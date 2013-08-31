@@ -24,6 +24,10 @@
 		8B27F33A17D1FC10005B5BEA /* miataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F33917D1FC10005B5BEA /* miataruTests.m */; };
 		8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DDD17D20E6A00F05F05 /* MIADHistoryViewController.m */; };
 		8B319DE617D20F6700F05F05 /* MIADSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */; };
+		8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B319DE717D2125000F05F05 /* CoreLocation.framework */; };
+		8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B319DE917D2125800F05F05 /* MapKit.framework */; };
+		8B319DEE17D261C900F05F05 /* MIADAddADeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DED17D261C800F05F05 /* MIADAddADeviceViewController.m */; };
+		8B319DF217D2637000F05F05 /* MiataruDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DF117D2637000F05F05 /* MiataruDevice.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +66,12 @@
 		8B319DDD17D20E6A00F05F05 /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
 		8B319DE417D20F6700F05F05 /* MIADSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADSettingsViewController.h; sourceTree = "<group>"; };
 		8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADSettingsViewController.m; sourceTree = "<group>"; };
+		8B319DE717D2125000F05F05 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		8B319DE917D2125800F05F05 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		8B319DEC17D261C800F05F05 /* MIADAddADeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceViewController.h; sourceTree = "<group>"; };
+		8B319DED17D261C800F05F05 /* MIADAddADeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceViewController.m; sourceTree = "<group>"; };
+		8B319DF017D2637000F05F05 /* MiataruDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MiataruDevice.h; sourceTree = "<group>"; };
+		8B319DF117D2637000F05F05 /* MiataruDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiataruDevice.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +79,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */,
+				8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */,
 				8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */,
 				8B27F31017D1FC10005B5BEA /* UIKit.framework in Frameworks */,
 				8B27F30C17D1FC0F005B5BEA /* Foundation.framework in Frameworks */,
@@ -110,6 +122,8 @@
 		8B27F30A17D1FC0F005B5BEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B319DE917D2125800F05F05 /* MapKit.framework */,
+				8B319DE717D2125000F05F05 /* CoreLocation.framework */,
 				8B27F30B17D1FC0F005B5BEA /* Foundation.framework */,
 				8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */,
 				8B27F30F17D1FC10005B5BEA /* UIKit.framework */,
@@ -121,6 +135,7 @@
 		8B27F31117D1FC10005B5BEA /* miataru */ = {
 			isa = PBXGroup;
 			children = (
+				8B319DEF17D2634F00F05F05 /* Model */,
 				8B319DDF17D20E7000F05F05 /* ViewControllers */,
 				8B27F31A17D1FC10005B5BEA /* MIADAppDelegate.h */,
 				8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */,
@@ -174,6 +189,7 @@
 		8B319DE017D20E8000F05F05 /* Devices */ = {
 			isa = PBXGroup;
 			children = (
+				8B319DEB17D261AB00F05F05 /* Add A Device */,
 				8B27F32017D1FC10005B5BEA /* MIADDevicesViewController.h */,
 				8B27F32117D1FC10005B5BEA /* MIADDevicesViewController.m */,
 			);
@@ -205,6 +221,24 @@
 				8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */,
 			);
 			name = Settings;
+			sourceTree = "<group>";
+		};
+		8B319DEB17D261AB00F05F05 /* Add A Device */ = {
+			isa = PBXGroup;
+			children = (
+				8B319DEC17D261C800F05F05 /* MIADAddADeviceViewController.h */,
+				8B319DED17D261C800F05F05 /* MIADAddADeviceViewController.m */,
+			);
+			name = "Add A Device";
+			sourceTree = "<group>";
+		};
+		8B319DEF17D2634F00F05F05 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8B319DF017D2637000F05F05 /* MiataruDevice.h */,
+				8B319DF117D2637000F05F05 /* MiataruDevice.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,6 +346,8 @@
 				8B27F31817D1FC10005B5BEA /* main.m in Sources */,
 				8B27F32217D1FC10005B5BEA /* MIADDevicesViewController.m in Sources */,
 				8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */,
+				8B319DEE17D261C900F05F05 /* MIADAddADeviceViewController.m in Sources */,
+				8B319DF217D2637000F05F05 /* MiataruDevice.m in Sources */,
 				8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */,
 				8B27F32517D1FC10005B5BEA /* MIADMapViewController.m in Sources */,
 			);
