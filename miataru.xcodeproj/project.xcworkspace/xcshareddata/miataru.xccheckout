@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>968BFEE9-D54E-4571-BD43-EE7CDF2CDE7B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>miataru</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>850D0A78-91CA-469F-BBA7-4EAC85F972F1</key>
+		<string>ssh://git/miataru/miataru-ios-app.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>miataru.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>850D0A78-91CA-469F-BBA7-4EAC85F972F1</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://git/miataru/miataru-ios-app.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>850D0A78-91CA-469F-BBA7-4EAC85F972F1</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>850D0A78-91CA-469F-BBA7-4EAC85F972F1</string>
+			<key>IDESourceControlWCCName</key>
+			<string>miataru-ios-app</string>
+		</dict>
+	</array>
+</dict>
+</plist>

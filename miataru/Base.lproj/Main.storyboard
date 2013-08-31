@@ -98,7 +98,7 @@
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
-                                    <barButtonItem systemItem="cancel" id="jY4-z4-6e9"/>
+                                    <barButtonItem systemItem="cancel" id="jY4-z4-6e9" customClass="MKUserTrackingBarButtonItem"/>
                                 </items>
                             </toolbar>
                         </subviews>
