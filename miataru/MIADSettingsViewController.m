@@ -1,18 +1,18 @@
 //
-//  MIADSecondViewController.m
+//  MIADSettingsViewController.m
 //  miataru
 //
 //  Created by Daniel Kirstenpfad on 31.08.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
 
-#import "MIADSecondViewController.h"
+#import "MIADSettingsViewController.h"
 
-@interface MIADSecondViewController ()
+@interface MIADSettingsViewController ()
 
 @end
 
-@implementation MIADSecondViewController
+@implementation MIADSettingsViewController
 
 - (void)viewDidLoad
 {

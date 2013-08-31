@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4451" systemVersion="13A461" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3676"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3715.3"/>
     </dependencies>
     <scenes>
-        <!--class Prefix:identifier First View Controller - First-->
+        <!--Devices View Controller - Devices-->
         <scene sceneID="W3I-pn-N6e">
             <objects>
-                <viewController title="First" id="CZ4-MO-1fc" customClass="MIADFirstViewController" sceneMemberID="viewController">
+                <viewController title="Devices" id="CZ4-MO-1fc" customClass="MIADDevicesViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="SiQ-qm-9mN"/>
+                        <viewControllerLayoutGuide type="bottom" id="M5g-pm-5vN"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="2VE-Yg-loa">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="First View" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zhg-ve-WU7">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Devices" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zhg-ve-WU7">
                                 <rect key="frame" x="20" y="158" width="280" height="42"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="tZ3-Hv-Q7E">
+                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" text="Loaded by the first view controller — an instance of MIADFirstViewController — specified in the app delegate." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="tZ3-Hv-Q7E">
                                 <rect key="frame" x="20" y="240" width="280" height="88"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="88" id="rDj-Sg-2Zj"/>
                                 </constraints>
-                                <string key="text">Loaded by the first view controller — an instance of MIADFirstViewController — specified in the app delegate.</string>
                                 <fontDescription key="fontDescription" type="system" size="system"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textView>
@@ -39,33 +42,36 @@
                             <constraint firstAttribute="centerY" secondItem="tZ3-Hv-Q7E" secondAttribute="centerY" id="xLM-BA-nZb"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="First" image="first" id="u1e-5L-l1D"/>
+                    <tabBarItem key="tabBarItem" title="Devices" image="Toolbar_Devices" id="u1e-5L-l1D"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="653" y="-138"/>
         </scene>
-        <!--class Prefix:identifier Second View Controller - Second-->
+        <!--Map View Controller - Map-->
         <scene sceneID="ot8-2e-RuS">
             <objects>
-                <viewController title="Second" id="QUy-BD-bpt" customClass="MIADSecondViewController" sceneMemberID="viewController">
+                <viewController title="Map" id="QUy-BD-bpt" customClass="MIADMapViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="cv7-8I-fvN"/>
+                        <viewControllerLayoutGuide type="bottom" id="lxn-o7-DXt"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gMD-aP-Fq6">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Second View" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="29h-N2-YGT">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Map" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="29h-N2-YGT">
                                 <rect key="frame" x="20" y="158" width="280" height="42"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="DcM-Fx-MKR">
+                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" text="Loaded by the second view controller — an instance of MIADSecondViewController — specified in the app delegate." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="DcM-Fx-MKR">
                                 <rect key="frame" x="20" y="240" width="280" height="88"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="88" id="9fN-Zf-E0i"/>
                                 </constraints>
-                                <string key="text">Loaded by the second view controller — an instance of MIADSecondViewController — specified in the app delegate.</string>
                                 <fontDescription key="fontDescription" type="system" size="system"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textView>
@@ -80,11 +86,99 @@
                             <constraint firstAttribute="centerY" secondItem="DcM-Fx-MKR" secondAttribute="centerY" id="lHZ-e8-ii2"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Second" image="second" id="Z7h-1E-pvt"/>
+                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="tcV-Yw-rdh"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="653" y="498"/>
+        </scene>
+        <!--History View Controller - History-->
+        <scene sceneID="cQb-9U-w6s">
+            <objects>
+                <viewController id="IoE-nD-Tai" customClass="MIADHistoryViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qep-0o-dRh"/>
+                        <viewControllerLayoutGuide type="bottom" id="eud-4Q-hFE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="GbR-cN-i07">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="History" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="nOb-LQ-MpU">
+                                <rect key="frame" x="20" y="158" width="280" height="42"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" text="Loaded by the first view controller — an instance of MIADFirstViewController — specified in the app delegate." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vqB-dy-gs9">
+                                <rect key="frame" x="20" y="240" width="280" height="88"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="88" id="fX8-MW-L1r"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="vqB-dy-gs9" firstAttribute="leading" secondItem="GbR-cN-i07" secondAttribute="leading" constant="20" symbolic="YES" id="3XG-M1-OEB"/>
+                            <constraint firstAttribute="centerY" secondItem="vqB-dy-gs9" secondAttribute="centerY" id="PYM-OQ-ESJ"/>
+                            <constraint firstItem="nOb-LQ-MpU" firstAttribute="leading" secondItem="GbR-cN-i07" secondAttribute="leading" constant="20" symbolic="YES" id="UL8-Rl-rvG"/>
+                            <constraint firstItem="vqB-dy-gs9" firstAttribute="top" secondItem="nOb-LQ-MpU" secondAttribute="bottom" constant="40" id="ac5-YA-b5G"/>
+                            <constraint firstAttribute="trailing" secondItem="nOb-LQ-MpU" secondAttribute="trailing" constant="20" symbolic="YES" id="fhE-97-OWW"/>
+                            <constraint firstAttribute="trailing" secondItem="vqB-dy-gs9" secondAttribute="trailing" constant="20" symbolic="YES" id="kv7-1X-RSz"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="History" image="Toolbar_History" id="CFF-Mx-PTA"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HKn-b4-hBT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="653" y="1160"/>
+        </scene>
+        <!--Settings View Controller - Settings-->
+        <scene sceneID="EaP-6R-9gC">
+            <objects>
+                <viewController id="qF7-Nd-lQH" customClass="MIADSettingsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Nh8-Wv-tK4"/>
+                        <viewControllerLayoutGuide type="bottom" id="EYf-Lw-BCm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="rve-Fd-Luk">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Settings" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="QrT-OY-of9">
+                                <rect key="frame" x="20" y="158" width="280" height="42"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" bouncesZoom="NO" editable="NO" text="Loaded by the first view controller — an instance of MIADFirstViewController — specified in the app delegate." textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="g9d-75-5bN">
+                                <rect key="frame" x="20" y="240" width="280" height="88"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="88" id="DAt-rb-St2"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" size="system"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="g9d-75-5bN" secondAttribute="trailing" constant="20" symbolic="YES" id="1zS-Nu-mA9"/>
+                            <constraint firstItem="g9d-75-5bN" firstAttribute="leading" secondItem="rve-Fd-Luk" secondAttribute="leading" constant="20" symbolic="YES" id="67M-Qu-HUs"/>
+                            <constraint firstItem="g9d-75-5bN" firstAttribute="top" secondItem="QrT-OY-of9" secondAttribute="bottom" constant="40" id="gnP-5V-IoF"/>
+                            <constraint firstAttribute="centerY" secondItem="g9d-75-5bN" secondAttribute="centerY" id="hJv-Xf-l2n"/>
+                            <constraint firstItem="QrT-OY-of9" firstAttribute="leading" secondItem="rve-Fd-Luk" secondAttribute="leading" constant="20" symbolic="YES" id="j2n-aG-OXF"/>
+                            <constraint firstAttribute="trailing" secondItem="QrT-OY-of9" secondAttribute="trailing" constant="20" symbolic="YES" id="zYh-gN-gZB"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Settings" image="Toolbar_Settings" id="GZU-9K-fKN"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Is5-V6-GEr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="653" y="1833"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -99,16 +193,20 @@
                     <connections>
                         <segue destination="CZ4-MO-1fc" kind="relationship" relationship="viewControllers" id="SUk-Ux-ee1"/>
                         <segue destination="QUy-BD-bpt" kind="relationship" relationship="viewControllers" id="M8t-EP-wfW"/>
+                        <segue destination="IoE-nD-Tai" kind="relationship" relationship="viewControllers" id="oeH-ux-CGk"/>
+                        <segue destination="qF7-Nd-lQH" kind="relationship" relationship="viewControllers" id="OOA-eW-ZQ7"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="132" y="180"/>
+            <point key="canvasLocation" x="-220" y="796"/>
         </scene>
     </scenes>
     <resources>
-        <image name="first" width="16" height="16"/>
-        <image name="second" width="16" height="16"/>
+        <image name="Toolbar_Devices" width="30" height="30"/>
+        <image name="Toolbar_History" width="30" height="30"/>
+        <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

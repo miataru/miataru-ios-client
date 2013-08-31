@@ -1,18 +1,18 @@
 //
-//  MIADFirstViewController.m
+//  MIADSecondViewController.m
 //  miataru
 //
 //  Created by Daniel Kirstenpfad on 31.08.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
 
-#import "MIADFirstViewController.h"
+#import "MIADMapViewController.h"
 
-@interface MIADFirstViewController ()
+@interface MIADMapViewController ()
 
 @end
 
-@implementation MIADFirstViewController
+@implementation MIADMapViewController
 
 - (void)viewDidLoad
 {

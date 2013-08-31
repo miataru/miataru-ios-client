@@ -1,5 +1,5 @@
 //
-//  MIADFirstViewController.h
+//  MIADSecondViewController.h
 //  miataru
 //
 //  Created by Daniel Kirstenpfad on 31.08.13.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MIADFirstViewController : UIViewController
+@interface MIADMapViewController : UIViewController
 
 @end
