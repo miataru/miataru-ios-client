@@ -25,8 +25,36 @@
     
     self.locations = [[NSMutableArray alloc] init];
     self.locationManager = [[CLLocationManager alloc] init];
+
+    // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.distanceFilter = 5;
     self.locationManager.delegate = self;
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    [self LocationAppInBackground];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    [self LocationAppInForeground];
+}
+
+
+- (void)LocationAppInForeground
+{
+    NSLog(@"Miataru is running in the foreground!");
+    [self.locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
+    [self.locationManager setDistanceFilter:5];
+}
+
+- (void)LocationAppInBackground
+{
+    NSLog(@"Miataru is running in the background!");
+    [self.locationManager setDesiredAccuracy:kCLLocationAccuracyHundredMeters];
+    [self.locationManager setDistanceFilter:100];
 }
 
 - (void)didReceiveMemoryWarning
@@ -96,7 +124,7 @@
     // when active...
     if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive)
     {
-/*        // determine the region the points span so we can update our map's zoom.
+/*      // determine the region the points span so we can update our map's zoom.
         double maxLat = -91;
         double minLat =  91;
         double maxLon = -181;
