@@ -25,7 +25,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="MlU-6H-mNo"/>
                                     <barButtonItem title="Add" id="eCl-3c-UNC">
                                         <connections>
-                                            <segue destination="2mZ-t4-Pkp" kind="modal" id="I8p-xj-iPU"/>
+                                            <segue destination="2mZ-t4-Pkp" kind="modal" identifier="AddADeviceSegue" id="I8p-xj-iPU"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -80,7 +80,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="653" y="-138"/>
+            <point key="canvasLocation" x="653" y="-137"/>
         </scene>
         <!--AddA Device View Controller-->
         <scene sceneID="6GB-c8-69u">
@@ -98,7 +98,7 @@
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
-                                    <barButtonItem systemItem="cancel" id="jY4-z4-6e9" customClass="MKUserTrackingBarButtonItem"/>
+                                    <barButtonItem systemItem="cancel" id="jY4-z4-6e9"/>
                                 </items>
                             </toolbar>
                         </subviews>
@@ -265,7 +265,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-220" y="796"/>
+            <point key="canvasLocation" x="-540" y="796"/>
         </scene>
     </scenes>
     <resources>
