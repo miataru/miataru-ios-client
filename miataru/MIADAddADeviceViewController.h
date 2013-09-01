@@ -10,4 +10,7 @@
 
 @interface MIADAddADeviceViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UIToolbar *CancelButtonPressed;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *SaveButtonPressed;
+
 @end
