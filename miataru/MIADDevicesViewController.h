@@ -13,7 +13,6 @@
 
 @property (strong, nonatomic) IBOutlet UISwitch *switchEnabled;
 
-- (IBAction)accuracyChanged:(id)sender;
 - (IBAction)enabledStateChanged:(id)sender;
 
 

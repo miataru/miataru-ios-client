@@ -1468,7 +1468,9 @@
 		A3EDD499A5C64C8F86D795EF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Daniel Kirstenpfad (BZUPZG7MA7)";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PROVISIONING_PROFILE = "8F445CA5-D831-4166-82E9-E8B0050E57FF";
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
@@ -1565,8 +1567,10 @@
 		EF0447D37D3E4382995B971D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Daniel Kirstenpfad (BZUPZG7MA7)";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "8F445CA5-D831-4166-82E9-E8B0050E57FF";
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Debug;

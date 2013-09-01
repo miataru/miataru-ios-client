@@ -7,6 +7,7 @@
 //
 
 #import "MIADAppDelegate.h"
+#import "MIADDevicesViewController.h"
 
 @implementation MIADAppDelegate
 
