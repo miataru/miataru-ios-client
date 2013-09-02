@@ -36,16 +36,16 @@
     if (self.locationManager.desiredAccuracy != kCLLocationAccuracyBest) {
         NSLog(@"Switching Accuracy to Foreground Mode");
         [self.locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
-        [self.locationManager setDistanceFilter:5];
+        [self.locationManager setDistanceFilter:400];
     }
 }
 
 - (void)LocationAppInBackground
 {
-    if (self.locationManager.desiredAccuracy != kCLLocationAccuracyHundredMeters) {
+    if (self.locationManager.desiredAccuracy != kCLLocationAccuracyBest) {
         NSLog(@"Switching Accuracy to Background Mode");
         [self.locationManager setDesiredAccuracy:kCLLocationAccuracyHundredMeters];
-        [self.locationManager setDistanceFilter:500];
+        [self.locationManager setDistanceFilter:1000];
     }
 }
 
@@ -122,7 +122,7 @@
     }
     */
     
-  
+     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [[NSURLConnection alloc] initWithRequest:request delegate:self];
     NSLog(@"Sending Update to Miataru Service...");
     
@@ -209,6 +209,16 @@
         [self LocationAppInBackground];
         [self SendUpdateToMiataruServer:newLocation];
     }
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 @end
