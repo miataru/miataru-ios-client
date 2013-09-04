@@ -10,8 +10,8 @@
 
 @interface MIADDevicesViewController ()
 
-@property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) NSMutableArray *locations;
+//@property (nonatomic, strong) CLLocationManager *locationManager;
+//@property (nonatomic, strong) NSMutableArray *locations;
 
 @end
 
