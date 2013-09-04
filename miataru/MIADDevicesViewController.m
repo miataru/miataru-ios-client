@@ -27,12 +27,19 @@
 
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 5;
+    self.locationManager.distanceFilter = 400;
     self.locationManager.delegate = self;
+    
+    if ([self.locationManager respondsToSelector:@selector(pausesLocationUpdatesAutomatically)]) {
+        self.locationManager.pausesLocationUpdatesAutomatically = NO;
+    }
 }
 
 - (void)LocationAppInForeground
 {
+    [self.locationManager stopMonitoringSignificantLocationChanges];
+    [self.locationManager startUpdatingLocation];
+    
     if (self.locationManager.desiredAccuracy != kCLLocationAccuracyBest) {
         NSLog(@"Switching Accuracy to Foreground Mode");
         [self.locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
@@ -42,7 +49,9 @@
 
 - (void)LocationAppInBackground
 {
-    if (self.locationManager.desiredAccuracy != kCLLocationAccuracyBest) {
+    [self.locationManager stopUpdatingLocation];
+    [self.locationManager startMonitoringSignificantLocationChanges];
+    if (self.locationManager.desiredAccuracy != kCLLocationAccuracyHundredMeters) {
         NSLog(@"Switching Accuracy to Background Mode");
         [self.locationManager setDesiredAccuracy:kCLLocationAccuracyHundredMeters];
         [self.locationManager setDistanceFilter:1000];
