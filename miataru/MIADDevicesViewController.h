@@ -9,11 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
-@interface MIADDevicesViewController : UIViewController <CLLocationManagerDelegate>
-
-@property (strong, nonatomic) IBOutlet UISwitch *switchEnabled;
-
-- (IBAction)enabledStateChanged:(id)sender;
-
+@interface MIADDevicesViewController : UIViewController
 
 @end

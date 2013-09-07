@@ -8,6 +8,7 @@
 
 #import "MIADAppDelegate.h"
 #import "MIADDevicesViewController.h"
+#import "CommonCrypto/CommonDigest.h"
 
 @interface MIADAppDelegate ()
 
@@ -143,56 +144,56 @@
      {"MiataruConfig":{"EnableLocationHistory":"False","LocationDataRetentionTime":"15"},"MiataruLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","Timestamp":"1376735651302","Longitude":"10.837502","Latitude":"49.828925","HorizontalAccuracy":"50.00"}]}
     */
     //[UIDevice currentDevice].identifierForVendor;
-
-    NSString* deviceID = [NSString stringWithFormat:@"7b8e6e0ee5296db345162dc2ef652c1350761824"];
-
-    NSString *currentLatitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.latitude];
-    NSString *currentLongitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.longitude];
-    NSString *currentHorizontalAccuracy = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.horizontalAccuracy*3.28];
-
-    // change this to the measured date timestamp!
-    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
-    // NSTimeInterval is defined as double
-    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-
-    NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
-
-
-    NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%@\",\"Latitude\":\"%@\",\"HorizontalAccuracy\":\"%@\"}]}",deviceID,currentTimeStamp,currentLongitude,currentLatitude,currentHorizontalAccuracy];
-
-
-    NSMutableURLRequest *request =
-    [[NSMutableURLRequest alloc] initWithURL:
-     [NSURL URLWithString:@"http://service.miataru.com/UpdateLocation"]];
-
-    [request setHTTPMethod:@"POST"];
-
-    [request setValue:[NSString
-                       stringWithFormat:@"%d", [UpdateLocationJSONContent length]]
-   forHTTPHeaderField:@"Content-length"];
-
-    [request setValue:@"application/json"
-   forHTTPHeaderField:@"Content-Type"];
-
-
-    [request setHTTPBody:[UpdateLocationJSONContent
-                          dataUsingEncoding:NSUTF8StringEncoding]];
-
-    /*NSURLResponse * response = nil;
-    NSError * error = nil;
-    NSData * data = [NSURLConnection sendSynchronousRequest:request
-                                          returningResponse:&response
-                                                      error:&error];
-
-    if (error == nil)
+    
+    // render device ID
+    
+    if ([UIDevice currentDevice].identifierForVendor != nil)
     {
-        // Parse data here
-    }
-    */
+        
+        NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
+        
+//        unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+//        NSData *stringBytes = [vendor_deviceID dataUsingEncoding: NSUTF8StringEncoding]; /* or some other encoding */
+//        CC_SHA1([stringBytes bytes], [stringBytes length], digest);
+//        NSString* deviceID = [[NSString alloc] initWithBytes:digest length:sizeof(digest) encoding:NSASCIIStringEncoding];
+//        NSString* deviceID = [NSString stringWithFormat:@"7b8e6e0ee5296db345162dc2ef652c1350761824"];
 
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    NSLog(@"Sending Update to Miataru Service...");
+        NSString *currentLatitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.latitude];
+        NSString *currentLongitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.longitude];
+        NSString *currentHorizontalAccuracy = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.horizontalAccuracy*3.28];
+
+        // change this to the measured date timestamp!
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        // NSTimeInterval is defined as double
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+
+        NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
+
+
+        NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%@\",\"Latitude\":\"%@\",\"HorizontalAccuracy\":\"%@\"}]}",deviceID,currentTimeStamp,currentLongitude,currentLatitude,currentHorizontalAccuracy];
+
+
+        NSMutableURLRequest *request =
+        [[NSMutableURLRequest alloc] initWithURL:
+         [NSURL URLWithString:@"http://service.miataru.com/UpdateLocation"]];
+
+        [request setHTTPMethod:@"POST"];
+
+        [request setValue:[NSString
+                           stringWithFormat:@"%d", [UpdateLocationJSONContent length]]
+       forHTTPHeaderField:@"Content-length"];
+
+        [request setValue:@"application/json"
+       forHTTPHeaderField:@"Content-Type"];
+
+
+        [request setHTTPBody:[UpdateLocationJSONContent
+                              dataUsingEncoding:NSUTF8StringEncoding]];
+
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+        [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        NSLog(@"Sending Update to Miataru Service...");
+    }
 }
 
 @end

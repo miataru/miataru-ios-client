@@ -23,18 +23,6 @@
                                 <items>
                                     <barButtonItem title="Edit" id="6ba-Tv-tAP"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="MlU-6H-mNo"/>
-                                    <barButtonItem style="plain" id="Agw-la-WOI">
-                                        <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="5vH-e1-38e">
-                                            <rect key="frame" x="211" y="7" width="51" height="31"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <connections>
-                                                <action selector="enabledStateChanged:" destination="CZ4-MO-1fc" eventType="valueChanged" id="AVk-Gf-GrJ"/>
-                                            </connections>
-                                        </switch>
-                                        <connections>
-                                            <action selector="enabledStateChanged:" destination="CZ4-MO-1fc" id="Z0c-EP-ovX"/>
-                                        </connections>
-                                    </barButtonItem>
                                     <barButtonItem title="Add" id="eCl-3c-UNC">
                                         <connections>
                                             <segue destination="2mZ-t4-Pkp" kind="modal" identifier="AddADeviceSegue" id="I8p-xj-iPU"/>
@@ -67,7 +55,7 @@
                                 </prototypes>
                             </tableView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Known Devices" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DJr-6l-0aX">
-                                <rect key="frame" x="75" y="31" width="119" height="21"/>
+                                <rect key="frame" x="101" y="31" width="119" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -87,9 +75,6 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Devices" image="Toolbar_Devices" id="u1e-5L-l1D"/>
                     <navigationItem key="navigationItem" id="M56-px-S3E"/>
-                    <connections>
-                        <outlet property="switchEnabled" destination="5vH-e1-38e" id="LJg-Hx-XYk"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
             </objects>
