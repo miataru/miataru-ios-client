@@ -7,11 +7,11 @@
 //
 
 #import "MIADDevicesViewController.h"
+#import "KnownDevice.h"
 
 @interface MIADDevicesViewController ()
 
-//@property (nonatomic, strong) CLLocationManager *locationManager;
-//@property (nonatomic, strong) NSMutableArray *locations;
+@property (strong) NSMutableArray *known_devices;
 
 @end
 
@@ -19,7 +19,26 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    [self loadKnownDevices];
+    
+    if(!self.known_devices)
+    {
+        self.known_devices = [NSMutableArray array];
+
+        NSString *name = @"Daniels iPhone";
+        NSString *id = @"50261AA3-FB9A-413B-B9CA-3A56DD3E736E";
+        KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
+        [self.known_devices addObject:knowndevice];
+
+        name = @"Steffis iPhone";
+        id = @"1FA18E88-2CD8-426F-94FD-69D95BFEE410";
+        knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
+        [self.known_devices addObject:knowndevice];
+        
+        [self saveKnownDevices];
+    }
+
+   [super viewDidLoad];
 }
 
 - (void)didReceiveMemoryWarning
@@ -27,5 +46,150 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.known_devices count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = nil;
+    
+    if([tableView respondsToSelector:@selector(dequeueReusableCellWithIdentifier:forIndexPath:)])
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"KnownDeviceCell" forIndexPath:indexPath];
+        
+    }
+    else
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"KnownDeviceCell"];
+        
+    }
+    
+    //    USVFeed *feed = [self.feeds objectAtIndex:indexPath.row];
+    KnownDevice *knowndevice = self.known_devices[indexPath.row];
+    
+    cell.textLabel.text = knowndevice.DeviceName;
+    cell.detailTextLabel.text = knowndevice.DeviceID;
+    
+    return cell;
+    
+}
+
+// Override to support conditional editing of the table view.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [self.known_devices removeObjectAtIndex:indexPath.row];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+    }
+}
+
+
+/*
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
+
+/*
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
+
+/*
+ #pragma mark - Navigation
+ 
+ // In a story board-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+ {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ 
+ */
+
+#pragma mark Persistent State
+
+- (NSURL*)applicationDataDirectory {
+    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+                                             inDomains:NSUserDomainMask];
+    NSURL* appSupportDir = nil;
+    NSURL* appDirectory = nil;
+    
+    if ([possibleURLs count] >= 1) {
+        // Use the first directory (if multiple are returned)
+        appSupportDir = [possibleURLs objectAtIndex:0];
+    }
+    
+    // If a valid app support directory exists, add the
+    // app's bundle ID to it to specify the final directory.
+    if (appSupportDir) {
+        NSString* appBundleID = [[NSBundle mainBundle] bundleIdentifier];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:appBundleID];
+    }
+    
+    return appDirectory;
+}
+
+
+- (NSString*) pathToSavedKnownDevices{
+    NSURL *applicationSupportURL = [self applicationDataDirectory];
+    
+    if (! [[NSFileManager defaultManager] fileExistsAtPath:[applicationSupportURL path]]){
+        
+        NSError *error = nil;
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[applicationSupportURL path]
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        
+        if (error){
+            NSLog(@"error creating app support dir: %@", error);
+        }
+        
+    }
+    NSString *path = [[applicationSupportURL path] stringByAppendingPathComponent:@"knownDevices.plist"];
+    
+    return path;
+}
+
+- (void) loadKnownDevices{
+    
+    NSString *path = [self pathToSavedKnownDevices];
+    NSLog(@"loadKnownDevices: %@", path);
+    
+    self.known_devices = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+}
+
+
+- (void) saveKnownDevices{
+    [NSKeyedArchiver archiveRootObject:self.known_devices toFile:[self pathToSavedKnownDevices]];
+}
+
+
 
 @end

@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
-@interface MIADDevicesViewController : UIViewController
+@interface MIADDevicesViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
 @end
