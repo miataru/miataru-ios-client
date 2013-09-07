@@ -7,7 +7,6 @@
 //
 
 #import "MIADAppDelegate.h"
-#import "MIADDevicesViewController.h"
 #import "CommonCrypto/CommonDigest.h"
 
 @interface MIADAppDelegate ()

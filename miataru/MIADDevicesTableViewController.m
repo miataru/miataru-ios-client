@@ -1,35 +1,46 @@
-      //
-//  MIADFirstViewController.m
+//
+//  MIADDevicesTableViewController.m
 //  miataru
 //
-//  Created by Daniel Kirstenpfad on 31.08.13.
+//  Created by Daniel Kirstenpfad on 07.09.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
 
-#import "MIADDevicesViewController.h"
+#import "MIADDevicesTableViewController.h"
 #import "KnownDevice.h"
 
-@interface MIADDevicesViewController ()
+@interface MIADDevicesTableViewController ()
 
 @property (strong) NSMutableArray *known_devices;
 
 @end
 
-@implementation MIADDevicesViewController
+@implementation MIADDevicesTableViewController
+
+- (id)initWithStyle:(UITableViewStyle)style
+{
+    self = [super initWithStyle:style];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+
     [self loadKnownDevices];
     
     if(!self.known_devices)
     {
         self.known_devices = [NSMutableArray array];
-
+        
         NSString *name = @"Daniels iPhone";
         NSString *id = @"50261AA3-FB9A-413B-B9CA-3A56DD3E736E";
         KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
         [self.known_devices addObject:knowndevice];
-
+        
         name = @"Steffis iPhone";
         id = @"1FA18E88-2CD8-426F-94FD-69D95BFEE410";
         knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
@@ -37,8 +48,13 @@
         
         [self saveKnownDevices];
     }
+    
 
-   [super viewDidLoad];
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+ 
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning
