@@ -96,7 +96,7 @@
     [self.locationManager stopUpdatingLocation];
     [self.locationManager startMonitoringSignificantLocationChanges];
     
-    [application beginBackgroundTaskWithExpirationHandler:^{}];
+    //[application beginBackgroundTaskWithExpirationHandler:^{}];
 
 }
 
