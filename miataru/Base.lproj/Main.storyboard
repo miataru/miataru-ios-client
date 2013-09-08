@@ -4,43 +4,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3715.3"/>
     </dependencies>
     <scenes>
-        <!--AddA Device View Controller - Add a new Device-->
-        <scene sceneID="SaM-G6-e3F">
-            <objects>
-                <viewController id="87w-FT-QCf" customClass="MIADAddADeviceViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="JUn-nr-ayS"/>
-                        <viewControllerLayoutGuide type="bottom" id="4nm-M0-XCh"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="z82-wT-eIH">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="kev-DW-B9I">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Add a new Device" id="Ujn-y4-DZk">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="AeV-VS-Uef">
-                            <connections>
-                                <action selector="CancelButtonPressed:" destination="87w-FT-QCf" id="Z3U-xT-IKK"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="rW3-K7-yMz">
-                            <connections>
-                                <action selector="SaveButtonPressed:" destination="87w-FT-QCf" id="fTm-vR-Nli"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="foO-Cr-Mmm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1866" y="-229"/>
-        </scene>
         <!--Map View Controller - Map-->
         <scene sceneID="ot8-2e-RuS">
             <objects>
@@ -70,7 +33,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1705" y="498"/>
+            <point key="canvasLocation" x="223" y="62"/>
         </scene>
         <!--History View Controller - History-->
         <scene sceneID="cQb-9U-w6s">
@@ -102,7 +65,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HKn-b4-hBT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="653" y="1160"/>
+            <point key="canvasLocation" x="223" y="796"/>
         </scene>
         <!--Settings View Controller - Settings-->
         <scene sceneID="EaP-6R-9gC">
@@ -134,7 +97,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Is5-V6-GEr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1179" y="1833"/>
+            <point key="canvasLocation" x="749" y="1549"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -206,7 +169,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="119-x1-8k3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="785" y="-10"/>
+            <point key="canvasLocation" x="749" y="-698"/>
         </scene>
         <!--Navigation Controller - Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -225,7 +188,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xi3-PN-we4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="653" y="1833"/>
+            <point key="canvasLocation" x="223" y="1549"/>
         </scene>
         <!--Navigation Controller - Devices-->
         <scene sceneID="mFQ-cI-ZZw">
@@ -244,7 +207,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GeV-8r-swQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="259" y="-10"/>
+            <point key="canvasLocation" x="223" y="-698"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9Ac-h1-4En">
@@ -257,12 +220,80 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="87w-FT-QCf" kind="relationship" relationship="rootViewController" id="m9b-Dv-QiO"/>
+                        <segue destination="fFJ-wG-oZ7" kind="relationship" relationship="rootViewController" id="eCe-Ru-n8b"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WH4-QA-c7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1362" y="-223"/>
+            <point key="canvasLocation" x="1326" y="-698"/>
+        </scene>
+        <!--AddA Device Table View Controller - Add a Device-->
+        <scene sceneID="B2f-ub-TDJ">
+            <objects>
+                <tableViewController id="fFJ-wG-oZ7" customClass="MIADAddADeviceTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="MxE-iH-uCW">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <sections>
+                            <tableViewSection headerTitle="Add a Device" id="zTf-hv-66l">
+                                <cells>
+                                    <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="gAF-sD-l1t">
+                                        <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="gAF-sD-l1t" id="yuj-nF-6Pg">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jMF-2w-cZT">
+                                                    <rect key="frame" x="20" y="7" width="280" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="QBg-vN-Ay2">
+                                        <rect key="frame" x="0.0" y="163" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="QBg-vN-Ay2" id="UQD-W8-Si9">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TGg-c8-cjP">
+                                                    <rect key="frame" x="20" y="7" width="280" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="fFJ-wG-oZ7" id="usk-qK-b7N"/>
+                            <outlet property="delegate" destination="fFJ-wG-oZ7" id="Xwq-aX-OEM"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Add a Device" id="Df5-Mj-hz2">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="yKy-nG-eFg">
+                            <connections>
+                                <action selector="CancelButtonPressed:" destination="fFJ-wG-oZ7" id="wnA-lQ-0KS"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="OmK-N3-ULI"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="DeviceIDTextField" destination="TGg-c8-cjP" id="B8f-Cw-Dgs"/>
+                        <outlet property="DeviceNameTextField" destination="yuj-nF-6Pg" id="sby-TK-UAv"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1804" y="-698"/>
         </scene>
     </scenes>
     <resources>
