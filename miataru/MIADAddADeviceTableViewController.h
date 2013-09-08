@@ -8,6 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class KnownDevice;
+
+@protocol MIADAddADeviceTableViewControllerDelegate;
+
 @interface MIADAddADeviceTableViewController : UITableViewController
+
+@property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
+
+@end
+
+@protocol MIADAddADeviceTableViewControllerDelegate <NSObject>
+
+- (void) addADeviceTableViewControllerDidFinish:(MIADAddADeviceTableViewController*)inController knownDevice:(KnownDevice*)inDevice;
 
 @end

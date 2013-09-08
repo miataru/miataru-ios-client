@@ -1,26 +1,22 @@
 //
-//  MIADAddADeviceTableViewController.m
+//  MIADDeviceDetailsViewController.m
 //  miataru
 //
 //  Created by Daniel Kirstenpfad on 08.09.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
 
-#import "MIADAddADeviceTableViewController.h"
-#import "KnownDevice.h"
+#import "MIADDeviceDetailsViewController.h"
 
-@interface MIADAddADeviceTableViewController ()
-
-@property (weak, nonatomic) IBOutlet UIView *DeviceNameTextField;
-@property (weak, nonatomic) IBOutlet UITextField *DeviceIDTextField;
+@interface MIADDeviceDetailsViewController ()
 
 @end
 
-@implementation MIADAddADeviceTableViewController
+@implementation MIADDeviceDetailsViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
@@ -30,6 +26,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+	// Do any additional setup after loading the view.
 }
 
 - (void)didReceiveMemoryWarning
@@ -37,14 +34,9 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 - (IBAction)CancelButtonAction:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-- (IBAction)SaveButtonAction:(id)sender
-{
-    
 }
 
 @end

@@ -134,17 +134,23 @@
  }
  */
 
-/*
- #pragma mark - Navigation
- 
- // In a story board-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
- {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- 
- */
+#pragma mark - Segue
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ModalToAddDevice"])
+    {
+        ((MIADAddADeviceTableViewController*)[[segue.destinationViewController viewControllers] objectAtIndex:0]).delegate = self;
+    }
+    /*else
+    if ([segue.identifier isEqualToString:@"PushToEntries"]) {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        USVFeed *feed = self.feeds[indexPath.row];
+        //        [segue.destinationViewController setFeed:feed];
+        ((USVEntriesTableViewController*)segue.destinationViewController).feed = feed;
+    }*/
+}
+
 
 #pragma mark Persistent State
 
@@ -206,6 +212,13 @@
     [NSKeyedArchiver archiveRootObject:self.known_devices toFile:[self pathToSavedKnownDevices]];
 }
 
+
+#pragma mark - Add a Device Delegate
+
+- (void)addADeviceTableViewControllerDidFinish:(MIADAddADeviceTableViewController *)inController knownDevice:(KnownDevice *)inDevice
+{
+    
+}
 
 
 @end

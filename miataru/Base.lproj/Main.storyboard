@@ -129,29 +129,32 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="hRL-vf-03S" detailTextLabel="eI3-Ia-xKM" style="IBUITableViewCellStyleSubtitle" id="6lD-GQ-3Eb">
+                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="hRL-vf-03S" detailTextLabel="eI3-Ia-xKM" style="IBUITableViewCellStyleSubtitle" id="6lD-GQ-3Eb">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="6lD-GQ-3Eb" id="i2B-Sf-DPJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" ambiguous="YES" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hRL-vf-03S">
-                                            <rect key="frame" x="15" y="3" width="34" height="22"/>
+                                            <rect key="frame" x="15" y="5" width="34" height="22"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" ambiguous="YES" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eI3-Ia-xKM">
-                                            <rect key="frame" x="15" y="25" width="43" height="15"/>
+                                            <rect key="frame" x="15" y="27" width="36" height="12"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="BuP-gn-PIf" kind="push" identifier="PushToDeviceDetails" id="kOI-mr-RaN"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -162,7 +165,7 @@
                     <navigationItem key="navigationItem" title="Known Devices" id="v5G-hS-wfJ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="CzK-S1-zM0">
                             <connections>
-                                <segue destination="i9u-Yd-vsN" kind="modal" id="Eza-PX-sRJ"/>
+                                <segue destination="i9u-Yd-vsN" kind="modal" identifier="ModalToAddDevice" id="Eza-PX-sRJ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -209,6 +212,37 @@
             </objects>
             <point key="canvasLocation" x="223" y="-698"/>
         </scene>
+        <!--Device Details View Controller - Device Details-->
+        <scene sceneID="NOf-4O-ete">
+            <objects>
+                <viewController id="BuP-gn-PIf" customClass="MIADDeviceDetailsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rVw-Ki-9As"/>
+                        <viewControllerLayoutGuide type="bottom" id="ANq-Vf-2ak"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Mds-Li-uQ3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="8aw-yu-kP7" secondAttribute="trailing" id="PT1-Lg-Mfa"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="top" secondItem="Mds-Li-uQ3" secondAttribute="top" id="Qtd-us-d6f"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="leading" secondItem="Mds-Li-uQ3" secondAttribute="leading" id="eYC-Vh-k7m"/>
+                            <constraint firstAttribute="bottom" secondItem="8aw-yu-kP7" secondAttribute="bottom" id="goI-O9-9FJ"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Device Details" id="u2g-TA-j6t"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a3K-xC-SOA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1330" y="-982"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="9Ac-h1-4En">
             <objects>
@@ -225,7 +259,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WH4-QA-c7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1326" y="-698"/>
+            <point key="canvasLocation" x="1330" y="-318"/>
         </scene>
         <!--AddA Device Table View Controller - Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
@@ -281,10 +315,14 @@
                     <navigationItem key="navigationItem" title="Add a Device" id="Df5-Mj-hz2">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="yKy-nG-eFg">
                             <connections>
-                                <action selector="CancelButtonPressed:" destination="fFJ-wG-oZ7" id="wnA-lQ-0KS"/>
+                                <action selector="CancelButtonAction:" destination="fFJ-wG-oZ7" id="Bzc-il-iNg"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="OmK-N3-ULI"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="OmK-N3-ULI">
+                            <connections>
+                                <action selector="SaveButtonAction:" destination="fFJ-wG-oZ7" id="30b-xP-HYT"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="DeviceIDTextField" destination="TGg-c8-cjP" id="B8f-Cw-Dgs"/>
@@ -293,7 +331,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1804" y="-698"/>
+            <point key="canvasLocation" x="1808" y="-318"/>
         </scene>
     </scenes>
     <resources>

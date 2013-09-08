@@ -28,6 +28,7 @@
 		8B5C1F1517DBCE3B001E87C5 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5C1F1417DBCE3B001E87C5 /* MIADDevicesTableViewController.m */; };
 		8B62284417D3A9750029B7D9 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B62284317D3A9750029B7D9 /* UpdateLocation.m */; };
 		8B67A18D17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */; };
+		8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */; };
 		8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */; };
 		AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3488FBB377DA45FFB847D9C3 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -76,6 +77,8 @@
 		8B62284317D3A9750029B7D9 /* UpdateLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateLocation.m; sourceTree = "<group>"; };
 		8B67A18B17DCC31800CD5CBE /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
 		8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
+		8B67A18F17DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
+		8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
 		8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
 		8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,14 +110,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8B12D6F817DBCC73002239A0 /* 1 Known Devices */ = {
+		8B12D6F817DBCC73002239A0 /* Known Devices */ = {
 			isa = PBXGroup;
 			children = (
+				8B67A18E17DCCBE100CD5CBE /* DeviceDetails */,
 				8B319DEB17D261AB00F05F05 /* Add A Device */,
 				8B5C1F1317DBCE3B001E87C5 /* MIADDevicesTableViewController.h */,
 				8B5C1F1417DBCE3B001E87C5 /* MIADDevicesTableViewController.m */,
 			);
-			name = "1 Known Devices";
+			name = "Known Devices";
 			sourceTree = "<group>";
 		};
 		8B27F2FF17D1FC0F005B5BEA = {
@@ -197,7 +201,7 @@
 		8B319DDF17D20E7000F05F05 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				8B12D6F817DBCC73002239A0 /* 1 Known Devices */,
+				8B12D6F817DBCC73002239A0 /* Known Devices */,
 				8B319DE117D20E8500F05F05 /* Map */,
 				8B319DE217D20E8C00F05F05 /* History */,
 				8B319DE317D20E9100F05F05 /* Settings */,
@@ -258,6 +262,15 @@
 				8B62284317D3A9750029B7D9 /* UpdateLocation.m */,
 			);
 			name = "REST Requests";
+			sourceTree = "<group>";
+		};
+		8B67A18E17DCCBE100CD5CBE /* DeviceDetails */ = {
+			isa = PBXGroup;
+			children = (
+				8B67A18F17DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.h */,
+				8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */,
+			);
+			name = DeviceDetails;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -404,6 +417,7 @@
 				8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */,
 				8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */,
 				8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */,
+				8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */,
 				8B27F32517D1FC10005B5BEA /* MIADMapViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

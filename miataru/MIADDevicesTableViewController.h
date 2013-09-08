@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MIADAddADeviceTableViewController.h"
 
-@interface MIADDevicesTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource>
+@interface MIADDevicesTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, MIADAddADeviceTableViewControllerDelegate>
 
 @end
