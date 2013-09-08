@@ -326,7 +326,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="DeviceIDTextField" destination="TGg-c8-cjP" id="B8f-Cw-Dgs"/>
-                        <outlet property="DeviceNameTextField" destination="yuj-nF-6Pg" id="sby-TK-UAv"/>
+                        <outlet property="DeviceNameTextField" destination="jMF-2w-cZT" id="tez-Ao-bBp"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>

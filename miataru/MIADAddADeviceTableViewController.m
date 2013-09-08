@@ -11,7 +11,8 @@
 
 @interface MIADAddADeviceTableViewController ()
 
-@property (weak, nonatomic) IBOutlet UIView *DeviceNameTextField;
+@property (weak, nonatomic) IBOutlet UITextField *DeviceNameTextField;
+
 @property (weak, nonatomic) IBOutlet UITextField *DeviceIDTextField;
 
 @end
@@ -40,11 +41,20 @@
 
 - (IBAction)CancelButtonAction:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self dismissViewControllerAnimated:YES completion:nil];
+    [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:nil];
+    
 }
 - (IBAction)SaveButtonAction:(id)sender
 {
+    KnownDevice *newDevice = nil;
     
+    if ([self.DeviceNameTextField.text length] && [self.DeviceIDTextField.text length])
+    {
+        newDevice = [KnownDevice DeviceWithName:self.DeviceNameTextField.text DeviceID:self.DeviceIDTextField.text];
+    }
+
+    [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:newDevice];
 }
 
 @end
