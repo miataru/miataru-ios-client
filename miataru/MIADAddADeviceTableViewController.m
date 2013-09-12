@@ -41,8 +41,8 @@
 
 - (IBAction)CancelButtonAction:(id)sender
 {
-    //[self dismissViewControllerAnimated:YES completion:nil];
-    [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:nil];
     
 }
 - (IBAction)SaveButtonAction:(id)sender

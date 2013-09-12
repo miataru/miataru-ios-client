@@ -3,19 +3,19 @@
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "miataru_icon-58.png",
+      "filename" : "miataru_icon_58.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "miataru_icon-80.png",
+      "filename" : "miataru_icon_80.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "miataru_icon-120.png",
+      "filename" : "miataru_icon_120.png",
       "scale" : "2x"
     }
   ],
