@@ -29,6 +29,7 @@
 		8B62284417D3A9750029B7D9 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B62284317D3A9750029B7D9 /* UpdateLocation.m */; };
 		8B67A18D17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */; };
 		8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */; };
+		8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BABC37D17E4FBE6008431F3 /* PositionPin.m */; };
 		8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */; };
 		AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3488FBB377DA45FFB847D9C3 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -79,6 +80,8 @@
 		8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
 		8B67A18F17DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
 		8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
+		8BABC37C17E4FBE6008431F3 /* PositionPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionPin.h; sourceTree = "<group>"; };
+		8BABC37D17E4FBE6008431F3 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
 		8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
 		8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -251,6 +254,8 @@
 				8B62284117D3A9600029B7D9 /* REST Requests */,
 				8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */,
 				8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */,
+				8BABC37C17E4FBE6008431F3 /* PositionPin.h */,
+				8BABC37D17E4FBE6008431F3 /* PositionPin.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -414,6 +419,7 @@
 				8B62284417D3A9750029B7D9 /* UpdateLocation.m in Sources */,
 				8B27F31817D1FC10005B5BEA /* main.m in Sources */,
 				8B5C1F1517DBCE3B001E87C5 /* MIADDevicesTableViewController.m in Sources */,
+				8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */,
 				8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */,
 				8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */,
 				8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */,
