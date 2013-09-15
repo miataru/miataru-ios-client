@@ -7,6 +7,7 @@
 //
 
 #import "MIADDevicesTableViewController.h"
+#import "MIADDeviceDetailsViewController.h"
 #import "KnownDevice.h"
 
 @interface MIADDevicesTableViewController ()
@@ -142,13 +143,14 @@
     {
         ((MIADAddADeviceTableViewController*)[[segue.destinationViewController viewControllers] objectAtIndex:0]).delegate = self;
     }
-    /*else
-    if ([segue.identifier isEqualToString:@"PushToEntries"]) {
+    else
+    if ([segue.identifier isEqualToString:@"PushToDeviceDetails"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        USVFeed *feed = self.feeds[indexPath.row];
-        //        [segue.destinationViewController setFeed:feed];
-        ((USVEntriesTableViewController*)segue.destinationViewController).feed = feed;
-    }*/
+        //Dev
+        KnownDevice *detailDevice = self.known_devices[indexPath.row];
+       
+        ((MIADDeviceDetailsViewController*)segue.destinationViewController).DetailDevice = detailDevice;
+    }
 }
 
 

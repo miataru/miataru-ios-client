@@ -9,8 +9,16 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
-@interface PositionPin : NSObject<MKAnnotation> {
-    CLLocationCoordinate2D coordinate;
+@interface PositionPin : NSObject <MKAnnotation> {
+    
+	NSString *title;
+	CLLocationCoordinate2D coordinate;
+    
 }
+
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
+
+- (id)initWithTitle:(NSString *)ttl andCoordinate:(CLLocationCoordinate2D)c2d;
 
 @end

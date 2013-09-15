@@ -91,7 +91,7 @@
     NSLog(@"applicationWillTerminate");
     
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 500;
+    self.locationManager.distanceFilter = 100;
     
     [self.locationManager stopUpdatingLocation];
     [self.locationManager startMonitoringSignificantLocationChanges];
@@ -190,7 +190,9 @@
                               dataUsingEncoding:NSUTF8StringEncoding]];
 
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        
+        [NSURLConnection connectionWithRequest:request delegate:self];
+        
         NSLog(@"Sending Update to Miataru Service...");
     }
 }
