@@ -26,7 +26,7 @@ static const CGFloat kPadding = 10;
 	// Do any additional setup after loading the view, typically from a nib.
     NSString *deviceID = [[UIDevice currentDevice].identifierForVendor.UUIDString lowercaseString];
     
-    UIImage* image = [QREncoder encode:deviceID size:6 correctionLevel:QRCorrectionLevelQ scale:4];
+    UIImage* image = [QREncoder encode:deviceID size:4 correctionLevel:QRCorrectionLevelMedium scale:6];
     [self.QRCodeView layer].magnificationFilter = kCAFilterNearest;
     [self.QRCodeView setImage:image];
     
