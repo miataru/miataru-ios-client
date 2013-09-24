@@ -55,6 +55,7 @@
     }
 
     [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:newDevice];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

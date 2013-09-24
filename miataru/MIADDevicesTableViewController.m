@@ -38,7 +38,7 @@
         self.known_devices = [NSMutableArray array];
         
         NSString *name = @"Daniels iPhone";
-        NSString *id = @"50261AA3-FB9A-413B-B9CA-3A56DD3E736E";
+        NSString *id = @"DBD02046-EAA5-40F2-8C3B-8C884893A57C";
         KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
         [self.known_devices addObject:knowndevice];
         
@@ -110,9 +110,13 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
+    if (editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        // delete a row...
         [self.known_devices removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self saveKnownDevices];
+        
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
@@ -219,7 +223,14 @@
 
 - (void)addADeviceTableViewControllerDidFinish:(MIADAddADeviceTableViewController *)inController knownDevice:(KnownDevice *)inDevice
 {
-    
+    if (inDevice)
+    {
+        [self.known_devices addObject:inDevice];
+        [self.tableView reloadData];
+        [self saveKnownDevices];
+        return;
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 

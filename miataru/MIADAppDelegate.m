@@ -193,7 +193,7 @@
         
         [NSURLConnection connectionWithRequest:request delegate:self];
         
-        NSLog(@"Sending Update to Miataru Service...");
+        NSLog(@"Sending Update for %@",deviceID);
     }
 }
 
