@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MIADMapViewController : UIViewController
+@interface MIADMyDeviceViewController : UIViewController
+
+@property (weak, nonatomic) IBOutlet UIImageView *QRCodeView;
+
+@property (weak, nonatomic) IBOutlet UILabel *DeviceIDLabel;
 
 @end

@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
-        <!--Map View Controller - Map-->
+        <!--My Device View Controller - Map-->
         <scene sceneID="ot8-2e-RuS">
             <objects>
-                <viewController title="Map" id="QUy-BD-bpt" customClass="MIADMapViewController" sceneMemberID="viewController">
+                <viewController title="Map" id="QUy-BD-bpt" customClass="MIADMyDeviceViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="cv7-8I-fvN"/>
                         <viewControllerLayoutGuide type="bottom" id="lxn-o7-DXt"/>
@@ -16,20 +16,56 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TPb-pv-btA">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1WX-Gp-MCn">
+                                <rect key="frame" x="60" y="49" width="200" height="200"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </mapView>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="RWI-88-N6E"/>
+                                    <constraint firstAttribute="width" constant="200" id="dlG-us-e0w"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Device ID" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tnt-2G-XOo">
+                                <rect key="frame" x="60" y="20" width="200" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AI1-zp-UXr">
+                                <rect key="frame" x="20" y="257" width="280" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="bBo-vM-dUI">
+                                <rect key="frame" x="20" y="245" width="280" height="78"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Scan the QR code with another Miataru devices app.">
+                                        <attributes>
+                                            <color key="NSColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                            <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="TPb-pv-btA" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" id="65X-Yd-RlH"/>
-                            <constraint firstAttribute="bottom" secondItem="TPb-pv-btA" secondAttribute="bottom" id="AOn-3E-Rnk"/>
-                            <constraint firstItem="TPb-pv-btA" firstAttribute="top" secondItem="gMD-aP-Fq6" secondAttribute="top" id="GX9-2P-IfU"/>
-                            <constraint firstAttribute="trailing" secondItem="TPb-pv-btA" secondAttribute="trailing" id="bH3-9L-92J"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="tnt-2G-XOo" secondAttribute="bottom" constant="8" symbolic="YES" id="29K-az-1xX"/>
+                            <constraint firstItem="tnt-2G-XOo" firstAttribute="centerX" secondItem="gMD-aP-Fq6" secondAttribute="centerX" id="MwR-mG-9Pt"/>
+                            <constraint firstItem="tnt-2G-XOo" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="48" id="afQ-XY-RGU"/>
+                            <constraint firstItem="tnt-2G-XOo" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" constant="60" id="hMa-pM-k8a"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="leading" secondItem="tnt-2G-XOo" secondAttribute="leading" id="hWK-G2-gWG"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="tcV-Yw-rdh"/>
+                    <tabBarItem key="tabBarItem" title="My Device" image="Toolbar_MyDevice" id="tcV-Yw-rdh"/>
+                    <connections>
+                        <outlet property="DeviceIDLabel" destination="AI1-zp-UXr" id="Gdg-Ka-S6f"/>
+                        <outlet property="QRCodeView" destination="1WX-Gp-MCn" id="aGM-zT-dgY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
@@ -343,7 +379,7 @@
     <resources>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
-        <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_MyDevice" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

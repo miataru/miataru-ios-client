@@ -43,10 +43,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)CancelButtonAction:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
 
 #pragma mark MapView Delegate Methods
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
@@ -122,20 +118,46 @@
     
     NSArray* MiataruLocations = [jsonArray objectForKey:@"MiataruLocation"]; //2
     
-    NSString* Lat = [MiataruLocations[0] objectForKey:@"Latitude"];
-    NSString* Lon = [MiataruLocations[0] objectForKey:@"Longitude"];
+    if (MiataruLocations != nil && [MiataruLocations class] != [NSNull class])
+    {
+        if (MiataruLocations[0] != nil && [MiataruLocations[0] class] != [NSNull class])
+        {
+            NSString* Lat = [MiataruLocations[0] objectForKey:@"Latitude"];
+            NSString* Lon = [MiataruLocations[0] objectForKey:@"Longitude"];
+        
+            if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
+            {
+                // now get long and lat out and add pin to mapview
+                CLLocationCoordinate2D DeviceCoordinates;
+            
+                DeviceCoordinates.latitude = [Lat doubleValue];
+                DeviceCoordinates.longitude = [Lon doubleValue];
+                if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
+                {
+                    //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
+                    // Add the annotation to our map view
+                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:self.DetailDevice.DeviceName andCoordinate:DeviceCoordinates];
+                    [self.DeviceDetailMapView addAnnotation:newAnnotation];
+                    NSLog(@"Added Annotation...");
+                    //[newAnnotation release];
+                    
+                    return;
+                }
+            }
+        }
+    }
+    // if we end up here, there has been an error...
+    NSString *message = [NSString stringWithFormat:@"Could not find Data for Device %@", self.DetailDevice.DeviceName];
     
-    // now get long and lat out and add pin to mapview
-    CLLocationCoordinate2D DeviceCoordinates;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                    message:message
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
     
-	DeviceCoordinates.latitude = [Lat doubleValue];
-	DeviceCoordinates.longitude = [Lon doubleValue];
-    
-	// Add the annotation to our map view
-	PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:self.DetailDevice.DeviceName andCoordinate:DeviceCoordinates];
-	[self.DeviceDetailMapView addAnnotation:newAnnotation];
-    NSLog(@"Added Annotation...");
-	//[newAnnotation release];
+    // TODO: transition back
+    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

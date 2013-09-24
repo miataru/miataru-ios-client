@@ -14,7 +14,7 @@
 		8B27F31817D1FC10005B5BEA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F31717D1FC10005B5BEA /* main.m */; };
 		8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */; };
 		8B27F31F17D1FC10005B5BEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F31D17D1FC10005B5BEA /* Main.storyboard */; };
-		8B27F32517D1FC10005B5BEA /* MIADMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F32417D1FC10005B5BEA /* MIADMapViewController.m */; };
+		8B27F32517D1FC10005B5BEA /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */; };
 		8B27F32717D1FC10005B5BEA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F32617D1FC10005B5BEA /* Images.xcassets */; };
 		8B27F32E17D1FC10005B5BEA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F32D17D1FC10005B5BEA /* XCTest.framework */; };
 		8B27F32F17D1FC10005B5BEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30B17D1FC0F005B5BEA /* Foundation.framework */; };
@@ -31,6 +31,7 @@
 		8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */; };
 		8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BABC37D17E4FBE6008431F3 /* PositionPin.m */; };
 		8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */; };
+		8BF6EDEF17F2190900CD9AFF /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */; };
 		AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3488FBB377DA45FFB847D9C3 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -58,8 +59,8 @@
 		8B27F31A17D1FC10005B5BEA /* MIADAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADAppDelegate.h; sourceTree = "<group>"; };
 		8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
 		8B27F31E17D1FC10005B5BEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8B27F32317D1FC10005B5BEA /* MIADMapViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADMapViewController.h; sourceTree = "<group>"; };
-		8B27F32417D1FC10005B5BEA /* MIADMapViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADMapViewController.m; sourceTree = "<group>"; };
+		8B27F32317D1FC10005B5BEA /* MIADMyDeviceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADMyDeviceViewController.h; sourceTree = "<group>"; };
+		8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADMyDeviceViewController.m; sourceTree = "<group>"; };
 		8B27F32617D1FC10005B5BEA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8B27F32C17D1FC10005B5BEA /* miataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B27F32D17D1FC10005B5BEA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -84,6 +85,7 @@
 		8BABC37D17E4FBE6008431F3 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
 		8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
 		8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
+		8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libQREncoder.a; path = "QREncoder/build/Debug-iphoneos/libQREncoder.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BF6EDEF17F2190900CD9AFF /* libQREncoder.a in Frameworks */,
 				8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */,
 				8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */,
 				8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */,
@@ -147,6 +150,7 @@
 		8B27F30A17D1FC0F005B5BEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */,
 				8B319DE917D2125800F05F05 /* MapKit.framework */,
 				8B319DE717D2125000F05F05 /* CoreLocation.framework */,
 				8B27F30B17D1FC0F005B5BEA /* Foundation.framework */,
@@ -205,20 +209,20 @@
 			isa = PBXGroup;
 			children = (
 				8B12D6F817DBCC73002239A0 /* Known Devices */,
-				8B319DE117D20E8500F05F05 /* Map */,
+				8B319DE117D20E8500F05F05 /* MyDevice */,
 				8B319DE217D20E8C00F05F05 /* History */,
 				8B319DE317D20E9100F05F05 /* Settings */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
 		};
-		8B319DE117D20E8500F05F05 /* Map */ = {
+		8B319DE117D20E8500F05F05 /* MyDevice */ = {
 			isa = PBXGroup;
 			children = (
-				8B27F32317D1FC10005B5BEA /* MIADMapViewController.h */,
-				8B27F32417D1FC10005B5BEA /* MIADMapViewController.m */,
+				8B27F32317D1FC10005B5BEA /* MIADMyDeviceViewController.h */,
+				8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */,
 			);
-			name = Map;
+			name = MyDevice;
 			sourceTree = "<group>";
 		};
 		8B319DE217D20E8C00F05F05 /* History */ = {
@@ -424,7 +428,7 @@
 				8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */,
 				8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */,
 				8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */,
-				8B27F32517D1FC10005B5BEA /* MIADMapViewController.m in Sources */,
+				8B27F32517D1FC10005B5BEA /* MIADMyDeviceViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -551,6 +555,19 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers\"",
+					"\"${PODS_ROOT}/Headers/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/RestKit\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/CoreData\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Network\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/ObjectMapping\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Support\"",
+					"\"${PODS_ROOT}/Headers/SOCKit\"",
+					"\"${PODS_ROOT}/Headers/TransitionKit\"",
+					"\"${SRCROOT}/QREncoder/Classes\"",
+				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -567,6 +584,19 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers\"",
+					"\"${PODS_ROOT}/Headers/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/RestKit\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/CoreData\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Network\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/ObjectMapping\"",
+					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Support\"",
+					"\"${PODS_ROOT}/Headers/SOCKit\"",
+					"\"${PODS_ROOT}/Headers/TransitionKit\"",
+					"\"${SRCROOT}/QREncoder/Classes\"",
+				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
