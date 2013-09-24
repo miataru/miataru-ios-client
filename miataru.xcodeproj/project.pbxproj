@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1606A017F25A6500E99613 /* libQREncoder.a */; };
 		8B27F30C17D1FC0F005B5BEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30B17D1FC0F005B5BEA /* Foundation.framework */; };
 		8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */; };
 		8B27F31017D1FC10005B5BEA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30F17D1FC10005B5BEA /* UIKit.framework */; };
@@ -32,11 +33,31 @@
 		8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BABC37D17E4FBE6008431F3 /* PositionPin.m */; };
 		8BDB780217F2475600AB4C0D /* MIADScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BDB780117F2475600AB4C0D /* MIADScanQRCodeViewController.m */; };
 		8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */; };
-		8BF6EDEF17F2190900CD9AFF /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */; };
 		AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3488FBB377DA45FFB847D9C3 /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8B16069F17F25A6500E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = QREncoder;
+		};
+		8B1606A117F25A6500E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB7DA3AE10A4F5D90071984A;
+			remoteInfo = QREncoderTest;
+		};
+		8B1606A317F25A7300E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = QREncoder;
+		};
 		8B27F33117D1FC10005B5BEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B27F30017D1FC0F005B5BEA /* Project object */;
@@ -49,6 +70,7 @@
 /* Begin PBXFileReference section */
 		3488FBB377DA45FFB847D9C3 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		68BED21D995C4990A73C8591 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
+		8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
 		8B27F30817D1FC0F005B5BEA /* miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B27F30B17D1FC0F005B5BEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -96,7 +118,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BF6EDEF17F2190900CD9AFF /* libQREncoder.a in Frameworks */,
+				8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */,
 				8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */,
 				8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */,
 				8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */,
@@ -130,9 +152,19 @@
 			name = "Known Devices";
 			sourceTree = "<group>";
 		};
+		8B16069B17F25A6500E99613 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8B1606A017F25A6500E99613 /* libQREncoder.a */,
+				8B1606A217F25A6500E99613 /* QREncoderTest.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		8B27F2FF17D1FC0F005B5BEA = {
 			isa = PBXGroup;
 			children = (
+				8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */,
 				8B27F31117D1FC10005B5BEA /* miataru */,
 				8B27F33317D1FC10005B5BEA /* miataruTests */,
 				8B27F30A17D1FC0F005B5BEA /* Frameworks */,
@@ -311,6 +343,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				8B1606A417F25A7300E99613 /* PBXTargetDependency */,
 			);
 			name = miataru;
 			productName = miataru;
@@ -364,6 +397,12 @@
 			mainGroup = 8B27F2FF17D1FC0F005B5BEA;
 			productRefGroup = 8B27F30917D1FC0F005B5BEA /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8B16069B17F25A6500E99613 /* Products */;
+					ProjectRef = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8B27F30717D1FC0F005B5BEA /* miataru */,
@@ -371,6 +410,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		8B1606A017F25A6500E99613 /* libQREncoder.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libQREncoder.a;
+			remoteRef = 8B16069F17F25A6500E99613 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8B1606A217F25A6500E99613 /* QREncoderTest.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = QREncoderTest.octest;
+			remoteRef = 8B1606A117F25A6500E99613 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8B27F30617D1FC0F005B5BEA /* Resources */ = {
@@ -457,6 +513,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8B1606A417F25A7300E99613 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = QREncoder;
+			targetProxy = 8B1606A317F25A7300E99613 /* PBXContainerItemProxy */;
+		};
 		8B27F33217D1FC10005B5BEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8B27F30717D1FC0F005B5BEA /* miataru */;
@@ -581,7 +642,6 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 					"\"${PODS_ROOT}/Headers/TransitionKit\"",
 					"\"${SRCROOT}/QREncoder/Classes\"",
-					"\"${SRCROOT}/ZXingWidget/Classes\"",
 				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -611,7 +671,6 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 					"\"${PODS_ROOT}/Headers/TransitionKit\"",
 					"\"${SRCROOT}/QREncoder/Classes\"",
-					"\"${SRCROOT}/ZXingWidget/Classes\"",
 				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
