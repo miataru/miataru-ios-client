@@ -85,7 +85,7 @@
 		8BABC37D17E4FBE6008431F3 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
 		8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
 		8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
-		8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libQREncoder.a; path = "QREncoder/build/Debug-iphoneos/libQREncoder.a"; sourceTree = "<group>"; };
+		8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libQREncoder.a; path = "QREncoder/build/Debug-iphoneos/libQREncoder.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -567,6 +567,7 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 					"\"${PODS_ROOT}/Headers/TransitionKit\"",
 					"\"${SRCROOT}/QREncoder/Classes\"",
+					"\"${SRCROOT}/ZXingWidget/Classes\"",
 				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -596,6 +597,7 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 					"\"${PODS_ROOT}/Headers/TransitionKit\"",
 					"\"${SRCROOT}/QREncoder/Classes\"",
+					"\"${SRCROOT}/ZXingWidget/Classes\"",
 				);
 				INFOPLIST_FILE = "miataru/miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
