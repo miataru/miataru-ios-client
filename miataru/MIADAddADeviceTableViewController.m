@@ -52,10 +52,10 @@
     if ([self.DeviceNameTextField.text length] && [self.DeviceIDTextField.text length])
     {
         newDevice = [KnownDevice DeviceWithName:self.DeviceNameTextField.text DeviceID:self.DeviceIDTextField.text];
+        [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:newDevice];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 
-    [self.delegate addADeviceTableViewControllerDidFinish:self knownDevice:newDevice];
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

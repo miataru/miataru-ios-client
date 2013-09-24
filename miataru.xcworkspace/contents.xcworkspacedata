@@ -10,7 +10,4 @@
    <FileRef
       location = "group:QREncoder/QREncoder.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:ZXingWidget/ZXingWidget.xcodeproj">
-   </FileRef>
 </Workspace>

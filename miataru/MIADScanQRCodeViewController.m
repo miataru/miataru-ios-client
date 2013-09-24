@@ -7,7 +7,7 @@
 //
 
 #import "MIADScanQRCodeViewController.h"
-//#import #import "MultiFormatReader.h"
+#import <MultiFormatReader.h>
 
 @interface MIADScanQRCodeViewController ()
 
