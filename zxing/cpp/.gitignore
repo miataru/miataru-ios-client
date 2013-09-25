@@ -1,0 +1,7 @@
+/build
+/.sconsign.dblite
+xcuserdata
+callgrind.out.*
+contents.xcworkspacedata
+*.pyc
+/.rbenv-version

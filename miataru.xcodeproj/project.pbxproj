@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1606A017F25A6500E99613 /* libQREncoder.a */; };
+		8B16070C17F261C200E99613 /* libZXingWidget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070717F2618700E99613 /* libZXingWidget.a */; };
+		8B16071017F261C200E99613 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070D17F261C200E99613 /* AudioToolbox.framework */; };
+		8B16071117F261C200E99613 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070E17F261C200E99613 /* AVFoundation.framework */; };
+		8B16071217F261C200E99613 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070F17F261C200E99613 /* libiconv.dylib */; };
 		8B27F30C17D1FC0F005B5BEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30B17D1FC0F005B5BEA /* Foundation.framework */; };
 		8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */; };
 		8B27F31017D1FC10005B5BEA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30F17D1FC10005B5BEA /* UIKit.framework */; };
@@ -58,6 +62,27 @@
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = QREncoder;
 		};
+		8B16070617F2618700E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = ZXingWidget;
+		};
+		8B16070817F2618700E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D60398D13DF7CAD006F4B51;
+			remoteInfo = ZXingTests;
+		};
+		8B16070A17F2619400E99613 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = ZXingWidget;
+		};
 		8B27F33117D1FC10005B5BEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8B27F30017D1FC0F005B5BEA /* Project object */;
@@ -71,6 +96,10 @@
 		3488FBB377DA45FFB847D9C3 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		68BED21D995C4990A73C8591 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
+		8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingWidget.xcodeproj; path = zxing/iphone/ZXingWidget/ZXingWidget.xcodeproj; sourceTree = "<group>"; };
+		8B16070D17F261C200E99613 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		8B16070E17F261C200E99613 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		8B16070F17F261C200E99613 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8B27F30817D1FC0F005B5BEA /* miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B27F30B17D1FC0F005B5BEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -118,6 +147,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B16071017F261C200E99613 /* AudioToolbox.framework in Frameworks */,
+				8B16071117F261C200E99613 /* AVFoundation.framework in Frameworks */,
+				8B16071217F261C200E99613 /* libiconv.dylib in Frameworks */,
+				8B16070C17F261C200E99613 /* libZXingWidget.a in Frameworks */,
 				8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */,
 				8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */,
 				8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */,
@@ -161,9 +194,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8B16070217F2618500E99613 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8B16070717F2618700E99613 /* libZXingWidget.a */,
+				8B16070917F2618700E99613 /* ZXingTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		8B27F2FF17D1FC0F005B5BEA = {
 			isa = PBXGroup;
 			children = (
+				8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */,
 				8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */,
 				8B27F31117D1FC10005B5BEA /* miataru */,
 				8B27F33317D1FC10005B5BEA /* miataruTests */,
@@ -185,6 +228,9 @@
 		8B27F30A17D1FC0F005B5BEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B16070D17F261C200E99613 /* AudioToolbox.framework */,
+				8B16070E17F261C200E99613 /* AVFoundation.framework */,
+				8B16070F17F261C200E99613 /* libiconv.dylib */,
 				8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */,
 				8B319DE917D2125800F05F05 /* MapKit.framework */,
 				8B319DE717D2125000F05F05 /* CoreLocation.framework */,
@@ -343,6 +389,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				8B16070B17F2619400E99613 /* PBXTargetDependency */,
 				8B1606A417F25A7300E99613 /* PBXTargetDependency */,
 			);
 			name = miataru;
@@ -402,6 +449,10 @@
 					ProductGroup = 8B16069B17F25A6500E99613 /* Products */;
 					ProjectRef = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
 				},
+				{
+					ProductGroup = 8B16070217F2618500E99613 /* Products */;
+					ProjectRef = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -424,6 +475,20 @@
 			fileType = wrapper.cfbundle;
 			path = QREncoderTest.octest;
 			remoteRef = 8B1606A117F25A6500E99613 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8B16070717F2618700E99613 /* libZXingWidget.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libZXingWidget.a;
+			remoteRef = 8B16070617F2618700E99613 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8B16070917F2618700E99613 /* ZXingTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ZXingTests.octest;
+			remoteRef = 8B16070817F2618700E99613 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -517,6 +582,11 @@
 			isa = PBXTargetDependency;
 			name = QREncoder;
 			targetProxy = 8B1606A317F25A7300E99613 /* PBXContainerItemProxy */;
+		};
+		8B16070B17F2619400E99613 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ZXingWidget;
+			targetProxy = 8B16070A17F2619400E99613 /* PBXContainerItemProxy */;
 		};
 		8B27F33217D1FC10005B5BEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
