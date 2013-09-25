@@ -51,14 +51,27 @@
                                 </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-pB-iTe">
+                                <rect key="frame" x="284" y="484" width="22" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="90q-2d-ljB" kind="modal" modalTransitionStyle="coverVertical" id="ID0-mU-zPZ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="tnt-2G-XOo" secondAttribute="bottom" constant="8" symbolic="YES" id="66I-42-KlL"/>
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="leading" secondItem="tnt-2G-XOo" secondAttribute="leading" id="8zZ-aw-e5L"/>
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="trailing" secondItem="tnt-2G-XOo" secondAttribute="trailing" id="JX6-7j-xHV"/>
+                            <constraint firstItem="lxn-o7-DXt" firstAttribute="top" secondItem="8JJ-pB-iTe" secondAttribute="bottom" constant="13" id="TmU-Tb-3ei"/>
                             <constraint firstItem="tnt-2G-XOo" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="29" id="ceV-pd-LoZ"/>
                             <constraint firstItem="tnt-2G-XOo" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" constant="60" id="eNK-z4-Ppx"/>
+                            <constraint firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="14" id="tg2-jV-E9e"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="My Device" image="Toolbar_MyDevice" id="tcV-Yw-rdh"/>
@@ -70,6 +83,80 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="223" y="62"/>
+        </scene>
+        <!--Encoder License Information View Controller-->
+        <scene sceneID="zkF-to-9ef">
+            <objects>
+                <viewController id="90q-2d-ljB" customClass="MIADQREncoderLicenseInformationViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="09i-Io-RGP"/>
+                        <viewControllerLayoutGuide type="bottom" id="7cy-zj-g3c"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="PgF-a2-f4T">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hs1-h8-6Ge">
+                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <navigationItem title="QR Encoder License" id="fKK-RG-DjP">
+                                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="JGf-eB-93V">
+                                            <connections>
+                                                <action selector="DoneButtonPressed:" destination="90q-2d-ljB" id="FMf-AB-xCb"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jAI-lB-OIv">
+                                <rect key="frame" x="20" y="170" width="280" height="227"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="227" id="l06-lv-sVQ"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="This app contains an open source Objective C QR Encoder licensed under the Apache License, Version 2.0.  ">
+                                        <attributes>
+                                            <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="http://www.apache.org/licenses/LICENSE-2.0.html">
+                                        <attributes>
+                                            <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                            <url key="NSLink" string="http://www.apache.org/licenses/LICENSE-2.0.html"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content"> 
+Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
+                                        <attributes>
+                                            <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <font key="NSFont" size="17" name="HelveticaNeue"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7cy-zj-g3c" firstAttribute="top" secondItem="jAI-lB-OIv" secondAttribute="bottom" constant="171" id="U6P-6R-a2I"/>
+                            <constraint firstItem="Hs1-h8-6Ge" firstAttribute="top" secondItem="09i-Io-RGP" secondAttribute="bottom" id="Vro-We-TUw"/>
+                            <constraint firstAttribute="trailing" secondItem="jAI-lB-OIv" secondAttribute="trailing" constant="20" symbolic="YES" id="YfX-Oj-Z22"/>
+                            <constraint firstItem="jAI-lB-OIv" firstAttribute="centerX" secondItem="Hs1-h8-6Ge" secondAttribute="centerX" id="bHS-It-sOr"/>
+                            <constraint firstItem="Hs1-h8-6Ge" firstAttribute="leading" secondItem="PgF-a2-f4T" secondAttribute="leading" id="eCJ-n4-khd"/>
+                            <constraint firstItem="jAI-lB-OIv" firstAttribute="leading" secondItem="PgF-a2-f4T" secondAttribute="leading" constant="20" symbolic="YES" id="nGK-NP-k0p"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="85l-Gk-wPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="708" y="62"/>
         </scene>
         <!--History View Controller - History-->
         <scene sceneID="cQb-9U-w6s">
