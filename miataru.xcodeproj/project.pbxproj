@@ -18,13 +18,12 @@
 		8B8682B217F2636F0091BD90 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682B017F2636F0091BD90 /* InfoPlist.strings */; };
 		8B8682B417F2636F0091BD90 /* MiataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682B317F2636F0091BD90 /* MiataruTests.m */; };
 		8B8682D617F264420091BD90 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C117F264420091BD90 /* KnownDevice.m */; };
-		8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */; };
+		8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.mm */; };
 		8B8682D817F264420091BD90 /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C517F264420091BD90 /* MIADAppDelegate.m */; };
 		8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C717F264420091BD90 /* MIADDeviceDetailsViewController.m */; };
 		8B8682DA17F264420091BD90 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C917F264420091BD90 /* MIADDevicesTableViewController.m */; };
 		8B8682DB17F264420091BD90 /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CB17F264420091BD90 /* MIADHistoryViewController.m */; };
 		8B8682DC17F264420091BD90 /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */; };
-		8B8682DD17F264420091BD90 /* MIADScanQRCodeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */; };
 		8B8682DE17F264420091BD90 /* MIADSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D117F264420091BD90 /* MIADSettingsViewController.m */; };
 		8B8682DF17F264420091BD90 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D317F264420091BD90 /* PositionPin.m */; };
 		8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D517F264420091BD90 /* UpdateLocation.m */; };
@@ -108,7 +107,7 @@
 		8B8682C017F264420091BD90 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
 		8B8682C117F264420091BD90 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
 		8B8682C217F264420091BD90 /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
-		8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
+		8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MIADAddADeviceTableViewController.mm; sourceTree = "<group>"; };
 		8B8682C417F264420091BD90 /* MIADAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAppDelegate.h; sourceTree = "<group>"; };
 		8B8682C517F264420091BD90 /* MIADAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
 		8B8682C617F264420091BD90 /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
@@ -119,8 +118,6 @@
 		8B8682CB17F264420091BD90 /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
 		8B8682CC17F264420091BD90 /* MIADMyDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMyDeviceViewController.h; sourceTree = "<group>"; };
 		8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMyDeviceViewController.m; sourceTree = "<group>"; };
-		8B8682CE17F264420091BD90 /* MIADScanQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADScanQRCodeViewController.h; sourceTree = "<group>"; };
-		8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MIADScanQRCodeViewController.mm; sourceTree = "<group>"; };
 		8B8682D017F264420091BD90 /* MIADSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADSettingsViewController.h; sourceTree = "<group>"; };
 		8B8682D117F264420091BD90 /* MIADSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADSettingsViewController.m; sourceTree = "<group>"; };
 		8B8682D217F264420091BD90 /* PositionPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionPin.h; sourceTree = "<group>"; };
@@ -349,20 +346,10 @@
 		8B86831117F266DC0091BD90 /* Add A Device */ = {
 			isa = PBXGroup;
 			children = (
-				8B86831217F266EC0091BD90 /* Scan A QRCode */,
 				8B8682C217F264420091BD90 /* MIADAddADeviceTableViewController.h */,
-				8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */,
+				8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.mm */,
 			);
 			name = "Add A Device";
-			sourceTree = "<group>";
-		};
-		8B86831217F266EC0091BD90 /* Scan A QRCode */ = {
-			isa = PBXGroup;
-			children = (
-				8B8682CE17F264420091BD90 /* MIADScanQRCodeViewController.h */,
-				8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */,
-			);
-			name = "Scan A QRCode";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -517,10 +504,9 @@
 				8B86829217F2636F0091BD90 /* main.m in Sources */,
 				8B8682D617F264420091BD90 /* KnownDevice.m in Sources */,
 				8B8682DE17F264420091BD90 /* MIADSettingsViewController.m in Sources */,
-				8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.m in Sources */,
+				8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.mm in Sources */,
 				8B8682DB17F264420091BD90 /* MIADHistoryViewController.m in Sources */,
 				8B8682DF17F264420091BD90 /* PositionPin.m in Sources */,
-				8B8682DD17F264420091BD90 /* MIADScanQRCodeViewController.mm in Sources */,
 				8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */,
 				8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */,
 				8B8682DA17F264420091BD90 /* MIADDevicesTableViewController.m in Sources */,

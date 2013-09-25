@@ -7,12 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ZXingWidgetController.h"
 
 @class KnownDevice;
 
 @protocol MIADAddADeviceTableViewControllerDelegate;
 
-@interface MIADAddADeviceTableViewController : UITableViewController 
+@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate, ZXingDelegate>
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
 
