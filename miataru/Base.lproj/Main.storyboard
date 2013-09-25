@@ -220,7 +220,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Is5-V6-GEr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="749" y="1541"/>
+            <point key="canvasLocation" x="708" y="1541"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -295,7 +295,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="119-x1-8k3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="749" y="-698"/>
+            <point key="canvasLocation" x="708" y="-698"/>
         </scene>
         <!--Navigation Controller - Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -370,7 +370,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3K-xC-SOA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1330" y="-982"/>
+            <point key="canvasLocation" x="1330" y="-1030"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9Ac-h1-4En">
@@ -388,7 +388,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WH4-QA-c7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1330" y="-318"/>
+            <point key="canvasLocation" x="1330" y="-250"/>
         </scene>
         <!--AddA Device Table View Controller - Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
@@ -488,7 +488,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1808" y="-318"/>
+            <point key="canvasLocation" x="1808" y="-250"/>
         </scene>
     </scenes>
     <resources>
