@@ -29,7 +29,6 @@
 		8B8682DF17F264420091BD90 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D317F264420091BD90 /* PositionPin.m */; };
 		8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D517F264420091BD90 /* UpdateLocation.m */; };
 		8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682E117F2644B0091BD90 /* Images.xcassets */; };
-		8B8682E417F264620091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682E317F264620091BD90 /* Main.storyboard */; };
 		8B8682F017F264F60091BD90 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682EB17F264DC0091BD90 /* libQREncoder.a */; };
 		8B8682F217F264F60091BD90 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682F117F264F60091BD90 /* CoreLocation.framework */; };
 		8B86830017F2662C0091BD90 /* libZXingWidget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682FB17F266010091BD90 /* libZXingWidget.a */; };
@@ -37,6 +36,7 @@
 		8B86830617F2662D0091BD90 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830217F2662D0091BD90 /* AVFoundation.framework */; };
 		8B86830717F2662D0091BD90 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830317F2662D0091BD90 /* CoreMedia.framework */; };
 		8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830417F2662D0091BD90 /* libiconv.dylib */; };
+		8B86831917F2698D0091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B86831717F2698D0091BD90 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,7 +128,6 @@
 		8B8682D417F264420091BD90 /* UpdateLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateLocation.h; sourceTree = "<group>"; };
 		8B8682D517F264420091BD90 /* UpdateLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateLocation.m; sourceTree = "<group>"; };
 		8B8682E117F2644B0091BD90 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		8B8682E317F264620091BD90 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = Libraries/QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
 		8B8682F117F264F60091BD90 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingWidget.xcodeproj; path = Libraries/zxing/iphone/ZXingWidget/ZXingWidget.xcodeproj; sourceTree = "<group>"; };
@@ -136,6 +135,7 @@
 		8B86830217F2662D0091BD90 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8B86830317F2662D0091BD90 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		8B86831817F2698D0091BD90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,10 +211,10 @@
 			children = (
 				8B86830A17F2665E0091BD90 /* Controllers */,
 				8B86830917F2664A0091BD90 /* Model */,
-				8B8682E317F264620091BD90 /* Main.storyboard */,
 				8B8682C417F264420091BD90 /* MIADAppDelegate.h */,
 				8B8682C517F264420091BD90 /* MIADAppDelegate.m */,
 				8B8682E117F2644B0091BD90 /* Images.xcassets */,
+				8B86831717F2698D0091BD90 /* Main.storyboard */,
 				8B86828C17F2636F0091BD90 /* Supporting Files */,
 			);
 			path = Miataru;
@@ -493,7 +493,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B8682E417F264620091BD90 /* Main.storyboard in Resources */,
+				8B86831917F2698D0091BD90 /* Main.storyboard in Resources */,
 				8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */,
 				8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */,
 			);
@@ -572,6 +572,14 @@
 				8B8682B117F2636F0091BD90 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		8B86831717F2698D0091BD90 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8B86831817F2698D0091BD90 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

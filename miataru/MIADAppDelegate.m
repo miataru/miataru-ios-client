@@ -28,7 +28,7 @@
  
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 500;
+    self.locationManager.distanceFilter = 250;
     self.locationManager.delegate = self;
     
     [self.locationManager startMonitoringSignificantLocationChanges];
@@ -53,7 +53,7 @@
 
     NSLog(@"applicationDidEnterBackground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 500;
+    self.locationManager.distanceFilter = 250;
 
     [self.locationManager stopUpdatingLocation];
     [self.locationManager startMonitoringSignificantLocationChanges];
