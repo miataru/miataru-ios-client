@@ -30,24 +30,35 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    [self loadKnownDevices];
+    NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
     
+    [self loadKnownDevices];
     if(!self.known_devices)
     {
         self.known_devices = [NSMutableArray array];
         
-        NSString *name = @"Daniels iPhone";
-        NSString *id = @"DBD02046-EAA5-40F2-8C3B-8C884893A57C";
-        KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
-        [self.known_devices addObject:knowndevice];
+        // search for THIS device and add it if not in the device list yet...
+  
+        //BOOL found_it = false;
         
-        name = @"Steffis iPhone";
-        id = @"1FA18E88-2CD8-426F-94FD-69D95BFEE410";
-        knowndevice = [KnownDevice DeviceWithName:name DeviceID:id];
-        [self.known_devices addObject:knowndevice];
+/*        for(KnownDevice *st in self.known_devices)
+        {
+            NSLog(@"%@",st.DeviceName);
+            
+            if([st.DeviceID isEqualToString:deviceID]==TRUE)
+            {
+                found_it = true;
+            }
+        }
         
-        [self saveKnownDevices];
+        if (!found_it)
+        {
+*/          NSString *name = @"this iPhone";
+            KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+            [self.known_devices addObject:knowndevice];
+            [self saveKnownDevices];
+        //}
+        
     }
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
