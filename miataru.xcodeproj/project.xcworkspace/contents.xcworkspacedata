@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:miataru.xcodeproj">
+      location = "self:Miataru.xcodeproj">
    </FileRef>
 </Workspace>

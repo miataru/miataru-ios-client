@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ZXingWidgetController.h"
 
-@interface MIADScanQRCodeViewController : UIViewController
+@interface MIADScanQRCodeViewController : UIViewController <ZXingDelegate>
 
 @end

@@ -1,8 +1,8 @@
 //
 //  main.m
-//  miataru
+//  Miataru
 //
-//  Created by Daniel Kirstenpfad on 31.08.13.
+//  Created by Daniel Kirstenpfad on 25.09.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
 

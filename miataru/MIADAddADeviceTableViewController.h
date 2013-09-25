@@ -12,7 +12,7 @@
 
 @protocol MIADAddADeviceTableViewControllerDelegate;
 
-@interface MIADAddADeviceTableViewController : UITableViewController
+@interface MIADAddADeviceTableViewController : UITableViewController 
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
 

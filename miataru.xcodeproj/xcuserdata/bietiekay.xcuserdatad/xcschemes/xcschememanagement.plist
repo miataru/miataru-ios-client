@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>miataru.xcscheme</key>
+		<key>Miataru.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,12 +12,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>8B27F30717D1FC0F005B5BEA</key>
+		<key>8B86828117F2636F0091BD90</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8B27F32B17D1FC10005B5BEA</key>
+		<key>8B8682A517F2636F0091BD90</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -7,433 +7,428 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1606A017F25A6500E99613 /* libQREncoder.a */; };
-		8B16070C17F261C200E99613 /* libZXingWidget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070717F2618700E99613 /* libZXingWidget.a */; };
-		8B16071017F261C200E99613 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070D17F261C200E99613 /* AudioToolbox.framework */; };
-		8B16071117F261C200E99613 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070E17F261C200E99613 /* AVFoundation.framework */; };
-		8B16071217F261C200E99613 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B16070F17F261C200E99613 /* libiconv.dylib */; };
-		8B27F30C17D1FC0F005B5BEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30B17D1FC0F005B5BEA /* Foundation.framework */; };
-		8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */; };
-		8B27F31017D1FC10005B5BEA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30F17D1FC10005B5BEA /* UIKit.framework */; };
-		8B27F31617D1FC10005B5BEA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F31417D1FC10005B5BEA /* InfoPlist.strings */; };
-		8B27F31817D1FC10005B5BEA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F31717D1FC10005B5BEA /* main.m */; };
-		8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */; };
-		8B27F31F17D1FC10005B5BEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F31D17D1FC10005B5BEA /* Main.storyboard */; };
-		8B27F32517D1FC10005B5BEA /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */; };
-		8B27F32717D1FC10005B5BEA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F32617D1FC10005B5BEA /* Images.xcassets */; };
-		8B27F32E17D1FC10005B5BEA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F32D17D1FC10005B5BEA /* XCTest.framework */; };
-		8B27F32F17D1FC10005B5BEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30B17D1FC0F005B5BEA /* Foundation.framework */; };
-		8B27F33017D1FC10005B5BEA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B27F30F17D1FC10005B5BEA /* UIKit.framework */; };
-		8B27F33817D1FC10005B5BEA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B27F33617D1FC10005B5BEA /* InfoPlist.strings */; };
-		8B27F33A17D1FC10005B5BEA /* miataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B27F33917D1FC10005B5BEA /* miataruTests.m */; };
-		8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DDD17D20E6A00F05F05 /* MIADHistoryViewController.m */; };
-		8B319DE617D20F6700F05F05 /* MIADSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */; };
-		8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B319DE717D2125000F05F05 /* CoreLocation.framework */; };
-		8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B319DE917D2125800F05F05 /* MapKit.framework */; };
-		8B5C1F1517DBCE3B001E87C5 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5C1F1417DBCE3B001E87C5 /* MIADDevicesTableViewController.m */; };
-		8B62284417D3A9750029B7D9 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B62284317D3A9750029B7D9 /* UpdateLocation.m */; };
-		8B67A18D17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */; };
-		8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */; };
-		8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BABC37D17E4FBE6008431F3 /* PositionPin.m */; };
-		8BDB780217F2475600AB4C0D /* MIADScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BDB780117F2475600AB4C0D /* MIADScanQRCodeViewController.m */; };
-		8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */; };
-		AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3488FBB377DA45FFB847D9C3 /* libPods.a */; };
+		8B86828617F2636F0091BD90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828517F2636F0091BD90 /* Foundation.framework */; };
+		8B86828817F2636F0091BD90 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828717F2636F0091BD90 /* CoreGraphics.framework */; };
+		8B86828A17F2636F0091BD90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828917F2636F0091BD90 /* UIKit.framework */; };
+		8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B86828E17F2636F0091BD90 /* InfoPlist.strings */; };
+		8B86829217F2636F0091BD90 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B86829117F2636F0091BD90 /* main.m */; };
+		8B8682A817F2636F0091BD90 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682A717F2636F0091BD90 /* XCTest.framework */; };
+		8B8682A917F2636F0091BD90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828517F2636F0091BD90 /* Foundation.framework */; };
+		8B8682AA17F2636F0091BD90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828917F2636F0091BD90 /* UIKit.framework */; };
+		8B8682B217F2636F0091BD90 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682B017F2636F0091BD90 /* InfoPlist.strings */; };
+		8B8682B417F2636F0091BD90 /* MiataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682B317F2636F0091BD90 /* MiataruTests.m */; };
+		8B8682D617F264420091BD90 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C117F264420091BD90 /* KnownDevice.m */; };
+		8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */; };
+		8B8682D817F264420091BD90 /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C517F264420091BD90 /* MIADAppDelegate.m */; };
+		8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C717F264420091BD90 /* MIADDeviceDetailsViewController.m */; };
+		8B8682DA17F264420091BD90 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682C917F264420091BD90 /* MIADDevicesTableViewController.m */; };
+		8B8682DB17F264420091BD90 /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CB17F264420091BD90 /* MIADHistoryViewController.m */; };
+		8B8682DC17F264420091BD90 /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */; };
+		8B8682DD17F264420091BD90 /* MIADScanQRCodeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */; };
+		8B8682DE17F264420091BD90 /* MIADSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D117F264420091BD90 /* MIADSettingsViewController.m */; };
+		8B8682DF17F264420091BD90 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D317F264420091BD90 /* PositionPin.m */; };
+		8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B8682D517F264420091BD90 /* UpdateLocation.m */; };
+		8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682E117F2644B0091BD90 /* Images.xcassets */; };
+		8B8682E417F264620091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B8682E317F264620091BD90 /* Main.storyboard */; };
+		8B8682F017F264F60091BD90 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682EB17F264DC0091BD90 /* libQREncoder.a */; };
+		8B8682F217F264F60091BD90 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682F117F264F60091BD90 /* CoreLocation.framework */; };
+		8B86830017F2662C0091BD90 /* libZXingWidget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682FB17F266010091BD90 /* libZXingWidget.a */; };
+		8B86830517F2662D0091BD90 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830117F2662D0091BD90 /* AudioToolbox.framework */; };
+		8B86830617F2662D0091BD90 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830217F2662D0091BD90 /* AVFoundation.framework */; };
+		8B86830717F2662D0091BD90 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830317F2662D0091BD90 /* CoreMedia.framework */; };
+		8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830417F2662D0091BD90 /* libiconv.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8B16069F17F25A6500E99613 /* PBXContainerItemProxy */ = {
+		8B8682AB17F2636F0091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			containerPortal = 8B86827A17F2636F0091BD90 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B86828117F2636F0091BD90;
+			remoteInfo = Miataru;
+		};
+		8B8682EA17F264DC0091BD90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = QREncoder;
 		};
-		8B1606A117F25A6500E99613 /* PBXContainerItemProxy */ = {
+		8B8682EC17F264DC0091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			containerPortal = 8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = EB7DA3AE10A4F5D90071984A;
 			remoteInfo = QREncoderTest;
 		};
-		8B1606A317F25A7300E99613 /* PBXContainerItemProxy */ = {
+		8B8682EE17F264E40091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+			containerPortal = 8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = QREncoder;
 		};
-		8B16070617F2618700E99613 /* PBXContainerItemProxy */ = {
+		8B8682FA17F266010091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			containerPortal = 8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = ZXingWidget;
 		};
-		8B16070817F2618700E99613 /* PBXContainerItemProxy */ = {
+		8B8682FC17F266010091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			containerPortal = 8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1D60398D13DF7CAD006F4B51;
 			remoteInfo = ZXingTests;
 		};
-		8B16070A17F2619400E99613 /* PBXContainerItemProxy */ = {
+		8B8682FE17F2660A0091BD90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+			containerPortal = 8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = ZXingWidget;
 		};
-		8B27F33117D1FC10005B5BEA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8B27F30017D1FC0F005B5BEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8B27F30717D1FC0F005B5BEA;
-			remoteInfo = miataru;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3488FBB377DA45FFB847D9C3 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		68BED21D995C4990A73C8591 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
-		8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
-		8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingWidget.xcodeproj; path = zxing/iphone/ZXingWidget/ZXingWidget.xcodeproj; sourceTree = "<group>"; };
-		8B16070D17F261C200E99613 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		8B16070E17F261C200E99613 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		8B16070F17F261C200E99613 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
-		8B27F30817D1FC0F005B5BEA /* miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8B27F30B17D1FC0F005B5BEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		8B27F30F17D1FC10005B5BEA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		8B27F31317D1FC10005B5BEA /* miataru-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "miataru-Info.plist"; sourceTree = "<group>"; };
-		8B27F31517D1FC10005B5BEA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8B27F31717D1FC10005B5BEA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		8B27F31917D1FC10005B5BEA /* miataru-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "miataru-Prefix.pch"; sourceTree = "<group>"; };
-		8B27F31A17D1FC10005B5BEA /* MIADAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADAppDelegate.h; sourceTree = "<group>"; };
-		8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
-		8B27F31E17D1FC10005B5BEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8B27F32317D1FC10005B5BEA /* MIADMyDeviceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADMyDeviceViewController.h; sourceTree = "<group>"; };
-		8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADMyDeviceViewController.m; sourceTree = "<group>"; };
-		8B27F32617D1FC10005B5BEA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		8B27F32C17D1FC10005B5BEA /* miataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8B27F32D17D1FC10005B5BEA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		8B27F33517D1FC10005B5BEA /* miataruTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "miataruTests-Info.plist"; sourceTree = "<group>"; };
-		8B27F33717D1FC10005B5BEA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8B27F33917D1FC10005B5BEA /* miataruTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = miataruTests.m; sourceTree = "<group>"; };
-		8B319DDC17D20E6A00F05F05 /* MIADHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADHistoryViewController.h; sourceTree = "<group>"; };
-		8B319DDD17D20E6A00F05F05 /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
-		8B319DE417D20F6700F05F05 /* MIADSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADSettingsViewController.h; sourceTree = "<group>"; };
-		8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADSettingsViewController.m; sourceTree = "<group>"; };
-		8B319DE717D2125000F05F05 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		8B319DE917D2125800F05F05 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		8B5C1F1317DBCE3B001E87C5 /* MIADDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDevicesTableViewController.h; sourceTree = "<group>"; };
-		8B5C1F1417DBCE3B001E87C5 /* MIADDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDevicesTableViewController.m; sourceTree = "<group>"; };
-		8B62284217D3A9750029B7D9 /* UpdateLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateLocation.h; sourceTree = "<group>"; };
-		8B62284317D3A9750029B7D9 /* UpdateLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateLocation.m; sourceTree = "<group>"; };
-		8B67A18B17DCC31800CD5CBE /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
-		8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
-		8B67A18F17DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
-		8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
-		8BABC37C17E4FBE6008431F3 /* PositionPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionPin.h; sourceTree = "<group>"; };
-		8BABC37D17E4FBE6008431F3 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
-		8BDB780017F2475600AB4C0D /* MIADScanQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADScanQRCodeViewController.h; sourceTree = "<group>"; };
-		8BDB780117F2475600AB4C0D /* MIADScanQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADScanQRCodeViewController.m; sourceTree = "<group>"; };
-		8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
-		8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
-		8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libQREncoder.a; path = "QREncoder/build/Debug-iphoneos/libQREncoder.a"; sourceTree = "<group>"; };
+		8B86828217F2636F0091BD90 /* Miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B86828517F2636F0091BD90 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8B86828717F2636F0091BD90 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8B86828917F2636F0091BD90 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		8B86828D17F2636F0091BD90 /* Miataru-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Miataru-Info.plist"; sourceTree = "<group>"; };
+		8B86828F17F2636F0091BD90 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8B86829117F2636F0091BD90 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8B86829317F2636F0091BD90 /* Miataru-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Miataru-Prefix.pch"; sourceTree = "<group>"; };
+		8B8682A617F2636F0091BD90 /* MiataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B8682A717F2636F0091BD90 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		8B8682AF17F2636F0091BD90 /* MiataruTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MiataruTests-Info.plist"; sourceTree = "<group>"; };
+		8B8682B117F2636F0091BD90 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8B8682B317F2636F0091BD90 /* MiataruTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MiataruTests.m; sourceTree = "<group>"; };
+		8B8682C017F264420091BD90 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
+		8B8682C117F264420091BD90 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
+		8B8682C217F264420091BD90 /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
+		8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
+		8B8682C417F264420091BD90 /* MIADAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAppDelegate.h; sourceTree = "<group>"; };
+		8B8682C517F264420091BD90 /* MIADAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
+		8B8682C617F264420091BD90 /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
+		8B8682C717F264420091BD90 /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
+		8B8682C817F264420091BD90 /* MIADDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDevicesTableViewController.h; sourceTree = "<group>"; };
+		8B8682C917F264420091BD90 /* MIADDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDevicesTableViewController.m; sourceTree = "<group>"; };
+		8B8682CA17F264420091BD90 /* MIADHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADHistoryViewController.h; sourceTree = "<group>"; };
+		8B8682CB17F264420091BD90 /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
+		8B8682CC17F264420091BD90 /* MIADMyDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMyDeviceViewController.h; sourceTree = "<group>"; };
+		8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMyDeviceViewController.m; sourceTree = "<group>"; };
+		8B8682CE17F264420091BD90 /* MIADScanQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADScanQRCodeViewController.h; sourceTree = "<group>"; };
+		8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MIADScanQRCodeViewController.mm; sourceTree = "<group>"; };
+		8B8682D017F264420091BD90 /* MIADSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADSettingsViewController.h; sourceTree = "<group>"; };
+		8B8682D117F264420091BD90 /* MIADSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADSettingsViewController.m; sourceTree = "<group>"; };
+		8B8682D217F264420091BD90 /* PositionPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionPin.h; sourceTree = "<group>"; };
+		8B8682D317F264420091BD90 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
+		8B8682D417F264420091BD90 /* UpdateLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateLocation.h; sourceTree = "<group>"; };
+		8B8682D517F264420091BD90 /* UpdateLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateLocation.m; sourceTree = "<group>"; };
+		8B8682E117F2644B0091BD90 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		8B8682E317F264620091BD90 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = Libraries/QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
+		8B8682F117F264F60091BD90 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingWidget.xcodeproj; path = Libraries/zxing/iphone/ZXingWidget/ZXingWidget.xcodeproj; sourceTree = "<group>"; };
+		8B86830117F2662D0091BD90 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		8B86830217F2662D0091BD90 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		8B86830317F2662D0091BD90 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8B27F30517D1FC0F005B5BEA /* Frameworks */ = {
+		8B86827F17F2636F0091BD90 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B16071017F261C200E99613 /* AudioToolbox.framework in Frameworks */,
-				8B16071117F261C200E99613 /* AVFoundation.framework in Frameworks */,
-				8B16071217F261C200E99613 /* libiconv.dylib in Frameworks */,
-				8B16070C17F261C200E99613 /* libZXingWidget.a in Frameworks */,
-				8B1606A517F25A7B00E99613 /* libQREncoder.a in Frameworks */,
-				8B319DEA17D2125800F05F05 /* MapKit.framework in Frameworks */,
-				8B319DE817D2125000F05F05 /* CoreLocation.framework in Frameworks */,
-				8B27F30E17D1FC0F005B5BEA /* CoreGraphics.framework in Frameworks */,
-				8B27F31017D1FC10005B5BEA /* UIKit.framework in Frameworks */,
-				8B27F30C17D1FC0F005B5BEA /* Foundation.framework in Frameworks */,
-				AE777194ACE74EE09CEF1B84 /* libPods.a in Frameworks */,
+				8B86830517F2662D0091BD90 /* AudioToolbox.framework in Frameworks */,
+				8B86830617F2662D0091BD90 /* AVFoundation.framework in Frameworks */,
+				8B86830717F2662D0091BD90 /* CoreMedia.framework in Frameworks */,
+				8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */,
+				8B86830017F2662C0091BD90 /* libZXingWidget.a in Frameworks */,
+				8B8682F217F264F60091BD90 /* CoreLocation.framework in Frameworks */,
+				8B8682F017F264F60091BD90 /* libQREncoder.a in Frameworks */,
+				8B86828817F2636F0091BD90 /* CoreGraphics.framework in Frameworks */,
+				8B86828A17F2636F0091BD90 /* UIKit.framework in Frameworks */,
+				8B86828617F2636F0091BD90 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B27F32917D1FC10005B5BEA /* Frameworks */ = {
+		8B8682A317F2636F0091BD90 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B27F32E17D1FC10005B5BEA /* XCTest.framework in Frameworks */,
-				8B27F33017D1FC10005B5BEA /* UIKit.framework in Frameworks */,
-				8B27F32F17D1FC10005B5BEA /* Foundation.framework in Frameworks */,
+				8B8682A817F2636F0091BD90 /* XCTest.framework in Frameworks */,
+				8B8682AA17F2636F0091BD90 /* UIKit.framework in Frameworks */,
+				8B8682A917F2636F0091BD90 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8B12D6F817DBCC73002239A0 /* Known Devices */ = {
+		8B86827917F2636F0091BD90 = {
 			isa = PBXGroup;
 			children = (
-				8B67A18E17DCCBE100CD5CBE /* DeviceDetails */,
-				8B319DEB17D261AB00F05F05 /* Add A Device */,
-				8B5C1F1317DBCE3B001E87C5 /* MIADDevicesTableViewController.h */,
-				8B5C1F1417DBCE3B001E87C5 /* MIADDevicesTableViewController.m */,
+				8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */,
+				8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */,
+				8B86828B17F2636F0091BD90 /* Miataru */,
+				8B8682AD17F2636F0091BD90 /* MiataruTests */,
+				8B86828417F2636F0091BD90 /* Frameworks */,
+				8B86828317F2636F0091BD90 /* Products */,
 			);
-			name = "Known Devices";
 			sourceTree = "<group>";
 		};
-		8B16069B17F25A6500E99613 /* Products */ = {
+		8B86828317F2636F0091BD90 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8B1606A017F25A6500E99613 /* libQREncoder.a */,
-				8B1606A217F25A6500E99613 /* QREncoderTest.octest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8B16070217F2618500E99613 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8B16070717F2618700E99613 /* libZXingWidget.a */,
-				8B16070917F2618700E99613 /* ZXingTests.octest */,
+				8B86828217F2636F0091BD90 /* Miataru.app */,
+				8B8682A617F2636F0091BD90 /* MiataruTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8B27F2FF17D1FC0F005B5BEA = {
+		8B86828417F2636F0091BD90 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */,
-				8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */,
-				8B27F31117D1FC10005B5BEA /* miataru */,
-				8B27F33317D1FC10005B5BEA /* miataruTests */,
-				8B27F30A17D1FC0F005B5BEA /* Frameworks */,
-				8B27F30917D1FC0F005B5BEA /* Products */,
-				68BED21D995C4990A73C8591 /* Pods.xcconfig */,
-			);
-			sourceTree = "<group>";
-		};
-		8B27F30917D1FC0F005B5BEA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8B27F30817D1FC0F005B5BEA /* miataru.app */,
-				8B27F32C17D1FC10005B5BEA /* miataruTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8B27F30A17D1FC0F005B5BEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				8B16070D17F261C200E99613 /* AudioToolbox.framework */,
-				8B16070E17F261C200E99613 /* AVFoundation.framework */,
-				8B16070F17F261C200E99613 /* libiconv.dylib */,
-				8BF6EDEE17F2190900CD9AFF /* libQREncoder.a */,
-				8B319DE917D2125800F05F05 /* MapKit.framework */,
-				8B319DE717D2125000F05F05 /* CoreLocation.framework */,
-				8B27F30B17D1FC0F005B5BEA /* Foundation.framework */,
-				8B27F30D17D1FC0F005B5BEA /* CoreGraphics.framework */,
-				8B27F30F17D1FC10005B5BEA /* UIKit.framework */,
-				8B27F32D17D1FC10005B5BEA /* XCTest.framework */,
-				3488FBB377DA45FFB847D9C3 /* libPods.a */,
+				8B86830117F2662D0091BD90 /* AudioToolbox.framework */,
+				8B86830217F2662D0091BD90 /* AVFoundation.framework */,
+				8B86830317F2662D0091BD90 /* CoreMedia.framework */,
+				8B86830417F2662D0091BD90 /* libiconv.dylib */,
+				8B8682F117F264F60091BD90 /* CoreLocation.framework */,
+				8B86828517F2636F0091BD90 /* Foundation.framework */,
+				8B86828717F2636F0091BD90 /* CoreGraphics.framework */,
+				8B86828917F2636F0091BD90 /* UIKit.framework */,
+				8B8682A717F2636F0091BD90 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8B27F31117D1FC10005B5BEA /* miataru */ = {
+		8B86828B17F2636F0091BD90 /* Miataru */ = {
 			isa = PBXGroup;
 			children = (
-				8B319DEF17D2634F00F05F05 /* Model */,
-				8B319DDF17D20E7000F05F05 /* ViewControllers */,
-				8B27F31A17D1FC10005B5BEA /* MIADAppDelegate.h */,
-				8B27F31B17D1FC10005B5BEA /* MIADAppDelegate.m */,
-				8B27F31D17D1FC10005B5BEA /* Main.storyboard */,
-				8B27F32617D1FC10005B5BEA /* Images.xcassets */,
-				8B27F31217D1FC10005B5BEA /* Supporting Files */,
+				8B86830A17F2665E0091BD90 /* Controllers */,
+				8B86830917F2664A0091BD90 /* Model */,
+				8B8682E317F264620091BD90 /* Main.storyboard */,
+				8B8682C417F264420091BD90 /* MIADAppDelegate.h */,
+				8B8682C517F264420091BD90 /* MIADAppDelegate.m */,
+				8B8682E117F2644B0091BD90 /* Images.xcassets */,
+				8B86828C17F2636F0091BD90 /* Supporting Files */,
 			);
-			path = miataru;
+			path = Miataru;
 			sourceTree = "<group>";
 		};
-		8B27F31217D1FC10005B5BEA /* Supporting Files */ = {
+		8B86828C17F2636F0091BD90 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8B27F31317D1FC10005B5BEA /* miataru-Info.plist */,
-				8B27F31417D1FC10005B5BEA /* InfoPlist.strings */,
-				8B27F31717D1FC10005B5BEA /* main.m */,
-				8B27F31917D1FC10005B5BEA /* miataru-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		8B27F33317D1FC10005B5BEA /* miataruTests */ = {
-			isa = PBXGroup;
-			children = (
-				8B27F33917D1FC10005B5BEA /* miataruTests.m */,
-				8B27F33417D1FC10005B5BEA /* Supporting Files */,
-			);
-			path = miataruTests;
-			sourceTree = "<group>";
-		};
-		8B27F33417D1FC10005B5BEA /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				8B27F33517D1FC10005B5BEA /* miataruTests-Info.plist */,
-				8B27F33617D1FC10005B5BEA /* InfoPlist.strings */,
+				8B86828D17F2636F0091BD90 /* Miataru-Info.plist */,
+				8B86828E17F2636F0091BD90 /* InfoPlist.strings */,
+				8B86829117F2636F0091BD90 /* main.m */,
+				8B86829317F2636F0091BD90 /* Miataru-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		8B319DDF17D20E7000F05F05 /* ViewControllers */ = {
+		8B8682AD17F2636F0091BD90 /* MiataruTests */ = {
 			isa = PBXGroup;
 			children = (
-				8B12D6F817DBCC73002239A0 /* Known Devices */,
-				8B319DE117D20E8500F05F05 /* MyDevice */,
-				8B319DE217D20E8C00F05F05 /* History */,
-				8B319DE317D20E9100F05F05 /* Settings */,
+				8B8682B317F2636F0091BD90 /* MiataruTests.m */,
+				8B8682AE17F2636F0091BD90 /* Supporting Files */,
 			);
-			name = ViewControllers;
+			path = MiataruTests;
 			sourceTree = "<group>";
 		};
-		8B319DE117D20E8500F05F05 /* MyDevice */ = {
+		8B8682AE17F2636F0091BD90 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8B27F32317D1FC10005B5BEA /* MIADMyDeviceViewController.h */,
-				8B27F32417D1FC10005B5BEA /* MIADMyDeviceViewController.m */,
+				8B8682AF17F2636F0091BD90 /* MiataruTests-Info.plist */,
+				8B8682B017F2636F0091BD90 /* InfoPlist.strings */,
 			);
-			name = MyDevice;
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		8B319DE217D20E8C00F05F05 /* History */ = {
+		8B8682E617F264DB0091BD90 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8B319DDC17D20E6A00F05F05 /* MIADHistoryViewController.h */,
-				8B319DDD17D20E6A00F05F05 /* MIADHistoryViewController.m */,
+				8B8682EB17F264DC0091BD90 /* libQREncoder.a */,
+				8B8682ED17F264DC0091BD90 /* QREncoderTest.octest */,
 			);
-			name = History;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		8B319DE317D20E9100F05F05 /* Settings */ = {
+		8B8682F617F265FF0091BD90 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8B319DE417D20F6700F05F05 /* MIADSettingsViewController.h */,
-				8B319DE517D20F6700F05F05 /* MIADSettingsViewController.m */,
+				8B8682FB17F266010091BD90 /* libZXingWidget.a */,
+				8B8682FD17F266010091BD90 /* ZXingTests.octest */,
 			);
-			name = Settings;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		8B319DEB17D261AB00F05F05 /* Add A Device */ = {
+		8B86830917F2664A0091BD90 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8BDB77FF17F2473600AB4C0D /* Scan a QRCode */,
-				8B67A18B17DCC31800CD5CBE /* MIADAddADeviceTableViewController.h */,
-				8B67A18C17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m */,
-			);
-			name = "Add A Device";
-			sourceTree = "<group>";
-		};
-		8B319DEF17D2634F00F05F05 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				8B62284117D3A9600029B7D9 /* REST Requests */,
-				8BE4883B17DBBAEC006E5C09 /* KnownDevice.h */,
-				8BE4883C17DBBAEC006E5C09 /* KnownDevice.m */,
-				8BABC37C17E4FBE6008431F3 /* PositionPin.h */,
-				8BABC37D17E4FBE6008431F3 /* PositionPin.m */,
+				8B86830B17F266730091BD90 /* REST Requests */,
+				8B8682C017F264420091BD90 /* KnownDevice.h */,
+				8B8682C117F264420091BD90 /* KnownDevice.m */,
+				8B8682D217F264420091BD90 /* PositionPin.h */,
+				8B8682D317F264420091BD90 /* PositionPin.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
 		};
-		8B62284117D3A9600029B7D9 /* REST Requests */ = {
+		8B86830A17F2665E0091BD90 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				8B62284217D3A9750029B7D9 /* UpdateLocation.h */,
-				8B62284317D3A9750029B7D9 /* UpdateLocation.m */,
+				8B86830C17F2668E0091BD90 /* KnownDevices */,
+				8B86830D17F266930091BD90 /* MyDevice */,
+				8B86830E17F2669F0091BD90 /* History */,
+				8B86830F17F266A30091BD90 /* Settings */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		8B86830B17F266730091BD90 /* REST Requests */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682D417F264420091BD90 /* UpdateLocation.h */,
+				8B8682D517F264420091BD90 /* UpdateLocation.m */,
 			);
 			name = "REST Requests";
 			sourceTree = "<group>";
 		};
-		8B67A18E17DCCBE100CD5CBE /* DeviceDetails */ = {
+		8B86830C17F2668E0091BD90 /* KnownDevices */ = {
 			isa = PBXGroup;
 			children = (
-				8B67A18F17DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.h */,
-				8B67A19017DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m */,
+				8B86831117F266DC0091BD90 /* Add A Device */,
+				8B86831017F266CF0091BD90 /* DeviceDetails */,
+				8B8682C817F264420091BD90 /* MIADDevicesTableViewController.h */,
+				8B8682C917F264420091BD90 /* MIADDevicesTableViewController.m */,
+			);
+			name = KnownDevices;
+			sourceTree = "<group>";
+		};
+		8B86830D17F266930091BD90 /* MyDevice */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682CC17F264420091BD90 /* MIADMyDeviceViewController.h */,
+				8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */,
+			);
+			name = MyDevice;
+			sourceTree = "<group>";
+		};
+		8B86830E17F2669F0091BD90 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682CA17F264420091BD90 /* MIADHistoryViewController.h */,
+				8B8682CB17F264420091BD90 /* MIADHistoryViewController.m */,
+			);
+			name = History;
+			sourceTree = "<group>";
+		};
+		8B86830F17F266A30091BD90 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682D017F264420091BD90 /* MIADSettingsViewController.h */,
+				8B8682D117F264420091BD90 /* MIADSettingsViewController.m */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		8B86831017F266CF0091BD90 /* DeviceDetails */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682C617F264420091BD90 /* MIADDeviceDetailsViewController.h */,
+				8B8682C717F264420091BD90 /* MIADDeviceDetailsViewController.m */,
 			);
 			name = DeviceDetails;
 			sourceTree = "<group>";
 		};
-		8BDB77FF17F2473600AB4C0D /* Scan a QRCode */ = {
+		8B86831117F266DC0091BD90 /* Add A Device */ = {
 			isa = PBXGroup;
 			children = (
-				8BDB780017F2475600AB4C0D /* MIADScanQRCodeViewController.h */,
-				8BDB780117F2475600AB4C0D /* MIADScanQRCodeViewController.m */,
+				8B86831217F266EC0091BD90 /* Scan A QRCode */,
+				8B8682C217F264420091BD90 /* MIADAddADeviceTableViewController.h */,
+				8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.m */,
 			);
-			name = "Scan a QRCode";
+			name = "Add A Device";
+			sourceTree = "<group>";
+		};
+		8B86831217F266EC0091BD90 /* Scan A QRCode */ = {
+			isa = PBXGroup;
+			children = (
+				8B8682CE17F264420091BD90 /* MIADScanQRCodeViewController.h */,
+				8B8682CF17F264420091BD90 /* MIADScanQRCodeViewController.mm */,
+			);
+			name = "Scan A QRCode";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8B27F30717D1FC0F005B5BEA /* miataru */ = {
+		8B86828117F2636F0091BD90 /* Miataru */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B27F33D17D1FC10005B5BEA /* Build configuration list for PBXNativeTarget "miataru" */;
+			buildConfigurationList = 8B8682B717F2636F0091BD90 /* Build configuration list for PBXNativeTarget "Miataru" */;
 			buildPhases = (
-				B96A3D671919429E8BC10419 /* Check Pods Manifest.lock */,
-				8B27F30417D1FC0F005B5BEA /* Sources */,
-				8B27F30517D1FC0F005B5BEA /* Frameworks */,
-				8B27F30617D1FC0F005B5BEA /* Resources */,
-				1D87EF9144C04052A2BED71D /* Copy Pods Resources */,
+				8B86827E17F2636F0091BD90 /* Sources */,
+				8B86827F17F2636F0091BD90 /* Frameworks */,
+				8B86828017F2636F0091BD90 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8B16070B17F2619400E99613 /* PBXTargetDependency */,
-				8B1606A417F25A7300E99613 /* PBXTargetDependency */,
+				8B8682FF17F2660A0091BD90 /* PBXTargetDependency */,
+				8B8682EF17F264E40091BD90 /* PBXTargetDependency */,
 			);
-			name = miataru;
-			productName = miataru;
-			productReference = 8B27F30817D1FC0F005B5BEA /* miataru.app */;
+			name = Miataru;
+			productName = Miataru;
+			productReference = 8B86828217F2636F0091BD90 /* Miataru.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8B27F32B17D1FC10005B5BEA /* miataruTests */ = {
+		8B8682A517F2636F0091BD90 /* MiataruTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B27F34017D1FC10005B5BEA /* Build configuration list for PBXNativeTarget "miataruTests" */;
+			buildConfigurationList = 8B8682BA17F2636F0091BD90 /* Build configuration list for PBXNativeTarget "MiataruTests" */;
 			buildPhases = (
-				8B27F32817D1FC10005B5BEA /* Sources */,
-				8B27F32917D1FC10005B5BEA /* Frameworks */,
-				8B27F32A17D1FC10005B5BEA /* Resources */,
+				8B8682A217F2636F0091BD90 /* Sources */,
+				8B8682A317F2636F0091BD90 /* Frameworks */,
+				8B8682A417F2636F0091BD90 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8B27F33217D1FC10005B5BEA /* PBXTargetDependency */,
+				8B8682AC17F2636F0091BD90 /* PBXTargetDependency */,
 			);
-			name = miataruTests;
-			productName = miataruTests;
-			productReference = 8B27F32C17D1FC10005B5BEA /* miataruTests.xctest */;
+			name = MiataruTests;
+			productName = MiataruTests;
+			productReference = 8B8682A617F2636F0091BD90 /* MiataruTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		8B27F30017D1FC0F005B5BEA /* Project object */ = {
+		8B86827A17F2636F0091BD90 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = MIAD;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = Miataru;
 				TargetAttributes = {
-					8B27F30717D1FC0F005B5BEA = {
+					8B86828117F2636F0091BD90 = {
 						DevelopmentTeam = X7H5D9Q5T4;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
-					8B27F32B17D1FC10005B5BEA = {
-						TestTargetID = 8B27F30717D1FC0F005B5BEA;
+					8B8682A517F2636F0091BD90 = {
+						TestTargetID = 8B86828117F2636F0091BD90;
 					};
 				};
 			};
-			buildConfigurationList = 8B27F30317D1FC0F005B5BEA /* Build configuration list for PBXProject "miataru" */;
+			buildConfigurationList = 8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "Miataru" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -441,181 +436,140 @@
 				en,
 				Base,
 			);
-			mainGroup = 8B27F2FF17D1FC0F005B5BEA;
-			productRefGroup = 8B27F30917D1FC0F005B5BEA /* Products */;
+			mainGroup = 8B86827917F2636F0091BD90;
+			productRefGroup = 8B86828317F2636F0091BD90 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 8B16069B17F25A6500E99613 /* Products */;
-					ProjectRef = 8B16069A17F25A6500E99613 /* QREncoder.xcodeproj */;
+					ProductGroup = 8B8682E617F264DB0091BD90 /* Products */;
+					ProjectRef = 8B8682E517F264DB0091BD90 /* QREncoder.xcodeproj */;
 				},
 				{
-					ProductGroup = 8B16070217F2618500E99613 /* Products */;
-					ProjectRef = 8B16070117F2618500E99613 /* ZXingWidget.xcodeproj */;
+					ProductGroup = 8B8682F617F265FF0091BD90 /* Products */;
+					ProjectRef = 8B8682F517F265FF0091BD90 /* ZXingWidget.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				8B27F30717D1FC0F005B5BEA /* miataru */,
-				8B27F32B17D1FC10005B5BEA /* miataruTests */,
+				8B86828117F2636F0091BD90 /* Miataru */,
+				8B8682A517F2636F0091BD90 /* MiataruTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		8B1606A017F25A6500E99613 /* libQREncoder.a */ = {
+		8B8682EB17F264DC0091BD90 /* libQREncoder.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libQREncoder.a;
-			remoteRef = 8B16069F17F25A6500E99613 /* PBXContainerItemProxy */;
+			remoteRef = 8B8682EA17F264DC0091BD90 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8B1606A217F25A6500E99613 /* QREncoderTest.octest */ = {
+		8B8682ED17F264DC0091BD90 /* QREncoderTest.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = QREncoderTest.octest;
-			remoteRef = 8B1606A117F25A6500E99613 /* PBXContainerItemProxy */;
+			remoteRef = 8B8682EC17F264DC0091BD90 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8B16070717F2618700E99613 /* libZXingWidget.a */ = {
+		8B8682FB17F266010091BD90 /* libZXingWidget.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libZXingWidget.a;
-			remoteRef = 8B16070617F2618700E99613 /* PBXContainerItemProxy */;
+			remoteRef = 8B8682FA17F266010091BD90 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8B16070917F2618700E99613 /* ZXingTests.octest */ = {
+		8B8682FD17F266010091BD90 /* ZXingTests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = ZXingTests.octest;
-			remoteRef = 8B16070817F2618700E99613 /* PBXContainerItemProxy */;
+			remoteRef = 8B8682FC17F266010091BD90 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8B27F30617D1FC0F005B5BEA /* Resources */ = {
+		8B86828017F2636F0091BD90 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B27F32717D1FC10005B5BEA /* Images.xcassets in Resources */,
-				8B27F31617D1FC10005B5BEA /* InfoPlist.strings in Resources */,
-				8B27F31F17D1FC10005B5BEA /* Main.storyboard in Resources */,
+				8B8682E417F264620091BD90 /* Main.storyboard in Resources */,
+				8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */,
+				8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B27F32A17D1FC10005B5BEA /* Resources */ = {
+		8B8682A417F2636F0091BD90 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B27F33817D1FC10005B5BEA /* InfoPlist.strings in Resources */,
+				8B8682B217F2636F0091BD90 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		1D87EF9144C04052A2BED71D /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B96A3D671919429E8BC10419 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		8B27F30417D1FC0F005B5BEA /* Sources */ = {
+		8B86827E17F2636F0091BD90 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B67A18D17DCC31800CD5CBE /* MIADAddADeviceTableViewController.m in Sources */,
-				8B319DE617D20F6700F05F05 /* MIADSettingsViewController.m in Sources */,
-				8B62284417D3A9750029B7D9 /* UpdateLocation.m in Sources */,
-				8B27F31817D1FC10005B5BEA /* main.m in Sources */,
-				8B5C1F1517DBCE3B001E87C5 /* MIADDevicesTableViewController.m in Sources */,
-				8BABC37E17E4FBE6008431F3 /* PositionPin.m in Sources */,
-				8B319DDE17D20E6A00F05F05 /* MIADHistoryViewController.m in Sources */,
-				8B27F31C17D1FC10005B5BEA /* MIADAppDelegate.m in Sources */,
-				8BE4883D17DBBAEC006E5C09 /* KnownDevice.m in Sources */,
-				8B67A19117DCCBFF00CD5CBE /* MIADDeviceDetailsViewController.m in Sources */,
-				8BDB780217F2475600AB4C0D /* MIADScanQRCodeViewController.m in Sources */,
-				8B27F32517D1FC10005B5BEA /* MIADMyDeviceViewController.m in Sources */,
+				8B86829217F2636F0091BD90 /* main.m in Sources */,
+				8B8682D617F264420091BD90 /* KnownDevice.m in Sources */,
+				8B8682DE17F264420091BD90 /* MIADSettingsViewController.m in Sources */,
+				8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.m in Sources */,
+				8B8682DB17F264420091BD90 /* MIADHistoryViewController.m in Sources */,
+				8B8682DF17F264420091BD90 /* PositionPin.m in Sources */,
+				8B8682DD17F264420091BD90 /* MIADScanQRCodeViewController.mm in Sources */,
+				8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */,
+				8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */,
+				8B8682DA17F264420091BD90 /* MIADDevicesTableViewController.m in Sources */,
+				8B8682D817F264420091BD90 /* MIADAppDelegate.m in Sources */,
+				8B8682DC17F264420091BD90 /* MIADMyDeviceViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B27F32817D1FC10005B5BEA /* Sources */ = {
+		8B8682A217F2636F0091BD90 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B27F33A17D1FC10005B5BEA /* miataruTests.m in Sources */,
+				8B8682B417F2636F0091BD90 /* MiataruTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8B1606A417F25A7300E99613 /* PBXTargetDependency */ = {
+		8B8682AC17F2636F0091BD90 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B86828117F2636F0091BD90 /* Miataru */;
+			targetProxy = 8B8682AB17F2636F0091BD90 /* PBXContainerItemProxy */;
+		};
+		8B8682EF17F264E40091BD90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = QREncoder;
-			targetProxy = 8B1606A317F25A7300E99613 /* PBXContainerItemProxy */;
+			targetProxy = 8B8682EE17F264E40091BD90 /* PBXContainerItemProxy */;
 		};
-		8B16070B17F2619400E99613 /* PBXTargetDependency */ = {
+		8B8682FF17F2660A0091BD90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ZXingWidget;
-			targetProxy = 8B16070A17F2619400E99613 /* PBXContainerItemProxy */;
-		};
-		8B27F33217D1FC10005B5BEA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8B27F30717D1FC0F005B5BEA /* miataru */;
-			targetProxy = 8B27F33117D1FC10005B5BEA /* PBXContainerItemProxy */;
+			targetProxy = 8B8682FE17F2660A0091BD90 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		8B27F31417D1FC10005B5BEA /* InfoPlist.strings */ = {
+		8B86828E17F2636F0091BD90 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8B27F31517D1FC10005B5BEA /* en */,
+				8B86828F17F2636F0091BD90 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		8B27F31D17D1FC10005B5BEA /* Main.storyboard */ = {
+		8B8682B017F2636F0091BD90 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8B27F31E17D1FC10005B5BEA /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		8B27F33617D1FC10005B5BEA /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8B27F33717D1FC10005B5BEA /* en */,
+				8B8682B117F2636F0091BD90 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -623,10 +577,11 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		8B27F33B17D1FC10005B5BEA /* Debug */ = {
+		8B8682B517F2636F0091BD90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -649,6 +604,7 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -660,10 +616,11 @@
 			};
 			name = Debug;
 		};
-		8B27F33C17D1FC10005B5BEA /* Release */ = {
+		8B8682B617F2636F0091BD90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -680,6 +637,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -691,98 +649,86 @@
 			};
 			name = Release;
 		};
-		8B27F33E17D1FC10005B5BEA /* Debug */ = {
+		8B8682B817F2636F0091BD90 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68BED21D995C4990A73C8591 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
+				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/AFNetworking\"",
-					"\"${PODS_ROOT}/Headers/RestKit\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/CoreData\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Network\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/ObjectMapping\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Support\"",
-					"\"${PODS_ROOT}/Headers/SOCKit\"",
-					"\"${PODS_ROOT}/Headers/TransitionKit\"",
-					"\"${SRCROOT}/QREncoder/Classes\"",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/cpp\"/**",
 				);
-				INFOPLIST_FILE = "miataru/miataru-Info.plist";
+				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		8B27F33F17D1FC10005B5BEA /* Release */ = {
+		8B8682B917F2636F0091BD90 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68BED21D995C4990A73C8591 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
+				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/AFNetworking\"",
-					"\"${PODS_ROOT}/Headers/RestKit\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/CoreData\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Network\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/ObjectMapping\"",
-					"\"${PODS_ROOT}/Headers/RestKit/RestKit/Support\"",
-					"\"${PODS_ROOT}/Headers/SOCKit\"",
-					"\"${PODS_ROOT}/Headers/TransitionKit\"",
-					"\"${SRCROOT}/QREncoder/Classes\"",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/cpp\"/**",
 				);
-				INFOPLIST_FILE = "miataru/miataru-Info.plist";
+				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
-		8B27F34117D1FC10005B5BEA /* Debug */ = {
+		8B8682BB17F2636F0091BD90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/miataru.app/miataru";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Miataru.app/Miataru";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
+				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "miataruTests/miataruTests-Info.plist";
+				INFOPLIST_FILE = "MiataruTests/MiataruTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
 		};
-		8B27F34217D1FC10005B5BEA /* Release */ = {
+		8B8682BC17F2636F0091BD90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/miataru.app/miataru";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Miataru.app/Miataru";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "miataru/miataru-Prefix.pch";
-				INFOPLIST_FILE = "miataruTests/miataruTests-Info.plist";
+				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
+				INFOPLIST_FILE = "MiataruTests/MiataruTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -792,34 +738,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8B27F30317D1FC0F005B5BEA /* Build configuration list for PBXProject "miataru" */ = {
+		8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "Miataru" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8B27F33B17D1FC10005B5BEA /* Debug */,
-				8B27F33C17D1FC10005B5BEA /* Release */,
+				8B8682B517F2636F0091BD90 /* Debug */,
+				8B8682B617F2636F0091BD90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8B27F33D17D1FC10005B5BEA /* Build configuration list for PBXNativeTarget "miataru" */ = {
+		8B8682B717F2636F0091BD90 /* Build configuration list for PBXNativeTarget "Miataru" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8B27F33E17D1FC10005B5BEA /* Debug */,
-				8B27F33F17D1FC10005B5BEA /* Release */,
+				8B8682B817F2636F0091BD90 /* Debug */,
+				8B8682B917F2636F0091BD90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8B27F34017D1FC10005B5BEA /* Build configuration list for PBXNativeTarget "miataruTests" */ = {
+		8B8682BA17F2636F0091BD90 /* Build configuration list for PBXNativeTarget "MiataruTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8B27F34117D1FC10005B5BEA /* Debug */,
-				8B27F34217D1FC10005B5BEA /* Release */,
+				8B8682BB17F2636F0091BD90 /* Debug */,
+				8B8682BC17F2636F0091BD90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 8B27F30017D1FC0F005B5BEA /* Project object */;
+	rootObject = 8B86827A17F2636F0091BD90 /* Project object */;
 }
