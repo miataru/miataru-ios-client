@@ -111,7 +111,7 @@
     NSError *err = nil;
     //NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: self.responseData options: NSJSONReadingMutableContainers error: &err];
     
-    NSLog(@"%@",self.responseData);
+    //NSLog(@"%@",self.responseData);
     
     NSDictionary* jsonArray = [NSJSONSerialization
                           JSONObjectWithData:self.responseData //1
