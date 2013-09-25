@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B84021917F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B84021817F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m */; };
 		8B86828617F2636F0091BD90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828517F2636F0091BD90 /* Foundation.framework */; };
 		8B86828817F2636F0091BD90 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828717F2636F0091BD90 /* CoreGraphics.framework */; };
 		8B86828A17F2636F0091BD90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828917F2636F0091BD90 /* UIKit.framework */; };
@@ -91,6 +92,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B84021717F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADQREncoderLicenseInformationViewController.h; sourceTree = "<group>"; };
+		8B84021817F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADQREncoderLicenseInformationViewController.m; sourceTree = "<group>"; };
 		8B86828217F2636F0091BD90 /* Miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B86828517F2636F0091BD90 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8B86828717F2636F0091BD90 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -167,6 +170,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B84021417F2882F00ACC253 /* License Information */ = {
+			isa = PBXGroup;
+			children = (
+				8B84021717F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.h */,
+				8B84021817F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m */,
+			);
+			name = "License Information";
+			sourceTree = "<group>";
+		};
 		8B86827917F2636F0091BD90 = {
 			isa = PBXGroup;
 			children = (
@@ -312,6 +324,7 @@
 		8B86830D17F266930091BD90 /* MyDevice */ = {
 			isa = PBXGroup;
 			children = (
+				8B84021417F2882F00ACC253 /* License Information */,
 				8B8682CC17F264420091BD90 /* MIADMyDeviceViewController.h */,
 				8B8682CD17F264420091BD90 /* MIADMyDeviceViewController.m */,
 			);
@@ -511,6 +524,7 @@
 				8B8682DF17F264420091BD90 /* PositionPin.m in Sources */,
 				8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */,
 				8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */,
+				8B84021917F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m in Sources */,
 				8B8682DA17F264420091BD90 /* MIADDevicesTableViewController.m in Sources */,
 				8B8682D817F264420091BD90 /* MIADAppDelegate.m in Sources */,
 				8B8682DC17F264420091BD90 /* MIADMyDeviceViewController.m in Sources */,
