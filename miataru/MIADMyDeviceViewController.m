@@ -24,13 +24,13 @@ static const CGFloat kPadding = 10;
     //NSString* deviceID = @"DBD02046-EAA5-40F2-8C3B-8C884893A57C-service.miataru.com";
     //NSString* deviceID = @"dbd02046-eaa5-40f2-8c3b-8c884893a57c";
 	// Do any additional setup after loading the view, typically from a nib.
-    NSString *deviceID = [[UIDevice currentDevice].identifierForVendor.UUIDString lowercaseString];
+    NSString *deviceID = [NSString stringWithFormat:@"miad-%@", [[UIDevice currentDevice].identifierForVendor.UUIDString lowercaseString]];
     
     UIImage* image = [QREncoder encode:deviceID size:4 correctionLevel:QRCorrectionLevelMedium scale:6];
     [self.QRCodeView layer].magnificationFilter = kCAFilterNearest;
     [self.QRCodeView setImage:image];
     
-    self.DeviceIDLabel.text = deviceID;
+    self.DeviceIDLabel.text = [UIDevice currentDevice].identifierForVendor.UUIDString;
 }
 
 - (void)didReceiveMemoryWarning

@@ -8,6 +8,7 @@
 
 #import "MIADAddADeviceTableViewController.h"
 #import "KnownDevice.h"
+#import "MultiFormatReader.h"
 
 @interface MIADAddADeviceTableViewController ()
 
@@ -60,13 +61,45 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIAlertView *messageAlert = [[UIAlertView alloc]
-                                 initWithTitle:@"Row Selected" message:@"You've selected a row" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    //NSLog(@"%i-%i",indexPath.row,indexPath.section);
     
-    // Display Alert Message
-    [messageAlert show];
-    
+    if (indexPath.row == 0 && indexPath.section == 1)
+    {
+        ZXingWidgetController *widController =
+        [[ZXingWidgetController alloc] initWithDelegate:self showCancel:YES OneDMode:NO];
+
+        NSMutableSet *readers = [[NSMutableSet alloc ] init];
+        
+        MultiFormatReader* reader = [[MultiFormatReader alloc] init];
+        [readers addObject:reader];
+
+        widController.readers = readers;
+        
+        [self presentViewController:widController animated:NO completion:nil];
+    }
 }
 
+- (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result
+{
+    //NSLog(@"%@",result);
+   if ([result hasPrefix:@"miad-"])
+   {
+       NSString *cutOff = [result substringFromIndex:5];
+       [self.DeviceIDTextField setText:[cutOff uppercaseString]];
+   }
+   else
+   {
+       UIAlertView *messageAlert = [[UIAlertView alloc]
+                                    initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+       
+       // Display Alert Message
+       [messageAlert show];
+   }
+   [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+- (void)zxingControllerDidCancel:(ZXingWidgetController*)controller {
+   [self dismissViewControllerAnimated:NO completion:nil];
+}
 
 @end

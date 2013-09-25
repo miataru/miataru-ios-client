@@ -11,7 +11,7 @@
 		8B86828817F2636F0091BD90 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828717F2636F0091BD90 /* CoreGraphics.framework */; };
 		8B86828A17F2636F0091BD90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828917F2636F0091BD90 /* UIKit.framework */; };
 		8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B86828E17F2636F0091BD90 /* InfoPlist.strings */; };
-		8B86829217F2636F0091BD90 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B86829117F2636F0091BD90 /* main.m */; };
+		8B86829217F2636F0091BD90 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B86829117F2636F0091BD90 /* main.mm */; };
 		8B8682A817F2636F0091BD90 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B8682A717F2636F0091BD90 /* XCTest.framework */; };
 		8B8682A917F2636F0091BD90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828517F2636F0091BD90 /* Foundation.framework */; };
 		8B8682AA17F2636F0091BD90 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86828917F2636F0091BD90 /* UIKit.framework */; };
@@ -97,7 +97,7 @@
 		8B86828917F2636F0091BD90 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8B86828D17F2636F0091BD90 /* Miataru-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Miataru-Info.plist"; sourceTree = "<group>"; };
 		8B86828F17F2636F0091BD90 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8B86829117F2636F0091BD90 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8B86829117F2636F0091BD90 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		8B86829317F2636F0091BD90 /* Miataru-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Miataru-Prefix.pch"; sourceTree = "<group>"; };
 		8B8682A617F2636F0091BD90 /* MiataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B8682A717F2636F0091BD90 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -133,6 +133,7 @@
 		8B86830317F2662D0091BD90 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8B86831817F2698D0091BD90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		8B8992B517F27274003776B2 /* beep-beep.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "beep-beep.caf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,9 +221,10 @@
 		8B86828C17F2636F0091BD90 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8B8992B517F27274003776B2 /* beep-beep.caf */,
 				8B86828D17F2636F0091BD90 /* Miataru-Info.plist */,
 				8B86828E17F2636F0091BD90 /* InfoPlist.strings */,
-				8B86829117F2636F0091BD90 /* main.m */,
+				8B86829117F2636F0091BD90 /* main.mm */,
 				8B86829317F2636F0091BD90 /* Miataru-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -501,7 +503,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B86829217F2636F0091BD90 /* main.m in Sources */,
+				8B86829217F2636F0091BD90 /* main.mm in Sources */,
 				8B8682D617F264420091BD90 /* KnownDevice.m in Sources */,
 				8B8682DE17F264420091BD90 /* MIADSettingsViewController.m in Sources */,
 				8B8682D717F264420091BD90 /* MIADAddADeviceTableViewController.mm in Sources */,
@@ -648,6 +650,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
@@ -656,7 +660,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
-					"\"$(SRCROOT)/Libraries/zxing/cpp\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -670,6 +674,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
@@ -678,7 +684,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
-					"\"$(SRCROOT)/Libraries/zxing/cpp\"/**",
+					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
