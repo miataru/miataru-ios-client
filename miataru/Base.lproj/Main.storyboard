@@ -17,31 +17,24 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1WX-Gp-MCn">
-                                <rect key="frame" x="60" y="78" width="200" height="200"/>
+                                <rect key="frame" x="61" y="97" width="200" height="200"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="GN6-vf-8iK"/>
-                                    <constraint firstAttribute="width" constant="200" id="ngw-d8-4Hw"/>
+                                    <constraint firstAttribute="height" constant="200" id="9E7-xv-XcF"/>
+                                    <constraint firstAttribute="width" constant="200" id="SYL-2d-JeK"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Device ID" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tnt-2G-XOo">
-                                <rect key="frame" x="60" y="49" width="200" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AI1-zp-UXr">
-                                <rect key="frame" x="20" y="286" width="280" height="21"/>
+                                <rect key="frame" x="20" y="305" width="280" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="269" translatesAutoresizingMaskIntoConstraints="NO" id="bBo-vM-dUI">
-                                <rect key="frame" x="26" y="315" width="269" height="72"/>
+                                <rect key="frame" x="26" y="334" width="269" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <attributedString key="attributedText">
-                                    <fragment content="Scan the QR code with another Miataru devices app using the  ‚Add Device‘ functionality.">
+                                    <fragment content="Scan the above QR code to add this device to the Devices List.">
                                         <attributes>
                                             <color key="NSColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                             <font key="NSFont" size="17" name="HelveticaNeue"/>
@@ -52,29 +45,27 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-pB-iTe">
-                                <rect key="frame" x="284" y="484" width="22" height="22"/>
+                                <rect key="frame" x="288" y="485" width="22" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="90q-2d-ljB" kind="modal" modalTransitionStyle="coverVertical" id="ID0-mU-zPZ"/>
+                                    <segue destination="ETP-S1-sh3" kind="modal" id="uaW-n2-vQT"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="tnt-2G-XOo" secondAttribute="bottom" constant="8" symbolic="YES" id="66I-42-KlL"/>
-                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="leading" secondItem="tnt-2G-XOo" secondAttribute="leading" id="8zZ-aw-e5L"/>
-                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="trailing" secondItem="tnt-2G-XOo" secondAttribute="trailing" id="JX6-7j-xHV"/>
-                            <constraint firstItem="lxn-o7-DXt" firstAttribute="top" secondItem="8JJ-pB-iTe" secondAttribute="bottom" constant="13" id="TmU-Tb-3ei"/>
-                            <constraint firstItem="tnt-2G-XOo" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="29" id="ceV-pd-LoZ"/>
-                            <constraint firstItem="tnt-2G-XOo" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" constant="60" id="eNK-z4-Ppx"/>
-                            <constraint firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="14" id="tg2-jV-E9e"/>
+                            <constraint firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="10" id="Aqn-IU-tm6"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="leading" secondItem="gMD-aP-Fq6" secondAttribute="leading" constant="61" id="N0M-ju-Lkj"/>
+                            <constraint firstItem="lxn-o7-DXt" firstAttribute="top" secondItem="8JJ-pB-iTe" secondAttribute="bottom" constant="12" id="ZRj-CM-tXl"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="33" id="r15-lU-gil"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="My Device" image="Toolbar_MyDevice" id="tcV-Yw-rdh"/>
+                    <tabBarItem key="tabBarItem" title="QR" image="Toolbar_MyDevice" id="tcV-Yw-rdh"/>
+                    <navigationItem key="navigationItem" title="Device QR Code" id="qHX-VR-GTP"/>
                     <connections>
                         <outlet property="DeviceIDLabel" destination="AI1-zp-UXr" id="Gdg-Ka-S6f"/>
                         <outlet property="QRCodeView" destination="1WX-Gp-MCn" id="aGM-zT-dgY"/>
@@ -82,9 +73,24 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="223" y="62"/>
+            <point key="canvasLocation" x="739" y="63"/>
         </scene>
-        <!--Encoder License Information View Controller-->
+        <!--Navigation Controller-->
+        <scene sceneID="MpT-89-XYV">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="ETP-S1-sh3" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rtb-nl-6Pa">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="90q-2d-ljB" kind="relationship" relationship="rootViewController" id="ozv-r2-sob"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tqd-lx-EeW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1204" y="63"/>
+        </scene>
+        <!--Encoder License Information View Controller - QR Encoder License-->
         <scene sceneID="zkF-to-9ef">
             <objects>
                 <viewController id="90q-2d-ljB" customClass="MIADQREncoderLicenseInformationViewController" sceneMemberID="viewController">
@@ -96,19 +102,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hs1-h8-6Ge">
-                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <items>
-                                    <navigationItem title="QR Encoder License" id="fKK-RG-DjP">
-                                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="JGf-eB-93V">
-                                            <connections>
-                                                <action selector="DoneButtonPressed:" destination="90q-2d-ljB" id="FMf-AB-xCb"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jAI-lB-OIv">
                                 <rect key="frame" x="20" y="170" width="280" height="227"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -146,49 +139,21 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="7cy-zj-g3c" firstAttribute="top" secondItem="jAI-lB-OIv" secondAttribute="bottom" constant="171" id="U6P-6R-a2I"/>
-                            <constraint firstItem="Hs1-h8-6Ge" firstAttribute="top" secondItem="09i-Io-RGP" secondAttribute="bottom" id="Vro-We-TUw"/>
                             <constraint firstAttribute="trailing" secondItem="jAI-lB-OIv" secondAttribute="trailing" constant="20" symbolic="YES" id="YfX-Oj-Z22"/>
-                            <constraint firstItem="jAI-lB-OIv" firstAttribute="centerX" secondItem="Hs1-h8-6Ge" secondAttribute="centerX" id="bHS-It-sOr"/>
-                            <constraint firstItem="Hs1-h8-6Ge" firstAttribute="leading" secondItem="PgF-a2-f4T" secondAttribute="leading" id="eCJ-n4-khd"/>
                             <constraint firstItem="jAI-lB-OIv" firstAttribute="leading" secondItem="PgF-a2-f4T" secondAttribute="leading" constant="20" symbolic="YES" id="nGK-NP-k0p"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="QR Encoder License" id="v4A-jF-hD6">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="HWY-Ik-fCJ">
+                            <connections>
+                                <action selector="DoneButtonPress:" destination="90q-2d-ljB" id="ZZA-Kd-Ruo"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="85l-Gk-wPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="708" y="62"/>
-        </scene>
-        <!--History View Controller - History-->
-        <scene sceneID="cQb-9U-w6s">
-            <objects>
-                <viewController id="IoE-nD-Tai" customClass="MIADHistoryViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="qep-0o-dRh"/>
-                        <viewControllerLayoutGuide type="bottom" id="eud-4Q-hFE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="GbR-cN-i07">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="TCp-jv-hra">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="TCp-jv-hra" secondAttribute="bottom" id="8oe-PO-fRv"/>
-                            <constraint firstAttribute="trailing" secondItem="TCp-jv-hra" secondAttribute="trailing" id="Elr-x9-Aey"/>
-                            <constraint firstItem="TCp-jv-hra" firstAttribute="leading" secondItem="GbR-cN-i07" secondAttribute="leading" id="eLk-QE-Yj9"/>
-                            <constraint firstItem="TCp-jv-hra" firstAttribute="top" secondItem="GbR-cN-i07" secondAttribute="top" id="v8f-aP-37o"/>
-                        </constraints>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="History" image="Toolbar_History" id="CFF-Mx-PTA"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HKn-b4-hBT" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="223" y="796"/>
+            <point key="canvasLocation" x="1658" y="63"/>
         </scene>
         <!--Settings View Controller - Settings-->
         <scene sceneID="EaP-6R-9gC">
@@ -234,8 +199,8 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     </tabBar>
                     <connections>
                         <segue destination="fUv-7Y-Jqh" kind="relationship" relationship="viewControllers" id="nEY-1n-sWg"/>
-                        <segue destination="QUy-BD-bpt" kind="relationship" relationship="viewControllers" id="M8t-EP-wfW"/>
-                        <segue destination="IoE-nD-Tai" kind="relationship" relationship="viewControllers" id="oeH-ux-CGk"/>
+                        <segue destination="ZCE-Co-7wT" kind="relationship" relationship="viewControllers" id="IJt-Jj-TJG"/>
+                        <segue destination="V9e-U7-As1" kind="relationship" relationship="viewControllers" id="6W5-25-02Z"/>
                         <segue destination="6aN-ZL-kRL" kind="relationship" relationship="viewControllers" id="OOA-eW-ZQ7"/>
                     </connections>
                 </tabBarController>
@@ -295,7 +260,32 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="119-x1-8k3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="708" y="-698"/>
+            <point key="canvasLocation" x="976" y="-1046"/>
+        </scene>
+        <!--View Controller - Map-->
+        <scene sceneID="5pI-dP-8pP">
+            <objects>
+                <viewController id="ZCE-Co-7wT" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Zm2-ei-URh"/>
+                        <viewControllerLayoutGuide type="bottom" id="Vz7-0y-ARL"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="OPE-gP-GNU">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="223" y="807"/>
         </scene>
         <!--Navigation Controller - Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -333,7 +323,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GeV-8r-swQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="223" y="-698"/>
+            <point key="canvasLocation" x="491" y="-1046"/>
         </scene>
         <!--Device Details View Controller - Device Details-->
         <scene sceneID="NOf-4O-ete">
@@ -364,7 +354,11 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Device Details" id="u2g-TA-j6t">
-                        <barButtonItem key="rightBarButtonItem" image="Toolbar_History" id="Tij-P7-vmU"/>
+                        <barButtonItem key="rightBarButtonItem" image="Toolbar_History" id="Tij-P7-vmU">
+                            <connections>
+                                <segue destination="fun-ND-L7r" kind="push" id="WFA-ik-taA"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="DeviceDetailMapView" destination="8aw-yu-kP7" id="cys-re-x6I"/>
@@ -372,7 +366,26 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3K-xC-SOA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1330" y="-1030"/>
+            <point key="canvasLocation" x="1598" y="-1378"/>
+        </scene>
+        <!--History View Controller - Device History-->
+        <scene sceneID="eMi-bB-UGz">
+            <objects>
+                <viewController id="fun-ND-L7r" customClass="MIADHistoryViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zEf-1X-h1f"/>
+                        <viewControllerLayoutGuide type="bottom" id="TAJ-R4-c2B"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="qNV-8U-vi6">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Device History" id="WeT-2C-irK"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RV3-uv-r0x" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2082" y="-1378"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9Ac-h1-4En">
@@ -390,7 +403,23 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WH4-QA-c7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1330" y="-250"/>
+            <point key="canvasLocation" x="1598" y="-598"/>
+        </scene>
+        <!--Navigation Controller - QR-->
+        <scene sceneID="yEI-vy-Nav">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="V9e-U7-As1" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="QR" image="Settings_QRCode" id="zC1-wZ-gvV"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1IC-dN-OVg">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="QUy-BD-bpt" kind="relationship" relationship="rootViewController" id="VFG-cJ-LPd"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Yqb-cV-tAN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="208" y="63"/>
         </scene>
         <!--AddA Device Table View Controller - Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
@@ -490,14 +519,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1808" y="-250"/>
+            <point key="canvasLocation" x="2076" y="-598"/>
         </scene>
     </scenes>
     <resources>
         <image name="Settings_QRCode" width="30" height="30"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
-        <image name="Toolbar_History" width="30" height="30"/>
+        <image name="Toolbar_Map" width="30" height="30"/>
         <image name="Toolbar_MyDevice" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
