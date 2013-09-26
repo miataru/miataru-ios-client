@@ -34,7 +34,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)DoneButtonPressed:(id)sender {
+- (IBAction)DoneButtonPress:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

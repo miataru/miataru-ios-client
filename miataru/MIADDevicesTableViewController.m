@@ -35,13 +35,15 @@
     [self loadKnownDevices];
     if(!self.known_devices)
     {
+        // first start!!!
+        
         self.known_devices = [NSMutableArray array];
         
         // search for THIS device and add it if not in the device list yet...
   
         //BOOL found_it = false;
         
-/*        for(KnownDevice *st in self.known_devices)
+/*      for(KnownDevice *st in self.known_devices)
         {
             NSLog(@"%@",st.DeviceName);
             
@@ -59,6 +61,28 @@
             [self saveKnownDevices];
         //}
         
+    }
+    else
+    {
+        // not the first start.. check if the current device is listed somewhere...
+       BOOL found_it = false;
+        
+       for(KnownDevice *st in self.known_devices)
+       {
+           if([st.DeviceID isEqualToString:deviceID]==TRUE)
+           {
+               found_it = true;
+               break;
+           }
+       }
+         
+       if (!found_it)
+       {
+           NSString *name = @"this iPhone";
+           KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+           [self.known_devices insertObject:knowndevice atIndex:0];
+           [self saveKnownDevices];
+       }
     }
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
@@ -134,21 +158,25 @@
 }
 
 
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
- {
- }
- */
+// Override to support rearranging the table view.
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+{
+    KnownDevice *deviceToMove = [self.known_devices objectAtIndex:fromIndexPath.row];
+    
+    [self.known_devices removeObjectAtIndex:fromIndexPath.row];
+    
+    [self.known_devices insertObject:deviceToMove atIndex:toIndexPath.row];
+    [self saveKnownDevices];
+}
 
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
- {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
+
+// Override to support conditional rearranging of the table view.
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Return NO if you do not want the item to be re-orderable.
+    return YES;
+}
+
 
 #pragma mark - Segue
 
