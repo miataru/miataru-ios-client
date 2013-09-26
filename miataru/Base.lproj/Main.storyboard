@@ -363,7 +363,9 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                             <constraint firstAttribute="bottom" secondItem="8aw-yu-kP7" secondAttribute="bottom" id="goI-O9-9FJ"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Device Details" id="u2g-TA-j6t"/>
+                    <navigationItem key="navigationItem" title="Device Details" id="u2g-TA-j6t">
+                        <barButtonItem key="rightBarButtonItem" image="Toolbar_History" id="Tij-P7-vmU"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="DeviceDetailMapView" destination="8aw-yu-kP7" id="cys-re-x6I"/>
                     </connections>
@@ -394,7 +396,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         <scene sceneID="B2f-ub-TDJ">
             <objects>
                 <tableViewController id="fFJ-wG-oZ7" customClass="MIADAddADeviceTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="MxE-iH-uCW">
+                    <tableView key="view" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="MxE-iH-uCW">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -408,7 +410,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device Name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jMF-2w-cZT">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="jMF-2w-cZT">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -424,7 +426,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TGg-c8-cjP">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="TGg-c8-cjP">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -494,6 +496,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
     <resources>
         <image name="Settings_QRCode" width="30" height="30"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
+        <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_MyDevice" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
