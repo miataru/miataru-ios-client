@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IASKAppSettingsViewController.h"
 
 @interface MIADSettingsViewController : UIViewController
 
+//@property (nonatomic, retain) IASKAppSettingsViewController *appSettingsViewController;
+
 @end
+

@@ -468,7 +468,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 	}
 	//cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
 	//cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
-	return cell;
+	
+    //cell.textLabel.minimumScaleFactor = 0.7f;
+    //cell.detailTextLabel.minimumScaleFactor = 0.7f;
+    return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

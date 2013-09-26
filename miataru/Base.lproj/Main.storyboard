@@ -155,37 +155,34 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="1658" y="63"/>
         </scene>
-        <!--Settings View Controller - Settings-->
-        <scene sceneID="EaP-6R-9gC">
+        <!--App Settings View Controller-->
+        <scene sceneID="X7X-p7-zZc">
             <objects>
-                <viewController id="qF7-Nd-lQH" customClass="MIADSettingsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Nh8-Wv-tK4"/>
-                        <viewControllerLayoutGuide type="bottom" id="EYf-Lw-BCm"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="rve-Fd-Luk">
+                <tableViewController id="ntc-sL-c8h" customClass="IASKAppSettingsViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="I4c-au-6j5">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="m6t-oq-ldl">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="m6t-oq-ldl" secondAttribute="trailing" id="Y6i-Gw-Ely"/>
-                            <constraint firstAttribute="bottom" secondItem="m6t-oq-ldl" secondAttribute="bottom" id="dVd-qf-cNw"/>
-                            <constraint firstItem="m6t-oq-ldl" firstAttribute="leading" secondItem="rve-Fd-Luk" secondAttribute="leading" id="dnF-TY-ZsF"/>
-                            <constraint firstItem="m6t-oq-ldl" firstAttribute="top" secondItem="rve-Fd-Luk" secondAttribute="top" id="eSA-SE-luG"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" title="Settings" id="zJx-QY-kmg"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Is5-V6-GEr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="sOW-bL-Xxu">
+                                <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sOW-bL-Xxu" id="wUY-iN-n5o">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="ntc-sL-c8h" id="gq6-qZ-3F4"/>
+                            <outlet property="delegate" destination="ntc-sL-c8h" id="SFt-Jy-JQF"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="caF-f1-q0G"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8Fx-aa-TP0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="708" y="1541"/>
+            <point key="canvasLocation" x="701" y="1541"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -299,7 +296,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="qF7-Nd-lQH" kind="relationship" relationship="rootViewController" id="rUa-eu-MeJ"/>
+                        <segue destination="ntc-sL-c8h" kind="relationship" relationship="rootViewController" id="zOM-Uz-KIp"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xi3-PN-we4" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -523,6 +520,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         </scene>
     </scenes>
     <resources>
+        <image name="Settings_QRCode" width="30" height="30"/>
         <image name="Settings_QRCode" width="30" height="30"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>

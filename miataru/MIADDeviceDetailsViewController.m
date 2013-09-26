@@ -149,7 +149,7 @@
         }
     }
     // if we end up here, there has been an error...
-    NSString *message = [NSString stringWithFormat:@"Could not find Data for Device %@", self.DetailDevice.DeviceName];
+    NSString *message = [NSString stringWithFormat:@"Could not find Data for Device %@ - Maybe you need to enable Reporting to Server?", self.DetailDevice.DeviceName];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                     message:message
@@ -180,8 +180,18 @@
     
     self.responseData = [NSMutableData data];
    
-    NSMutableURLRequest *detailrequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://service.miataru.com/GetLocation"]];
-        
+    NSString* miataru_server_url = [[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
+    
+    while ([miataru_server_url hasSuffix:@"/"])
+    {
+        if ( [miataru_server_url length] > 0)
+            miataru_server_url = [miataru_server_url substringToIndex:[miataru_server_url length] - 1];
+    }
+
+    NSMutableURLRequest *detailrequest =
+    [[NSMutableURLRequest alloc] initWithURL:
+     [NSURL URLWithString:[NSString stringWithFormat:@"%@/GetLocation", miataru_server_url]]];
+    
     
     [detailrequest setHTTPMethod:@"POST"];
     

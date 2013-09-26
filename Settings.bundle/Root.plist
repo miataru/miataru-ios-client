@@ -6,53 +6,67 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>Group</string>
+			<string>Client Settings</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>Key</key>
-			<string>name_preference</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-			<key>Title</key>
-			<string>Name</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<key>FooterText</key>
+			<string>Enable or Disable Tracking and Server Reporting</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>enabled_preference</string>
+			<string>track_location</string>
 			<key>Title</key>
-			<string>Enabled</string>
+			<string>Track Location</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<real>0.5</real>
+			<false/>
 			<key>Key</key>
-			<string>slider_preference</string>
-			<key>MaximumValue</key>
-			<integer>1</integer>
-			<key>MaximumValueImage</key>
-			<string></string>
-			<key>MinimumValue</key>
-			<integer>0</integer>
-			<key>MinimumValueImage</key>
-			<string></string>
+			<string>report_location_to_server</string>
+			<key>Title</key>
+			<string>Report Location to Server</string>
 			<key>Type</key>
-			<string>PSSliderSpecifier</string>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Location History</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Enable Location History if you want to store a Location History on the Miataru Server (Number is limited by the Server).</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>save_location_history_on_server</string>
+			<key>Title</key>
+			<string>Server Location History</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Server Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Here you need to specify the server you want to use. By default service.miataru.com is set here but you can use your own.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>DefaultValue</key>
+			<string>http://service.miataru.com</string>
+			<key>Title</key>
+			<string>Server-URL</string>
+			<key>Key</key>
+			<string>miataru_server_url</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

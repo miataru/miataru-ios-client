@@ -19,8 +19,43 @@
 
 @implementation MIADAppDelegate
 
+- (void)setDefaults {
+    
+    //get the plist location from the settings bundle
+    NSString *settingsPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Settings.bundle"];
+    NSString *plistPath = [settingsPath stringByAppendingPathComponent:@"Root.plist"];
+    
+    //get the preference specifiers array which contains the settings
+    NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:plistPath];
+    NSArray *preferencesArray = [settingsDictionary objectForKey:@"PreferenceSpecifiers"];
+    
+    //use the shared defaults object
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    //for each preference item, set its default if there is no value set
+    for(NSDictionary *item in preferencesArray) {
+        
+        //get the item key, if there is no key then we can skip it
+        NSString *key = [item objectForKey:@"Key"];
+        if (key) {
+            
+            //check to see if the value and default value are set
+            //if a default value exists and the value is not set, use the default
+            id value = [defaults objectForKey:key];
+            id defaultValue = [item objectForKey:@"DefaultValue"];
+            if(defaultValue && !value) {
+                [defaults setObject:defaultValue forKey:key];
+            }
+        }
+    }
+    
+    //write the changes to disk
+    [defaults synchronize];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [self setDefaults];
     // ---------- Location
     NSLog(@"didFinishLaunchingWithOptions");
     
@@ -31,7 +66,14 @@
     self.locationManager.distanceFilter = 250;
     self.locationManager.delegate = self;
     
-    [self.locationManager startMonitoringSignificantLocationChanges];
+    BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"];
+    
+   
+    if ( value == 1 )
+    {
+        NSLog(@"Starting SignificantLocationChanges...");
+        [self.locationManager startMonitoringSignificantLocationChanges];
+    }
     // ---------- Location
     
     // Override point for customization after application launch.
@@ -55,10 +97,18 @@
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 250;
 
-    [self.locationManager stopUpdatingLocation];
-    [self.locationManager startMonitoringSignificantLocationChanges];
-
-    [application beginBackgroundTaskWithExpirationHandler:^{}];
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    {
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager startMonitoringSignificantLocationChanges];
+    }
+    else
+    {
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+    }
+    
+    //[application beginBackgroundTaskWithExpirationHandler:^{}];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -67,9 +117,17 @@
     NSLog(@"applicationWillEnterForeground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-    
-    [self.locationManager stopMonitoringSignificantLocationChanges];
-    [self.locationManager startUpdatingLocation];
+
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    {
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+        [self.locationManager startUpdatingLocation];
+    }
+    else
+    {
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+        [self.locationManager stopUpdatingLocation];
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -79,9 +137,17 @@
     NSLog(@"applicationDidBecomeActive");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-    
-    [self.locationManager stopMonitoringSignificantLocationChanges];
-    [self.locationManager startUpdatingLocation];
+
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    {
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+        [self.locationManager startUpdatingLocation];
+    }
+    else
+    {
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+        [self.locationManager stopUpdatingLocation];
+    }
 
 }
 
@@ -92,10 +158,17 @@
     
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-    
-    [self.locationManager stopUpdatingLocation];
-    [self.locationManager startMonitoringSignificantLocationChanges];
-    
+
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    {
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager startMonitoringSignificantLocationChanges];
+    }
+    else
+    {
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+    }
     //[application beginBackgroundTaskWithExpirationHandler:^{}];
 
 }
@@ -119,7 +192,22 @@
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    [self SendUpdateToMiataruServer:newLocation];
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] != 1 )
+    {
+        NSLog(@"Stopping Location Tracking");
+        [self.locationManager stopUpdatingLocation];
+        [self.locationManager stopMonitoringSignificantLocationChanges];
+    }
+    else
+    {
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"report_location_to_server"] == 1 )
+        {
+            // send only when enabled in the settings...
+            [self SendUpdateToMiataruServer:newLocation];
+        }
+        else
+            NSLog(@"Sending Location to Server is disabled");
+    }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -168,14 +256,33 @@
 
         NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
 
+        NSString *LocationHistory = @"False";
+        
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"save_location_history_on_server"] == 1 )
+        {
+            LocationHistory = @"True";
+        }
+        
+        
+        NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"%@\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%@\",\"Latitude\":\"%@\",\"HorizontalAccuracy\":\"%@\"}]}",LocationHistory,deviceID,currentTimeStamp,currentLongitude,currentLatitude,currentHorizontalAccuracy];
 
-        NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"True\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%@\",\"Latitude\":\"%@\",\"HorizontalAccuracy\":\"%@\"}]}",deviceID,currentTimeStamp,currentLongitude,currentLatitude,currentHorizontalAccuracy];
-
-
+        
+        NSString* miataru_server_url = [[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
+        
+        while ([miataru_server_url hasSuffix:@"/"])
+        {
+            if ( [miataru_server_url length] > 0)
+                miataru_server_url = [miataru_server_url substringToIndex:[miataru_server_url length] - 1];
+        }
+       
         NSMutableURLRequest *request =
         [[NSMutableURLRequest alloc] initWithURL:
-         [NSURL URLWithString:@"http://service.miataru.com/UpdateLocation"]];
+         [NSURL URLWithString:[NSString stringWithFormat:@"%@/UpdateLocation", miataru_server_url]]];
 
+        //NSLog(value);
+        //NSLog(request.URL.absoluteString);
+        
+        
         [request setHTTPMethod:@"POST"];
 
         [request setValue:[NSString

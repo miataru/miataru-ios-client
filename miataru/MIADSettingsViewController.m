@@ -7,12 +7,15 @@
 //
 
 #import "MIADSettingsViewController.h"
+#import "IASKSettingsReader.h"
 
 @interface MIADSettingsViewController ()
 
 @end
 
 @implementation MIADSettingsViewController
+
+//@synthesize appSettingsViewController;
 
 - (void)viewDidLoad
 {
