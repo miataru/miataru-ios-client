@@ -64,7 +64,7 @@
 			<key>Title</key>
 			<string>Map Update Interval</string>
 			<key>FooterText</key>
-			<string>How often do you want the map to be updated.</string>
+			<string>How often do you want to get the location from other devices in your Known Devices list. This is not the update interval for reporting locations.</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>

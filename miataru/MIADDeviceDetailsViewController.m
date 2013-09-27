@@ -78,7 +78,6 @@
 }
 
 #pragma mark MapView Annotation Clear
-
 // to remove all pins but the users location...
 - (void)removeAllPinsButUserLocation
 {
@@ -220,7 +219,6 @@
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
-    
     // TODO: transition back
     //[self.navigationController popToRootViewControllerAnimated:YES];
 }
@@ -230,12 +228,14 @@
     // Check the error var
     NSLog(@"Connection failed: %@",error);
     self.map_update_timer_should_stop = true;
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 #pragma mark - GetLocationForDeviceFromMiataruServer
 
 - (void)GetLocationForDeviceFromMiataruServer:(NSString*)deviceID
 {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     /*
         ￼{"MiataruGetLocation": [{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}
     */

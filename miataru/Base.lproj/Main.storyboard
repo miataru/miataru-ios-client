@@ -279,6 +279,9 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
                     <navigationItem key="navigationItem" title="Map" id="hW8-lh-8HW"/>
+                    <connections>
+                        <outlet property="AllDevicesMapView" destination="1j5-4o-vxz" id="SHx-vI-6eV"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -9,8 +9,15 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
+@class KnownDevice;
+
 @interface MIADMapViewController : UIViewController <NSURLConnectionDelegate,MKMapViewDelegate>
 
 @property (strong) NSMutableData *responseData;
+
+@property (weak, nonatomic) IBOutlet MKMapView *AllDevicesMapView;
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
+
+- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views;
 
 @end
