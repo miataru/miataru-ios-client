@@ -33,6 +33,16 @@
     
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    NSLog(@"Map did appear");
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    NSLog(@"Map disappeared");
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

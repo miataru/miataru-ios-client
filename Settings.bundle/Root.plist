@@ -72,7 +72,7 @@
 			<key>Key</key>
 			<string>map_update_interval</string>
 			<key>Title</key>
-			<string>Interval</string>
+			<string>Update Interval</string>
 			<key>Titles</key>
 			<array>
 				<string>5s</string>
