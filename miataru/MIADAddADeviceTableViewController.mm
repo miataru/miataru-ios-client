@@ -82,9 +82,9 @@
 - (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result
 {
     //NSLog(@"%@",result);
-   if ([result hasPrefix:@"miad-"])
+   if ([result hasPrefix:@"miataru://"])
    {
-       NSString *cutOff = [result substringFromIndex:5];
+       NSString *cutOff = [result substringFromIndex:10];
        [self.DeviceIDTextField setText:[cutOff uppercaseString]];
    }
    else

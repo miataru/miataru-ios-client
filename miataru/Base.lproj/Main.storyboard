@@ -520,7 +520,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
     </scenes>
     <resources>
         <image name="Settings_QRCode" width="30" height="30"/>
-        <image name="Settings_QRCode" width="30" height="30"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>

@@ -173,6 +173,14 @@
 
 }
 
+-(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    if (url != nil && [url isFileURL])
+    {
+        // handle the miataru URL by passing it to the appropriate view controller...
+    }
+    return YES;
+}
 
 // ----------------------- Location
 
