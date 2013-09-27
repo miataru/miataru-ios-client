@@ -64,7 +64,6 @@
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="33" id="r15-lU-gil"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="QR" image="Toolbar_MyDevice" id="tcV-Yw-rdh"/>
                     <navigationItem key="navigationItem" title="Device QR Code" id="qHX-VR-GTP"/>
                     <connections>
                         <outlet property="DeviceIDLabel" destination="AI1-zp-UXr" id="Gdg-Ka-S6f"/>
@@ -525,7 +524,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>
-        <image name="Toolbar_MyDevice" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
