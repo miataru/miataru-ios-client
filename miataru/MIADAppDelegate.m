@@ -64,10 +64,8 @@
     self.locationManager.distanceFilter = 250;
     self.locationManager.delegate = self;
     
-    BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"];
-    
-    
-    if ( value == 1 )
+//  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         NSLog(@"Starting SignificantLocationChanges...");
         [self.locationManager startMonitoringSignificantLocationChanges];
@@ -104,7 +102,7 @@
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 250;
 
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopUpdatingLocation];
         [self.locationManager startMonitoringSignificantLocationChanges];
@@ -125,7 +123,7 @@
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
 
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopMonitoringSignificantLocationChanges];
         [self.locationManager startUpdatingLocation];
@@ -145,7 +143,7 @@
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
 
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopMonitoringSignificantLocationChanges];
         [self.locationManager startUpdatingLocation];
@@ -185,16 +183,16 @@
     NSLog(@"openURL");
     [self postLaunch];
     
-    if (url != nil)
-    {
-        // handle the miataru URL by passing it to the appropriate view controller...
-        MIADAddADeviceTableViewController *addDeviceView = [MIADAddADeviceTableViewController alloc];
-        
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:addDeviceView];
-        [[self window] setRootViewController:navController];
-        //template code
-        [self.window makeKeyAndVisible];
-    }
+//    if (url != nil)
+//    {
+//        // handle the miataru URL by passing it to the appropriate view controller...
+//        MIADAddADeviceTableViewController *addDeviceView = [MIADAddADeviceTableViewController alloc];
+//        
+//        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:addDeviceView];
+//        [[self window] setRootViewController:navController];
+//        //template code
+//        [self.window makeKeyAndVisible];
+//    }
     return YES;
 }
 
@@ -216,7 +214,7 @@
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] != 1 )
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
     {
         NSLog(@"Stopping Location Tracking");
         [self.locationManager stopUpdatingLocation];
@@ -224,7 +222,7 @@
     }
     else
     {
-        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"report_location_to_server"] == 1 )
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
         {
             // send only when enabled in the settings...
             [self SendUpdateToMiataruServer:newLocation];
@@ -310,7 +308,7 @@
         [request setHTTPMethod:@"POST"];
 
         [request setValue:[NSString
-                           stringWithFormat:@"%d", [UpdateLocationJSONContent length]]
+                           stringWithFormat:@"%lu", (unsigned long)[UpdateLocationJSONContent length]]
        forHTTPHeaderField:@"Content-length"];
 
         [request setValue:@"application/json"

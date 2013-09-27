@@ -17,25 +17,23 @@
 
 @implementation MIADDeviceDetailsViewController
 
-
 @synthesize DeviceDetailMapView;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+//{
+//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+//    if (self) {
+//        // Custom initialization
+//
+//    }
+//    return self;
+//}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    //NSLog(self.DetailDevice.DeviceID);
-    [self GetLocationForDeviceFromMiataruServer:self.DetailDevice.DeviceID];
 }
 
 - (void)didReceiveMemoryWarning
@@ -44,11 +42,62 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+#pragma mark --- Timer related stuff here
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    NSLog(@"Detail View goes away...");
+    // here we will stop the timer...
+    self.map_update_timer_should_stop = true;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    NSLog(@"Detail View appears...");
+    // initialize the timer... it should start it's life now
+    self.map_update_timer_should_stop = false;
+    [NSTimer scheduledTimerWithTimeInterval:0 target:self selector:@selector(myTimerTick:) userInfo:nil repeats:false];
+}
+
+
+- (void)myTimerTick:(NSTimer *)timer
+{
+    if (self.map_update_timer_should_stop == true)
+    {
+        NSLog(@"Stopping Timer Updates");
+    }
+    else
+    {
+        [self GetLocationForDeviceFromMiataruServer:self.DetailDevice.DeviceID];
+
+        [NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] integerForKey:@"map_update_interval"] target:self selector:@selector(myTimerTick:) userInfo:nil repeats:false];
+    }
+    
+    //[timer invalidate]; //to stop and invalidate the timer.
+}
+
+#pragma mark MapView Annotation Clear
+
+// to remove all pins but the users location...
+- (void)removeAllPinsButUserLocation
+{
+    id userLocation = [self.DeviceDetailMapView userLocation];
+    NSMutableArray *pins = [[NSMutableArray alloc] initWithArray:[self.DeviceDetailMapView annotations]];
+    if ( userLocation != nil ) {
+        [pins removeObject:userLocation]; // avoid removing user location off the map
+    }
+    
+    [self.DeviceDetailMapView removeAnnotations:pins];
+    //[pins release];
+    pins = nil;
+}
+
 #pragma mark MapView Delegate Methods
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
     
-    NSLog(@"here!!");
+    NSLog(@"viewForAnnotation");
 //    static NSString *identifier = @"MyLocation";
 //    if ([annotation isKindOfClass:[PositionPin class]]) {
 //        
@@ -136,18 +185,32 @@
                 DeviceCoordinates.longitude = [Lon doubleValue];
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                 {
-                    //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
-                    // Add the annotation to our map view
-                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:self.DetailDevice.DeviceName andCoordinate:DeviceCoordinates];
-                    [self.DeviceDetailMapView addAnnotation:newAnnotation];
-                    NSLog(@"Added Annotation...");
-                    //[newAnnotation release];
+                    if (self.LastLatitude != DeviceCoordinates.latitude && self.LastLongitude != DeviceCoordinates.longitude)
+                    {
+                        self.LastLatitude = DeviceCoordinates.latitude;
+                        self.LastLongitude = DeviceCoordinates.longitude;
+                        // clear all others...
+                        [self.DeviceDetailMapView removeAnnotations:self.DeviceDetailMapView.annotations];
+                        
+                        //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
+                        // Add the annotation to our map view
+                        PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:self.DetailDevice.DeviceName andCoordinate:DeviceCoordinates];
+                        [self.DeviceDetailMapView addAnnotation:newAnnotation];
+                        NSLog(@"Added Annotation...");
+                        //[newAnnotation release];
                     
-                    return;
+                        return;
+                    }
+                    else
+                    {
+                        NSLog(@"We already have that pin");
+                        return;
+                    }
                 }
             }
         }
     }
+    self.map_update_timer_should_stop = true;
     // if we end up here, there has been an error...
     NSString *message = [NSString stringWithFormat:@"Could not find Data for Device %@ - Maybe you need to enable Reporting to Server?", self.DetailDevice.DeviceName];
     
@@ -166,6 +229,7 @@
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Connection failed: %@",error);
+    self.map_update_timer_should_stop = true;
 }
 
 #pragma mark - GetLocationForDeviceFromMiataruServer
@@ -196,7 +260,7 @@
     [detailrequest setHTTPMethod:@"POST"];
     
     [detailrequest setValue:[NSString
-                       stringWithFormat:@"%d", [GetLocationJSONContent length]]
+                       stringWithFormat:@"%lu", (unsigned long)[GetLocationJSONContent length]]
    forHTTPHeaderField:@"Content-length"];
     
     [detailrequest setValue:@"application/json"

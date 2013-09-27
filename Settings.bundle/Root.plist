@@ -16,19 +16,9 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>track_location</string>
+			<string>track_and_report_location</string>
 			<key>Title</key>
-			<string>Track Location</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>report_location_to_server</string>
-			<key>Title</key>
-			<string>Report Location to Server</string>
+			<string>Track and Report Location</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
@@ -67,6 +57,40 @@
 			<string>Server-URL</string>
 			<key>Key</key>
 			<string>miataru_server_url</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Update Interval</string>
+			<key>FooterText</key>
+			<string>How often do you want the map to be updated.</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>30</string>
+			<key>Key</key>
+			<string>map_update_interval</string>
+			<key>Title</key>
+			<string>Interval</string>
+			<key>Titles</key>
+			<array>
+				<string>5s</string>
+				<string>10s</string>
+				<string>15s</string>
+				<string>30s</string>
+				<string>60s</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>5</string>
+				<string>10</string>
+				<string>15</string>
+				<string>30</string>
+				<string>60</string>
+			</array>
 		</dict>
 	</array>
 	<key>StringsTable</key>
