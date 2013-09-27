@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 
-@interface MIADMapViewController : UIViewController
+@interface MIADMapViewController : UIViewController <NSURLConnectionDelegate,MKMapViewDelegate>
 
 @property (strong) NSMutableData *responseData;
 
