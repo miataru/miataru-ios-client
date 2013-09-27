@@ -8,6 +8,7 @@
 
 #import "MIADAppDelegate.h"
 #import "CommonCrypto/CommonDigest.h"
+#import "MIADAddADeviceTableViewController.h"
 
 @interface MIADAppDelegate ()
 
@@ -53,14 +54,11 @@
     [defaults synchronize];
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (void)postLaunch {
     [self setDefaults];
     // ---------- Location
-    NSLog(@"didFinishLaunchingWithOptions");
-    
     self.locationManager = [[CLLocationManager alloc] init];
- 
+    
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 250;
@@ -68,13 +66,22 @@
     
     BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"];
     
-   
+    
     if ( value == 1 )
     {
         NSLog(@"Starting SignificantLocationChanges...");
         [self.locationManager startMonitoringSignificantLocationChanges];
     }
     // ---------- Location
+    
+}
+
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    NSLog(@"didFinishLaunchingWithOptions");
+
+    [self postLaunch];
     
     // Override point for customization after application launch.
     return YES;
@@ -173,11 +180,20 @@
 
 }
 
--(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-    if (url != nil && [url isFileURL])
+-(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+
+    NSLog(@"openURL");
+    [self postLaunch];
+    
+    if (url != nil)
     {
         // handle the miataru URL by passing it to the appropriate view controller...
+        MIADAddADeviceTableViewController *addDeviceView = [MIADAddADeviceTableViewController alloc];
+        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:addDeviceView];
+        [[self window] setRootViewController:navController];
+        //template code
+        [self.window makeKeyAndVisible];
     }
     return YES;
 }

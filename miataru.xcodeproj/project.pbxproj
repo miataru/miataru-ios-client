@@ -53,6 +53,7 @@
 		8BAFCC5D17F4CEE800B2139E /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */; };
 		8BAFCC5F17F4D24D00B2139E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8BAFCC5E17F4D24D00B2139E /* Settings.bundle */; };
 		8BAFCC6117F4D2F900B2139E /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAFCC6017F4D2F900B2139E /* MessageUI.framework */; };
+		8BF05C6017F51D0000FD3C6B /* MIADMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BF05C5F17F51D0000FD3C6B /* MIADMapViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -184,6 +185,8 @@
 		8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKTextField.m; sourceTree = "<group>"; };
 		8BAFCC5E17F4D24D00B2139E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		8BAFCC6017F4D2F900B2139E /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		8BF05C5E17F51D0000FD3C6B /* MIADMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMapViewController.h; sourceTree = "<group>"; };
+		8BF05C5F17F51D0000FD3C6B /* MIADMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMapViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +348,7 @@
 			isa = PBXGroup;
 			children = (
 				8B86830C17F2668E0091BD90 /* KnownDevices */,
+				8BF05C5D17F51CBD00FD3C6B /* Map */,
 				8B86830D17F266930091BD90 /* MyDevice */,
 				8B86830E17F2669F0091BD90 /* History */,
 				8B86830F17F266A30091BD90 /* Settings */,
@@ -477,6 +481,15 @@
 				8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		8BF05C5D17F51CBD00FD3C6B /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				8BF05C5E17F51D0000FD3C6B /* MIADMapViewController.h */,
+				8BF05C5F17F51D0000FD3C6B /* MIADMapViewController.m */,
+			);
+			name = Map;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -647,6 +660,7 @@
 				8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */,
 				8B84021917F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m in Sources */,
 				8BAFCC5417F4CEE800B2139E /* IASKSettingsStore.m in Sources */,
+				8BF05C6017F51D0000FD3C6B /* MIADMapViewController.m in Sources */,
 				8BAFCC5517F4CEE800B2139E /* IASKSettingsStoreFile.m in Sources */,
 				8BAFCC5B17F4CEE800B2139E /* IASKSlider.m in Sources */,
 				8BAFCC5317F4CEE800B2139E /* IASKSettingsReader.m in Sources */,

@@ -195,7 +195,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     </tabBar>
                     <connections>
                         <segue destination="fUv-7Y-Jqh" kind="relationship" relationship="viewControllers" id="nEY-1n-sWg"/>
-                        <segue destination="ZCE-Co-7wT" kind="relationship" relationship="viewControllers" id="IJt-Jj-TJG"/>
+                        <segue destination="aGv-5P-RB8" kind="relationship" relationship="viewControllers" id="Wjl-yU-nPn"/>
                         <segue destination="V9e-U7-As1" kind="relationship" relationship="viewControllers" id="6W5-25-02Z"/>
                         <segue destination="6aN-ZL-kRL" kind="relationship" relationship="viewControllers" id="OOA-eW-ZQ7"/>
                     </connections>
@@ -258,10 +258,10 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="976" y="-1046"/>
         </scene>
-        <!--View Controller - Map-->
+        <!--Map View Controller - Map-->
         <scene sceneID="5pI-dP-8pP">
             <objects>
-                <viewController id="ZCE-Co-7wT" sceneMemberID="viewController">
+                <viewController id="ZCE-Co-7wT" customClass="MIADMapViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Zm2-ei-URh"/>
                         <viewControllerLayoutGuide type="bottom" id="Vz7-0y-ARL"/>
@@ -278,10 +278,27 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
+                    <navigationItem key="navigationItem" title="Map" id="hW8-lh-8HW"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="223" y="807"/>
+            <point key="canvasLocation" x="724" y="779"/>
+        </scene>
+        <!--Navigation Controller - Map-->
+        <scene sceneID="h0o-iR-m0v">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="aGv-5P-RB8" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="hGU-TK-ylo"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JKI-yP-Sa5">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="ZCE-Co-7wT" kind="relationship" relationship="rootViewController" id="djO-2P-m0p"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Z2N-V7-DaB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="208" y="779"/>
         </scene>
         <!--Navigation Controller - Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -383,10 +400,10 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="2082" y="-1378"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Navigation Controller - AddDeviceNavigationController-->
         <scene sceneID="9Ac-h1-4En">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="i9u-Yd-vsN" sceneMemberID="viewController">
+                <navigationController title="AddDeviceNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="i9u-Yd-vsN" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="5tN-p8-5TL">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
