@@ -124,6 +124,7 @@
     id <MKAnnotation> mp = [annotationView annotation];
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
     [mapView setRegion:region animated:YES];
+    [mapView selectAnnotation:mp animated:YES];
 }
 
 #pragma mark NSURLConnection Delegate Methods
