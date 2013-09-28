@@ -259,7 +259,7 @@
     if ([UIDevice currentDevice].identifierForVendor != nil)
     {
         
-        NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
+        //NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
         
 //        unsigned char digest[CC_SHA1_DIGEST_LENGTH];
 //        NSData *stringBytes = [vendor_deviceID dataUsingEncoding: NSUTF8StringEncoding]; /* or some other encoding */
@@ -267,26 +267,32 @@
 //        NSString* deviceID = [[NSString alloc] initWithBytes:digest length:sizeof(digest) encoding:NSASCIIStringEncoding];
 //        NSString* deviceID = [NSString stringWithFormat:@"7b8e6e0ee5296db345162dc2ef652c1350761824"];
 
-        NSString *currentLatitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.latitude];
-        NSString *currentLongitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.longitude];
-        NSString *currentHorizontalAccuracy = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.horizontalAccuracy*3.28];
+        //NSString *currentLatitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.latitude];
+        //NSString *currentLongitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.longitude];
+        //NSString *currentHorizontalAccuracy = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.horizontalAccuracy*3.28];
 
         // change this to the measured date timestamp!
-        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        //NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
         // NSTimeInterval is defined as double
-        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+//        NSNumber *timeStampObj = [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]];
 
-        NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
+//        NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
 
         NSString *LocationHistory = @"False";
-        
         if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"save_location_history_on_server"] == 1 )
         {
             LocationHistory = @"True";
         }
         
         
-        NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"%@\",\"LocationDataRetentionTime\":\"15\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%@\",\"Latitude\":\"%@\",\"HorizontalAccuracy\":\"%@\"}]}",LocationHistory,deviceID,currentTimeStamp,currentLongitude,currentLatitude,currentHorizontalAccuracy];
+        NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"%@\",\"LocationDataRetentionTime\":\"%@\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%+.6f\",\"Latitude\":\"%+.6f\",\"HorizontalAccuracy\":\"%+.6f\"}]}",
+            LocationHistory,
+            [[NSUserDefaults standardUserDefaults] stringForKey:@"location_data_retention_time"],
+            [UIDevice currentDevice].identifierForVendor.UUIDString,
+            [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]],
+            locationupdate.coordinate.longitude,
+            locationupdate.coordinate.latitude,
+            locationupdate.horizontalAccuracy*3.28];
 
         
         NSString* miataru_server_url = [[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
@@ -322,7 +328,7 @@
         
         [NSURLConnection connectionWithRequest:request delegate:self];
         
-        NSLog(@"Sending Update for %@",deviceID);
+        NSLog(@"Sending Update to Server");
     }
 }
 

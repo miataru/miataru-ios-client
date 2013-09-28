@@ -8,11 +8,13 @@
 
 #import "MIADDevicesTableViewController.h"
 #import "MIADDeviceDetailsViewController.h"
+#import "MIADFirstStartWizardRootViewController.h"
 #import "KnownDevice.h"
 
 @interface MIADDevicesTableViewController ()
 
 @property (strong) NSMutableArray *known_devices;
+@property BOOL first_start_detected;
 
 @end
 
@@ -27,43 +29,45 @@
     return self;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    if (self.first_start_detected)
+    {
+        self.first_start_detected = false;
+        [self performSelector:@selector(FirstRunWizard)];
+    }
+}
+
 - (void)viewDidLoad
 {
+    // default value...for testing it#s always true...
+    self.first_start_detected = true;
+    
     [super viewDidLoad];
     NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
     
     [self loadKnownDevices];
     if(!self.known_devices)
     {
+        NSLog(@"First start detected! - Initializing and starting Welcome Wizard Modal");
         // first start!!!
         
+        // make sure that "this iPhone" is already in the known devices list when we start...
         self.known_devices = [NSMutableArray array];
-        
-        // search for THIS device and add it if not in the device list yet...
-  
-        //BOOL found_it = false;
-        
-/*      for(KnownDevice *st in self.known_devices)
-        {
-            NSLog(@"%@",st.DeviceName);
-            
-            if([st.DeviceID isEqualToString:deviceID]==TRUE)
-            {
-                found_it = true;
-            }
-        }
-        
-        if (!found_it)
-        {
-*/          NSString *name = @"this iPhone";
-            KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
-            [self.known_devices addObject:knowndevice];
-            [self saveKnownDevices];
-        //}
-        
+        NSString *name = @"this iPhone";
+        KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+        [self.known_devices addObject:knowndevice];
+        [self saveKnownDevices];
+
+        self.first_start_detected = true;
     }
     else
     {
+        // just for test
+        //[self performSelector:@selector(FirstRunWizard)];
+        // just for test
+        
+        
         // not the first start.. check if the current device is listed somewhere...
        BOOL found_it = false;
         
@@ -98,6 +102,17 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - First Run Wizard Modal
+
+- (void)FirstRunWizard
+{
+    MIADFirstStartWizardRootViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"FirstStartWizardRoot"];
+    
+//    MIADFirstStartWizardRootViewController *FirstStartController = [[MIADFirstStartWizardRootViewController alloc] init];
+    [self presentViewController:vc animated:YES completion:nil];
+}
+
 
 #pragma mark - Table view data source
 

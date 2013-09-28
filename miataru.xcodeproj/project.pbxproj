@@ -53,6 +53,7 @@
 		8BAFCC5D17F4CEE800B2139E /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */; };
 		8BAFCC5F17F4D24D00B2139E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8BAFCC5E17F4D24D00B2139E /* Settings.bundle */; };
 		8BAFCC6117F4D2F900B2139E /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAFCC6017F4D2F900B2139E /* MessageUI.framework */; };
+		8BCE4D9417F63B9C006068BC /* MIADFirstStartWizardRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BCE4D9317F63B9C006068BC /* MIADFirstStartWizardRootViewController.m */; };
 		8BF05C6017F51D0000FD3C6B /* MIADMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BF05C5F17F51D0000FD3C6B /* MIADMapViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -185,6 +186,8 @@
 		8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKTextField.m; sourceTree = "<group>"; };
 		8BAFCC5E17F4D24D00B2139E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		8BAFCC6017F4D2F900B2139E /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		8BCE4D9217F63B9C006068BC /* MIADFirstStartWizardRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADFirstStartWizardRootViewController.h; sourceTree = "<group>"; };
+		8BCE4D9317F63B9C006068BC /* MIADFirstStartWizardRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADFirstStartWizardRootViewController.m; sourceTree = "<group>"; };
 		8BF05C5E17F51D0000FD3C6B /* MIADMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMapViewController.h; sourceTree = "<group>"; };
 		8BF05C5F17F51D0000FD3C6B /* MIADMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMapViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -347,6 +350,7 @@
 		8B86830A17F2665E0091BD90 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				8BCE4D4817F63859006068BC /* FirstStartWizard */,
 				8B86830C17F2668E0091BD90 /* KnownDevices */,
 				8BF05C5D17F51CBD00FD3C6B /* Map */,
 				8B86830D17F266930091BD90 /* MyDevice */,
@@ -481,6 +485,15 @@
 				8BAFCC4F17F4CEE800B2139E /* IASKTextField.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		8BCE4D4817F63859006068BC /* FirstStartWizard */ = {
+			isa = PBXGroup;
+			children = (
+				8BCE4D9217F63B9C006068BC /* MIADFirstStartWizardRootViewController.h */,
+				8BCE4D9317F63B9C006068BC /* MIADFirstStartWizardRootViewController.m */,
+			);
+			name = FirstStartWizard;
 			sourceTree = "<group>";
 		};
 		8BF05C5D17F51CBD00FD3C6B /* Map */ = {
@@ -658,6 +671,7 @@
 				8B8682DF17F264420091BD90 /* PositionPin.m in Sources */,
 				8B8682E017F264420091BD90 /* UpdateLocation.m in Sources */,
 				8B8682D917F264420091BD90 /* MIADDeviceDetailsViewController.m in Sources */,
+				8BCE4D9417F63B9C006068BC /* MIADFirstStartWizardRootViewController.m in Sources */,
 				8B84021917F2884800ACC253 /* MIADQREncoderLicenseInformationViewController.m in Sources */,
 				8BAFCC5417F4CEE800B2139E /* IASKSettingsStore.m in Sources */,
 				8BF05C6017F51D0000FD3C6B /* MIADMapViewController.m in Sources */,

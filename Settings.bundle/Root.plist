@@ -41,6 +41,34 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string>30</string>
+			<key>FooterText</key>
+			<string>Footertext here.</string>
+			<key>Key</key>
+			<string>location_data_retention_time</string>
+			<key>Title</key>
+			<string>Data Retention Time</string>
+			<key>Titles</key>
+			<array>
+				<string>30 minutes</string>
+				<string>1 hour</string>
+				<string>2 hours</string>
+				<string>6 hours</string>
+				<string>12 hours</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>30</string>
+				<string>60</string>
+				<string>120</string>
+				<string>360</string>
+				<string>720</string>
+			</array>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Server Settings</string>
 			<key>Type</key>
