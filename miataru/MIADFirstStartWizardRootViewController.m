@@ -42,5 +42,24 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (IBAction)ReportLocationSwitchToggled:(id)sender
+{
+    BOOL state = [sender isOn];
+    // set the userdefault setting...
+    //[[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
+    
+    [[NSUserDefaults standardUserDefaults] setBool:state forKey:@"track_and_report_location"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (IBAction)StoreLocationHistorySwitchToggled:(id)sender
+{
+    BOOL state = [sender isOn];
+    // set the userdefault setting...
+    //[[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
+    
+    [[NSUserDefaults standardUserDefaults] setBool:state forKey:@"save_location_history_on_server"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
 @end

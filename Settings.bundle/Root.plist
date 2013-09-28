@@ -41,10 +41,16 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Last Location Data Retention Time</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>When Location History Storage is disabled only your last location is stored on the server for the time you specify here.</string>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>30</string>
-			<key>FooterText</key>
-			<string>Footertext here.</string>
 			<key>Key</key>
 			<string>location_data_retention_time</string>
 			<key>Title</key>

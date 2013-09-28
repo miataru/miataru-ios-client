@@ -41,7 +41,7 @@
 - (void)viewDidLoad
 {
     // default value...for testing it#s always true...
-    self.first_start_detected = true;
+    self.first_start_detected = false;
     
     [super viewDidLoad];
     NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
