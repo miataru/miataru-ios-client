@@ -1,0 +1,65 @@
+App Name: 
+
+Miataru - be found
+
+App Description:
+
+Miataru or 見当たる is Japanese and means "be found" or "to come across" and it's meant to be a set of tools to allow the user to track locations and choose how to work with the data as well as how data is stored if at all.
+
+When Google closed it’s Latitude service it suddenly became apparent how many processes in an home automation system and daily life already make use of the ability to locate devices.
+
+This is the Miataru iOS App that allows you to use the free Miataru service or your own Miataru server instance.
+
+Primary Category:
+
+Secondary Category:
+
+Subcategories:
+
+Copyright:
+
+(C) 2013 - Daniel Kirstenpfad / miataru.com
+
+App Rating:
+
+Keywords:
+
+Longitude, Latitude, Location, Share Location
+
+SKU Number:
+
+1
+
+Application URL:
+
+http://miataru.com
+
+Screenshots:
+
+see folder
+
+Support URL:
+
+http://miataru.com
+
+Support eMail Address:
+
+ios@miataru.com
+
+End User License Agreement:
+
+Pricing:
+
+free
+
+Available Date:
+
+10-05-2013
+
+Territories:
+
+Worldwide
+
+Large App Icon:
+
+see folder
