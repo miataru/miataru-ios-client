@@ -439,6 +439,10 @@ For more information please visit </string>
                             <constraint firstItem="GuG-hg-zy5" firstAttribute="leading" secondItem="Dot-r5-u0N" secondAttribute="trailing" constant="12" id="xz6-gx-A2y"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="ReportLocationToServerUISwitch" destination="GuG-hg-zy5" id="FGS-9Z-1JT"/>
+                        <outlet property="StoreLocationHistoryUISwitch" destination="X2B-nO-HeY" id="esf-Fp-47g"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IZV-UY-qSB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

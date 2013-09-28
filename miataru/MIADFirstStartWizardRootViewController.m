@@ -14,6 +14,9 @@
 
 @implementation MIADFirstStartWizardRootViewController
 
+@synthesize ReportLocationToServerUISwitch;
+@synthesize StoreLocationHistoryUISwitch;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -30,6 +33,17 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+   // [ setOn:YES animated:YES];
+    
+    BOOL trackandreport_state = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
+    BOOL storelocationhistory_state = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"save_location_history_on_server"];
+    
+    [ReportLocationToServerUISwitch setOn:trackandreport_state animated:true];
+    [StoreLocationHistoryUISwitch setOn:storelocationhistory_state animated:true];
 }
 
 - (void)viewDidAppear:(BOOL)animated

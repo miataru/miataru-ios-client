@@ -12,5 +12,7 @@
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 
+@property (weak, nonatomic) IBOutlet UISwitch *ReportLocationToServerUISwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *StoreLocationHistoryUISwitch;
 
 @end
