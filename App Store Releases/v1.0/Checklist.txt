@@ -63,3 +63,15 @@ Worldwide
 Large App Icon:
 
 see folder
+
+App-Store Review Instructions:
+
+This is the client application that corresponds with the free miataru.com service. Miataru is built to allow users to freely share location data of not only their iPhones but essentially all devices and things using clients on all sorts of operating systems. 
+
+This application allows the user to interact with a Miataru server - a free one is pre-configured in the app - to see where known devices are (i've given my own iPhone as an example in the Demo Account Information). If a user chooses not to use the free service he can install his own server on his own infrastructure, allowing complete privacy.
+
+To add devices to the device list the device details can be entered manually or using the QR code and QR code scanner in the app. I've added device credentials in the demo account information - the password is the device id - additionally please refer to this image to have a with-the-app-scanable QR code: https://dl.dropboxusercontent.com/u/2202427/appstore-review-iphone-qrcode.png
+
+The settings of the app are giving the user the freedom to decide what the app does with his data. Therefore he can select to disable/enable tracking and reporting at all, wether to store a location history or not, how long data gets stored before it automatically times out and gets deleted, a server url and an update interval for following a known device over the map (autorefresh).
+
+
