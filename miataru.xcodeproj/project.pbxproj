@@ -37,6 +37,7 @@
 		8B86830717F2662D0091BD90 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830317F2662D0091BD90 /* CoreMedia.framework */; };
 		8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830417F2662D0091BD90 /* libiconv.dylib */; };
 		8B86831917F2698D0091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B86831717F2698D0091BD90 /* Main.storyboard */; };
+		8BAFA94A1808BD5D00FAD8E8 /* beep-beep.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */; };
 		8BAFCC5017F4CEE800B2139E /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3217F4CEE800B2139E /* IASKAppSettingsViewController.m */; };
 		8BAFCC5117F4CEE800B2139E /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3417F4CEE800B2139E /* IASKAppSettingsWebViewController.m */; };
 		8BAFCC5217F4CEE800B2139E /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3617F4CEE800B2139E /* IASKSpecifierValuesViewController.m */; };
@@ -154,7 +155,7 @@
 		8B86830317F2662D0091BD90 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8B86831817F2698D0091BD90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8B8992B517F27274003776B2 /* beep-beep.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "beep-beep.caf"; sourceTree = "<group>"; };
+		8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "beep-beep.aiff"; sourceTree = "<group>"; };
 		8BAFCC3117F4CEE800B2139E /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BAFCC3217F4CEE800B2139E /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
 		8BAFCC3317F4CEE800B2139E /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
@@ -290,7 +291,7 @@
 		8B86828C17F2636F0091BD90 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8B8992B517F27274003776B2 /* beep-beep.caf */,
+				8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */,
 				8B86828D17F2636F0091BD90 /* Miataru-Info.plist */,
 				8B86828E17F2636F0091BD90 /* InfoPlist.strings */,
 				8B86829117F2636F0091BD90 /* main.mm */,
@@ -568,7 +569,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "Miataru" */;
+			buildConfigurationList = 8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "miataru" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -635,6 +636,7 @@
 			files = (
 				8BAFCC5F17F4D24D00B2139E /* Settings.bundle in Resources */,
 				8B86831917F2698D0091BD90 /* Main.storyboard in Resources */,
+				8BAFA94A1808BD5D00FAD8E8 /* beep-beep.aiff in Resources */,
 				8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */,
 				8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */,
 			);
@@ -915,7 +917,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "Miataru" */ = {
+		8B86827D17F2636F0091BD90 /* Build configuration list for PBXProject "miataru" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8B8682B517F2636F0091BD90 /* Debug */,
