@@ -32,13 +32,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    [self loadKnownDevices];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     NSLog(@"Map did appear");
+    [self loadKnownDevices];
     
     //[self GetLocationForDeviceFromMiataruServer:@"24F47362-2B49-47F7-A1E4-0AC15117CD65"];
     
