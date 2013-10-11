@@ -192,6 +192,7 @@
         {
             NSString* Lat = [MiataruLocations[0] objectForKey:@"Latitude"];
             NSString* Lon = [MiataruLocations[0] objectForKey:@"Longitude"];
+            NSString* Timestamp = [MiataruLocations[0] objectForKey:@"Timestamp"];
             NSString* DeviceID = [MiataruLocations[0] objectForKey:@"Device"];
             NSString* DeviceName = @"MiataruDevice";
             
@@ -205,6 +206,11 @@
                 }
             }
             
+            
+            NSString *TimeString = [self dateToStringInterval:[NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]]];
+            
+            NSString* UseThisDeviceName = [NSString stringWithFormat:@"%@ - %@",DeviceName,TimeString];
+            
             if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
             {
                 // now get long and lat out and add pin to mapview
@@ -215,7 +221,7 @@
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                 {
                     // Add the annotation to our map view
-                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
+                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates];
                     [self.AllDevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
                     //[newAnnotation release];
@@ -278,6 +284,50 @@
     //NSLog(@"%@", GetLocationJSONContent);
     
     NSLog(@"Getting Update from to Miataru Service...");
+}
+
+#pragma mark - Time formatting helper
+//! Method to return a string "xxx days ago" based on the difference between pastDate and the current date and time.
+- (NSString*)dateToStringInterval:(NSDate*)pastDate
+{
+    // Get the system calendar
+    NSCalendar *sysCalendar = [NSCalendar currentCalendar];
+    
+    // Create the current date
+    NSDate *currentDate = [[NSDate alloc] init];
+    
+    // Get conversion to months, days, hours, minutes
+    unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit | NSMonthCalendarUnit;
+    
+    NSDateComponents *breakdownInfo = [sysCalendar components:unitFlags fromDate:currentDate  toDate:pastDate  options:0];
+    
+    NSString *intervalString;
+    if ([breakdownInfo month]) {
+        if (-[breakdownInfo month] > 1)
+            intervalString = [NSString stringWithFormat:@"%d months ago", -[breakdownInfo month]];
+        else
+            intervalString = @"1 month ago";
+    }
+    else if ([breakdownInfo day]) {
+        if (-[breakdownInfo day] > 1)
+            intervalString = [NSString stringWithFormat:@"%d days ago", -[breakdownInfo day]];
+        else
+            intervalString = @"1 day ago";
+    }
+    else if ([breakdownInfo hour]) {
+        if (-[breakdownInfo hour] > 1)
+            intervalString = [NSString stringWithFormat:@"%d hours ago", -[breakdownInfo hour]];
+        else
+            intervalString = @"1 hour ago";
+    }
+    else {
+        if (-[breakdownInfo minute] > 1)
+            intervalString = [NSString stringWithFormat:@"%d minutes ago", -[breakdownInfo minute]];
+        else
+            intervalString = @"just now";
+    }
+    
+    return intervalString;
 }
 
 
