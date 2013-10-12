@@ -68,7 +68,7 @@
         ZXingWidgetController *widController =
         [[ZXingWidgetController alloc] initWithDelegate:self showCancel:YES OneDMode:NO];
 
-        NSBundle *mainBundle = [NSBundle mainBundle];
+        //NSBundle *mainBundle = [NSBundle mainBundle];
 /*        widController.soundToPlay =
         [NSURL fileURLWithPath:[mainBundle pathForResource:@"beep-beep" ofType:@"aiff"] isDirectory:NO];
 */

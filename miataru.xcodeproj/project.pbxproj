@@ -38,6 +38,8 @@
 		8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830417F2662D0091BD90 /* libiconv.dylib */; };
 		8B86831917F2698D0091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B86831717F2698D0091BD90 /* Main.storyboard */; };
 		8BAFA94A1808BD5D00FAD8E8 /* beep-beep.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */; };
+		8BAFA94E1808C85900FAD8E8 /* KnownDevicesHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFA94D1808C85900FAD8E8 /* KnownDevicesHandling.m */; };
+		8BAFA9521808C88700FAD8E8 /* PassedTimeDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFA9511808C88700FAD8E8 /* PassedTimeDateFormatter.m */; };
 		8BAFCC5017F4CEE800B2139E /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3217F4CEE800B2139E /* IASKAppSettingsViewController.m */; };
 		8BAFCC5117F4CEE800B2139E /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3417F4CEE800B2139E /* IASKAppSettingsWebViewController.m */; };
 		8BAFCC5217F4CEE800B2139E /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFCC3617F4CEE800B2139E /* IASKSpecifierValuesViewController.m */; };
@@ -156,6 +158,10 @@
 		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8B86831817F2698D0091BD90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "beep-beep.aiff"; sourceTree = "<group>"; };
+		8BAFA94C1808C85900FAD8E8 /* KnownDevicesHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KnownDevicesHandling.h; path = miataru/KnownDevicesHandling.h; sourceTree = SOURCE_ROOT; };
+		8BAFA94D1808C85900FAD8E8 /* KnownDevicesHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KnownDevicesHandling.m; path = miataru/KnownDevicesHandling.m; sourceTree = SOURCE_ROOT; };
+		8BAFA9501808C88700FAD8E8 /* PassedTimeDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PassedTimeDateFormatter.h; path = miataru/PassedTimeDateFormatter.h; sourceTree = SOURCE_ROOT; };
+		8BAFA9511808C88700FAD8E8 /* PassedTimeDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PassedTimeDateFormatter.m; path = miataru/PassedTimeDateFormatter.m; sourceTree = SOURCE_ROOT; };
 		8BAFCC3117F4CEE800B2139E /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BAFCC3217F4CEE800B2139E /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
 		8BAFCC3317F4CEE800B2139E /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
@@ -277,6 +283,8 @@
 		8B86828B17F2636F0091BD90 /* Miataru */ = {
 			isa = PBXGroup;
 			children = (
+				8BAFA94F1808C86B00FAD8E8 /* Helpers */,
+				8BAFA94B1808C82E00FAD8E8 /* KnownDevices */,
 				8B86830A17F2665E0091BD90 /* Controllers */,
 				8B86830917F2664A0091BD90 /* Model */,
 				8B8682C417F264420091BD90 /* MIADAppDelegate.h */,
@@ -425,6 +433,24 @@
 				8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.mm */,
 			);
 			name = "Add A Device";
+			sourceTree = "<group>";
+		};
+		8BAFA94B1808C82E00FAD8E8 /* KnownDevices */ = {
+			isa = PBXGroup;
+			children = (
+				8BAFA94C1808C85900FAD8E8 /* KnownDevicesHandling.h */,
+				8BAFA94D1808C85900FAD8E8 /* KnownDevicesHandling.m */,
+			);
+			name = KnownDevices;
+			sourceTree = "<group>";
+		};
+		8BAFA94F1808C86B00FAD8E8 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				8BAFA9501808C88700FAD8E8 /* PassedTimeDateFormatter.h */,
+				8BAFA9511808C88700FAD8E8 /* PassedTimeDateFormatter.m */,
+			);
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 		8BAFCC2F17F4CEE800B2139E /* InAppSettingsKit */ = {
@@ -659,6 +685,7 @@
 			files = (
 				8BAFCC5217F4CEE800B2139E /* IASKSpecifierValuesViewController.m in Sources */,
 				8BAFCC5817F4CEE800B2139E /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				8BAFA94E1808C85900FAD8E8 /* KnownDevicesHandling.m in Sources */,
 				8B86829217F2636F0091BD90 /* main.mm in Sources */,
 				8BAFCC5017F4CEE800B2139E /* IASKAppSettingsViewController.m in Sources */,
 				8B8682D617F264420091BD90 /* KnownDevice.m in Sources */,
@@ -685,6 +712,7 @@
 				8BAFCC5D17F4CEE800B2139E /* IASKTextField.m in Sources */,
 				8B8682D817F264420091BD90 /* MIADAppDelegate.m in Sources */,
 				8B8682DC17F264420091BD90 /* MIADMyDeviceViewController.m in Sources */,
+				8BAFA9521808C88700FAD8E8 /* PassedTimeDateFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
