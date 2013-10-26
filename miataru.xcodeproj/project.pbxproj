@@ -37,6 +37,26 @@
 		8B86830717F2662D0091BD90 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830317F2662D0091BD90 /* CoreMedia.framework */; };
 		8B86830817F2662D0091BD90 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B86830417F2662D0091BD90 /* libiconv.dylib */; };
 		8B86831917F2698D0091BD90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B86831717F2698D0091BD90 /* Main.storyboard */; };
+		8B933A89181C69AC003072E0 /* cgeohash.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B952005181C64FF003E6961 /* cgeohash.h */; };
+		8B933A8A181C69AC003072E0 /* cgeohash.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B952006181C64FF003E6961 /* cgeohash.m */; };
+		8B933A8B181C69AC003072E0 /* GeoHash.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B952007181C64FF003E6961 /* GeoHash.h */; };
+		8B933A8C181C69AC003072E0 /* GeoHash.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B952008181C64FF003E6961 /* GeoHash.m */; };
+		8B933A8D181C69AC003072E0 /* GHArea.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B952009181C64FF003E6961 /* GHArea.h */; };
+		8B933A8E181C69AC003072E0 /* GHArea.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B95200A181C64FF003E6961 /* GHArea.m */; };
+		8B933A8F181C69AC003072E0 /* GHNeighbors.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B95200B181C64FF003E6961 /* GHNeighbors.h */; };
+		8B933A90181C69AC003072E0 /* GHNeighbors.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B95200C181C64FF003E6961 /* GHNeighbors.m */; };
+		8B933A91181C69AC003072E0 /* GHRange.h in Sources */ = {isa = PBXBuildFile; fileRef = 8B95200D181C64FF003E6961 /* GHRange.h */; };
+		8B933A92181C69AC003072E0 /* GHRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B95200E181C64FF003E6961 /* GHRange.m */; };
+		8B952011181C64FF003E6961 /* cgeohash.h in Resources */ = {isa = PBXBuildFile; fileRef = 8B952005181C64FF003E6961 /* cgeohash.h */; };
+		8B952012181C64FF003E6961 /* cgeohash.m in Resources */ = {isa = PBXBuildFile; fileRef = 8B952006181C64FF003E6961 /* cgeohash.m */; };
+		8B952013181C64FF003E6961 /* GeoHash.h in Resources */ = {isa = PBXBuildFile; fileRef = 8B952007181C64FF003E6961 /* GeoHash.h */; };
+		8B952014181C64FF003E6961 /* GeoHash.m in Resources */ = {isa = PBXBuildFile; fileRef = 8B952008181C64FF003E6961 /* GeoHash.m */; };
+		8B952015181C64FF003E6961 /* GHArea.h in Resources */ = {isa = PBXBuildFile; fileRef = 8B952009181C64FF003E6961 /* GHArea.h */; };
+		8B952016181C64FF003E6961 /* GHArea.m in Resources */ = {isa = PBXBuildFile; fileRef = 8B95200A181C64FF003E6961 /* GHArea.m */; };
+		8B952017181C64FF003E6961 /* GHNeighbors.h in Resources */ = {isa = PBXBuildFile; fileRef = 8B95200B181C64FF003E6961 /* GHNeighbors.h */; };
+		8B952018181C64FF003E6961 /* GHNeighbors.m in Resources */ = {isa = PBXBuildFile; fileRef = 8B95200C181C64FF003E6961 /* GHNeighbors.m */; };
+		8B952019181C64FF003E6961 /* GHRange.h in Resources */ = {isa = PBXBuildFile; fileRef = 8B95200D181C64FF003E6961 /* GHRange.h */; };
+		8B95201A181C64FF003E6961 /* GHRange.m in Resources */ = {isa = PBXBuildFile; fileRef = 8B95200E181C64FF003E6961 /* GHRange.m */; };
 		8BAFA94A1808BD5D00FAD8E8 /* beep-beep.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */; };
 		8BAFA94E1808C85900FAD8E8 /* KnownDevicesHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFA94D1808C85900FAD8E8 /* KnownDevicesHandling.m */; };
 		8BAFA9521808C88700FAD8E8 /* PassedTimeDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAFA9511808C88700FAD8E8 /* PassedTimeDateFormatter.m */; };
@@ -157,6 +177,16 @@
 		8B86830317F2662D0091BD90 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		8B86830417F2662D0091BD90 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8B86831817F2698D0091BD90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		8B952005181C64FF003E6961 /* cgeohash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgeohash.h; sourceTree = "<group>"; };
+		8B952006181C64FF003E6961 /* cgeohash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cgeohash.m; sourceTree = "<group>"; };
+		8B952007181C64FF003E6961 /* GeoHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoHash.h; sourceTree = "<group>"; };
+		8B952008181C64FF003E6961 /* GeoHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeoHash.m; sourceTree = "<group>"; };
+		8B952009181C64FF003E6961 /* GHArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHArea.h; sourceTree = "<group>"; };
+		8B95200A181C64FF003E6961 /* GHArea.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHArea.m; sourceTree = "<group>"; };
+		8B95200B181C64FF003E6961 /* GHNeighbors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHNeighbors.h; sourceTree = "<group>"; };
+		8B95200C181C64FF003E6961 /* GHNeighbors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHNeighbors.m; sourceTree = "<group>"; };
+		8B95200D181C64FF003E6961 /* GHRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHRange.h; sourceTree = "<group>"; };
+		8B95200E181C64FF003E6961 /* GHRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHRange.m; sourceTree = "<group>"; };
 		8BAFA9491808BD5D00FAD8E8 /* beep-beep.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "beep-beep.aiff"; sourceTree = "<group>"; };
 		8BAFA94C1808C85900FAD8E8 /* KnownDevicesHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KnownDevicesHandling.h; path = miataru/KnownDevicesHandling.h; sourceTree = SOURCE_ROOT; };
 		8BAFA94D1808C85900FAD8E8 /* KnownDevicesHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KnownDevicesHandling.m; path = miataru/KnownDevicesHandling.m; sourceTree = SOURCE_ROOT; };
@@ -251,6 +281,7 @@
 				8B86828317F2636F0091BD90 /* Products */,
 				8BAFCC5E17F4D24D00B2139E /* Settings.bundle */,
 				8BAFCC2F17F4CEE800B2139E /* InAppSettingsKit */,
+				8B952010181C64FF003E6961 /* GeoHash */,
 			);
 			sourceTree = "<group>";
 		};
@@ -433,6 +464,24 @@
 				8B8682C317F264420091BD90 /* MIADAddADeviceTableViewController.mm */,
 			);
 			name = "Add A Device";
+			sourceTree = "<group>";
+		};
+		8B952010181C64FF003E6961 /* GeoHash */ = {
+			isa = PBXGroup;
+			children = (
+				8B952005181C64FF003E6961 /* cgeohash.h */,
+				8B952006181C64FF003E6961 /* cgeohash.m */,
+				8B952007181C64FF003E6961 /* GeoHash.h */,
+				8B952008181C64FF003E6961 /* GeoHash.m */,
+				8B952009181C64FF003E6961 /* GHArea.h */,
+				8B95200A181C64FF003E6961 /* GHArea.m */,
+				8B95200B181C64FF003E6961 /* GHNeighbors.h */,
+				8B95200C181C64FF003E6961 /* GHNeighbors.m */,
+				8B95200D181C64FF003E6961 /* GHRange.h */,
+				8B95200E181C64FF003E6961 /* GHRange.m */,
+			);
+			name = GeoHash;
+			path = Libraries/LyoKatoGeoHash/GeoHash/GeoHash;
 			sourceTree = "<group>";
 		};
 		8BAFA94B1808C82E00FAD8E8 /* KnownDevices */ = {
@@ -660,11 +709,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B952012181C64FF003E6961 /* cgeohash.m in Resources */,
 				8BAFCC5F17F4D24D00B2139E /* Settings.bundle in Resources */,
 				8B86831917F2698D0091BD90 /* Main.storyboard in Resources */,
+				8B952017181C64FF003E6961 /* GHNeighbors.h in Resources */,
 				8BAFA94A1808BD5D00FAD8E8 /* beep-beep.aiff in Resources */,
+				8B952018181C64FF003E6961 /* GHNeighbors.m in Resources */,
+				8B95201A181C64FF003E6961 /* GHRange.m in Resources */,
 				8B86829017F2636F0091BD90 /* InfoPlist.strings in Resources */,
+				8B952011181C64FF003E6961 /* cgeohash.h in Resources */,
+				8B952013181C64FF003E6961 /* GeoHash.h in Resources */,
+				8B952016181C64FF003E6961 /* GHArea.m in Resources */,
 				8B8682E217F2644B0091BD90 /* Images.xcassets in Resources */,
+				8B952015181C64FF003E6961 /* GHArea.h in Resources */,
+				8B952014181C64FF003E6961 /* GeoHash.m in Resources */,
+				8B952019181C64FF003E6961 /* GHRange.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,6 +742,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B933A89181C69AC003072E0 /* cgeohash.h in Sources */,
+				8B933A8A181C69AC003072E0 /* cgeohash.m in Sources */,
+				8B933A8B181C69AC003072E0 /* GeoHash.h in Sources */,
+				8B933A8C181C69AC003072E0 /* GeoHash.m in Sources */,
+				8B933A8D181C69AC003072E0 /* GHArea.h in Sources */,
+				8B933A8E181C69AC003072E0 /* GHArea.m in Sources */,
+				8B933A8F181C69AC003072E0 /* GHNeighbors.h in Sources */,
+				8B933A90181C69AC003072E0 /* GHNeighbors.m in Sources */,
+				8B933A91181C69AC003072E0 /* GHRange.h in Sources */,
+				8B933A92181C69AC003072E0 /* GHRange.m in Sources */,
 				8BAFCC5217F4CEE800B2139E /* IASKSpecifierValuesViewController.m in Sources */,
 				8BAFCC5817F4CEE800B2139E /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				8BAFA94E1808C85900FAD8E8 /* KnownDevicesHandling.m in Sources */,

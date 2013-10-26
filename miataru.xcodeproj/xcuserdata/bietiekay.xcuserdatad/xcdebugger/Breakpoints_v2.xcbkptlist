@@ -245,12 +245,12 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file://localhost/Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "403264311.269256"
+                  timestampString = "404515703.926884"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
                   endingLineNumber = "75"
-                  offsetFromSymbolStart = "274">
+                  offsetFromSymbolStart = "273">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -259,14 +259,30 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file://localhost/Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "403264311.269737"
+                  timestampString = "404515703.927349"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
                   endingLineNumber = "75"
-                  offsetFromSymbolStart = "716">
+                  offsetFromSymbolStart = "632">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Miataru/KnownDevice.m"
+            timestampString = "404515566.86589"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "-encodeWithCoder:"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
