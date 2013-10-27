@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12F45" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
@@ -293,11 +293,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     <navigationItem key="navigationItem" title="Map" id="hW8-lh-8HW"/>
                     <connections>
                         <outlet property="AllDevicesMapView" destination="1j5-4o-vxz" id="SHx-vI-6eV"/>
+                        <outlet property="DevicesMapView" destination="1j5-4o-vxz" id="LpX-YN-VQX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="724" y="1499"/>
+            <point key="canvasLocation" x="739" y="1499"/>
         </scene>
         <!--Navigation Controller - Map-->
         <scene sceneID="h0o-iR-m0v">

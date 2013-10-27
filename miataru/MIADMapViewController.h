@@ -15,6 +15,8 @@
 
 @property (strong) NSMutableData *responseData;
 
+@property (weak, nonatomic) IBOutlet MKMapView *DevicesMapView;
+
 @property (weak, nonatomic) IBOutlet MKMapView *AllDevicesMapView;
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 

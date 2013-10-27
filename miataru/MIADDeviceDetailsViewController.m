@@ -123,9 +123,17 @@
     NSLog(@"didaddannotation");
     MKAnnotationView *annotationView = [views objectAtIndex:0];
     id <MKAnnotation> mp = [annotationView annotation];
-    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
-    [mapView setRegion:region animated:YES];
-    [mapView selectAnnotation:mp animated:YES];
+
+    //CLLocationDistance visibleDistance = 5000;
+    
+    NSInteger distance_setting = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_zoom_level"];
+
+    if (distance_setting > 0)
+    {
+        MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate],  distance_setting*1000, distance_setting*1000);
+        [mapView setRegion:region animated:YES];
+        [mapView selectAnnotation:mp animated:YES];
+    }
 }
 
 #pragma mark NSURLConnection Delegate Methods

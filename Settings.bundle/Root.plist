@@ -126,6 +126,40 @@
 				<string>60</string>
 			</array>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Default Zoom Level</string>
+			<key>FooterText</key>
+			<string>What should the Map Zoom level be by default?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>5</string>
+			<key>Key</key>
+			<string>map_zoom_level</string>
+			<key>Title</key>
+			<string>Map Zoom Level</string>
+			<key>Titles</key>
+			<array>
+				<string>5 km</string>
+				<string>10 km</string>
+				<string>25 km</string>
+				<string>50 km</string>
+				<string>100 km</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>5</string>
+				<string>10</string>
+				<string>25</string>
+				<string>50</string>
+				<string>100</string>
+			</array>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

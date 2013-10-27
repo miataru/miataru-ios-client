@@ -20,6 +20,8 @@
 
 @implementation MIADMapViewController
 
+@synthesize DevicesMapView;
+
 //- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 //{
 //    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -146,10 +148,11 @@
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
     NSLog(@"didaddannotation");
-    MKAnnotationView *annotationView = [views objectAtIndex:0];
-    id <MKAnnotation> mp = [annotationView annotation];
-    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
-    [mapView setRegion:region animated:YES];
+//    MKAnnotationView *annotationView = [views objectAtIndex:0];
+//    id <MKAnnotation> mp = [annotationView annotation];
+//    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
+//    [mapView setRegion:region animated:YES];
+    
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -226,6 +229,19 @@
                     [self.AllDevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
                     //[newAnnotation release];
+                    
+                    // Zoom to fit...
+                    
+                    MKMapRect zoomRect = MKMapRectNull;
+                    for (id <MKAnnotation> annotation in self.AllDevicesMapView.annotations)
+                    {
+                        MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
+                        MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+                        zoomRect = MKMapRectUnion(zoomRect, pointRect);
+                    }
+                    [self.AllDevicesMapView setVisibleMapRect:zoomRect animated:YES];
+                    
+                    
                     
                     return;
                 }
