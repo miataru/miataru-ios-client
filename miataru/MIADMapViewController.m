@@ -35,12 +35,32 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     NSLog(@"Map did appear");
     [self loadKnownDevices];
+    
+    NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
+    
+    switch (map_type)
+    {
+        case 1:
+            [DevicesMapView setMapType:MKMapTypeStandard];
+            break;
+        case 2:
+            [DevicesMapView setMapType:MKMapTypeHybrid];
+            break;
+        case 3:
+            [DevicesMapView setMapType:MKMapTypeSatellite];
+            break;
+        default:
+            [DevicesMapView setMapType:MKMapTypeStandard];
+            break;
+    }
+
     
     //[self GetLocationForDeviceFromMiataruServer:@"24F47362-2B49-47F7-A1E4-0AC15117CD65"];
     
@@ -236,7 +256,7 @@
                     for (id <MKAnnotation> annotation in self.AllDevicesMapView.annotations)
                     {
                         MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
-                        MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
+                        MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.5, 0.5);
                         zoomRect = MKMapRectUnion(zoomRect, pointRect);
                     }
                     [self.AllDevicesMapView setVisibleMapRect:zoomRect animated:YES];

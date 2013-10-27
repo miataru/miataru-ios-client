@@ -160,6 +160,36 @@
 				<string>100</string>
 			</array>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Type</string>
+			<key>FooterText</key>
+			<string>What type of map do you want to use?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>1</string>
+			<key>Key</key>
+			<string>map_type</string>
+			<key>Title</key>
+			<string>Map Type</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Hybrid</string>
+				<string>Satelite</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+			</array>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

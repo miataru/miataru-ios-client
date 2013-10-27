@@ -35,6 +35,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -59,6 +60,25 @@
     // initialize the timer... it should start it's life now
     self.map_update_timer_should_stop = false;
     [NSTimer scheduledTimerWithTimeInterval:0 target:self selector:@selector(myTimerTick:) userInfo:nil repeats:false];
+    
+    NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
+    
+    switch (map_type)
+    {
+        case 1:
+            [DeviceDetailMapView setMapType:MKMapTypeStandard];
+            break;
+        case 2:
+            [DeviceDetailMapView setMapType:MKMapTypeHybrid];
+            break;
+        case 3:
+            [DeviceDetailMapView setMapType:MKMapTypeSatellite];
+            break;
+        default:
+            [DeviceDetailMapView setMapType:MKMapTypeStandard];
+            break;
+    }
+
 }
 
 
