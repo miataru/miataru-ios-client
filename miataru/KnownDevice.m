@@ -29,8 +29,8 @@
     if (CLLocationCoordinate2DIsValid(self.LastKnownLocation))
     {
         NSString *hash = [GeoHash hashForLatitude: self.LastKnownLocation.latitude
-                                    longitude: self.LastKnownLocation.longitude
-                                       length: 13];
+                                longitude: self.LastKnownLocation.longitude
+                                   length: 13];
         // geohash encode the location...
         [aCoder encodeObject:hash forKey:@"LastKnownLocation"];
     }

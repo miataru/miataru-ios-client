@@ -245,7 +245,7 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404574051.716648"
+                  timestampString = "404574619.835642"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
@@ -259,7 +259,7 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404574051.71701"
+                  timestampString = "404574619.836007"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
@@ -282,6 +282,22 @@
             startingLineNumber = "31"
             endingLineNumber = "31"
             landmarkName = "-encodeWithCoder:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Miataru/KnownDevice.m"
+            timestampString = "404574615.892729"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "-initWithCoder:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

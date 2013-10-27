@@ -229,7 +229,7 @@
     }
     self.map_update_timer_should_stop = true;
     // if we end up here, there has been an error...
-    NSString *message = [NSString stringWithFormat:@"Could not find Data for Device %@ - Maybe you need to enable Reporting to Server?", self.DetailDevice.DeviceName];
+    NSString *message = [NSString stringWithFormat:@"Device %@ could not be found.", self.DetailDevice.DeviceName];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                     message:message
