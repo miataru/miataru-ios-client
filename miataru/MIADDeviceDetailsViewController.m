@@ -151,8 +151,8 @@
     if (distance_setting > 0)
     {
         MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate],  distance_setting*1000, distance_setting*1000);
-        [mapView setRegion:region animated:YES];
-        [mapView selectAnnotation:mp animated:YES];
+        [mapView setRegion:region animated:NO];
+        [mapView selectAnnotation:mp animated:NO];
     }
 }
 

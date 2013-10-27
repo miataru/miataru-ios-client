@@ -259,7 +259,7 @@
                         MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.5, 0.5);
                         zoomRect = MKMapRectUnion(zoomRect, pointRect);
                     }
-                    [self.AllDevicesMapView setVisibleMapRect:zoomRect animated:YES];
+                    [self.AllDevicesMapView setVisibleMapRect:zoomRect animated:NO];
                     
                     
                     
