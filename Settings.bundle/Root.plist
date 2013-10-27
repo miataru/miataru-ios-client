@@ -136,13 +136,15 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<string>5</string>
+			<string>1</string>
 			<key>Key</key>
 			<string>map_zoom_level</string>
 			<key>Title</key>
 			<string>Map Zoom Level</string>
 			<key>Titles</key>
 			<array>
+				<string>1 km</string>
+				<string>2 km</string>
 				<string>5 km</string>
 				<string>10 km</string>
 				<string>25 km</string>
@@ -153,6 +155,8 @@
 			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
+				<string>1</string>
+				<string>2</string>
 				<string>5</string>
 				<string>10</string>
 				<string>25</string>
