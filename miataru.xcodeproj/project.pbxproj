@@ -15,8 +15,6 @@
 		8BB999F2181FA6D10049AC08 /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */; };
 		8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999F3181FA6D10049AC08 /* Main_iPhone.storyboard */; };
 		8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999F6181FA6D10049AC08 /* Main_iPad.storyboard */; };
-		8BB999FB181FA6D10049AC08 /* MIADFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB999FA181FA6D10049AC08 /* MIADFirstViewController.m */; };
-		8BB999FE181FA6D10049AC08 /* MIADSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB999FD181FA6D10049AC08 /* MIADSecondViewController.m */; };
 		8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999FF181FA6D10049AC08 /* Images.xcassets */; };
 		8BB99A07181FA6D10049AC08 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB99A06181FA6D10049AC08 /* XCTest.framework */; };
 		8BB99A08181FA6D10049AC08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E1181FA6D10049AC08 /* Foundation.framework */; };
@@ -48,10 +46,6 @@
 		8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
 		8BB999F4181FA6D10049AC08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		8BB999F7181FA6D10049AC08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		8BB999F9181FA6D10049AC08 /* MIADFirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADFirstViewController.h; sourceTree = "<group>"; };
-		8BB999FA181FA6D10049AC08 /* MIADFirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADFirstViewController.m; sourceTree = "<group>"; };
-		8BB999FC181FA6D10049AC08 /* MIADSecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MIADSecondViewController.h; sourceTree = "<group>"; };
-		8BB999FD181FA6D10049AC08 /* MIADSecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADSecondViewController.m; sourceTree = "<group>"; };
 		8BB999FF181FA6D10049AC08 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8BB99A05181FA6D10049AC08 /* MiataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BB99A06181FA6D10049AC08 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -121,10 +115,6 @@
 				8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */,
 				8BB999F3181FA6D10049AC08 /* Main_iPhone.storyboard */,
 				8BB999F6181FA6D10049AC08 /* Main_iPad.storyboard */,
-				8BB999F9181FA6D10049AC08 /* MIADFirstViewController.h */,
-				8BB999FA181FA6D10049AC08 /* MIADFirstViewController.m */,
-				8BB999FC181FA6D10049AC08 /* MIADSecondViewController.h */,
-				8BB999FD181FA6D10049AC08 /* MIADSecondViewController.m */,
 				8BB999FF181FA6D10049AC08 /* Images.xcassets */,
 				8BB999E8181FA6D10049AC08 /* Supporting Files */,
 			);
@@ -268,9 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
-				8BB999FB181FA6D10049AC08 /* MIADFirstViewController.m in Sources */,
 				8BB999F2181FA6D10049AC08 /* MIADAppDelegate.m in Sources */,
-				8BB999FE181FA6D10049AC08 /* MIADSecondViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +479,7 @@
 				8BB99A18181FA6D10049AC08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BB99A19181FA6D10049AC08 /* Build configuration list for PBXNativeTarget "MiataruTests" */ = {
 			isa = XCConfigurationList;
@@ -499,6 +488,7 @@
 				8BB99A1B181FA6D10049AC08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
