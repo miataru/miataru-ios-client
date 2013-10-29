@@ -245,12 +245,12 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404578069.767735"
+                  timestampString = "404731815.675098"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
                   endingLineNumber = "75"
-                  offsetFromSymbolStart = "274">
+                  offsetFromSymbolStart = "273">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -259,12 +259,12 @@
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404578069.768453"
+                  timestampString = "404731815.675547"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "75"
                   endingLineNumber = "75"
-                  offsetFromSymbolStart = "716">
+                  offsetFromSymbolStart = "632">
                </Location>
             </Locations>
          </BreakpointContent>
