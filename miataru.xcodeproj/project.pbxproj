@@ -36,7 +36,7 @@
 		8BB91C33181FB28A00C63DA1 /* PassedTimeDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C32181FB28A00C63DA1 /* PassedTimeDateFormatter.m */; };
 		8BB91C38181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C37181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m */; };
 		8BB91C3C181FB2EA00C63DA1 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C3B181FB2EA00C63DA1 /* MIADDevicesTableViewController.m */; };
-		8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */; };
+		8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m */; };
 		8BB91C44181FB30600C63DA1 /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */; };
 		8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C47181FB31800C63DA1 /* MIADMapViewController.m */; };
 		8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C4B181FB32900C63DA1 /* MIADMyDeviceViewController.m */; };
@@ -59,6 +59,7 @@
 		8BB99A09181FA6D10049AC08 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E5181FA6D10049AC08 /* UIKit.framework */; };
 		8BB99A11181FA6D10049AC08 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8BB99A0F181FA6D10049AC08 /* InfoPlist.strings */; };
 		8BB99A13181FA6D10049AC08 /* MiataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB99A12181FA6D10049AC08 /* MiataruTests.m */; };
+		8BE7C076181FD9E3001529A9 /* MIADScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE7C075181FD9E3001529A9 /* MIADScanQRCodeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,7 +141,7 @@
 		8BB91C3A181FB2EA00C63DA1 /* MIADDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDevicesTableViewController.h; sourceTree = "<group>"; };
 		8BB91C3B181FB2EA00C63DA1 /* MIADDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDevicesTableViewController.m; sourceTree = "<group>"; };
 		8BB91C3E181FB2F900C63DA1 /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
-		8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MIADAddADeviceTableViewController.mm; sourceTree = "<group>"; };
+		8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADAddADeviceTableViewController.m; sourceTree = "<group>"; };
 		8BB91C42181FB30600C63DA1 /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
 		8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
 		8BB91C46181FB31800C63DA1 /* MIADMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMapViewController.h; sourceTree = "<group>"; };
@@ -174,6 +175,8 @@
 		8BB99A0E181FA6D10049AC08 /* MiataruTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MiataruTests-Info.plist"; sourceTree = "<group>"; };
 		8BB99A10181FA6D10049AC08 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8BB99A12181FA6D10049AC08 /* MiataruTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MiataruTests.m; sourceTree = "<group>"; };
+		8BE7C074181FD9E3001529A9 /* MIADScanQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADScanQRCodeViewController.h; sourceTree = "<group>"; };
+		8BE7C075181FD9E3001529A9 /* MIADScanQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADScanQRCodeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,8 +350,9 @@
 		8BB91C3D181FB2EF00C63DA1 /* AddADevice */ = {
 			isa = PBXGroup;
 			children = (
+				8BE7C073181FD9BE001529A9 /* ScanQRCode */,
 				8BB91C3E181FB2F900C63DA1 /* MIADAddADeviceTableViewController.h */,
-				8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */,
+				8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m */,
 			);
 			name = AddADevice;
 			sourceTree = "<group>";
@@ -493,6 +497,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		8BE7C073181FD9BE001529A9 /* ScanQRCode */ = {
+			isa = PBXGroup;
+			children = (
+				8BE7C074181FD9E3001529A9 /* MIADScanQRCodeViewController.h */,
+				8BE7C075181FD9E3001529A9 /* MIADScanQRCodeViewController.m */,
+			);
+			name = ScanQRCode;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -635,6 +648,7 @@
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
 				8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */,
 				8BB91BF8181FB08700C63DA1 /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				8BE7C076181FD9E3001529A9 /* MIADScanQRCodeViewController.m in Sources */,
 				8BB91BF3181FB08700C63DA1 /* IASKSettingsReader.m in Sources */,
 				8BB91C50181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m in Sources */,
 				8BB91C0E181FB0A900C63DA1 /* GHRange.m in Sources */,
@@ -649,7 +663,7 @@
 				8BB91C3C181FB2EA00C63DA1 /* MIADDevicesTableViewController.m in Sources */,
 				8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */,
 				8BB91BF4181FB08700C63DA1 /* IASKSettingsStore.m in Sources */,
-				8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm in Sources */,
+				8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m in Sources */,
 				8BB91C5A181FB36E00C63DA1 /* KnownDevice.m in Sources */,
 				8BB91C38181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m in Sources */,
 				8BB91C0C181FB0A900C63DA1 /* GHArea.m in Sources */,

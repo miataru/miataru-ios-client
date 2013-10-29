@@ -613,15 +613,15 @@ For more information please visit </string>
                             </tableViewSection>
                             <tableViewSection headerTitle="Scan Device QR Code" id="flH-Mc-Qsg">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ScanQRCodeTableViewCell" textLabel="OXe-Nh-prk" imageView="yQc-uX-O6n" style="IBUITableViewCellStyleDefault" id="ZYd-mU-YPg">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ScanQRCodeTableViewCell" textLabel="OXe-Nh-prk" imageView="yQc-uX-O6n" style="IBUITableViewCellStyleDefault" id="ZYd-mU-YPg">
                                         <rect key="frame" x="0.0" y="255" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZYd-mU-YPg" id="CtV-NK-PHb">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Scan Device QR Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXe-Nh-prk">
-                                                    <rect key="frame" x="60" y="0.0" width="245" height="43"/>
+                                                    <rect key="frame" x="60" y="0.0" width="225" height="43"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -636,6 +636,9 @@ For more information please visit </string>
                                         <accessibility key="accessibilityConfiguration">
                                             <accessibilityTraits key="traits" none="YES" button="YES"/>
                                         </accessibility>
+                                        <connections>
+                                            <segue destination="1e1-oq-8en" kind="modal" id="Ko9-uJ-PCS"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -665,6 +668,57 @@ For more information please visit </string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1750" y="66"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="JCs-2F-nOF">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="1e1-oq-8en" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="18f-fM-irP"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="zNN-Xc-OjC">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="45o-7I-dVA" kind="relationship" relationship="rootViewController" id="Al1-uv-aUM"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KfY-bR-3JY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2231" y="66"/>
+        </scene>
+        <!--ScanQR Code View Controller-->
+        <scene sceneID="IkS-hf-WjQ">
+            <objects>
+                <viewController id="45o-7I-dVA" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="sGm-ax-cVP"/>
+                        <viewControllerLayoutGuide type="bottom" id="9UV-Il-cYM"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="vhS-yx-Hpc">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkR-2l-yMM">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="bzF-YO-Ntd">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="UyL-cG-Lab">
+                            <connections>
+                                <action selector="CancelButtonPressed:" destination="45o-7I-dVA" id="QFn-M0-iig"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="CameraPreviewLayer" destination="CkR-2l-yMM" id="jxS-kG-5UD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kuo-3a-K8Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2730" y="66"/>
         </scene>
     </scenes>
     <resources>

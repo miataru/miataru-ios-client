@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
 
 @class KnownDevice;
 
 @protocol MIADAddADeviceTableViewControllerDelegate;
 
-@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate, AVCaptureMetadataOutputObjectsDelegate>
+@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate>
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
 
