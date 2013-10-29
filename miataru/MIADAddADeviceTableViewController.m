@@ -7,6 +7,7 @@
 //
 
 #import "MIADAddADeviceTableViewController.h"
+#import "MIADScanQRCodeViewController.h"
 #import "KnownDevice.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -63,6 +64,22 @@
 
 }
 
+#pragma mark - Segue
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ModalToScanQRCode"])
+    {
+        ((MIADScanQRCodeViewController*)[[segue.destinationViewController viewControllers] objectAtIndex:0]).delegate = self;
+    }
+}
+
+- (void) ScanQRCodeControllerDidFinish:(MIADScanQRCodeViewController*)inController scannedDeviceID:(NSString*)DeviceID;
+{
+    [self.DeviceIDTextField setText:[DeviceID uppercaseString]];
+}
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //NSLog(@"%i-%i",indexPath.row,indexPath.section);
@@ -99,29 +116,5 @@
 //        [self.captureSession startRunning];
 //    }
 }
-
-
-//- (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result
-//{
-//    //NSLog(@"%@",result);
-//   if ([result hasPrefix:@"miataru://"])
-//   {
-//       NSString *cutOff = [result substringFromIndex:10];
-//       [self.DeviceIDTextField setText:[cutOff uppercaseString]];
-//   }
-//   else
-//   {
-//       UIAlertView *messageAlert = [[UIAlertView alloc]
-//                                    initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//       
-//       // Display Alert Message
-//       [messageAlert show];
-//   }
-//   [self dismissViewControllerAnimated:NO completion:nil];
-//}
-//
-//- (void)zxingControllerDidCancel:(ZXingWidgetController*)controller {
-//   [self dismissViewControllerAnimated:NO completion:nil];
-//}
 
 @end

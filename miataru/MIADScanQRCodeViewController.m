@@ -105,6 +105,7 @@
                 
                 // todo: return value...
                 //[self.DeviceIDTextField setText:[cutOff uppercaseString]];
+                [self.delegate ScanQRCodeControllerDidFinish:self scannedDeviceID:cutOff];
             }
             else
             {

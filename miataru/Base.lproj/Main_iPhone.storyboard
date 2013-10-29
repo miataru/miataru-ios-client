@@ -637,7 +637,7 @@ For more information please visit </string>
                                             <accessibilityTraits key="traits" none="YES" button="YES"/>
                                         </accessibility>
                                         <connections>
-                                            <segue destination="1e1-oq-8en" kind="modal" id="Ko9-uJ-PCS"/>
+                                            <segue destination="1e1-oq-8en" kind="modal" identifier="ModalToScanQRCode" id="Ko9-uJ-PCS"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -685,7 +685,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="2231" y="66"/>
         </scene>
-        <!--ScanQR Code View Controller-->
+        <!--ScanQR Code View Controller - Scan QR Code-->
         <scene sceneID="IkS-hf-WjQ">
             <objects>
                 <viewController id="45o-7I-dVA" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
@@ -705,7 +705,7 @@ For more information please visit </string>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="bzF-YO-Ntd">
+                    <navigationItem key="navigationItem" title="Scan QR Code" id="bzF-YO-Ntd">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="UyL-cG-Lab">
                             <connections>
                                 <action selector="CancelButtonPressed:" destination="45o-7I-dVA" id="QFn-M0-iig"/>

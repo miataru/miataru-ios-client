@@ -7,12 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MIADScanQRCodeViewController.h"
 
 @class KnownDevice;
 
 @protocol MIADAddADeviceTableViewControllerDelegate;
 
-@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate>
+@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate, MIADScanQRCodeDelegate>
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
 
