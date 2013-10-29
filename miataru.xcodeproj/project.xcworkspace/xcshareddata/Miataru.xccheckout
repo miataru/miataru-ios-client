@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>FC1FD94C-AF0D-4FA5-AA23-62BA63415B33</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Miataru</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>CADCE2C8-72C1-414F-9D4E-CACC8D2B8643</key>
+		<string>ssh://192.168.178.104/miataru/miataru-ios-app.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Miataru.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>CADCE2C8-72C1-414F-9D4E-CACC8D2B8643</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://192.168.178.104/miataru/miataru-ios-app.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>CADCE2C8-72C1-414F-9D4E-CACC8D2B8643</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>CADCE2C8-72C1-414F-9D4E-CACC8D2B8643</string>
+			<key>IDESourceControlWCCName</key>
+			<string>universal</string>
+		</dict>
+	</array>
+</dict>
+</plist>
