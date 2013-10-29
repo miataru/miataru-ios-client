@@ -27,7 +27,6 @@
 		8BB91C0D181FB0A900C63DA1 /* GHNeighbors.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C07181FB0A900C63DA1 /* GHNeighbors.m */; };
 		8BB91C0E181FB0A900C63DA1 /* GHRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C09181FB0A900C63DA1 /* GHRange.m */; };
 		8BB91C21181FB13600C63DA1 /* libQREncoder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C15181FB0B500C63DA1 /* libQREncoder.a */; };
-		8BB91C22181FB13600C63DA1 /* libZXingWidget.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C1E181FB0D300C63DA1 /* libZXingWidget.a */; };
 		8BB91C27181FB13600C63DA1 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C23181FB13600C63DA1 /* AudioToolbox.framework */; };
 		8BB91C28181FB13600C63DA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C24181FB13600C63DA1 /* AVFoundation.framework */; };
 		8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C25181FB13600C63DA1 /* CoreLocation.framework */; };
@@ -76,20 +75,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = EB7DA3AE10A4F5D90071984A;
 			remoteInfo = QREncoderTest;
-		};
-		8BB91C1D181FB0D300C63DA1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BB91C18181FB0D200C63DA1 /* ZXingWidget.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D;
-			remoteInfo = ZXingWidget;
-		};
-		8BB91C1F181FB0D300C63DA1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BB91C18181FB0D200C63DA1 /* ZXingWidget.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1D60398D13DF7CAD006F4B51;
-			remoteInfo = ZXingTests;
 		};
 		8BB99A0A181FA6D10049AC08 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -142,7 +127,6 @@
 		8BB91C08181FB0A900C63DA1 /* GHRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHRange.h; sourceTree = "<group>"; };
 		8BB91C09181FB0A900C63DA1 /* GHRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHRange.m; sourceTree = "<group>"; };
 		8BB91C0F181FB0B500C63DA1 /* QREncoder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QREncoder.xcodeproj; path = Libraries/QREncoder/QREncoder.xcodeproj; sourceTree = "<group>"; };
-		8BB91C18181FB0D200C63DA1 /* ZXingWidget.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingWidget.xcodeproj; path = Libraries/zxing/iphone/ZXingWidget/ZXingWidget.xcodeproj; sourceTree = "<group>"; };
 		8BB91C23181FB13600C63DA1 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8BB91C24181FB13600C63DA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8BB91C25181FB13600C63DA1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -203,7 +187,6 @@
 				8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */,
 				8BB91C2A181FB13600C63DA1 /* MessageUI.framework in Frameworks */,
 				8BB91C21181FB13600C63DA1 /* libQREncoder.a in Frameworks */,
-				8BB91C22181FB13600C63DA1 /* libZXingWidget.a in Frameworks */,
 				8BB999E4181FA6D10049AC08 /* CoreGraphics.framework in Frameworks */,
 				8BB999E6181FA6D10049AC08 /* UIKit.framework in Frameworks */,
 				8BB999E2181FA6D10049AC08 /* Foundation.framework in Frameworks */,
@@ -320,15 +303,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8BB91C19181FB0D200C63DA1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8BB91C1E181FB0D300C63DA1 /* libZXingWidget.a */,
-				8BB91C20181FB0D300C63DA1 /* ZXingTests.octest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		8BB91C30181FB27F00C63DA1 /* PassedTime */ = {
 			isa = PBXGroup;
 			children = (
@@ -341,10 +315,10 @@
 		8BB91C34181FB2A300C63DA1 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				8BB91C51181FB34D00C63DA1 /* SettingsTab */,
-				8BB91C49181FB32000C63DA1 /* QRCodeTab */,
-				8BB91C45181FB30F00C63DA1 /* MapTab */,
 				8BB91C39181FB2D200C63DA1 /* DevicesTab */,
+				8BB91C45181FB30F00C63DA1 /* MapTab */,
+				8BB91C49181FB32000C63DA1 /* QRCodeTab */,
+				8BB91C51181FB34D00C63DA1 /* SettingsTab */,
 				8BB91C35181FB2BA00C63DA1 /* FirstStartWizard */,
 			);
 			name = Controllers;
@@ -439,7 +413,6 @@
 		8BB999D5181FA6D10049AC08 = {
 			isa = PBXGroup;
 			children = (
-				8BB91C18181FB0D200C63DA1 /* ZXingWidget.xcodeproj */,
 				8BB91C0F181FB0B500C63DA1 /* QREncoder.xcodeproj */,
 				8BB999E7181FA6D10049AC08 /* Miataru */,
 				8BB99A0C181FA6D10049AC08 /* MiataruTests */,
@@ -597,10 +570,6 @@
 					ProductGroup = 8BB91C10181FB0B500C63DA1 /* Products */;
 					ProjectRef = 8BB91C0F181FB0B500C63DA1 /* QREncoder.xcodeproj */;
 				},
-				{
-					ProductGroup = 8BB91C19181FB0D200C63DA1 /* Products */;
-					ProjectRef = 8BB91C18181FB0D200C63DA1 /* ZXingWidget.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -623,20 +592,6 @@
 			fileType = wrapper.cfbundle;
 			path = QREncoderTest.octest;
 			remoteRef = 8BB91C16181FB0B500C63DA1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BB91C1E181FB0D300C63DA1 /* libZXingWidget.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libZXingWidget.a;
-			remoteRef = 8BB91C1D181FB0D300C63DA1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8BB91C20181FB0D300C63DA1 /* ZXingTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ZXingTests.octest;
-			remoteRef = 8BB91C1F181FB0D300C63DA1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -836,7 +791,7 @@
 		8BB99A17181FA6D10049AC08 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
@@ -847,13 +802,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
-					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -861,7 +814,7 @@
 		8BB99A18181FA6D10049AC08 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
@@ -872,13 +825,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
-					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

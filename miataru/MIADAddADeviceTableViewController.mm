@@ -8,13 +8,17 @@
 
 #import "MIADAddADeviceTableViewController.h"
 #import "KnownDevice.h"
-#import "MultiFormatReader.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface MIADAddADeviceTableViewController ()
 
 @property (weak, nonatomic) IBOutlet UITextField *DeviceNameTextField;
 
 @property (weak, nonatomic) IBOutlet UITextField *DeviceIDTextField;
+
+@property (strong) AVCaptureSession *captureSession;
+
+@property (strong) AVCaptureVideoPreviewLayer *previewLayer;
 
 @end
 
@@ -65,45 +69,90 @@
     
     if (indexPath.row == 0 && indexPath.section == 1)
     {
-        ZXingWidgetController *widController =
-        [[ZXingWidgetController alloc] initWithDelegate:self showCancel:YES OneDMode:NO];
-
-        //NSBundle *mainBundle = [NSBundle mainBundle];
-/*        widController.soundToPlay =
-        [NSURL fileURLWithPath:[mainBundle pathForResource:@"beep-beep" ofType:@"aiff"] isDirectory:NO];
-*/
-        NSMutableSet *readers = [[NSMutableSet alloc ] init];
+        self.captureSession = [[AVCaptureSession alloc] init];
+        AVCaptureDevice *videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        NSError *error = nil;
+        AVCaptureDeviceInput *videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:&error];
+        if(videoInput)
+            [self.captureSession addInput:videoInput];
+        else
+        {
+            NSLog(@"Error: %@", error);
+            return;
+        }
+        //Turn on point autofocus for middle of view
+        [videoCaptureDevice lockForConfiguration:&error];
+        CGPoint point = CGPointMake(0.5,0.5);
+        [videoCaptureDevice setFocusPointOfInterest:point];
+        [videoCaptureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+        [videoCaptureDevice unlockForConfiguration];
         
-        MultiFormatReader* reader = [[MultiFormatReader alloc] init];
-        [readers addObject:reader];
-
-        widController.readers = readers;
+        AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
+        [self.captureSession addOutput:metadataOutput];
+        [metadataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+        [metadataOutput setMetadataObjectTypes:@[AVMetadataObjectTypeQRCode]];
         
-        [self presentViewController:widController animated:NO completion:nil];
+        _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureSession];
+        _previewLayer.frame = self.view.bounds;
+        [self.view.layer addSublayer:_previewLayer];
+        
+        [self.captureSession startRunning];
     }
 }
 
-- (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result
+#pragma mark AVCaptureMetadataOutputObjectsDelegate
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
 {
-    //NSLog(@"%@",result);
-   if ([result hasPrefix:@"miataru://"])
-   {
-       NSString *cutOff = [result substringFromIndex:10];
-       [self.DeviceIDTextField setText:[cutOff uppercaseString]];
-   }
-   else
-   {
-       UIAlertView *messageAlert = [[UIAlertView alloc]
-                                    initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-       
-       // Display Alert Message
-       [messageAlert show];
-   }
-   [self dismissViewControllerAnimated:NO completion:nil];
+    for(AVMetadataObject *metadataObject in metadataObjects)
+    {
+        AVMetadataMachineReadableCodeObject *readableObject = (AVMetadataMachineReadableCodeObject *)metadataObject;
+        if([metadataObject.type isEqualToString:AVMetadataObjectTypeQRCode])
+        {
+            NSLog(@"QR Code = %@", readableObject.stringValue);
+            
+            if ([readableObject.stringValue hasPrefix:@"miataru://"])
+            {
+                NSString *cutOff = [readableObject.stringValue substringFromIndex:10];
+                [self.DeviceIDTextField setText:[cutOff uppercaseString]];
+            }
+            else
+            {
+                UIAlertView *messageAlert = [[UIAlertView alloc]
+                                               initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                // Display Alert Message
+                [messageAlert show];
+            }
+        }
+    }
+   
+    [_previewLayer removeFromSuperlayer];
+    
+    [self.captureSession stopRunning];
+
 }
 
-- (void)zxingControllerDidCancel:(ZXingWidgetController*)controller {
-   [self dismissViewControllerAnimated:NO completion:nil];
-}
+//- (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result
+//{
+//    //NSLog(@"%@",result);
+//   if ([result hasPrefix:@"miataru://"])
+//   {
+//       NSString *cutOff = [result substringFromIndex:10];
+//       [self.DeviceIDTextField setText:[cutOff uppercaseString]];
+//   }
+//   else
+//   {
+//       UIAlertView *messageAlert = [[UIAlertView alloc]
+//                                    initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//       
+//       // Display Alert Message
+//       [messageAlert show];
+//   }
+//   [self dismissViewControllerAnimated:NO completion:nil];
+//}
+//
+//- (void)zxingControllerDidCancel:(ZXingWidgetController*)controller {
+//   [self dismissViewControllerAnimated:NO completion:nil];
+//}
 
 @end
