@@ -182,6 +182,24 @@
     
     NSLog(@"openURL");
     [self postLaunch];
+
+    
+    if ([[url absoluteString] hasPrefix:@"miataru://"])
+    {
+        NSString *cutOff = [[url absoluteString] substringFromIndex:10];
+        
+        // todo: return value...
+        //[self.DeviceIDTextField setText:[cutOff uppercaseString]];
+        //[self.delegate ScanQRCodeControllerDidFinish:self scannedDeviceID:cutOff];
+    }
+    else
+    {
+        UIAlertView *messageAlert = [[UIAlertView alloc]
+                                     initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        // Display Alert Message
+        [messageAlert show];
+    }
+    
     
     //    if (url != nil)
     //    {
