@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="283.46px" height="283.46px" viewBox="0 0 283.46 283.46" enable-background="new 0 0 283.46 283.46" xml:space="preserve">
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="141.73" y1="289.7803" x2="141.73" y2="76.7315">
+	<stop  offset="0" style="stop-color:#00A99D"/>
+	<stop  offset="0.3835" style="stop-color:#0EAAB5"/>
+	<stop  offset="1" style="stop-color:#29ABE2"/>
+</linearGradient>
+<rect opacity="0.9" fill="url(#SVGID_1_)" width="283.46" height="283.459"/>
+<ellipse fill="#FFFFFF" cx="144.999" cy="242.771" rx="56.362" ry="16.949"/>
+<line fill="none" stroke="#000000" stroke-width="8.33" stroke-linejoin="round" stroke-miterlimit="10" x1="62.35" y1="189.622" x2="95.856" y2="189.622"/>
+<line fill="none" stroke="#000000" stroke-width="8.33" stroke-linejoin="round" stroke-miterlimit="10" x1="187.426" y1="189.622" x2="220.932" y2="189.622"/>
+<ellipse fill="#CCCCCC" cx="144.738" cy="241.574" rx="13.171" ry="4.199"/>
+<polyline fill="none" stroke="#000000" stroke-width="8.33" stroke-linejoin="round" stroke-miterlimit="10" points="
+	79.104,189.576 79.104,32.797 144.55,237.376 204.178,32.797 204.178,190.546 "/>
+</svg>
