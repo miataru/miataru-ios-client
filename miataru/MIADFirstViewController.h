@@ -1,5 +1,5 @@
 //
-//  MIADAppDelegate.h
+//  MIADFirstViewController.h
 //  Miataru
 //
 //  Created by Daniel Kirstenpfad on 29.10.13.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MIADAppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
+@interface MIADFirstViewController : UIViewController
 
 @end
