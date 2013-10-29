@@ -33,6 +33,19 @@
 		8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C25181FB13600C63DA1 /* CoreLocation.framework */; };
 		8BB91C2A181FB13600C63DA1 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C26181FB13600C63DA1 /* MessageUI.framework */; };
 		8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8BB91C2B181FB1F200C63DA1 /* Settings.bundle */; };
+		8BB91C2E181FB24300C63DA1 /* beep-beep.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 8BB91C2D181FB24300C63DA1 /* beep-beep.aiff */; };
+		8BB91C33181FB28A00C63DA1 /* PassedTimeDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C32181FB28A00C63DA1 /* PassedTimeDateFormatter.m */; };
+		8BB91C38181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C37181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m */; };
+		8BB91C3C181FB2EA00C63DA1 /* MIADDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C3B181FB2EA00C63DA1 /* MIADDevicesTableViewController.m */; };
+		8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */; };
+		8BB91C44181FB30600C63DA1 /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */; };
+		8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C47181FB31800C63DA1 /* MIADMapViewController.m */; };
+		8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C4B181FB32900C63DA1 /* MIADMyDeviceViewController.m */; };
+		8BB91C50181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C4F181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m */; };
+		8BB91C54181FB35500C63DA1 /* MIADSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C53181FB35500C63DA1 /* MIADSettingsViewController.m */; };
+		8BB91C5A181FB36E00C63DA1 /* KnownDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C57181FB36E00C63DA1 /* KnownDevice.m */; };
+		8BB91C5B181FB36E00C63DA1 /* PositionPin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91C59181FB36E00C63DA1 /* PositionPin.m */; };
+		8BB91C5D181FB6EF00C63DA1 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C5C181FB6EF00C63DA1 /* libiconv.dylib */; };
 		8BB999E2181FA6D10049AC08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E1181FA6D10049AC08 /* Foundation.framework */; };
 		8BB999E4181FA6D10049AC08 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E3181FA6D10049AC08 /* CoreGraphics.framework */; };
 		8BB999E6181FA6D10049AC08 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E5181FA6D10049AC08 /* UIKit.framework */; };
@@ -135,6 +148,30 @@
 		8BB91C25181FB13600C63DA1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		8BB91C26181FB13600C63DA1 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		8BB91C2B181FB1F200C63DA1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		8BB91C2D181FB24300C63DA1 /* beep-beep.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = "beep-beep.aiff"; sourceTree = "<group>"; };
+		8BB91C31181FB28A00C63DA1 /* PassedTimeDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassedTimeDateFormatter.h; sourceTree = "<group>"; };
+		8BB91C32181FB28A00C63DA1 /* PassedTimeDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PassedTimeDateFormatter.m; sourceTree = "<group>"; };
+		8BB91C36181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADFirstStartWizardRootViewController.h; sourceTree = "<group>"; };
+		8BB91C37181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADFirstStartWizardRootViewController.m; sourceTree = "<group>"; };
+		8BB91C3A181FB2EA00C63DA1 /* MIADDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDevicesTableViewController.h; sourceTree = "<group>"; };
+		8BB91C3B181FB2EA00C63DA1 /* MIADDevicesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDevicesTableViewController.m; sourceTree = "<group>"; };
+		8BB91C3E181FB2F900C63DA1 /* MIADAddADeviceTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADAddADeviceTableViewController.h; sourceTree = "<group>"; };
+		8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MIADAddADeviceTableViewController.mm; sourceTree = "<group>"; };
+		8BB91C42181FB30600C63DA1 /* MIADDeviceDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceDetailsViewController.h; sourceTree = "<group>"; };
+		8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceDetailsViewController.m; sourceTree = "<group>"; };
+		8BB91C46181FB31800C63DA1 /* MIADMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMapViewController.h; sourceTree = "<group>"; };
+		8BB91C47181FB31800C63DA1 /* MIADMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMapViewController.m; sourceTree = "<group>"; };
+		8BB91C4A181FB32900C63DA1 /* MIADMyDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADMyDeviceViewController.h; sourceTree = "<group>"; };
+		8BB91C4B181FB32900C63DA1 /* MIADMyDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADMyDeviceViewController.m; sourceTree = "<group>"; };
+		8BB91C4E181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADQREncoderLicenseInformationViewController.h; sourceTree = "<group>"; };
+		8BB91C4F181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADQREncoderLicenseInformationViewController.m; sourceTree = "<group>"; };
+		8BB91C52181FB35500C63DA1 /* MIADSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADSettingsViewController.h; sourceTree = "<group>"; };
+		8BB91C53181FB35500C63DA1 /* MIADSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADSettingsViewController.m; sourceTree = "<group>"; };
+		8BB91C56181FB36E00C63DA1 /* KnownDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnownDevice.h; sourceTree = "<group>"; };
+		8BB91C57181FB36E00C63DA1 /* KnownDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnownDevice.m; sourceTree = "<group>"; };
+		8BB91C58181FB36E00C63DA1 /* PositionPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionPin.h; sourceTree = "<group>"; };
+		8BB91C59181FB36E00C63DA1 /* PositionPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionPin.m; sourceTree = "<group>"; };
+		8BB91C5C181FB6EF00C63DA1 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		8BB999DE181FA6D10049AC08 /* Miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BB999E1181FA6D10049AC08 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8BB999E3181FA6D10049AC08 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -160,6 +197,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BB91C5D181FB6EF00C63DA1 /* libiconv.dylib in Frameworks */,
 				8BB91C27181FB13600C63DA1 /* AudioToolbox.framework in Frameworks */,
 				8BB91C28181FB13600C63DA1 /* AVFoundation.framework in Frameworks */,
 				8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */,
@@ -188,6 +226,7 @@
 		8BB91BCE181FB07300C63DA1 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				8BB91C30181FB27F00C63DA1 /* PassedTime */,
 				8BB91BFE181FB0A900C63DA1 /* GeoHash */,
 				8BB91BCF181FB08700C63DA1 /* InAppSettingsKit */,
 			);
@@ -290,6 +329,113 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8BB91C30181FB27F00C63DA1 /* PassedTime */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C31181FB28A00C63DA1 /* PassedTimeDateFormatter.h */,
+				8BB91C32181FB28A00C63DA1 /* PassedTimeDateFormatter.m */,
+			);
+			name = PassedTime;
+			sourceTree = "<group>";
+		};
+		8BB91C34181FB2A300C63DA1 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C51181FB34D00C63DA1 /* SettingsTab */,
+				8BB91C49181FB32000C63DA1 /* QRCodeTab */,
+				8BB91C45181FB30F00C63DA1 /* MapTab */,
+				8BB91C39181FB2D200C63DA1 /* DevicesTab */,
+				8BB91C35181FB2BA00C63DA1 /* FirstStartWizard */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		8BB91C35181FB2BA00C63DA1 /* FirstStartWizard */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C36181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.h */,
+				8BB91C37181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m */,
+			);
+			name = FirstStartWizard;
+			sourceTree = "<group>";
+		};
+		8BB91C39181FB2D200C63DA1 /* DevicesTab */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C41181FB2FD00C63DA1 /* DeviceDetails */,
+				8BB91C3D181FB2EF00C63DA1 /* AddADevice */,
+				8BB91C3A181FB2EA00C63DA1 /* MIADDevicesTableViewController.h */,
+				8BB91C3B181FB2EA00C63DA1 /* MIADDevicesTableViewController.m */,
+			);
+			name = DevicesTab;
+			sourceTree = "<group>";
+		};
+		8BB91C3D181FB2EF00C63DA1 /* AddADevice */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C3E181FB2F900C63DA1 /* MIADAddADeviceTableViewController.h */,
+				8BB91C3F181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm */,
+			);
+			name = AddADevice;
+			sourceTree = "<group>";
+		};
+		8BB91C41181FB2FD00C63DA1 /* DeviceDetails */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C42181FB30600C63DA1 /* MIADDeviceDetailsViewController.h */,
+				8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */,
+			);
+			name = DeviceDetails;
+			sourceTree = "<group>";
+		};
+		8BB91C45181FB30F00C63DA1 /* MapTab */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C46181FB31800C63DA1 /* MIADMapViewController.h */,
+				8BB91C47181FB31800C63DA1 /* MIADMapViewController.m */,
+			);
+			name = MapTab;
+			sourceTree = "<group>";
+		};
+		8BB91C49181FB32000C63DA1 /* QRCodeTab */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C4D181FB33400C63DA1 /* LicenseInformation */,
+				8BB91C4A181FB32900C63DA1 /* MIADMyDeviceViewController.h */,
+				8BB91C4B181FB32900C63DA1 /* MIADMyDeviceViewController.m */,
+			);
+			name = QRCodeTab;
+			sourceTree = "<group>";
+		};
+		8BB91C4D181FB33400C63DA1 /* LicenseInformation */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C4E181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.h */,
+				8BB91C4F181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m */,
+			);
+			name = LicenseInformation;
+			sourceTree = "<group>";
+		};
+		8BB91C51181FB34D00C63DA1 /* SettingsTab */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C52181FB35500C63DA1 /* MIADSettingsViewController.h */,
+				8BB91C53181FB35500C63DA1 /* MIADSettingsViewController.m */,
+			);
+			name = SettingsTab;
+			sourceTree = "<group>";
+		};
+		8BB91C55181FB35C00C63DA1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8BB91C56181FB36E00C63DA1 /* KnownDevice.h */,
+				8BB91C57181FB36E00C63DA1 /* KnownDevice.m */,
+				8BB91C58181FB36E00C63DA1 /* PositionPin.h */,
+				8BB91C59181FB36E00C63DA1 /* PositionPin.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		8BB999D5181FA6D10049AC08 = {
 			isa = PBXGroup;
 			children = (
@@ -315,6 +461,7 @@
 		8BB999E0181FA6D10049AC08 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8BB91C5C181FB6EF00C63DA1 /* libiconv.dylib */,
 				8BB91C23181FB13600C63DA1 /* AudioToolbox.framework */,
 				8BB91C24181FB13600C63DA1 /* AVFoundation.framework */,
 				8BB91C25181FB13600C63DA1 /* CoreLocation.framework */,
@@ -330,6 +477,8 @@
 		8BB999E7181FA6D10049AC08 /* Miataru */ = {
 			isa = PBXGroup;
 			children = (
+				8BB91C55181FB35C00C63DA1 /* Model */,
+				8BB91C34181FB2A300C63DA1 /* Controllers */,
 				8BB91BCE181FB07300C63DA1 /* Libraries */,
 				8BB999F0181FA6D10049AC08 /* MIADAppDelegate.h */,
 				8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */,
@@ -344,6 +493,7 @@
 		8BB999E8181FA6D10049AC08 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8BB91C2D181FB24300C63DA1 /* beep-beep.aiff */,
 				8BB999E9181FA6D10049AC08 /* Miataru-Info.plist */,
 				8BB999EA181FA6D10049AC08 /* InfoPlist.strings */,
 				8BB999ED181FA6D10049AC08 /* main.m */,
@@ -497,6 +647,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */,
+				8BB91C2E181FB24300C63DA1 /* beep-beep.aiff in Resources */,
 				8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */,
 				8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */,
 				8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */,
@@ -523,18 +674,29 @@
 				8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */,
 				8BB91BF9181FB08700C63DA1 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				8BB91BF6181FB08700C63DA1 /* IASKSettingsStoreUserDefaults.m in Sources */,
+				8BB91C5B181FB36E00C63DA1 /* PositionPin.m in Sources */,
 				8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */,
 				8BB91BFC181FB08700C63DA1 /* IASKSwitch.m in Sources */,
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
+				8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */,
 				8BB91BF8181FB08700C63DA1 /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				8BB91BF3181FB08700C63DA1 /* IASKSettingsReader.m in Sources */,
+				8BB91C50181FB34100C63DA1 /* MIADQREncoderLicenseInformationViewController.m in Sources */,
 				8BB91C0E181FB0A900C63DA1 /* GHRange.m in Sources */,
+				8BB91C54181FB35500C63DA1 /* MIADSettingsViewController.m in Sources */,
 				8BB999F2181FA6D10049AC08 /* MIADAppDelegate.m in Sources */,
 				8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */,
 				8BB91BFD181FB08700C63DA1 /* IASKTextField.m in Sources */,
 				8BB91C0D181FB0A900C63DA1 /* GHNeighbors.m in Sources */,
+				8BB91C44181FB30600C63DA1 /* MIADDeviceDetailsViewController.m in Sources */,
 				8BB91BF7181FB08700C63DA1 /* IASKSpecifier.m in Sources */,
+				8BB91C33181FB28A00C63DA1 /* PassedTimeDateFormatter.m in Sources */,
+				8BB91C3C181FB2EA00C63DA1 /* MIADDevicesTableViewController.m in Sources */,
+				8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */,
 				8BB91BF4181FB08700C63DA1 /* IASKSettingsStore.m in Sources */,
+				8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.mm in Sources */,
+				8BB91C5A181FB36E00C63DA1 /* KnownDevice.m in Sources */,
+				8BB91C38181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m in Sources */,
 				8BB91C0C181FB0A900C63DA1 /* GHArea.m in Sources */,
 				8BB91BFB181FB08700C63DA1 /* IASKSlider.m in Sources */,
 				8BB91C0A181FB0A900C63DA1 /* cgeohash.m in Sources */,
@@ -674,13 +836,24 @@
 		8BB99A17181FA6D10049AC08 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
+					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
+				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -688,13 +861,24 @@
 		8BB99A18181FA6D10049AC08 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"\"$(SRCROOT)/Libraries/zxing/cpp/core/src\"",
+					"\"$(SRCROOT)/Libraries/zxing/iphone/ZXingWidget/Classes\"/**",
+					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
+				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
