@@ -32,6 +32,7 @@
 		8BB91C28181FB13600C63DA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C24181FB13600C63DA1 /* AVFoundation.framework */; };
 		8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C25181FB13600C63DA1 /* CoreLocation.framework */; };
 		8BB91C2A181FB13600C63DA1 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB91C26181FB13600C63DA1 /* MessageUI.framework */; };
+		8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8BB91C2B181FB1F200C63DA1 /* Settings.bundle */; };
 		8BB999E2181FA6D10049AC08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E1181FA6D10049AC08 /* Foundation.framework */; };
 		8BB999E4181FA6D10049AC08 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E3181FA6D10049AC08 /* CoreGraphics.framework */; };
 		8BB999E6181FA6D10049AC08 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E5181FA6D10049AC08 /* UIKit.framework */; };
@@ -133,6 +134,7 @@
 		8BB91C24181FB13600C63DA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8BB91C25181FB13600C63DA1 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		8BB91C26181FB13600C63DA1 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		8BB91C2B181FB1F200C63DA1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		8BB999DE181FA6D10049AC08 /* Miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BB999E1181FA6D10049AC08 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8BB999E3181FA6D10049AC08 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -297,6 +299,7 @@
 				8BB99A0C181FA6D10049AC08 /* MiataruTests */,
 				8BB999E0181FA6D10049AC08 /* Frameworks */,
 				8BB999DF181FA6D10049AC08 /* Products */,
+				8BB91C2B181FB1F200C63DA1 /* Settings.bundle */,
 			);
 			sourceTree = "<group>";
 		};
@@ -495,6 +498,7 @@
 			files = (
 				8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */,
 				8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */,
+				8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */,
 				8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */,
 				8BB999EC181FA6D10049AC08 /* InfoPlist.strings in Resources */,
 			);
