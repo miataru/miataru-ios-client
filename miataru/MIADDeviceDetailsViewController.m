@@ -12,14 +12,9 @@
 #import "PositionPin.h"
 #import "PassedTimeDateFormatter.h"
 
-//@interface MIADDeviceDetailsViewController ()
-//
-//@end
-
 @implementation MIADDeviceDetailsViewController
 
 @synthesize DeviceDetailMapView;
-
 
 //- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 //{
@@ -189,7 +184,8 @@
     NSError *err = nil;
     //NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: self.responseData options: NSJSONReadingMutableContainers error: &err];
     
-    //NSLog(@"%@",self.responseData);
+    NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",strData );
     
     NSDictionary* jsonArray = [NSJSONSerialization
                           JSONObjectWithData:self.responseData //1
@@ -273,6 +269,9 @@
 
 - (void)GetLocationForDeviceFromMiataruServer:(NSString*)deviceID
 {
+    if (deviceID == nil)
+        return;
+    
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     /*
         ￼{"MiataruGetLocation": [{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}
@@ -301,9 +300,7 @@
                        stringWithFormat:@"%lu", (unsigned long)[GetLocationJSONContent length]]
    forHTTPHeaderField:@"Content-length"];
     
-    [detailrequest setValue:@"application/json"
-   forHTTPHeaderField:@"Content-Type"];
-    
+    [detailrequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
    
     [detailrequest setHTTPBody:[GetLocationJSONContent dataUsingEncoding:NSUTF8StringEncoding]];
         
@@ -311,8 +308,9 @@
     
     [NSURLConnection connectionWithRequest:detailrequest delegate:self];
     
-    //NSLog(@"%@", GetLocationJSONContent);
+    NSLog(@"%@", GetLocationJSONContent);
     
     NSLog(@"Getting Update from to Miataru Service...");
 }
+
 @end

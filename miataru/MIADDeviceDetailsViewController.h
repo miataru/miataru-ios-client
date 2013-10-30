@@ -13,6 +13,7 @@
 
 @interface MIADDeviceDetailsViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
+
 @property (strong) KnownDevice *DetailDevice;
 @property (strong) NSMutableData *responseData;
 @property BOOL map_update_timer_should_stop;
