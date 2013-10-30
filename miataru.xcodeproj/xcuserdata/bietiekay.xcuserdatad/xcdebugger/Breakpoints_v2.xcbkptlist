@@ -113,7 +113,6 @@
             endingLineNumber = "307"
             landmarkName = "-sendBackgroundLocationToServer:"
             landmarkType = "5">
-<<<<<<< HEAD
             <Locations>
                <Location
                   shouldBeEnabled = "Yes"
@@ -144,8 +143,6 @@
                   offsetFromSymbolStart = "632">
                </Location>
             </Locations>
-=======
->>>>>>> ipad-rewrite
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
