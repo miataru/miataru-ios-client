@@ -63,7 +63,7 @@
     
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 250;
+    self.locationManager.distanceFilter = 100;
     self.locationManager.delegate = self;
     
     //  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
@@ -102,7 +102,7 @@
     
     NSLog(@"applicationDidEnterBackground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 250;
+    self.locationManager.distanceFilter = 100;
     
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
