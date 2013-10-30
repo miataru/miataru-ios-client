@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ZXingWidgetController.h"
+#import "MIADScanQRCodeViewController.h"
 
 @class KnownDevice;
 
 @protocol MIADAddADeviceTableViewControllerDelegate;
 
-@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate, ZXingDelegate>
+@interface MIADAddADeviceTableViewController : UITableViewController <UITableViewDelegate, MIADScanQRCodeDelegate>
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
+
+- (void) addADeviceFromURLType:(NSString*)inDevice;
 
 @end
 

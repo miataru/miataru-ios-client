@@ -14,11 +14,13 @@
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
-//@property (nonatomic) UIBackgroundTaskIdentifier bgTask;
+@property (nonatomic) UIBackgroundTaskIdentifier bgTask;
 
 @end
 
 @implementation MIADAppDelegate
+
+@synthesize bgTask;
 
 - (void)setDefaults {
     
@@ -61,10 +63,10 @@
     
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 250;
+    self.locationManager.distanceFilter = 100;
     self.locationManager.delegate = self;
     
-//  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
+    //  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         NSLog(@"Starting SignificantLocationChanges...");
@@ -78,13 +80,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSLog(@"didFinishLaunchingWithOptions");
-
+    
     [self postLaunch];
     
     // Override point for customization after application launch.
     return YES;
 }
-							
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -95,13 +97,13 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-
+    
     NSLog(@"applicationDidEnterBackground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 250;
-
+    self.locationManager.distanceFilter = 100;
+    
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopUpdatingLocation];
@@ -122,7 +124,7 @@
     NSLog(@"applicationWillEnterForeground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-
+    
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopMonitoringSignificantLocationChanges];
@@ -142,7 +144,7 @@
     NSLog(@"applicationDidBecomeActive");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-
+    
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopMonitoringSignificantLocationChanges];
@@ -153,7 +155,7 @@
         [self.locationManager stopMonitoringSignificantLocationChanges];
         [self.locationManager stopUpdatingLocation];
     }
-
+    
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -163,7 +165,7 @@
     
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
-
+    
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
     {
         [self.locationManager stopUpdatingLocation];
@@ -175,24 +177,46 @@
         [self.locationManager stopMonitoringSignificantLocationChanges];
     }
     //[application beginBackgroundTaskWithExpirationHandler:^{}];
-
+    
 }
 
 -(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-
+    
     NSLog(@"openURL");
     [self postLaunch];
+
     
-//    if (url != nil)
-//    {
-//        // handle the miataru URL by passing it to the appropriate view controller...
-//        MIADAddADeviceTableViewController *addDeviceView = [MIADAddADeviceTableViewController alloc];
-//        
-//        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:addDeviceView];
-//        [[self window] setRootViewController:navController];
-//        //template code
-//        [self.window makeKeyAndVisible];
-//    }
+    if ([[url absoluteString] hasPrefix:@"miataru://"])
+    {
+        //NSString *cutOff = [[url absoluteString] substringFromIndex:10];
+        // todo: return value...
+        
+        // init the AddADeviceTableView...
+        //MIADAddADeviceTableViewController *view = [[MIADAddADeviceTableViewController alloc] init];
+        //[view addADeviceFromURLType:cutOff];
+        //[self.window.rootViewController presentViewController:view animated:YES completion:nil];
+        
+        //[self.delegate ScanQRCodeControllerDidFinish:self scannedDeviceID:cutOff];
+    }
+    else
+    {
+        UIAlertView *messageAlert = [[UIAlertView alloc]
+                                     initWithTitle:@"No Device QR Code" message:@"The code you scanned is not a Miataru QR device code." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        // Display Alert Message
+        [messageAlert show];
+    }
+    
+    
+    //    if (url != nil)
+    //    {
+    //        // handle the miataru URL by passing it to the appropriate view controller...
+    //        MIADAddADeviceTableViewController *addDeviceView = [MIADAddADeviceTableViewController alloc];
+    //
+    //        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:addDeviceView];
+    //        [[self window] setRootViewController:navController];
+    //        //template code
+    //        [self.window makeKeyAndVisible];
+    //    }
     return YES;
 }
 
@@ -214,44 +238,103 @@
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
+    BOOL isInBackground = NO;
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
     {
-        NSLog(@"Stopping Location Tracking");
-        [self.locationManager stopUpdatingLocation];
-        [self.locationManager stopMonitoringSignificantLocationChanges];
+        isInBackground = YES;
+    }
+    
+    // Handle location updates as normal, code omitted for brevity.
+    // The omitted code should determine whether to reject the location update for being too
+    // old, too close to the previous one, too inaccurate and so forth according to your own
+    // application design.
+    
+    if (isInBackground)
+    {
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
+        {
+            NSLog(@"Stopping Location Tracking");
+            [self.locationManager stopUpdatingLocation];
+            [self.locationManager stopMonitoringSignificantLocationChanges];
+        }
+        else
+        {
+            if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+            {
+                // send only when enabled in the settings...
+                [self sendBackgroundLocationToServer:newLocation];
+            }
+            else
+                NSLog(@"Sending Location to Server is disabled");
+        }
     }
     else
     {
-        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
         {
-            // send only when enabled in the settings...
-            [self SendUpdateToMiataruServer:newLocation];
+            NSLog(@"Stopping Location Tracking");
+            [self.locationManager stopUpdatingLocation];
+            [self.locationManager stopMonitoringSignificantLocationChanges];
         }
         else
-            NSLog(@"Sending Location to Server is disabled");
+        {
+            if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+            {
+                // send only when enabled in the settings...
+                [self SendUpdateToMiataruServer:newLocation ExecuteAsyncronous:true];
+            }
+            else
+                NSLog(@"Sending Location to Server is disabled");
+        }
     }
+    
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-   [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 
+#pragma mark SendUpdatesToServer
+
+-(void) sendBackgroundLocationToServer:(CLLocation *)location
+{
+    // REMEMBER. We are running in the background if this is being executed.
+    // We can't assume normal network access.
+    // bgTask is defined as an instance variable of type UIBackgroundTaskIdentifier
+    
+    // Note that the expiration handler block simply ends the task. It is important that we always
+    // end tasks that we have started.
+    
+    bgTask = [[UIApplication sharedApplication]
+              beginBackgroundTaskWithExpirationHandler:
+              ^{[[UIApplication sharedApplication] endBackgroundTask:bgTask];}];
+    
+    
+    [self SendUpdateToMiataruServer:location ExecuteAsyncronous:false];
+    
+    if (bgTask != UIBackgroundTaskInvalid)
+    {
+    [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    bgTask = UIBackgroundTaskInvalid;
+    }
+}
+
 // ---------------- Send Location to Miataru Server
 
-- (void)SendUpdateToMiataruServer:(CLLocation *)locationupdate
+- (void)SendUpdateToMiataruServer:(CLLocation *)locationupdate ExecuteAsyncronous:(bool)asyncrounous
 {
     // this constructs a very simple json string and POSTs it to the miataru server under
     // service.miataru.com
     /* the JSON content, according to the miataru documentation, should look like this:
      {"MiataruConfig":{"EnableLocationHistory":"False","LocationDataRetentionTime":"15"},"MiataruLocation":[{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823","Timestamp":"1376735651302","Longitude":"10.837502","Latitude":"49.828925","HorizontalAccuracy":"50.00"}]}
-    */
+     */
     //[UIDevice currentDevice].identifierForVendor;
     
     // render device ID
@@ -261,23 +344,23 @@
         
         //NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
         
-//        unsigned char digest[CC_SHA1_DIGEST_LENGTH];
-//        NSData *stringBytes = [vendor_deviceID dataUsingEncoding: NSUTF8StringEncoding]; /* or some other encoding */
-//        CC_SHA1([stringBytes bytes], [stringBytes length], digest);
-//        NSString* deviceID = [[NSString alloc] initWithBytes:digest length:sizeof(digest) encoding:NSASCIIStringEncoding];
-//        NSString* deviceID = [NSString stringWithFormat:@"7b8e6e0ee5296db345162dc2ef652c1350761824"];
-
+        //        unsigned char digest[CC_SHA1_DIGEST_LENGTH];
+        //        NSData *stringBytes = [vendor_deviceID dataUsingEncoding: NSUTF8StringEncoding]; /* or some other encoding */
+        //        CC_SHA1([stringBytes bytes], [stringBytes length], digest);
+        //        NSString* deviceID = [[NSString alloc] initWithBytes:digest length:sizeof(digest) encoding:NSASCIIStringEncoding];
+        //        NSString* deviceID = [NSString stringWithFormat:@"7b8e6e0ee5296db345162dc2ef652c1350761824"];
+        
         //NSString *currentLatitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.latitude];
         //NSString *currentLongitude = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.coordinate.longitude];
         //NSString *currentHorizontalAccuracy = [[NSString alloc]initWithFormat:@"%+.6f", locationupdate.horizontalAccuracy*3.28];
-
+        
         // change this to the measured date timestamp!
         //NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
         // NSTimeInterval is defined as double
-//        NSNumber *timeStampObj = [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]];
-
-//        NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
-
+        //        NSNumber *timeStampObj = [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]];
+        
+        //        NSString *currentTimeStamp = [[NSString alloc]initWithFormat:@"%@", timeStampObj];
+        
         NSString *LocationHistory = @"False";
         if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"save_location_history_on_server"] == 1 )
         {
@@ -286,14 +369,14 @@
         
         
         NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"%@\",\"LocationDataRetentionTime\":\"%@\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%+.6f\",\"Latitude\":\"%+.6f\",\"HorizontalAccuracy\":\"%+.6f\"}]}",
-            LocationHistory,
-            [[NSUserDefaults standardUserDefaults] stringForKey:@"location_data_retention_time"],
-            [UIDevice currentDevice].identifierForVendor.UUIDString,
-            [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]],
-            locationupdate.coordinate.longitude,
-            locationupdate.coordinate.latitude,
-            locationupdate.horizontalAccuracy*3.28];
-
+                                               LocationHistory,
+                                               [[NSUserDefaults standardUserDefaults] stringForKey:@"location_data_retention_time"],
+                                               [UIDevice currentDevice].identifierForVendor.UUIDString,
+                                               [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]],
+                                               locationupdate.coordinate.longitude,
+                                               locationupdate.coordinate.latitude,
+                                               locationupdate.horizontalAccuracy*3.28];
+        
         
         NSString* miataru_server_url = [[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"];
         
@@ -302,33 +385,42 @@
             if ( [miataru_server_url length] > 0)
                 miataru_server_url = [miataru_server_url substringToIndex:[miataru_server_url length] - 1];
         }
-       
+        
         NSMutableURLRequest *request =
         [[NSMutableURLRequest alloc] initWithURL:
          [NSURL URLWithString:[NSString stringWithFormat:@"%@/UpdateLocation", miataru_server_url]]];
-
+        
         //NSLog(value);
         //NSLog(request.URL.absoluteString);
         
         
         [request setHTTPMethod:@"POST"];
-
+        
         [request setValue:[NSString
                            stringWithFormat:@"%lu", (unsigned long)[UpdateLocationJSONContent length]]
        forHTTPHeaderField:@"Content-length"];
-
+        
         [request setValue:@"application/json"
        forHTTPHeaderField:@"Content-Type"];
-
-
+        
+        
         [request setHTTPBody:[UpdateLocationJSONContent
                               dataUsingEncoding:NSUTF8StringEncoding]];
-
+        
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        
-        [NSURLConnection connectionWithRequest:request delegate:self];
-        
-        NSLog(@"Sending Update to Server");
+       
+        if(asyncrounous)
+        {
+            NSLog(@"Sending Async Update to Server");
+            [NSURLConnection connectionWithRequest:request delegate:self];
+        }
+        else
+        {
+            NSURLResponse* response;
+            NSError* error = nil;
+            NSLog(@"Sending Sync Update to Server");
+            [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
+        }
     }
 }
 

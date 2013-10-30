@@ -26,25 +26,25 @@
     NSString *intervalString;
     if ([breakdownInfo month]) {
         if (-[breakdownInfo month] > 1)
-            intervalString = [NSString stringWithFormat:@"%d months ago", -[breakdownInfo month]];
+            intervalString = [NSString stringWithFormat:@"%ld months ago", (long)-[breakdownInfo month]];
         else
             intervalString = @"1 month ago";
     }
     else if ([breakdownInfo day]) {
         if (-[breakdownInfo day] > 1)
-            intervalString = [NSString stringWithFormat:@"%d days ago", -[breakdownInfo day]];
+            intervalString = [NSString stringWithFormat:@"%ld days ago", (long)-[breakdownInfo day]];
         else
             intervalString = @"1 day ago";
     }
     else if ([breakdownInfo hour]) {
         if (-[breakdownInfo hour] > 1)
-            intervalString = [NSString stringWithFormat:@"%d hours ago", -[breakdownInfo hour]];
+            intervalString = [NSString stringWithFormat:@"%ld hours ago", (long)-[breakdownInfo hour]];
         else
             intervalString = @"1 hour ago";
     }
     else {
         if (-[breakdownInfo minute] > 1)
-            intervalString = [NSString stringWithFormat:@"%d minutes ago", -[breakdownInfo minute]];
+            intervalString = [NSString stringWithFormat:@"%ld minutes ago", (long)-[breakdownInfo minute]];
         else
             intervalString = @"just now";
     }

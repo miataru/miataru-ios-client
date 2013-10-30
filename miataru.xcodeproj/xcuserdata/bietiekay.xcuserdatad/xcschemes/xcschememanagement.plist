@@ -9,20 +9,15 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>miataru.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>3</integer>
-		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>8B86828117F2636F0091BD90</key>
+		<key>8BB999DD181FA6D10049AC08</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8B8682A517F2636F0091BD90</key>
+		<key>8BB99A04181FA6D10049AC08</key>
 		<dict>
 			<key>primary</key>
 			<true/>

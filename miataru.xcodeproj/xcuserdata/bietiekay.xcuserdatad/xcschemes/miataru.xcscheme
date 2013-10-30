@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B86828117F2636F0091BD90"
+               BlueprintIdentifier = "8BB999DD181FA6D10049AC08"
                BuildableName = "Miataru.app"
                BlueprintName = "Miataru"
                ReferencedContainer = "container:miataru.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8B8682A517F2636F0091BD90"
+               BlueprintIdentifier = "8BB99A04181FA6D10049AC08"
                BuildableName = "MiataruTests.xctest"
                BlueprintName = "MiataruTests"
                ReferencedContainer = "container:miataru.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B86828117F2636F0091BD90"
+            BlueprintIdentifier = "8BB999DD181FA6D10049AC08"
             BuildableName = "Miataru.app"
             BlueprintName = "Miataru"
             ReferencedContainer = "container:miataru.xcodeproj">
@@ -61,7 +61,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B86828117F2636F0091BD90"
+            BlueprintIdentifier = "8BB999DD181FA6D10049AC08"
             BuildableName = "Miataru.app"
             BlueprintName = "Miataru"
             ReferencedContainer = "container:miataru.xcodeproj">
@@ -79,7 +79,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8B86828117F2636F0091BD90"
+            BlueprintIdentifier = "8BB999DD181FA6D10049AC08"
             BuildableName = "Miataru.app"
             BlueprintName = "Miataru"
             ReferencedContainer = "container:miataru.xcodeproj">

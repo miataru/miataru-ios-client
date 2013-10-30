@@ -305,7 +305,7 @@
     [detailrequest setHTTPMethod:@"POST"];
     
     [detailrequest setValue:[NSString
-                             stringWithFormat:@"%d", [GetLocationJSONContent length]]
+                             stringWithFormat:@"%lu", (unsigned long)[GetLocationJSONContent length]]
          forHTTPHeaderField:@"Content-length"];
     
     [detailrequest setValue:@"application/json"
