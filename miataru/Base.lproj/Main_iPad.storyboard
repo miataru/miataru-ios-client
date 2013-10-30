@@ -82,6 +82,9 @@
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Device Details" id="dDB-aU-tUC"/>
+                    <connections>
+                        <outlet property="DeviceDetailMapView" destination="pB3-2t-OIW" id="VIG-ZQ-aRj"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x7T-rx-dt3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -715,8 +718,6 @@ For more information please visit </string>
         <image name="FirstRunWizardBackground_softened" width="480" height="498"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>
-        <image name="Toolbar_Map" width="30" height="30"/>
-        <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
