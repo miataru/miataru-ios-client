@@ -38,7 +38,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="oYf-K1-iml" kind="push" identifier="PushToDeviceDetails" splitViewControllerTargetIndex="1" id="ysu-wg-GSW"/>
+                                    <segue destination="oYf-K1-iml" kind="replace" identifier="PushToDeviceDetails" splitViewControllerTargetIndex="1" id="ysu-wg-GSW"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -98,7 +98,7 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <segue destination="lap-uH-GHm" kind="relationship" relationship="masterViewController" id="efX-xB-P9Z"/>
-                        <segue destination="sY9-1b-bED" kind="relationship" relationship="detailViewController" id="IQa-nB-GNV"/>
+                        <segue destination="8PJ-ZQ-lQx" kind="relationship" relationship="detailViewController" id="5RE-Ie-gEy"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uqz-Ns-awN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -551,9 +551,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2WM-qe-mWp">
-                                <rect key="frame" x="254" y="29" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2WM-qe-mWp">
+                                <rect key="frame" x="958" y="20" width="46" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="Vuo-Km-oVf"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="Done">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -562,26 +565,34 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                     <action selector="button:" destination="8aa-dS-YAZ" eventType="touchUpInside" id="rSi-cs-YlI"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="2Zt-BD-ilj">
-                                <rect key="frame" x="127" y="29" width="67" height="74"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="2Zt-BD-ilj">
+                                <rect key="frame" x="479" y="136" width="67" height="74"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="67" id="91J-AS-GxI"/>
+                                    <constraint firstAttribute="height" constant="74" id="ttC-WN-Vmq"/>
+                                </constraints>
                             </imageView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ms7-fd-mdF">
-                                <rect key="frame" x="54" y="111" width="223" height="30"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ms7-fd-mdF">
+                                <rect key="frame" x="401" y="246" width="223" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="223" id="Yw9-f8-fWa"/>
+                                    <constraint firstAttribute="height" constant="30" id="g7q-NM-hhg"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8k6-gB-Xd7">
-                                <rect key="frame" x="246" y="677" width="51" height="31"/>
+                                <rect key="frame" x="593" y="590" width="51" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="ReportLocationSwitchToggled:" destination="8aa-dS-YAZ" eventType="valueChanged" id="NEj-pY-eH2"/>
                                 </connections>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hgx-9L-Cci">
-                                <rect key="frame" x="246" y="716" width="51" height="31"/>
+                                <rect key="frame" x="593" y="629" width="51" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="StoreLocationHistorySwitchToggled:" destination="8aa-dS-YAZ" eventType="valueChanged" id="cWt-c5-dqe"/>
@@ -594,20 +605,23 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Location to Server" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Mw-pI-W2j">
-                                <rect key="frame" x="36" y="682" width="198" height="21"/>
+                                <rect key="frame" x="383" y="595" width="198" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Store Location History" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eG6-jf-nwx">
-                                <rect key="frame" x="36" y="721" width="198" height="21"/>
+                                <rect key="frame" x="383" y="634" width="198" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="91I-iZ-FBU">
-                                <rect key="frame" x="20" y="149" width="280" height="224"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="469" translatesAutoresizingMaskIntoConstraints="NO" id="91I-iZ-FBU">
+                                <rect key="frame" x="278" y="284" width="469" height="224"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="469" id="biB-9b-yk9"/>
+                                </constraints>
                                 <attributedString key="attributedText">
                                     <fragment>
                                         <string key="content">Miataru is a Location Sharing Service which allows you to share your location with anybody you choose to give your unique device ID.
@@ -639,15 +653,25 @@ For more information please visit </string>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="btc-PW-fSy" firstAttribute="top" secondItem="Hgx-9L-Cci" secondAttribute="bottom" constant="21" id="0zK-3e-d7Y"/>
-                            <constraint firstItem="8k6-gB-Xd7" firstAttribute="leading" secondItem="Hgx-9L-Cci" secondAttribute="leading" id="0zW-r4-d5I"/>
-                            <constraint firstItem="1Mw-pI-W2j" firstAttribute="leading" secondItem="f6h-RM-CT5" secondAttribute="leading" constant="36" id="DhJ-3j-mZs"/>
-                            <constraint firstItem="eG6-jf-nwx" firstAttribute="trailing" secondItem="1Mw-pI-W2j" secondAttribute="trailing" id="bj3-RO-641"/>
-                            <constraint firstItem="8k6-gB-Xd7" firstAttribute="leading" secondItem="1Mw-pI-W2j" secondAttribute="trailing" constant="12" id="gEe-cQ-Zwc"/>
-                            <constraint firstItem="eG6-jf-nwx" firstAttribute="leading" secondItem="1Mw-pI-W2j" secondAttribute="leading" id="gjH-Zw-jEp"/>
-                            <constraint firstItem="eG6-jf-nwx" firstAttribute="centerY" secondItem="Hgx-9L-Cci" secondAttribute="centerY" id="jdm-go-sOx"/>
-                            <constraint firstItem="Hgx-9L-Cci" firstAttribute="top" secondItem="8k6-gB-Xd7" secondAttribute="bottom" constant="8" symbolic="YES" id="ojq-D3-dM2"/>
-                            <constraint firstItem="1Mw-pI-W2j" firstAttribute="centerY" secondItem="8k6-gB-Xd7" secondAttribute="centerY" id="rW9-04-BkY"/>
+                            <constraint firstItem="2Zt-BD-ilj" firstAttribute="top" secondItem="i84-iy-wZP" secondAttribute="bottom" constant="116" id="1jy-1M-Q94"/>
+                            <constraint firstItem="91I-iZ-FBU" firstAttribute="centerX" secondItem="f6h-RM-CT5" secondAttribute="centerX" id="3yG-yt-Cha"/>
+                            <constraint firstItem="91I-iZ-FBU" firstAttribute="centerX" secondItem="ms7-fd-mdF" secondAttribute="centerX" id="90O-yE-YPf"/>
+                            <constraint firstItem="eG6-jf-nwx" firstAttribute="leading" secondItem="1Mw-pI-W2j" secondAttribute="leading" id="FBr-MK-IdC"/>
+                            <constraint firstItem="2WM-qe-mWp" firstAttribute="top" secondItem="f6h-RM-CT5" secondAttribute="top" constant="20" symbolic="YES" id="Jyw-Q8-CLI"/>
+                            <constraint firstItem="1Mw-pI-W2j" firstAttribute="centerY" secondItem="8k6-gB-Xd7" secondAttribute="centerY" id="M7J-Em-0jl"/>
+                            <constraint firstItem="1Mw-pI-W2j" firstAttribute="leading" secondItem="f6h-RM-CT5" secondAttribute="leading" constant="383" id="Mbh-Mj-NCF"/>
+                            <constraint firstAttribute="trailing" secondItem="2WM-qe-mWp" secondAttribute="trailing" constant="20" symbolic="YES" id="N0K-0G-6lu"/>
+                            <constraint firstItem="8k6-gB-Xd7" firstAttribute="top" secondItem="91I-iZ-FBU" secondAttribute="bottom" constant="82" id="Tmy-Bw-33r"/>
+                            <constraint firstItem="btc-PW-fSy" firstAttribute="top" secondItem="2WM-qe-mWp" secondAttribute="bottom" constant="718" id="WQl-2N-28y"/>
+                            <constraint firstItem="Hgx-9L-Cci" firstAttribute="centerY" secondItem="eG6-jf-nwx" secondAttribute="centerY" id="WYt-Wk-1t8"/>
+                            <constraint firstItem="ms7-fd-mdF" firstAttribute="top" secondItem="2Zt-BD-ilj" secondAttribute="bottom" constant="36" id="b95-g9-AMT"/>
+                            <constraint firstItem="1Mw-pI-W2j" firstAttribute="trailing" secondItem="eG6-jf-nwx" secondAttribute="trailing" id="dNs-Xr-bJH"/>
+                            <constraint firstItem="ms7-fd-mdF" firstAttribute="centerX" secondItem="2Zt-BD-ilj" secondAttribute="centerX" id="fnX-JS-Hn1"/>
+                            <constraint firstItem="91I-iZ-FBU" firstAttribute="top" secondItem="ms7-fd-mdF" secondAttribute="bottom" constant="8" symbolic="YES" id="gH8-2a-Azr"/>
+                            <constraint firstItem="8k6-gB-Xd7" firstAttribute="leading" secondItem="1Mw-pI-W2j" secondAttribute="trailing" constant="12" id="lka-GB-bkY"/>
+                            <constraint firstItem="btc-PW-fSy" firstAttribute="top" secondItem="Hgx-9L-Cci" secondAttribute="bottom" constant="108" id="qdZ-EK-KJU"/>
+                            <constraint firstItem="Hgx-9L-Cci" firstAttribute="top" secondItem="8k6-gB-Xd7" secondAttribute="bottom" constant="8" symbolic="YES" id="y9c-VJ-ZYS"/>
+                            <constraint firstItem="8k6-gB-Xd7" firstAttribute="leading" secondItem="Hgx-9L-Cci" secondAttribute="leading" id="yg3-6F-eNJ"/>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
@@ -686,7 +710,6 @@ For more information please visit </string>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="wv5-dL-TSe"/>
                     <navigationItem key="navigationItem" title="Map" id="5fP-A1-aav"/>
                     <connections>
                         <outlet property="AllDevicesMapView" destination="F2h-FO-Rjm" id="SHl-bA-r9g"/>
@@ -695,29 +718,13 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7n7-H0-dng" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1603" y="1363"/>
-        </scene>
-        <!--Navigation Controller - Map-->
-        <scene sceneID="U3d-2W-nXT">
-            <objects>
-                <navigationController definesPresentationContext="YES" id="sY9-1b-bED" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="xVm-8F-UdE"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JP3-WT-XnD">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="8PJ-ZQ-lQx" kind="relationship" relationship="rootViewController" id="nBc-bb-Ge9"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="o3Y-xt-lbP" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="552" y="1363"/>
+            <point key="canvasLocation" x="547" y="523"/>
         </scene>
     </scenes>
     <resources>
         <image name="FirstRunWizardBackground_softened" width="480" height="498"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
-        <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
