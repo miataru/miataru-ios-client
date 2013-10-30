@@ -25,6 +25,11 @@
 
 @implementation MIADAddADeviceTableViewController
 
+- (void) addADeviceFromURLType:(NSString*)inDevice
+{
+   NSLog(@"AddADeviceFromURLType: %@", inDevice);
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];

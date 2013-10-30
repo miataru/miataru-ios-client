@@ -14,11 +14,13 @@
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
-//@property (nonatomic) UIBackgroundTaskIdentifier bgTask;
+@property (nonatomic) UIBackgroundTaskIdentifier bgTask;
 
 @end
 
 @implementation MIADAppDelegate
+
+@synthesize bgTask;
 
 - (void)setDefaults {
     
@@ -186,10 +188,14 @@
     
     if ([[url absoluteString] hasPrefix:@"miataru://"])
     {
-        NSString *cutOff = [[url absoluteString] substringFromIndex:10];
-        
+        //NSString *cutOff = [[url absoluteString] substringFromIndex:10];
         // todo: return value...
-        //[self.DeviceIDTextField setText:[cutOff uppercaseString]];
+        
+        // init the AddADeviceTableView...
+        //MIADAddADeviceTableViewController *view = [[MIADAddADeviceTableViewController alloc] init];
+        //[view addADeviceFromURLType:cutOff];
+        //[self.window.rootViewController presentViewController:view animated:YES completion:nil];
+        
         //[self.delegate ScanQRCodeControllerDidFinish:self scannedDeviceID:cutOff];
     }
     else
@@ -232,22 +238,56 @@
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
+    BOOL isInBackground = NO;
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
     {
-        NSLog(@"Stopping Location Tracking");
-        [self.locationManager stopUpdatingLocation];
-        [self.locationManager stopMonitoringSignificantLocationChanges];
+        isInBackground = YES;
+    }
+    
+    // Handle location updates as normal, code omitted for brevity.
+    // The omitted code should determine whether to reject the location update for being too
+    // old, too close to the previous one, too inaccurate and so forth according to your own
+    // application design.
+    
+    if (isInBackground)
+    {
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
+        {
+            NSLog(@"Stopping Location Tracking");
+            [self.locationManager stopUpdatingLocation];
+            [self.locationManager stopMonitoringSignificantLocationChanges];
+        }
+        else
+        {
+            if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+            {
+                // send only when enabled in the settings...
+                [self sendBackgroundLocationToServer:newLocation];
+            }
+            else
+                NSLog(@"Sending Location to Server is disabled");
+        }
     }
     else
     {
-        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] != 1 )
         {
-            // send only when enabled in the settings...
-            [self SendUpdateToMiataruServer:newLocation];
+            NSLog(@"Stopping Location Tracking");
+            [self.locationManager stopUpdatingLocation];
+            [self.locationManager stopMonitoringSignificantLocationChanges];
         }
         else
-            NSLog(@"Sending Location to Server is disabled");
+        {
+            if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
+            {
+                // send only when enabled in the settings...
+                [self SendUpdateToMiataruServer:newLocation ExecuteAsyncronous:true];
+            }
+            else
+                NSLog(@"Sending Location to Server is disabled");
+        }
     }
+    
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -261,9 +301,34 @@
 }
 
 
+#pragma mark SendUpdatesToServer
+
+-(void) sendBackgroundLocationToServer:(CLLocation *)location
+{
+    // REMEMBER. We are running in the background if this is being executed.
+    // We can't assume normal network access.
+    // bgTask is defined as an instance variable of type UIBackgroundTaskIdentifier
+    
+    // Note that the expiration handler block simply ends the task. It is important that we always
+    // end tasks that we have started.
+    
+    bgTask = [[UIApplication sharedApplication]
+              beginBackgroundTaskWithExpirationHandler:
+              ^{[[UIApplication sharedApplication] endBackgroundTask:bgTask];}];
+    
+    
+    [self SendUpdateToMiataruServer:location ExecuteAsyncronous:false];
+    
+    if (bgTask != UIBackgroundTaskInvalid)
+    {
+    [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    bgTask = UIBackgroundTaskInvalid;
+    }
+}
+
 // ---------------- Send Location to Miataru Server
 
-- (void)SendUpdateToMiataruServer:(CLLocation *)locationupdate
+- (void)SendUpdateToMiataruServer:(CLLocation *)locationupdate ExecuteAsyncronous:(bool)asyncrounous
 {
     // this constructs a very simple json string and POSTs it to the miataru server under
     // service.miataru.com
@@ -343,10 +408,19 @@
                               dataUsingEncoding:NSUTF8StringEncoding]];
         
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        
-        [NSURLConnection connectionWithRequest:request delegate:self];
-        
-        NSLog(@"Sending Update to Server");
+       
+        if(asyncrounous)
+        {
+            NSLog(@"Sending Async Update to Server");
+            [NSURLConnection connectionWithRequest:request delegate:self];
+        }
+        else
+        {
+            NSURLResponse* response;
+            NSError* error = nil;
+            NSLog(@"Sending Sync Update to Server");
+            [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
+        }
     }
 }
 

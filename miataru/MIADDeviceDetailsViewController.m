@@ -79,6 +79,12 @@
 
 - (void)myTimerTick:(NSTimer *)timer
 {
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
+    {
+        self.map_update_timer_should_stop = true;
+    }
+
+    
     if (self.map_update_timer_should_stop == true)
     {
         NSLog(@"Stopping Timer Updates");
@@ -269,6 +275,9 @@
 
 - (void)GetLocationForDeviceFromMiataruServer:(NSString*)deviceID
 {
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
+        return;
+    
     if (deviceID == nil)
         return;
     

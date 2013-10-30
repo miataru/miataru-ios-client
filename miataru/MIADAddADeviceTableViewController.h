@@ -17,6 +17,8 @@
 
 @property (weak) id<MIADAddADeviceTableViewControllerDelegate> delegate;
 
+- (void) addADeviceFromURLType:(NSString*)inDevice;
+
 @end
 
 @protocol MIADAddADeviceTableViewControllerDelegate <NSObject>

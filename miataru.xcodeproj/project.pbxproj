@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
 		8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */; };
 		8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */; };
@@ -87,6 +88,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
 		8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
 		8BB91BD3181FB08700C63DA1 /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
@@ -470,6 +472,7 @@
 		8BB999E8181FA6D10049AC08 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8BA32A891821A51B0025582B /* miataru_icon_80.png */,
 				8BB91C2D181FB24300C63DA1 /* beep-beep.aiff */,
 				8BB999E9181FA6D10049AC08 /* Miataru-Info.plist */,
 				8BB999EA181FA6D10049AC08 /* InfoPlist.strings */,
@@ -619,6 +622,7 @@
 				8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */,
 				8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */,
 				8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */,
+				8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */,
 				8BB999EC181FA6D10049AC08 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

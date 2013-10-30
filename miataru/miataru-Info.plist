@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.miataru.ios.deletethis</string>
+	<string>com.miataru.ios</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -24,9 +24,9 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>Viewer</string>
 			<key>CFBundleURLIconFile</key>
-			<string></string>
+			<string>miataru_icon_80</string>
 			<key>CFBundleURLName</key>
 			<string>com.miataru.ios</string>
 			<key>CFBundleURLSchemes</key>
