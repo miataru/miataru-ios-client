@@ -570,7 +570,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8BB999D9181FA6D10049AC08 /* Build configuration list for PBXProject "Miataru" */;
+			buildConfigurationList = 8BB999D9181FA6D10049AC08 /* Build configuration list for PBXProject "miataru" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -897,7 +897,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8BB999D9181FA6D10049AC08 /* Build configuration list for PBXProject "Miataru" */ = {
+		8BB999D9181FA6D10049AC08 /* Build configuration list for PBXProject "miataru" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8BB99A14181FA6D10049AC08 /* Debug */,
