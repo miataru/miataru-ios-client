@@ -430,7 +430,10 @@ static int RS_BLOCK_TABLE[][7] = {
         [encoders[i] encode];
     }
     
-    int minLostPoint = LONG_MAX;
+    
+    int minLostPoint = 2147483647;
+    
+    
     QREncoder *encoder = nil;
     for(int i = 0; i < 8; i++) {
         if (encoders[i]->_matrix != nil) {
