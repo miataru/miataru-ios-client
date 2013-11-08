@@ -11,6 +11,7 @@
 #import "KnownDevice.h"
 #import "PositionPin.h"
 #import "PassedTimeDateFormatter.h"
+#import "MIADHistoryViewController.h"
 
 @implementation MIADDeviceDetailsViewController
 
@@ -73,7 +74,6 @@
             [DeviceDetailMapView setMapType:MKMapTypeStandard];
             break;
     }
-
 }
 
 
@@ -321,5 +321,15 @@
     
     NSLog(@"Getting Update from to Miataru Service...");
 }
+
+#pragma mark Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"PushToDeviceHistory"]) {
+        ((MIADHistoryViewController*)segue.destinationViewController).HistoryDevice = self.DetailDevice;
+    }
+}
+
 
 @end

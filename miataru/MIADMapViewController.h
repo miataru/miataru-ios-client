@@ -17,7 +17,8 @@
 
 @property (weak, nonatomic) IBOutlet MKMapView *DevicesMapView;
 
-@property (weak, nonatomic) IBOutlet MKMapView *AllDevicesMapView;
+//@property (weak, nonatomic) IBOutlet MKMapView *AllDevicesMapView;
+
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views;

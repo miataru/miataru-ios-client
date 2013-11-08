@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */; };
 		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
 		8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */; };
@@ -88,6 +89,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B1D1AC4182D7527006454AA /* MIADHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADHistoryViewController.h; sourceTree = "<group>"; };
+		8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
 		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
 		8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
@@ -211,6 +214,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B1D1AC3182D74F0006454AA /* DeviceHistory */ = {
+			isa = PBXGroup;
+			children = (
+				8B1D1AC4182D7527006454AA /* MIADHistoryViewController.h */,
+				8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */,
+			);
+			name = DeviceHistory;
+			sourceTree = "<group>";
+		};
 		8BB91BCE181FB07300C63DA1 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -362,6 +374,7 @@
 		8BB91C41181FB2FD00C63DA1 /* DeviceDetails */ = {
 			isa = PBXGroup;
 			children = (
+				8B1D1AC3182D74F0006454AA /* DeviceHistory */,
 				8BB91C42181FB30600C63DA1 /* MIADDeviceDetailsViewController.h */,
 				8BB91C43181FB30600C63DA1 /* MIADDeviceDetailsViewController.m */,
 			);
@@ -668,6 +681,7 @@
 				8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */,
 				8BB91BF4181FB08700C63DA1 /* IASKSettingsStore.m in Sources */,
 				8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m in Sources */,
+				8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */,
 				8BB91C5A181FB36E00C63DA1 /* KnownDevice.m in Sources */,
 				8BB91C38181FB2CE00C63DA1 /* MIADFirstStartWizardRootViewController.m in Sources */,
 				8BB91C0C181FB0A900C63DA1 /* GHArea.m in Sources */,

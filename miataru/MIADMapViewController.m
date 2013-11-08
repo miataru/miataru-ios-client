@@ -146,13 +146,13 @@
 // to remove all pins but the users location...
 - (void)removeAllPinsButUserLocation
 {
-    id userLocation = [self.AllDevicesMapView userLocation];
-    NSMutableArray *pins = [[NSMutableArray alloc] initWithArray:[self.AllDevicesMapView annotations]];
+    id userLocation = [DevicesMapView userLocation];
+    NSMutableArray *pins = [[NSMutableArray alloc] initWithArray:[DevicesMapView annotations]];
     if ( userLocation != nil ) {
         [pins removeObject:userLocation]; // avoid removing user location off the map
     }
     
-    [self.AllDevicesMapView removeAnnotations:pins];
+    [DevicesMapView removeAnnotations:pins];
     //[pins release];
     pins = nil;
 }
@@ -246,20 +246,20 @@
                 {
                     // Add the annotation to our map view
                     PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates];
-                    [self.AllDevicesMapView addAnnotation:newAnnotation];
+                    [DevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
                     //[newAnnotation release];
                     
                     // Zoom to fit...
                     
                     MKMapRect zoomRect = MKMapRectNull;
-                    for (id <MKAnnotation> annotation in self.AllDevicesMapView.annotations)
+                    for (id <MKAnnotation> annotation in DevicesMapView.annotations)
                     {
                         MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
                         MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.5, 0.5);
                         zoomRect = MKMapRectUnion(zoomRect, pointRect);
                     }
-                    [self.AllDevicesMapView setVisibleMapRect:zoomRect animated:NO];
+                    [DevicesMapView setVisibleMapRect:zoomRect animated:NO];
                     
                     
                     
