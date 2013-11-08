@@ -292,13 +292,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OSo-rr-BVL">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSo-rr-BVL">
                                 <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="OSo-rr-BVL" secondAttribute="bottom" id="Kbx-at-XTm"/>
+                            <constraint firstAttribute="trailing" secondItem="OSo-rr-BVL" secondAttribute="trailing" id="P2q-cM-E1p"/>
+                            <constraint firstItem="OSo-rr-BVL" firstAttribute="leading" secondItem="10l-03-0wf" secondAttribute="leading" id="rEI-ST-rdb"/>
+                            <constraint firstItem="OSo-rr-BVL" firstAttribute="top" secondItem="10l-03-0wf" secondAttribute="top" id="sOe-HP-0bi"/>
+                        </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Scan QR Code" id="G1X-04-TiP">
@@ -308,6 +314,7 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="CameraPreviewLayer" destination="OSo-rr-BVL" id="4j5-uJ-GYY"/>
                     </connections>
@@ -712,7 +719,6 @@ For more information please visit </string>
                     </view>
                     <navigationItem key="navigationItem" title="Map" id="5fP-A1-aav"/>
                     <connections>
-                        <outlet property="AllDevicesMapView" destination="F2h-FO-Rjm" id="SHl-bA-r9g"/>
                         <outlet property="DevicesMapView" destination="F2h-FO-Rjm" id="Zi3-Qt-j7f"/>
                     </connections>
                 </viewController>

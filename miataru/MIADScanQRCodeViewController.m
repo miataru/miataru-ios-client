@@ -13,9 +13,13 @@
 
 @property (strong) AVCaptureSession *capture_session;
 
+@property (strong) AVCaptureVideoPreviewLayer *VideoPreviewLayer;
+
 @end
 
 @implementation MIADScanQRCodeViewController
+
+@synthesize VideoPreviewLayer;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -41,6 +45,54 @@
 - (IBAction)CancelButtonPressed:(id)sender {
 
     [self dismissViewControllerAnimated:true completion:nil];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if (VideoPreviewLayer != nil)
+    {
+        if (VideoPreviewLayer.connection.supportsVideoOrientation)
+        {
+            [self setRightInterfaceOrientation:toInterfaceOrientation];
+        }
+    }
+    
+}
+
+- (void)setRightInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    if (VideoPreviewLayer != nil)
+    {
+        switch (toInterfaceOrientation)
+            {
+                case UIInterfaceOrientationPortrait:
+                {
+                    VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+                    
+                    CGRect layerRect = [[[self view] layer] bounds];
+                    [VideoPreviewLayer setBounds:layerRect];
+                    [VideoPreviewLayer setPosition:CGPointMake(CGRectGetMidX(layerRect),CGRectGetMidY(layerRect))];
+                    VideoPreviewLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
+
+                    break;
+                }
+                case UIInterfaceOrientationPortraitUpsideDown:
+                {
+                    VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeLeft:
+                {
+                    VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeRight:
+                {
+                    VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+                    break;
+                }
+            }
+    }
 }
 
 #pragma mark Capture
@@ -72,18 +124,19 @@
     AVCaptureMetadataOutput *output = [[AVCaptureMetadataOutput alloc] init];
     [output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
     [_capture_session addOutput:output];
-  
-    
     
     //You should check here to see if the session supports these types, if they aren't support you'll get an exception
     output.metadataObjectTypes = @[AVMetadataObjectTypeQRCode];
     output.rectOfInterest = self.CameraPreviewLayer.bounds;
     
     
-    AVCaptureVideoPreviewLayer *newCaptureVideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_capture_session];
-    newCaptureVideoPreviewLayer.frame = self.CameraPreviewLayer.bounds;
-    newCaptureVideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    [self.CameraPreviewLayer.layer insertSublayer:newCaptureVideoPreviewLayer above:self.CameraPreviewLayer.layer];
+    VideoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_capture_session];
+    VideoPreviewLayer.frame = self.CameraPreviewLayer.bounds;
+    VideoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    
+    [self.CameraPreviewLayer.layer insertSublayer:VideoPreviewLayer above:self.CameraPreviewLayer.layer];
+   
+    [self setRightInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation];
     
     [_capture_session startRunning];
 }
