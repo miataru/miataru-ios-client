@@ -192,8 +192,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[super viewDidAppear:animated];
 
 	NSNotificationCenter *dc = [NSNotificationCenter defaultCenter];
-	IASK_IF_IOS4_OR_GREATER([dc addObserver:self selector:@selector(synchronizeSettings) name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];);
-	IASK_IF_IOS4_OR_GREATER([dc addObserver:self selector:@selector(reload) name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];);
+	[dc addObserver:self selector:@selector(synchronizeSettings) name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];
+	[dc addObserver:self selector:@selector(reload) name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
 	[dc addObserver:self selector:@selector(synchronizeSettings) name:UIApplicationWillTerminateNotification object:[UIApplication sharedApplication]];
 }
 
@@ -203,7 +203,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	NSNotificationCenter *dc = [NSNotificationCenter defaultCenter];
+	[dc removeObserver:self name:NSUserDefaultsDidChangeNotification object:dc];
+	[dc removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];
+	[dc removeObserver:self name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
+	[dc removeObserver:self name:UIApplicationWillTerminateNotification object:[UIApplication sharedApplication]];
 
     // hide the keyboard
     [self.currentFirstResponder resignFirstResponder];
@@ -403,17 +407,9 @@ CGRect IASKCGRectSwap(CGRect rect);
 	}
 	NSString *title;
 	if ((title = [self tableView:tableView titleForHeaderInSection:section])) {
-        
-        CGRect textRect = [title boundingRectWithSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
-                                             options:NSStringDrawingUsesLineFragmentOrigin
-                                          attributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]}
-                                             context:nil];
-        
-        CGSize size = textRect.size;
-        
-//		CGSize size = [title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] 
-//						constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
-//							lineBreakMode:NSLineBreakByWordWrapping];
+		CGSize size = [title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] 
+						constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
+							lineBreakMode:NSLineBreakByWordWrapping];
 		return roundf(size.height+kIASKVerticalPaddingGroupTitles);
 	}
 	return 0;
@@ -466,12 +462,9 @@ CGRect IASKCGRectSwap(CGRect rect);
 	} else {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
 	}
-	//cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
-	//cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
-	
-    //cell.textLabel.minimumScaleFactor = 0.7f;
-    //cell.detailTextLabel.minimumScaleFactor = 0.7f;
-    return cell;
+	cell.textLabel.minimumFontSize = kIASKMinimumFontSize;
+	cell.detailTextLabel.minimumFontSize = kIASKMinimumFontSize;
+	return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
