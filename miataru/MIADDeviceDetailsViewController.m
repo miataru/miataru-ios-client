@@ -16,6 +16,9 @@
 @implementation MIADDeviceDetailsViewController
 
 @synthesize DeviceDetailMapView;
+@synthesize DeviceDetail_UpdateDateTime;
+@synthesize DeviceCoordinates;
+@synthesize MapAnnotation;
 
 //- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 //{
@@ -139,6 +142,39 @@
     return nil;
 }
 
+- (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
+    if ([mapView2.annotations count] == 0) return;
+    
+    CLLocationCoordinate2D topLeftCoord;
+    topLeftCoord.latitude = -90;
+    topLeftCoord.longitude = 180;
+    
+    CLLocationCoordinate2D bottomRightCoord;
+    bottomRightCoord.latitude = 90;
+    bottomRightCoord.longitude = -180;
+    
+    for(id<MKAnnotation> annotation in mapView2.annotations) {
+        topLeftCoord.longitude = fmin(topLeftCoord.longitude, annotation.coordinate.longitude);
+        topLeftCoord.latitude = fmax(topLeftCoord.latitude, annotation.coordinate.latitude);
+        bottomRightCoord.longitude = fmax(bottomRightCoord.longitude, annotation.coordinate.longitude);
+        bottomRightCoord.latitude = fmin(bottomRightCoord.latitude, annotation.coordinate.latitude);
+    }
+    
+    MKCoordinateRegion region;
+    //MKCoordinateRegion region;
+    region.center.latitude = topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5;
+    region.center.longitude = topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5;
+    
+    // Adding edge map
+    region.span.latitudeDelta = fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * 1.5;
+    region.span.longitudeDelta = fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * 1.5;
+    
+    region = [mapView2 regionThatFits:region];
+    [mapView2 setRegion:region animated:NO];
+    
+}
+
+
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
     NSLog(@"didaddannotation");
@@ -211,8 +247,6 @@
             if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
             {
                 // now get long and lat out and add pin to mapview
-                CLLocationCoordinate2D DeviceCoordinates;
-            
                 DeviceCoordinates.latitude = [Lat doubleValue];
                 DeviceCoordinates.longitude = [Lon doubleValue];
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
@@ -224,7 +258,9 @@
                         
                         //NSDate *startdate = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
                         
-                        NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:[NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]]];
+                        DeviceDetail_UpdateDateTime = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
+                        
+                        NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:DeviceDetail_UpdateDateTime];
                         
                         NSString* DeviceName = [NSString stringWithFormat:@"%@ - %@",self.DetailDevice.DeviceName,TimeString];
                         
@@ -233,16 +269,32 @@
                         
                         //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
                         // Add the annotation to our map view
-                        PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
-                        [self.DeviceDetailMapView addAnnotation:newAnnotation];
+                        MapAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
+                        [self.DeviceDetailMapView addAnnotation:MapAnnotation];
                         NSLog(@"Added Annotation...");
                         //[newAnnotation release];
-                    
+                        [self zoomToFitMapAnnotations:DeviceDetailMapView];
+
                         return;
                     }
                     else
                     {
                         NSLog(@"We already have that pin");
+                        // just update the passed time...
+                        NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:DeviceDetail_UpdateDateTime];
+                        
+                        NSString* DeviceName = [NSString stringWithFormat:@"%@ - %@",self.DetailDevice.DeviceName,TimeString];
+//                        
+//                        // clear all others...
+//                        [self.DeviceDetailMapView removeAnnotations:self.DeviceDetailMapView.annotations];
+//                        
+//                        PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
+//                        [self.DeviceDetailMapView addAnnotation:newAnnotation];
+
+                        MapAnnotation.title = DeviceName;
+                        
+                        NSLog(@"Updated Annotation...");
+                        
                         return;
                     }
                 }
@@ -261,6 +313,14 @@
     [alert show];
     // TODO: transition back
     //[self.navigationController popToRootViewControllerAnimated:YES];
+}
+
++(NSString*)generateRandomString:(int)num {
+    NSMutableString* string = [NSMutableString stringWithCapacity:num];
+    for (int i = 0; i < num; i++) {
+        [string appendFormat:@"%C", (unichar)('a' + arc4random_uniform(25))];
+    }
+    return string;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

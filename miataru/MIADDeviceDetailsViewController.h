@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "PositionPin.h"
 
 @class KnownDevice;
 
@@ -16,6 +17,10 @@
 
 @property (strong) KnownDevice *DetailDevice;
 @property (strong) NSMutableData *responseData;
+@property (strong) NSDate *DeviceDetail_UpdateDateTime;
+@property (strong) PositionPin *MapAnnotation;
+
+@property CLLocationCoordinate2D DeviceCoordinates;
 @property BOOL map_update_timer_should_stop;
 @property double LastLatitude;
 @property double LastLongitude;
