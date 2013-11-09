@@ -146,8 +146,9 @@
     /*
      ￼{"MiataruGetLocation": [{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}
      */
+    int number_of_items_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_items"];
     
-    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",device.DeviceID,25];
+    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",device.DeviceID,number_of_items_to_show];
     
     self.responseData = [NSMutableData data];
     
