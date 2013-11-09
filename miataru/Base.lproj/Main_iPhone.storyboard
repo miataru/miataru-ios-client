@@ -259,6 +259,9 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="KnownDevicesTableView" destination="OVX-yi-16D" id="M1W-KN-XwX"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="119-x1-8k3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

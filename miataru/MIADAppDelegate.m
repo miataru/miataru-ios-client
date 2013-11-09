@@ -388,7 +388,7 @@
         
         NSMutableURLRequest *request =
         [[NSMutableURLRequest alloc] initWithURL:
-         [NSURL URLWithString:[NSString stringWithFormat:@"%@/UpdateLocation", miataru_server_url]]];
+         [NSURL URLWithString:[NSString stringWithFormat:@"%@/v1/UpdateLocation", miataru_server_url]]];
         
         //NSLog(value);
         //NSLog(request.URL.absoluteString);

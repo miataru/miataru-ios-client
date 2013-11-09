@@ -19,5 +19,6 @@
 @property CLLocationCoordinate2D LastKnownLocation;
 
 + (id) DeviceWithName:(NSString*)inName DeviceID:(NSString*)inDeviceID;
+-(void)setUpdateTime:(NSDate*)NewUpdateDateTime;
 
 @end

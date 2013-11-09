@@ -330,7 +330,7 @@
     
     NSMutableURLRequest *detailrequest =
     [[NSMutableURLRequest alloc] initWithURL:
-     [NSURL URLWithString:[NSString stringWithFormat:@"%@/GetLocation", miataru_server_url]]];
+     [NSURL URLWithString:[NSString stringWithFormat:@"%@/v1/GetLocation", miataru_server_url]]];
     
     
     [detailrequest setHTTPMethod:@"POST"];

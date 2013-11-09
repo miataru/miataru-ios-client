@@ -11,4 +11,6 @@
 
 @interface MIADDevicesTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, MIADAddADeviceTableViewControllerDelegate>
 
+@property (strong, nonatomic) IBOutlet UITableView *KnownDevicesTableView;
+
 @end

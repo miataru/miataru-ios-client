@@ -20,6 +20,11 @@
     return device;
 }
 
+-(void)setUpdateTime:(NSDate*)NewUpdateDateTime
+{
+    self.LastUpdate = NewUpdateDateTime;
+}
+
 -(void)encodeWithCoder:(NSCoder *)aCoder
 {
     [aCoder encodeObject:self.DeviceName forKey:@"DeviceName"];

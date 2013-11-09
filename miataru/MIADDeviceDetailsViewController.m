@@ -19,6 +19,7 @@
 @synthesize DeviceDetail_UpdateDateTime;
 @synthesize DeviceCoordinates;
 @synthesize MapAnnotation;
+@synthesize DetailDevice;
 
 //- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 //{
@@ -259,6 +260,9 @@
                         //NSDate *startdate = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
                         
                         DeviceDetail_UpdateDateTime = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
+
+                        // update the knowndevice
+                        [DetailDevice setUpdateTime:DeviceDetail_UpdateDateTime];
                         
                         NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:DeviceDetail_UpdateDateTime];
                         
@@ -274,7 +278,7 @@
                         NSLog(@"Added Annotation...");
                         //[newAnnotation release];
                         [self zoomToFitMapAnnotations:DeviceDetailMapView];
-
+                        
                         return;
                     }
                     else
@@ -360,7 +364,7 @@
 
     NSMutableURLRequest *detailrequest =
     [[NSMutableURLRequest alloc] initWithURL:
-     [NSURL URLWithString:[NSString stringWithFormat:@"%@/GetLocation", miataru_server_url]]];
+     [NSURL URLWithString:[NSString stringWithFormat:@"%@/v1/GetLocation", miataru_server_url]]];
     
     
     [detailrequest setHTTPMethod:@"POST"];
