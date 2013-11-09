@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "405649750.899918"
+            timestampString = "405649996.419854"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "336"
-            endingLineNumber = "336"
+            startingLineNumber = "344"
+            endingLineNumber = "344"
             landmarkName = "-GetLocationForDeviceFromMiataruServer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -389,12 +389,12 @@
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405649751.124669"
+                  timestampString = "405650043.558336"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "125"
                   endingLineNumber = "125"
-                  offsetFromSymbolStart = "509">
+                  offsetFromSymbolStart = "488">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -403,12 +403,12 @@
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405649751.124969"
+                  timestampString = "405650043.558618"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "125"
                   endingLineNumber = "125"
-                  offsetFromSymbolStart = "895">
+                  offsetFromSymbolStart = "722">
                </Location>
             </Locations>
          </BreakpointContent>
