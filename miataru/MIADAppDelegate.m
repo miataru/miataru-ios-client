@@ -66,6 +66,16 @@
     self.locationManager.distanceFilter = 100;
     self.locationManager.delegate = self;
     
+    // set https service.miataru.com setting...
+    
+    if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"] isEqualToString:@"http://service.miataru.com"])
+    {
+        // set to https
+        [[NSUserDefaults standardUserDefaults] setValue: @"https://service.miataru.com" forKey: @"miataru_server_url"]; 
+    }
+    
+    
+    
     //  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {

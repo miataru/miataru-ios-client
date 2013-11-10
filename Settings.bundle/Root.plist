@@ -86,7 +86,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>DefaultValue</key>
-			<string>http://service.miataru.com</string>
+			<string>https://service.miataru.com</string>
 			<key>Title</key>
 			<string>Server-URL</string>
 			<key>Key</key>
