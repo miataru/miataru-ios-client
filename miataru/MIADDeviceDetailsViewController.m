@@ -21,21 +21,27 @@
 @synthesize MapAnnotation;
 @synthesize DetailDevice;
 
-//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-//{
-//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-//    if (self) {
-//        // Custom initialization
-//
-//    }
-//    return self;
-//}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
     
+    switch (map_type)
+    {
+        case 1:
+            [DeviceDetailMapView setMapType:MKMapTypeStandard];
+            break;
+        case 2:
+            [DeviceDetailMapView setMapType:MKMapTypeHybrid];
+            break;
+        case 3:
+            [DeviceDetailMapView setMapType:MKMapTypeSatellite];
+            break;
+        default:
+            [DeviceDetailMapView setMapType:MKMapTypeStandard];
+            break;
+    }
 }
 
 - (void)didReceiveMemoryWarning

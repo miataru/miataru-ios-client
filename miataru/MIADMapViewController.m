@@ -35,7 +35,23 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
     
+    switch (map_type)
+    {
+        case 1:
+            [DevicesMapView setMapType:MKMapTypeStandard];
+            break;
+        case 2:
+            [DevicesMapView setMapType:MKMapTypeHybrid];
+            break;
+        case 3:
+            [DevicesMapView setMapType:MKMapTypeSatellite];
+            break;
+        default:
+            [DevicesMapView setMapType:MKMapTypeStandard];
+            break;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
