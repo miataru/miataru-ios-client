@@ -384,7 +384,13 @@
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Device QR Code" id="KvP-zj-U88"/>
+                    <navigationItem key="navigationItem" title="Device QR Code" id="KvP-zj-U88">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="BDk-3I-Cbz">
+                            <connections>
+                                <action selector="ActionButtonPressed:" destination="A5T-DK-Gkm" id="gix-J9-hmQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="DeviceIDLabel" destination="cNP-O3-gx8" id="Acp-Dy-qEU"/>
                         <outlet property="QRCodeView" destination="15y-hf-e15" id="tYn-rh-iOe"/>
