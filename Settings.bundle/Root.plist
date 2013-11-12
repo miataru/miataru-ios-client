@@ -218,7 +218,6 @@
 				<string>300</string>
 				<string>400</string>
 				<string>500</string>
-				<string>1000</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -231,7 +230,6 @@
 				<string>300</string>
 				<string>400</string>
 				<string>500</string>
-				<string>1000</string>
 			</array>
 		</dict>
 	</array>
