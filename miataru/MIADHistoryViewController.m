@@ -32,6 +32,24 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
+    
+    switch (map_type)
+    {
+        case 1:
+            [HistoryMapView setMapType:MKMapTypeStandard];
+            break;
+        case 2:
+            [HistoryMapView setMapType:MKMapTypeHybrid];
+            break;
+        case 3:
+            [HistoryMapView setMapType:MKMapTypeSatellite];
+            break;
+        default:
+            [HistoryMapView setMapType:MKMapTypeStandard];
+            break;
+    }
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -123,14 +141,69 @@
     {
         // iterate through all available locations...
         for (id MiataruLocation in MiataruLocations) {
-            //if ([MiataruLocation isKindOfClass: [NSDictionary Class]])
-            
-            
-            NSLog(MiataruLocation);
-            
+            if (MiataruLocation != nil)
+            {
+                NSString* Lat = [MiataruLocation objectForKey:@"Latitude"];
+                NSString* Lon = [MiataruLocation objectForKey:@"Longitude"];
+                NSString* Timestamp = [MiataruLocation objectForKey:@"Timestamp"];
+                //NSString* DeviceID = [MiataruLocation objectForKey:@"Device"];
+               
+                
+                NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:[NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]]];
+                
+                if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
+                {
+                    // now get long and lat out and add pin to mapview
+                    CLLocationCoordinate2D DeviceCoordinates;
+                    
+                    DeviceCoordinates.latitude = [Lat doubleValue];
+                    DeviceCoordinates.longitude = [Lon doubleValue];
+                    if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
+                    {
+                        // Add the annotation to our map view
+                        PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates];
+                        [HistoryMapView addAnnotation:newAnnotation];
+                        NSLog(@"Added Annotation...");
+                    }
+                }
+            }
         }
+        [self zoomToFitMapAnnotations:HistoryMapView];
     }
 }
+
+- (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
+    if ([mapView2.annotations count] == 0) return;
+    
+    CLLocationCoordinate2D topLeftCoord;
+    topLeftCoord.latitude = -90;
+    topLeftCoord.longitude = 180;
+    
+    CLLocationCoordinate2D bottomRightCoord;
+    bottomRightCoord.latitude = 90;
+    bottomRightCoord.longitude = -180;
+    
+    for(id<MKAnnotation> annotation in mapView2.annotations) {
+        topLeftCoord.longitude = fmin(topLeftCoord.longitude, annotation.coordinate.longitude);
+        topLeftCoord.latitude = fmax(topLeftCoord.latitude, annotation.coordinate.latitude);
+        bottomRightCoord.longitude = fmax(bottomRightCoord.longitude, annotation.coordinate.longitude);
+        bottomRightCoord.latitude = fmin(bottomRightCoord.latitude, annotation.coordinate.latitude);
+    }
+    
+    MKCoordinateRegion region;
+    //MKCoordinateRegion region;
+    region.center.latitude = topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5;
+    region.center.longitude = topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5;
+    
+    // Adding edge map
+    region.span.latitudeDelta = fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * 1.5;
+    region.span.longitudeDelta = fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * 1.5;
+    
+    region = [mapView2 regionThatFits:region];
+    [mapView2 setRegion:region animated:NO];
+    
+}
+
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!

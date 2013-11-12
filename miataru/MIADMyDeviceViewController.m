@@ -9,6 +9,7 @@
 #import "MIADMyDeviceViewController.h"
 #import <QREncoder/QREncoder.h>
 
+
 static const CGFloat kPadding = 10;
 
 @interface MIADMyDeviceViewController ()
@@ -37,6 +38,57 @@ static const CGFloat kPadding = 10;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark Send-eMail
+
+- (IBAction)ActionButtonPressed:(id)sender {
+    if ([MFMailComposeViewController canSendMail])
+    {
+        MFMailComposeViewController *controller = [[MFMailComposeViewController alloc] init];
+        controller.mailComposeDelegate = self;
+        //[controller.navigationBar setBackgroundImage:[UIImage imageNamed:@"navigation_bg_iPhone.png"] forBarMetrics:UIBarMetricsDefault];
+        //controller.navigationBar.tintColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0];
+        [controller setSubject:@"my Miataru Device ID"];
+        
+        [controller setMessageBody:[NSString stringWithFormat:@"Hello,<br/> this is my Miataru Device ID: %@ <br/>", [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString]] isHTML:YES];
+        [controller setToRecipients:[NSArray arrayWithObjects:@"",nil]];
+        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        pasteboard.image = self.QRCodeView.image;
+        NSData *imageData = [NSData dataWithData:UIImagePNGRepresentation(self.QRCodeView.image)];
+        [controller addAttachmentData:imageData mimeType:@"image/png" fileName:@" "];
+        [self presentViewController:controller animated:YES completion:NULL];
+    }
+    else{
+        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"alrt" message:nil delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil] ;
+        [alert show];
+    }
+}
+
+-(void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+    
+//    [MailAlert show];
+//    switch (result)
+//    {
+//        case MFMailComposeResultCancelled:
+//            MailAlert.message = @"Email Cancelled";
+//            break;
+//        case MFMailComposeResultSaved:
+//            MailAlert.message = @"Email Saved";
+//            break;
+//        case MFMailComposeResultSent:
+//            MailAlert.message = @"Email Sent";
+//            break;
+//        case MFMailComposeResultFailed:
+//            MailAlert.message = @"Email Failed";
+//            break;
+//        default:
+//            MailAlert.message = @"Email Not Sent";
+//            break;
+//    }
+    [self dismissViewControllerAnimated:YES completion:NULL];
+//    [MailAlert show];
 }
 
 @end

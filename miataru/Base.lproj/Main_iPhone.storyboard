@@ -64,7 +64,13 @@
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="33" id="r15-lU-gil"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Device QR Code" id="qHX-VR-GTP"/>
+                    <navigationItem key="navigationItem" title="Device QR Code" id="qHX-VR-GTP">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="OCw-f6-2zr">
+                            <connections>
+                                <action selector="ActionButtonPressed:" destination="QUy-BD-bpt" id="rJc-uO-pIH"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="DeviceIDLabel" destination="AI1-zp-UXr" id="Gdg-Ka-S6f"/>
                         <outlet property="QRCodeView" destination="1WX-Gp-MCn" id="aGM-zT-dgY"/>
@@ -279,7 +285,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </mapView>
@@ -488,7 +494,7 @@ For more information please visit </string>
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
@@ -531,7 +537,7 @@ For more information please visit </string>
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" pitchEnabled="NO" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </mapView>
@@ -747,6 +753,8 @@ For more information please visit </string>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
