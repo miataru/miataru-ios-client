@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B1CA0E31837F67000715129 /* MIADDeviceEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1CA0E21837F67000715129 /* MIADDeviceEditViewController.m */; };
 		8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */; };
 		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
@@ -89,6 +90,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B1CA0E11837F67000715129 /* MIADDeviceEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceEditViewController.h; sourceTree = "<group>"; };
+		8B1CA0E21837F67000715129 /* MIADDeviceEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADDeviceEditViewController.m; sourceTree = "<group>"; };
 		8B1D1AC4182D7527006454AA /* MIADHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADHistoryViewController.h; sourceTree = "<group>"; };
 		8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
 		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
@@ -214,6 +217,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B1CA0DE1837F65500715129 /* DeviceEdit */ = {
+			isa = PBXGroup;
+			children = (
+				8B1CA0E11837F67000715129 /* MIADDeviceEditViewController.h */,
+				8B1CA0E21837F67000715129 /* MIADDeviceEditViewController.m */,
+			);
+			name = DeviceEdit;
+			sourceTree = "<group>";
+		};
 		8B1D1AC3182D74F0006454AA /* DeviceHistory */ = {
 			isa = PBXGroup;
 			children = (
@@ -353,6 +365,7 @@
 		8BB91C39181FB2D200C63DA1 /* DevicesTab */ = {
 			isa = PBXGroup;
 			children = (
+				8B1CA0DE1837F65500715129 /* DeviceEdit */,
 				8BB91C41181FB2FD00C63DA1 /* DeviceDetails */,
 				8BB91C3D181FB2EF00C63DA1 /* AddADevice */,
 				8BB91C3A181FB2EA00C63DA1 /* MIADDevicesTableViewController.h */,
@@ -661,6 +674,7 @@
 				8BB91BF6181FB08700C63DA1 /* IASKSettingsStoreUserDefaults.m in Sources */,
 				8BB91C5B181FB36E00C63DA1 /* PositionPin.m in Sources */,
 				8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */,
+				8B1CA0E31837F67000715129 /* MIADDeviceEditViewController.m in Sources */,
 				8BB91BFC181FB08700C63DA1 /* IASKSwitch.m in Sources */,
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
 				8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */,

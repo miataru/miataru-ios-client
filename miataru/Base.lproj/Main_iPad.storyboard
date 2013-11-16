@@ -737,7 +737,6 @@ For more information please visit </string>
         <image name="FirstRunWizardBackground_softened" width="480" height="498"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
-        <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

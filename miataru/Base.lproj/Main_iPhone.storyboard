@@ -225,11 +225,11 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="hRL-vf-03S" detailTextLabel="eI3-Ia-xKM" style="IBUITableViewCellStyleSubtitle" id="6lD-GQ-3Eb">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="detailDisclosureButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="hRL-vf-03S" detailTextLabel="eI3-Ia-xKM" style="IBUITableViewCellStyleSubtitle" id="6lD-GQ-3Eb">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6lD-GQ-3Eb" id="i2B-Sf-DPJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="253" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hRL-vf-03S">
@@ -249,7 +249,8 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="BuP-gn-PIf" kind="push" identifier="PushToDeviceDetails" id="kOI-mr-RaN"/>
+                                    <segue destination="Lc1-aD-afX" kind="push" identifier="PushToDeviceEdit" trigger="accessoryAction" id="vEN-nG-Dzk"/>
+                                    <segue destination="BuP-gn-PIf" kind="push" identifier="PushToDeviceDetails" id="Wqb-KA-H1E"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -481,6 +482,31 @@ For more information please visit </string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GeV-8r-swQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="195" y="-346"/>
+        </scene>
+        <!--Device Edit View Controller-->
+        <scene sceneID="qVQ-7y-33t">
+            <objects>
+                <viewController id="Lc1-aD-afX" customClass="MIADDeviceEditViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hgf-DK-2YI"/>
+                        <viewControllerLayoutGuide type="bottom" id="Yck-HA-fkz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="q2f-Rc-HZ6">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="QbR-8J-2oB">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="XPf-fz-eHV">
+                            <connections>
+                                <action selector="DoneButtonPressed:" destination="Lc1-aD-afX" id="04l-dv-oam"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Zec-H5-h0F" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1272" y="-1341"/>
         </scene>
         <!--Device Details View Controller - Details-->
         <scene sceneID="NOf-4O-ete">
