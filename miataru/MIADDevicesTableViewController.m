@@ -8,6 +8,7 @@
 
 #import "MIADDevicesTableViewController.h"
 #import "MIADDeviceDetailsViewController.h"
+#import "MIADEditDeviceViewController.h"
 #import "MIADFirstStartWizardRootViewController.h"
 #import "KnownDevice.h"
 #import "PassedTimeDateFormatter.h"
@@ -232,6 +233,17 @@
        
         ((MIADDeviceDetailsViewController*)segue.destinationViewController).DetailDevice = detailDevice;
     }
+    else
+        if ([segue.identifier isEqualToString:@"PushToDeviceEdit"]) {
+           
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+            //Dev
+            KnownDevice *editDevice = self.known_devices[indexPath.row];
+            editDevice.KnownDevicesTablePosition = indexPath.row;
+            
+            ((MIADEditDeviceViewController*)segue.destinationViewController).delegate = self;
+            ((MIADEditDeviceViewController*)segue.destinationViewController).EditDevice = editDevice;
+        }
 }
 
 
@@ -310,5 +322,20 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - Edit a Device Delegate
+
+- (void)editADeviceTableViewControllerDidFinish:(MIADEditDeviceViewController *)inController knownDevice:(KnownDevice *)inDevice
+{
+    NSLog(@"Saving...");
+    if (inDevice)
+    {
+        KnownDevice *editDevice = self.known_devices[inDevice.KnownDevicesTablePosition];
+        editDevice.DeviceName = inDevice.DeviceName;
+        
+        [self.tableView reloadData];
+        [self saveKnownDevices];
+        return;
+    }
+}
 
 @end

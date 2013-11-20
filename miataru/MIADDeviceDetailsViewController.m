@@ -125,6 +125,17 @@
 }
 
 #pragma mark MapView Delegate Methods
+-(MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id)overlay
+{
+    MKCircleView *circleView = [[MKCircleView alloc] initWithOverlay:overlay];
+//    circleView.strokeColor = [UIColor redColor];
+//    circleView.lineWidth = 2;
+    circleView.fillColor = [UIColor blueColor];
+    circleView.opaque = true;
+    circleView.alpha = 0.1;
+    return circleView;
+}
+
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
     
@@ -249,6 +260,7 @@
         {
             NSString* Lat = [MiataruLocations[0] objectForKey:@"Latitude"];
             NSString* Lon = [MiataruLocations[0] objectForKey:@"Longitude"];
+            NSString* Accuracy = [MiataruLocations[0] objectForKey:@"HorizontalAccuracy"];
             NSString* Timestamp = [MiataruLocations[0] objectForKey:@"Timestamp"];
         
             if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
@@ -256,6 +268,14 @@
                 // now get long and lat out and add pin to mapview
                 DeviceCoordinates.latitude = [Lat doubleValue];
                 DeviceCoordinates.longitude = [Lon doubleValue];
+                
+                double DeviceAccuracy = 5;
+                
+                if (Accuracy != nil && [Accuracy class] != [NSNull class])
+                {
+                    DeviceAccuracy = [Accuracy doubleValue];
+                }
+                
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                 {
                     if (self.LastLatitude != DeviceCoordinates.latitude && self.LastLongitude != DeviceCoordinates.longitude)
@@ -275,13 +295,22 @@
                         NSString* DeviceName = [NSString stringWithFormat:@"%@ - %@",self.DetailDevice.DeviceName,TimeString];
                         
                         // clear all others...
+                        [self.DeviceDetailMapView removeOverlays:self.DeviceDetailMapView.overlays];
                         [self.DeviceDetailMapView removeAnnotations:self.DeviceDetailMapView.annotations];
-                        
+
                         //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
                         // Add the annotation to our map view
                         MapAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
                         [self.DeviceDetailMapView addAnnotation:MapAnnotation];
                         NSLog(@"Added Annotation...");
+                        
+                        if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"indicate_accuracy_on_map"] == 1 )
+                        {
+                            NSLog(@"Drawing Overlay...");
+                            MKCircle *circle = [MKCircle circleWithCenterCoordinate:DeviceCoordinates radius:DeviceAccuracy];
+                            [self.DeviceDetailMapView addOverlay:circle];
+                        }
+                        
                         //[newAnnotation release];
                         [self zoomToFitMapAnnotations:DeviceDetailMapView];
                         

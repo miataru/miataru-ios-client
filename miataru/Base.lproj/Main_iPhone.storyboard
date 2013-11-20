@@ -249,8 +249,8 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="Lc1-aD-afX" kind="push" identifier="PushToDeviceEdit" trigger="accessoryAction" id="vEN-nG-Dzk"/>
                                     <segue destination="BuP-gn-PIf" kind="push" identifier="PushToDeviceDetails" id="Wqb-KA-H1E"/>
+                                    <segue destination="0Xv-eN-zor" kind="push" identifier="PushToDeviceEdit" trigger="accessoryAction" id="2MX-vO-qCa"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -483,30 +483,72 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="195" y="-346"/>
         </scene>
-        <!--Device Edit View Controller-->
-        <scene sceneID="qVQ-7y-33t">
+        <!--Edit Device View Controller-->
+        <scene sceneID="3VX-U7-xw9">
             <objects>
-                <viewController id="Lc1-aD-afX" customClass="MIADDeviceEditViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="hgf-DK-2YI"/>
-                        <viewControllerLayoutGuide type="bottom" id="Yck-HA-fkz"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="q2f-Rc-HZ6">
+                <tableViewController id="0Xv-eN-zor" customClass="MIADEditDeviceViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="twv-q6-Vca">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="QbR-8J-2oB">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="XPf-fz-eHV">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <sections>
+                            <tableViewSection headerTitle="Device Information" id="obR-t0-ya2">
+                                <cells>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="22h-u8-va9">
+                                        <rect key="frame" x="0.0" y="119" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="22h-u8-va9" id="bN9-2o-wco">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Device Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="G4V-n3-kve">
+                                                    <rect key="frame" x="20" y="7" width="280" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Xrh-py-ZcB">
+                                        <rect key="frame" x="0.0" y="163" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xrh-py-ZcB" id="Bay-UM-1hN">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Device ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="f2Z-HJ-44a">
+                                                    <rect key="frame" x="20" y="7" width="280" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="0Xv-eN-zor" id="aiK-ug-AE4"/>
+                            <outlet property="delegate" destination="0Xv-eN-zor" id="YzY-LB-m2N"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="vjp-mE-Nau">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="xUo-Ej-ONm">
                             <connections>
-                                <action selector="DoneButtonPressed:" destination="Lc1-aD-afX" id="04l-dv-oam"/>
+                                <action selector="SaveButtonPressed:" destination="0Xv-eN-zor" id="1BB-Qg-bEq"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Zec-H5-h0F" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                    <connections>
+                        <outlet property="DeviceIDTextField" destination="f2Z-HJ-44a" id="lyo-5H-Xqz"/>
+                        <outlet property="DeviceNameTextfield" destination="G4V-n3-kve" id="wjm-UB-7cu"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zIn-S9-9PQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="-1341"/>
+            <point key="canvasLocation" x="1272" y="-1345"/>
         </scene>
         <!--Device Details View Controller - Details-->
         <scene sceneID="NOf-4O-ete">
@@ -656,7 +698,7 @@ For more information please visit </string>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="TGg-c8-cjP">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
@@ -779,6 +821,8 @@ For more information please visit </string>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_Map" width="30" height="30"/>
+        <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>

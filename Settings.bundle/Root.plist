@@ -198,6 +198,24 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
+			<string>Indicate Accuracy</string>
+			<key>FooterText</key>
+			<string>Do you want a blue circle around the pin on the map to indicate the position accuracy?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>indicate_accuracy_on_map</string>
+			<key>Title</key>
+			<string>Indicate Location Accuracy</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
 			<string>History Items</string>
 			<key>FooterText</key>
 			<string>How many old positions do you want to have displayed in the device location history?</string>

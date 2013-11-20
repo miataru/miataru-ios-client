@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "MIADAddADeviceTableViewController.h"
+#import "MIADEditDeviceViewController.h"
 
-@interface MIADDevicesTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, MIADAddADeviceTableViewControllerDelegate>
+@interface MIADDevicesTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, MIADAddADeviceTableViewControllerDelegate, MIADEditADeviceTableViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *KnownDevicesTableView;
 

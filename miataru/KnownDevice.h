@@ -14,9 +14,11 @@
 
 @property (strong) NSString *DeviceName;
 @property (strong) NSString *DeviceID;
+@property int KnownDevicesTablePosition;
 
 @property (strong) NSDate *LastUpdate;
 @property CLLocationCoordinate2D LastKnownLocation;
+@property double LastKnownAccuracy;
 
 + (id) DeviceWithName:(NSString*)inName DeviceID:(NSString*)inDeviceID;
 -(void)setUpdateTime:(NSDate*)NewUpdateDateTime;
