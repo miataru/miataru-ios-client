@@ -12,6 +12,9 @@
 #import "PositionPin.h"
 #import "PassedTimeDateFormatter.h"
 #import "MIADHistoryViewController.h"
+#import "ZSPinAnnotation.h"
+
+#define RGB(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
 
 @implementation MIADDeviceDetailsViewController
 
@@ -149,26 +152,27 @@
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
-    
     NSLog(@"viewForAnnotation");
-//    static NSString *identifier = @"MyLocation";
-//    if ([annotation isKindOfClass:[PositionPin class]]) {
-//        
-//        MKPinAnnotationView *annotationView = (MKPinAnnotationView *) [DeviceDetailMapView dequeueReusableAnnotationViewWithIdentifier:identifier];
-//        if (annotationView == nil) {
-//            annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
-//        } else {
-//            annotationView.annotation = annotation;
-//        }
-//        
-//        annotationView.enabled = YES;
-//        annotationView.canShowCallout = YES;
-//        //annotationView.image=[UIImage imageNamed:@"Icon.png"];//here we use a nice image instead of the default pins
-//        
-//        return annotationView;
-//    }
+
+    // Don't mess with user location
+	if(![annotation isKindOfClass:[PositionPin class]])
+        return nil;
     
-    return nil;
+    PositionPin *a = (PositionPin *)annotation;
+    static NSString *defaultPinID = @"StandardIdentifier";
+    
+    // Create the ZSPinAnnotation object and reuse it
+    ZSPinAnnotation *pinView = (ZSPinAnnotation *)[mapView dequeueReusableAnnotationViewWithIdentifier:defaultPinID];
+    if (pinView == nil){
+        pinView = [[ZSPinAnnotation alloc] initWithAnnotation:annotation reuseIdentifier:defaultPinID];
+    }
+    
+    // Set the type of pin to draw and the color
+    pinView.annotationType = a.type;
+    pinView.annotationColor = a.color;
+    pinView.canShowCallout = YES;
+    
+    return pinView;
 }
 
 - (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
@@ -312,8 +316,8 @@
 
                         //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
                         // Add the annotation to our map view
-                        MapAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
-
+                        MapAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates andColor:DetailDevice.DeviceColor];
+                        
                         [self.DeviceDetailMapView addAnnotation:MapAnnotation];
                         NSLog(@"Added Annotation...");
                         

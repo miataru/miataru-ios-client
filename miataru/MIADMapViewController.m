@@ -172,7 +172,25 @@
 {
     NSLog(@"viewForAnnotation");
     
-    return nil;
+    // Don't mess with user location
+	if(![annotation isKindOfClass:[PositionPin class]])
+        return nil;
+    
+    PositionPin *a = (PositionPin *)annotation;
+    static NSString *defaultPinID = @"StandardIdentifier";
+    
+    // Create the ZSPinAnnotation object and reuse it
+    ZSPinAnnotation *pinView = (ZSPinAnnotation *)[mapView dequeueReusableAnnotationViewWithIdentifier:defaultPinID];
+    if (pinView == nil){
+        pinView = [[ZSPinAnnotation alloc] initWithAnnotation:annotation reuseIdentifier:defaultPinID];
+    }
+    
+    // Set the type of pin to draw and the color
+    pinView.annotationType = a.type;
+    pinView.annotationColor = a.color;
+    pinView.canShowCallout = YES;
+    
+    return pinView;
 }
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
@@ -238,6 +256,7 @@
             NSString* Timestamp = [MiataruLocations[0] objectForKey:@"Timestamp"];
             NSString* DeviceID = [MiataruLocations[0] objectForKey:@"Device"];
             NSString* DeviceName = @"MiataruDevice";
+            UIColor* DeviceColor;
             
             // get the device name from the known_devices list...
             for(KnownDevice *kDevice in self.known_devices)
@@ -245,6 +264,7 @@
                 if([kDevice.DeviceID isEqualToString:DeviceID])
                 {
                     DeviceName = kDevice.DeviceName;
+                    DeviceColor = kDevice.DeviceColor;
                     break;
                 }
             }
@@ -264,7 +284,7 @@
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                 {
                     // Add the annotation to our map view
-                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates];
+                    PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates andColor:DeviceColor];
                     [DevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
                     //[newAnnotation release];

@@ -14,6 +14,7 @@
 
 @synthesize HistoryMapView;
 @synthesize mapScaleView;
+@synthesize rainbow_hue;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,6 +29,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    rainbow_hue = 0.0;  // the hue to start with...
+    
 	// Do any additional setup after loading the view.
     NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];
     
@@ -94,14 +98,32 @@
 #pragma mark MapView Delegate Methods
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
-    NSLog(@"viewForAnnotation");
+    //NSLog(@"viewForAnnotation");
     
-    return nil;
+    // Don't mess with user location
+	if(![annotation isKindOfClass:[PositionPin class]])
+        return nil;
+    
+    PositionPin *a = (PositionPin *)annotation;
+    static NSString *defaultPinID = @"StandardIdentifier";
+    
+    // Create the ZSPinAnnotation object and reuse it
+    ZSPinAnnotation *pinView = (ZSPinAnnotation *)[mapView dequeueReusableAnnotationViewWithIdentifier:defaultPinID];
+    if (pinView == nil){
+        pinView = [[ZSPinAnnotation alloc] initWithAnnotation:annotation reuseIdentifier:defaultPinID];
+    }
+    
+    // Set the type of pin to draw and the color
+    pinView.annotationType = a.type;
+    pinView.annotationColor = a.color;
+    pinView.canShowCallout = YES;
+    
+    return pinView;
 }
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
-    NSLog(@"didaddannotation");
+    //NSLog(@"didaddannotation");
     //    MKAnnotationView *annotationView = [views objectAtIndex:0];
     //    id <MKAnnotation> mp = [annotationView annotation];
     //    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
@@ -168,6 +190,11 @@
                 
                 NSDate* TimestampOfPin = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
 
+                UIColor *color = [UIColor colorWithHue:0.5
+                                          saturation:1.0
+                                          brightness:1.0
+                                          alpha:1.0];
+                
                 if ( [PassedTimeDateFormatter isWithinDayRange:TimestampOfPin DayRange:number_of_days_to_show] )
                 {
                     NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:TimestampOfPin];
@@ -182,9 +209,9 @@
                         if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                         {
                             // Add the annotation to our map view
-                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates];
+                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates andColor:color];
                             [HistoryMapView addAnnotation:newAnnotation];
-                            NSLog(@"Added Annotation...");
+                            //NSLog(@"Added Annotation...");
                         }
                     }
                 }

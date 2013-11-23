@@ -16,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet MKMapView *HistoryMapView;
 @property LXMapScaleView* mapScaleView;
 
+@property float rainbow_hue;
+
 @property (strong) NSMutableData *responseData;
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;

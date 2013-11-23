@@ -8,6 +8,8 @@
 
 #import "KnownDevice.h"
 
+//#define RGB(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
+
 @implementation KnownDevice
 
 + (id) DeviceWithName:(NSString*)inName DeviceID:(NSString*)inDeviceID;
@@ -16,6 +18,7 @@
 
     device.DeviceName = inName;
     device.DeviceID = inDeviceID;
+    device.DeviceColor = [UIColor redColor];
    
     return device;
 }
@@ -30,6 +33,7 @@
     [aCoder encodeObject:self.DeviceName forKey:@"DeviceName"];
     [aCoder encodeObject:self.DeviceID forKey:@"DeviceID"];
     [aCoder encodeObject:self.LastUpdate forKey:@"LastUpdate"];
+    [aCoder encodeObject:self.DeviceColor forKey:@"DeviceColor"];
     
     if (CLLocationCoordinate2DIsValid(self.LastKnownLocation))
     {
@@ -50,6 +54,7 @@
     self.DeviceID = [aDecoder decodeObjectForKey:@"DeviceID"];
     self.DeviceName = [aDecoder decodeObjectForKey:@"DeviceName"];
     self.LastUpdate = [aDecoder decodeObjectForKey:@"LastUpdate"];
+    self.DeviceColor = [aDecoder decodeObjectForKey:@"DeviceColor"];
    
     NSString *hash = [aDecoder decodeObjectForKey:@"LastKnownLocation"];
     
