@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import "PositionPin.h"
+#import "LXMapScaleView.h"
 
 @class KnownDevice;
 
@@ -27,6 +28,8 @@
 @property double LastAccuracy;
 
 @property (weak, nonatomic) IBOutlet MKMapView *DeviceDetailMapView;
+
+@property LXMapScaleView* mapScaleView;
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 

@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "406902562.186983"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "384"
-            endingLineNumber = "384"
+            startingLineNumber = "391"
+            endingLineNumber = "391"
             landmarkName = "-GetLocationForDeviceFromMiataruServer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "406672096.443051"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "250"
-            endingLineNumber = "250"
+            startingLineNumber = "257"
+            endingLineNumber = "257"
             landmarkName = "-connectionDidFinishLoading:"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "406672096.443051"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "227"
-            endingLineNumber = "227"
+            startingLineNumber = "234"
+            endingLineNumber = "234"
             landmarkName = "-connection:didReceiveData:"
             landmarkType = "5">
          </BreakpointContent>
@@ -168,11 +168,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "405891834.675262"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "-viewWillDisappear:"
             landmarkType = "5">
          </BreakpointContent>
@@ -420,11 +420,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "406902562.186983"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "289"
-            endingLineNumber = "289"
+            startingLineNumber = "296"
+            endingLineNumber = "296"
             landmarkName = "-connectionDidFinishLoading:"
             landmarkType = "5">
          </BreakpointContent>
@@ -436,11 +436,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "406902562.186983"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "400"
-            endingLineNumber = "400"
+            startingLineNumber = "407"
+            endingLineNumber = "407"
             landmarkName = "-GetLocationForDeviceFromMiataruServer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -452,11 +452,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "405891834.675262"
+            timestampString = "406906668.236061"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>

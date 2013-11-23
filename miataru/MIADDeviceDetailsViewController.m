@@ -20,6 +20,7 @@
 @synthesize DeviceCoordinates;
 @synthesize MapAnnotation;
 @synthesize DetailDevice;
+@synthesize mapScaleView;
 
 - (void)viewDidLoad
 {
@@ -42,6 +43,12 @@
             [DeviceDetailMapView setMapType:MKMapTypeStandard];
             break;
     }
+    
+    // here comes the interesting part
+	// get a handle to the map scale view of our mapView (by eventually installing one first)
+	mapScaleView = [LXMapScaleView mapScaleForMapView:DeviceDetailMapView];
+    mapScaleView.position = kLXMapScalePositionTopLeft;
+	mapScaleView.style = kLXMapScaleStyleBar;
 }
 
 - (void)didReceiveMemoryWarning
@@ -429,6 +436,14 @@
     if ([segue.identifier isEqualToString:@"PushToDeviceHistory"]) {
         ((MIADHistoryViewController*)segue.destinationViewController).HistoryDevice = self.DetailDevice;
     }
+}
+
+#pragma mark MapScale
+- (void)mapView:(MKMapView*)aMapView regionDidChangeAnimated:(BOOL)aAnimated
+{
+	// the map scale will retrieve the current state of the mapView it is attached to
+	// and update itself accordingly
+	[mapScaleView update];
 }
 
 
