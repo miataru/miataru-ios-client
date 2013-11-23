@@ -198,7 +198,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Indicate Accuracy</string>
+			<string>Accuracy Indicator</string>
 			<key>FooterText</key>
 			<string>Do you want a blue circle around the pin on the map to indicate the position accuracy?</string>
 		</dict>
@@ -216,38 +216,44 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>History Items</string>
+			<string>History Days</string>
 			<key>FooterText</key>
-			<string>How many old positions do you want to have displayed in the device location history?</string>
+			<string>How many days shall be displayed in the history view?</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<string>25</string>
+			<string>5</string>
 			<key>Key</key>
-			<string>history_number_of_items</string>
+			<string>history_number_of_days</string>
 			<key>Title</key>
-			<string>Number of History Items</string>
+			<string>Days of History</string>
 			<key>Titles</key>
 			<array>
-				<string>25</string>
-				<string>50</string>
-				<string>100</string>
-				<string>200</string>
-				<string>300</string>
-				<string>400</string>
-				<string>500</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
+				<string>6</string>
+				<string>7</string>
+				<string>14</string>
+				<string>31</string>
+				<string>All available</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Values</key>
 			<array>
-				<string>25</string>
-				<string>50</string>
-				<string>100</string>
-				<string>200</string>
-				<string>300</string>
-				<string>400</string>
-				<string>500</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
+				<string>6</string>
+				<string>7</string>
+				<string>14</string>
+				<string>31</string>
+				<string>10000000</string>
 			</array>
 		</dict>
 	</array>

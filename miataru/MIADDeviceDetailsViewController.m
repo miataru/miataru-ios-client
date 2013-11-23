@@ -245,7 +245,7 @@
     //NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: self.responseData options: NSJSONReadingMutableContainers error: &err];
     
     NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@",strData );
+    //NSLog(@"%@",strData );
     
     NSDictionary* jsonArray = [NSJSONSerialization
                           JSONObjectWithData:self.responseData //1
@@ -278,10 +278,11 @@
                 
                 if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                 {
-                    if (self.LastLatitude != DeviceCoordinates.latitude && self.LastLongitude != DeviceCoordinates.longitude)
+                    if (self.LastLatitude != DeviceCoordinates.latitude || self.LastLongitude != DeviceCoordinates.longitude || self.LastAccuracy != DeviceAccuracy)
                     {
                         self.LastLatitude = DeviceCoordinates.latitude;
                         self.LastLongitude = DeviceCoordinates.longitude;
+                        self.LastAccuracy = DeviceAccuracy;
                         
                         //NSDate *startdate = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
                         
@@ -340,16 +341,16 @@
             }
         }
     }
-    self.map_update_timer_should_stop = true;
+    //self.map_update_timer_should_stop = true;
     // if we end up here, there has been an error...
-    NSString *message = [NSString stringWithFormat:@"Device %@ could not be found.", self.DetailDevice.DeviceName];
+    //NSString *message = [NSString stringWithFormat:@"Device %@ could not be found.", self.DetailDevice.DeviceName];
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
-    [alert show];
+    [alert show];*/
     // TODO: transition back
     //[self.navigationController popToRootViewControllerAnimated:YES];
 }
@@ -366,7 +367,7 @@
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Connection failed: %@",error);
-    self.map_update_timer_should_stop = true;
+    //self.map_update_timer_should_stop = true;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 

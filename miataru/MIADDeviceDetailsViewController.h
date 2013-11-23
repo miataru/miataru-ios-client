@@ -24,6 +24,7 @@
 @property BOOL map_update_timer_should_stop;
 @property double LastLatitude;
 @property double LastLongitude;
+@property double LastAccuracy;
 
 @property (weak, nonatomic) IBOutlet MKMapView *DeviceDetailMapView;
 

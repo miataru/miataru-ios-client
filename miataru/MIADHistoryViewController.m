@@ -136,6 +136,9 @@
                                error:&err];
     
     NSArray* MiataruLocations = [jsonArray objectForKey:@"MiataruLocation"]; //2
+
+    // how many days should we display?
+    long number_of_days_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_days"];
     
     if (MiataruLocations != nil && [MiataruLocations class] != [NSNull class])
     {
@@ -147,23 +150,27 @@
                 NSString* Lon = [MiataruLocation objectForKey:@"Longitude"];
                 NSString* Timestamp = [MiataruLocation objectForKey:@"Timestamp"];
                 //NSString* DeviceID = [MiataruLocation objectForKey:@"Device"];
-               
                 
-                NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:[NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]]];
-                
-                if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
+                NSDate* TimestampOfPin = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
+
+                if ( [PassedTimeDateFormatter isWithinDayRange:TimestampOfPin DayRange:number_of_days_to_show] )
                 {
-                    // now get long and lat out and add pin to mapview
-                    CLLocationCoordinate2D DeviceCoordinates;
+                    NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:TimestampOfPin];
                     
-                    DeviceCoordinates.latitude = [Lat doubleValue];
-                    DeviceCoordinates.longitude = [Lon doubleValue];
-                    if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
+                    if (Lat != nil && Lon != nil && [Lat class] != [NSNull class] && [Lon class] != [NSNull class])
                     {
-                        // Add the annotation to our map view
-                        PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates];
-                        [HistoryMapView addAnnotation:newAnnotation];
-                        NSLog(@"Added Annotation...");
+                        // now get long and lat out and add pin to mapview
+                        CLLocationCoordinate2D DeviceCoordinates;
+                        
+                        DeviceCoordinates.latitude = [Lat doubleValue];
+                        DeviceCoordinates.longitude = [Lon doubleValue];
+                        if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
+                        {
+                            // Add the annotation to our map view
+                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates];
+                            [HistoryMapView addAnnotation:newAnnotation];
+                            NSLog(@"Added Annotation...");
+                        }
                     }
                 }
             }
@@ -219,9 +226,10 @@
     /*
      ￼{"MiataruGetLocation": [{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}
      */
-    int number_of_items_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_items"];
-    
-    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",device.DeviceID,number_of_items_to_show];
+    //int number_of_items_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_items"];
+
+    // get as much as possible, but up to 1024 entries...
+    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",device.DeviceID,1024];
     
     self.responseData = [NSMutableData data];
     

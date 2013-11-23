@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface PassedTimeDateFormatter : NSObject<NSURLConnectionDelegate>
+@interface PassedTimeDateFormatter : NSObject
 
 + (NSString*)dateToStringInterval:(NSDate*)pastDate;
++ (bool)isWithinDayRange:(NSDate*)PastDate DayRange:(long)dayRange;
 
 @end

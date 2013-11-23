@@ -52,5 +52,23 @@
     return intervalString;
 }
 
++ (bool)isWithinDayRange:(NSDate*)PastDate DayRange:(long)dayRange
+{
+    // Get the system calendar
+    NSCalendar *sysCalendar = [NSCalendar currentCalendar];
+    
+    // Create the current date
+    NSDate *currentDate = [[NSDate alloc] init];
+    
+    // Get conversion to months, days, hours, minutes
+    unsigned int unitFlags = NSDayCalendarUnit;
+    
+    NSDateComponents *breakdownInfo = [sysCalendar components:unitFlags fromDate:currentDate  toDate:PastDate  options:0];
+
+    if (-[breakdownInfo day] <= dayRange)
+        return true;
+        
+    return false;
+}
 
 @end
