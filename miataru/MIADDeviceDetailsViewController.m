@@ -47,8 +47,13 @@
     // here comes the interesting part
 	// get a handle to the map scale view of our mapView (by eventually installing one first)
 	mapScaleView = [LXMapScaleView mapScaleForMapView:DeviceDetailMapView];
-    mapScaleView.position = kLXMapScalePositionTopLeft;
+    mapScaleView.position = kLXMapScalePositionBottomRight;
 	mapScaleView.style = kLXMapScaleStyleBar;
+    //mapScaleView.style = kLXMapScaleStyleTapeMeasure;
+    mapScaleView.alpha = 0.7;
+    mapScaleView.maxWidth = 150;
+    
+    [mapScaleView update];
 }
 
 - (void)didReceiveMemoryWarning
@@ -56,7 +61,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 #pragma mark --- Timer related stuff here
 
@@ -251,7 +255,7 @@
     NSError *err = nil;
     //NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: self.responseData options: NSJSONReadingMutableContainers error: &err];
     
-    NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
+    //NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
     //NSLog(@"%@",strData );
     
     NSDictionary* jsonArray = [NSJSONSerialization
@@ -309,6 +313,7 @@
                         //NSString* PinTitle = @"%@",self.DetailDevice.DeviceName;
                         // Add the annotation to our map view
                         MapAnnotation = [[PositionPin alloc] initWithTitle:DeviceName andCoordinate:DeviceCoordinates];
+
                         [self.DeviceDetailMapView addAnnotation:MapAnnotation];
                         NSLog(@"Added Annotation...");
                         

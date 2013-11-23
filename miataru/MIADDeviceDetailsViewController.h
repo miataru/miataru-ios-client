@@ -15,7 +15,6 @@
 
 @interface MIADDeviceDetailsViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
-
 @property (strong) KnownDevice *DetailDevice;
 @property (strong) NSMutableData *responseData;
 @property (strong) NSDate *DeviceDetail_UpdateDateTime;
@@ -34,4 +33,5 @@
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views;
+
 @end

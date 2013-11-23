@@ -655,7 +655,7 @@ static int RS_BLOCK_TABLE[][7] = {
 - (QRBitBuffer *)getData {
   QRBitBuffer *buffer = [[QRBitBuffer alloc] init];
   [buffer append:4 length:4];
-  [buffer append:[_str length] length:8];
+  [buffer append:(int)[_str length] length:8];
 
   for(int i = 0; i < [_str length]; i++) {
     unichar c = [_str characterAtIndex:i];

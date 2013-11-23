@@ -10,13 +10,10 @@
 #import "PassedTimeDateFormatter.h"
 #import "PositionPin.h"
 
-@interface MIADHistoryViewController ()
-
-@end
-
 @implementation MIADHistoryViewController
 
 @synthesize HistoryMapView;
+@synthesize mapScaleView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -49,7 +46,17 @@
             [HistoryMapView setMapType:MKMapTypeStandard];
             break;
     }
-
+    
+    // here comes the interesting part
+	// get a handle to the map scale view of our mapView (by eventually installing one first)
+	mapScaleView = [LXMapScaleView mapScaleForMapView:HistoryMapView];
+    mapScaleView.position = kLXMapScalePositionBottomRight;
+	mapScaleView.style = kLXMapScaleStyleBar;
+    //mapScaleView.style = kLXMapScaleStyleTapeMeasure;
+    mapScaleView.alpha = 0.7;
+    mapScaleView.maxWidth = 150;
+    
+    [mapScaleView update];
 }
 
 - (void)didReceiveMemoryWarning
@@ -100,6 +107,14 @@
     //    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
     //    [mapView setRegion:region animated:YES];
     
+}
+
+#pragma mark MapScale
+- (void)mapView:(MKMapView*)aMapView regionDidChangeAnimated:(BOOL)aAnimated
+{
+	// the map scale will retrieve the current state of the mapView it is attached to
+	// and update itself accordingly
+	[mapScaleView update];
 }
 
 #pragma mark NSURLConnection Delegate Methods

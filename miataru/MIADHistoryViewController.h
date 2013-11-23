@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "KnownDevice.h"
+#import "LXMapScaleView.h"
 
 @interface MIADHistoryViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
 @property (strong) KnownDevice *HistoryDevice;
 @property (weak, nonatomic) IBOutlet MKMapView *HistoryMapView;
+@property LXMapScaleView* mapScaleView;
 
 @property (strong) NSMutableData *responseData;
 

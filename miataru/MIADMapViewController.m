@@ -11,25 +11,10 @@
 #import "PositionPin.h"
 #import "PassedTimeDateFormatter.h"
 
-
-@interface MIADMapViewController ()
-
-@property (strong) NSMutableArray *known_devices;
-
-@end
-
 @implementation MIADMapViewController
 
 @synthesize DevicesMapView;
-
-//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-//{
-//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-//    if (self) {
-//        // Custom initialization
-//    }
-//    return self;
-//}
+@synthesize mapScaleView;
 
 - (void)viewDidLoad
 {
@@ -52,6 +37,15 @@
             [DevicesMapView setMapType:MKMapTypeStandard];
             break;
     }
+    // here comes the interesting part
+	// get a handle to the map scale view of our mapView (by eventually installing one first)
+	mapScaleView = [LXMapScaleView mapScaleForMapView:DevicesMapView];
+    mapScaleView.position = kLXMapScalePositionBottomRight;
+	mapScaleView.style = kLXMapScaleStyleBar;
+    mapScaleView.alpha = 0.7;
+    mapScaleView.maxWidth = 150;
+    
+    [mapScaleView update];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -189,6 +183,15 @@
 //    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance([mp coordinate], 1000,1000);
 //    [mapView setRegion:region animated:YES];
     
+}
+
+#pragma mark MapScale
+- (void)mapView:(MKMapView*)aMapView regionDidChangeAnimated:(BOOL)aAnimated
+{
+    NSLog(@"regionchanged");
+	// the map scale will retrieve the current state of the mapView it is attached to
+	// and update itself accordingly
+	[mapScaleView update];
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -369,5 +372,4 @@
     
     NSLog(@"Getting Update from to Miataru Service...");
 }
-
 @end

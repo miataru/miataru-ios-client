@@ -13,7 +13,6 @@
     
 	NSString *title;
 	CLLocationCoordinate2D coordinate;
-    
 }
 
 @property (nonatomic, copy) NSString *title;

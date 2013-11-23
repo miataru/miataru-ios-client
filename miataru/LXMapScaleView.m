@@ -10,7 +10,7 @@
 
 static const CGRect kDefaultViewRect = {{0,0},{160,30}};
 static const CGFloat kMinimumWidth = 100.0f;
-static const UIEdgeInsets kDefaultPadding = {100,100,100,100};
+static const UIEdgeInsets kDefaultPadding = {5,5,40,0};
 
 static const double kFeetPerMeter = 1.0/0.3048;
 static const double kFeetPerMile = 5280.0;
@@ -96,12 +96,12 @@ static const double kFeetPerMile = 5280.0;
 // -----------------------------------------------------------------------------
 - (void)constructLabels
 {
-	UIFont* font = [UIFont systemFontOfSize:12.0f];
+	UIFont* font = [UIFont boldSystemFontOfSize:9.0f];
 	zeroLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 8, 10)];
 	zeroLabel.backgroundColor = [UIColor clearColor];
-	zeroLabel.textColor = [UIColor whiteColor];
-	zeroLabel.shadowColor = [UIColor blackColor];
-	zeroLabel.shadowOffset = CGSizeMake(1, 1);
+	zeroLabel.textColor = [UIColor blackColor];
+	//zeroLabel.shadowColor = [UIColor grayColor];
+	//zeroLabel.shadowOffset = CGSizeMake(1, 1);
 	zeroLabel.text = @"0";
 	zeroLabel.font = font;
 	[self addSubview:zeroLabel];
@@ -109,20 +109,20 @@ static const double kFeetPerMile = 5280.0;
 	
 	maxLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 10, 10)];
 	maxLabel.backgroundColor = [UIColor clearColor];
-	maxLabel.textColor = [UIColor whiteColor];
-	maxLabel.shadowColor = [UIColor blackColor];
-	maxLabel.shadowOffset = CGSizeMake(1, 1);
+	maxLabel.textColor = [UIColor blackColor];
+	//maxLabel.shadowColor = [UIColor grayColor];
+	//maxLabel.shadowOffset = CGSizeMake(1, 1);
 	maxLabel.text = @"1";
 	maxLabel.font = font;
-	maxLabel.textAlignment = UITextAlignmentRight;
+	maxLabel.textAlignment = NSTextAlignmentRight;
 	[self addSubview:maxLabel];
 	[maxLabel release];
 	
 	unitLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, 18, 10)];
 	unitLabel.backgroundColor = [UIColor clearColor];
-	unitLabel.textColor = [UIColor whiteColor];
-	unitLabel.shadowColor = [UIColor blackColor];
-	unitLabel.shadowOffset = CGSizeMake(1, 1);
+	unitLabel.textColor = [UIColor blackColor];
+	//unitLabel.shadowColor = [UIColor grayColor];
+	//unitLabel.shadowOffset = CGSizeMake(1, 1);
 	unitLabel.text = @"m";
 	unitLabel.font = font;
 	[self addSubview:unitLabel];
@@ -225,7 +225,7 @@ static const double kFeetPerMile = 5280.0;
 		}
 	}
 	
-	maxLabel.text = [NSString stringWithFormat:@"%d",maxValue];
+	maxLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)maxValue];
 	unitLabel.text = unit;
 	
 	[self layoutSubviews];
@@ -323,7 +323,7 @@ static const double kFeetPerMile = 5280.0;
 // -----------------------------------------------------------------------------
 - (void)layoutSubviews
 {
-	CGSize maxLabelSize = [maxLabel.text sizeWithFont:maxLabel.font];
+	CGSize maxLabelSize = [maxLabel.text sizeWithAttributes:@{NSFontAttributeName:maxLabel.font}];
 	maxLabel.frame = CGRectMake(zeroLabel.frame.size.width/2.0f+1+scaleWidth+1 - (maxLabelSize.width+1)/2.0f,
 								0, 
 								maxLabelSize.width+1,

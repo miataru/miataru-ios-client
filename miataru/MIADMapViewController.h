@@ -8,16 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "LXMapScaleView.h"
 
 @class KnownDevice;
 
-@interface MIADMapViewController : UIViewController <NSURLConnectionDelegate,MKMapViewDelegate>
+@interface MIADMapViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
 @property (strong) NSMutableData *responseData;
 
 @property (weak, nonatomic) IBOutlet MKMapView *DevicesMapView;
-
-//@property (weak, nonatomic) IBOutlet MKMapView *AllDevicesMapView;
+@property LXMapScaleView* mapScaleView;
+@property (strong) NSMutableArray *known_devices;
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 

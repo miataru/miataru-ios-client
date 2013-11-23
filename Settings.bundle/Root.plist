@@ -216,7 +216,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>History Days</string>
+			<string>History Display</string>
 			<key>FooterText</key>
 			<string>How many days shall be displayed in the history view?</string>
 		</dict>
@@ -226,7 +226,7 @@
 			<key>Key</key>
 			<string>history_number_of_days</string>
 			<key>Title</key>
-			<string>Days of History</string>
+			<string>Days</string>
 			<key>Titles</key>
 			<array>
 				<string>1</string>
