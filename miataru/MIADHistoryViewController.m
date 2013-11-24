@@ -209,7 +209,7 @@
                         if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                         {
                             // Add the annotation to our map view
-                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates andColor:color];
+                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates andColor:nil];
                             [HistoryMapView addAnnotation:newAnnotation];
                             //NSLog(@"Added Annotation...");
                         }
