@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Client Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Enable or Disable Tracking and Server Reporting</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>track_and_report_location</string>
+			<key>Title</key>
+			<string>Track and Report Location</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Location History</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Enable Location History if you want to store a Location History on the Miataru Server (Number is limited by the Server).</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>save_location_history_on_server</string>
+			<key>Title</key>
+			<string>Server Location History</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Last Location Data Retention Time</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>When Location History Storage is disabled only your last location is stored on the server for the time you specify here.</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>30</string>
+			<key>Key</key>
+			<string>location_data_retention_time</string>
+			<key>Title</key>
+			<string>Data Retention Time</string>
+			<key>Titles</key>
+			<array>
+				<string>30 minutes</string>
+				<string>1 hour</string>
+				<string>2 hours</string>
+				<string>6 hours</string>
+				<string>12 hours</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>30</string>
+				<string>60</string>
+				<string>120</string>
+				<string>360</string>
+				<string>720</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Server Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Here you need to specify the server you want to use. By default service.miataru.com is set here but you can use your own.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>DefaultValue</key>
+			<string>https://service.miataru.com</string>
+			<key>Title</key>
+			<string>Server-URL</string>
+			<key>Key</key>
+			<string>miataru_server_url</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Update Interval</string>
+			<key>FooterText</key>
+			<string>How often do you want to get the location from other devices in your Known Devices list. This is not the update interval for reporting locations.</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>30</string>
+			<key>Key</key>
+			<string>map_update_interval</string>
+			<key>Title</key>
+			<string>Update Interval</string>
+			<key>Titles</key>
+			<array>
+				<string>5s</string>
+				<string>10s</string>
+				<string>15s</string>
+				<string>30s</string>
+				<string>60s</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>5</string>
+				<string>10</string>
+				<string>15</string>
+				<string>30</string>
+				<string>60</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Default Zoom Level</string>
+			<key>FooterText</key>
+			<string>What should the Map Zoom level be by default?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>1</string>
+			<key>Key</key>
+			<string>map_zoom_level</string>
+			<key>Title</key>
+			<string>Map Zoom Level</string>
+			<key>Titles</key>
+			<array>
+				<string>1 km</string>
+				<string>2 km</string>
+				<string>5 km</string>
+				<string>10 km</string>
+				<string>25 km</string>
+				<string>50 km</string>
+				<string>100 km</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>5</string>
+				<string>10</string>
+				<string>25</string>
+				<string>50</string>
+				<string>100</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Map Type</string>
+			<key>FooterText</key>
+			<string>What type of map do you want to use?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>1</string>
+			<key>Key</key>
+			<string>map_type</string>
+			<key>Title</key>
+			<string>Map Type</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Hybrid</string>
+				<string>Satelite</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Accuracy Indicator</string>
+			<key>FooterText</key>
+			<string>Do you want a blue circle around the pin on the map to indicate the position accuracy?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>indicate_accuracy_on_map</string>
+			<key>Title</key>
+			<string>Indicate Location Accuracy</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>History Display</string>
+			<key>FooterText</key>
+			<string>How many days shall be displayed in the history view?</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>5</string>
+			<key>Key</key>
+			<string>history_number_of_days</string>
+			<key>Title</key>
+			<string>Days</string>
+			<key>Titles</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
+				<string>6</string>
+				<string>7</string>
+				<string>14</string>
+				<string>31</string>
+				<string>All available</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
+				<string>6</string>
+				<string>7</string>
+				<string>14</string>
+				<string>31</string>
+				<string>10000000</string>
+			</array>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+</dict>
+</plist>
