@@ -11,7 +11,6 @@
 		8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */; };
 		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BA899321840E5EA00A3D4E0 /* LXMapScaleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8BA899331840E5EA00A3D4E0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8BA899311840E5EA00A3D4E0 /* README.md */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
 		8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */; };
 		8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */; };
@@ -64,6 +63,20 @@
 		8BB99A09181FA6D10049AC08 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E5181FA6D10049AC08 /* UIKit.framework */; };
 		8BB99A11181FA6D10049AC08 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8BB99A0F181FA6D10049AC08 /* InfoPlist.strings */; };
 		8BB99A13181FA6D10049AC08 /* MiataruTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB99A12181FA6D10049AC08 /* MiataruTests.m */; };
+		8BD5943C184933D100B87666 /* colorPicker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8BD59429184933D100B87666 /* colorPicker.bundle */; };
+		8BD5943D184933D100B87666 /* NEOColorPickerBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD5942B184933D100B87666 /* NEOColorPickerBaseViewController.m */; };
+		8BD5943E184933D100B87666 /* NEOColorPickerFavoritesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD5942D184933D100B87666 /* NEOColorPickerFavoritesViewController.m */; };
+		8BD5943F184933D100B87666 /* NEOColorPickerFavoritesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BD5942E184933D100B87666 /* NEOColorPickerFavoritesViewController.xib */; };
+		8BD59440184933D100B87666 /* NEOColorPickerGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD59430184933D100B87666 /* NEOColorPickerGradientView.m */; };
+		8BD59441184933D100B87666 /* NEOColorPickerHSLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD59432184933D100B87666 /* NEOColorPickerHSLViewController.m */; };
+		8BD59442184933D100B87666 /* NEOColorPickerHSLViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BD59433184933D100B87666 /* NEOColorPickerHSLViewController.xib */; };
+		8BD59443184933D100B87666 /* NEOColorPickerHueGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD59435184933D100B87666 /* NEOColorPickerHueGridViewController.m */; };
+		8BD59444184933D100B87666 /* NEOColorPickerHueGridViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BD59436184933D100B87666 /* NEOColorPickerHueGridViewController.xib */; };
+		8BD59445184933D100B87666 /* NEOColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD59438184933D100B87666 /* NEOColorPickerViewController.m */; };
+		8BD59446184933D100B87666 /* NEOColorPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8BD59439184933D100B87666 /* NEOColorPickerViewController.xib */; };
+		8BD59447184933D100B87666 /* UIColor+NEOColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD5943B184933D100B87666 /* UIColor+NEOColor.m */; };
+		8BD594491849389400B87666 /* licenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8BD594481849389400B87666 /* licenses.txt */; };
+		8BD5944B1849395600B87666 /* GeoHash-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8BD5944A1849395600B87666 /* GeoHash-LICENSE */; };
 		8BDFF82B18414EBE00CC2A61 /* ZSPinAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BDFF82A18414EBE00CC2A61 /* ZSPinAnnotation.m */; };
 		8BDFF82D18414ED400CC2A61 /* ZSPinAnnotation-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFF82C18414ED400CC2A61 /* ZSPinAnnotation-LICENSE */; };
 		8BE7C076181FD9E3001529A9 /* MIADScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE7C075181FD9E3001529A9 /* MIADScanQRCodeViewController.m */; };
@@ -101,7 +114,6 @@
 		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
 		8BA8992F1840E5EA00A3D4E0 /* LXMapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LXMapScaleView.h; sourceTree = "<group>"; };
 		8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXMapScaleView.m; sourceTree = "<group>"; };
-		8BA899311840E5EA00A3D4E0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
 		8BB91BD3181FB08700C63DA1 /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
@@ -190,6 +202,27 @@
 		8BB99A0E181FA6D10049AC08 /* MiataruTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MiataruTests-Info.plist"; sourceTree = "<group>"; };
 		8BB99A10181FA6D10049AC08 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8BB99A12181FA6D10049AC08 /* MiataruTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MiataruTests.m; sourceTree = "<group>"; };
+		8BD59429184933D100B87666 /* colorPicker.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = colorPicker.bundle; sourceTree = "<group>"; };
+		8BD5942A184933D100B87666 /* NEOColorPickerBaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerBaseViewController.h; sourceTree = "<group>"; };
+		8BD5942B184933D100B87666 /* NEOColorPickerBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerBaseViewController.m; sourceTree = "<group>"; };
+		8BD5942C184933D100B87666 /* NEOColorPickerFavoritesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerFavoritesViewController.h; sourceTree = "<group>"; };
+		8BD5942D184933D100B87666 /* NEOColorPickerFavoritesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerFavoritesViewController.m; sourceTree = "<group>"; };
+		8BD5942E184933D100B87666 /* NEOColorPickerFavoritesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NEOColorPickerFavoritesViewController.xib; sourceTree = "<group>"; };
+		8BD5942F184933D100B87666 /* NEOColorPickerGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerGradientView.h; sourceTree = "<group>"; };
+		8BD59430184933D100B87666 /* NEOColorPickerGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerGradientView.m; sourceTree = "<group>"; };
+		8BD59431184933D100B87666 /* NEOColorPickerHSLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerHSLViewController.h; sourceTree = "<group>"; };
+		8BD59432184933D100B87666 /* NEOColorPickerHSLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerHSLViewController.m; sourceTree = "<group>"; };
+		8BD59433184933D100B87666 /* NEOColorPickerHSLViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NEOColorPickerHSLViewController.xib; sourceTree = "<group>"; };
+		8BD59434184933D100B87666 /* NEOColorPickerHueGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerHueGridViewController.h; sourceTree = "<group>"; };
+		8BD59435184933D100B87666 /* NEOColorPickerHueGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerHueGridViewController.m; sourceTree = "<group>"; };
+		8BD59436184933D100B87666 /* NEOColorPickerHueGridViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NEOColorPickerHueGridViewController.xib; sourceTree = "<group>"; };
+		8BD59437184933D100B87666 /* NEOColorPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NEOColorPickerViewController.h; sourceTree = "<group>"; };
+		8BD59438184933D100B87666 /* NEOColorPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NEOColorPickerViewController.m; sourceTree = "<group>"; };
+		8BD59439184933D100B87666 /* NEOColorPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NEOColorPickerViewController.xib; sourceTree = "<group>"; };
+		8BD5943A184933D100B87666 /* UIColor+NEOColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+NEOColor.h"; sourceTree = "<group>"; };
+		8BD5943B184933D100B87666 /* UIColor+NEOColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+NEOColor.m"; sourceTree = "<group>"; };
+		8BD594481849389400B87666 /* licenses.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = licenses.txt; sourceTree = "<group>"; };
+		8BD5944A1849395600B87666 /* GeoHash-LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoHash-LICENSE"; sourceTree = "<group>"; };
 		8BDFF82918414EBE00CC2A61 /* ZSPinAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSPinAnnotation.h; sourceTree = "<group>"; };
 		8BDFF82A18414EBE00CC2A61 /* ZSPinAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSPinAnnotation.m; sourceTree = "<group>"; };
 		8BDFF82C18414ED400CC2A61 /* ZSPinAnnotation-LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ZSPinAnnotation-LICENSE"; sourceTree = "<group>"; };
@@ -250,7 +283,6 @@
 			children = (
 				8BA8992F1840E5EA00A3D4E0 /* LXMapScaleView.h */,
 				8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */,
-				8BA899311840E5EA00A3D4E0 /* README.md */,
 			);
 			name = MapScale;
 			sourceTree = "<group>";
@@ -258,6 +290,7 @@
 		8BB91BCE181FB07300C63DA1 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				8BD59426184933C500B87666 /* NeoColorPicker */,
 				8BDFF82618414E9800CC2A61 /* ZSPinAnnotation */,
 				8BA8992C1840E5D100A3D4E0 /* MapScale */,
 				8BB91C30181FB27F00C63DA1 /* PassedTime */,
@@ -330,6 +363,7 @@
 		8BB91BFE181FB0A900C63DA1 /* GeoHash */ = {
 			isa = PBXGroup;
 			children = (
+				8BD5944A1849395600B87666 /* GeoHash-LICENSE */,
 				8BB91BFF181FB0A900C63DA1 /* cgeohash.h */,
 				8BB91C00181FB0A900C63DA1 /* cgeohash.m */,
 				8BB91C01181FB0A900C63DA1 /* GeoHash-Prefix.pch */,
@@ -526,6 +560,7 @@
 				8BB999EA181FA6D10049AC08 /* InfoPlist.strings */,
 				8BB999ED181FA6D10049AC08 /* main.m */,
 				8BB999EF181FA6D10049AC08 /* Miataru-Prefix.pch */,
+				8BD594481849389400B87666 /* licenses.txt */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -546,6 +581,32 @@
 				8BB99A0F181FA6D10049AC08 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8BD59426184933C500B87666 /* NeoColorPicker */ = {
+			isa = PBXGroup;
+			children = (
+				8BD59429184933D100B87666 /* colorPicker.bundle */,
+				8BD5942A184933D100B87666 /* NEOColorPickerBaseViewController.h */,
+				8BD5942B184933D100B87666 /* NEOColorPickerBaseViewController.m */,
+				8BD5942C184933D100B87666 /* NEOColorPickerFavoritesViewController.h */,
+				8BD5942D184933D100B87666 /* NEOColorPickerFavoritesViewController.m */,
+				8BD5942E184933D100B87666 /* NEOColorPickerFavoritesViewController.xib */,
+				8BD5942F184933D100B87666 /* NEOColorPickerGradientView.h */,
+				8BD59430184933D100B87666 /* NEOColorPickerGradientView.m */,
+				8BD59431184933D100B87666 /* NEOColorPickerHSLViewController.h */,
+				8BD59432184933D100B87666 /* NEOColorPickerHSLViewController.m */,
+				8BD59433184933D100B87666 /* NEOColorPickerHSLViewController.xib */,
+				8BD59434184933D100B87666 /* NEOColorPickerHueGridViewController.h */,
+				8BD59435184933D100B87666 /* NEOColorPickerHueGridViewController.m */,
+				8BD59436184933D100B87666 /* NEOColorPickerHueGridViewController.xib */,
+				8BD59437184933D100B87666 /* NEOColorPickerViewController.h */,
+				8BD59438184933D100B87666 /* NEOColorPickerViewController.m */,
+				8BD59439184933D100B87666 /* NEOColorPickerViewController.xib */,
+				8BD5943A184933D100B87666 /* UIColor+NEOColor.h */,
+				8BD5943B184933D100B87666 /* UIColor+NEOColor.m */,
+			);
+			name = NeoColorPicker;
 			sourceTree = "<group>";
 		};
 		8BDFF82618414E9800CC2A61 /* ZSPinAnnotation */ = {
@@ -676,13 +737,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */,
+				8BD59444184933D100B87666 /* NEOColorPickerHueGridViewController.xib in Resources */,
 				8BB91C2E181FB24300C63DA1 /* beep-beep.aiff in Resources */,
 				8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */,
+				8BD5943C184933D100B87666 /* colorPicker.bundle in Resources */,
+				8BD594491849389400B87666 /* licenses.txt in Resources */,
 				8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */,
 				8BDFF82D18414ED400CC2A61 /* ZSPinAnnotation-LICENSE in Resources */,
 				8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */,
+				8BD59446184933D100B87666 /* NEOColorPickerViewController.xib in Resources */,
+				8BD5944B1849395600B87666 /* GeoHash-LICENSE in Resources */,
 				8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */,
-				8BA899331840E5EA00A3D4E0 /* README.md in Resources */,
+				8BD5943F184933D100B87666 /* NEOColorPickerFavoritesViewController.xib in Resources */,
+				8BD59442184933D100B87666 /* NEOColorPickerHSLViewController.xib in Resources */,
 				8BB999EC181FA6D10049AC08 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -704,6 +771,7 @@
 			files = (
 				8BB91BF5181FB08700C63DA1 /* IASKSettingsStoreFile.m in Sources */,
 				8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */,
+				8BD59443184933D100B87666 /* NEOColorPickerHueGridViewController.m in Sources */,
 				8BB91BF9181FB08700C63DA1 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				8BB91BF6181FB08700C63DA1 /* IASKSettingsStoreUserDefaults.m in Sources */,
 				8BB91C5B181FB36E00C63DA1 /* PositionPin.m in Sources */,
@@ -712,6 +780,7 @@
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
 				8B1731CA183D3E1C00DC013C /* MIADEditDeviceViewController.m in Sources */,
 				8BB91C4C181FB32900C63DA1 /* MIADMyDeviceViewController.m in Sources */,
+				8BD5943E184933D100B87666 /* NEOColorPickerFavoritesViewController.m in Sources */,
 				8BB91BF8181FB08700C63DA1 /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				8BE7C076181FD9E3001529A9 /* MIADScanQRCodeViewController.m in Sources */,
 				8BA899321840E5EA00A3D4E0 /* LXMapScaleView.m in Sources */,
@@ -722,13 +791,16 @@
 				8BB999F2181FA6D10049AC08 /* MIADAppDelegate.m in Sources */,
 				8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */,
 				8BB91BFD181FB08700C63DA1 /* IASKTextField.m in Sources */,
+				8BD5943D184933D100B87666 /* NEOColorPickerBaseViewController.m in Sources */,
 				8BDFF82B18414EBE00CC2A61 /* ZSPinAnnotation.m in Sources */,
+				8BD59440184933D100B87666 /* NEOColorPickerGradientView.m in Sources */,
 				8BB91C0D181FB0A900C63DA1 /* GHNeighbors.m in Sources */,
 				8BB91C44181FB30600C63DA1 /* MIADDeviceDetailsViewController.m in Sources */,
 				8BB91BF7181FB08700C63DA1 /* IASKSpecifier.m in Sources */,
 				8BB91C33181FB28A00C63DA1 /* PassedTimeDateFormatter.m in Sources */,
 				8BB91C3C181FB2EA00C63DA1 /* MIADDevicesTableViewController.m in Sources */,
 				8BB91C48181FB31800C63DA1 /* MIADMapViewController.m in Sources */,
+				8BD59445184933D100B87666 /* NEOColorPickerViewController.m in Sources */,
 				8BB91BF4181FB08700C63DA1 /* IASKSettingsStore.m in Sources */,
 				8BB91C40181FB2F900C63DA1 /* MIADAddADeviceTableViewController.m in Sources */,
 				8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */,
@@ -739,6 +811,8 @@
 				8BB91C0A181FB0A900C63DA1 /* cgeohash.m in Sources */,
 				8BB91BFA181FB08700C63DA1 /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				8BB91C0B181FB0A900C63DA1 /* GeoHash.m in Sources */,
+				8BD59447184933D100B87666 /* UIColor+NEOColor.m in Sources */,
+				8BD59441184933D100B87666 /* NEOColorPickerHSLViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

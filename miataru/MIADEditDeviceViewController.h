@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "KnownDevice.h"
+#import "NEOColorPickerViewController.h"
 
 @protocol MIADEditADeviceTableViewControllerDelegate;
 
-@interface MIADEditDeviceViewController : UITableViewController
+@interface MIADEditDeviceViewController : UITableViewController <NEOColorPickerViewControllerDelegate>
 
 @property (strong) KnownDevice *EditDevice;
 @property (weak, nonatomic) IBOutlet UITextField *DeviceNameTextfield;
@@ -19,6 +20,7 @@
 
 @property (weak) id<MIADEditADeviceTableViewControllerDelegate> delegate;
 
+@property (weak, nonatomic) IBOutlet UITableViewCell *ColorPickerTableCell;
 
 @end
 

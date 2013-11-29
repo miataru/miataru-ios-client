@@ -190,10 +190,10 @@
                 
                 NSDate* TimestampOfPin = [NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]];
 
-                UIColor *color = [UIColor colorWithHue:0.5
-                                          saturation:1.0
-                                          brightness:1.0
-                                          alpha:1.0];
+//                UIColor *color = [UIColor colorWithHue:0.5
+//                                          saturation:1.0
+//                                          brightness:1.0
+//                                          alpha:1.0];
                 
                 if ( [PassedTimeDateFormatter isWithinDayRange:TimestampOfPin DayRange:number_of_days_to_show] )
                 {
@@ -209,7 +209,7 @@
                         if (DeviceCoordinates.latitude != 0.0 && DeviceCoordinates.longitude != 0.0)
                         {
                             // Add the annotation to our map view
-                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates andColor:nil];
+                            PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:TimeString andCoordinate:DeviceCoordinates andColor:self.HistoryDevice.DeviceColor];
                             [HistoryMapView addAnnotation:newAnnotation];
                             //NSLog(@"Added Annotation...");
                         }

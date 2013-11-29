@@ -17,6 +17,7 @@
 @synthesize EditDevice;
 @synthesize DeviceNameTextfield;
 @synthesize DeviceIDTextField;
+@synthesize ColorPickerTableCell;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -40,8 +41,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    NSLog(@"viewWillAppear");
     DeviceNameTextfield.text = EditDevice.DeviceName;
     DeviceIDTextField.text = EditDevice.DeviceID;
+    if (EditDevice.DeviceColor != nil)
+        ColorPickerTableCell.backgroundColor = EditDevice.DeviceColor;
 }
 
 - (void)didReceiveMemoryWarning
@@ -133,9 +137,34 @@
     {
         newDevice = [KnownDevice DeviceWithName:DeviceNameTextfield.text DeviceID:DeviceIDTextField.text];
         newDevice.KnownDevicesTablePosition = EditDevice.KnownDevicesTablePosition;
+        if (ColorPickerTableCell.backgroundColor != nil)
+            newDevice.DeviceColor = ColorPickerTableCell.backgroundColor;
+        
         [self.delegate editADeviceTableViewControllerDidFinish:self knownDevice:newDevice];
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+- (IBAction)PickColorPressed:(id)sender {
+    NEOColorPickerViewController *controller = [[NEOColorPickerViewController alloc] init];
+    controller.delegate = self;
+
+    controller.selectedColor = EditDevice.DeviceColor;
+    controller.title = @"Pick a color";
+    
+	UINavigationController* navVC = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navVC animated:YES completion:nil];
+
+}
+
+#pragma mark ColorPicker Delegate
+- (void)colorPickerViewController:(NEOColorPickerBaseViewController *)controller didSelectColor:(UIColor *)color {
+    ColorPickerTableCell.backgroundColor = color;
+    EditDevice.DeviceColor = color;
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)colorPickerViewControllerDidCancel:(NEOColorPickerBaseViewController *)controller {
+	[controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
