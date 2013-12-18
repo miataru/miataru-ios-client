@@ -285,7 +285,7 @@
     
     NSMutableURLRequest *detailrequest =
     [[NSMutableURLRequest alloc] initWithURL:
-     [NSURL URLWithString:[NSString stringWithFormat:@"%@/GetLocationHistory", miataru_server_url]]];
+     [NSURL URLWithString:[NSString stringWithFormat:@"%@/v1/GetLocationHistory", miataru_server_url]]];
     
     
     [detailrequest setHTTPMethod:@"POST"];
