@@ -57,6 +57,10 @@
     mapScaleView.maxWidth = 150;
     
     [mapScaleView update];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,6 +102,15 @@
             [DeviceDetailMapView setMapType:MKMapTypeStandard];
             break;
     }
+}
+
+- (void)appDidBecomeActive:(NSNotification *)notification {
+    NSLog(@"detailview became active again");
+    [self viewDidAppear:false];
+}
+
+- (void)appDidEnterForeground:(NSNotification *)notification {
+    NSLog(@"detailview was sent to background");
 }
 
 
