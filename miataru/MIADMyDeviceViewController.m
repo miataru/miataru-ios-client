@@ -51,7 +51,7 @@ static const CGFloat kPadding = 10;
         //controller.navigationBar.tintColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0];
         [controller setSubject:@"my Miataru Device ID"];
         
-        [controller setMessageBody:[NSString stringWithFormat:@"Hello,<br/> this is my Miataru Device ID: %@ <br/>", [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString]] isHTML:YES];
+        [controller setMessageBody:[NSString stringWithFormat:@"Hello,<br/> this is my Miataru Device ID: %@ <br><p>To view this device in any browser you may use this <a href='http://miataru.com/client/#%@'>link.</a><br>", [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString], [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString]] isHTML:YES];
         [controller setToRecipients:[NSArray arrayWithObjects:@"",nil]];
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.image = self.QRCodeView.image;
