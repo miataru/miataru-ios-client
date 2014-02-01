@@ -76,14 +76,17 @@
         NSLog(@"First start detected! - Initializing and starting Welcome Wizard Modal");
         // first start!!!
         
-        // make sure that "this iPhone" is already in the known devices list when we start...
-        self.known_devices = [NSMutableArray array];
-        NSString *name = @"this iPhone";
-        KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
-        [self.known_devices addObject:knowndevice];
-        [self saveKnownDevices];
+        if (deviceID.length > 5)
+        {
+            // make sure that "this iPhone" is already in the known devices list when we start...
+            self.known_devices = [NSMutableArray array];
+            NSString *name = @"this iPhone";
+            KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+            [self.known_devices addObject:knowndevice];
+            [self saveKnownDevices];
 
-        self.first_start_detected = true;
+            self.first_start_detected = true;
+        }
     }
     else
     {

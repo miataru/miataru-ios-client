@@ -86,6 +86,16 @@
     
 }
 
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    NSLog(@"willFinishLaunchingWithOptions");
+    
+    [self postLaunch];
+    
+    // Override point for customization after application launch.
+    return YES;
+    
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -325,7 +335,6 @@
     bgTask = [[UIApplication sharedApplication]
               beginBackgroundTaskWithExpirationHandler:
               ^{[[UIApplication sharedApplication] endBackgroundTask:bgTask];}];
-    
     
     [self SendUpdateToMiataruServer:location ExecuteAsyncronous:false];
     
