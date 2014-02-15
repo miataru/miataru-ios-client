@@ -11,6 +11,7 @@
 		8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */; };
 		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BA899321840E5EA00A3D4E0 /* LXMapScaleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8BAC06E318AF69AE000F221E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAC06E218AF69AE000F221E /* MapKit.framework */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
 		8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */; };
 		8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */; };
@@ -114,6 +115,7 @@
 		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
 		8BA8992F1840E5EA00A3D4E0 /* LXMapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LXMapScaleView.h; sourceTree = "<group>"; };
 		8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXMapScaleView.m; sourceTree = "<group>"; };
+		8BAC06E218AF69AE000F221E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
 		8BB91BD3181FB08700C63DA1 /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 			files = (
 				8BB91C5D181FB6EF00C63DA1 /* libiconv.dylib in Frameworks */,
 				8BB91C27181FB13600C63DA1 /* AudioToolbox.framework in Frameworks */,
+				8BAC06E318AF69AE000F221E /* MapKit.framework in Frameworks */,
 				8BB91C28181FB13600C63DA1 /* AVFoundation.framework in Frameworks */,
 				8BB91C29181FB13600C63DA1 /* CoreLocation.framework in Frameworks */,
 				8BB91C2A181FB13600C63DA1 /* MessageUI.framework in Frameworks */,
@@ -522,6 +525,7 @@
 		8BB999E0181FA6D10049AC08 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8BAC06E218AF69AE000F221E /* MapKit.framework */,
 				8BB91C5C181FB6EF00C63DA1 /* libiconv.dylib */,
 				8BB91C23181FB13600C63DA1 /* AudioToolbox.framework */,
 				8BB91C24181FB13600C63DA1 /* AVFoundation.framework */,
@@ -680,6 +684,9 @@
 						DevelopmentTeam = X7H5D9Q5T4;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.iOS = {
 								enabled = 1;
 							};
 						};

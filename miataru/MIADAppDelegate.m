@@ -101,7 +101,16 @@
 {
     NSLog(@"didFinishLaunchingWithOptions");
     
+    // Handle launching from a notification
+    UILocalNotification *localNotif =
+    [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+    if (localNotif) {
+        NSLog(@"Received Notification %@",localNotif);
+    }
+
+    
     [self postLaunch];
+    
     
     // Override point for customization after application launch.
     return YES;
@@ -186,10 +195,37 @@
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
     
-    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_location"] == 1 )
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
         [self.locationManager stopUpdatingLocation];
         [self.locationManager startMonitoringSignificantLocationChanges];
+        
+        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // Schedule an alarm here to warn the user that they have terminated an application and if they want to re-activate it.
+        NSDate * theDate = [[NSDate date] dateByAddingTimeInterval:1]; // set a localnotificaiton for 10 seconds
+        
+        UIApplication* app = [UIApplication sharedApplication];
+        NSArray*    oldNotifications = [app scheduledLocalNotifications];
+        
+        
+        // Clear out the old notification before scheduling a new one.
+        if ([oldNotifications count] > 0)
+            [app cancelAllLocalNotifications];
+        
+        // Create a new notification.
+        UILocalNotification* alarm = [[UILocalNotification alloc] init];
+        if (alarm)
+        {
+            alarm.fireDate = theDate;
+            alarm.timeZone = [NSTimeZone defaultTimeZone];
+            alarm.repeatInterval = 0;
+            alarm.soundName = @"sonar";
+            alarm.alertBody =@"Miataru was closed and won't track. Tap here to restart.";
+            
+            [app scheduleLocalNotification:alarm];
+        }
+
+        NSLog(@"Notification...");
     }
     else
     {
@@ -197,7 +233,6 @@
         [self.locationManager stopMonitoringSignificantLocationChanges];
     }
     //[application beginBackgroundTaskWithExpirationHandler:^{}];
-    
 }
 
 -(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
