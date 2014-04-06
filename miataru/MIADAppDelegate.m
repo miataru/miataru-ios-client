@@ -90,7 +90,7 @@
 {
     NSLog(@"willFinishLaunchingWithOptions");
     
-    [self postLaunch];
+    //[self postLaunch];
     
     // Override point for customization after application launch.
     return YES;
