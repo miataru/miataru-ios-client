@@ -31,9 +31,9 @@
 #error "IASK needs ARC"
 #endif
 
-static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3f;
-static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2f;
-static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8f;
+//static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3f;
+//static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2f;
+//static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8f;
 
 static NSString *kIASKCredits = @"Powered by InAppSettingsKit"; // Leave this as-is!!!
 

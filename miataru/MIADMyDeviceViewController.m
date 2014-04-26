@@ -10,7 +10,7 @@
 #import <QREncoder/QREncoder.h>
 
 
-static const CGFloat kPadding = 10;
+//static const CGFloat kPadding = 10;
 
 @interface MIADMyDeviceViewController ()
 

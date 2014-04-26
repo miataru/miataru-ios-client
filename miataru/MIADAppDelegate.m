@@ -74,8 +74,6 @@
         [[NSUserDefaults standardUserDefaults] setValue: @"https://service.miataru.com" forKey: @"miataru_server_url"]; 
     }
     
-    
-    
     //  BOOL value = (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"];
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
@@ -83,7 +81,6 @@
         [self.locationManager startMonitoringSignificantLocationChanges];
     }
     // ---------- Location
-    
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -91,10 +88,8 @@
     NSLog(@"willFinishLaunchingWithOptions");
     
     //[self postLaunch];
-    
     // Override point for customization after application launch.
     return YES;
-    
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -129,6 +124,8 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    
     NSLog(@"applicationDidEnterBackground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
@@ -153,6 +150,11 @@
     NSLog(@"applicationWillEnterForeground");
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.distanceFilter = 100;
+    
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }
     
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {

@@ -35,6 +35,16 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }
+    else
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    }
+    
+    
     if (self.first_start_detected)
     {
         self.first_start_detected = false;
@@ -76,7 +86,7 @@
         NSLog(@"First start detected! - Initializing and starting Welcome Wizard Modal");
         // first start!!!
         
-        if (deviceID.length > 5)
+        if (deviceID.length != 0)
         {
             // make sure that "this iPhone" is already in the known devices list when we start...
             self.known_devices = [NSMutableArray array];
@@ -94,7 +104,6 @@
         //[self performSelector:@selector(FirstRunWizard)];
         // just for test
         
-        
         // not the first start.. check if the current device is listed somewhere...
        BOOL found_it = false;
         
@@ -109,10 +118,13 @@
          
        if (!found_it)
        {
-           NSString *name = @"this iPhone";
-           KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
-           [self.known_devices insertObject:knowndevice atIndex:0];
-           [self saveKnownDevices];
+           if (deviceID.length != 0)
+           {
+               NSString *name = @"this iPhone";
+               KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+               [self.known_devices insertObject:knowndevice atIndex:0];
+               [self saveKnownDevices];
+           }
        }
     }
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
@@ -242,7 +254,7 @@
             NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
             //Dev
             KnownDevice *editDevice = self.known_devices[indexPath.row];
-            editDevice.KnownDevicesTablePosition = indexPath.row;
+            editDevice.KnownDevicesTablePosition = (int)indexPath.row;
             
             ((MIADEditDeviceViewController*)segue.destinationViewController).delegate = self;
             ((MIADEditDeviceViewController*)segue.destinationViewController).EditDevice = editDevice;

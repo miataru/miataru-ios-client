@@ -51,6 +51,16 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     NSLog(@"Map did appear");
+    
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }
+    else
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    }
+    
     [self loadKnownDevices];
     
     NSInteger map_type = [[NSUserDefaults standardUserDefaults] integerForKey:@"map_type"];

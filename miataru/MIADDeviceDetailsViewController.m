@@ -80,6 +80,16 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }
+    else
+    {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    }
+        
+    
     NSLog(@"Detail View appears...");
     // initialize the timer... it should start it's life now
     self.map_update_timer_should_stop = false;
