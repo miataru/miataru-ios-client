@@ -93,6 +93,9 @@
 //      {
 //      }
     }
+    
+    // zoom to fit all map annotations...
+    [DevicesMapView showAnnotations:DevicesMapView.annotations animated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -308,7 +311,6 @@
 //                        MKMapRect pointRect = MKMapRectMake(annotationPoint.x+50, annotationPoint.y+50, 0.5, 0.5);
 //                        zoomRect = MKMapRectUnion(zoomRect, pointRect);
 //                    }
-                    [self zoomToFitMapAnnotations:DevicesMapView];
                     //[DevicesMapView setVisibleMapRect:zoomRect animated:NO];
                     return;
                 }
@@ -316,39 +318,6 @@
         }
     }
 }
-
-- (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
-    if ([mapView2.annotations count] == 0) return;
-    
-    CLLocationCoordinate2D topLeftCoord;
-    topLeftCoord.latitude = -90;
-    topLeftCoord.longitude = 180;
-    
-    CLLocationCoordinate2D bottomRightCoord;
-    bottomRightCoord.latitude = 90;
-    bottomRightCoord.longitude = -180;
-    
-    for(id<MKAnnotation> annotation in mapView2.annotations) {
-        topLeftCoord.longitude = fmin(topLeftCoord.longitude, annotation.coordinate.longitude);
-        topLeftCoord.latitude = fmax(topLeftCoord.latitude, annotation.coordinate.latitude);
-        bottomRightCoord.longitude = fmax(bottomRightCoord.longitude, annotation.coordinate.longitude);
-        bottomRightCoord.latitude = fmin(bottomRightCoord.latitude, annotation.coordinate.latitude);
-    }
-    
-    MKCoordinateRegion region;
-    //MKCoordinateRegion region;
-    region.center.latitude = topLeftCoord.latitude - (topLeftCoord.latitude - bottomRightCoord.latitude) * 0.5;
-    region.center.longitude = topLeftCoord.longitude + (bottomRightCoord.longitude - topLeftCoord.longitude) * 0.5;
-    
-    // Adding edge map
-    region.span.latitudeDelta = fabs(topLeftCoord.latitude - bottomRightCoord.latitude) * 1.5;
-    region.span.longitudeDelta = fabs(bottomRightCoord.longitude - topLeftCoord.longitude) * 1.5;
-    
-    region = [mapView2 regionThatFits:region];
-    [mapView2 setRegion:region animated:NO];
-    
-}
-
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
