@@ -13,12 +13,10 @@
 #import "PassedTimeDateFormatter.h"
 #import "MIADHistoryViewController.h"
 #import "ZSPinAnnotation.h"
-#import "FBShimmeringView.h"
 
 #define RGB(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
 
 @implementation MIADDeviceDetailsViewController {
-    FBShimmeringView *_shimmeringView;
 }
 
 @synthesize DeviceDetailMapView;
