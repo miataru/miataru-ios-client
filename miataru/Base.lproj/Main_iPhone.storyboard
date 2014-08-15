@@ -849,7 +849,7 @@ For more information please visit </string>
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
@@ -865,7 +865,7 @@ For more information please visit </string>
                             <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="hwq-w9-pAo" secondAttribute="leading" id="rQy-ex-KS3"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
+                    <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
                     <navigationItem key="navigationItem" title="Group" id="i7C-l9-CSy">
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="EYi-5O-NPq">
                             <connections>

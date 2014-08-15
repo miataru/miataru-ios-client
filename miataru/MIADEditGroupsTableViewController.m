@@ -80,6 +80,9 @@
     cell.textLabel.text = knowndevice.DeviceName;
     cell.detailTextLabel.text = knowndevice.DeviceID;
     
+    if (knowndevice.DeviceIsInGroup)
+       cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    
     return cell;
     
 }

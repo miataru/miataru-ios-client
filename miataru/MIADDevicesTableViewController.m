@@ -92,6 +92,8 @@
             self.known_devices = [NSMutableArray array];
             NSString *name = @"this iPhone";
             KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+            knowndevice.DeviceIsInGroup = TRUE;
+            
             [self.known_devices addObject:knowndevice];
             [self saveKnownDevices];
 
