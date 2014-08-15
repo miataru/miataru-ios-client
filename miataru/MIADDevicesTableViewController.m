@@ -320,6 +320,7 @@
 
 - (void) saveKnownDevices{
     [NSKeyedArchiver archiveRootObject:self.known_devices toFile:[self pathToSavedKnownDevices]];
+    NSLog(@"saveKnownDevices");
 }
 
 

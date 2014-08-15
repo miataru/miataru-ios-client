@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
@@ -78,7 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="739" y="796"/>
+            <point key="canvasLocation" x="726" y="1612"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="MpT-89-XYV">
@@ -93,7 +93,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tqd-lx-EeW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="796"/>
+            <point key="canvasLocation" x="1259" y="1612"/>
         </scene>
         <!--Encoder License Information View Controller - QR Encoder License-->
         <scene sceneID="zkF-to-9ef">
@@ -158,7 +158,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="85l-Gk-wPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1750" y="796"/>
+            <point key="canvasLocation" x="1737" y="1612"/>
         </scene>
         <!--App Settings View Controller-->
         <scene sceneID="X7X-p7-zZc">
@@ -193,7 +193,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Fx-aa-TP0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="701" y="2261"/>
+            <point key="canvasLocation" x="688" y="3077"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -207,6 +207,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     </tabBar>
                     <connections>
                         <segue destination="fUv-7Y-Jqh" kind="relationship" relationship="viewControllers" id="nEY-1n-sWg"/>
+                        <segue destination="iqp-wo-Olw" kind="relationship" relationship="viewControllers" id="Vux-qh-03E"/>
                         <segue destination="aGv-5P-RB8" kind="relationship" relationship="viewControllers" id="Wjl-yU-nPn"/>
                         <segue destination="V9e-U7-As1" kind="relationship" relationship="viewControllers" id="6W5-25-02Z"/>
                         <segue destination="6aN-ZL-kRL" kind="relationship" relationship="viewControllers" id="OOA-eW-ZQ7"/>
@@ -303,7 +304,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="739" y="1499"/>
+            <point key="canvasLocation" x="726" y="2355"/>
         </scene>
         <!--Navigation Controller - Map-->
         <scene sceneID="h0o-iR-m0v">
@@ -319,7 +320,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z2N-V7-DaB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="208" y="1499"/>
+            <point key="canvasLocation" x="195" y="2355"/>
         </scene>
         <!--Navigation Controller - Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -338,7 +339,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xi3-PN-we4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="223" y="2261"/>
+            <point key="canvasLocation" x="210" y="3077"/>
         </scene>
         <!--First Start Wizard Root View Controller-->
         <scene sceneID="8qm-dB-YcB">
@@ -458,13 +459,13 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IZV-UY-qSB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1171" y="2261"/>
+            <point key="canvasLocation" x="1158" y="3077"/>
         </scene>
-        <!--Navigation Controller - Devices-->
+        <!--Navigation Controller - Device-->
         <scene sceneID="mFQ-cI-ZZw">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fUv-7Y-Jqh" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Devices" image="Toolbar_Devices" id="nOJ-jd-lDj"/>
+                    <tabBarItem key="tabBarItem" title="Device" image="Toolbar_Device" id="nOJ-jd-lDj"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="tIy-0k-kDS">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -604,7 +605,6 @@ For more information please visit </string>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="DetailsShimmerBar" destination="u2g-TA-j6t" id="hN2-6k-sWC"/>
                         <outlet property="DeviceDetailMapView" destination="8aw-yu-kP7" id="cys-re-x6I"/>
                     </connections>
                 </viewController>
@@ -681,7 +681,7 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yqb-cV-tAN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="208" y="796"/>
+            <point key="canvasLocation" x="195" y="1612"/>
         </scene>
         <!--AddA Device Table View Controller - Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
@@ -837,9 +837,99 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="2730" y="66"/>
         </scene>
+        <!--Groups View Controller - Group-->
+        <scene sceneID="IAN-4Q-wGI">
+            <objects>
+                <viewController id="wpY-yN-bUb" customClass="MIADGroupsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="pxA-aj-c22"/>
+                        <viewControllerLayoutGuide type="bottom" id="1MA-rA-8Ah"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hwq-w9-pAo">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="wpY-yN-bUb" id="KyD-PE-pZt"/>
+                                </connections>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="top" secondItem="hwq-w9-pAo" secondAttribute="top" id="ELh-37-ztc"/>
+                            <constraint firstAttribute="bottom" secondItem="Sfz-As-Nf1" secondAttribute="bottom" id="RGD-9a-hNg"/>
+                            <constraint firstAttribute="trailing" secondItem="Sfz-As-Nf1" secondAttribute="trailing" id="pe2-9N-SNc"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="hwq-w9-pAo" secondAttribute="leading" id="rQy-ex-KS3"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
+                    <navigationItem key="navigationItem" title="Group" id="i7C-l9-CSy">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="EYi-5O-NPq">
+                            <connections>
+                                <segue destination="8hr-If-I5p" kind="push" id="ZHy-fV-ogy"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="DevicesMapView" destination="Sfz-As-Nf1" id="y0V-Et-SqS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OOf-HY-7Z7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="688" y="796"/>
+        </scene>
+        <!--Edit Groups Table View Controller-->
+        <scene sceneID="cpe-4J-0Su">
+            <objects>
+                <tableViewController id="8hr-If-I5p" customClass="MIADEditGroupsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="xvr-tN-tsw">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownGroupDeviceCell" editingAccessoryType="checkmark" id="6nK-8s-DHO">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6nK-8s-DHO" id="joH-cU-nam">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="8hr-If-I5p" id="pxG-Ze-sBJ"/>
+                            <outlet property="delegate" destination="8hr-If-I5p" id="dpr-Nm-neb"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="AwG-RT-lRO"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ipg-7m-i3X" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1180" y="796"/>
+        </scene>
+        <!--Navigation Controller - Group-->
+        <scene sceneID="ejS-k6-3ug">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="iqp-wo-Olw" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="VWV-ax-coC"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="X2Q-se-jDv">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="wpY-yN-bUb" kind="relationship" relationship="rootViewController" id="E2f-iL-Okx"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NDB-3d-Rf7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="195" y="796"/>
+        </scene>
     </scenes>
     <resources>
         <image name="FirstRunWizardBackground_softened" width="480" height="498"/>
+        <image name="Toolbar_Device" width="30" height="30"/>
         <image name="Toolbar_Devices" width="30" height="30"/>
         <image name="Toolbar_History" width="30" height="30"/>
         <image name="Toolbar_Map" width="30" height="30"/>

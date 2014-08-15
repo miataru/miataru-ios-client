@@ -34,6 +34,7 @@
     [aCoder encodeObject:self.DeviceID forKey:@"DeviceID"];
     [aCoder encodeObject:self.LastUpdate forKey:@"LastUpdate"];
     [aCoder encodeObject:self.DeviceColor forKey:@"DeviceColor"];
+    [aCoder encodeBool:self.DeviceIsInGroup forKey:@"DeviceIsInGroup"];
     
     if (CLLocationCoordinate2DIsValid(self.LastKnownLocation))
     {
@@ -55,7 +56,8 @@
     self.DeviceName = [aDecoder decodeObjectForKey:@"DeviceName"];
     self.LastUpdate = [aDecoder decodeObjectForKey:@"LastUpdate"];
     self.DeviceColor = [aDecoder decodeObjectForKey:@"DeviceColor"];
-   
+    self.DeviceIsInGroup = [aDecoder decodeBoolForKey:@"DeviceIsInGroup"];
+    
     NSString *hash = [aDecoder decodeObjectForKey:@"LastKnownLocation"];
     
     if (hash)

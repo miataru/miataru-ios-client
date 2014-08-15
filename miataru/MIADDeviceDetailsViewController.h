@@ -27,7 +27,6 @@
 @property double LastAccuracy;
 
 @property (weak, nonatomic) IBOutlet MKMapView *DeviceDetailMapView;
-@property (weak, nonatomic) IBOutlet UINavigationItem *DetailsShimmerBar;
 
 @property LXMapScaleView* mapScaleView;
 

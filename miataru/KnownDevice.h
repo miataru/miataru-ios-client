@@ -15,6 +15,7 @@
 @property (strong) NSString *DeviceName;
 @property (strong) NSString *DeviceID;
 @property (strong) UIColor *DeviceColor;
+@property BOOL DeviceIsInGroup;
 @property int KnownDevicesTablePosition;
 
 @property (strong) NSDate *LastUpdate;

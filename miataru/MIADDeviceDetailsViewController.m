@@ -25,7 +25,6 @@
 @synthesize MapAnnotation;
 @synthesize DetailDevice;
 @synthesize mapScaleView;
-@synthesize DetailsShimmerBar;
 
 - (void)viewDidLoad
 {
@@ -284,8 +283,8 @@
     NSError *err = nil;
     //NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: self.responseData options: NSJSONReadingMutableContainers error: &err];
     
-    //NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
-    //NSLog(@"%@",strData );
+    NSString *strData = [[NSString alloc]initWithData:self.responseData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@",strData );
     
     NSDictionary* jsonArray = [NSJSONSerialization
                           JSONObjectWithData:self.responseData //1
