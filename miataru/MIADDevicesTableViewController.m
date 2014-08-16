@@ -53,23 +53,23 @@
     
     // TODO: Below here is the handling of the updated times... it's already in the KnownDevice but not used right now...
     // check if we got here with an updated device...
-    int i=0;
-    for(KnownDevice *st in self.known_devices)
-    {
-        if(st.LastUpdate != nil)
-        {
-//            //NSLog(st.DeviceID);
-//            [KnownDevicesTableView beginUpdates];
-//            UITableViewCell *cell = [self tableView:KnownDevicesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-//            //UITableViewCell *cell = [KnownDevicesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-//            cell.detailTextLabel.text = [PassedTimeDateFormatter dateToStringInterval:st.LastUpdate];
-//            //[KnownDevicesTableView reloadData];
-//            [KnownDevicesTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:i inSection:0], nil] withRowAnimation:UITableViewRowAnimationNone];
-//
-//            [KnownDevicesTableView endUpdates];            
-        }
-        i++;
-    }
+//    int i=0;
+//    for(KnownDevice *st in self.known_devices)
+//    {
+//        if(st.LastUpdate != nil)
+//        {
+////            //NSLog(st.DeviceID);
+////            [KnownDevicesTableView beginUpdates];
+////            UITableViewCell *cell = [self tableView:KnownDevicesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+////            //UITableViewCell *cell = [KnownDevicesTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+////            cell.detailTextLabel.text = [PassedTimeDateFormatter dateToStringInterval:st.LastUpdate];
+////            //[KnownDevicesTableView reloadData];
+////            [KnownDevicesTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:i inSection:0], nil] withRowAnimation:UITableViewRowAnimationNone];
+////
+////            [KnownDevicesTableView endUpdates];            
+//        }
+//        i++;
+//    }
 }
 
 - (void)viewDidLoad

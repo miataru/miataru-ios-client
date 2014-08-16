@@ -342,11 +342,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADMapViewController.m"
-            timestampString = "421403970.978917"
+            timestampString = "429907289.479231"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
+            startingLineNumber = "264"
+            endingLineNumber = "264"
             landmarkName = "-connectionDidFinishLoading:"
             landmarkType = "5">
          </BreakpointContent>
@@ -672,11 +672,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADMapViewController.m"
-            timestampString = "421403970.978917"
+            timestampString = "429907289.479231"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "222"
-            endingLineNumber = "222"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
             landmarkName = "-mapView:regionDidChangeAnimated:"
             landmarkType = "5">
          </BreakpointContent>
@@ -710,6 +710,22 @@
             startingLineNumber = "20"
             endingLineNumber = "20"
             landmarkName = "-initWithTitle:andCoordinate:andColor:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Miataru/MIADGroupsViewController.m"
+            timestampString = "429908263.349932"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
+            landmarkName = "-removeAllPinsButUserLocation"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

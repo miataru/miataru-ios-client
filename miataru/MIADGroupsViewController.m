@@ -15,6 +15,9 @@
 
 @synthesize DevicesMapView;
 @synthesize mapScaleView;
+@synthesize ToBeRemovedPins;
+@synthesize RenderedDevices;
+@synthesize ToRenderDevices;
 
 - (void)viewDidLoad
 {
@@ -48,9 +51,16 @@
     [mapScaleView update];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    NSLog(@"Detail View goes away...");
+    // here we will stop the timer...
+    self.map_update_timer_should_stop = true;
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
-    NSLog(@"Map did appear");
+    NSLog(@"Group Map did appear");
     
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
     {
@@ -80,20 +90,53 @@
             [DevicesMapView setMapType:MKMapTypeStandard];
             break;
     }
+    
+    self.map_update_timer_should_stop = false;
+    self.zoom_to_fit = true;
+    
+    [NSTimer scheduledTimerWithTimeInterval:0 target:self selector:@selector(myTimerTick:) userInfo:nil repeats:false];
 
-    
-    //[self GetLocationForDeviceFromMiataruServer:@"24F47362-2B49-47F7-A1E4-0AC15117CD65"];
-    
-    // go through self.known_devices and get all known_device objects out of that...
-    for(KnownDevice *kDevice in self.known_devices)
+}
+
+- (void)myTimerTick:(NSTimer *)timer
+{
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
     {
-        // here we go - get the location and pin for this device but only if this device is marked in the "device is in group" list
-        if (kDevice.DeviceIsInGroup)
-            [self GetLocationForDeviceFromMiataruServer:kDevice];
+        self.map_update_timer_should_stop = true;
     }
     
-    // zoom to fit all map annotations...
-    //[DevicesMapView showAnnotations:DevicesMapView.annotations animated:NO];
+    
+    if (self.map_update_timer_should_stop == true)
+    {
+        NSLog(@"Stopping Timer Updates");
+    }
+    else
+    {
+        [self removeAllPinsButUserLocation];
+        ToRenderDevices = 0;
+        RenderedDevices = 0;
+        
+        // go through self.known_devices and get all known_device objects out of that...
+        for(KnownDevice *kDevice in self.known_devices)
+        {
+            // here we go - get the location and pin for this device but only if this device is marked in the "device is in group" list
+            if (kDevice.DeviceIsInGroup)
+            {
+                [self GetLocationForDeviceFromMiataruServer:kDevice];
+                self.last_known_device = kDevice;
+                ToRenderDevices++;
+            }
+        }
+
+        [NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] integerForKey:@"map_update_interval"] target:self selector:@selector(myTimerTick:) userInfo:nil repeats:false];
+    }
+    
+    //[timer invalidate]; //to stop and invalidate the timer.
+}
+
+- (IBAction)ZoomToFitButton:(id)sender {
+
+    [self zoomToFitMapAnnotations:DevicesMapView];
 }
 
 - (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
@@ -134,7 +177,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-    NSLog(@"Map disappeared");
+    NSLog(@"Group Map disappeared");
     [self removeAllPinsButUserLocation];
 }
 
@@ -203,16 +246,20 @@
 // to remove all pins but the users location...
 - (void)removeAllPinsButUserLocation
 {
-    id userLocation = [DevicesMapView userLocation];
-    NSMutableArray *pins = [[NSMutableArray alloc] initWithArray:[DevicesMapView annotations]];
-    if ( userLocation != nil ) {
-        [pins removeObject:userLocation]; // avoid removing user location off the map
+    if (ToBeRemovedPins == nil)
+    {
+        id userLocation = [DevicesMapView userLocation];
+        ToBeRemovedPins = [[NSMutableArray alloc] initWithArray:[DevicesMapView annotations]];
+        if ( userLocation != nil ) {
+            [ToBeRemovedPins removeObject:userLocation]; // avoid removing user location off the map
+        }
     }
-    
-    [DevicesMapView removeAnnotations:pins];
-    //[pins release];
-    pins = nil;
+    else{
+        [DevicesMapView removeAnnotations:ToBeRemovedPins];
+        ToBeRemovedPins = nil;
+    }
 }
+
 
 #pragma mark MapView Delegate Methods
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
@@ -334,19 +381,31 @@
                     PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates andColor:DeviceColor];
                     [DevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
-                    [self zoomToFitMapAnnotations:DevicesMapView];
-                    //[newAnnotation release];
+
+                    RenderedDevices++;
+                    if (RenderedDevices == ToRenderDevices)
+                    {
+                        // this must be the last one to be rendered...
+                        NSLog(@"this was the last Annotation for this run");
+                        // do the zoom thing once...
+                        if (self.zoom_to_fit)
+                        {
+                            [self zoomToFitMapAnnotations:DevicesMapView];
+                            
+                            if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"groups_zoom_to_fit"] == 1 )
+                            {
+                                self.zoom_to_fit = true;
+                            }
+                            else
+                            {
+                                self.zoom_to_fit = false;
+                            }
+                        }
+                        
+                        // remove the old pins, if there are any...
+                        [self removeAllPinsButUserLocation];
+                    }
                     
-                    // Zoom to fit...
-                    
-//                    MKMapRect zoomRect = MKMapRectNull;
-//                    for (id <MKAnnotation> annotation in DevicesMapView.annotations)
-//                    {
-//                        MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
-//                        MKMapRect pointRect = MKMapRectMake(annotationPoint.x+50, annotationPoint.y+50, 0.5, 0.5);
-//                        zoomRect = MKMapRectUnion(zoomRect, pointRect);
-//                    }
-                    //[DevicesMapView setVisibleMapRect:zoomRect animated:NO];
                     return;
                 }
             }
