@@ -19,6 +19,13 @@
 @property (weak, nonatomic) IBOutlet MKMapView *DevicesMapView;
 @property LXMapScaleView* mapScaleView;
 @property (strong) NSMutableArray *known_devices;
+@property (weak) KnownDevice *last_known_device;
+@property BOOL zoom_to_fit;
+@property NSMutableArray *ToBeRemovedPins;
+@property NSInteger ToRenderDevices;
+@property NSInteger RenderedDevices;
+
+@property BOOL map_update_timer_should_stop;
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 

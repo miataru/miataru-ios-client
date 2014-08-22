@@ -297,7 +297,13 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
-                    <navigationItem key="navigationItem" title="Map" id="hW8-lh-8HW"/>
+                    <navigationItem key="navigationItem" title="Map" id="hW8-lh-8HW">
+                        <barButtonItem key="leftBarButtonItem" title="Zoom to fit" id="HSh-Mh-Qfd">
+                            <connections>
+                                <action selector="ZoomToFitButton:" destination="ZCE-Co-7wT" id="DD7-iN-Sdl"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="DevicesMapView" destination="1j5-4o-vxz" id="m4L-Yf-jMn"/>
                     </connections>
@@ -867,6 +873,11 @@ For more information please visit </string>
                     </view>
                     <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
                     <navigationItem key="navigationItem" title="Group" id="i7C-l9-CSy">
+                        <barButtonItem key="leftBarButtonItem" title="Zoom to fit" id="IEt-LD-eM2">
+                            <connections>
+                                <action selector="ZoomToFitButton:" destination="wpY-yN-bUb" id="72k-mc-Zni"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="EYi-5O-NPq">
                             <connections>
                                 <segue destination="8hr-If-I5p" kind="push" id="ZHy-fV-ogy"/>

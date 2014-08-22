@@ -97,6 +97,9 @@
     // zoom to fit all map annotations...
     [DevicesMapView showAnnotations:DevicesMapView.annotations animated:NO];
 }
+- (IBAction)ZoomToFitButton:(id)sender {
+    [DevicesMapView showAnnotations:DevicesMapView.annotations animated:NO];
+}
 
 - (void)viewDidDisappear:(BOOL)animated
 {

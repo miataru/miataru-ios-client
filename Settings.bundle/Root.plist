@@ -168,6 +168,24 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
+			<string>Always Zoom To Fit in Groups</string>
+			<key>FooterText</key>
+			<string>Should the Groups Feature always zoom to fit on Updates?</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Groups always Zoom To Fit</string>
+			<key>Key</key>
+			<string>groups_zoom_to_fit</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
 			<string>Map Type</string>
 			<key>FooterText</key>
 			<string>What type of map do you want to use?</string>
