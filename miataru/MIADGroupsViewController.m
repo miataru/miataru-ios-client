@@ -96,6 +96,17 @@
     //[DevicesMapView showAnnotations:DevicesMapView.annotations animated:NO];
 }
 
+-(MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id)overlay
+{
+    MKCircleView *circleView = [[MKCircleView alloc] initWithOverlay:overlay];
+    //    circleView.strokeColor = [UIColor redColor];
+    //    circleView.lineWidth = 2;
+    circleView.fillColor = [UIColor blueColor];
+    circleView.opaque = true;
+    circleView.alpha = 0.1;
+    return circleView;
+}
+
 - (void)zoomToFitMapAnnotations:(MKMapView *)mapView2 {
     
     NSLog(@"Zoom To Fit");
@@ -208,6 +219,10 @@
     if ( userLocation != nil ) {
         [pins removeObject:userLocation]; // avoid removing user location off the map
     }
+    //NSMutableArray *overlays = [[NSMutableArray alloc] initWithArray:[DevicesMapView overlays]];
+
+    
+    [DevicesMapView removeOverlays:[DevicesMapView overlays]];
     
     [DevicesMapView removeAnnotations:pins];
     //[pins release];
@@ -300,6 +315,7 @@
         {
             NSString* Lat = [MiataruLocations[0] objectForKey:@"Latitude"];
             NSString* Lon = [MiataruLocations[0] objectForKey:@"Longitude"];
+            NSString* Accuracy = [MiataruLocations[0] objectForKey:@"HorizontalAccuracy"];
             NSString* Timestamp = [MiataruLocations[0] objectForKey:@"Timestamp"];
             NSString* DeviceID = [MiataruLocations[0] objectForKey:@"Device"];
             NSString* DeviceName = @"MiataruDevice";
@@ -316,6 +332,12 @@
                 }
             }
             
+            double DeviceAccuracy = 5;
+            
+            if (Accuracy != nil && [Accuracy class] != [NSNull class])
+            {
+                DeviceAccuracy = [Accuracy doubleValue];
+            }
             
             NSString *TimeString = [PassedTimeDateFormatter dateToStringInterval:[NSDate dateWithTimeIntervalSince1970:[Timestamp doubleValue]]];
             
@@ -334,6 +356,14 @@
                     PositionPin *newAnnotation = [[PositionPin alloc] initWithTitle:UseThisDeviceName andCoordinate:DeviceCoordinates andColor:DeviceColor];
                     [DevicesMapView addAnnotation:newAnnotation];
                     NSLog(@"Added Annotation...");
+                    
+                    if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"indicate_accuracy_on_map"] == 1 )
+                    {
+                        NSLog(@"Drawing Overlay...");
+                        MKCircle *circle = [MKCircle circleWithCenterCoordinate:DeviceCoordinates radius:DeviceAccuracy];
+                        [self.DevicesMapView addOverlay:circle];
+                    }
+                    
                     [self zoomToFitMapAnnotations:DevicesMapView];
                     //[newAnnotation release];
                     
