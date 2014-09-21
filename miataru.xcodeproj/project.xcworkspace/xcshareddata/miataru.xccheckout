@@ -10,24 +10,36 @@
 	<string>miataru</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E</key>
+		<string>192.168.178.104:miataru/miataru-ios-app.git</string>
 		<key>BC2164FA-9EB2-46A7-9C2D-E4E69EB84FFB</key>
 		<string>ssh://192.168.178.104/miataru/miataru-ios-app.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>miataru.xcodeproj/project.xcworkspace</string>
+	<string>miataru.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>BC2164FA-9EB2-46A7-9C2D-E4E69EB84FFB</key>
+		<key>AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E</key>
 		<string>../..</string>
+		<key>BC2164FA-9EB2-46A7-9C2D-E4E69EB84FFB</key>
+		<string>../../../universal</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://192.168.178.104/miataru/miataru-ios-app.git</string>
+	<string>192.168.178.104:miataru/miataru-ios-app.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>BC2164FA-9EB2-46A7-9C2D-E4E69EB84FFB</string>
+	<string>AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>miataru-ios-app</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
