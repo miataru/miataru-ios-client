@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
-        <!--My Device View Controller - Map-->
+        <!--Map-->
         <scene sceneID="ot8-2e-RuS">
             <objects>
                 <viewController title="Map" id="QUy-BD-bpt" customClass="MIADMyDeviceViewController" sceneMemberID="viewController">
@@ -18,7 +19,6 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1WX-Gp-MCn">
                                 <rect key="frame" x="61" y="97" width="200" height="200"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="200" id="9E7-xv-XcF"/>
                                     <constraint firstAttribute="width" constant="200" id="SYL-2d-JeK"/>
@@ -26,13 +26,11 @@
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AI1-zp-UXr">
                                 <rect key="frame" x="20" y="305" width="280" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="269" translatesAutoresizingMaskIntoConstraints="NO" id="bBo-vM-dUI">
                                 <rect key="frame" x="26" y="334" width="269" height="70"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <attributedString key="attributedText">
                                     <fragment content="Scan the above QR code to add this device to the Devices List.">
                                         <attributes>
@@ -46,7 +44,6 @@
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-pB-iTe">
                                 <rect key="frame" x="288" y="485" width="22" height="22"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -95,7 +92,7 @@
             </objects>
             <point key="canvasLocation" x="1259" y="1612"/>
         </scene>
-        <!--Encoder License Information View Controller - QR Encoder License-->
+        <!--QR Encoder License-->
         <scene sceneID="zkF-to-9ef">
             <objects>
                 <viewController id="90q-2d-ljB" customClass="MIADQREncoderLicenseInformationViewController" sceneMemberID="viewController">
@@ -109,7 +106,6 @@
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jAI-lB-OIv">
                                 <rect key="frame" x="20" y="170" width="280" height="227"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="227" id="l06-lv-sVQ"/>
                                 </constraints>
@@ -217,7 +213,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="-540" y="796"/>
         </scene>
-        <!--Devices Table View Controller - Known Devices-->
+        <!--Known Devices-->
         <scene sceneID="MYi-75-Jvh">
             <objects>
                 <tableViewController id="EcO-y0-7dz" customClass="MIADDevicesTableViewController" sceneMemberID="viewController">
@@ -236,7 +232,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hRL-vf-03S">
                                             <rect key="frame" x="15" y="0.0" width="238" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -268,7 +264,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="724" y="-346"/>
         </scene>
-        <!--Map View Controller - Map-->
+        <!--Map-->
         <scene sceneID="5pI-dP-8pP">
             <objects>
                 <viewController id="ZCE-Co-7wT" customClass="MIADMapViewController" sceneMemberID="viewController">
@@ -282,7 +278,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="ZCE-Co-7wT" id="Uxv-lI-ldf"/>
                                 </connections>
@@ -312,7 +307,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="726" y="2355"/>
         </scene>
-        <!--Navigation Controller - Map-->
+        <!--Map-->
         <scene sceneID="h0o-iR-m0v">
             <objects>
                 <navigationController definesPresentationContext="YES" id="aGv-5P-RB8" sceneMemberID="viewController">
@@ -328,7 +323,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="195" y="2355"/>
         </scene>
-        <!--Navigation Controller - Settings-->
+        <!--Settings-->
         <scene sceneID="p2U-CL-bhz">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6aN-ZL-kRL" sceneMemberID="viewController">
@@ -361,7 +356,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jw1-O1-HRN">
                                 <rect key="frame" x="254" y="29" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="Done">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -372,50 +366,41 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="7hw-cQ-bGa">
                                 <rect key="frame" x="127" y="29" width="67" height="74"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BT8-NJ-y4k">
                                 <rect key="frame" x="54" y="111" width="223" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GuG-hg-zy5">
                                 <rect key="frame" x="246" y="477" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="ReportLocationSwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="T9f-2i-Yql"/>
                                 </connections>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="X2B-nO-HeY">
                                 <rect key="frame" x="246" y="516" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="StoreLocationHistorySwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="03p-oZ-VeE"/>
                                 </connections>
                             </switch>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mio-M6-UQV">
-                                <rect key="frame" x="20" y="284" width="0.0" height="0.0"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Location to Server" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dot-r5-u0N">
                                 <rect key="frame" x="36" y="482" width="198" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Store Location History" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d97-ix-nt0">
                                 <rect key="frame" x="36" y="521" width="198" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="Na6-lW-hAt">
                                 <rect key="frame" x="20" y="149" width="280" height="224"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <attributedString key="attributedText">
                                     <fragment>
                                         <string key="content">Miataru is a Location Sharing Service which allows you to share your location with anybody you choose to give your unique device ID.
@@ -467,7 +452,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1158" y="3077"/>
         </scene>
-        <!--Navigation Controller - Device-->
+        <!--Device-->
         <scene sceneID="mFQ-cI-ZZw">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fUv-7Y-Jqh" sceneMemberID="viewController">
@@ -506,8 +491,7 @@ For more information please visit </string>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Device Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="G4V-n3-kve">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                 </textField>
                                             </subviews>
@@ -522,8 +506,7 @@ For more information please visit </string>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Device ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="f2Z-HJ-44a">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
@@ -538,7 +521,7 @@ For more information please visit </string>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hwE-3T-j7C">
                                                     <rect key="frame" x="113" y="7" width="94" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                     <state key="normal" title="Pick Color">
                                                         <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -575,7 +558,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1272" y="-1345"/>
         </scene>
-        <!--Device Details View Controller - Details-->
+        <!--Details-->
         <scene sceneID="NOf-4O-ete">
             <objects>
                 <viewController id="BuP-gn-PIf" customClass="MIADDeviceDetailsViewController" sceneMemberID="viewController">
@@ -589,7 +572,6 @@ For more information please visit </string>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="BuP-gn-PIf" id="JeQ-Ep-eEu"/>
                                 </connections>
@@ -618,7 +600,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1272" y="-670"/>
         </scene>
-        <!--History View Controller - History-->
+        <!--History-->
         <scene sceneID="eMi-bB-UGz">
             <objects>
                 <viewController id="fun-ND-L7r" customClass="MIADHistoryViewController" sceneMemberID="viewController">
@@ -632,7 +614,6 @@ For more information please visit </string>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="fun-ND-L7r" id="fmB-BI-o2J"/>
                                 </connections>
@@ -655,7 +636,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1828" y="-670"/>
         </scene>
-        <!--Navigation Controller - AddDeviceNavigationController-->
+        <!--AddDeviceNavigationController-->
         <scene sceneID="9Ac-h1-4En">
             <objects>
                 <navigationController title="AddDeviceNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="i9u-Yd-vsN" sceneMemberID="viewController">
@@ -673,7 +654,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1272" y="66"/>
         </scene>
-        <!--Navigation Controller - QR-->
+        <!--QR-->
         <scene sceneID="yEI-vy-Nav">
             <objects>
                 <navigationController definesPresentationContext="YES" id="V9e-U7-As1" sceneMemberID="viewController">
@@ -689,7 +670,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="195" y="1612"/>
         </scene>
-        <!--AddA Device Table View Controller - Add a Device-->
+        <!--Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
             <objects>
                 <tableViewController id="fFJ-wG-oZ7" customClass="MIADAddADeviceTableViewController" sceneMemberID="viewController">
@@ -709,8 +690,7 @@ For more information please visit </string>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="jMF-2w-cZT">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
@@ -725,8 +705,7 @@ For more information please visit </string>
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="TGg-c8-cjP">
                                                     <rect key="frame" x="20" y="7" width="280" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
                                             </subviews>
@@ -746,7 +725,7 @@ For more information please visit </string>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Scan Device QR Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXe-Nh-prk">
                                                     <rect key="frame" x="60" y="0.0" width="225" height="43"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -808,7 +787,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="2231" y="66"/>
         </scene>
-        <!--ScanQR Code View Controller - Scan QR Code-->
+        <!--Scan QR Code-->
         <scene sceneID="IkS-hf-WjQ">
             <objects>
                 <viewController id="45o-7I-dVA" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
@@ -822,7 +801,6 @@ For more information please visit </string>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkR-2l-yMM">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
@@ -843,7 +821,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="2730" y="66"/>
         </scene>
-        <!--Groups View Controller - Group-->
+        <!--Group-->
         <scene sceneID="IAN-4Q-wGI">
             <objects>
                 <viewController id="wpY-yN-bUb" customClass="MIADGroupsViewController" sceneMemberID="viewController">
@@ -857,7 +835,6 @@ For more information please visit </string>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="wpY-yN-bUb" id="KyD-PE-pZt"/>
                                 </connections>
@@ -921,7 +898,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1180" y="796"/>
         </scene>
-        <!--Navigation Controller - Group-->
+        <!--Group-->
         <scene sceneID="ejS-k6-3ug">
             <objects>
                 <navigationController definesPresentationContext="YES" id="iqp-wo-Olw" sceneMemberID="viewController">
