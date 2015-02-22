@@ -66,6 +66,11 @@
     self.locationManager.distanceFilter = 100;
     self.locationManager.delegate = self;
     
+    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
+    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self.locationManager requestAlwaysAuthorization];
+    }
+    
     // set https service.miataru.com setting...
     
     if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"miataru_server_url"] isEqualToString:@"http://service.miataru.com"])
