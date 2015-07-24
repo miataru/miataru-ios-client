@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "429824704.228265"
+            timestampString = "459462357.561298"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "449"
-            endingLineNumber = "449"
+            startingLineNumber = "450"
+            endingLineNumber = "450"
             landmarkName = "-GetLocationForDeviceFromMiataruServer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -120,6 +120,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
                   timestampString = "404731815.675098"
                   startingColumnNumber = "9223372036854775807"
@@ -134,6 +135,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
                   timestampString = "404731815.675547"
                   startingColumnNumber = "9223372036854775807"
@@ -246,6 +248,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "+[QREncoder encode:size:correctionLevel:scale:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Libraries/QREncoder/Classes/QREncoder.m"
                   timestampString = "405540152.720365"
                   startingColumnNumber = "9223372036854775807"
@@ -260,6 +263,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "+[QREncoder encode:size:correctionLevel:scale:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Libraries/QREncoder/Classes/QREncoder.m"
                   timestampString = "405540152.720674"
                   startingColumnNumber = "9223372036854775807"
@@ -372,6 +376,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
                   timestampString = "405974382.506566"
                   startingColumnNumber = "9223372036854775807"
@@ -386,6 +391,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
                   timestampString = "405974382.508485"
                   startingColumnNumber = "9223372036854775807"
@@ -436,11 +442,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADDeviceDetailsViewController.m"
-            timestampString = "429824704.228265"
+            timestampString = "459462357.561298"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "465"
-            endingLineNumber = "465"
+            startingLineNumber = "466"
+            endingLineNumber = "466"
             landmarkName = "@implementation MIADDeviceDetailsViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -482,6 +488,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
                   timestampString = "405975197.084348"
                   startingColumnNumber = "9223372036854775807"
@@ -496,6 +503,7 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
                   moduleName = "Miataru"
+                  usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
                   timestampString = "405975197.084796"
                   startingColumnNumber = "9223372036854775807"
@@ -574,7 +582,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Miataru/MIADEditDeviceViewController.h"
@@ -582,7 +590,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "27"
-            endingLineNumber = "27">
+            endingLineNumber = "27"
+            landmarkName = "@protocol MIADEditADeviceTableViewControllerDelegate"
+            landmarkType = "2">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

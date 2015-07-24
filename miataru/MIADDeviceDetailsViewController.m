@@ -424,9 +424,10 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     /*
         ￼{"MiataruGetLocation": [{"Device":"7b8e6e0ee5296db345162dc2ef652c1350761823"}]}
+        [UIDevice currentDevice].identifierForVendor.UUIDString
     */
     
-    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocation\": [{\"Device\":\"%@\"}]}",deviceID];
+    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"RequestMiataruDeviceID\": \"%@\"},\"MiataruGetLocation\": [{\"Device\":\"%@\"}]}",[UIDevice currentDevice].identifierForVendor.UUIDString,deviceID];
     
     self.responseData = [NSMutableData data];
    

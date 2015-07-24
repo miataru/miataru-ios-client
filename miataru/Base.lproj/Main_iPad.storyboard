@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="qEx-gG-y2a">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="qEx-gG-y2a">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
-        <!--Devices Table View Controller - Known Devices-->
+        <!--Known Devices-->
         <scene sceneID="xee-Za-MNR">
             <objects>
                 <tableViewController id="5Gu-ch-mxj" customClass="MIADDevicesTableViewController" sceneMemberID="viewController">
@@ -12,7 +13,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="UVu-lo-OHA" detailTextLabel="4Tn-A4-V7e" style="IBUITableViewCellStyleSubtitle" id="ZcD-cF-bid">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
@@ -55,7 +55,7 @@
             </objects>
             <point key="canvasLocation" x="1639" y="-2768"/>
         </scene>
-        <!--Device Details View Controller - Device Details-->
+        <!--Device Details-->
         <scene sceneID="38H-Ug-Utw">
             <objects>
                 <viewController id="oYf-K1-iml" customClass="MIADDeviceDetailsViewController" sceneMemberID="viewController">
@@ -69,7 +69,6 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="pB3-2t-OIW">
                                 <rect key="frame" x="0.0" y="0.0" width="703" height="768"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="oYf-K1-iml" id="JAe-7Q-oQE"/>
                                 </connections>
@@ -82,7 +81,6 @@
                             <constraint firstAttribute="trailing" secondItem="pB3-2t-OIW" secondAttribute="trailing" id="ewe-ZJ-URT"/>
                             <constraint firstAttribute="bottom" secondItem="pB3-2t-OIW" secondAttribute="bottom" id="huj-U4-4SK"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Device Details" id="dDB-aU-tUC"/>
                     <connections>
@@ -128,7 +126,7 @@
             </objects>
             <point key="canvasLocation" x="547" y="-2768"/>
         </scene>
-        <!--Navigation Controller - Devices-->
+        <!--Devices-->
         <scene sceneID="dXj-Q3-rA2">
             <objects>
                 <navigationController definesPresentationContext="YES" id="pmS-cw-H5Q" sceneMemberID="viewController">
@@ -144,7 +142,7 @@
             </objects>
             <point key="canvasLocation" x="1063" y="-2768"/>
         </scene>
-        <!--Navigation Controller - AddDeviceNavigationController-->
+        <!--AddDeviceNavigationController-->
         <scene sceneID="8Ys-wZ-pCV">
             <objects>
                 <navigationController title="AddDeviceNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="RAW-9L-CCS" sceneMemberID="viewController">
@@ -163,15 +161,14 @@
             </objects>
             <point key="canvasLocation" x="2707" y="-3154"/>
         </scene>
-        <!--AddA Device Table View Controller - Add a Device-->
+        <!--Add a Device-->
         <scene sceneID="3OU-ms-FjF">
             <objects>
                 <tableViewController id="Keb-1t-7zg" customClass="MIADAddADeviceTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="Hry-LX-SJa">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <sections>
                             <tableViewSection headerTitle="Add a Device" id="wMd-Un-37j">
                                 <cells>
@@ -184,7 +181,6 @@
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device Name" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="aGm-Cj-vzY">
                                                     <rect key="frame" x="20" y="7" width="504" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
@@ -200,7 +196,6 @@
                                             <subviews>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Device ID" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="sPo-2p-YyR">
                                                     <rect key="frame" x="20" y="7" width="510" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
@@ -283,7 +278,7 @@
             </objects>
             <point key="canvasLocation" x="5612" y="-3154"/>
         </scene>
-        <!--ScanQR Code View Controller - Scan QR Code-->
+        <!--Scan QR Code-->
         <scene sceneID="1yU-cM-8J9">
             <objects>
                 <viewController id="5Oj-TR-gB0" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
@@ -292,12 +287,11 @@
                         <viewControllerLayoutGuide type="bottom" id="b38-gb-kuX"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="10l-03-0wf">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSo-rr-BVL">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
@@ -308,7 +302,6 @@
                             <constraint firstItem="OSo-rr-BVL" firstAttribute="leading" secondItem="10l-03-0wf" secondAttribute="leading" id="rEI-ST-rdb"/>
                             <constraint firstItem="OSo-rr-BVL" firstAttribute="top" secondItem="10l-03-0wf" secondAttribute="top" id="sOe-HP-0bi"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Scan QR Code" id="G1X-04-TiP">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="PDH-qi-KTh">
@@ -326,7 +319,7 @@
             </objects>
             <point key="canvasLocation" x="6075" y="-2078"/>
         </scene>
-        <!--My Device View Controller - Map-->
+        <!--Map-->
         <scene sceneID="byH-BM-j6Y">
             <objects>
                 <viewController title="Map" id="A5T-DK-Gkm" customClass="MIADMyDeviceViewController" sceneMemberID="viewController">
@@ -340,7 +333,6 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="15y-hf-e15">
                                 <rect key="frame" x="61" y="97" width="200" height="200"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="MjC-f2-gpg"/>
                                     <constraint firstAttribute="height" constant="200" id="wsr-cp-Z3k"/>
@@ -348,13 +340,11 @@
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cNP-O3-gx8">
                                 <rect key="frame" x="20" y="305" width="280" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="269" translatesAutoresizingMaskIntoConstraints="NO" id="h7G-GC-F04">
                                 <rect key="frame" x="26" y="334" width="269" height="70"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <attributedString key="attributedText">
                                     <fragment content="Scan the above QR code to add this device to the Devices List.">
                                         <attributes>
@@ -368,7 +358,6 @@
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LGa-m6-cA8">
                                 <rect key="frame" x="292" y="688" width="22" height="22"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -385,7 +374,6 @@
                             <constraint firstAttribute="trailing" secondItem="LGa-m6-cA8" secondAttribute="trailing" constant="6" id="e6m-dE-opK"/>
                             <constraint firstItem="15y-hf-e15" firstAttribute="leading" secondItem="cVf-ke-YtT" secondAttribute="leading" constant="61" id="hVq-1f-Jsu"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Device QR Code" id="KvP-zj-U88">
                         <barButtonItem key="rightBarButtonItem" systemItem="action" id="BDk-3I-Cbz">
@@ -418,7 +406,7 @@
             </objects>
             <point key="canvasLocation" x="2296" y="-1684"/>
         </scene>
-        <!--Encoder License Information View Controller - QR Encoder License-->
+        <!--QR Encoder License-->
         <scene sceneID="T6U-Un-WzW">
             <objects>
                 <viewController id="iHM-tg-9AH" customClass="MIADQREncoderLicenseInformationViewController" sceneMemberID="viewController">
@@ -427,12 +415,11 @@
                         <viewControllerLayoutGuide type="bottom" id="7k4-r5-wlX"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="6Hi-tE-APQ">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="sez-QV-DlU">
-                                <rect key="frame" x="20" y="370" width="280" height="227"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="20" y="370" width="984" height="227"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="227" id="z0T-id-D9c"/>
                                 </constraints>
@@ -470,7 +457,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                             <constraint firstItem="7k4-r5-wlX" firstAttribute="top" secondItem="sez-QV-DlU" secondAttribute="bottom" constant="171" id="w8G-rf-iXd"/>
                             <constraint firstAttribute="trailing" secondItem="sez-QV-DlU" secondAttribute="trailing" constant="20" symbolic="YES" id="wBZ-hd-Qys"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="QR Encoder License" id="LVc-Rf-PSY">
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="O98-WH-XNh">
@@ -484,7 +470,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="3810" y="-1684"/>
         </scene>
-        <!--Navigation Controller - QR-->
+        <!--QR-->
         <scene sceneID="xnk-VR-aDn">
             <objects>
                 <navigationController definesPresentationContext="YES" id="wHn-tX-x4c" sceneMemberID="viewController">
@@ -508,7 +494,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="IpadSettingsID" id="kKG-QB-nKa">
                                 <rect key="frame" x="0.0" y="119" width="320" height="44"/>
@@ -536,7 +521,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="1501" y="-491"/>
         </scene>
-        <!--Navigation Controller - Settings-->
+        <!--Settings-->
         <scene sceneID="Cnj-yf-VtB">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="K6a-1z-ime" sceneMemberID="viewController">
@@ -564,12 +549,11 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <viewControllerLayoutGuide type="bottom" id="btc-PW-fSy"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="f6h-RM-CT5">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2WM-qe-mWp">
-                                <rect key="frame" x="254" y="20" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="958" y="20" width="46" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="Vuo-Km-oVf"/>
                                 </constraints>
@@ -582,16 +566,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="2Zt-BD-ilj">
-                                <rect key="frame" x="127" y="136" width="67" height="74"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="479" y="136" width="67" height="74"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="67" id="91J-AS-GxI"/>
                                     <constraint firstAttribute="height" constant="74" id="ttC-WN-Vmq"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ms7-fd-mdF">
-                                <rect key="frame" x="49" y="246" width="223" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="401" y="246" width="223" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="223" id="Yw9-f8-fWa"/>
                                     <constraint firstAttribute="height" constant="30" id="g7q-NM-hhg"/>
@@ -602,39 +584,33 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8k6-gB-Xd7">
                                 <rect key="frame" x="593" y="590" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="ReportLocationSwitchToggled:" destination="8aa-dS-YAZ" eventType="valueChanged" id="NEj-pY-eH2"/>
                                 </connections>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Hgx-9L-Cci">
                                 <rect key="frame" x="593" y="629" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
                                     <action selector="StoreLocationHistorySwitchToggled:" destination="8aa-dS-YAZ" eventType="valueChanged" id="cWt-c5-dqe"/>
                                 </connections>
                             </switch>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LMU-Ak-pZX">
                                 <rect key="frame" x="20" y="284" width="0.0" height="0.0"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Location to Server" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Mw-pI-W2j">
-                                <rect key="frame" x="383" y="595" width="198" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="383" y="595" width="198" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Store Location History" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eG6-jf-nwx">
-                                <rect key="frame" x="383" y="634" width="198" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="383" y="634" width="198" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="469" translatesAutoresizingMaskIntoConstraints="NO" id="91I-iZ-FBU">
-                                <rect key="frame" x="-74" y="284" width="469" height="224"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="278" y="284" width="469" height="224"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="469" id="biB-9b-yk9"/>
                                 </constraints>
@@ -689,7 +665,6 @@ For more information please visit </string>
                             <constraint firstItem="Hgx-9L-Cci" firstAttribute="top" secondItem="8k6-gB-Xd7" secondAttribute="bottom" constant="8" symbolic="YES" id="y9c-VJ-ZYS"/>
                             <constraint firstItem="8k6-gB-Xd7" firstAttribute="leading" secondItem="Hgx-9L-Cci" secondAttribute="leading" id="yg3-6F-eNJ"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <connections>
                         <outlet property="ReportLocationToServerUISwitch" destination="8k6-gB-Xd7" id="CXK-6Z-faI"/>
@@ -700,7 +675,7 @@ For more information please visit </string>
             </objects>
             <point key="canvasLocation" x="1971" y="-491"/>
         </scene>
-        <!--Map View Controller - Map-->
+        <!--Map-->
         <scene sceneID="bJT-Qk-ZRJ">
             <objects>
                 <viewController id="8PJ-ZQ-lQx" customClass="MIADMapViewController" sceneMemberID="viewController">
@@ -714,7 +689,6 @@ For more information please visit </string>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="F2h-FO-Rjm">
                                 <rect key="frame" x="0.0" y="0.0" width="703" height="768"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <outlet property="delegate" destination="8PJ-ZQ-lQx" id="cie-f0-aZA"/>
                                 </connections>
@@ -727,7 +701,6 @@ For more information please visit </string>
                             <constraint firstItem="F2h-FO-Rjm" firstAttribute="leading" secondItem="Kc2-mi-yiV" secondAttribute="leading" id="X9w-gv-4Jp"/>
                             <constraint firstAttribute="trailing" secondItem="F2h-FO-Rjm" secondAttribute="trailing" id="icy-lV-Tai"/>
                         </constraints>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <navigationItem key="navigationItem" title="Map" id="5fP-A1-aav"/>
                     <connections>

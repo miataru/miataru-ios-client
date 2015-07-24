@@ -239,7 +239,7 @@
     //int number_of_items_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_items"];
 
     // get as much as possible, but up to 1024 entries...
-    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",device.DeviceID,1024];
+    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"RequestMiataruDeviceID\": \"%@\"},\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",[UIDevice currentDevice].identifierForVendor.UUIDString,device.DeviceID,1024];
     
     self.responseData = [NSMutableData data];
     
