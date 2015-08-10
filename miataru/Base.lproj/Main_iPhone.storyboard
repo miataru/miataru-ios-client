@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="8YX-ce-x5E">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -14,7 +14,7 @@
                         <viewControllerLayoutGuide type="bottom" id="lxn-o7-DXt"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gMD-aP-Fq6">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1WX-Gp-MCn">
@@ -43,13 +43,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-pB-iTe">
-                                <rect key="frame" x="288" y="485" width="22" height="22"/>
+                                <rect key="frame" x="568" y="517" width="22" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="ETP-S1-sh3" kind="modal" id="uaW-n2-vQT"/>
+                                    <segue destination="ETP-S1-sh3" kind="presentation" id="uaW-n2-vQT"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -75,7 +75,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3qq-4t-Ow8" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="726" y="1612"/>
+            <point key="canvasLocation" x="1361.25" y="1702.8169014084506"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="MpT-89-XYV">
@@ -90,7 +90,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tqd-lx-EeW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1259" y="1612"/>
+            <point key="canvasLocation" x="2360.625" y="1702.8169014084506"/>
         </scene>
         <!--QR Encoder License-->
         <scene sceneID="zkF-to-9ef">
@@ -101,11 +101,11 @@
                         <viewControllerLayoutGuide type="bottom" id="7cy-zj-g3c"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="PgF-a2-f4T">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jAI-lB-OIv">
-                                <rect key="frame" x="20" y="170" width="280" height="227"/>
+                                <rect key="frame" x="20" y="202" width="560" height="227"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="227" id="l06-lv-sVQ"/>
                                 </constraints>
@@ -154,14 +154,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="85l-Gk-wPt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1737" y="1612"/>
+            <point key="canvasLocation" x="3256.875" y="1702.8169014084506"/>
         </scene>
         <!--App Settings View Controller-->
         <scene sceneID="X7X-p7-zZc">
             <objects>
                 <tableViewController id="ntc-sL-c8h" customClass="IASKAppSettingsViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="I4c-au-6j5">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
@@ -180,16 +180,21 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="caF-f1-q0G">
+                        <barButtonItem key="leftBarButtonItem" image="Toolbar_History" id="wfQ-xM-oKu">
+                            <connections>
+                                <segue destination="4OT-uE-miO" kind="show" id="E3s-64-dB5"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Welcome" id="z4s-Zr-cMj">
                             <connections>
-                                <segue destination="k4y-V8-4Kg" kind="modal" id="X74-hp-h8g"/>
+                                <segue destination="k4y-V8-4Kg" kind="presentation" id="X74-hp-h8g"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8Fx-aa-TP0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="688" y="3077"/>
+            <point key="canvasLocation" x="1290" y="3250.3521126760561"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="Vex-rW-GRa">
@@ -211,14 +216,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-540" y="796"/>
+            <point key="canvasLocation" x="-1012.5" y="840.84507042253517"/>
         </scene>
         <!--Known Devices-->
         <scene sceneID="MYi-75-Jvh">
             <objects>
                 <tableViewController id="EcO-y0-7dz" customClass="MIADDevicesTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="OVX-yi-16D">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -239,8 +244,8 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="BuP-gn-PIf" kind="push" identifier="PushToDeviceDetails" id="Wqb-KA-H1E"/>
-                                    <segue destination="0Xv-eN-zor" kind="push" identifier="PushToDeviceEdit" trigger="accessoryAction" id="2MX-vO-qCa"/>
+                                    <segue destination="BuP-gn-PIf" kind="show" identifier="PushToDeviceDetails" id="Wqb-KA-H1E"/>
+                                    <segue destination="0Xv-eN-zor" kind="show" identifier="PushToDeviceEdit" trigger="accessoryAction" id="2MX-vO-qCa"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -252,7 +257,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     <navigationItem key="navigationItem" title="Known Devices" id="v5G-hS-wfJ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="CzK-S1-zM0">
                             <connections>
-                                <segue destination="i9u-Yd-vsN" kind="modal" identifier="ModalToAddDevice" id="Eza-PX-sRJ"/>
+                                <segue destination="i9u-Yd-vsN" kind="presentation" identifier="ModalToAddDevice" id="Eza-PX-sRJ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -262,7 +267,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="119-x1-8k3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="724" y="-346"/>
+            <point key="canvasLocation" x="1357.5" y="-365.49295774647885"/>
         </scene>
         <!--Map-->
         <scene sceneID="5pI-dP-8pP">
@@ -273,11 +278,11 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <viewControllerLayoutGuide type="bottom" id="Vz7-0y-ARL"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="OPE-gP-GNU">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
                                     <outlet property="delegate" destination="ZCE-Co-7wT" id="Uxv-lI-ldf"/>
                                 </connections>
@@ -305,7 +310,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="726" y="2355"/>
+            <point key="canvasLocation" x="1361.25" y="2487.676056338028"/>
         </scene>
         <!--Map-->
         <scene sceneID="h0o-iR-m0v">
@@ -321,7 +326,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z2N-V7-DaB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="195" y="2355"/>
+            <point key="canvasLocation" x="365.625" y="2487.676056338028"/>
         </scene>
         <!--Settings-->
         <scene sceneID="p2U-CL-bhz">
@@ -340,7 +345,33 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xi3-PN-we4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="210" y="3077"/>
+            <point key="canvasLocation" x="393.75" y="3250.3521126760561"/>
+        </scene>
+        <!--Device History Table View Controller-->
+        <scene sceneID="yrt-bd-wAF">
+            <objects>
+                <tableViewController storyboardIdentifier="DevicesVisitorHistoryRoot" hidesBottomBarWhenPushed="YES" id="4OT-uE-miO" customClass="MIADDeviceHistoryTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="qZi-7w-cT9">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1tV-wP-rmj">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1tV-wP-rmj" id="2SH-Ri-zQJ">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="4OT-uE-miO" id="wUD-bP-Wjg"/>
+                            <outlet property="delegate" destination="4OT-uE-miO" id="rWH-2l-YnV"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WK7-dN-dKh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1875" y="3969"/>
         </scene>
         <!--First Start Wizard Root View Controller-->
         <scene sceneID="8qm-dB-YcB">
@@ -351,7 +382,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <viewControllerLayoutGuide type="bottom" id="gCS-LZ-kHS"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="tLn-fd-HWl">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jw1-O1-HRN">
@@ -374,13 +405,13 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GuG-hg-zy5">
-                                <rect key="frame" x="246" y="477" width="51" height="31"/>
+                                <rect key="frame" x="246" y="509" width="51" height="31"/>
                                 <connections>
                                     <action selector="ReportLocationSwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="T9f-2i-Yql"/>
                                 </connections>
                             </switch>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="X2B-nO-HeY">
-                                <rect key="frame" x="246" y="516" width="51" height="31"/>
+                                <rect key="frame" x="246" y="548" width="51" height="31"/>
                                 <connections>
                                     <action selector="StoreLocationHistorySwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="03p-oZ-VeE"/>
                                 </connections>
@@ -390,12 +421,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Location to Server" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dot-r5-u0N">
-                                <rect key="frame" x="36" y="482" width="198" height="21"/>
+                                <rect key="frame" x="36" y="514" width="198" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Store Location History" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d97-ix-nt0">
-                                <rect key="frame" x="36" y="521" width="198" height="21"/>
+                                <rect key="frame" x="36" y="553" width="198" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -450,7 +481,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IZV-UY-qSB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1158" y="3077"/>
+            <point key="canvasLocation" x="2171.25" y="3250.3521126760561"/>
         </scene>
         <!--Device-->
         <scene sceneID="mFQ-cI-ZZw">
@@ -469,14 +500,14 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GeV-8r-swQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="195" y="-346"/>
+            <point key="canvasLocation" x="365.625" y="-365.49295774647885"/>
         </scene>
         <!--Edit Device View Controller-->
         <scene sceneID="3VX-U7-xw9">
             <objects>
                 <tableViewController id="0Xv-eN-zor" customClass="MIADEditDeviceViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="twv-q6-Vca">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
@@ -556,7 +587,7 @@ For more information please visit </string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zIn-S9-9PQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="-1345"/>
+            <point key="canvasLocation" x="2385" y="-1421.25"/>
         </scene>
         <!--Details-->
         <scene sceneID="NOf-4O-ete">
@@ -567,11 +598,11 @@ For more information please visit </string>
                         <viewControllerLayoutGuide type="bottom" id="ANq-Vf-2ak"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Mds-Li-uQ3">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
                                     <outlet property="delegate" destination="BuP-gn-PIf" id="JeQ-Ep-eEu"/>
                                 </connections>
@@ -588,7 +619,7 @@ For more information please visit </string>
                     <navigationItem key="navigationItem" title="Details" id="u2g-TA-j6t">
                         <barButtonItem key="rightBarButtonItem" image="Toolbar_History" id="Tij-P7-vmU">
                             <connections>
-                                <segue destination="fun-ND-L7r" kind="push" identifier="PushToDeviceHistory" id="CgQ-68-TCg"/>
+                                <segue destination="fun-ND-L7r" kind="show" identifier="PushToDeviceHistory" id="CgQ-68-TCg"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -598,7 +629,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3K-xC-SOA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="-670"/>
+            <point key="canvasLocation" x="2385" y="-707.74647887323943"/>
         </scene>
         <!--History-->
         <scene sceneID="eMi-bB-UGz">
@@ -609,11 +640,11 @@ For more information please visit </string>
                         <viewControllerLayoutGuide type="bottom" id="TAJ-R4-c2B"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="qNV-8U-vi6">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
                                     <outlet property="delegate" destination="fun-ND-L7r" id="fmB-BI-o2J"/>
                                 </connections>
@@ -634,7 +665,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RV3-uv-r0x" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1828" y="-670"/>
+            <point key="canvasLocation" x="3427.5" y="-707.74647887323943"/>
         </scene>
         <!--AddDeviceNavigationController-->
         <scene sceneID="9Ac-h1-4En">
@@ -652,7 +683,7 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WH4-QA-c7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1272" y="66"/>
+            <point key="canvasLocation" x="2385" y="69.718309859154928"/>
         </scene>
         <!--QR-->
         <scene sceneID="yEI-vy-Nav">
@@ -668,14 +699,14 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yqb-cV-tAN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="195" y="1612"/>
+            <point key="canvasLocation" x="365.625" y="1702.8169014084506"/>
         </scene>
         <!--Add a Device-->
         <scene sceneID="B2f-ub-TDJ">
             <objects>
                 <tableViewController id="fFJ-wG-oZ7" customClass="MIADAddADeviceTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="MxE-iH-uCW">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
@@ -739,7 +770,7 @@ For more information please visit </string>
                                             <accessibilityTraits key="traits" none="YES" button="YES"/>
                                         </accessibility>
                                         <connections>
-                                            <segue destination="1e1-oq-8en" kind="modal" identifier="ModalToScanQRCode" id="Ko9-uJ-PCS"/>
+                                            <segue destination="1e1-oq-8en" kind="presentation" identifier="ModalToScanQRCode" id="Ko9-uJ-PCS"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -769,7 +800,7 @@ For more information please visit </string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Yl-Jy-liS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1750" y="66"/>
+            <point key="canvasLocation" x="3281.25" y="69.718309859154928"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="JCs-2F-nOF">
@@ -785,7 +816,7 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KfY-bR-3JY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2231" y="66"/>
+            <point key="canvasLocation" x="4183.125" y="69.718309859154928"/>
         </scene>
         <!--Scan QR Code-->
         <scene sceneID="IkS-hf-WjQ">
@@ -796,7 +827,7 @@ For more information please visit </string>
                         <viewControllerLayoutGuide type="bottom" id="9UV-Il-cYM"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="vhS-yx-Hpc">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkR-2l-yMM">
@@ -819,7 +850,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kuo-3a-K8Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2730" y="66"/>
+            <point key="canvasLocation" x="5118.75" y="69.718309859154928"/>
         </scene>
         <!--Group-->
         <scene sceneID="IAN-4Q-wGI">
@@ -830,11 +861,11 @@ For more information please visit </string>
                         <viewControllerLayoutGuide type="bottom" id="1MA-rA-8Ah"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="hwq-w9-pAo">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <connections>
                                     <outlet property="delegate" destination="wpY-yN-bUb" id="KyD-PE-pZt"/>
                                 </connections>
@@ -857,7 +888,7 @@ For more information please visit </string>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="EYi-5O-NPq">
                             <connections>
-                                <segue destination="8hr-If-I5p" kind="push" id="ZHy-fV-ogy"/>
+                                <segue destination="8hr-If-I5p" kind="show" id="ZHy-fV-ogy"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -867,14 +898,14 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OOf-HY-7Z7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="688" y="796"/>
+            <point key="canvasLocation" x="1290" y="840.84507042253517"/>
         </scene>
         <!--Edit Groups Table View Controller-->
         <scene sceneID="cpe-4J-0Su">
             <objects>
                 <tableViewController id="8hr-If-I5p" customClass="MIADEditGroupsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="xvr-tN-tsw">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -904,7 +935,7 @@ For more information please visit </string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ipg-7m-i3X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1180" y="796"/>
+            <point key="canvasLocation" x="2212.5" y="840.84507042253517"/>
         </scene>
         <!--Group-->
         <scene sceneID="ejS-k6-3ug">
@@ -920,7 +951,7 @@ For more information please visit </string>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NDB-3d-Rf7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="195" y="796"/>
+            <point key="canvasLocation" x="365.625" y="840.84507042253517"/>
         </scene>
     </scenes>
     <resources>
@@ -932,9 +963,4 @@ For more information please visit </string>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>

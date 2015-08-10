@@ -91,6 +91,17 @@
                     VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
                     break;
                 }
+                case UIInterfaceOrientationUnknown:
+                {
+                    VideoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+                    
+                    CGRect layerRect = [[[self view] layer] bounds];
+                    [VideoPreviewLayer setBounds:layerRect];
+                    [VideoPreviewLayer setPosition:CGPointMake(CGRectGetMidX(layerRect),CGRectGetMidY(layerRect))];
+                    VideoPreviewLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
+                    
+                    break;
+                }
             }
     }
 }
