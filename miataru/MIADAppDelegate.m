@@ -12,6 +12,8 @@
 
 @interface MIADAppDelegate ()
 
+@property (strong) NSString *device_id;
+
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
 @property (nonatomic) UIBackgroundTaskIdentifier bgTask;
@@ -28,6 +30,14 @@
     NSString *settingsPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Settings.bundle"];
     NSString *plistPath = [settingsPath stringByAppendingPathComponent:@"Root.plist"];
     
+    if (![self CheckDeviceID])
+    {
+        [self saveDeviceID];
+    }
+    else
+    {
+        [self loadDeviceID];
+    }
     //get the preference specifiers array which contains the settings
     NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:plistPath];
     NSArray *preferencesArray = [settingsDictionary objectForKey:@"PreferenceSpecifiers"];
@@ -400,7 +410,7 @@
     
     // render device ID
     
-    if ([UIDevice currentDevice].identifierForVendor != nil)
+    if (self.device_id != nil)
     {
         NSString *LocationHistory = @"False";
         if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"save_location_history_on_server"] == 1 )
@@ -412,7 +422,7 @@
         NSString* UpdateLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"EnableLocationHistory\":\"%@\",\"LocationDataRetentionTime\":\"%@\"},\"MiataruLocation\":[{\"Device\":\"%@\",\"Timestamp\":\"%@\",\"Longitude\":\"%+.6f\",\"Latitude\":\"%+.6f\",\"HorizontalAccuracy\":\"%+.6f\"}]}",
                                                LocationHistory,
                                                [[NSUserDefaults standardUserDefaults] stringForKey:@"location_data_retention_time"],
-                                               [UIDevice currentDevice].identifierForVendor.UUIDString,
+                                               self.device_id,
                                                [NSNumber numberWithDouble: [[NSDate date] timeIntervalSince1970]],
                                                locationupdate.coordinate.longitude,
                                                locationupdate.coordinate.latitude,
@@ -464,5 +474,78 @@
         }
     }
 }
+
+
+#pragma mark Persistent State for device ID
+
+- (NSURL*)applicationDataDirectory {
+    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+                                             inDomains:NSUserDomainMask];
+    NSURL* appSupportDir = nil;
+    NSURL* appDirectory = nil;
+    
+    if ([possibleURLs count] >= 1) {
+        // Use the first directory (if multiple are returned)
+        appSupportDir = [possibleURLs objectAtIndex:0];
+    }
+    
+    // If a valid app support directory exists, add the
+    // app's bundle ID to it to specify the final directory.
+    if (appSupportDir) {
+        NSString* appBundleID = [[NSBundle mainBundle] bundleIdentifier];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:appBundleID];
+    }
+    
+    return appDirectory;
+}
+
+
+- (NSString*) pathToSavedDeviceID{
+    NSURL *applicationSupportURL = [self applicationDataDirectory];
+    
+    if (! [[NSFileManager defaultManager] fileExistsAtPath:[applicationSupportURL path]]){
+        
+        NSError *error = nil;
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[applicationSupportURL path]
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        
+        if (error){
+            NSLog(@"error creating app support dir: %@", error);
+        }
+        
+    }
+    NSString *path = [[applicationSupportURL path] stringByAppendingPathComponent:@"deviceID.plist"];
+    
+    return path;
+}
+
+- (BOOL) CheckDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"CheckDeviceID: %@", path);
+    
+    
+    return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+
+- (void) loadDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"LoadDeviceID: %@", path);
+    
+    self.device_id = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+}
+
+
+- (void) saveDeviceID{
+    [NSKeyedArchiver archiveRootObject:[UIDevice currentDevice].identifierForVendor.UUIDString toFile:[self pathToSavedDeviceID]];
+    NSLog(@"saveDeviceID");
+}
+
 
 @end

@@ -15,6 +15,7 @@
 
 @interface MIADDevicesTableViewController ()
 
+@property (strong) NSString *device_id;
 @property (strong) NSMutableArray *known_devices;
 @property BOOL first_start_detected;
 
@@ -78,7 +79,11 @@
     self.first_start_detected = false;
     
     [super viewDidLoad];
-    NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
+    
+    [self loadDeviceID];
+    
+
+    NSString* deviceID = self.device_id;
     
     [self loadKnownDevices];
     if(!self.known_devices)
@@ -91,7 +96,7 @@
             // make sure that "this iPhone" is already in the known devices list when we start...
             self.known_devices = [NSMutableArray array];
             NSString *name = @"this iPhone";
-            KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+            KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:self.device_id];
             knowndevice.DeviceIsInGroup = TRUE;
             
             [self.known_devices addObject:knowndevice];
@@ -111,7 +116,7 @@
         
        for(KnownDevice *st in self.known_devices)
        {
-           if([st.DeviceID isEqualToString:deviceID]==TRUE)
+           if([st.DeviceID isEqualToString:self.device_id]==TRUE)
            {
                found_it = true;
                break;
@@ -120,10 +125,10 @@
          
        if (!found_it)
        {
-           if (deviceID.length != 0)
+           if (self.device_id.length != 0)
            {
                NSString *name = @"this iPhone";
-               KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:deviceID];
+               KnownDevice *knowndevice = [KnownDevice DeviceWithName:name DeviceID:self.device_id];
                [self.known_devices insertObject:knowndevice atIndex:0];
                [self saveKnownDevices];
            }
@@ -355,5 +360,48 @@
         return;
     }
 }
+
+#pragma mark Persistent State for device ID
+
+- (NSString*) pathToSavedDeviceID{
+    NSURL *applicationSupportURL = [self applicationDataDirectory];
+    
+    if (! [[NSFileManager defaultManager] fileExistsAtPath:[applicationSupportURL path]]){
+        
+        NSError *error = nil;
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[applicationSupportURL path]
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        
+        if (error){
+            NSLog(@"error creating app support dir: %@", error);
+        }
+        
+    }
+    NSString *path = [[applicationSupportURL path] stringByAppendingPathComponent:@"deviceID.plist"];
+    
+    return path;
+}
+
+- (BOOL) CheckDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"CheckDeviceID: %@", path);
+    
+    
+    return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+
+- (void) loadDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"LoadDeviceID: %@", path);
+    
+    self.device_id = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+}
+
 
 @end

@@ -13,7 +13,7 @@
 //static const CGFloat kPadding = 10;
 
 @interface MIADMyDeviceViewController ()
-
+@property (strong) NSString *device_id;
 @end
 
 @implementation MIADMyDeviceViewController
@@ -21,17 +21,18 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self loadDeviceID];
     //NSString* deviceID = [UIDevice currentDevice].identifierForVendor.UUIDString;
     //NSString* deviceID = @"DBD02046-EAA5-40F2-8C3B-8C884893A57C-service.miataru.com";
     //NSString* deviceID = @"dbd02046-eaa5-40f2-8c3b-8c884893a57c";
 	// Do any additional setup after loading the view, typically from a nib.
-    NSString *deviceID = [NSString stringWithFormat:@"miataru://%@", [[UIDevice currentDevice].identifierForVendor.UUIDString lowercaseString]];
+    NSString *deviceID = [NSString stringWithFormat:@"miataru://%@", [self.device_id lowercaseString]];
     
     UIImage* image = [QREncoder encode:deviceID size:4 correctionLevel:QRCorrectionLevelMedium scale:6];
     [self.QRCodeView layer].magnificationFilter = kCAFilterNearest;
     [self.QRCodeView setImage:image];
     
-    self.DeviceIDLabel.text = [UIDevice currentDevice].identifierForVendor.UUIDString;
+    self.DeviceIDLabel.text = self.device_id;
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,7 +52,7 @@
         //controller.navigationBar.tintColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0];
         [controller setSubject:@"my Miataru Device ID"];
         
-        [controller setMessageBody:[NSString stringWithFormat:@"Hello,<br/> this is my Miataru Device ID: %@ <br><p>To view this device in any browser you may use this <a href='http://miataru.com/client/#%@'>link.</a><br>", [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString], [[UIDevice currentDevice].identifierForVendor.UUIDString uppercaseString]] isHTML:YES];
+        [controller setMessageBody:[NSString stringWithFormat:@"Hello,<br/> this is my Miataru Device ID: %@ <br><p>To view this device in any browser you may use this <a href='http://miataru.com/client/#%@'>link.</a><br>", [self.device_id uppercaseString], [self.device_id uppercaseString]] isHTML:YES];
         [controller setToRecipients:[NSArray arrayWithObjects:@"",nil]];
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.image = self.QRCodeView.image;
@@ -89,6 +90,72 @@
 //    }
     [self dismissViewControllerAnimated:YES completion:NULL];
 //    [MailAlert show];
+}
+
+
+#pragma mark Persistent State for device ID
+
+- (NSURL*)applicationDataDirectory {
+    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+                                             inDomains:NSUserDomainMask];
+    NSURL* appSupportDir = nil;
+    NSURL* appDirectory = nil;
+    
+    if ([possibleURLs count] >= 1) {
+        // Use the first directory (if multiple are returned)
+        appSupportDir = [possibleURLs objectAtIndex:0];
+    }
+    
+    // If a valid app support directory exists, add the
+    // app's bundle ID to it to specify the final directory.
+    if (appSupportDir) {
+        NSString* appBundleID = [[NSBundle mainBundle] bundleIdentifier];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:appBundleID];
+    }
+    
+    return appDirectory;
+}
+
+
+- (NSString*) pathToSavedDeviceID{
+    NSURL *applicationSupportURL = [self applicationDataDirectory];
+    
+    if (! [[NSFileManager defaultManager] fileExistsAtPath:[applicationSupportURL path]]){
+        
+        NSError *error = nil;
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[applicationSupportURL path]
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        
+        if (error){
+            NSLog(@"error creating app support dir: %@", error);
+        }
+        
+    }
+    NSString *path = [[applicationSupportURL path] stringByAppendingPathComponent:@"deviceID.plist"];
+    
+    return path;
+}
+
+- (BOOL) CheckDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"CheckDeviceID: %@", path);
+    
+    
+    return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+
+- (void) loadDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"LoadDeviceID: %@", path);
+    
+    self.device_id = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
 }
 
 @end

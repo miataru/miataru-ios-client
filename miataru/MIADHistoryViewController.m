@@ -29,6 +29,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self loadDeviceID];
     
     rainbow_hue = 0.0;  // the hue to start with...
     
@@ -239,7 +240,7 @@
     //int number_of_items_to_show = [[NSUserDefaults standardUserDefaults] integerForKey:@"history_number_of_items"];
 
     // get as much as possible, but up to 1024 entries...
-    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"RequestMiataruDeviceID\": \"%@\"},\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",[UIDevice currentDevice].identifierForVendor.UUIDString,device.DeviceID,1024];
+    NSString* GetLocationJSONContent = [NSString stringWithFormat:@"{\"MiataruConfig\":{\"RequestMiataruDeviceID\": \"%@\"},\"MiataruGetLocationHistory\": {\"Device\":\"%@\",\"Amount\": \"%d\"}}",self.device_id,device.DeviceID,1024];
     
     self.responseData = [NSMutableData data];
     
@@ -277,6 +278,69 @@
     NSLog(@"Getting LocationHistory from to Miataru Service...");
 }
 
+#pragma mark Persistent State for device ID
 
+- (NSURL*)applicationDataDirectory {
+    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+                                             inDomains:NSUserDomainMask];
+    NSURL* appSupportDir = nil;
+    NSURL* appDirectory = nil;
+    
+    if ([possibleURLs count] >= 1) {
+        // Use the first directory (if multiple are returned)
+        appSupportDir = [possibleURLs objectAtIndex:0];
+    }
+    
+    // If a valid app support directory exists, add the
+    // app's bundle ID to it to specify the final directory.
+    if (appSupportDir) {
+        NSString* appBundleID = [[NSBundle mainBundle] bundleIdentifier];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:appBundleID];
+    }
+    
+    return appDirectory;
+}
+
+
+- (NSString*) pathToSavedDeviceID{
+    NSURL *applicationSupportURL = [self applicationDataDirectory];
+    
+    if (! [[NSFileManager defaultManager] fileExistsAtPath:[applicationSupportURL path]]){
+        
+        NSError *error = nil;
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[applicationSupportURL path]
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+        
+        if (error){
+            NSLog(@"error creating app support dir: %@", error);
+        }
+        
+    }
+    NSString *path = [[applicationSupportURL path] stringByAppendingPathComponent:@"deviceID.plist"];
+    
+    return path;
+}
+
+- (BOOL) CheckDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"CheckDeviceID: %@", path);
+    
+    
+    return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+
+- (void) loadDeviceID{
+    
+    NSString *path = [self pathToSavedDeviceID];
+    NSLog(@"LoadDeviceID: %@", path);
+    
+    self.device_id = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+}
 
 @end

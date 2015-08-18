@@ -15,6 +15,8 @@
 
 @interface MIADDeviceDetailsViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
+@property (strong) NSString *device_id;
+
 @property (strong) KnownDevice *DetailDevice;
 @property (strong) NSMutableData *responseData;
 @property (strong) NSDate *DeviceDetail_UpdateDateTime;

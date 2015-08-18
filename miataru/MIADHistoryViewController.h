@@ -12,6 +12,7 @@
 
 @interface MIADHistoryViewController : UIViewController<NSURLConnectionDelegate,MKMapViewDelegate>
 
+@property (strong) NSString *device_id;
 @property (strong) KnownDevice *HistoryDevice;
 @property (weak, nonatomic) IBOutlet MKMapView *HistoryMapView;
 @property LXMapScaleView* mapScaleView;
