@@ -192,6 +192,8 @@
         case UIUserInterfaceIdiomPad: return @"~ipad";
         case UIUserInterfaceIdiomPhone: return @"~iphone";
         case UIUserInterfaceIdiomUnspecified: return @"~iphone";
+        case UIUserInterfaceIdiomTV: return @"~ipad";
+        case UIUserInterfaceIdiomCarPlay: return @"~ipad";
     }
 }
 
