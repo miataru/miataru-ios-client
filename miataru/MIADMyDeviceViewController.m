@@ -61,7 +61,7 @@
         [self presentViewController:controller animated:YES completion:NULL];
     }
     else{
-        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"alrt" message:nil delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil] ;
+        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"sending email not possible" message:nil delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil] ;
         [alert show];
     }
 }

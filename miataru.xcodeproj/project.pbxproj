@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8B1731CA183D3E1C00DC013C /* MIADEditDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1731C9183D3E1C00DC013C /* MIADEditDeviceViewController.m */; };
 		8B1D1AC6182D7527006454AA /* MIADHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */; };
+		8B89CA22214D170800797724 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B89CA21214D170800797724 /* Media.xcassets */; };
+		8B89CA27214D2D6C00797724 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B89CA25214D2D6C00797724 /* LaunchScreen.storyboard */; };
 		8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BA32A891821A51B0025582B /* miataru_icon_80.png */; };
 		8BA899321840E5EA00A3D4E0 /* LXMapScaleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8BAC06E318AF69AE000F221E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAC06E218AF69AE000F221E /* MapKit.framework */; };
@@ -59,7 +61,6 @@
 		8BB999F2181FA6D10049AC08 /* MIADAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */; };
 		8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999F3181FA6D10049AC08 /* Main_iPhone.storyboard */; };
 		8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999F6181FA6D10049AC08 /* Main_iPad.storyboard */; };
-		8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BB999FF181FA6D10049AC08 /* Images.xcassets */; };
 		8BB99A07181FA6D10049AC08 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB99A06181FA6D10049AC08 /* XCTest.framework */; };
 		8BB99A08181FA6D10049AC08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E1181FA6D10049AC08 /* Foundation.framework */; };
 		8BB99A09181FA6D10049AC08 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB999E5181FA6D10049AC08 /* UIKit.framework */; };
@@ -115,6 +116,8 @@
 		8B1731C9183D3E1C00DC013C /* MIADEditDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADEditDeviceViewController.m; sourceTree = "<group>"; };
 		8B1D1AC4182D7527006454AA /* MIADHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADHistoryViewController.h; sourceTree = "<group>"; };
 		8B1D1AC5182D7527006454AA /* MIADHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIADHistoryViewController.m; sourceTree = "<group>"; };
+		8B89CA21214D170800797724 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Media.xcassets; path = miataru/Media.xcassets; sourceTree = SOURCE_ROOT; };
+		8B89CA26214D2D6C00797724 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = miataru/Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8BA32A891821A51B0025582B /* miataru_icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = miataru_icon_80.png; path = "../Assets/App Icons/Variant 5/miataru_icon_80.png"; sourceTree = "<group>"; };
 		8BA8992F1840E5EA00A3D4E0 /* LXMapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LXMapScaleView.h; sourceTree = "<group>"; };
 		8BA899301840E5EA00A3D4E0 /* LXMapScaleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXMapScaleView.m; sourceTree = "<group>"; };
@@ -203,7 +206,6 @@
 		8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIADAppDelegate.m; sourceTree = "<group>"; };
 		8BB999F4181FA6D10049AC08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		8BB999F7181FA6D10049AC08 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		8BB999FF181FA6D10049AC08 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8BB99A05181FA6D10049AC08 /* MiataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BB99A06181FA6D10049AC08 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		8BB99A0E181FA6D10049AC08 /* MiataruTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MiataruTests-Info.plist"; sourceTree = "<group>"; };
@@ -524,6 +526,7 @@
 		8BB999D5181FA6D10049AC08 = {
 			isa = PBXGroup;
 			children = (
+				8B89CA25214D2D6C00797724 /* LaunchScreen.storyboard */,
 				8BB91C0F181FB0B500C63DA1 /* QREncoder.xcodeproj */,
 				8BB999E7181FA6D10049AC08 /* Miataru */,
 				8BB99A0C181FA6D10049AC08 /* MiataruTests */,
@@ -569,8 +572,8 @@
 				8BB999F1181FA6D10049AC08 /* MIADAppDelegate.m */,
 				8BB999F3181FA6D10049AC08 /* Main_iPhone.storyboard */,
 				8BB999F6181FA6D10049AC08 /* Main_iPad.storyboard */,
-				8BB999FF181FA6D10049AC08 /* Images.xcassets */,
 				8BB999E8181FA6D10049AC08 /* Supporting Files */,
+				8B89CA21214D170800797724 /* Media.xcassets */,
 			);
 			path = Miataru;
 			sourceTree = "<group>";
@@ -785,13 +788,14 @@
 				8BB999F8181FA6D10049AC08 /* Main_iPad.storyboard in Resources */,
 				8BD59444184933D100B87666 /* NEOColorPickerHueGridViewController.xib in Resources */,
 				8BB91C2E181FB24300C63DA1 /* beep-beep.aiff in Resources */,
-				8BB99A00181FA6D10049AC08 /* Images.xcassets in Resources */,
 				8BD5943C184933D100B87666 /* colorPicker.bundle in Resources */,
 				8BD594491849389400B87666 /* licenses.txt in Resources */,
 				8BB91C2C181FB1F200C63DA1 /* Settings.bundle in Resources */,
 				8BDFF82D18414ED400CC2A61 /* ZSPinAnnotation-LICENSE in Resources */,
 				8BB999F5181FA6D10049AC08 /* Main_iPhone.storyboard in Resources */,
 				8BD59446184933D100B87666 /* NEOColorPickerViewController.xib in Resources */,
+				8B89CA27214D2D6C00797724 /* LaunchScreen.storyboard in Resources */,
+				8B89CA22214D170800797724 /* Media.xcassets in Resources */,
 				8BD5944B1849395600B87666 /* GeoHash-LICENSE in Resources */,
 				8BA32A8A1821A51B0025582B /* miataru_icon_80.png in Resources */,
 				8BD5943F184933D100B87666 /* NEOColorPickerFavoritesViewController.xib in Resources */,
@@ -884,6 +888,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		8B89CA25214D2D6C00797724 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8B89CA26214D2D6C00797724 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		8BB999EA181FA6D10049AC08 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1034,6 +1046,7 @@
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -1057,6 +1070,7 @@
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 armv7s arm64";
