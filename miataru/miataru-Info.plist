@@ -36,9 +36,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.2.0</string>
+	<string>3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>The camera is used to scan QR codes from other devices only.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Miataru needs access to your Location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
