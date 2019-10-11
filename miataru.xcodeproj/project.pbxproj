@@ -740,7 +740,7 @@
 			};
 			buildConfigurationList = 8BB999D9181FA6D10049AC08 /* Build configuration list for PBXProject "miataru" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
