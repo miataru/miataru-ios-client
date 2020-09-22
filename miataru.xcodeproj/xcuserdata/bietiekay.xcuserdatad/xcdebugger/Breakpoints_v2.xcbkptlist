@@ -123,7 +123,7 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 4f48adb1c497df07"
+                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 13fc137668c6c92"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -139,7 +139,7 @@
                   offsetFromSymbolStart = "273">
                </Location>
                <Location
-                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 4f48adb1c497df07"
+                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 13fc137668c6c92"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -242,7 +242,7 @@
             landmarkType = "5">
             <Locations>
                <Location
-                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 6653402ea4c3dc09"
+                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 9806da4d0e93aa7d"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -258,7 +258,7 @@
                   offsetFromSymbolStart = "48">
                </Location>
                <Location
-                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 6653402ea4c3dc09"
+                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 9806da4d0e93aa7d"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -378,7 +378,7 @@
             landmarkType = "5">
             <Locations>
                <Location
-                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 64e06e3a5d926e60"
+                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 22c127adc0b7e40f"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -394,7 +394,7 @@
                   offsetFromSymbolStart = "509">
                </Location>
                <Location
-                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 64e06e3a5d926e60"
+                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 22c127adc0b7e40f"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -497,7 +497,7 @@
             landmarkType = "5">
             <Locations>
                <Location
-                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 64e06e3a5d926e60"
+                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 22c127adc0b7e2b1"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -513,7 +513,7 @@
                   offsetFromSymbolStart = "509">
                </Location>
                <Location
-                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 64e06e3a5d926e60"
+                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 22c127adc0b7e2b1"
                   shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -612,8 +612,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "27"
             endingLineNumber = "27"
-            landmarkName = "@protocol MIADEditADeviceTableViewControllerDelegate"
-            landmarkType = "2">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -647,7 +647,7 @@
             startingLineNumber = "134"
             endingLineNumber = "134"
             landmarkName = "-SaveButtonPressed:"
-            landmarkType = "5">
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

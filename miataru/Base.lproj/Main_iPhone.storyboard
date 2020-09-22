@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -50,7 +50,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="1WX-Gp-MCn" firstAttribute="centerX" secondItem="gMD-aP-Fq6" secondAttribute="centerX" id="5Fw-FD-5Jb"/>
                             <constraint firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="10" id="Aqn-IU-tm6"/>
@@ -114,7 +114,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="7cy-zj-g3c" firstAttribute="top" secondItem="jAI-lB-OIv" secondAttribute="bottom" constant="171" id="U6P-6R-a2I"/>
                             <constraint firstAttribute="trailing" secondItem="jAI-lB-OIv" secondAttribute="trailing" constant="20" symbolic="YES" id="YfX-Oj-Z22"/>
@@ -142,13 +142,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AppSettingViewID" id="sOW-bL-Xxu">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AppSettingViewID" id="sOW-bL-Xxu">
                                 <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sOW-bL-Xxu" id="wUY-iN-n5o">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -181,7 +182,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="JQR-rB-NYL">
                         <rect key="frame" x="0.0" y="431" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
                         <segue destination="fUv-7Y-Jqh" kind="relationship" relationship="viewControllers" id="nEY-1n-sWg"/>
@@ -208,11 +208,11 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6lD-GQ-3Eb" id="i2B-Sf-DPJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="315.5" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="316" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hRL-vf-03S">
-                                            <rect key="frame" x="16" y="0.0" width="291.5" height="44"/>
+                                            <rect key="frame" x="16" y="0.0" width="292" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <nil key="textColor"/>
@@ -379,19 +379,19 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ed2-CY-f3P">
-                                <rect key="frame" x="58" y="47" width="277" height="842"/>
+                                <rect key="frame" x="58" y="47" width="277" height="593"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="7hw-cQ-bGa">
-                                        <rect key="frame" x="19" y="0.0" width="239" height="498"/>
+                                        <rect key="frame" x="19" y="0.0" width="239" height="249"/>
                                     </imageView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BT8-NJ-y4k">
-                                        <rect key="frame" x="32" y="508" width="213" height="29"/>
+                                        <rect key="frame" x="32" y="259" width="213" height="29"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="Na6-lW-hAt">
-                                        <rect key="frame" x="0.0" y="547" width="277" height="213"/>
+                                        <rect key="frame" x="0.0" y="298" width="277" height="213"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="213" id="dt3-Wv-d7u"/>
                                         </constraints>
@@ -424,7 +424,7 @@ For more information please visit </string>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="8jo-8D-JEj">
-                                        <rect key="frame" x="12" y="770" width="253" height="72"/>
+                                        <rect key="frame" x="12" y="521" width="253" height="72"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zvh-Oa-B9L">
                                                 <rect key="frame" x="0.0" y="0.0" width="253" height="31"/>
@@ -597,6 +597,7 @@ For more information please visit </string>
                         <outlet property="ColorPickerTableCell" destination="xrG-xL-N99" id="Jaq-Me-jgU"/>
                         <outlet property="DeviceIDTextField" destination="f2Z-HJ-44a" id="lyo-5H-Xqz"/>
                         <outlet property="DeviceNameTextfield" destination="G4V-n3-kve" id="wjm-UB-7cu"/>
+                        <outlet property="test" destination="G4V-n3-kve" id="gAK-0P-0rY"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zIn-S9-9PQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -767,11 +768,11 @@ For more information please visit </string>
                                         <rect key="frame" x="0.0" y="191.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZYd-mU-YPg" id="CtV-NK-PHb">
-                                            <rect key="frame" x="0.0" y="0.0" width="347.5" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Scan Device QR Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXe-Nh-prk">
-                                                    <rect key="frame" x="61" y="0.0" width="278.5" height="44"/>
+                                                    <rect key="frame" x="61" y="0.0" width="279" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>

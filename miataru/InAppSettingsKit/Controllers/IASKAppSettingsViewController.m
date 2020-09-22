@@ -817,11 +817,11 @@ static NSDictionary *oldUserDefaults = nil;
 	}
 	oldUserDefaults = currentDict;
 	
-	for (UITableViewCell *cell in self.tableView.visibleCells) {
+	/*for (UITableViewCell *cell in self.tableView.visibleCells) {
 		if ([cell isKindOfClass:[IASKPSTextFieldSpecifierViewCell class]] && [((IASKPSTextFieldSpecifierViewCell*)cell).textField isFirstResponder]) {
 			[indexPathsToUpdate removeObject:[self.tableView indexPathForCell:cell]];
 		}
-	}
+	}*/
 	if (indexPathsToUpdate.count) {
 		[self.tableView reloadRowsAtIndexPaths:indexPathsToUpdate withRowAnimation:UITableViewRowAnimationNone];
 	}

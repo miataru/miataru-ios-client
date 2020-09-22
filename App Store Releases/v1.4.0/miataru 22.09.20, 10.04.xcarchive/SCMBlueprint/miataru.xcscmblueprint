@@ -1,0 +1,26 @@
+{
+  "DVTSourceControlWorkspaceBlueprintLocationsKey" : {
+    "AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E" : {
+      "DVTSourceControlBranchIdentifierKey" : "master",
+      "DVTSourceControlLocationRevisionKey" : "d64a4b4d414d3cc413d0e78902f486149f4aa24b",
+      "DVTSourceControlBranchOptionsKey" : 4,
+      "DVTSourceControlBranchRemoteNameKey" : "origin",
+      "DVTSourceControlWorkspaceBlueprintLocationTypeKey" : "DVTSourceControlBranch"
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E",
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "534D171D-DA9B-4B0A-8626-A518927281E5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E" : "miataru-ios-client\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "miataru",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "miataru.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:miataru\/miataru-ios-client.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "AFA218B587BC24A9EAC4970CB8F845FF21D6EE1E"
+    }
+  ]
+}

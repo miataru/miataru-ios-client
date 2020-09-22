@@ -1,7 +1,7 @@
 //
 //  MIADEditDeviceViewController.h
 //  miataru
-//
+//   kmklmlkm
 //  Created by Daniel Kirstenpfad on 20.11.13.
 //  Copyright (c) 2013 Miataru. All rights reserved.
 //
@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *DeviceIDTextField;
 
 @property (weak) id<MIADEditADeviceTableViewControllerDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UITextField *test;
 
 @property (weak, nonatomic) IBOutlet UITableViewCell *ColorPickerTableCell;
 
