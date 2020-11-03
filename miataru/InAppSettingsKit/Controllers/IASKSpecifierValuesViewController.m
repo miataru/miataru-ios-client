@@ -128,7 +128,7 @@
 
 - (void)deselectCell:(UITableViewCell *)cell {
 	[cell setAccessoryType:UITableViewCellAccessoryNone];
-	[[cell textLabel] setTextColor:[UIColor darkTextColor]];
+	[[cell textLabel] setTextColor:[UIColor labelColor]];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {

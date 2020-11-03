@@ -19,7 +19,7 @@
     NSDate *currentDate = [[NSDate alloc] init];
     
     // Get conversion to months, days, hours, minutes
-    unsigned int unitFlags = NSHourCalendarUnit | NSMinuteCalendarUnit | NSDayCalendarUnit | NSMonthCalendarUnit;
+    unsigned int unitFlags = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitMonth;
     
     NSDateComponents *breakdownInfo = [sysCalendar components:unitFlags fromDate:currentDate  toDate:pastDate  options:0];
     
@@ -61,7 +61,7 @@
     NSDate *currentDate = [[NSDate alloc] init];
     
     // Get conversion to months, days, hours, minutes
-    unsigned int unitFlags = NSDayCalendarUnit;
+    unsigned int unitFlags = NSCalendarUnitDay;
     
     NSDateComponents *breakdownInfo = [sysCalendar components:unitFlags fromDate:currentDate  toDate:PastDate  options:0];
 

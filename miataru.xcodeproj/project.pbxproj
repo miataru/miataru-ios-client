@@ -17,7 +17,6 @@
 		8BAC60831B7845FC0061026D /* MIADDeviceDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAC60821B7845FC0061026D /* MIADDeviceDetailsViewController.m */; };
 		8BAC60871B7847BD0061026D /* MIADDeviceHistoryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BAC60861B7847BD0061026D /* MIADDeviceHistoryTableViewController.m */; };
 		8BB91BF0181FB08700C63DA1 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */; };
-		8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */; };
 		8BB91BF2181FB08700C63DA1 /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */; };
 		8BB91BF3181FB08700C63DA1 /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BDA181FB08700C63DA1 /* IASKSettingsReader.m */; };
 		8BB91BF4181FB08700C63DA1 /* IASKSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB91BDC181FB08700C63DA1 /* IASKSettingsStore.m */; };
@@ -128,8 +127,6 @@
 		8BAC60881B7847CC0061026D /* MIADDeviceHistoryTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIADDeviceHistoryTableViewController.h; sourceTree = "<group>"; };
 		8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
-		8BB91BD3181FB08700C63DA1 /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
-		8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsWebViewController.m; sourceTree = "<group>"; };
 		8BB91BD5181FB08700C63DA1 /* IASKSpecifierValuesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSpecifierValuesViewController.h; sourceTree = "<group>"; };
 		8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSpecifierValuesViewController.m; sourceTree = "<group>"; };
 		8BB91BD7181FB08700C63DA1 /* IASKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKViewController.h; sourceTree = "<group>"; };
@@ -338,8 +335,6 @@
 			children = (
 				8BB91BD1181FB08700C63DA1 /* IASKAppSettingsViewController.h */,
 				8BB91BD2181FB08700C63DA1 /* IASKAppSettingsViewController.m */,
-				8BB91BD3181FB08700C63DA1 /* IASKAppSettingsWebViewController.h */,
-				8BB91BD4181FB08700C63DA1 /* IASKAppSettingsWebViewController.m */,
 				8BB91BD5181FB08700C63DA1 /* IASKSpecifierValuesViewController.h */,
 				8BB91BD6181FB08700C63DA1 /* IASKSpecifierValuesViewController.m */,
 				8BB91BD7181FB08700C63DA1 /* IASKViewController.h */,
@@ -826,7 +821,6 @@
 				8BB91BF9181FB08700C63DA1 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				8BB91BF6181FB08700C63DA1 /* IASKSettingsStoreUserDefaults.m in Sources */,
 				8BB91C5B181FB36E00C63DA1 /* PositionPin.m in Sources */,
-				8BB91BF1181FB08700C63DA1 /* IASKAppSettingsWebViewController.m in Sources */,
 				8BB91BFC181FB08700C63DA1 /* IASKSwitch.m in Sources */,
 				8BB999EE181FA6D10049AC08 /* main.m in Sources */,
 				8B1731CA183D3E1C00DC013C /* MIADEditDeviceViewController.m in Sources */,
@@ -1050,7 +1044,7 @@
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 armv7s arm64 x86_64";
@@ -1076,7 +1070,7 @@
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "armv7 armv7s arm64 x86_64";
