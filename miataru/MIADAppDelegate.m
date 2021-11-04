@@ -73,6 +73,8 @@
     
     // the defaults...
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.allowsBackgroundLocationUpdates = true;
+    self.locationManager.pausesLocationUpdatesAutomatically = false;
     self.locationManager.distanceFilter = 100;
     self.locationManager.delegate = self;
     
@@ -112,11 +114,11 @@
     NSLog(@"didFinishLaunchingWithOptions");
     
     // Handle launching from a notification
-    UILocalNotification *localNotif =
+    /*UILocalNotification *localNotif =
     [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
     if (localNotif) {
         NSLog(@"Received Notification %@",localNotif);
-    }
+    }*/
 
     
     [self postLaunch];

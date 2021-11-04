@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -34,7 +34,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8JJ-pB-iTe">
-                                <rect key="frame" x="340" y="582" width="25" height="24"/>
+                                <rect key="frame" x="345" y="586" width="20" height="20"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -144,7 +144,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AppSettingViewID" id="sOW-bL-Xxu">
-                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="49.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sOW-bL-Xxu" id="wUY-iN-n5o">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -180,9 +180,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             <objects>
                 <tabBarController extendedLayoutIncludesOpaqueBars="YES" id="8YX-ce-x5E" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="JQR-rB-NYL">
+                    <tabBar key="tabBar" opaque="NO" contentMode="scaleToFill" id="JQR-rB-NYL">
                         <rect key="frame" x="0.0" y="431" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="tintColor" systemColor="labelColor"/>
+                        <color key="selectedImageTintColor" systemColor="labelColor"/>
+                        <tabBarAppearance key="standardAppearance"/>
                     </tabBar>
                     <connections>
                         <segue destination="fUv-7Y-Jqh" kind="relationship" relationship="viewControllers" id="nEY-1n-sWg"/>
@@ -206,14 +209,14 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="detailDisclosureButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownDeviceCell" textLabel="hRL-vf-03S" style="IBUITableViewCellStyleDefault" id="6lD-GQ-3Eb">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="44.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6lD-GQ-3Eb" id="i2B-Sf-DPJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="316" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="321" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hRL-vf-03S">
-                                            <rect key="frame" x="16" y="0.0" width="292" height="44"/>
+                                            <rect key="frame" x="16" y="0.0" width="297" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <nil key="textColor"/>
@@ -259,8 +262,8 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1j5-4o-vxz">
+                                <rect key="frame" x="0.0" y="44" width="375" height="574"/>
                                 <connections>
                                     <outlet property="delegate" destination="ZCE-Co-7wT" id="Uxv-lI-ldf"/>
                                 </connections>
@@ -268,10 +271,10 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="1j5-4o-vxz" secondAttribute="bottom" id="7Fd-Xy-ESa"/>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="leading" secondItem="OPE-gP-GNU" secondAttribute="leading" id="PjL-I3-Knz"/>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="top" secondItem="OPE-gP-GNU" secondAttribute="top" id="gbI-NX-l6v"/>
-                            <constraint firstAttribute="trailing" secondItem="1j5-4o-vxz" secondAttribute="trailing" id="m4N-ej-jwM"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="centerX" secondItem="OPE-gP-GNU" secondAttribute="centerX" id="MRl-1z-UJ2"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="top" secondItem="OPE-gP-GNU" secondAttribute="topMargin" id="rjg-iY-myJ"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="leading" secondItem="OPE-gP-GNU" secondAttribute="leadingMargin" constant="-16" id="uex-DR-2qJ"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="bottom" secondItem="OPE-gP-GNU" secondAttribute="bottomMargin" id="zt9-AS-O0N"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
@@ -288,7 +291,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Y8F-Mg-EyX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1361.25" y="2487.676056338028"/>
+            <point key="canvasLocation" x="1360.8" y="2485.9070464767619"/>
         </scene>
         <!--Map-->
         <scene sceneID="h0o-iR-m0v">
@@ -336,7 +339,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1tV-wP-rmj">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="44.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1tV-wP-rmj" id="2SH-Ri-zQJ">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -526,7 +529,7 @@ For more information please visit </string>
                             <tableViewSection headerTitle="Device Information" id="obR-t0-ya2">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DeviceNameID" id="22h-u8-va9">
-                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="22h-u8-va9" id="bN9-2o-wco">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -542,7 +545,7 @@ For more information please visit </string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DeviceIDID" id="Xrh-py-ZcB">
-                                        <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="93.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xrh-py-ZcB" id="Bay-UM-1hN">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -558,7 +561,7 @@ For more information please visit </string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PickColorID" id="xrG-xL-N99">
-                                        <rect key="frame" x="0.0" y="143.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="137.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xrG-xL-N99" id="gqg-k9-YXc">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -618,7 +621,7 @@ For more information please visit </string>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="574"/>
                                 <connections>
                                     <outlet property="delegate" destination="BuP-gn-PIf" id="JeQ-Ep-eEu"/>
                                 </connections>
@@ -626,10 +629,10 @@ For more information please visit </string>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="8aw-yu-kP7" secondAttribute="trailing" id="PT1-Lg-Mfa"/>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="top" secondItem="Mds-Li-uQ3" secondAttribute="top" id="Qtd-us-d6f"/>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="leading" secondItem="Mds-Li-uQ3" secondAttribute="leading" id="eYC-Vh-k7m"/>
-                            <constraint firstAttribute="bottom" secondItem="8aw-yu-kP7" secondAttribute="bottom" id="goI-O9-9FJ"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="leading" secondItem="Mds-Li-uQ3" secondAttribute="leadingMargin" constant="-16" id="Noc-D1-QSy"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="top" secondItem="Mds-Li-uQ3" secondAttribute="topMargin" id="RC5-SU-o30"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="centerX" secondItem="Mds-Li-uQ3" secondAttribute="centerX" id="UoD-LX-mPP"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="bottom" secondItem="Mds-Li-uQ3" secondAttribute="bottomMargin" id="vgP-UR-sfl"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Details" id="u2g-TA-j6t">
@@ -645,7 +648,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a3K-xC-SOA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2385" y="-707.74647887323943"/>
+            <point key="canvasLocation" x="2384.8000000000002" y="-708.39580209895053"/>
         </scene>
         <!--History-->
         <scene sceneID="eMi-bB-UGz">
@@ -659,8 +662,8 @@ For more information please visit </string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
                                 <connections>
                                     <outlet property="delegate" destination="fun-ND-L7r" id="fmB-BI-o2J"/>
                                 </connections>
@@ -681,7 +684,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RV3-uv-r0x" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3427.5" y="-707.74647887323943"/>
+            <point key="canvasLocation" x="3426.4000000000001" y="-708.39580209895053"/>
         </scene>
         <!--AddDeviceNavigationController-->
         <scene sceneID="9Ac-h1-4En">
@@ -730,7 +733,7 @@ For more information please visit </string>
                             <tableViewSection headerTitle="Add a Device" id="zTf-hv-66l">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DeviceNameID2" id="gAF-sD-l1t">
-                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gAF-sD-l1t" id="yuj-nF-6Pg">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -746,7 +749,7 @@ For more information please visit </string>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DeviceIDID2" id="QBg-vN-Ay2">
-                                        <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="93.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QBg-vN-Ay2" id="UQD-W8-Si9">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -766,14 +769,14 @@ For more information please visit </string>
                             <tableViewSection headerTitle="Scan Device QR Code" id="flH-Mc-Qsg">
                                 <cells>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ScanQRCodeTableViewCell" textLabel="OXe-Nh-prk" imageView="yQc-uX-O6n" style="IBUITableViewCellStyleDefault" id="ZYd-mU-YPg">
-                                        <rect key="frame" x="0.0" y="191.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="179.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZYd-mU-YPg" id="CtV-NK-PHb">
-                                            <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="349.5" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Scan Device QR Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXe-Nh-prk">
-                                                    <rect key="frame" x="61" y="0.0" width="279" height="44"/>
+                                                    <rect key="frame" x="61" y="0.0" width="280.5" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
@@ -886,7 +889,7 @@ For more information please visit </string>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Sfz-As-Nf1">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="574"/>
                                 <connections>
                                     <outlet property="delegate" destination="wpY-yN-bUb" id="KyD-PE-pZt"/>
                                 </connections>
@@ -894,10 +897,10 @@ For more information please visit </string>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="top" secondItem="hwq-w9-pAo" secondAttribute="top" id="ELh-37-ztc"/>
-                            <constraint firstAttribute="bottom" secondItem="Sfz-As-Nf1" secondAttribute="bottom" id="RGD-9a-hNg"/>
-                            <constraint firstAttribute="trailing" secondItem="Sfz-As-Nf1" secondAttribute="trailing" id="pe2-9N-SNc"/>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="hwq-w9-pAo" secondAttribute="leading" id="rQy-ex-KS3"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="centerX" secondItem="hwq-w9-pAo" secondAttribute="centerX" id="2qA-WB-QPA"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="hwq-w9-pAo" secondAttribute="leadingMargin" constant="-16" id="3Cd-Pe-KkT"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="top" secondItem="hwq-w9-pAo" secondAttribute="topMargin" id="N3Q-1e-usd"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="bottom" secondItem="hwq-w9-pAo" secondAttribute="bottomMargin" id="wVF-Bj-QJm"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
@@ -919,7 +922,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OOf-HY-7Z7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1290" y="840.84507042253517"/>
+            <point key="canvasLocation" x="1288.8" y="840.62968515742136"/>
         </scene>
         <!--Edit Groups Table View Controller-->
         <scene sceneID="cpe-4J-0Su">
@@ -931,7 +934,7 @@ For more information please visit </string>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="KnownGroupDeviceCell" editingAccessoryType="checkmark" textLabel="JHu-YY-QH7" style="IBUITableViewCellStyleDefault" id="6nK-8s-DHO">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="44.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6nK-8s-DHO" id="joH-cU-nam">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -988,11 +991,8 @@ For more information please visit </string>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
-        <systemColor name="groupTableViewBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="groupTableViewBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
