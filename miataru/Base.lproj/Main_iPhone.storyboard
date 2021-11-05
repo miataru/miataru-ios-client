@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="8YX-ce-x5E">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
+        <deployment version="4864" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -12,10 +13,6 @@
         <scene sceneID="ot8-2e-RuS">
             <objects>
                 <viewController title="Map" id="QUy-BD-bpt" customClass="MIADMyDeviceViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="cv7-8I-fvN"/>
-                        <viewControllerLayoutGuide type="bottom" id="lxn-o7-DXt"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="gMD-aP-Fq6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -51,12 +48,13 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="KVD-5U-216"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="centerX" secondItem="gMD-aP-Fq6" secondAttribute="centerX" id="5Fw-FD-5Jb"/>
-                            <constraint firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="10" id="Aqn-IU-tm6"/>
-                            <constraint firstItem="lxn-o7-DXt" firstAttribute="top" secondItem="8JJ-pB-iTe" secondAttribute="bottom" constant="12" id="ZRj-CM-tXl"/>
-                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="cv7-8I-fvN" secondAttribute="bottom" constant="33" id="r15-lU-gil"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="centerX" secondItem="KVD-5U-216" secondAttribute="centerX" id="5Fw-FD-5Jb"/>
+                            <constraint firstItem="KVD-5U-216" firstAttribute="trailing" secondItem="8JJ-pB-iTe" secondAttribute="trailing" constant="10" id="Aqn-IU-tm6"/>
+                            <constraint firstItem="KVD-5U-216" firstAttribute="bottom" secondItem="8JJ-pB-iTe" secondAttribute="bottom" constant="12" id="ZRj-CM-tXl"/>
+                            <constraint firstItem="1WX-Gp-MCn" firstAttribute="top" secondItem="KVD-5U-216" secondAttribute="top" constant="33" id="r15-lU-gil"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Device QR Code" id="qHX-VR-GTP">
@@ -79,8 +77,9 @@
         <scene sceneID="MpT-89-XYV">
             <objects>
                 <navigationController definesPresentationContext="YES" id="ETP-S1-sh3" sceneMemberID="viewController">
+                    <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="rtb-nl-6Pa">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -95,16 +94,12 @@
         <scene sceneID="zkF-to-9ef">
             <objects>
                 <viewController id="90q-2d-ljB" customClass="MIADQREncoderLicenseInformationViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="09i-Io-RGP"/>
-                        <viewControllerLayoutGuide type="bottom" id="7cy-zj-g3c"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="PgF-a2-f4T">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jAI-lB-OIv">
-                                <rect key="frame" x="20" y="249" width="335" height="227"/>
+                                <rect key="frame" x="0.0" y="269" width="375" height="227"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="227" id="l06-lv-sVQ"/>
                                 </constraints>
@@ -115,11 +110,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="zkB-4G-SJc"/>
                         <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="7cy-zj-g3c" firstAttribute="top" secondItem="jAI-lB-OIv" secondAttribute="bottom" constant="171" id="U6P-6R-a2I"/>
-                            <constraint firstAttribute="trailing" secondItem="jAI-lB-OIv" secondAttribute="trailing" constant="20" symbolic="YES" id="YfX-Oj-Z22"/>
-                            <constraint firstItem="jAI-lB-OIv" firstAttribute="leading" secondItem="PgF-a2-f4T" secondAttribute="leading" constant="20" symbolic="YES" id="nGK-NP-k0p"/>
+                            <constraint firstItem="zkB-4G-SJc" firstAttribute="bottom" secondItem="jAI-lB-OIv" secondAttribute="bottom" constant="171" id="U6P-6R-a2I"/>
+                            <constraint firstItem="zkB-4G-SJc" firstAttribute="trailing" secondItem="jAI-lB-OIv" secondAttribute="trailing" constant="20" symbolic="YES" id="YfX-Oj-Z22"/>
+                            <constraint firstItem="jAI-lB-OIv" firstAttribute="leading" secondItem="zkB-4G-SJc" secondAttribute="leading" constant="20" symbolic="YES" id="nGK-NP-k0p"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="QR Encoder License" id="v4A-jF-hD6">
@@ -159,11 +155,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="caF-f1-q0G">
-                        <barButtonItem key="leftBarButtonItem" image="Toolbar_History" id="wfQ-xM-oKu">
-                            <connections>
-                                <segue destination="4OT-uE-miO" kind="show" id="E3s-64-dB5"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Welcome" id="z4s-Zr-cMj">
                             <connections>
                                 <segue destination="k4y-V8-4Kg" kind="presentation" id="X74-hp-h8g"/>
@@ -179,12 +170,9 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         <scene sceneID="Vex-rW-GRa">
             <objects>
                 <tabBarController extendedLayoutIncludesOpaqueBars="YES" id="8YX-ce-x5E" sceneMemberID="viewController">
-                    <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" opaque="NO" contentMode="scaleToFill" id="JQR-rB-NYL">
                         <rect key="frame" x="0.0" y="431" width="320" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <color key="tintColor" systemColor="labelColor"/>
-                        <color key="selectedImageTintColor" systemColor="labelColor"/>
                         <tabBarAppearance key="standardAppearance"/>
                     </tabBar>
                     <connections>
@@ -254,10 +242,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         <scene sceneID="5pI-dP-8pP">
             <objects>
                 <viewController id="ZCE-Co-7wT" customClass="MIADMapViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Zm2-ei-URh"/>
-                        <viewControllerLayoutGuide type="bottom" id="Vz7-0y-ARL"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="OPE-gP-GNU">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -269,12 +253,13 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 </connections>
                             </mapView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="hau-BQ-4bX"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="centerX" secondItem="OPE-gP-GNU" secondAttribute="centerX" id="MRl-1z-UJ2"/>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="top" secondItem="OPE-gP-GNU" secondAttribute="topMargin" id="rjg-iY-myJ"/>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="leading" secondItem="OPE-gP-GNU" secondAttribute="leadingMargin" constant="-16" id="uex-DR-2qJ"/>
-                            <constraint firstItem="1j5-4o-vxz" firstAttribute="bottom" secondItem="OPE-gP-GNU" secondAttribute="bottomMargin" id="zt9-AS-O0N"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="leading" secondItem="hau-BQ-4bX" secondAttribute="leading" id="Aaw-jq-s6f"/>
+                            <constraint firstItem="hau-BQ-4bX" firstAttribute="trailing" secondItem="1j5-4o-vxz" secondAttribute="trailing" id="Sbg-gS-dz1"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="bottom" secondItem="hau-BQ-4bX" secondAttribute="bottom" id="YjF-kp-3nz"/>
+                            <constraint firstItem="1j5-4o-vxz" firstAttribute="top" secondItem="hau-BQ-4bX" secondAttribute="top" id="iGw-Xd-7Lt"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="zVM-0g-Ywa"/>
@@ -296,11 +281,12 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
         <!--Map-->
         <scene sceneID="h0o-iR-m0v">
             <objects>
-                <navigationController definesPresentationContext="YES" id="aGv-5P-RB8" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="aGv-5P-RB8" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Map" image="Toolbar_Map" id="hGU-TK-ylo"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="JKI-yP-Sa5">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </navigationBar>
                     <connections>
                         <segue destination="ZCE-Co-7wT" kind="relationship" relationship="rootViewController" id="djO-2P-m0p"/>
@@ -338,7 +324,7 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1tV-wP-rmj">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settings" id="1tV-wP-rmj">
                                 <rect key="frame" x="0.0" y="44.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1tV-wP-rmj" id="2SH-Ri-zQJ">
@@ -355,25 +341,18 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WK7-dN-dKh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1875" y="3969"/>
+            <point key="canvasLocation" x="2813.5999999999999" y="3968.3658170914546"/>
         </scene>
         <!--First Start Wizard Root View Controller-->
         <scene sceneID="8qm-dB-YcB">
             <objects>
                 <viewController storyboardIdentifier="FirstStartWizardRoot" useStoryboardIdentifierAsRestorationIdentifier="YES" id="k4y-V8-4Kg" customClass="MIADFirstStartWizardRootViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="hTy-64-lNR"/>
-                        <viewControllerLayoutGuide type="bottom" id="gCS-LZ-kHS"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="tLn-fd-HWl">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jw1-O1-HRN">
                                 <rect key="frame" x="295" y="8" width="64" height="35"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="64" id="nn5-FB-v1n"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="Done">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -383,66 +362,41 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ed2-CY-f3P">
-                                <rect key="frame" x="58" y="47" width="277" height="593"/>
+                                <rect key="frame" x="58" y="47" width="272" height="538"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FirstRunWizardBackground_softened" translatesAutoresizingMaskIntoConstraints="NO" id="7hw-cQ-bGa">
-                                        <rect key="frame" x="19" y="0.0" width="239" height="249"/>
+                                        <rect key="frame" x="16" y="0.0" width="240" height="249"/>
                                     </imageView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to Miataru!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BT8-NJ-y4k">
-                                        <rect key="frame" x="32.5" y="259" width="212.5" height="29"/>
+                                        <rect key="frame" x="30" y="259" width="212.5" height="29"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="19" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="Na6-lW-hAt">
-                                        <rect key="frame" x="0.0" y="298" width="277" height="213"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="213" id="dt3-Wv-d7u"/>
-                                        </constraints>
-                                        <attributedString key="attributedText">
-                                            <fragment>
-                                                <string key="content">Miataru is a Location Sharing Service which allows you to share your location with anybody you choose to give your unique device ID.
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="wordWrap" numberOfLines="14" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="Na6-lW-hAt">
+                                        <rect key="frame" x="0.0" y="298" width="272" height="158"/>
+                                        <string key="text">Miataru is a Location Sharing Service which allows you to share your location with anybody you choose to give your unique device ID.
 
 By default the Miataru iOS App stores your current location for 30 minutes on the free Miataru Service servers. It's being deleted automatically after that time and not stored any further.
 
-For more information please visit </string>
-                                                <attributes>
-                                                    <font key="NSFont" size="14" name="HelveticaNeue"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
-                                                </attributes>
-                                            </fragment>
-                                            <fragment content="miataru.com">
-                                                <attributes>
-                                                    <font key="NSFont" size="14" name="HelveticaNeue"/>
-                                                    <url key="NSLink" string="http://miataru.com/ios"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
-                                                </attributes>
-                                            </fragment>
-                                            <fragment content=".">
-                                                <attributes>
-                                                    <font key="NSFont" size="14" name="HelveticaNeue"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
-                                                </attributes>
-                                            </fragment>
-                                        </attributedString>
+For more information please visit miataru.com.</string>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="8jo-8D-JEj">
-                                        <rect key="frame" x="12" y="521" width="253" height="72"/>
+                                        <rect key="frame" x="9" y="466" width="254" height="72"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zvh-Oa-B9L">
-                                                <rect key="frame" x="0.0" y="0.0" width="253" height="31"/>
+                                                <rect key="frame" x="0.5" y="0.0" width="253.5" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Report Location to Server" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dot-r5-u0N">
-                                                        <rect key="frame" x="0.0" y="0.0" width="196" height="31"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="196" id="U0u-Zv-BLj"/>
-                                                        </constraints>
+                                                        <rect key="frame" x="0.0" y="0.0" width="194.5" height="31"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GuG-hg-zy5">
-                                                        <rect key="frame" x="206" y="0.0" width="49" height="31"/>
+                                                        <rect key="frame" x="204.5" y="0.0" width="51" height="31"/>
                                                         <connections>
                                                             <action selector="ReportLocationSwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="T9f-2i-Yql"/>
                                                         </connections>
@@ -450,18 +404,15 @@ For more information please visit </string>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="zXd-Xx-8Jj">
-                                                <rect key="frame" x="26" y="41" width="227" height="31"/>
+                                                <rect key="frame" x="26" y="41" width="228" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Store Location History" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d97-ix-nt0">
-                                                        <rect key="frame" x="0.0" y="0.0" width="170" height="31"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="170" id="abc-O7-REP"/>
-                                                        </constraints>
+                                                        <rect key="frame" x="0.0" y="0.0" width="169" height="31"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="X2B-nO-HeY">
-                                                        <rect key="frame" x="180" y="0.0" width="49" height="31"/>
+                                                        <rect key="frame" x="179" y="0.0" width="51" height="31"/>
                                                         <connections>
                                                             <action selector="StoreLocationHistorySwitchToggled:" destination="k4y-V8-4Kg" eventType="valueChanged" id="03p-oZ-VeE"/>
                                                         </connections>
@@ -470,23 +421,20 @@ For more information please visit </string>
                                             </stackView>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="zXd-Xx-8Jj" firstAttribute="leading" secondItem="8jo-8D-JEj" secondAttribute="leading" constant="26" id="xaV-5z-51G"/>
+                                            <constraint firstItem="zXd-Xx-8Jj" firstAttribute="leading" secondItem="8jo-8D-JEj" secondAttribute="leading" constant="26" id="ZpW-8f-RH8"/>
                                         </constraints>
                                     </stackView>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="8jo-8D-JEj" firstAttribute="leading" secondItem="Ed2-CY-f3P" secondAttribute="leading" constant="12" id="Hfp-he-Ead"/>
-                                    <constraint firstItem="7hw-cQ-bGa" firstAttribute="leading" secondItem="Ed2-CY-f3P" secondAttribute="leading" constant="19" id="cAD-oy-gkZ"/>
-                                </constraints>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="yca-HC-znN"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="Ed2-CY-f3P" secondAttribute="trailing" constant="24" id="BrA-Qb-A48"/>
-                            <constraint firstItem="Ed2-CY-f3P" firstAttribute="leading" secondItem="tLn-fd-HWl" secondAttribute="leadingMargin" constant="42" id="CmA-kM-KvK"/>
-                            <constraint firstItem="Ed2-CY-f3P" firstAttribute="top" secondItem="jw1-O1-HRN" secondAttribute="bottom" constant="4" id="KBY-iB-6bX"/>
-                            <constraint firstItem="jw1-O1-HRN" firstAttribute="top" secondItem="hTy-64-lNR" secondAttribute="bottom" constant="8" symbolic="YES" id="Mcm-db-kJh"/>
-                            <constraint firstItem="jw1-O1-HRN" firstAttribute="trailing" secondItem="tLn-fd-HWl" secondAttribute="trailingMargin" id="mep-yz-DAp"/>
+                            <constraint firstItem="jw1-O1-HRN" firstAttribute="leading" secondItem="yca-HC-znN" secondAttribute="leading" constant="295" id="5fU-V3-LK6"/>
+                            <constraint firstItem="jw1-O1-HRN" firstAttribute="trailing" secondItem="tLn-fd-HWl" secondAttribute="trailingMargin" id="Fgl-2v-ioL"/>
+                            <constraint firstItem="Ed2-CY-f3P" firstAttribute="leading" secondItem="yca-HC-znN" secondAttribute="leading" constant="58" id="c99-Uj-XQI"/>
+                            <constraint firstItem="yca-HC-znN" firstAttribute="bottom" secondItem="Ed2-CY-f3P" secondAttribute="bottom" constant="62" id="pfz-2q-h1v"/>
+                            <constraint firstItem="jw1-O1-HRN" firstAttribute="top" secondItem="yca-HC-znN" secondAttribute="top" constant="8" id="qOk-84-frj"/>
                         </constraints>
                     </view>
                     <connections>
@@ -496,7 +444,7 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IZV-UY-qSB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2170.4000000000001" y="3249.7536945812808"/>
+            <point key="canvasLocation" x="2170.4000000000001" y="3249.6251874062973"/>
         </scene>
         <!--Device-->
         <scene sceneID="mFQ-cI-ZZw">
@@ -612,27 +560,25 @@ For more information please visit </string>
         <scene sceneID="NOf-4O-ete">
             <objects>
                 <viewController id="BuP-gn-PIf" customClass="MIADDeviceDetailsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="rVw-Ki-9As"/>
-                        <viewControllerLayoutGuide type="bottom" id="ANq-Vf-2ak"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Mds-Li-uQ3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="8aw-yu-kP7">
                                 <rect key="frame" x="0.0" y="44" width="375" height="574"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="delegate" destination="BuP-gn-PIf" id="JeQ-Ep-eEu"/>
                                 </connections>
                             </mapView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="Z61-ez-dbc"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="leading" secondItem="Mds-Li-uQ3" secondAttribute="leadingMargin" constant="-16" id="Noc-D1-QSy"/>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="top" secondItem="Mds-Li-uQ3" secondAttribute="topMargin" id="RC5-SU-o30"/>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="centerX" secondItem="Mds-Li-uQ3" secondAttribute="centerX" id="UoD-LX-mPP"/>
-                            <constraint firstItem="8aw-yu-kP7" firstAttribute="bottom" secondItem="Mds-Li-uQ3" secondAttribute="bottomMargin" id="vgP-UR-sfl"/>
+                            <constraint firstItem="Z61-ez-dbc" firstAttribute="trailing" secondItem="8aw-yu-kP7" secondAttribute="trailing" id="El0-4j-rvJ"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="leading" secondItem="Z61-ez-dbc" secondAttribute="leading" id="PdJ-01-niD"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="bottom" secondItem="Z61-ez-dbc" secondAttribute="bottom" id="Ufc-Ro-ey7"/>
+                            <constraint firstItem="8aw-yu-kP7" firstAttribute="top" secondItem="Z61-ez-dbc" secondAttribute="top" id="vEj-XK-Kc8"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Details" id="u2g-TA-j6t">
@@ -654,27 +600,24 @@ For more information please visit </string>
         <scene sceneID="eMi-bB-UGz">
             <objects>
                 <viewController id="fun-ND-L7r" customClass="MIADHistoryViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="zEf-1X-h1f"/>
-                        <viewControllerLayoutGuide type="bottom" id="TAJ-R4-c2B"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="qNV-8U-vi6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="If0-NT-irc">
+                                <rect key="frame" x="0.0" y="44" width="375" height="574"/>
                                 <connections>
                                     <outlet property="delegate" destination="fun-ND-L7r" id="fmB-BI-o2J"/>
                                 </connections>
                             </mapView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="uh4-NP-LJY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="If0-NT-irc" secondAttribute="bottom" id="9jA-Aj-vd4"/>
-                            <constraint firstItem="If0-NT-irc" firstAttribute="leading" secondItem="qNV-8U-vi6" secondAttribute="leading" id="D3W-cT-tQS"/>
-                            <constraint firstAttribute="trailing" secondItem="If0-NT-irc" secondAttribute="trailing" id="MN8-cI-SCJ"/>
-                            <constraint firstItem="If0-NT-irc" firstAttribute="top" secondItem="qNV-8U-vi6" secondAttribute="top" id="pCV-5Q-dbz"/>
+                            <constraint firstItem="If0-NT-irc" firstAttribute="leading" secondItem="uh4-NP-LJY" secondAttribute="leading" id="DY1-fx-o2Q"/>
+                            <constraint firstItem="If0-NT-irc" firstAttribute="top" secondItem="uh4-NP-LJY" secondAttribute="top" constant="8" symbolic="YES" id="aJn-0i-BTe"/>
+                            <constraint firstItem="If0-NT-irc" firstAttribute="bottom" secondItem="uh4-NP-LJY" secondAttribute="bottom" id="kWe-ob-lE3"/>
+                            <constraint firstItem="uh4-NP-LJY" firstAttribute="trailing" secondItem="If0-NT-irc" secondAttribute="trailing" id="vuF-Q4-8xB"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="History" id="WeT-2C-irK"/>
@@ -707,7 +650,7 @@ For more information please visit </string>
         <!--QR-->
         <scene sceneID="yEI-vy-Nav">
             <objects>
-                <navigationController definesPresentationContext="YES" id="V9e-U7-As1" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="V9e-U7-As1" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="QR" image="Toolbar_QRCode" id="zC1-wZ-gvV"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="1IC-dN-OVg">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -776,14 +719,14 @@ For more information please visit </string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Scan Device QR Code" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OXe-Nh-prk">
-                                                    <rect key="frame" x="61" y="0.0" width="280.5" height="44"/>
+                                                    <rect key="frame" x="51.5" y="0.0" width="290" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="Toolbar_QRCode" id="yQc-uX-O6n">
-                                                    <rect key="frame" x="16" y="7" width="30" height="30"/>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="qrcode.viewfinder" catalog="system" id="yQc-uX-O6n">
+                                                    <rect key="frame" x="16" y="12.5" width="20.5" height="18.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
@@ -827,10 +770,11 @@ For more information please visit </string>
         <!--Navigation Controller-->
         <scene sceneID="JCs-2F-nOF">
             <objects>
-                <navigationController definesPresentationContext="YES" id="1e1-oq-8en" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="overFullScreen" id="1e1-oq-8en" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="18f-fM-irP"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="zNN-Xc-OjC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="zNN-Xc-OjC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -844,24 +788,28 @@ For more information please visit </string>
         <!--Scan QR Code-->
         <scene sceneID="IkS-hf-WjQ">
             <objects>
-                <viewController id="45o-7I-dVA" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="sGm-ax-cVP"/>
-                        <viewControllerLayoutGuide type="bottom" id="9UV-Il-cYM"/>
-                    </layoutGuides>
+                <viewController extendedLayoutIncludesOpaqueBars="YES" modalPresentationStyle="overFullScreen" id="45o-7I-dVA" customClass="MIADScanQRCodeViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="vhS-yx-Hpc">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CkR-2l-yMM">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <view clearsContextBeforeDrawing="NO" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="CkR-2l-yMM">
+                                <rect key="frame" x="0.0" y="44" width="375" height="623"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="tef-s1-HjL"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="tef-s1-HjL" firstAttribute="trailing" secondItem="CkR-2l-yMM" secondAttribute="trailing" id="jdQ-ey-uAw"/>
+                            <constraint firstItem="CkR-2l-yMM" firstAttribute="leading" secondItem="tef-s1-HjL" secondAttribute="leading" id="oLu-Xk-nlA"/>
+                            <constraint firstItem="CkR-2l-yMM" firstAttribute="bottom" secondItem="tef-s1-HjL" secondAttribute="bottom" id="pi7-cb-5so"/>
+                            <constraint firstItem="CkR-2l-yMM" firstAttribute="top" secondItem="tef-s1-HjL" secondAttribute="top" id="vAY-G0-8KX"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Scan QR Code" id="bzF-YO-Ntd">
+                        <barButtonItem key="backBarButtonItem" title="Cancel" id="eFE-P1-Fcj"/>
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="UyL-cG-Lab">
                             <connections>
                                 <action selector="CancelButtonPressed:" destination="45o-7I-dVA" id="QFn-M0-iig"/>
@@ -874,17 +822,13 @@ For more information please visit </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kuo-3a-K8Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5118.75" y="69.718309859154928"/>
+            <point key="canvasLocation" x="5117.6000000000004" y="69.715142428785612"/>
         </scene>
         <!--Group-->
         <scene sceneID="IAN-4Q-wGI">
             <objects>
                 <viewController id="wpY-yN-bUb" customClass="MIADGroupsViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="pxA-aj-c22"/>
-                        <viewControllerLayoutGuide type="bottom" id="1MA-rA-8Ah"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="hwq-w9-pAo">
+                    <view key="view" opaque="NO" contentMode="scaleToFill" id="hwq-w9-pAo">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
@@ -895,12 +839,13 @@ For more information please visit </string>
                                 </connections>
                             </mapView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="RQM-yx-qhH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="centerX" secondItem="hwq-w9-pAo" secondAttribute="centerX" id="2qA-WB-QPA"/>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="hwq-w9-pAo" secondAttribute="leadingMargin" constant="-16" id="3Cd-Pe-KkT"/>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="top" secondItem="hwq-w9-pAo" secondAttribute="topMargin" id="N3Q-1e-usd"/>
-                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="bottom" secondItem="hwq-w9-pAo" secondAttribute="bottomMargin" id="wVF-Bj-QJm"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="leading" secondItem="RQM-yx-qhH" secondAttribute="leading" id="NYC-Y7-ZLd"/>
+                            <constraint firstItem="RQM-yx-qhH" firstAttribute="trailing" secondItem="Sfz-As-Nf1" secondAttribute="trailing" id="mu4-hw-9Fb"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="top" secondItem="RQM-yx-qhH" secondAttribute="top" id="sx6-8a-hdF"/>
+                            <constraint firstItem="Sfz-As-Nf1" firstAttribute="bottom" secondItem="RQM-yx-qhH" secondAttribute="bottom" id="xVQ-pJ-2NK"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="0kR-Wv-Yjt"/>
@@ -965,11 +910,12 @@ For more information please visit </string>
         <!--Group-->
         <scene sceneID="ejS-k6-3ug">
             <objects>
-                <navigationController definesPresentationContext="YES" id="iqp-wo-Olw" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="iqp-wo-Olw" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Group" image="Toolbar_Devices" id="VWV-ax-coC"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="X2Q-se-jDv">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <navigationBarAppearance key="standardAppearance"/>
                     </navigationBar>
                     <connections>
                         <segue destination="wpY-yN-bUb" kind="relationship" relationship="rootViewController" id="E2f-iL-Okx"/>
@@ -988,11 +934,9 @@ For more information please visit </string>
         <image name="Toolbar_Map" width="30" height="30"/>
         <image name="Toolbar_QRCode" width="30" height="30"/>
         <image name="Toolbar_Settings" width="30" height="30"/>
+        <image name="qrcode.viewfinder" catalog="system" width="128" height="115"/>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

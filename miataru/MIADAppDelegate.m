@@ -72,10 +72,10 @@
     self.locationManager = [[CLLocationManager alloc] init];
     
     // the defaults...
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;//kCLLocationAccuracyBest;
     self.locationManager.allowsBackgroundLocationUpdates = true;
     self.locationManager.pausesLocationUpdatesAutomatically = false;
-    self.locationManager.distanceFilter = 100;
+    self.locationManager.distanceFilter = 200;
     self.locationManager.delegate = self;
     
     // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
