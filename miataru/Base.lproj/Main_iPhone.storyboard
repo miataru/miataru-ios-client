@@ -315,34 +315,6 @@ Ported from http://github.com/whomwah/rqrcode by Bill Jacobs.</string>
             </objects>
             <point key="canvasLocation" x="393.75" y="3250.3521126760561"/>
         </scene>
-        <!--Device History Table View Controller-->
-        <scene sceneID="yrt-bd-wAF">
-            <objects>
-                <tableViewController storyboardIdentifier="DevicesVisitorHistoryRoot" hidesBottomBarWhenPushed="YES" id="4OT-uE-miO" customClass="MIADDeviceHistoryTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="qZi-7w-cT9">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settings" id="1tV-wP-rmj">
-                                <rect key="frame" x="0.0" y="44.5" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1tV-wP-rmj" id="2SH-Ri-zQJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="4OT-uE-miO" id="wUD-bP-Wjg"/>
-                            <outlet property="delegate" destination="4OT-uE-miO" id="rWH-2l-YnV"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="WK7-dN-dKh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2813.5999999999999" y="3968.3658170914546"/>
-        </scene>
         <!--First Start Wizard Root View Controller-->
         <scene sceneID="8qm-dB-YcB">
             <objects>

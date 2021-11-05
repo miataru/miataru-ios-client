@@ -93,9 +93,9 @@
 }
 
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+/*- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
-}
+}*/
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -104,7 +104,8 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
+
+- (void)dealloc {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
 	self.tableView = nil;
@@ -128,7 +129,11 @@
 
 - (void)deselectCell:(UITableViewCell *)cell {
 	[cell setAccessoryType:UITableViewCellAccessoryNone];
-	[[cell textLabel] setTextColor:[UIColor labelColor]];
+    if (@available(iOS 13.0, *)) {
+        [[cell textLabel] setTextColor:[UIColor labelColor]];
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
@@ -178,9 +183,10 @@
                                                                                            forKey:[_currentSpecifier key]]];
 }
 
+/*
 - (CGSize)contentSizeForViewInPopover {
     return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
-}
+}*/
 
 
 #pragma mark Notifications

@@ -253,7 +253,7 @@
     }
     //[application beginBackgroundTaskWithExpirationHandler:^{}];
 }
-
+/*
 -(BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     
     NSLog(@"openURL");
@@ -293,7 +293,7 @@
     //    }
     return YES;
 }
-
+*/
 // ----------------------- Location
 
 
@@ -308,9 +308,12 @@
  *    This method is deprecated. If locationManager:didUpdateLocations: is
  *    implemented, this method will not be called.
  */
+
 - (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations
+/*- (void)locationManager:(CLLocationManager *)manager
     didUpdateToLocation:(CLLocation *)newLocation
-           fromLocation:(CLLocation *)oldLocation
+           fromLocation:(CLLocation *)oldLocation*/
 {
     BOOL isInBackground = NO;
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
@@ -336,7 +339,7 @@
             if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
             {
                 // send only when enabled in the settings...
-                [self sendBackgroundLocationToServer:newLocation];
+                [self sendBackgroundLocationToServer:[locations lastObject]];
             }
             else
                 NSLog(@"Sending Location to Server is disabled");
@@ -355,7 +358,7 @@
             if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
             {
                 // send only when enabled in the settings...
-                [self SendUpdateToMiataruServer:newLocation ExecuteAsyncronous:true];
+                [self SendUpdateToMiataruServer:[locations lastObject] ExecuteAsyncronous:true];
             }
             else
                 NSLog(@"Sending Location to Server is disabled");
@@ -388,7 +391,7 @@
     
     bgTask = [[UIApplication sharedApplication]
               beginBackgroundTaskWithExpirationHandler:
-              ^{[[UIApplication sharedApplication] endBackgroundTask:bgTask];}];
+                  ^{[[UIApplication sharedApplication] endBackgroundTask:self->bgTask];}];
     
     [self SendUpdateToMiataruServer:location ExecuteAsyncronous:false];
     
@@ -465,7 +468,9 @@
         if(asyncrounous)
         {
             NSLog(@"Sending Async Update to Server");
-            [NSURLConnection connectionWithRequest:request delegate:self];
+            [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
+
+            //[NSURLConnection connectionWithRequest:request delegate:self];
         }
         else
         {
