@@ -77,6 +77,7 @@
     self.locationManager.pausesLocationUpdatesAutomatically = false;
     self.locationManager.distanceFilter = 200;
     self.locationManager.delegate = self;
+    [self.locationManager startMonitoringSignificantLocationChanges];
     
     // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
     if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
@@ -144,16 +145,21 @@
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     
     NSLog(@"applicationDidEnterBackground");
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 100;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationManager.distanceFilter = 200;
+    self.locationManager.allowsBackgroundLocationUpdates = true;
+    self.locationManager.pausesLocationUpdatesAutomatically = false;
+    
     
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"track_and_report_location"] == 1 )
     {
-        [self.locationManager stopUpdatingLocation];
+        /*[self.locationManager stopUpdatingLocation];
+        [self.locationManager startMonitoringSignificantLocationChanges];*/
         [self.locationManager startMonitoringSignificantLocationChanges];
     }
     else
     {
+        
         [self.locationManager stopUpdatingLocation];
         [self.locationManager stopMonitoringSignificantLocationChanges];
     }
@@ -165,8 +171,10 @@
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     NSLog(@"applicationWillEnterForeground");
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.distanceFilter = 100;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationManager.distanceFilter = 200;
+    self.locationManager.allowsBackgroundLocationUpdates = true;
+    self.locationManager.pausesLocationUpdatesAutomatically = false;
     
     if ( (BOOL)[[NSUserDefaults standardUserDefaults] boolForKey:@"disable_device_autolock_while_in_foreground"] == 1 )
     {
@@ -477,11 +485,41 @@
             NSURLResponse* response;
             NSError* error = nil;
             NSLog(@"Sending Sync Update to Server");
-            [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
+
+            // OLD
+            // [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
+            
+            /*NSData *data =  */[self sendSynchronousRequest:request returningResponse:&response error:&error];
+
         }
     }
 }
 
+
+- (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error
+{
+
+    NSError __block *err = NULL;
+    NSData __block *data;
+    BOOL __block reqProcessed = false;
+    NSURLResponse __block *resp;
+
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable _data, NSURLResponse * _Nullable _response, NSError * _Nullable _error) {
+        resp = _response;
+        err = _error;
+        data = _data;
+        reqProcessed = true;
+    }] resume];
+
+    while (!reqProcessed) {
+        [NSThread sleepForTimeInterval:0.02];
+    }
+    if (response != nil)
+        *response = resp;
+    if (error != nil)
+        *error = err;
+    return data;
+}
 
 #pragma mark Persistent State for device ID
 

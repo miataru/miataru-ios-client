@@ -1034,7 +1034,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1043,7 +1043,7 @@
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.5.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1060,7 +1060,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1069,7 +1069,7 @@
 					"\"$(SRCROOT)/Libraries/QREncoder/Classes\"/**",
 				);
 				INFOPLIST_FILE = "Miataru/Miataru-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.5.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";

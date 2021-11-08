@@ -45,11 +45,14 @@
 	<string>Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
+		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
