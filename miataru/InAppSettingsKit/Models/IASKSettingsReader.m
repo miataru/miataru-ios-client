@@ -197,6 +197,9 @@
         case UIUserInterfaceIdiomMac:
             return @"~ipad";
             break;
+        case UIUserInterfaceIdiomVision:
+            return @"~ipad";
+            break;
     }
 }
 

@@ -1035,6 +1035,7 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1061,6 +1062,7 @@
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Miataru/Miataru-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
