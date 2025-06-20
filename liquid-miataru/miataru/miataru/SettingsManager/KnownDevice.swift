@@ -9,29 +9,48 @@
 
 import Foundation
 
-// Beispiel für ein KnownDevice-Objekt, das NSSecureCoding unterstützt
-class KnownDevice: NSObject, NSSecureCoding {
-    static var supportsSecureCoding: Bool = true
-
-    var deviceName: String
-    var deviceID: String
-
-    init(deviceName: String, deviceID: String) {
-        self.deviceName = deviceName
-        self.deviceID = deviceID
+@objc(KnownDevice)
+class KnownDevice: NSObject, NSCoding, NSSecureCoding {
+    @objc var DeviceName: String
+    @objc var DeviceID: String
+    @objc var DeviceIsInGroup: Bool = false
+    @objc var KnownDevicesTablePosition: Int = 0
+    
+    init(name: String, deviceID: String) {
+        self.DeviceName = name
+        self.DeviceID = deviceID
     }
+    private let fileName = "knownDevices.plist"
 
-    required convenience init?(coder aDecoder: NSCoder) {
-        guard let deviceName = aDecoder.decodeObject(forKey: "deviceName") as? String,
-              let deviceID = aDecoder.decodeObject(forKey: "deviceID") as? String else {
-            return nil
+    private var fileURL: URL {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        let appSupportURL = urls[0]
+        let bundleID = Bundle.main.bundleIdentifier ?? "DefaultApp"
+        let appDirectory = appSupportURL.appendingPathComponent(bundleID)
+        // Verzeichnis anlegen, falls nicht vorhanden
+        if !fileManager.fileExists(atPath: appDirectory.path) {
+            try? fileManager.createDirectory(at: appDirectory, withIntermediateDirectories: true, attributes: nil)
         }
-        self.init(deviceName: deviceName, deviceID: deviceID)
+        return appDirectory.appendingPathComponent(fileName)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        self.DeviceName = aDecoder.decodeObject(forKey: "DeviceName") as? String ?? ""
+        self.DeviceID = aDecoder.decodeObject(forKey: "DeviceID") as? String ?? ""
+        self.DeviceIsInGroup = aDecoder.decodeBool(forKey: "DeviceIsInGroup")
+        self.KnownDevicesTablePosition = aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition")
     }
 
     func encode(with aCoder: NSCoder) {
-        aCoder.encode(deviceName, forKey: "deviceName")
-        aCoder.encode(deviceID, forKey: "deviceID")
+        aCoder.encode(DeviceName, forKey: "DeviceName")
+        aCoder.encode(DeviceID, forKey: "DeviceID")
+        aCoder.encode(DeviceIsInGroup, forKey: "DeviceIsInGroup")
+        aCoder.encode(KnownDevicesTablePosition, forKey: "KnownDevicesTablePosition")
+    }
+
+    static var supportsSecureCoding: Bool {
+        return true
     }
 }
 

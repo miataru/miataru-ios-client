@@ -1,13 +1,17 @@
 import SwiftUI
 
 struct DevicesView: View {
+ @State private var knownDevices: [KnownDevice] = []
+
     var body: some View {
         NavigationView {
-            List {
-                Text("Gerät 1")
-                Text("Gerät 2")
+            List(knownDevices, id: \.DeviceID) { device in
+                Text(device.DeviceName)
             }
             .navigationTitle("Geräte")
+            .onAppear {
+                knownDevices = KnownDeviceStore.shared.load();
+            }
         }
     }
 }
