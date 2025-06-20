@@ -34,7 +34,7 @@ struct MiataruRootView: View {
                 .tabItem {
                     Label("Gruppen", systemImage: "person.3")
                 }
-            MyDeviceView()
+            MyDeviceQRCodeView()
                 .tabItem {
                     Label("QR", systemImage: "qrcode")
                 }
