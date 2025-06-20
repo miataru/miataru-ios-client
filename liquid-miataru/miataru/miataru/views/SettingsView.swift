@@ -4,6 +4,41 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
+                Section(header: Text("Tracking & Verlauf")) {
+                    Toggle("Standort erfassen & melden", isOn: Binding(
+                        get: { SettingsManager.shared.trackAndReportLocation },
+                        set: { SettingsManager.shared.trackAndReportLocation = $0 }
+                    ))
+                    Toggle("Standortverlauf auf Server speichern", isOn: Binding(
+                        get: { SettingsManager.shared.saveLocationHistoryOnServer },
+                        set: { SettingsManager.shared.saveLocationHistoryOnServer = $0 }
+                    ))
+                    Picker("Verlauf speichern für", selection: Binding(
+                        get: { SettingsManager.shared.historyNumberOfDays },
+                        set: { SettingsManager.shared.historyNumberOfDays = $0 }
+                    )) {
+                        Text("1 Tag").tag(1)
+                        Text("2 Tage").tag(2)
+                        Text("3 Tage").tag(3)
+                        Text("4 Tage").tag(4)
+                        Text("5 Tage").tag(5)
+                        Text("6 Tage").tag(6)
+                        Text("7 Tage").tag(7)
+                        Text("14 Tage").tag(14)
+                        Text("31 Tage").tag(31)
+                        Text("Alle verfügbaren").tag(10000000)
+                    }
+                    Picker("Letzte Standortdaten speichern für", selection: Binding(
+                        get: { SettingsManager.shared.locationDataRetentionTime },
+                        set: { SettingsManager.shared.locationDataRetentionTime = $0 }
+                    )) {
+                        Text("30 Minuten").tag(30)
+                        Text("1 Stunde").tag(60)
+                        Text("2 Stunden").tag(120)
+                        Text("6 Stunden").tag(360)
+                        Text("12 Stunden").tag(720)
+                    }
+                }
                 Section(header: Text("Allgemein")) {
                     Toggle("Gerätesperre deaktivieren", isOn: Binding(
                         get: { SettingsManager.shared.disableDeviceAutolock },
@@ -55,41 +90,6 @@ struct SettingsView: View {
                         get: { SettingsManager.shared.groupsZoomToFit },
                         set: { SettingsManager.shared.groupsZoomToFit = $0 }
                     ))
-                }
-                Section(header: Text("Tracking & Verlauf")) {
-                    Toggle("Standort erfassen & melden", isOn: Binding(
-                        get: { SettingsManager.shared.trackAndReportLocation },
-                        set: { SettingsManager.shared.trackAndReportLocation = $0 }
-                    ))
-                    Toggle("Standortverlauf auf Server speichern", isOn: Binding(
-                        get: { SettingsManager.shared.saveLocationHistoryOnServer },
-                        set: { SettingsManager.shared.saveLocationHistoryOnServer = $0 }
-                    ))
-                    Picker("Verlauf speichern für", selection: Binding(
-                        get: { SettingsManager.shared.historyNumberOfDays },
-                        set: { SettingsManager.shared.historyNumberOfDays = $0 }
-                    )) {
-                        Text("1 Tag").tag(1)
-                        Text("2 Tage").tag(2)
-                        Text("3 Tage").tag(3)
-                        Text("4 Tage").tag(4)
-                        Text("5 Tage").tag(5)
-                        Text("6 Tage").tag(6)
-                        Text("7 Tage").tag(7)
-                        Text("14 Tage").tag(14)
-                        Text("31 Tage").tag(31)
-                        Text("Alle verfügbaren").tag(10000000)
-                    }
-                    Picker("Letzte Standortdaten speichern für", selection: Binding(
-                        get: { SettingsManager.shared.locationDataRetentionTime },
-                        set: { SettingsManager.shared.locationDataRetentionTime = $0 }
-                    )) {
-                        Text("30 Minuten").tag(30)
-                        Text("1 Stunde").tag(60)
-                        Text("2 Stunden").tag(120)
-                        Text("6 Stunden").tag(360)
-                        Text("12 Stunden").tag(720)
-                    }
                 }
             }
             .navigationTitle("Einstellungen")
