@@ -8,7 +8,7 @@ struct DevicesView: View {
             List(knownDevices, id: \.DeviceID) { device in
                 Text(device.DeviceName)
             }
-            .navigationTitle("Geräte")
+            .navigationTitle("devices")
             .onAppear {
                 knownDevices = KnownDeviceStore.shared.load();
             }

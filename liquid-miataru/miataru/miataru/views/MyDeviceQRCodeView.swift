@@ -7,13 +7,13 @@ struct MyDeviceQRCodeView: View {
                 .resizable()
                 .frame(width: 80, height: 120)
                 .foregroundColor(.blue)
-            Text("Mein Gerät")
+            Text("my_device_qr_code")
                 .font(.title)
-            Text("Geräteinformationen anzeigen")
+            Text("qr_code_explanation")
                 .foregroundColor(.secondary)
         }
         .padding()
-        .navigationTitle("Mein Gerät")
+        .navigationTitle("my_device")
     }
 }
 

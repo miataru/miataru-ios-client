@@ -4,10 +4,10 @@ struct GroupsView: View {
     var body: some View {
         NavigationView {
             List {
-                Text("Gruppe 1")
-                Text("Gruppe 2")
+                //Text("1")
+                //Text("2")
             }
-            .navigationTitle("Gruppen")
+            .navigationTitle("groups")
         }
     }
 }
