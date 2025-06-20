@@ -121,40 +121,6 @@
             endingLineNumber = "392"
             landmarkName = "-sendBackgroundLocationToServer:"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 13fc137668c6c92"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404731815.675098"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "75"
-                  endingLineNumber = "75"
-                  offsetFromSymbolStart = "273">
-               </Location>
-               <Location
-                  uuid = "B8F4282A-29EB-4D0A-9261-7F47E58625D4 - 13fc137668c6c92"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADAddADeviceTableViewController tableView:didSelectRowAtIndexPath:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADAddADeviceTableViewController.mm"
-                  timestampString = "404731815.675547"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "75"
-                  endingLineNumber = "75"
-                  offsetFromSymbolStart = "632">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -240,40 +206,6 @@
             endingLineNumber = "427"
             landmarkName = "+encode:size:correctionLevel:scale:"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 9806da4d0e93aa7d"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "+[QREncoder encode:size:correctionLevel:scale:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Libraries/QREncoder/Classes/QREncoder.m"
-                  timestampString = "405540152.720365"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "428"
-                  endingLineNumber = "428"
-                  offsetFromSymbolStart = "48">
-               </Location>
-               <Location
-                  uuid = "5CFD63FC-41AF-4084-B787-CDC9F23EC531 - 9806da4d0e93aa7d"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "+[QREncoder encode:size:correctionLevel:scale:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Libraries/QREncoder/Classes/QREncoder.m"
-                  timestampString = "405540152.720674"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "428"
-                  endingLineNumber = "428"
-                  offsetFromSymbolStart = "153">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -376,40 +308,6 @@
             endingLineNumber = "163"
             landmarkName = "-connection:willCacheResponse:"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 22c127adc0b7e40f"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405974382.506566"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "125"
-                  endingLineNumber = "125"
-                  offsetFromSymbolStart = "509">
-               </Location>
-               <Location
-                  uuid = "FABB8874-67B4-490C-84AE-C07FA928CABE - 22c127adc0b7e40f"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405974382.508485"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "125"
-                  endingLineNumber = "125"
-                  offsetFromSymbolStart = "895">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -495,40 +393,6 @@
             endingLineNumber = "184"
             landmarkName = "-connectionDidFinishLoading:"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 22c127adc0b7e2b1"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405975197.084348"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "143"
-                  endingLineNumber = "143"
-                  offsetFromSymbolStart = "509">
-               </Location>
-               <Location
-                  uuid = "0CC3365E-96A6-4778-B396-577F1A56F8E8 - 22c127adc0b7e2b1"
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[MIADHistoryViewController connectionDidFinishLoading:]"
-                  moduleName = "Miataru"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/Miataru/MIADHistoryViewController.m"
-                  timestampString = "405975197.084796"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "143"
-                  endingLineNumber = "143"
-                  offsetFromSymbolStart = "1980">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

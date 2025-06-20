@@ -176,8 +176,10 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				CLASSPREFIX = MIAD;
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
+				ORGANIZATIONNAME = Miataru;
 				TargetAttributes = {
 					8BA62CE72E057D1700F54650 = {
 						CreatedOnToolsVersion = 16.4;
@@ -407,7 +409,6 @@
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "miataru - be found";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -437,7 +438,6 @@
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "miataru - be found";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
