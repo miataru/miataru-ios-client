@@ -6,7 +6,7 @@ struct iPhone_DevicesView: View {
     var body: some View {
         NavigationView {
             List(store.devices, id: \.DeviceID) { device in
-                Text(device.DeviceName)
+                DeviceRowView(device: device)
             }
             .navigationTitle("devices")
         }
