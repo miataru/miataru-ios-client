@@ -42,7 +42,7 @@ extension Color {
     }
 }
 
-extension KnownDevice: Identifiable {
-    public var id: String { DeviceID }
-} 
+// extension KnownDevice: Identifiable {
+//     public var id: String { DeviceID }
+// } 
 

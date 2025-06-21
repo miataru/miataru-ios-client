@@ -7,9 +7,15 @@ struct iPhone_DevicesView: View {
 
     var body: some View {
         NavigationView {
-            List(store.devices, id: \.DeviceID) { device in
-                iPhone_DeviceRowView(device: device)
+            List {
+                ForEach(store.devices) { device in
+                    iPhone_DeviceRowView(device: device)
+                }
+                .onMove { indices, newOffset in
+                    store.devices.move(fromOffsets: indices, toOffset: newOffset)
+                }
             }
+            .environment(\.editMode, .constant(.active))
             .navigationTitle("devices")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

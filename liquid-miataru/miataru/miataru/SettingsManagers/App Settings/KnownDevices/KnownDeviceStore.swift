@@ -58,7 +58,8 @@ class KnownDeviceStore: ObservableObject {
         guard let data = try? Data(contentsOf: fileURL) else { return [] }
         do {
             if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self, UIColor.self], from: data) as? [KnownDevice] {
-                return devices
+                // Nach gespeicherter Reihenfolge sortieren
+                return devices.sorted { $0.KnownDevicesTablePosition < $1.KnownDevicesTablePosition }
             }
         } catch {
             print("Fehler beim Laden der KnownDevices: \(error)")
@@ -68,5 +69,14 @@ class KnownDeviceStore: ObservableObject {
 
     func add(device: KnownDevice) {
         devices.append(device)
+    }
+
+    func move(fromOffsets source: IndexSet, toOffset destination: Int) {
+        devices.move(fromOffsets: source, toOffset: destination)
+        // Reihenfolge-Index aktualisieren
+        for (index, device) in devices.enumerated() {
+            device.KnownDevicesTablePosition = index
+        }
+        save()
     }
 } 

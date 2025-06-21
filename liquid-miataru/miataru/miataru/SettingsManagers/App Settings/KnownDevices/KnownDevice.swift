@@ -12,12 +12,14 @@ import UIKit
 import MapKit
 
 @objc(KnownDevice)
-class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
+class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identifiable {
     @Published @objc var DeviceName: String
     @Published @objc var DeviceID: String
     @Published @objc var DeviceIsInGroup: Bool = false
     @Published @objc var KnownDevicesTablePosition: Int = 0
     @Published @objc var DeviceColor: UIColor?
+    
+    var id: String { DeviceID }
     
     init(name: String, deviceID: String, color: UIColor? = nil) {
         self.DeviceName = name
