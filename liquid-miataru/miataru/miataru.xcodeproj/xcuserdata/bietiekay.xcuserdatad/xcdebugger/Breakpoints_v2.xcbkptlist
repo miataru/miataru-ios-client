@@ -132,5 +132,51 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5795500D-F4B9-449B-998C-76A86E03EE44"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "miataru/views/iPhone/Devices View/iPhone_AddDeviceView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "5795500D-F4B9-449B-998C-76A86E03EE44 - 2a57ed464f71ec00"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Result&lt;CodeScanner.ScanResult, CodeScanner.ScanError&gt;) -&gt; () in closure #2 () -&gt; CodeScanner.CodeScannerView in miataru.iPhone_AddDeviceView.body.getter : some"
+                  moduleName = "miataru.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/iPhone_AddDeviceView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+               <Location
+                  uuid = "5795500D-F4B9-449B-998C-76A86E03EE44 - f50ab9b597c2c715"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 (Swift.Result&lt;CodeScanner.ScanResult, CodeScanner.ScanError&gt;) -&gt; () in closure #2 () -&gt; CodeScanner.CodeScannerView in miataru.iPhone_AddDeviceView.body.getter : some"
+                  moduleName = "miataru.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/iPhone_AddDeviceView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

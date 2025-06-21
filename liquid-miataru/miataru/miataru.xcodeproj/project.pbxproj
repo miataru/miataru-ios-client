@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = miataru;
 			packageProductDependencies = (
+				8BDCBB332E06E9CF000041DC /* CodeScanner */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -198,6 +204,9 @@
 			);
 			mainGroup = 8BA62CDF2E057D1700F54650;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8BA62CE92E057D1700F54650 /* Products */;
 			projectDirPath = "";
@@ -565,6 +574,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "Libraries/CodeScanner-main";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8BDCBB332E06E9CF000041DC /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CodeScanner;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8BA62CE02E057D1700F54650 /* Project object */;
 }

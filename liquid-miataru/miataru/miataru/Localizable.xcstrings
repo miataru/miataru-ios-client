@@ -356,7 +356,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ID"
+            "value" : "enter the ID here or scan QR code"
           }
         }
       }
@@ -528,6 +528,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "satelite map"
+          }
+        }
+      }
+    },
+    "scan_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "touch here to scan QR code"
           }
         }
       }
