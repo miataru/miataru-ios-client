@@ -261,6 +261,16 @@
         }
       }
     },
+    "add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "add"
+          }
+        }
+      }
+    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -281,6 +291,16 @@
         }
       }
     },
+    "cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cancel"
+          }
+        }
+      }
+    },
     "deactivate_device_lock" : {
       "localizations" : {
         "en" : {
@@ -297,6 +317,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "default map"
+          }
+        }
+      }
+    },
+    "device_id" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID"
+          }
+        }
+      }
+    },
+    "device_id2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID"
+          }
+        }
+      }
+    },
+    "device_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Name"
+          }
+        }
+      }
+    },
+    "device_name2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         }
       }
@@ -412,6 +472,16 @@
         }
       }
     },
+    "new_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Device"
+          }
+        }
+      }
+    },
     "qr" : {
       "localizations" : {
         "en" : {
@@ -503,7 +573,14 @@
       }
     },
     "zoom_to_fit_for_groups" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zoom to fit groups"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -65,4 +65,8 @@ class KnownDeviceStore: ObservableObject {
         }
         return []
     }
+
+    func add(device: KnownDevice) {
+        devices.append(device)
+    }
 } 
