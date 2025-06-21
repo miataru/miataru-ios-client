@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct iPhone_DeviceRowView: View {
-    let device: KnownDevice
+    @ObservedObject var device: KnownDevice
 
     var body: some View {
         HStack {

@@ -412,6 +412,9 @@
         }
       }
     },
+    "edit_device" : {
+
+    },
     "groups" : {
       "localizations" : {
         "en" : {
@@ -581,6 +584,9 @@
           }
         }
       }
+    },
+    "save" : {
+
     },
     "scan_qr_code" : {
       "localizations" : {
