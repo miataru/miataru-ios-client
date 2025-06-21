@@ -351,6 +351,16 @@
         }
       }
     },
+    "device_id_copied_to_clipboard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID was copied to the clipboard."
+          }
+        }
+      }
+    },
     "device_id2" : {
       "localizations" : {
         "en" : {
@@ -413,7 +423,14 @@
       }
     },
     "edit_device" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Device"
+          }
+        }
+      }
     },
     "groups" : {
       "localizations" : {
@@ -586,7 +603,14 @@
       }
     },
     "save" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
     },
     "scan_qr_code" : {
       "localizations" : {
