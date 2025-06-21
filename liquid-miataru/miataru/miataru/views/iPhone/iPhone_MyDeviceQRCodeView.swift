@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MyDeviceQRCodeView: View {
+struct iPhone_MyDeviceQRCodeView: View {
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "iphone")
@@ -18,5 +18,5 @@ struct MyDeviceQRCodeView: View {
 }
 
 #Preview {
-    MyDeviceQRCodeView()
+    iPhone_MyDeviceQRCodeView()
 } 

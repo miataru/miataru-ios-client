@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		8BA62D132E057D6000F54650 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BA62D122E057D6000F54650 /* Launch Screen.storyboard */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -31,7 +27,6 @@
 		8BA62CE82E057D1700F54650 /* miataru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miataru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BA62CF52E057D1A00F54650 /* miataruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BA62CFF2E057D1A00F54650 /* miataruUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8BA62D122E057D6000F54650 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,7 +75,6 @@
 		8BA62CDF2E057D1700F54650 = {
 			isa = PBXGroup;
 			children = (
-				8BA62D122E057D6000F54650 /* Launch Screen.storyboard */,
 				8BA62CEA2E057D1700F54650 /* miataru */,
 				8BA62CF82E057D1A00F54650 /* miataruTests */,
 				8BA62D022E057D1A00F54650 /* miataruUITests */,
@@ -221,7 +215,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BA62D132E057D6000F54650 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

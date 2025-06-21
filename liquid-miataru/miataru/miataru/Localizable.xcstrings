@@ -304,12 +304,6 @@
     "devices" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geräte"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

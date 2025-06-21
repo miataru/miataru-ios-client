@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DevicesView: View {
+struct iPhone_DevicesView: View {
  @State private var knownDevices: [KnownDevice] = []
 
     var body: some View {
@@ -17,5 +17,5 @@ struct DevicesView: View {
 }
 
 #Preview {
-    DevicesView()
+    iPhone_DevicesView()
 } 

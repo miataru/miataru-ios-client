@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SettingsView: View {
+struct iPhone_SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
@@ -100,5 +100,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    iPhone_SettingsView()
 }

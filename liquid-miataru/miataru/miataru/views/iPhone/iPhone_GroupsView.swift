@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GroupsView: View {
+struct iPhone_GroupsView: View {
     var body: some View {
         NavigationView {
             List {
@@ -13,5 +13,5 @@ struct GroupsView: View {
 }
 
 #Preview {
-    GroupsView()
+    iPhone_GroupsView()
 } 
