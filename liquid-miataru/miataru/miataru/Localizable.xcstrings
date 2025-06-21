@@ -547,7 +547,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "My devices QR code"
+            "value" : "This is your devices QR-Code."
           }
         }
       }
@@ -587,7 +587,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This is your devices QR code."
+            "value" : "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
           }
         }
       }

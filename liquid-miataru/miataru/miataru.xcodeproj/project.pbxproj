@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
+		8BDCBB722E0704CD000041DC /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB712E0704CD000041DC /* QRCode */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BDCBB722E0704CD000041DC /* QRCode in Frameworks */,
 				8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = miataru;
 			packageProductDependencies = (
 				8BDCBB332E06E9CF000041DC /* CodeScanner */,
+				8BDCBB712E0704CD000041DC /* QRCode */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -206,6 +209,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */,
+				8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8BA62CE92E057D1700F54650 /* Products */;
@@ -286,6 +290,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -351,6 +356,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -580,12 +586,20 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "Libraries/CodeScanner-main";
 		};
+		8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "Libraries/QRCode-main";
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		8BDCBB332E06E9CF000041DC /* CodeScanner */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CodeScanner;
+		};
+		8BDCBB712E0704CD000041DC /* QRCode */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QRCode;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
