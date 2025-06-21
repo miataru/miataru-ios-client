@@ -1,17 +1,14 @@
 import SwiftUI
 
 struct iPhone_DevicesView: View {
- @State private var knownDevices: [KnownDevice] = []
+    @StateObject private var store = KnownDeviceStore()
 
     var body: some View {
         NavigationView {
-            List(knownDevices, id: \.DeviceID) { device in
+            List(store.devices, id: \.DeviceID) { device in
                 Text(device.DeviceName)
             }
             .navigationTitle("devices")
-            .onAppear {
-                knownDevices = KnownDeviceStore.shared.load();
-            }
         }
     }
 }

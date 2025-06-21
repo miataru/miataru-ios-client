@@ -1,11 +1,18 @@
 import Foundation
+import Combine
 
 // Falls erforderlich, KnownDevice importieren (bei getrennten Modulen):
 // import miataru
 
-class KnownDeviceStore {
-    static let shared = KnownDeviceStore()
+class KnownDeviceStore: ObservableObject {
+    @Published var devices: [KnownDevice] = [] {
+        didSet {
+            setupSubscribers()
+            save()
+        }
+    }
     private let fileName = "knownDevices.plist"
+    private var cancellables: [AnyCancellable] = []
 
     private var fileURL: URL {
         let fileManager = FileManager.default
@@ -20,7 +27,23 @@ class KnownDeviceStore {
         return appDirectory.appendingPathComponent(fileName)
     }
 
-    func save(devices: [KnownDevice]) {
+    init() {
+        self.devices = load()
+        setupSubscribers()
+    }
+
+    private func setupSubscribers() {
+        cancellables = []
+        for device in devices {
+            let c = device.objectWillChange
+                .sink { [weak self] _ in
+                    self?.save()
+                }
+            cancellables.append(c)
+        }
+    }
+
+    private func save() {
         do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: devices, requiringSecureCoding: true)
             try data.write(to: fileURL)
@@ -29,7 +52,7 @@ class KnownDeviceStore {
         }
     }
 
-    func load() -> [KnownDevice] {
+    private func load() -> [KnownDevice] {
         guard let data = try? Data(contentsOf: fileURL) else { return [] }
         do {
             if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self], from: data) as? [KnownDevice] {

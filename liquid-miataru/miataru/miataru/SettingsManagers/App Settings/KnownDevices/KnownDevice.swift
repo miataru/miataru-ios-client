@@ -7,13 +7,14 @@
 //
 
 import Foundation
+import Combine
 
 @objc(KnownDevice)
-class KnownDevice: NSObject, NSCoding, NSSecureCoding {
-    @objc var DeviceName: String
-    @objc var DeviceID: String
-    @objc var DeviceIsInGroup: Bool = false
-    @objc var KnownDevicesTablePosition: Int = 0
+class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
+    @Published @objc var DeviceName: String
+    @Published @objc var DeviceID: String
+    @Published @objc var DeviceIsInGroup: Bool = false
+    @Published @objc var KnownDevicesTablePosition: Int = 0
     
     init(name: String, deviceID: String) {
         self.DeviceName = name
