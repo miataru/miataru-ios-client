@@ -442,6 +442,26 @@
         }
       }
     },
+    "invalid_miataru_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid QR-Code"
+          }
+        }
+      }
+    },
+    "invalid_miataru_qr_code_error_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The QR-Code has to begin with 'miataru://'."
+          }
+        }
+      }
+    },
     "location_track" : {
       "localizations" : {
         "en" : {
@@ -518,6 +538,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add a new Device"
+          }
+        }
+      }
+    },
+    "ok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }

@@ -8,6 +8,7 @@ struct iPhone_AddDeviceView: View {
     @State private var deviceID: String = ""
     @State private var deviceColor: Color = .gray
     @State private var isShowingScanner = false
+    @State private var showInvalidQRAlert = false
     
     var body: some View {
         NavigationView {
@@ -47,14 +48,32 @@ struct iPhone_AddDeviceView: View {
             CodeScannerView(codeTypes: [.qr]) { result in
                 switch result {
                 case .success(let res):
-                    deviceID = res.string
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        isShowingScanner = false
+                    let prefix = "miataru://"
+                    if res.string.hasPrefix(prefix) {
+                        deviceID = String(res.string.dropFirst(prefix.count))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            isShowingScanner = false
+                        }
+                    } else {
+                        deviceID = ""
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            isShowingScanner = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                showInvalidQRAlert = true
+                            }
+                        }
                     }
                 case .failure:
                     isShowingScanner = false
                 }
             }
+        }
+        .alert(isPresented: $showInvalidQRAlert) {
+            Alert(
+                title: Text("invalid_miataru_qr_code"),
+                message: Text("invalid_miataru_qr_code_error_text"), //"Der QR-Code muss mit 'miataru://' beginnen."
+                dismissButton: .default(Text("ok"))
+            )
         }
     }
 }
