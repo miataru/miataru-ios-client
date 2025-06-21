@@ -23,7 +23,7 @@ struct iPhone_DevicesView: View {
             .navigationTitle("devices")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(editMode == .active ? "Fertig" : "Bearbeiten") {
+                    Button(editMode == .active ? "devicelist_edit_done" : "devicelist_editbutton") {
                         editMode = editMode == .active ? .inactive : .active
                     }
                 }

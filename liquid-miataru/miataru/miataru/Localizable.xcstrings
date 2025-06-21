@@ -291,9 +291,6 @@
         }
       }
     },
-    "Bearbeiten" : {
-
-    },
     "cancel" : {
       "localizations" : {
         "en" : {
@@ -384,6 +381,26 @@
         }
       }
     },
+    "devicelist_edit_done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "devicelist_editbutton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
     "devices" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -394,9 +411,6 @@
           }
         }
       }
-    },
-    "Fertig" : {
-
     },
     "groups" : {
       "localizations" : {
@@ -503,7 +517,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "New Device"
+            "value" : "Add a new Device"
           }
         }
       }
