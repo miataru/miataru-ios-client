@@ -321,6 +321,26 @@
         }
       }
     },
+    "device_color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Color"
+          }
+        }
+      }
+    },
+    "device_color2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pick a color"
+          }
+        }
+      }
+    },
     "device_id" : {
       "localizations" : {
         "en" : {
