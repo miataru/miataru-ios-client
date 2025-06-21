@@ -261,6 +261,9 @@
         }
       }
     },
+    "Abbrechen" : {
+
+    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -280,6 +283,9 @@
           }
         }
       }
+    },
+    "Bearbeiten" : {
+
     },
     "deactivate_device_lock" : {
       "localizations" : {
@@ -301,6 +307,9 @@
         }
       }
     },
+    "Device ID" : {
+
+    },
     "devices" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -312,6 +321,21 @@
         }
       }
     },
+    "Farbe" : {
+
+    },
+    "Farbe wählen" : {
+
+    },
+    "Gerät bearbeiten" : {
+
+    },
+    "Gerät hinzufügen" : {
+
+    },
+    "Gerätename" : {
+
+    },
     "groups" : {
       "localizations" : {
         "en" : {
@@ -321,6 +345,9 @@
           }
         }
       }
+    },
+    "Hinzufügen" : {
+
     },
     "hybrid_mal" : {
       "localizations" : {
@@ -412,6 +439,9 @@
         }
       }
     },
+    "Name" : {
+
+    },
     "qr" : {
       "localizations" : {
         "en" : {
@@ -481,6 +511,9 @@
           }
         }
       }
+    },
+    "Speichern" : {
+
     },
     "store_history_before_autoremove" : {
       "localizations" : {

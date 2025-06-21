@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DeviceRowView: View {
+struct iPhone_DeviceRowView: View {
     let device: KnownDevice
 
     var body: some View {
@@ -40,5 +40,9 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
+}
+
+extension KnownDevice: Identifiable {
+    public var id: String { DeviceID }
 } 
 
