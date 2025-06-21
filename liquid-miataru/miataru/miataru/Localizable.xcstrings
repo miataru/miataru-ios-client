@@ -291,6 +291,9 @@
         }
       }
     },
+    "Bearbeiten" : {
+
+    },
     "cancel" : {
       "localizations" : {
         "en" : {
@@ -391,6 +394,9 @@
           }
         }
       }
+    },
+    "Fertig" : {
+
     },
     "groups" : {
       "localizations" : {

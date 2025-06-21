@@ -79,4 +79,9 @@ class KnownDeviceStore: ObservableObject {
         }
         save()
     }
+
+    func remove(atOffsets offsets: IndexSet) {
+        devices.remove(atOffsets: offsets)
+        save()
+    }
 } 
