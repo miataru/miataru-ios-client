@@ -6,12 +6,45 @@
 //
 
 import Foundation
+import Combine
 
-class SettingsManager {
-    static let shared = SettingsManager()
+class SettingsManager: ObservableObject {
     private let defaults = UserDefaults.standard
     
-    private init() {}
+    // MARK: - Properties
+    @Published var disableDeviceAutolock: Bool {
+        didSet { defaults.set(disableDeviceAutolock, forKey: Keys.disableDeviceAutolock) }
+    }
+    @Published var indicateAccuracyOnMap: Bool {
+        didSet { defaults.set(indicateAccuracyOnMap, forKey: Keys.indicateAccuracyOnMap) }
+    }
+    @Published var groupsZoomToFit: Bool {
+        didSet { defaults.set(groupsZoomToFit, forKey: Keys.groupsZoomToFit) }
+    }
+    @Published var miataruServerURL: String {
+        didSet { defaults.set(miataruServerURL, forKey: Keys.miataruServerURL) }
+    }
+    @Published var trackAndReportLocation: Bool {
+        didSet { defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation) }
+    }
+    @Published var saveLocationHistoryOnServer: Bool {
+        didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }
+    }
+    @Published var locationDataRetentionTime: Int {
+        didSet { defaults.set(String(locationDataRetentionTime), forKey: "location_data_retention_time") }
+    }
+    @Published var mapType: Int {
+        didSet { defaults.set(String(mapType), forKey: Keys.mapType) }
+    }
+    @Published var mapUpdateInterval: Int {
+        didSet { defaults.set(String(mapUpdateInterval), forKey: Keys.mapUpdateInterval) }
+    }
+    @Published var mapZoomLevel: Int {
+        didSet { defaults.set(String(mapZoomLevel), forKey: Keys.mapZoomLevel) }
+    }
+    @Published var historyNumberOfDays: Int {
+        didSet { defaults.set(String(historyNumberOfDays), forKey: Keys.historyNumberOfDays) }
+    }
     
     // MARK: - Keys
     private enum Keys {
@@ -27,60 +60,20 @@ class SettingsManager {
         static let historyNumberOfDays = "history_number_of_days"
     }
     
-    // MARK: - Properties
-    var disableDeviceAutolock: Bool {
-        get { defaults.bool(forKey: Keys.disableDeviceAutolock) }
-        set { defaults.set(newValue, forKey: Keys.disableDeviceAutolock) }
-    }
-    
-    var indicateAccuracyOnMap: Bool {
-        get { defaults.bool(forKey: Keys.indicateAccuracyOnMap) }
-        set { defaults.set(newValue, forKey: Keys.indicateAccuracyOnMap) }
-    }
-    
-    var groupsZoomToFit: Bool {
-        get { defaults.bool(forKey: Keys.groupsZoomToFit) }
-        set { defaults.set(newValue, forKey: Keys.groupsZoomToFit) }
-    }
-    
-    var miataruServerURL: String? {
-        get { defaults.string(forKey: Keys.miataruServerURL) }
-        set { defaults.set(newValue, forKey: Keys.miataruServerURL) }
-    }
-    
-    var trackAndReportLocation: Bool {
-        get { defaults.bool(forKey: Keys.trackAndReportLocation) }
-        set { defaults.set(newValue, forKey: Keys.trackAndReportLocation) }
-    }
-    
-    var saveLocationHistoryOnServer: Bool {
-        get { defaults.bool(forKey: Keys.saveLocationHistoryOnServer) }
-        set { defaults.set(newValue, forKey: Keys.saveLocationHistoryOnServer) }
-    }
-    
-    var locationDataRetentionTime: Int {
-        get { Int(defaults.string(forKey: "location_data_retention_time") ?? "30") ?? 30 }
-        set { defaults.set(String(newValue), forKey: "location_data_retention_time") }
-    }
-    
-    var mapType: Int {
-        get { Int(defaults.string(forKey: Keys.mapType) ?? "1") ?? 1 }
-        set { defaults.set(String(newValue), forKey: Keys.mapType) }
-    }
-    
-    var mapUpdateInterval: Int {
-        get { Int(defaults.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30 }
-        set { defaults.set(String(newValue), forKey: Keys.mapUpdateInterval) }
-    }
-    
-    var mapZoomLevel: Int {
-        get { Int(defaults.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1 }
-        set { defaults.set(String(newValue), forKey: Keys.mapZoomLevel) }
-    }
-    
-    var historyNumberOfDays: Int {
-        get { Int(defaults.string(forKey: Keys.historyNumberOfDays) ?? "5") ?? 5 }
-        set { defaults.set(String(newValue), forKey: Keys.historyNumberOfDays) }
+    // MARK: - Initialwerte laden
+    init() {
+        let d = UserDefaults.standard
+        self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false
+        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? false
+        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? false
+        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? ""
+        self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false
+        self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false
+        self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "30") ?? 30
+        self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1
+        self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
+        self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
+        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "5") ?? 5
     }
     
     // MARK: - Synchronize
@@ -113,4 +106,6 @@ class SettingsManager {
             print("Settings.bundle oder Root.plist nicht gefunden!")
         }
     }
+    
+    static let shared = SettingsManager()
 } 
