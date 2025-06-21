@@ -88,20 +88,20 @@ class SettingsManager: ObservableObject {
            let plistPath = settings.path(forResource: "Root", ofType: "plist"),
            let dict = NSDictionary(contentsOfFile: plistPath) as? [String: Any],
            let preferences = dict["PreferenceSpecifiers"] as? [[String: Any]] {
-            print("Settings.bundle gefunden: \(settingsBundle)")
-            print("Root.plist gefunden: \(plistPath)")
-            print("PreferenceSpecifiers: \(preferences)")
+            //print("Settings.bundle gefunden: \(settingsBundle)")
+            //print("Root.plist gefunden: \(plistPath)")
+            //print("PreferenceSpecifiers: \(preferences)")
             var defaultsToRegister: [String: Any] = [:]
             for item in preferences {
                 if let key = item["Key"] as? String, let defaultValue = item["DefaultValue"] {
-                    print("Key: \(key), DefaultValue: \(defaultValue)")
+                    //print("Key: \(key), DefaultValue: \(defaultValue)")
                     if defaults.object(forKey: key) == nil {
                         defaultsToRegister[key] = defaultValue
                     }
                 }
             }
             defaults.register(defaults: defaultsToRegister)
-            print("Registrierte Defaults: \(defaultsToRegister)")
+            //print("Registrierte Defaults: \(defaultsToRegister)")
         } else {
             print("Settings.bundle oder Root.plist nicht gefunden!")
         }

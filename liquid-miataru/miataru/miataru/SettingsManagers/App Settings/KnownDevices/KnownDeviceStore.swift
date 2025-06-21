@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Combine
 
 // Falls erforderlich, KnownDevice importieren (bei getrennten Modulen):
@@ -44,18 +45,19 @@ class KnownDeviceStore: ObservableObject {
     }
 
     private func save() {
-        do {
+       /* do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: devices, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
             print("Fehler beim Speichern der KnownDevices: \(error)")
-        }
+        }*/
+        print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
     }
 
     private func load() -> [KnownDevice] {
         guard let data = try? Data(contentsOf: fileURL) else { return [] }
         do {
-            if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self], from: data) as? [KnownDevice] {
+            if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self, UIColor.self], from: data) as? [KnownDevice] {
                 return devices
             }
         } catch {

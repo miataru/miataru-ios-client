@@ -6,7 +6,7 @@ struct DeviceRowView: View {
     var body: some View {
         HStack {
             Circle()
-                .fill(Color(hex: /*device.DeviceColorHex ?? */"#CCCCCC"))
+                .fill(Color(device.DeviceColor ?? UIColor.gray))
                 .frame(width: 16, height: 16)
             VStack(alignment: .leading) {
                 Text(device.DeviceName)

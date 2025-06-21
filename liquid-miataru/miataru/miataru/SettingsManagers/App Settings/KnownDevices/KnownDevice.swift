@@ -8,6 +8,8 @@
 
 import Foundation
 import Combine
+import UIKit
+import MapKit
 
 @objc(KnownDevice)
 class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
@@ -15,24 +17,12 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
     @Published @objc var DeviceID: String
     @Published @objc var DeviceIsInGroup: Bool = false
     @Published @objc var KnownDevicesTablePosition: Int = 0
+    @Published @objc var DeviceColor: UIColor?
     
-    init(name: String, deviceID: String) {
+    init(name: String, deviceID: String, color: UIColor? = nil) {
         self.DeviceName = name
         self.DeviceID = deviceID
-    }
-    private let fileName = "knownDevices.plist"
-
-    private var fileURL: URL {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupportURL = urls[0]
-        let bundleID = Bundle.main.bundleIdentifier ?? "DefaultApp"
-        let appDirectory = appSupportURL.appendingPathComponent(bundleID)
-        // Verzeichnis anlegen, falls nicht vorhanden
-        if !fileManager.fileExists(atPath: appDirectory.path) {
-            try? fileManager.createDirectory(at: appDirectory, withIntermediateDirectories: true, attributes: nil)
-        }
-        return appDirectory.appendingPathComponent(fileName)
+        self.DeviceColor = color
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -40,16 +30,33 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
         self.DeviceID = aDecoder.decodeObject(forKey: "DeviceID") as? String ?? ""
         self.DeviceIsInGroup = aDecoder.decodeBool(forKey: "DeviceIsInGroup")
         self.KnownDevicesTablePosition = aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition")
+        self.DeviceColor = aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor
+        print(aDecoder.decodeObject(forKey: "DeviceName") as? String ?? "")
+        print(aDecoder.decodeObject(forKey: "DeviceID") as? String ?? "")
+        print(aDecoder.decodeBool(forKey: "DeviceIsInGroup"))
+        print(aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition"))
+        print(aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor)
     }
 
     func encode(with aCoder: NSCoder) {
-        aCoder.encode(DeviceName, forKey: "DeviceName")
+        /*aCoder.encode(DeviceName, forKey: "DeviceName")
         aCoder.encode(DeviceID, forKey: "DeviceID")
         aCoder.encode(DeviceIsInGroup, forKey: "DeviceIsInGroup")
         aCoder.encode(KnownDevicesTablePosition, forKey: "KnownDevicesTablePosition")
+        aCoder.encode(DeviceColor, forKey: "DeviceColor")*/
+        print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
+
     }
 
     static var supportsSecureCoding: Bool {
         return true
     }
+
+    static func DeviceWithName(_ inName: String, deviceID inDeviceID: String) -> KnownDevice {
+        return KnownDevice(name: inName, deviceID: inDeviceID)
+    }
+
+    //func setUpdateTime(_ NewUpdateDateTime: Date) {
+    //    self.LastUpdate = NewUpdateDateTime
+    //}
 }
