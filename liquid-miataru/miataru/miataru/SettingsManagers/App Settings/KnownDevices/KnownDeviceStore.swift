@@ -45,13 +45,13 @@ class KnownDeviceStore: ObservableObject {
     }
 
     private func save() {
-       /* do {
+       do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: devices, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
             print("Fehler beim Speichern der KnownDevices: \(error)")
-        }*/
-        print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
+        }
+        //print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
     }
 
     private func load() -> [KnownDevice] {

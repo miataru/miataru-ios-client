@@ -39,12 +39,12 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding {
     }
 
     func encode(with aCoder: NSCoder) {
-        /*aCoder.encode(DeviceName, forKey: "DeviceName")
+        aCoder.encode(DeviceName, forKey: "DeviceName")
         aCoder.encode(DeviceID, forKey: "DeviceID")
         aCoder.encode(DeviceIsInGroup, forKey: "DeviceIsInGroup")
         aCoder.encode(KnownDevicesTablePosition, forKey: "KnownDevicesTablePosition")
-        aCoder.encode(DeviceColor, forKey: "DeviceColor")*/
-        print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
+        aCoder.encode(DeviceColor, forKey: "DeviceColor")
+        //print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
 
     }
 
