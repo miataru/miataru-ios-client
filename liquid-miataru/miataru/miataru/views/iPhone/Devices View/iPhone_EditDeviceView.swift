@@ -75,4 +75,12 @@ struct iPhone_EditDeviceView: View {
         )
         .animation(.easeInOut, value: copiedIDFeedback)
     }
-} 
+}
+
+#Preview {
+    @Previewable @State var device = KnownDevice(name: "Testdevice", deviceID: "12345", color: .blue)
+    @Previewable @State var isPresented = true
+    
+    iPhone_EditDeviceView(device: $device, isPresented: $isPresented)
+}
+

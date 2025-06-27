@@ -321,6 +321,9 @@
         }
       }
     },
+    "delete" : {
+
+    },
     "device_color" : {
       "localizations" : {
         "en" : {
@@ -421,6 +424,9 @@
           }
         }
       }
+    },
+    "edit" : {
+
     },
     "edit_device" : {
       "localizations" : {

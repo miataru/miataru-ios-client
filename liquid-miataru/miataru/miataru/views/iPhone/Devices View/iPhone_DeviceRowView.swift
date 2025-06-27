@@ -44,5 +44,10 @@ extension Color {
 
 // extension KnownDevice: Identifiable {
 //     public var id: String { DeviceID }
-// } 
+// }
+
+#Preview {
+    @Previewable @State var device = KnownDevice(name: "Testgerät", deviceID: "12345", color: .blue)
+    iPhone_DeviceRowView(device: device)
+} 
 

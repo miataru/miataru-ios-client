@@ -17,6 +17,23 @@ struct iPhone_DevicesView: View {
                                 editingDevice = device
                             }
                         }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
+                                    store.remove(atOffsets: IndexSet(integer: index))
+                                }
+                            } label: {
+                                Label("delete", systemImage: "trash")
+                            }
+                        }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                editingDevice = device
+                            } label: {
+                                Label("edit", systemImage: "pencil")
+                            }
+                            .tint(.blue)
+                        }
                 }
                 .onMove { indices, newOffset in
                     store.devices.move(fromOffsets: indices, toOffset: newOffset)
@@ -58,5 +75,11 @@ struct iPhone_DevicesView: View {
 }
 
 #Preview {
-    iPhone_DevicesView()
+    let store = KnownDeviceStore()
+    store.devices = [
+        KnownDevice(name: "iPhone 13", deviceID: UUID().uuidString, color: .red),
+        KnownDevice(name: "iPad Pro", deviceID: UUID().uuidString, color: .green),
+        KnownDevice(name: "MacBook Air", deviceID: UUID().uuidString, color: .blue)
+    ]
+    return iPhone_DevicesView().environmentObject(store)
 }
