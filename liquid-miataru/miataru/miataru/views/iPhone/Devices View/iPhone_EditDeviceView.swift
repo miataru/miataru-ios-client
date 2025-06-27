@@ -1,4 +1,5 @@
 import SwiftUI
+import QRCode
 
 struct iPhone_EditDeviceView: View {
     @Binding var device: KnownDevice
@@ -33,6 +34,30 @@ struct iPhone_EditDeviceView: View {
                 }
                 Section(header: Text("device_color")) {
                     ColorPicker("device_color2", selection: $tempDeviceColor)
+                }
+                Section(header: Text("device_qr_code")) {
+                    let qrContent = QRCodeShape(
+                        data: ("miataru://" + device.DeviceID).data(using: .utf8) ?? Data(),
+                        errorCorrection: .low
+                    )
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            Color.white
+                            qrContent
+                                .components(.eyeOuter)
+                                .fill(Color.primary)
+                            qrContent
+                                .components(.eyePupil)
+                                .fill(Color.primary)
+                            qrContent
+                                .components(.onPixels)
+                                .fill(Color.primary)
+                        }
+                        .frame(width: 200, height: 200)
+                        .padding()
+                        Spacer()
+                    }
                 }
             }
             .navigationTitle("edit_device")

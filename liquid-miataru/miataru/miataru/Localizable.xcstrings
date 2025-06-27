@@ -394,6 +394,9 @@
         }
       }
     },
+    "device_qr_code" : {
+
+    },
     "devicelist_edit_done" : {
       "localizations" : {
         "en" : {
