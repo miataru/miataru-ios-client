@@ -321,8 +321,15 @@
         }
       }
     },
-    "delete" : {
-
+    "delete_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
     },
     "device_color" : {
       "localizations" : {
@@ -395,7 +402,14 @@
       }
     },
     "device_qr_code" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "this devices QR-Code"
+          }
+        }
+      }
     },
     "devicelist_edit_done" : {
       "localizations" : {
@@ -427,9 +441,6 @@
           }
         }
       }
-    },
-    "edit" : {
-
     },
     "edit_device" : {
       "localizations" : {

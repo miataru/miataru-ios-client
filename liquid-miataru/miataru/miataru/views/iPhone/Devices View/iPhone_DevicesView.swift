@@ -23,14 +23,14 @@ struct iPhone_DevicesView: View {
                                     store.remove(atOffsets: IndexSet(integer: index))
                                 }
                             } label: {
-                                Label("delete", systemImage: "trash")
+                                Label("delete_device", systemImage: "trash")
                             }
                         }
                         .swipeActions(edge: .leading) {
                             Button {
                                 editingDevice = device
                             } label: {
-                                Label("edit", systemImage: "pencil")
+                                Label("edit_device", systemImage: "pencil")
                             }
                             .tint(.blue)
                         }
