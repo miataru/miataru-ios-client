@@ -261,6 +261,16 @@
         }
       }
     },
+    "add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "add"
+          }
+        }
+      }
+    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -277,6 +287,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Application behaviour"
+          }
+        }
+      }
+    },
+    "cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cancel"
           }
         }
       }
@@ -301,19 +321,113 @@
         }
       }
     },
+    "device_color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Color"
+          }
+        }
+      }
+    },
+    "device_color2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pick a color"
+          }
+        }
+      }
+    },
+    "device_id" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID"
+          }
+        }
+      }
+    },
+    "device_id_copied_to_clipboard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID was copied to the clipboard."
+          }
+        }
+      }
+    },
+    "device_id2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enter the ID here or scan QR code"
+          }
+        }
+      }
+    },
+    "device_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Name"
+          }
+        }
+      }
+    },
+    "device_name2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "devicelist_edit_done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "devicelist_editbutton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
     "devices" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geräte"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Devices"
+          }
+        }
+      }
+    },
+    "edit_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Device"
           }
         }
       }
@@ -344,6 +458,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "indicate location accuracy"
+          }
+        }
+      }
+    },
+    "invalid_miataru_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid QR-Code"
+          }
+        }
+      }
+    },
+    "invalid_miataru_qr_code_error_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The QR-Code has to begin with 'miataru://'."
           }
         }
       }
@@ -413,7 +547,27 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "My devices QR code"
+            "value" : "This is your devices QR-Code."
+          }
+        }
+      }
+    },
+    "new_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a new Device"
+          }
+        }
+      }
+    },
+    "ok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }
@@ -433,7 +587,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This is your devices QR code."
+            "value" : "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
           }
         }
       }
@@ -444,6 +598,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "satelite map"
+          }
+        }
+      }
+    },
+    "save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "scan_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "touch here to scan QR code"
           }
         }
       }
@@ -509,7 +683,14 @@
       }
     },
     "zoom_to_fit_for_groups" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zoom to fit groups"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

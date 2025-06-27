@@ -4,29 +4,26 @@
 //
 //  Created by Daniel Kirstenpfad on 20.06.25.
 //
-
 import SwiftUI
 
 struct MiataruRootView: View {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+
     var body: some View {
-        TabView {
-            DevicesView()
-                .tabItem {
-                    Label("devices", systemImage: "iphone.gen3.badge.location")
-                }
-            GroupsView()
-                .tabItem {
-                    Label("groups", systemImage: "person.3")
-                }
-            MyDeviceQRCodeView()
-                .tabItem {
-                    Label("qr", systemImage: "qrcode")
-                }
-            SettingsView()
-                .tabItem {
-                    Label("settings", systemImage: "gear")
-                }
+        #if os(macOS)
+        // Mac-spezifische View
+        //MacRootView()
+        iPhone_RootView() // for now
+        #else
+        if horizontalSizeClass == .compact {
+            // iPhone-spezifische View
+            iPhone_RootView()
+        } else {
+            // iPad-spezifische View
+            //iPad_RootView()
+            iPhone_RootView() // for now
         }
+        #endif
     }
 }
 

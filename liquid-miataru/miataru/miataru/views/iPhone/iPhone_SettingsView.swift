@@ -1,0 +1,70 @@
+import SwiftUI
+
+struct iPhone_SettingsView: View {
+    @ObservedObject var settings = SettingsManager.shared
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("track_and_history")) {
+                    Toggle("location_track", isOn: $settings.trackAndReportLocation)
+                    Toggle("send_location_to_server", isOn: $settings.saveLocationHistoryOnServer)
+                    Picker("show_history_days", selection: $settings.historyNumberOfDays) {
+                        Text("1day").tag(1)
+                        Text("2days").tag(2)
+                        Text("3days").tag(3)
+                        Text("4days").tag(4)
+                        Text("5days").tag(5)
+                        Text("6days").tag(6)
+                        Text("7days").tag(7)
+                        Text("14days").tag(14)
+                        Text("31days").tag(31)
+                        Text("all_available").tag(10000000)
+                    }
+                    Picker("store_history_before_autoremove", selection: $settings.locationDataRetentionTime) {
+                        Text("30minutes").tag(30)
+                        Text("1hour").tag(60)
+                        Text("2hours").tag(120)
+                        Text("6hours").tag(360)
+                        Text("12hours").tag(720)
+                    }
+                }
+                Section(header: Text("server_url")) {
+                    TextField("server_url", text: $settings.miataruServerURL)
+                }
+                Section(header: Text("app_behaviour")) {
+                    Toggle("deactivate_device_lock", isOn: $settings.disableDeviceAutolock)
+                    Toggle("indicate_location_accuracy", isOn: $settings.indicateAccuracyOnMap)
+                }
+                Section(header: Text("map_configuration")) {
+                    Picker("map_type", selection: $settings.mapType) {
+                        Text("default_map").tag(1)
+                        Text("hybrid_mal").tag(2)
+                        Text("sat_map").tag(3)
+                    }
+                    Picker("map_update_interval", selection: $settings.mapUpdateInterval) {
+                        Text("5s").tag(5)
+                        Text("10s").tag(10)
+                        Text("15s").tag(15)
+                        Text("30s").tag(30)
+                        Text("60s").tag(60)
+                    }
+                    Picker("map_zoom_level", selection: $settings.mapZoomLevel) {
+                        Text("1km").tag(1)
+                        Text("2km").tag(2)
+                        Text("5km").tag(5)
+                        Text("10km").tag(10)
+                        Text("25km").tag(25)
+                        Text("50km").tag(50)
+                        Text("100km").tag(100)
+                    }
+                    Toggle("zoom_to_fit_for_groups", isOn: $settings.groupsZoomToFit)
+                }
+            }
+            .navigationTitle("settings")
+        }
+    }
+}
+
+#Preview {
+    iPhone_SettingsView()
+}
