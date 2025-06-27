@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
-		8BDCBB722E0704CD000041DC /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB712E0704CD000041DC /* QRCode */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BDCBB722E0704CD000041DC /* QRCode in Frameworks */,
+				8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */,
 				8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,12 +79,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B3AFA8C2E0E900B0046E5B3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8BA62CDF2E057D1700F54650 = {
 			isa = PBXGroup;
 			children = (
 				8BA62CEA2E057D1700F54650 /* miataru */,
 				8BA62CF82E057D1A00F54650 /* miataruTests */,
 				8BA62D022E057D1A00F54650 /* miataruUITests */,
+				8B3AFA8C2E0E900B0046E5B3 /* Frameworks */,
 				8BA62CE92E057D1700F54650 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,7 +128,7 @@
 			name = miataru;
 			packageProductDependencies = (
 				8BDCBB332E06E9CF000041DC /* CodeScanner */,
-				8BDCBB712E0704CD000041DC /* QRCode */,
+				8B3AFA8D2E0E900B0046E5B3 /* QRCode */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -595,13 +603,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B3AFA8D2E0E900B0046E5B3 /* QRCode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */;
+			productName = QRCode;
+		};
 		8BDCBB332E06E9CF000041DC /* CodeScanner */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CodeScanner;
-		};
-		8BDCBB712E0704CD000041DC /* QRCode */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = QRCode;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
