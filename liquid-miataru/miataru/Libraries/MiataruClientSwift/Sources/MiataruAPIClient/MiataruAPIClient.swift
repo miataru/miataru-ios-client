@@ -55,10 +55,24 @@ public struct GetLocationHistoryPayload: Codable {
 /// Payload for the UpdateLocation request.
 public struct UpdateLocationPayload: Codable {
     public let Device: String
-    public let Timestamp: String
+    public var Timestamp: String
     public var Longitude: Double
     public var Latitude: Double
     public var HorizontalAccuracy: Double
+
+    /// Computed property für den Zugriff als Date
+    public var TimestampDate: Date {
+        get {
+            if let ms = Double(Timestamp) {
+                return Date(timeIntervalSince1970: ms)
+            } else {
+                return Date(timeIntervalSince1970: 0)
+            }
+        }
+        set {
+            Timestamp = String(Int64(newValue.timeIntervalSince1970))
+        }
+    }
 
     enum CodingKeys: String, CodingKey {
         case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
@@ -84,7 +98,16 @@ public struct UpdateLocationPayload: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         Device = try container.decode(String.self, forKey: .Device)
-        Timestamp = try container.decode(String.self, forKey: .Timestamp)
+        // Timestamp kann als String oder als Zahl kommen
+        if let tsString = try? container.decode(String.self, forKey: .Timestamp) {
+            Timestamp = tsString
+        } else if let tsInt = try? container.decode(Int64.self, forKey: .Timestamp) {
+            Timestamp = String(tsInt)
+        } else if let tsDouble = try? container.decode(Double.self, forKey: .Timestamp) {
+            Timestamp = String(Int64(tsDouble))
+        } else {
+            Timestamp = "0"
+        }
         let longitudeStr = try container.decode(String.self, forKey: .Longitude)
         let latitudeStr = try container.decode(String.self, forKey: .Latitude)
         let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)
@@ -105,6 +128,15 @@ public struct MiataruLocationData: Codable {
     public var Latitude: Double
     public var HorizontalAccuracy: Double
 
+    /// Computed property für den Zugriff als Date
+    public var TimestampDate: Date {
+        if let ms = Double(Timestamp) {
+            return Date(timeIntervalSince1970: ms)
+        } else {
+            return Date(timeIntervalSince1970: 0)
+        }
+    }
+
     enum CodingKeys: String, CodingKey {
         case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
     }
@@ -120,7 +152,16 @@ public struct MiataruLocationData: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         Device = try container.decode(String.self, forKey: .Device)
-        Timestamp = try container.decode(String.self, forKey: .Timestamp)
+        // Timestamp kann als String oder als Zahl kommen
+        if let tsString = try? container.decode(String.self, forKey: .Timestamp) {
+            Timestamp = tsString
+        } else if let tsInt = try? container.decode(Int64.self, forKey: .Timestamp) {
+            Timestamp = String(tsInt)
+        } else if let tsDouble = try? container.decode(Double.self, forKey: .Timestamp) {
+            Timestamp = String(Int64(tsDouble))
+        } else {
+            Timestamp = "0"
+        }
         let longitudeStr = try container.decode(String.self, forKey: .Longitude)
         let latitudeStr = try container.decode(String.self, forKey: .Latitude)
         let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)

@@ -151,121 +151,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "81B884A5-47BB-410E-A1B2-B053CDB5C47D"
+            uuid = "83D27A4B-2EE9-4AE8-87AC-531B623FEF6D"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "miataru/views/iPhone/Devices View/sheets/iPhone_DeviceMapView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
-            landmarkName = "fetchLocation()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "81B884A5-47BB-410E-A1B2-B053CDB5C47D - 8fcb4720dd286cba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "81B884A5-47BB-410E-A1B2-B053CDB5C47D - ae4b4ed3b7b8a0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-            </Locations>
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9BBB995D-7B38-4ADA-B27A-98E9B57EE016"
+            uuid = "B5BECE7F-9D15-47A8-99C9-307597F1E58E"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "miataru/views/iPhone/Devices View/sheets/iPhone_DeviceMapView.swift"
+            filePath = "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
-            landmarkName = "fetchLocation()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9BBB995D-7B38-4ADA-B27A-98E9B57EE016 - d8654f69299ef541"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76">
-               </Location>
-               <Location
-                  uuid = "9BBB995D-7B38-4ADA-B27A-98E9B57EE016 - d8654f69299ef541"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76">
-               </Location>
-               <Location
-                  uuid = "9BBB995D-7B38-4ADA-B27A-98E9B57EE016 - d8654f69299ef541"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76">
-               </Location>
-               <Location
-                  uuid = "9BBB995D-7B38-4ADA-B27A-98E9B57EE016 - d8654f69299ef541"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for miataru.iPhone_DeviceMapView.fetchLocation() async -&gt; ()"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/liquid-miataru/miataru/miataru/views/iPhone/Devices%20View/sheets/iPhone_DeviceMapView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76">
-               </Location>
-            </Locations>
+            startingLineNumber = "134"
+            endingLineNumber = "134"
+            landmarkName = "TimestampDate"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BFBA039C-A6C4-4B52-A3CA-E8FB89A89CCC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "TimestampDate"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
