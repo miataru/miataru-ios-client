@@ -455,6 +455,9 @@
         }
       }
     },
+    "Fehler" : {
+
+    },
     "groups" : {
       "localizations" : {
         "en" : {
@@ -504,6 +507,9 @@
           }
         }
       }
+    },
+    "Lädt..." : {
+
     },
     "location_track" : {
       "localizations" : {
@@ -594,6 +600,9 @@
           }
         }
       }
+    },
+    "OK" : {
+
     },
     "qr" : {
       "localizations" : {

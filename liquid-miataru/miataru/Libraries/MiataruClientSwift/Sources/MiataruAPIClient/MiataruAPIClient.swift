@@ -56,25 +56,90 @@ public struct GetLocationHistoryPayload: Codable {
 public struct UpdateLocationPayload: Codable {
     public let Device: String
     public let Timestamp: String
-    public let Longitude: String
-    public let Latitude: String
-    public let HorizontalAccuracy: String
-    public init(Device: String, Timestamp: String, Longitude: String, Latitude: String, HorizontalAccuracy: String) {
+    public var Longitude: Double
+    public var Latitude: Double
+    public var HorizontalAccuracy: Double
+
+    enum CodingKeys: String, CodingKey {
+        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
+    }
+
+    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double) {
         self.Device = Device
         self.Timestamp = Timestamp
         self.Longitude = Longitude
         self.Latitude = Latitude
         self.HorizontalAccuracy = HorizontalAccuracy
     }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(Device, forKey: .Device)
+        try container.encode(Timestamp, forKey: .Timestamp)
+        try container.encode(String(Longitude), forKey: .Longitude)
+        try container.encode(String(Latitude), forKey: .Latitude)
+        try container.encode(String(HorizontalAccuracy), forKey: .HorizontalAccuracy)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        Device = try container.decode(String.self, forKey: .Device)
+        Timestamp = try container.decode(String.self, forKey: .Timestamp)
+        let longitudeStr = try container.decode(String.self, forKey: .Longitude)
+        let latitudeStr = try container.decode(String.self, forKey: .Latitude)
+        let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)
+        guard let longitude = Double(longitudeStr), let latitude = Double(latitudeStr), let accuracy = Double(accuracyStr) else {
+            throw DecodingError.dataCorruptedError(forKey: .Longitude, in: container, debugDescription: "Longitude, Latitude oder HorizontalAccuracy konnte nicht in Double umgewandelt werden.")
+        }
+        Longitude = longitude
+        Latitude = latitude
+        HorizontalAccuracy = accuracy
+    }
 }
 
 /// Represents the location data received from the server, matching the API specification.
 public struct MiataruLocationData: Codable {
-    let Device: String
-    let Timestamp: String
-    let Longitude: String
-    let Latitude: String
-    let HorizontalAccuracy: String
+    public let Device: String
+    public let Timestamp: String
+    public var Longitude: Double
+    public var Latitude: Double
+    public var HorizontalAccuracy: Double
+
+    enum CodingKeys: String, CodingKey {
+        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
+    }
+
+    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double) {
+        self.Device = Device
+        self.Timestamp = Timestamp
+        self.Longitude = Longitude
+        self.Latitude = Latitude
+        self.HorizontalAccuracy = HorizontalAccuracy
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        Device = try container.decode(String.self, forKey: .Device)
+        Timestamp = try container.decode(String.self, forKey: .Timestamp)
+        let longitudeStr = try container.decode(String.self, forKey: .Longitude)
+        let latitudeStr = try container.decode(String.self, forKey: .Latitude)
+        let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)
+        guard let longitude = Double(longitudeStr), let latitude = Double(latitudeStr), let accuracy = Double(accuracyStr) else {
+            throw DecodingError.dataCorruptedError(forKey: .Longitude, in: container, debugDescription: "Longitude, Latitude oder HorizontalAccuracy konnte nicht in Double umgewandelt werden.")
+        }
+        Longitude = longitude
+        Latitude = latitude
+        HorizontalAccuracy = accuracy
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(Device, forKey: .Device)
+        try container.encode(Timestamp, forKey: .Timestamp)
+        try container.encode(String(Longitude), forKey: .Longitude)
+        try container.encode(String(Latitude), forKey: .Latitude)
+        try container.encode(String(HorizontalAccuracy), forKey: .HorizontalAccuracy)
+    }
 }
 
 /// The structure of the response for a GetLocation request.
