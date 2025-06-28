@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    "%lld" : {
+
+    },
     "1day" : {
       "localizations" : {
         "en" : {
@@ -271,6 +277,9 @@
         }
       }
     },
+    "Aktuelle Position" : {
+
+    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -281,6 +290,9 @@
         }
       }
     },
+    "Anzeigen" : {
+
+    },
     "app_behaviour" : {
       "localizations" : {
         "en" : {
@@ -290,6 +302,24 @@
           }
         }
       }
+    },
+    "Background Tasks:" : {
+
+    },
+    "Background Updates:" : {
+
+    },
+    "Background-Status" : {
+
+    },
+    "Berechtigung anfordern" : {
+
+    },
+    "Berechtigung:" : {
+
+    },
+    "Berechtigungs-Status" : {
+
     },
     "cancel" : {
       "localizations" : {
@@ -485,6 +515,15 @@
         }
       }
     },
+    "Fertig" : {
+
+    },
+    "Genauigkeit:" : {
+
+    },
+    "Gesetzt" : {
+
+    },
     "groups" : {
       "localizations" : {
         "en" : {
@@ -515,6 +554,9 @@
         }
       }
     },
+    "Info" : {
+
+    },
     "invalid_miataru_qr_code" : {
       "localizations" : {
         "en" : {
@@ -535,6 +577,21 @@
         }
       }
     },
+    "Keine Position verfügbar" : {
+
+    },
+    "Latitude:" : {
+
+    },
+    "Letzter Background Update:" : {
+
+    },
+    "Letzter Update:" : {
+
+    },
+    "Letztes Update:" : {
+
+    },
     "loading" : {
       "localizations" : {
         "en" : {
@@ -554,6 +611,24 @@
           }
         }
       }
+    },
+    "Location-Status" : {
+
+    },
+    "Location-Test" : {
+
+    },
+    "Location-Tracking Details" : {
+
+    },
+    "Location-Tracking Status" : {
+
+    },
+    "Longitude:" : {
+
+    },
+    "Manueller Server-Update" : {
+
     },
     "map_configuration" : {
       "localizations" : {
@@ -636,6 +711,9 @@
         }
       }
     },
+    "Nicht gesetzt" : {
+
+    },
     "no_location_data_found" : {
       "comment" : "Kein Standort verfügbar",
       "localizations" : {
@@ -647,6 +725,9 @@
         }
       }
     },
+    "Öffne die Einstellungen, um Location-Zugriff zu erlauben" : {
+
+    },
     "ok" : {
       "localizations" : {
         "en" : {
@@ -656,6 +737,9 @@
           }
         }
       }
+    },
+    "OK" : {
+
     },
     "qr" : {
       "localizations" : {
@@ -760,6 +844,12 @@
         }
       }
     },
+    "Server-Status" : {
+
+    },
+    "Server-URL:" : {
+
+    },
     "settings" : {
       "localizations" : {
         "en" : {
@@ -780,6 +870,9 @@
         }
       }
     },
+    "Status:" : {
+
+    },
     "store_history_before_autoremove" : {
       "localizations" : {
         "en" : {
@@ -790,6 +883,9 @@
         }
       }
     },
+    "Test-Funktionen" : {
+
+    },
     "track_and_history" : {
       "localizations" : {
         "en" : {
@@ -799,6 +895,15 @@
           }
         }
       }
+    },
+    "Tracking starten" : {
+
+    },
+    "Tracking stoppen" : {
+
+    },
+    "Tracking-Status" : {
+
     },
     "update" : {
       "localizations" : {

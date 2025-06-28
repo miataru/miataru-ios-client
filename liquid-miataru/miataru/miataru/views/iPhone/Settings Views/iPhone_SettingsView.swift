@@ -2,9 +2,25 @@ import SwiftUI
 
 struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @State private var showingLocationStatus = false
+    
     var body: some View {
         NavigationView {
             Form {
+                // Location Tracking Status Section
+                Section(header: Text("Location-Tracking Status")) {
+                    HStack {
+                        Image(systemName: "location.fill")
+                            .foregroundColor(.blue)
+                        Text("Location-Tracking Details")
+                        Spacer()
+                        Button("Anzeigen") {
+                            showingLocationStatus = true
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
+                
                 Section(header: Text("track_and_history")) {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
                     Toggle("send_location_to_server", isOn: $settings.saveLocationHistoryOnServer)
@@ -61,6 +77,20 @@ struct iPhone_SettingsView: View {
                 }
             }
             .navigationTitle("settings")
+            .sheet(isPresented: $showingLocationStatus) {
+                NavigationView {
+                    iPhone_LocationStatusView()
+                        .navigationTitle("Location-Status")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Fertig") {
+                                    showingLocationStatus = false
+                                }
+                            }
+                        }
+                }
+            }
         }
     }
 }
