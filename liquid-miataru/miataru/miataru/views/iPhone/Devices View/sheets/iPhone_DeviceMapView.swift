@@ -3,34 +3,28 @@ import MapKit
 
 struct iPhone_DeviceMapView: View {
     let device: KnownDevice
-    @Environment(\.dismiss) private var dismiss
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco als Standard
         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     )
     
     var body: some View {
-        NavigationView {
-            Map(coordinateRegion: $region)
-                .ignoresSafeArea()
-                .navigationTitle(device.DeviceName)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Zurück") {
-                            dismiss()
-                        }
+        Map(coordinateRegion: $region)
+            .ignoresSafeArea()
+            .navigationTitle(device.DeviceName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Aktualisieren") {
+                        // Hier könnte die Standortaktualisierung implementiert werden
                     }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Aktualisieren") {
-                            // Hier könnte die Standortaktualisierung implementiert werden
-                        }
-                        .foregroundColor(Color(device.DeviceColor ?? UIColor.blue))
-                    }
+                    .foregroundColor(Color(device.DeviceColor ?? UIColor.blue))
                 }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
+            }
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .tabBar)
+            .toolbarBackground(.ultraThinMaterial, for: .tabBar)
     }
 }
 

@@ -5,20 +5,14 @@ struct iPhone_DevicesView: View {
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
-    @State private var selectedDevice: KnownDevice? = nil
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(store.devices) { device in
-                    iPhone_DeviceRowView(device: device)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if editMode == .active {
-                                editingDevice = device
-                            } else {
-                                selectedDevice = device
-                            }
+                    if editMode == .inactive {
+                        NavigationLink(destination: iPhone_DeviceMapView(device: device)) {
+                            iPhone_DeviceRowView(device: device)
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
@@ -37,6 +31,30 @@ struct iPhone_DevicesView: View {
                             }
                             .tint(.blue)
                         }
+                    } else {
+                        iPhone_DeviceRowView(device: device)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                editingDevice = device
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
+                                        store.remove(atOffsets: IndexSet(integer: index))
+                                    }
+                                } label: {
+                                    Label("delete_device", systemImage: "trash")
+                                }
+                            }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    editingDevice = device
+                                } label: {
+                                    Label("edit_device", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
+                    }
                 }
                 .onMove { indices, newOffset in
                     store.devices.move(fromOffsets: indices, toOffset: newOffset)
@@ -72,9 +90,6 @@ struct iPhone_DevicesView: View {
                         )
                     )
                 }
-            }
-            .sheet(item: $selectedDevice) { device in
-                iPhone_DeviceMapView(device: device)
             }
         }
     }
