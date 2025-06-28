@@ -357,8 +357,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "480"
             endingLineNumber = "480"
-            landmarkName = "MIADDeviceDetailsViewController"
-            landmarkType = "3">
+            landmarkName = "-mapView:regionDidChangeAnimated:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -578,8 +578,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "222"
             endingLineNumber = "222"
-            landmarkName = "MIADMapViewController"
-            landmarkType = "3">
+            landmarkName = "-mapView:regionDidChangeAnimated:"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

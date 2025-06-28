@@ -35,9 +35,22 @@
 		8BA62CFF2E057D1A00F54650 /* miataruUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8B057FAB2E10677200E3FD7F /* Exceptions for "miataru" folder in "miataru" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8BA62CE72E057D1700F54650 /* miataru */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8BA62CEA2E057D1700F54650 /* miataru */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8B057FAB2E10677200E3FD7F /* Exceptions for "miataru" folder in "miataru" target */,
+			);
 			path = miataru;
 			sourceTree = "<group>";
 		};
@@ -432,8 +445,11 @@
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = miataru/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -462,8 +478,11 @@
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = miataru/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

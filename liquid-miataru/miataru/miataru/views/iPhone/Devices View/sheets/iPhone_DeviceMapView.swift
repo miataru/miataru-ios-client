@@ -47,23 +47,10 @@ struct iPhone_DeviceMapView: View {
                         }
                     }
                     .ignoresSafeArea()
+                    .mapStyle(mapStyleFromSettings(settings.mapType))
                 } else {
-                    Map(coordinateRegion: $region, annotationItems: deviceLocation != nil ? [device] : []) { device in
-                        MapAnnotation(coordinate: deviceLocation!) {
-                            ZStack {
-                                // Accuracy-Kreis (blau, halbtransparent)
-                                if let accuracy = deviceAccuracy, accuracy > 0 {
-                                    let diameter = min(CGFloat(accuracy / region.metersPerPoint()), 300)
-                                    Circle()
-                                        .fill(Color.blue.opacity(0.2))
-                                        .frame(width: diameter, height: diameter)
-                                }
-                                // Pin-View
-                                PinView(color: Color(device.DeviceColor ?? UIColor.blue))
-                            }
-                        }
-                    }
-                    .ignoresSafeArea()
+                    LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
+                        .ignoresSafeArea()
                 }
             }
             // Fehler-Overlay
@@ -215,5 +202,95 @@ extension MKCoordinateRegion {
         let mapWidthInMeters = self.span.longitudeDelta * 111_000.0 * cos(self.center.latitude * .pi / 180)
         let mapWidthInPoints: Double =  UIScreen.main.bounds.width
         return mapWidthInMeters / mapWidthInPoints
+    }
+}
+
+// Hilfsfunktion für MapStyle
+@available(iOS 17.0, *)
+fileprivate func mapStyleFromSettings(_ mapType: Int) -> MapStyle {
+    switch mapType {
+    case 2:
+        return .hybrid(elevation: .automatic)
+    case 3:
+        return .imagery(elevation: .automatic)
+    default:
+        return .standard(elevation: .automatic)
+    }
+}
+
+// MARK: - LegacyMapViewRepresentable für iOS < 17
+import UIKit
+import MapKit
+
+struct LegacyMapViewRepresentable: UIViewRepresentable {
+    @Binding var region: MKCoordinateRegion
+    let device: KnownDevice
+    let deviceLocation: CLLocationCoordinate2D?
+    let deviceAccuracy: Double?
+    let mapType: Int
+
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView()
+        mapView.delegate = context.coordinator
+        mapView.isRotateEnabled = true
+        mapView.isPitchEnabled = true
+        mapView.showsUserLocation = false
+        mapView.setRegion(region, animated: false)
+        mapView.mapType = mapTypeFromSettings(mapType)
+        return mapView
+    }
+
+    func updateUIView(_ uiView: MKMapView, context: Context) {
+        uiView.setRegion(region, animated: true)
+        uiView.mapType = mapTypeFromSettings(mapType)
+        uiView.removeAnnotations(uiView.annotations)
+        if let coordinate = deviceLocation {
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = device.DeviceName
+            uiView.addAnnotation(annotation)
+            // Genauigkeitskreis
+            if let accuracy = deviceAccuracy, accuracy > 0 {
+                uiView.removeOverlays(uiView.overlays)
+                let circle = MKCircle(center: coordinate, radius: accuracy)
+                uiView.addOverlay(circle)
+            } else {
+                uiView.removeOverlays(uiView.overlays)
+            }
+        } else {
+            uiView.removeOverlays(uiView.overlays)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, MKMapViewDelegate {
+        var parent: LegacyMapViewRepresentable
+        init(_ parent: LegacyMapViewRepresentable) {
+            self.parent = parent
+        }
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let circle = overlay as? MKCircle {
+                let renderer = MKCircleRenderer(circle: circle)
+                renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
+                renderer.strokeColor = UIColor.blue.withAlphaComponent(0.4)
+                renderer.lineWidth = 1
+                return renderer
+            }
+            return MKOverlayRenderer(overlay: overlay)
+        }
+    }
+}
+
+fileprivate func mapTypeFromSettings(_ mapType: Int) -> MKMapType {
+    switch mapType {
+    case 2:
+        return .hybrid
+    case 3:
+        return .satellite
+    default:
+        return .standard
     }
 }
