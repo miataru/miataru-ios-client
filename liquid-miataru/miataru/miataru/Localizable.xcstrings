@@ -271,9 +271,6 @@
         }
       }
     },
-    "Aktualisieren" : {
-
-    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -455,8 +452,16 @@
         }
       }
     },
-    "Fehler" : {
-
+    "error_loading_locationdata" : {
+      "comment" : "Fehler beim Laden der Standortdaten",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error when loading location data."
+          }
+        }
+      }
     },
     "groups" : {
       "localizations" : {
@@ -508,8 +513,15 @@
         }
       }
     },
-    "Lädt..." : {
-
+    "loading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "loading"
+          }
+        }
+      }
     },
     "location_track" : {
       "localizations" : {
@@ -591,6 +603,17 @@
         }
       }
     },
+    "no_location_data_found" : {
+      "comment" : "Kein Standort verfügbar",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No location data could be found."
+          }
+        }
+      }
+    },
     "ok" : {
       "localizations" : {
         "en" : {
@@ -600,9 +623,6 @@
           }
         }
       }
-    },
-    "OK" : {
-
     },
     "qr" : {
       "localizations" : {
@@ -664,6 +684,17 @@
         }
       }
     },
+    "server_or_deviceid_invalid" : {
+      "comment" : "Fehler: Server oder DeviceID ungültig",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server URL or DeviceID is wrong."
+          }
+        }
+      }
+    },
     "server_url" : {
       "localizations" : {
         "en" : {
@@ -710,6 +741,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking & History"
+          }
+        }
+      }
+    },
+    "update" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "update"
           }
         }
       }

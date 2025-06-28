@@ -23,13 +23,33 @@ struct iPhone_DeviceMapView: View {
     @State private var deviceTimestamp: Date? = nil
     @ObservedObject private var settings = SettingsManager.shared
     @State private var timerCancellable: AnyCancellable? = nil
+    @State private var errorOverlayVisible = false
     
     var body: some View {
-        VStack {
-            if #available(iOS 17.0, *) {
-                Map(position: $cameraPosition) {
-                    if let coordinate = deviceLocation {
-                        Annotation(device.DeviceName, coordinate: coordinate) {
+        ZStack {
+            VStack {
+                if #available(iOS 17.0, *) {
+                    Map(position: $cameraPosition) {
+                        if let coordinate = deviceLocation {
+                            Annotation(device.DeviceName, coordinate: coordinate) {
+                                ZStack {
+                                    // Accuracy-Kreis (blau, halbtransparent)
+                                    if let accuracy = deviceAccuracy, accuracy > 0 {
+                                        let diameter = min(CGFloat(accuracy / region.metersPerPoint()), 300)
+                                        Circle()
+                                            .fill(Color.blue.opacity(0.2))
+                                            .frame(width: diameter, height: diameter)
+                                    }
+                                    // Pin-View
+                                    PinView(color: Color(device.DeviceColor ?? UIColor.blue))
+                                }
+                            }
+                        }
+                    }
+                    .ignoresSafeArea()
+                } else {
+                    Map(coordinateRegion: $region, annotationItems: deviceLocation != nil ? [device] : []) { device in
+                        MapAnnotation(coordinate: deviceLocation!) {
                             ZStack {
                                 // Accuracy-Kreis (blau, halbtransparent)
                                 if let accuracy = deviceAccuracy, accuracy > 0 {
@@ -43,32 +63,31 @@ struct iPhone_DeviceMapView: View {
                             }
                         }
                     }
+                    .ignoresSafeArea()
                 }
-                .ignoresSafeArea()
-            } else {
-                Map(coordinateRegion: $region, annotationItems: deviceLocation != nil ? [device] : []) { device in
-                    MapAnnotation(coordinate: deviceLocation!) {
-                        ZStack {
-                            // Accuracy-Kreis (blau, halbtransparent)
-                            if let accuracy = deviceAccuracy, accuracy > 0 {
-                                let diameter = min(CGFloat(accuracy / region.metersPerPoint()), 300)
-                                Circle()
-                                    .fill(Color.blue.opacity(0.2))
-                                    .frame(width: diameter, height: diameter)
-                            }
-                            // Pin-View
-                            PinView(color: Color(device.DeviceColor ?? UIColor.blue))
-                        }
-                    }
+            }
+            // Fehler-Overlay
+            if errorOverlayVisible {
+                VStack {
+                    Text(errorMessage)
+                        .padding(12)
+                        .background(Color.red.opacity(0.85))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .shadow(radius: 8)
+                        .transition(.opacity)
+                        .padding(.top, 60)
+                    Spacer()
                 }
-                .ignoresSafeArea()
+                .zIndex(1)
+                .animation(.easeInOut, value: errorOverlayVisible)
             }
         }
         .navigationTitle(device.DeviceName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(isLoading ? "Lädt..." : "Aktualisieren") {
+                Button(isLoading ? "loading" : "update") {
                     Task {
                         await fetchLocation()
                     }
@@ -81,11 +100,6 @@ struct iPhone_DeviceMapView: View {
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
-        .alert("Fehler", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(errorMessage)
-        }
         .onAppear {
             Task { await fetchLocation() }
             startAutoUpdate()
@@ -93,15 +107,14 @@ struct iPhone_DeviceMapView: View {
         .onDisappear {
             stopAutoUpdate()
         }
-        .onChange(of: settings.mapUpdateInterval) { _ in
+        .onChange(of: settings.mapUpdateInterval) {
             restartAutoUpdate()
         }
     }
     
     private func fetchLocation() async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
-            errorMessage = "Ungültige Server-URL oder DeviceID."
-            showError = true
+            showErrorOverlay("Ungültige Server-URL oder DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Fehler: Server oder DeviceID ungültig"))
             return
         }
         isLoading = true
@@ -125,12 +138,10 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             } else {
-                errorMessage = "Keine Standortdaten gefunden."
-                showError = true
+                showErrorOverlay("Keine Standortdaten gefunden", NSLocalizedString("no_location_data_found", comment: "Kein Standort verfügbar"))
             }
         } catch {
-            errorMessage = error.localizedDescription
-            showError = true
+            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Fehler beim Laden der Standortdaten"))
         }
     }
 
@@ -152,6 +163,17 @@ struct iPhone_DeviceMapView: View {
 
     private func restartAutoUpdate() {
         startAutoUpdate()
+    }
+
+    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
+        print("Fehler: \(debugMessage)") // Debug-Ausgabe
+        errorMessage = userMessage
+        errorOverlayVisible = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            withAnimation {
+                errorOverlayVisible = false
+            }
+        }
     }
 }
 
