@@ -7,12 +7,12 @@ struct iPhone_DeviceMapView: View {
     let device: KnownDevice
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco als Standard
-        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        span: spanForZoomLevel(1) // Default, wird in onAppear überschrieben
     )
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            span: spanForZoomLevel(1)
         )
     )
     @State private var isLoading = false
@@ -88,6 +88,21 @@ struct iPhone_DeviceMapView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
+            // Zoom-Level initial setzen
+            let span = spanForZoomLevel(settings.mapZoomLevel)
+            if let coordinate = deviceLocation {
+                region = MKCoordinateRegion(center: coordinate, span: span)
+                if #available(iOS 17.0, *) {
+                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                }
+            } else {
+                // Default: San Francisco
+                let defaultCoord = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
+                region = MKCoordinateRegion(center: defaultCoord, span: span)
+                if #available(iOS 17.0, *) {
+                    cameraPosition = .region(MKCoordinateRegion(center: defaultCoord, span: span))
+                }
+            }
             Task { await fetchLocation() }
             startAutoUpdate()
         }
@@ -96,6 +111,13 @@ struct iPhone_DeviceMapView: View {
         }
         .onChange(of: settings.mapUpdateInterval) {
             restartAutoUpdate()
+        }
+        .onChange(of: settings.mapZoomLevel) {
+            let span = spanForZoomLevel(settings.mapZoomLevel)
+            region.span = span
+            if #available(iOS 17.0, *) {
+                cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
+            }
         }
     }
     
@@ -118,10 +140,11 @@ struct iPhone_DeviceMapView: View {
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 withAnimation {
+                    let span = spanForZoomLevel(settings.mapZoomLevel)
                     if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)))
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
                     } else {
-                        region.center = coordinate
+                        region = MKCoordinateRegion(center: coordinate, span: span)
                     }
                 }
             } else {
@@ -293,4 +316,12 @@ fileprivate func mapTypeFromSettings(_ mapType: Int) -> MKMapType {
     default:
         return .standard
     }
+}
+
+// Hilfsfunktion für Zoom-Level (in km)
+fileprivate func spanForZoomLevel(_ zoomLevel: Int) -> MKCoordinateSpan {
+    // 1° Breitengrad ≈ 111 km
+    let km = Double(zoomLevel)
+    let delta = km / 111.0
+    return MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
 }
