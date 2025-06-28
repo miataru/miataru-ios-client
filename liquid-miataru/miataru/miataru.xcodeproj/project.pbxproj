@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
 		8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
 /* End PBXBuildFile section */
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */,
 				8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */,
 				8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */,
 			);
@@ -129,6 +131,7 @@
 			packageProductDependencies = (
 				8BDCBB332E06E9CF000041DC /* CodeScanner */,
 				8B3AFA8D2E0E900B0046E5B3 /* QRCode */,
+				8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -218,6 +221,7 @@
 			packageReferences = (
 				8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */,
 				8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */,
+				8B0556F42E0FFF31008B3C81 /* XCLocalSwiftPackageReference "Libraries/MiataruClientSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8BA62CE92E057D1700F54650 /* Products */;
@@ -592,6 +596,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		8B0556F42E0FFF31008B3C81 /* XCLocalSwiftPackageReference "Libraries/MiataruClientSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Libraries/MiataruClientSwift;
+		};
 		8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "Libraries/CodeScanner-main";
@@ -603,6 +611,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MiataruAPIClient;
+		};
 		8B3AFA8D2E0E900B0046E5B3 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */;

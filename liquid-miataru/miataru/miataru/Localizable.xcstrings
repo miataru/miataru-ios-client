@@ -271,6 +271,9 @@
         }
       }
     },
+    "Aktualisieren" : {
+
+    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -711,6 +714,9 @@
           }
         }
       }
+    },
+    "Zurück" : {
+
     }
   },
   "version" : "1.0"

@@ -5,6 +5,7 @@ struct iPhone_DevicesView: View {
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
+    @State private var selectedDevice: KnownDevice? = nil
 
     var body: some View {
         NavigationView {
@@ -15,6 +16,8 @@ struct iPhone_DevicesView: View {
                         .onTapGesture {
                             if editMode == .active {
                                 editingDevice = device
+                            } else {
+                                selectedDevice = device
                             }
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -69,6 +72,9 @@ struct iPhone_DevicesView: View {
                         )
                     )
                 }
+            }
+            .sheet(item: $selectedDevice) { device in
+                iPhone_DeviceMapView(device: device)
             }
         }
     }
