@@ -311,6 +311,17 @@
         }
       }
     },
+    "decoding_error" : {
+      "comment" : "Fehler beim Verarbeiten der Serverantwort.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not get device location data from the Miataru server. Device might not exist."
+          }
+        }
+      }
+    },
     "default_map" : {
       "localizations" : {
         "en" : {
@@ -448,6 +459,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit Device"
+          }
+        }
+      }
+    },
+    "encoding_error" : {
+      "comment" : "Fehler beim Kodieren der Anfrage.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error while encoding the location update."
           }
         }
       }
@@ -593,6 +615,17 @@
         }
       }
     },
+    "network_error" : {
+      "comment" : "Netzwerkfehler. Bitte Internetverbindung prüfen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error. Check server URL or network connection."
+          }
+        }
+      }
+    },
     "new_device" : {
       "localizations" : {
         "en" : {
@@ -695,12 +728,34 @@
         }
       }
     },
+    "server_response_invalid" : {
+      "comment" : "Die Antwort des Servers war ungültig.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response from Miataru server is invalid."
+          }
+        }
+      }
+    },
     "server_url" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru Server URL"
+          }
+        }
+      }
+    },
+    "server_url_invalid" : {
+      "comment" : "Die Server-URL ist ungültig.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru Server-URL is invalid"
           }
         }
       }

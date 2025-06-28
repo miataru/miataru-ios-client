@@ -56,18 +56,23 @@ struct iPhone_DeviceMapView: View {
             // Fehler-Overlay
             if errorOverlayVisible {
                 VStack {
-                    Text(errorMessage)
-                        .padding(12)
-                        .background(Color.red.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .shadow(radius: 8)
-                        .transition(.opacity)
-                        .padding(.top, 60)
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Text(errorMessage)
+                            .padding(16)
+                            .background(Color.red.opacity(0.85))
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                            .shadow(radius: 10)
+                            .multilineTextAlignment(.center)
+                        Spacer()
+                    }
                     Spacer()
                 }
+                .transition(.scale.combined(with: .opacity))
+                .animation(.easeInOut(duration: 0.3), value: errorOverlayVisible)
                 .zIndex(1)
-                .animation(.easeInOut, value: errorOverlayVisible)
             }
         }
         .navigationTitle(device.DeviceName)
@@ -150,6 +155,20 @@ struct iPhone_DeviceMapView: View {
             } else {
                 showErrorOverlay("Keine Standortdaten gefunden", NSLocalizedString("no_location_data_found", comment: "Kein Standort verfügbar"))
             }
+        } catch let error as MiataruAPIClient.APIError {
+            // Differenzierte Fehlerbehandlung
+            switch error {
+            case .invalidURL:
+                showErrorOverlay("Ungültige Server-URL", NSLocalizedString("server_url_invalid", comment: "Die Server-URL ist ungültig."))
+            case .invalidResponse(_):
+                showErrorOverlay("Ungültige Serverantwort", NSLocalizedString("server_response_invalid", comment: "Die Antwort des Servers war ungültig."))
+            case .encodingError(let err):
+                showErrorOverlay("Fehler beim Kodieren: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Fehler beim Kodieren der Anfrage."))
+            case .decodingError(let err):
+                showErrorOverlay("Fehler beim Verarbeiten der Antwort: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Fehler beim Verarbeiten der Serverantwort."))
+            case .requestFailed(let err):
+                showErrorOverlay("Netzwerkfehler: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Netzwerkfehler. Bitte Internetverbindung prüfen."))
+            }
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Fehler beim Laden der Standortdaten"))
         }
@@ -178,7 +197,9 @@ struct iPhone_DeviceMapView: View {
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         print("Fehler: \(debugMessage)") // Debug-Ausgabe
         errorMessage = userMessage
-        errorOverlayVisible = true
+        withAnimation {
+            errorOverlayVisible = true
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             withAnimation {
                 errorOverlayVisible = false
