@@ -62,7 +62,7 @@ struct iPhone_DeviceMapView: View {
                     cameraPosition = .region(MKCoordinateRegion(center: defaultCoord, span: span))
                 }
             }
-            Task { await fetchLocation() }
+            Task { await fetchLocation(resetZoomToSettings: true) }
             startAutoUpdate()
         }
         .onDisappear {
@@ -133,13 +133,13 @@ struct iPhone_DeviceMapView: View {
     private func updateButton() -> some View {
         Button(isLoading ? "loading" : "update") {
             Task {
-                await fetchLocation()
+                await fetchLocation(resetZoomToSettings: true)
             }
         }
         .disabled(isLoading)
     }
     
-    private func fetchLocation() async {
+    private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
             showErrorOverlay("Ungültige Server-URL oder DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Fehler: Server oder DeviceID ungültig"))
             return
@@ -159,13 +159,26 @@ struct iPhone_DeviceMapView: View {
                 deviceTimestamp = loc.TimestampDate
                 withAnimation {
                     if #available(iOS 17.0, *) {
-                        // Aktuellen Zoom-Level aus der gespeicherten currentMapSpan verwenden
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                        if resetZoomToSettings {
+                            // Bei manuellem Update: Zoom-Level aus Settings verwenden
+                            let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: settingsSpan))
+                            currentMapSpan = settingsSpan // Auch currentMapSpan aktualisieren
+                        } else {
+                            // Bei automatischem Update: Aktuellen Zoom-Level beibehalten
+                            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                        }
                     } else {
-                        // Aktuellen Zoom-Level aus Region berechnen
-                        let currentZoomLevel = currentZoomLevelFromSpan(region.span)
-                        let currentSpan = spanForZoomLevel(currentZoomLevel)
-                        region = MKCoordinateRegion(center: coordinate, span: currentSpan)
+                        if resetZoomToSettings {
+                            // Bei manuellem Update: Zoom-Level aus Settings verwenden
+                            let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                            region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
+                        } else {
+                            // Bei automatischem Update: Aktuellen Zoom-Level beibehalten
+                            let currentZoomLevel = currentZoomLevelFromSpan(region.span)
+                            let currentSpan = spanForZoomLevel(currentZoomLevel)
+                            region = MKCoordinateRegion(center: coordinate, span: currentSpan)
+                        }
                     }
                 }
             } else {
@@ -197,7 +210,7 @@ struct iPhone_DeviceMapView: View {
         timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
-                Task { await fetchLocation() }
+                Task { await fetchLocation(resetZoomToSettings: false) }
             }
     }
 
