@@ -3,6 +3,7 @@ import CoreLocation
 
 struct iPhone_LocationStatusView: View {
     @ObservedObject private var locationManager = LocationManager.shared
+    @ObservedObject private var backgroundManager = BackgroundLocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
     
     var body: some View {
@@ -24,7 +25,7 @@ struct iPhone_LocationStatusView: View {
                 Spacer()
                 
                 // Tracking Toggle
-                Toggle("", isOn: $settings.trackAndReportLocation)
+                Toggle("location_track", isOn: $settings.trackAndReportLocation)
                     .labelsHidden()
             }
             .padding()
@@ -78,6 +79,9 @@ struct iPhone_LocationStatusView: View {
             
             // Berechtigungs-Status
             PermissionStatusView(status: locationManager.locationStatus)
+            
+            // Background Status
+            BackgroundStatusCard()
         }
         .padding()
     }
@@ -315,6 +319,54 @@ struct PermissionStatusView: View {
     }
 }
 
+struct BackgroundStatusCard: View {
+    @ObservedObject private var backgroundManager = BackgroundLocationManager.shared
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "clock.fill")
+                    .foregroundColor(.purple)
+                Text("Background-Status")
+                    .font(.headline)
+                Spacer()
+            }
+            
+            HStack {
+                Text("Background Tasks:")
+                Spacer()
+                Text(backgroundManager.backgroundTaskStatus)
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Text("Background Updates:")
+                Spacer()
+                Text("\(backgroundManager.backgroundUpdateCount)")
+                    .foregroundColor(.secondary)
+            }
+            
+            if let lastUpdate = backgroundManager.lastBackgroundUpdate {
+                HStack {
+                    Text("Letzter Background Update:")
+                    Spacer()
+                    Text(formatTime(lastUpdate))
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .medium
+        return formatter.string(from: date)
+    }
+}
 #Preview {
     iPhone_LocationStatusView()
 } 

@@ -2,16 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.miataru.ios.background-location</string>
+		<string>com.miataru.ios.background-server-update</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
-		<string>background-processing</string>
+		<string>processing</string>
 	</array>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Miataru benötigt Zugriff auf Ihren Standort, um Ihre Position kontinuierlich an den Miataru-Server zu senden. Dies funktioniert sowohl im Vorder- als auch im Hintergrund.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Miataru benötigt Zugriff auf Ihren Standort, um Ihre Position an den Miataru-Server zu senden.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Miataru benötigt Zugriff auf Ihren Standort im Hintergrund, um Ihre Position kontinuierlich zu verfolgen und an den Miataru-Server zu senden.</string>
 </dict>
 </plist>

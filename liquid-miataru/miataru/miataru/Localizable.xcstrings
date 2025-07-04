@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%lld" : {
 
     },
@@ -277,9 +274,6 @@
         }
       }
     },
-    "Aktuelle Position" : {
-
-    },
     "all_available" : {
       "localizations" : {
         "en" : {
@@ -310,12 +304,6 @@
 
     },
     "Background-Status" : {
-
-    },
-    "Berechtigung anfordern" : {
-
-    },
-    "Berechtigung:" : {
 
     },
     "Berechtigungs-Status" : {
@@ -518,12 +506,6 @@
     "Fertig" : {
 
     },
-    "Genauigkeit:" : {
-
-    },
-    "Gesetzt" : {
-
-    },
     "groups" : {
       "localizations" : {
         "en" : {
@@ -554,9 +536,6 @@
         }
       }
     },
-    "Info" : {
-
-    },
     "invalid_miataru_qr_code" : {
       "localizations" : {
         "en" : {
@@ -577,19 +556,7 @@
         }
       }
     },
-    "Keine Position verfügbar" : {
-
-    },
-    "Latitude:" : {
-
-    },
     "Letzter Background Update:" : {
-
-    },
-    "Letzter Update:" : {
-
-    },
-    "Letztes Update:" : {
 
     },
     "loading" : {
@@ -615,19 +582,10 @@
     "Location-Status" : {
 
     },
-    "Location-Test" : {
-
-    },
     "Location-Tracking Details" : {
 
     },
     "Location-Tracking Status" : {
-
-    },
-    "Longitude:" : {
-
-    },
-    "Manueller Server-Update" : {
 
     },
     "map_configuration" : {
@@ -712,9 +670,6 @@
         }
       }
     },
-    "Nicht gesetzt" : {
-
-    },
     "no_location_data_found" : {
       "comment" : "Kein Standort verfügbar",
       "localizations" : {
@@ -738,9 +693,6 @@
           }
         }
       }
-    },
-    "OK" : {
-
     },
     "qr" : {
       "localizations" : {
@@ -848,9 +800,6 @@
     "Server-Status" : {
 
     },
-    "Server-URL:" : {
-
-    },
     "settings" : {
       "localizations" : {
         "en" : {
@@ -871,9 +820,6 @@
         }
       }
     },
-    "Status:" : {
-
-    },
     "store_history_before_autoremove" : {
       "localizations" : {
         "en" : {
@@ -884,9 +830,6 @@
         }
       }
     },
-    "Test-Funktionen" : {
-
-    },
     "track_and_history" : {
       "localizations" : {
         "en" : {
@@ -896,15 +839,6 @@
           }
         }
       }
-    },
-    "Tracking starten" : {
-
-    },
-    "Tracking stoppen" : {
-
-    },
-    "Tracking-Status" : {
-
     },
     "update" : {
       "localizations" : {

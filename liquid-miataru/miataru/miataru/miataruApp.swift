@@ -12,6 +12,7 @@ struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     
     init() {
+        BackgroundLocationManager.shared.registerBackgroundTasks()
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")

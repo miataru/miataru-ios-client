@@ -25,12 +25,11 @@ class BackgroundLocationManager: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        registerBackgroundTasks()
         setupNotificationCenter()
     }
     
     // MARK: - Background Task Registration
-    private func registerBackgroundTasks() {
+    public func registerBackgroundTasks() {
         // Registriere Background Location Task
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: backgroundLocationTaskIdentifier,
