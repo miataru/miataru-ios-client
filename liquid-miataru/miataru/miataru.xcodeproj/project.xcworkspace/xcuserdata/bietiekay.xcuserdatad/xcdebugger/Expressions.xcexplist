@@ -3,6 +3,45 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "closure #1 in LocationManager.sendLocationToServer():LocationManager.swift">
+      </ContextState>
+      <ContextState
+         contextName = "MiataruLocationData.TimestampDate.getter:MiataruAPIClient.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Timestamp">
+            </PersistentString>
+            <PersistentString
+               value = "Date(timeIntervalSince1970: ms)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MiataruLocationData.init(from:):MiataruAPIClient.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Timestamp">
+            </PersistentString>
+            <PersistentString
+               value = "TimestampDate">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "static MiataruAPIClient.getLocation(serverURL:forDeviceIDs:requestingDeviceID:):MiataruAPIClient.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "data">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in iPhone_DevicesView.body.getter:iPhone_DevicesView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "static MiataruAPIClient.performPostRequest(url:jsonPayload:):MiataruAPIClient.swift">
+      </ContextState>
+      <ContextState
          contextName = "KnownDeviceStore.init():KnownDeviceStore.swift">
          <PersistentStrings>
             <PersistentString
@@ -22,35 +61,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in iPhone_DevicesView.body.getter:iPhone_DevicesView.swift">
-      </ContextState>
-      <ContextState
          contextName = "iPhone_DeviceMapView.fetchLocation():iPhone_DeviceMapView.swift">
          <PersistentStrings>
             <PersistentString
                value = "deviceTimestamp">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MiataruLocationData.init(from:):MiataruAPIClient.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "Timestamp">
-            </PersistentString>
-            <PersistentString
-               value = "TimestampDate">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "MiataruLocationData.TimestampDate.getter:MiataruAPIClient.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "Timestamp">
-            </PersistentString>
-            <PersistentString
-               value = "Date(timeIntervalSince1970: ms)">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

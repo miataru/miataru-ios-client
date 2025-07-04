@@ -108,15 +108,20 @@ public struct UpdateLocationPayload: Codable {
         } else {
             Timestamp = "0"
         }
-        let longitudeStr = try container.decode(String.self, forKey: .Longitude)
-        let latitudeStr = try container.decode(String.self, forKey: .Latitude)
-        let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)
-        guard let longitude = Double(longitudeStr), let latitude = Double(latitudeStr), let accuracy = Double(accuracyStr) else {
-            throw DecodingError.dataCorruptedError(forKey: .Longitude, in: container, debugDescription: "Longitude, Latitude oder HorizontalAccuracy konnte nicht in Double umgewandelt werden.")
+        // Longitude, Latitude, HorizontalAccuracy können String oder Double sein
+        Longitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Longitude)
+        Latitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Latitude)
+        HorizontalAccuracy = try Self.decodeDoubleStringOrNumber(container: container, key: .HorizontalAccuracy)
+    }
+    
+    private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
+        if let doubleVal = try? container.decode(Double.self, forKey: key) {
+            return doubleVal
+        } else if let stringVal = try? container.decode(String.self, forKey: key), let doubleVal = Double(stringVal) {
+            return doubleVal
+        } else {
+            throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
         }
-        Longitude = longitude
-        Latitude = latitude
-        HorizontalAccuracy = accuracy
     }
 }
 
@@ -162,15 +167,20 @@ public struct MiataruLocationData: Codable {
         } else {
             Timestamp = "0"
         }
-        let longitudeStr = try container.decode(String.self, forKey: .Longitude)
-        let latitudeStr = try container.decode(String.self, forKey: .Latitude)
-        let accuracyStr = try container.decode(String.self, forKey: .HorizontalAccuracy)
-        guard let longitude = Double(longitudeStr), let latitude = Double(latitudeStr), let accuracy = Double(accuracyStr) else {
-            throw DecodingError.dataCorruptedError(forKey: .Longitude, in: container, debugDescription: "Longitude, Latitude oder HorizontalAccuracy konnte nicht in Double umgewandelt werden.")
+        // Longitude, Latitude, HorizontalAccuracy können String oder Double sein
+        Longitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Longitude)
+        Latitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Latitude)
+        HorizontalAccuracy = try Self.decodeDoubleStringOrNumber(container: container, key: .HorizontalAccuracy)
+    }
+    
+    private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
+        if let doubleVal = try? container.decode(Double.self, forKey: key) {
+            return doubleVal
+        } else if let stringVal = try? container.decode(String.self, forKey: key), let doubleVal = Double(stringVal) {
+            return doubleVal
+        } else {
+            throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
         }
-        Longitude = longitude
-        Latitude = latitude
-        HorizontalAccuracy = accuracy
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -230,6 +240,12 @@ public enum MiataruAPIClient {
         let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
         
         do {
+            //print("Data: ",data);
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Data als String: \(jsonString)")
+            } else {
+                print("Konnte Data nicht als UTF-8 String dekodieren.")
+            }
             let response = try jsonDecoder.decode(MiataruGetLocationResponse.self, from: data)
             return response.MiataruLocation
         } catch {

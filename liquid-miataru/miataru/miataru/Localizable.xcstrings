@@ -671,11 +671,12 @@
       }
     },
     "my_device" : {
+      "comment" : "Name für das eigene Gerät in der Geräteliste",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "My device"
+            "value" : "this Device"
           }
         }
       }
