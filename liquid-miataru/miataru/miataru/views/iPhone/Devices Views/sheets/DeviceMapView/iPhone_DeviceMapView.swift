@@ -82,9 +82,12 @@ struct iPhone_DeviceMapView: View {
         if #available(iOS 17.0, *) {
             Map(position: $cameraPosition) {
                 if let coordinate = deviceLocation {
-                    Annotation(device.DeviceName, coordinate: coordinate) {
-                        iPhone_PinWithAccuracyView(coordinate: coordinate, accuracy: deviceAccuracy, region: region, color: device.DeviceColor)
+                    if let accuracy = deviceAccuracy, accuracy > 0 {
+                        MapCircle(center: coordinate, radius: accuracy)
+                            .foregroundStyle(Color.blue.opacity(0.2))
                     }
+                    Marker(device.DeviceName, systemImage: "mappin", coordinate: coordinate)
+                        .tint(Color(device.DeviceColor ?? .blue))
                 }
             }
             .ignoresSafeArea()

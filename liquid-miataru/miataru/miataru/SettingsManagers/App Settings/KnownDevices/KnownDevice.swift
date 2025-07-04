@@ -32,12 +32,13 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
         self.DeviceID = aDecoder.decodeObject(forKey: "DeviceID") as? String ?? ""
         self.DeviceIsInGroup = aDecoder.decodeBool(forKey: "DeviceIsInGroup")
         self.KnownDevicesTablePosition = aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition")
-        self.DeviceColor = aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor
+        let decodedColor = aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor
+        self.DeviceColor = decodedColor
         print(aDecoder.decodeObject(forKey: "DeviceName") as? String ?? "")
         print(aDecoder.decodeObject(forKey: "DeviceID") as? String ?? "")
         print(aDecoder.decodeBool(forKey: "DeviceIsInGroup"))
         print(aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition"))
-        print(aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor)
+        print(String(describing: decodedColor))
     }
 
     func encode(with aCoder: NSCoder) {

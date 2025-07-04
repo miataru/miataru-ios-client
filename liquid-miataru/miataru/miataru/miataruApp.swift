@@ -24,7 +24,7 @@ struct miataruApp: App {
         locationManager.requestLocationPermission()
         
         // BackgroundLocationManager initialisieren
-        let backgroundManager = BackgroundLocationManager.shared
+        _ = BackgroundLocationManager.shared
         print("Background Location Manager initialisiert")
     }
     
@@ -32,8 +32,8 @@ struct miataruApp: App {
         WindowGroup {
             MiataruRootView()
         }
-        .onChange(of: scenePhase) { newPhase in
-            switch newPhase {
+        .onChange(of: scenePhase) {
+            switch scenePhase {
             case .active:
                 print("App ist aktiv")
                 BackgroundLocationManager.shared.handleAppWillEnterForeground()
