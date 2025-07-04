@@ -41,7 +41,7 @@ struct iPhone_SettingsView: View {
                 Section(header: Text("map_configuration")) {
                     Picker("map_type", selection: $settings.mapType) {
                         Text("default_map").tag(1)
-                        Text("hybrid_mal").tag(2)
+                        Text("hybrid_map").tag(2)
                         Text("sat_map").tag(3)
                     }
                     Picker("map_update_interval", selection: $settings.mapUpdateInterval) {
@@ -63,13 +63,13 @@ struct iPhone_SettingsView: View {
                     Toggle("zoom_to_fit_for_groups", isOn: $settings.groupsZoomToFit)
                 }
                 // Location Tracking Status Section
-                Section(header: Text("Location-Tracking Status")) {
+                Section(header: Text("Location Tracking Status")) {
                     HStack {
                         Image(systemName: "location.fill")
                             .foregroundColor(.blue)
-                        Text("Location-Tracking Details")
+                        Text("Location Tracking Details")
                         Spacer()
-                        Button("Anzeigen") {
+                        Button("show") {
                             showingLocationStatus = true
                         }
                         .foregroundColor(.blue)
@@ -81,11 +81,11 @@ struct iPhone_SettingsView: View {
             .sheet(isPresented: $showingLocationStatus) {
                 NavigationView {
                     iPhone_LocationStatusView()
-                        .navigationTitle("Location-Status")
+                        .navigationTitle("Location Tracking Details")
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Fertig") {
+                                Button("done") {
                                     showingLocationStatus = false
                                 }
                             }

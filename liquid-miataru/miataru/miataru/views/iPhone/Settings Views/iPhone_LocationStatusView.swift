@@ -15,7 +15,7 @@ struct iPhone_LocationStatusView: View {
                     .font(.title2)
                 
                 VStack(alignment: .leading) {
-                    Text("Location-Tracking Status")
+                    Text("Location Tracking Status")
                         .font(.headline)
                     Text(statusText)
                         .font(.caption)
@@ -38,15 +38,15 @@ struct iPhone_LocationStatusView: View {
                     // Aktuelle Location
                     if let location = locationManager.currentLocation {
                         LocationInfoRow(
-                            title: "Aktuelle Position",
-                            value: String(format: "%.6f, %.6f", 
+                            title: NSLocalizedString("Current location", comment: "current position display in Location Tracking Details"),
+                            value: String(format: "%.6f, %.6f",
                                         location.coordinate.latitude, 
                                         location.coordinate.longitude),
                             icon: "location.fill"
                         )
                         
                         LocationInfoRow(
-                            title: "Genauigkeit",
+                            title: NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details"),
                             value: String(format: "%.1f m", location.horizontalAccuracy),
                             icon: "target"
                         )
@@ -55,7 +55,7 @@ struct iPhone_LocationStatusView: View {
                     // Letzte Updates
                     if let lastUpdate = locationManager.lastUpdateTime {
                         LocationInfoRow(
-                            title: "Letztes GPS-Update",
+                            title: NSLocalizedString("Last GPS update", comment: "Last GPS-Update"),
                             value: formatDate(lastUpdate),
                             icon: "clock"
                         )
@@ -63,7 +63,7 @@ struct iPhone_LocationStatusView: View {
                     
                     if let lastServerUpdate = locationManager.lastServerUpdate {
                         LocationInfoRow(
-                            title: "Letzter Server-Update",
+                            title: NSLocalizedString("Last server update", comment: "Last Server-Update status line in Location Tracking details"),
                             value: formatDate(lastServerUpdate),
                             icon: "network"
                         )
@@ -127,22 +127,22 @@ struct iPhone_LocationStatusView: View {
     
     private var statusText: String {
         if !settings.trackAndReportLocation {
-            return "Location-Tracking deaktiviert"
+            return NSLocalizedString("Location tracking deactivated", comment: "Location Tracking Status statusText")
         }
         
         switch locationManager.locationStatus {
         case .authorizedAlways:
-            return locationManager.isTracking ? "Tracking aktiv (Vorder- & Hintergrund)" : "Berechtigung erteilt, aber nicht aktiv"
+            return locationManager.isTracking ? NSLocalizedString("Tracking inactive (fore- & background)", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", comment: "Location Tracking Status statusText")
         case .authorizedWhenInUse:
-            return "Nur im Vordergrund erlaubt"
+            return NSLocalizedString("Only allowed when app in foregrond", comment: "Location Tracking Status statusText")
         case .denied:
-            return "Location-Zugriff verweigert"
+            return NSLocalizedString("Location access denied", comment: "Location Tracking Status statusText")
         case .restricted:
-            return "Location-Zugriff eingeschränkt"
+            return NSLocalizedString("Location access restricted", comment: "Location Tracking Status statusText")
         case .notDetermined:
-            return "Berechtigung nicht angefordert"
+            return NSLocalizedString("Permission not determined", comment: "Location Tracking Status statusText")
         case .unavailable:
-            return "Location-Dienste nicht verfügbar"
+            return NSLocalizedString("Location services not available", comment: "Location Tracking Status statusText")
         }
     }
     
@@ -188,7 +188,7 @@ struct ServerStatusRow: View {
                 .foregroundColor(statusColor)
                 .frame(width: 20)
             
-            Text("Server-Status")
+            Text(NSLocalizedString("Miataru server status", comment: "Server Status Row"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             
@@ -230,13 +230,13 @@ struct ServerStatusRow: View {
     private var statusText: String {
         switch status {
         case .idle:
-            return "Bereit"
+            return NSLocalizedString("Ready", comment: "statusText LocationTracking Status")
         case .updating:
-            return "Wird gesendet..."
+            return NSLocalizedString("Sending...", comment: "statusText LocationTracking Status")
         case .success:
-            return "Erfolgreich"
+            return NSLocalizedString("Successful", comment: "statusText LocationTracking Status")
         case .failed(let error):
-            return "Fehler: \(error)"
+            return NSLocalizedString("Error: \(error)", comment: "statusText LocationTracking Status")
         }
     }
 }
@@ -246,7 +246,7 @@ struct PermissionStatusView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Berechtigungs-Status")
+            Text("Permission state")
                 .font(.headline)
             
             HStack {
@@ -261,7 +261,7 @@ struct PermissionStatusView: View {
             }
             
             if status == .denied || status == .restricted {
-                Text("Öffne die Einstellungen, um Location-Zugriff zu erlauben")
+                Text("Open app settings in iOS to change location permission state.")
                     .font(.caption)
                     .foregroundColor(.red)
             }
@@ -304,17 +304,17 @@ struct PermissionStatusView: View {
     private var permissionText: String {
         switch status {
         case .authorizedAlways:
-            return "Vollständiger Zugriff erteilt"
+            return NSLocalizedString("Full permissions granted", comment: "permission text in Location Tracking Status")
         case .authorizedWhenInUse:
-            return "Nur Vordergrund-Zugriff erteilt"
+            return NSLocalizedString("Only allowed when app in foregrond", comment: "permission text in Location Tracking Status")
         case .denied:
-            return "Zugriff verweigert"
+            return NSLocalizedString("Location access denied", comment: "permission text in Location Tracking Status")
         case .restricted:
-            return "Zugriff eingeschränkt"
+            return NSLocalizedString("Location access restricted", comment: "permission text in Location Tracking Status")
         case .notDetermined:
-            return "Berechtigung nicht angefordert"
+            return NSLocalizedString("Permission not determined", comment: "permission text in Location Tracking Status")
         case .unavailable:
-            return "Location-Dienste nicht verfügbar"
+            return NSLocalizedString("Location services not available", comment: "permission text in Location Tracking Status")
         }
     }
 }
@@ -333,7 +333,7 @@ struct BackgroundStatusCard: View {
             }
             
             HStack {
-                Text("Background Tasks:")
+                Text("Background Task:")
                 Spacer()
                 Text(backgroundManager.backgroundTaskStatus)
                     .foregroundColor(.secondary)
@@ -342,13 +342,13 @@ struct BackgroundStatusCard: View {
             HStack {
                 Text("Background Updates:")
                 Spacer()
-                Text("\(backgroundManager.backgroundUpdateCount)")
+                Text("\(backgroundManager.backgroundUpdateCount)", comment: "Number of background updates")
                     .foregroundColor(.secondary)
             }
             
             if let lastUpdate = backgroundManager.lastBackgroundUpdate {
                 HStack {
-                    Text("Letzter Background Update:")
+                    Text("Last Background Update:")
                     Spacer()
                     Text(formatTime(lastUpdate))
                         .foregroundColor(.secondary)

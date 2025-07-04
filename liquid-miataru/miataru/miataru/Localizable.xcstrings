@@ -2,7 +2,15 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%lld" : {
-
+      "comment" : "Number of background updates",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
     },
     "1day" : {
       "localizations" : {
@@ -264,6 +272,9 @@
         }
       }
     },
+    "Accuracy" : {
+      "comment" : "Accuracy display in Location Tracking Details"
+    },
     "add" : {
       "localizations" : {
         "en" : {
@@ -284,9 +295,6 @@
         }
       }
     },
-    "Anzeigen" : {
-
-    },
     "app_behaviour" : {
       "localizations" : {
         "en" : {
@@ -297,17 +305,35 @@
         }
       }
     },
-    "Background Tasks:" : {
-
+    "Background Task:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background task:"
+          }
+        }
+      }
     },
     "Background Updates:" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Number of background updates:"
+          }
+        }
+      }
     },
     "Background-Status" : {
-
-    },
-    "Berechtigungs-Status" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background-Status"
+          }
+        }
+      }
     },
     "cancel" : {
       "localizations" : {
@@ -315,6 +341,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "cancel"
+          }
+        }
+      }
+    },
+    "Current location" : {
+      "comment" : "current position display in Location Tracking Details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current location"
           }
         }
       }
@@ -471,6 +508,16 @@
         }
       }
     },
+    "done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "done"
+          }
+        }
+      }
+    },
     "edit_device" : {
       "localizations" : {
         "en" : {
@@ -503,8 +550,16 @@
         }
       }
     },
-    "Fertig" : {
-
+    "Full permissions granted" : {
+      "comment" : "permission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full permissions granted"
+          }
+        }
+      }
     },
     "groups" : {
       "localizations" : {
@@ -516,12 +571,12 @@
         }
       }
     },
-    "hybrid_mal" : {
+    "hybrid_map" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "hybrid map"
+            "value" : "Hybrid map"
           }
         }
       }
@@ -556,8 +611,37 @@
         }
       }
     },
-    "Letzter Background Update:" : {
-
+    "Last Background Update:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Background Update:"
+          }
+        }
+      }
+    },
+    "Last GPS update" : {
+      "comment" : "Last GPS-Update",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last GPS update"
+          }
+        }
+      }
+    },
+    "Last server update" : {
+      "comment" : "Last Server-Update status line in Location Tracking details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last server update"
+          }
+        }
+      }
     },
     "loading" : {
       "localizations" : {
@@ -565,6 +649,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "loading"
+          }
+        }
+      }
+    },
+    "Location access denied" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access denied"
+          }
+        }
+      }
+    },
+    "Location access restricted" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access restricted"
+          }
+        }
+      }
+    },
+    "Location services not available" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location services not available"
+          }
+        }
+      }
+    },
+    "Location tracking deactivated" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location tracking deactivated"
+          }
+        }
+      }
+    },
+    "Location Tracking Details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Tracking Details"
+          }
+        }
+      }
+    },
+    "Location Tracking Status" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Tracking Status"
           }
         }
       }
@@ -578,15 +726,6 @@
           }
         }
       }
-    },
-    "Location-Status" : {
-
-    },
-    "Location-Tracking Details" : {
-
-    },
-    "Location-Tracking Status" : {
-
     },
     "map_configuration" : {
       "localizations" : {
@@ -624,6 +763,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Default map zoom level"
+          }
+        }
+      }
+    },
+    "Miataru server status" : {
+      "comment" : "Server Status Row",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru server status"
           }
         }
       }
@@ -681,9 +831,6 @@
         }
       }
     },
-    "Öffne die Einstellungen, um Location-Zugriff zu erlauben" : {
-
-    },
     "ok" : {
       "localizations" : {
         "en" : {
@@ -694,12 +841,65 @@
         }
       }
     },
+    "Only allowed when app in foregrond" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only allowed when app in foregrond"
+          }
+        }
+      }
+    },
+    "Open app settings in iOS to change location permission state." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open app settings in iOS to change location permission state."
+          }
+        }
+      }
+    },
+    "Permission granted, but not active" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission granted, but not active"
+          }
+        }
+      }
+    },
+    "Permission not determined" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission not determined"
+          }
+        }
+      }
+    },
+    "Permission state" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location permission state"
+          }
+        }
+      }
+    },
     "qr" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR"
+            "value" : "QR-Code"
           }
         }
       }
@@ -710,6 +910,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
+          }
+        }
+      }
+    },
+    "Ready" : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
           }
         }
       }
@@ -750,6 +961,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "send location to server"
+          }
+        }
+      }
+    },
+    "Sending..." : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending..."
           }
         }
       }
@@ -797,15 +1019,22 @@
         }
       }
     },
-    "Server-Status" : {
-
-    },
     "settings" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "show" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "show"
           }
         }
       }
@@ -830,12 +1059,34 @@
         }
       }
     },
+    "Successful" : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successful"
+          }
+        }
+      }
+    },
     "track_and_history" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking & History"
+          }
+        }
+      }
+    },
+    "Tracking inactive (fore- & background)" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking inactive (fore- & background)"
           }
         }
       }
