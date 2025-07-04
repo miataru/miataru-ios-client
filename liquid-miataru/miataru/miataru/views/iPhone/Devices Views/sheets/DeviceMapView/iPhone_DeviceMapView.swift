@@ -83,14 +83,14 @@ struct iPhone_DeviceMapView: View {
             Map(position: $cameraPosition) {
                 if let coordinate = deviceLocation {
                     Annotation(device.DeviceName, coordinate: coordinate) {
-                        PinWithAccuracyView(coordinate: coordinate, accuracy: deviceAccuracy, region: region, color: device.DeviceColor)
+                        iPhone_PinWithAccuracyView(coordinate: coordinate, accuracy: deviceAccuracy, region: region, color: device.DeviceColor)
                     }
                 }
             }
             .ignoresSafeArea()
             .mapStyle(mapStyleFromSettings(settings.mapType))
         } else {
-            LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
+            iPhone_LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                 .ignoresSafeArea()
         }
     }
