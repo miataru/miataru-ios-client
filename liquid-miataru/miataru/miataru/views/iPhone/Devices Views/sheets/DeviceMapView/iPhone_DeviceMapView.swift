@@ -25,22 +25,30 @@ struct iPhone_DeviceMapView: View {
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var errorOverlayVisible = false
     @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
+    @State private var mapInteractionID = UUID()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
+            // Karte und Fehler-Overlay
             VStack {
                 mapSection()
             }
             errorOverlay()
-            // Eigene ScaleBar unten rechts für alle iOS-Versionen
-            if #available(iOS 17.0, *) {
-                if let region = cameraPosition.region {
+            // ScaleBar immer ganz oben
+            Group {
+                if #available(iOS 17.0, *) {
+                    if let region = cameraPosition.region {
+                        MapScaleBar(region: region, width: 100)
+                            .id(mapInteractionID)
+                            .padding([.bottom, .trailing], 16)
+                            .zIndex(2)
+                    }
+                } else {
                     MapScaleBar(region: region, width: 100)
+                        .id("scalebar")
                         .padding([.bottom, .trailing], 16)
+                        .zIndex(2)
                 }
-            } else {
-                MapScaleBar(region: region, width: 100)
-                    .padding([.bottom, .trailing], 16)
             }
         }
         .navigationTitle(device.DeviceName)
@@ -106,6 +114,7 @@ struct iPhone_DeviceMapView: View {
             .onMapCameraChange { context in
                 // Aktuellen Zoom-Level aus der Karte speichern
                 currentMapSpan = context.region.span
+                mapInteractionID = UUID() // erzwingt Neurendern der ScaleBar
             }
             .ignoresSafeArea()
             .mapStyle(mapStyleFromSettings(settings.mapType))
