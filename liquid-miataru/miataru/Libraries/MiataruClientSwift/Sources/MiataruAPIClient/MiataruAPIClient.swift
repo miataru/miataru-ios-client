@@ -241,11 +241,11 @@ public enum MiataruAPIClient {
         
         do {
             //print("Data: ",data);
-            if let jsonString = String(data: data, encoding: .utf8) {
+            /*if let jsonString = String(data: data, encoding: .utf8) {
                 print("Data als String: \(jsonString)")
             } else {
                 print("Konnte Data nicht als UTF-8 String dekodieren.")
-            }
+            }*/
             let response = try jsonDecoder.decode(MiataruGetLocationResponse.self, from: data)
             return response.MiataruLocation
         } catch {

@@ -6,6 +6,14 @@
          contextName = "closure #1 in LocationManager.sendLocationToServer():LocationManager.swift">
       </ContextState>
       <ContextState
+         contextName = "closure #1 in iPhone_DeviceMapView.fetchLocation():iPhone_DeviceMapView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "userHasZoomed">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "MiataruLocationData.TimestampDate.getter:MiataruAPIClient.swift">
          <PersistentStrings>
             <PersistentString
@@ -36,10 +44,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in iPhone_DevicesView.body.getter:iPhone_DevicesView.swift">
+         contextName = "static MiataruAPIClient.performPostRequest(url:jsonPayload:):MiataruAPIClient.swift">
       </ContextState>
       <ContextState
-         contextName = "static MiataruAPIClient.performPostRequest(url:jsonPayload:):MiataruAPIClient.swift">
+         contextName = "closure #1 in closure #1 in iPhone_DevicesView.body.getter:iPhone_DevicesView.swift">
       </ContextState>
       <ContextState
          contextName = "KnownDeviceStore.init():KnownDeviceStore.swift">

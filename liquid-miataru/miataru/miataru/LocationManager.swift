@@ -202,7 +202,7 @@ class LocationManager: NSObject, ObservableObject {
                     if success {
                         self.serverUpdateStatus = .success
                         self.lastServerUpdate = Date()
-                        print("Location erfolgreich an Server gesendet: \(location.coordinate)")
+                        //print("Location erfolgreich an Server gesendet: \(location.coordinate)")
                     } else {
                         self.serverUpdateStatus = .failed("Server-Antwort war nicht erfolgreich")
                     }
@@ -242,7 +242,7 @@ extension LocationManager: CLLocationManagerDelegate {
         // Sofort an Server senden bei neuer Location
         sendLocationToServer()
         
-        print("Neue Location erhalten: \(location.coordinate)")
+        //print("Neue Location erhalten: \(location.coordinate)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

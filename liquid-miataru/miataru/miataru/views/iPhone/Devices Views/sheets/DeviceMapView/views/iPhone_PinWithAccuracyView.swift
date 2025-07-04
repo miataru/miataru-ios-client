@@ -15,6 +15,7 @@ struct iPhone_PinWithAccuracyView: View {
                     .frame(width: diameter, height: diameter)
             }
             iPhone_PinView(color: Color(color ?? UIColor.blue))
+                .offset(y: -24)
         }
     }
 }
