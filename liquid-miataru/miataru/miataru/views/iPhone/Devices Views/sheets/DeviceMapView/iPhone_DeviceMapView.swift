@@ -32,7 +32,16 @@ struct iPhone_DeviceMapView: View {
                 mapSection()
             }
             errorOverlay()
-            scaleBarView()
+            // Eigene ScaleBar unten rechts für alle iOS-Versionen
+            if #available(iOS 17.0, *) {
+                if let region = cameraPosition.region {
+                    MapScaleBar(region: region, width: 100)
+                        .padding([.bottom, .trailing], 16)
+                }
+            } else {
+                MapScaleBar(region: region, width: 100)
+                    .padding([.bottom, .trailing], 16)
+            }
         }
         .navigationTitle(device.DeviceName)
         .navigationBarTitleDisplayMode(.inline)
@@ -128,23 +137,6 @@ struct iPhone_DeviceMapView: View {
             .animation(.easeInOut(duration: 0.3), value: errorOverlayVisible)
             .zIndex(1)
         }
-    }
-
-    @ViewBuilder
-    private func scaleBarView() -> some View {
-        if #available(iOS 17.0, *) {
-            if let region = extractRegion(from: cameraPosition) {
-                MapScaleBar(region: region, width: 100)
-                    .padding([.bottom, .trailing], 16)
-            }
-        } else {
-            MapScaleBar(region: region, width: 100)
-                .padding([.bottom, .trailing], 16)
-        }
-    }
-
-    private func extractRegion(from position: MapCameraPosition) -> MKCoordinateRegion? {
-        position.region
     }
 
     @ViewBuilder
