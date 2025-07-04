@@ -643,17 +643,6 @@
         }
       }
     },
-    "loading" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "loading"
-          }
-        }
-      }
-    },
     "Location access denied" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {

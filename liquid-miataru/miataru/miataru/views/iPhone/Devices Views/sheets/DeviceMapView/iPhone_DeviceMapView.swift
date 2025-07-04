@@ -27,11 +27,12 @@ struct iPhone_DeviceMapView: View {
     @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             VStack {
                 mapSection()
             }
             errorOverlay()
+            scaleBarView()
         }
         .navigationTitle(device.DeviceName)
         .navigationBarTitleDisplayMode(.inline)
@@ -127,6 +128,23 @@ struct iPhone_DeviceMapView: View {
             .animation(.easeInOut(duration: 0.3), value: errorOverlayVisible)
             .zIndex(1)
         }
+    }
+
+    @ViewBuilder
+    private func scaleBarView() -> some View {
+        if #available(iOS 17.0, *) {
+            if let region = extractRegion(from: cameraPosition) {
+                MapScaleBar(region: region, width: 100)
+                    .padding([.bottom, .trailing], 16)
+            }
+        } else {
+            MapScaleBar(region: region, width: 100)
+                .padding([.bottom, .trailing], 16)
+        }
+    }
+
+    private func extractRegion(from position: MapCameraPosition) -> MKCoordinateRegion? {
+        position.region
     }
 
     @ViewBuilder
@@ -266,6 +284,47 @@ fileprivate func currentZoomLevelFromSpan(_ span: MKCoordinateSpan) -> Int {
     // Umrechnung zurück zu km: 1° ≈ 111 km
     let km = avgDelta * 111.0
     return Int(round(km))
+}
+
+// --- Maßstabsleiste (Scale Bar) ---
+struct MapScaleBar: View {
+    let region: MKCoordinateRegion
+    let width: CGFloat
+
+    var body: some View {
+        let distance = distanceForWidth(region: region, width: width)
+        let label = distanceLabel(for: distance)
+        HStack(spacing: 4) {
+            Rectangle()
+                .frame(width: width, height: 4)
+                .foregroundColor(.primary)
+                .cornerRadius(2)
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.primary)
+        }
+        .padding(8)
+        .background(.thinMaterial)
+        .cornerRadius(8)
+    }
+
+    func distanceForWidth(region: MKCoordinateRegion, width: CGFloat) -> CLLocationDistance {
+        // Berechne die Distanz, die 'width' Punkte auf der Karte abdecken
+        let mapViewWidth = UIScreen.main.bounds.width
+        let span = region.span
+        let center = region.center
+        let loc1 = CLLocation(latitude: center.latitude, longitude: center.longitude - span.longitudeDelta / 2 * Double(width / mapViewWidth))
+        let loc2 = CLLocation(latitude: center.latitude, longitude: center.longitude + span.longitudeDelta / 2 * Double(width / mapViewWidth))
+        return loc1.distance(from: loc2)
+    }
+
+    func distanceLabel(for distance: CLLocationDistance) -> String {
+        if distance > 1000 {
+            return String(format: "%.0f km", distance / 1000)
+        } else {
+            return String(format: "%.0f m", distance)
+        }
+    }
 }
 
 
