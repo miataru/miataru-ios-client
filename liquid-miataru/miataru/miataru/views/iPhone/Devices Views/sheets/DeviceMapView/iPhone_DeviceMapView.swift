@@ -24,6 +24,7 @@ struct iPhone_DeviceMapView: View {
     @ObservedObject private var settings = SettingsManager.shared
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var errorOverlayVisible = false
+    @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
     
     var body: some View {
         ZStack {
@@ -46,6 +47,8 @@ struct iPhone_DeviceMapView: View {
         .onAppear {
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
+            currentMapSpan = span // Initialen Zoom-Level setzen
+            
             if let coordinate = deviceLocation {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
@@ -89,6 +92,10 @@ struct iPhone_DeviceMapView: View {
                     Marker(device.DeviceName, systemImage: "mappin", coordinate: coordinate)
                         .tint(Color(device.DeviceColor ?? .blue))
                 }
+            }
+            .onMapCameraChange { context in
+                // Aktuellen Zoom-Level aus der Karte speichern
+                currentMapSpan = context.region.span
             }
             .ignoresSafeArea()
             .mapStyle(mapStyleFromSettings(settings.mapType))
@@ -151,11 +158,14 @@ struct iPhone_DeviceMapView: View {
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 withAnimation {
-                    let span = spanForZoomLevel(settings.mapZoomLevel)
                     if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                        // Aktuellen Zoom-Level aus der gespeicherten currentMapSpan verwenden
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
                     } else {
-                        region = MKCoordinateRegion(center: coordinate, span: span)
+                        // Aktuellen Zoom-Level aus Region berechnen
+                        let currentZoomLevel = currentZoomLevelFromSpan(region.span)
+                        let currentSpan = spanForZoomLevel(currentZoomLevel)
+                        region = MKCoordinateRegion(center: coordinate, span: currentSpan)
                     }
                 }
             } else {
@@ -234,3 +244,14 @@ fileprivate func spanForZoomLevel(_ zoomLevel: Int) -> MKCoordinateSpan {
     let delta = km / 111.0
     return MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
 }
+
+// Hilfsfunktion um aktuellen Zoom-Level aus Span zu berechnen
+fileprivate func currentZoomLevelFromSpan(_ span: MKCoordinateSpan) -> Int {
+    // Durchschnitt aus latitude und longitude delta
+    let avgDelta = (span.latitudeDelta + span.longitudeDelta) / 2.0
+    // Umrechnung zurück zu km: 1° ≈ 111 km
+    let km = avgDelta * 111.0
+    return Int(round(km))
+}
+
+
