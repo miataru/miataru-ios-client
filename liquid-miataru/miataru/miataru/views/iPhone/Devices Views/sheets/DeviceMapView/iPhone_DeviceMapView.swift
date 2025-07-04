@@ -131,12 +131,13 @@ struct iPhone_DeviceMapView: View {
 
     @ViewBuilder
     private func updateButton() -> some View {
-        Button(isLoading ? "loading" : "update") {
+        //Button(isLoading ? "loading" : "update") {
+        Button("update") {
             Task {
                 await fetchLocation(resetZoomToSettings: true)
             }
         }
-        .disabled(isLoading)
+        //.disabled(isLoading)
     }
     
     private func fetchLocation(resetZoomToSettings: Bool = false) async {

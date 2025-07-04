@@ -644,6 +644,7 @@
       }
     },
     "loading" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
