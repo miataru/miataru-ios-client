@@ -12,16 +12,17 @@ struct MapCompass: View {
                 Circle()
                     .stroke(Color.primary, lineWidth: 2)
                     .frame(width: size, height: size)
-                    .background(Circle().fill(.thinMaterial))
+                    .background(Circle().fill(.ultraThinMaterial))
                 // Nadel (zeigt nach Norden)
-                CompassNeedle(size: size * 0.7)
+                CompassNeedle(size: size * 0.5)
                     .fill(Color.red)
                     .rotationEffect(.degrees(heading))
                 // N-Markierung
                 Text(NSLocalizedString("N", comment: "Compass North label"))
-                    .font(.caption2.bold())
+                    //.font(.caption2.bold())
+                    .font(.caption2.smallCaps().bold())
                     .foregroundColor(.primary)
-                    .offset(y: -size * 0.38)
+                    .offset(y: -size * 0.36)
             }
             .frame(width: size, height: size)
             // Gradzahl und Richtung
@@ -31,8 +32,8 @@ struct MapCompass: View {
                 .padding(.top, 2)
         }
         .padding(4)
-        .background(.thinMaterial)
-        .cornerRadius(size/2 + 8)
+        .background(.ultraThinMaterial)
+        .cornerRadius(size/5 + 8)
         .shadow(radius: 1)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
@@ -85,5 +86,12 @@ struct CompassNeedle: Shape {
         MapCompass(heading: 225, size: 48)
         MapCompass(heading: 270, size: 48)
         MapCompass(heading: 315, size: 48)
-    }
-} 
+    } .padding()
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [.blue, .purple, .orange]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+}

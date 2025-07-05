@@ -18,7 +18,7 @@ struct MapScaleBar: View {
                 .foregroundColor(.primary)
         }
         .padding(4)
-        .background(.thinMaterial)
+        .background(.ultraThinMaterial)
         .cornerRadius(4)
     }
 
