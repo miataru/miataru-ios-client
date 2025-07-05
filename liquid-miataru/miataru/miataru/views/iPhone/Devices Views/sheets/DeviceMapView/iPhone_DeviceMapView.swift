@@ -161,7 +161,7 @@ struct iPhone_DeviceMapView: View {
     
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
-            showErrorOverlay("Ungültige Server-URL oder DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Fehler: Server oder DeviceID ungültig"))
+            showErrorOverlay("Ungültige Server-URL oder DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }
         isLoading = true
@@ -202,24 +202,24 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             } else {
-                showErrorOverlay("Keine Standortdaten gefunden", NSLocalizedString("no_location_data_found", comment: "Kein Standort verfügbar"))
+                showErrorOverlay("Keine Standortdaten gefunden", NSLocalizedString("no_location_data_found", comment: "No location available"))
             }
         } catch let error as MiataruAPIClient.APIError {
             // Differenzierte Fehlerbehandlung
             switch error {
             case .invalidURL:
-                showErrorOverlay("Ungültige Server-URL", NSLocalizedString("server_url_invalid", comment: "Die Server-URL ist ungültig."))
+                showErrorOverlay("Ungültige Server-URL", NSLocalizedString("server_url_invalid", comment: "The server URL is invalid."))
             case .invalidResponse(_):
-                showErrorOverlay("Ungültige Serverantwort", NSLocalizedString("server_response_invalid", comment: "Die Antwort des Servers war ungültig."))
+                showErrorOverlay("Ungültige Serverantwort", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
             case .encodingError(let err):
-                showErrorOverlay("Fehler beim Kodieren: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Fehler beim Kodieren der Anfrage."))
+                showErrorOverlay("Fehler beim Kodieren: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Error encoding the request."))
             case .decodingError(let err):
-                showErrorOverlay("Fehler beim Verarbeiten der Antwort: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Fehler beim Verarbeiten der Serverantwort."))
+                showErrorOverlay("Fehler beim Verarbeiten der Antwort: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
             case .requestFailed(let err):
-                showErrorOverlay("Netzwerkfehler: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Netzwerkfehler. Bitte Internetverbindung prüfen."))
+                showErrorOverlay("Netzwerkfehler: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
             }
         } catch {
-            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Fehler beim Laden der Standortdaten"))
+            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
         }
     }
 
@@ -324,11 +324,11 @@ struct MapScaleBar: View {
         if usesMetric {
             if distance > 1000 {
                 // Lokalisiert: Kilometer-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_kilometers", comment: "Maßstabsleiste: Anzeige der Distanz in Kilometern")
+                let format = NSLocalizedString("scalebar_kilometers", comment: "Scale bar: display distance in kilometers")
                 return String(format: format, distance / 1000)
             } else {
                 // Lokalisiert: Meter-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_meters", comment: "Maßstabsleiste: Anzeige der Distanz in Metern")
+                let format = NSLocalizedString("scalebar_meters", comment: "Scale bar: display distance in meters")
                 return String(format: format, distance)
             }
         } else {
@@ -337,11 +337,11 @@ struct MapScaleBar: View {
             let distanceInMiles = distance / 1609.34
             if distanceInFeet > 528 { // Mehr als 1/10 Meile
                 // Lokalisiert: Meilen-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_miles", comment: "Maßstabsleiste: Anzeige der Distanz in Meilen")
+                let format = NSLocalizedString("scalebar_miles", comment: "Scale bar: display distance in miles")
                 return String(format: format, distanceInMiles)
             } else {
                 // Lokalisiert: Fuß-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_feet", comment: "Maßstabsleiste: Anzeige der Distanz in Fuß")
+                let format = NSLocalizedString("scalebar_feet", comment: "Scale bar: display distance in feet")
                 return String(format: format, distanceInFeet)
             }
         }

@@ -33,7 +33,7 @@ class KnownDeviceStore: ObservableObject {
         // Sicherstellen, dass das eigene Gerät immer in der Liste ist
         let myDeviceID = thisDeviceIDManager.shared.deviceID
         if !self.devices.contains(where: { $0.DeviceID == myDeviceID }) {
-            let myDeviceName = NSLocalizedString("my_device", comment: "Name für das eigene Gerät in der Geräteliste")
+            let myDeviceName = NSLocalizedString("my_device", comment: "Name for the user's own device in the device list")
             let myDevice = KnownDevice(name: myDeviceName, deviceID: myDeviceID, color: UIColor.systemBlue)
             self.devices.insert(myDevice, at: 0)
             print("[DEBUG] Eigenes Gerät mit DeviceID \(myDeviceID) wurde automatisch als erstes Device hinzugefügt.")

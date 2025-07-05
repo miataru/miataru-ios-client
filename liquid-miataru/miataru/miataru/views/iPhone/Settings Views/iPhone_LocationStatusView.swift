@@ -55,7 +55,7 @@ struct iPhone_LocationStatusView: View {
                     // Letzte Updates
                     if let lastUpdate = locationManager.lastUpdateTime {
                         LocationInfoRow(
-                            title: NSLocalizedString("Last GPS update", comment: "Last GPS-Update"),
+                            title: NSLocalizedString("Last GPS update", comment: "Last GPS update"),
                             value: formatDate(lastUpdate),
                             icon: "clock"
                         )
