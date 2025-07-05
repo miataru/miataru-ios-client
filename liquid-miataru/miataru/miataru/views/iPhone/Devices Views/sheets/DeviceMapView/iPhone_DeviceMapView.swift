@@ -139,7 +139,25 @@ struct iPhone_DeviceMapView: View {
                         MapCircle(center: coordinate, radius: accuracy)
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
-                    Marker(device.DeviceName, systemImage: "mappin", coordinate: coordinate)
+                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+                    // Overlay für Zeitangabe
+                    Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
+                        if let timestamp = deviceTimestamp {
+                            Text(relativeTimeString(from: timestamp))
+                                .font(.caption2)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Capsule())
+                                .overlay(
+                                    Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                )
+                                .shadow(radius: 2)
+                                .offset(y: -38) // Wert ggf. anpassen, damit es über dem Marker schwebt
+                        }
+                    }
+                    // Nativer Marker
+                    Marker(annotationID, systemImage: "mappin", coordinate: coordinate)
                         .tint(Color(device.DeviceColor ?? .blue))
                 }
             }
@@ -295,6 +313,14 @@ struct iPhone_DeviceMapView: View {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
         }
+    }
+
+    // Hilfsfunktion für relative Zeitangabe
+    private func relativeTimeString(from date: Date?) -> String {
+        guard let date = date else { return "–" }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
