@@ -151,7 +151,7 @@ struct iPhone_DeviceMapView: View {
             }
         }
         .sheet(isPresented: $showEditDeviceSheet) {
-            if let device = device, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
+            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }

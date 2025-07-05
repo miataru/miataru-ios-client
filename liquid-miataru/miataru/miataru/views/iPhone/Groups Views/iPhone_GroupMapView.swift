@@ -248,7 +248,7 @@ struct iPhone_GroupMapView: View {
                     region = MKCoordinateRegion(center: coordinate, span: span)
                 }
             } else {
-                // Multiple devices: fit all in view
+                // Multiple devices: fit all in view with generous padding
                 let latitudes = validCoordinates.map { $0.latitude }
                 let longitudes = validCoordinates.map { $0.longitude }
                 
@@ -261,9 +261,30 @@ struct iPhone_GroupMapView: View {
                 let centerLon = (minLon + maxLon) / 2
                 let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
                 
-                let latDelta = (maxLat - minLat) * 1.2 // Add 20% padding
-                let lonDelta = (maxLon - minLon) * 1.2
-                let span = MKCoordinateSpan(latitudeDelta: max(latDelta, 0.01), longitudeDelta: max(lonDelta, 0.01))
+                // Calculate the raw differences
+                let rawLatDelta = maxLat - minLat
+                let rawLonDelta = maxLon - minLon
+                
+                // Add generous padding (50% instead of 20%)
+                let paddedLatDelta = rawLatDelta * 1.5
+                let paddedLonDelta = rawLonDelta * 1.5
+                
+                // For longitude, account for latitude-dependent scaling
+                let avgLatRadians = centerLat * .pi / 180
+                let correctedLonDelta = paddedLonDelta / cos(avgLatRadians)
+                
+                // Ensure minimum spans for visibility and add extra buffer
+                let minLatDelta = max(paddedLatDelta, 0.05) // Increased minimum
+                let minLonDelta = max(correctedLonDelta, 0.05) // Increased minimum
+                
+                // Add extra buffer for very small differences
+                let finalLatDelta = minLatDelta < 0.1 ? minLatDelta * 2 : minLatDelta
+                let finalLonDelta = minLonDelta < 0.1 ? minLonDelta * 2 : minLonDelta
+                
+                let span = MKCoordinateSpan(
+                    latitudeDelta: finalLatDelta,
+                    longitudeDelta: finalLonDelta
+                )
                 
                 if #available(iOS 17.0, *) {
                     if userHasRotatedMap, let currentCamera = currentMapCamera {
@@ -361,7 +382,7 @@ struct iPhone_GroupMapView: View {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
         } else {
-            // Multiple devices: fit all in view
+            // Multiple devices: fit all in view with generous padding
             let latitudes = validCoordinates.map { $0.latitude }
             let longitudes = validCoordinates.map { $0.longitude }
             
@@ -374,9 +395,30 @@ struct iPhone_GroupMapView: View {
             let centerLon = (minLon + maxLon) / 2
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
             
-            let latDelta = (maxLat - minLat) * 1.2 // Add 20% padding
-            let lonDelta = (maxLon - minLon) * 1.2
-            let span = MKCoordinateSpan(latitudeDelta: max(latDelta, 0.01), longitudeDelta: max(lonDelta, 0.01))
+            // Calculate the raw differences
+            let rawLatDelta = maxLat - minLat
+            let rawLonDelta = maxLon - minLon
+            
+            // Add generous padding (50% instead of 20%)
+            let paddedLatDelta = rawLatDelta * 1.5
+            let paddedLonDelta = rawLonDelta * 1.5
+            
+            // For longitude, account for latitude-dependent scaling
+            let avgLatRadians = centerLat * .pi / 180
+            let correctedLonDelta = paddedLonDelta / cos(avgLatRadians)
+            
+            // Ensure minimum spans for visibility and add extra buffer
+            let minLatDelta = max(paddedLatDelta, 0.05) // Increased minimum
+            let minLonDelta = max(correctedLonDelta, 0.05) // Increased minimum
+            
+            // Add extra buffer for very small differences
+            let finalLatDelta = minLatDelta < 0.1 ? minLatDelta * 2 : minLatDelta
+            let finalLonDelta = minLonDelta < 0.1 ? minLonDelta * 2 : minLonDelta
+            
+            let span = MKCoordinateSpan(
+                latitudeDelta: finalLatDelta,
+                longitudeDelta: finalLonDelta
+            )
             
             if #available(iOS 17.0, *) {
                 cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
