@@ -49,4 +49,10 @@ class ErrorOverlayManager: ObservableObject {
                 }
             }
     }
-} 
+}
+
+#Preview {
+    ErrorOverlay(message: "This is an example error message!", visible: true)
+        .background(Color.gray.opacity(0.2))
+        .edgesIgnoringSafeArea(.all)
+}
