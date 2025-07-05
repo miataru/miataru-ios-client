@@ -56,10 +56,14 @@ struct iPhone_DeviceMapView: View {
             Group {
                 if #available(iOS 17.0, *) {
                     let heading = currentMapCamera?.heading ?? 0
-                    MapCompass(heading: heading, size: 40)
-                        .padding([.top, .trailing], 10)
-                        .zIndex(3)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    Button(action: {
+                        alignMapToNorth()
+                    }) {
+                        MapCompass(heading: heading, size: 40)
+                    }
+                    .padding([.top, .trailing], 10)
+                    .zIndex(3)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
             }
         }
@@ -257,6 +261,19 @@ struct iPhone_DeviceMapView: View {
             withAnimation {
                 errorOverlayVisible = false
             }
+        }
+    }
+
+    private func alignMapToNorth() {
+        guard let currentCamera = currentMapCamera else { return }
+        let newCamera = MapCamera(
+            centerCoordinate: currentCamera.centerCoordinate,
+            distance: currentCamera.distance,
+            heading: 0, // Norden
+            pitch: currentCamera.pitch
+        )
+        withAnimation {
+            cameraPosition = .camera(newCamera)
         }
     }
 }

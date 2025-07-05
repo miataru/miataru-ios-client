@@ -1,23 +1,27 @@
 import SwiftUI
 
 struct MapCompass: View {
-    /// Heading in Grad (0 = Norden, 90 = Osten, 180 = Süden, 270 = Westen)
+    /// Heading in degrees (0 = North, 90 = East, 180 = South, 270 = West)
     let heading: Double
     let size: CGFloat
 
     var body: some View {
         VStack(spacing: 2) {
             ZStack {
-                // Kompass-Kreis
+                // Compass circle
                 Circle()
                     .stroke(Color.primary, lineWidth: 2)
                     .frame(width: size, height: size)
                     .background(Circle().fill(.ultraThinMaterial))
-                // Nadel (zeigt nach Norden)
+                    .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                Circle()
+                    .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                    .frame(width: size * 0.96, height: size * 0.96)
+                    .offset(y: -size * 0.04)
+                // Needle (points North)
                 CompassNeedle(size: size * 0.5)
-                    .fill(Color.red)
                     .rotationEffect(.degrees(heading))
-                // N-Markierung
+                // N marker
                 Text(NSLocalizedString("N", comment: "Compass North label"))
                     //.font(.caption2.bold())
                     .font(.caption2.smallCaps().bold())
@@ -25,7 +29,7 @@ struct MapCompass: View {
                     .offset(y: -size * 0.36)
             }
             .frame(width: size, height: size)
-            // Gradzahl und Richtung
+            // Degree and direction label
             Text(compassLabel(for: heading))
                 .font(.caption2)
                 .foregroundColor(.primary)
@@ -40,7 +44,7 @@ struct MapCompass: View {
         .accessibilityValue(compassLabel(for: heading))
     }
 
-    /// Gibt z.B. "NE 45°" zurück
+    /// Returns e.g. "NE 45°"
     private func compassLabel(for heading: Double) -> String {
         let directions = [
             NSLocalizedString("compass_N", comment: "Compass North abbreviation"),
@@ -56,21 +60,50 @@ struct MapCompass: View {
         let index = Int((heading + 22.5) / 45.0) % 8
         let dir = directions[index]
         let deg = Int(round(heading))
-        // Formatierter String für Richtung und Gradzahl
+        // Formatted string for direction and degree
         return String(format: NSLocalizedString("compass_%@ %d°", comment: "Compass direction and degree, e.g. 'NE 45°'"), dir, deg)
     }
 }
 
-/// Einfache Kompassnadel als Shape
-struct CompassNeedle: Shape {
+// Neue, schönere Kompassnadel als View
+struct CompassNeedle: View {
     let size: CGFloat
+    var body: some View {
+        ZStack {
+            // Südspitze (grau)
+            NeedleHalf(size: size, isNorth: false)
+                .fill(Color.gray)
+            // Nordspitze (rot)
+            NeedleHalf(size: size, isNorth: true)
+                .fill(Color.red)
+            // Mittelkreis
+            Circle()
+                .fill(Color.white)
+                .frame(width: size * 0.18, height: size * 0.18)
+                .shadow(radius: 1)
+        }
+    }
+}
+
+struct NeedleHalf: Shape {
+    let size: CGFloat
+    let isNorth: Bool
     func path(in rect: CGRect) -> Path {
         let center = CGPoint(x: rect.midX, y: rect.midY)
         var path = Path()
-        // Dreieckige Nadel nach oben
-        path.move(to: CGPoint(x: center.x, y: center.y - size/2)) // Spitze oben
-        path.addLine(to: CGPoint(x: center.x - size/8, y: center.y + size/4))
-        path.addLine(to: CGPoint(x: center.x + size/8, y: center.y + size/4))
+        if isNorth {
+            // Nordspitze
+            path.move(to: center)
+            path.addLine(to: CGPoint(x: center.x - size/8, y: center.y))
+            path.addLine(to: CGPoint(x: center.x, y: center.y - size/2))
+            path.addLine(to: CGPoint(x: center.x + size/8, y: center.y))
+        } else {
+            // Südspitze
+            path.move(to: center)
+            path.addLine(to: CGPoint(x: center.x - size/8, y: center.y))
+            path.addLine(to: CGPoint(x: center.x, y: center.y + size/2))
+            path.addLine(to: CGPoint(x: center.x + size/8, y: center.y))
+        }
         path.closeSubpath()
         return path
     }
