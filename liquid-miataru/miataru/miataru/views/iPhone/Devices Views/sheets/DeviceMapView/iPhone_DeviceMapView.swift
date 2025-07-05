@@ -141,8 +141,8 @@ struct iPhone_DeviceMapView: View {
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    // Overlay for time display
-                    Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
+                    // Zeit-Overlay-Annotation danach (oben)
+                    Annotation("time-\(annotationID)", coordinate: coordinate, anchor: .bottom) {
                         if let timestamp = deviceTimestamp {
                             Text(relativeTimeString(from: timestamp))
                                 .font(.caption2)
@@ -154,15 +154,16 @@ struct iPhone_DeviceMapView: View {
                                     Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                 )
                                 .shadow(radius: 2)
-                                .offset(y: -38) // Value may need to be adjusted to hover above the marker
+                                .offset(y: -40) // Wert ggf. anpassen, damit es über dem Pin ist
                         }
                     }
-                    // Native Marker (ersetzt durch CustomMapMarker)
+                    // Pin-Annotation zuerst (unten)
                     Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
                         MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                             .frame(width: 30, height: 40)
                             .shadow(radius: 2)
                     }
+
                 }
             }
             .ignoresSafeArea()
