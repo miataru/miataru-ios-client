@@ -11,7 +11,7 @@ struct iPhone_DevicesView: View {
             List {
                 ForEach(store.devices) { device in
                     if editMode == .inactive {
-                        NavigationLink(destination: iPhone_DeviceMapView(device: device)) {
+                        NavigationLink(destination: iPhone_DeviceMapView(deviceID: device.DeviceID)) {
                             iPhone_DeviceRowView(device: device)
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {

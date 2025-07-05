@@ -4,7 +4,7 @@ import MiataruAPIClient
 import Combine
 
 struct iPhone_DeviceMapView: View {
-    let device: KnownDevice
+    let deviceID: String // Change from device to deviceID
     // Preview-Parameter (optional)
     var previewDeviceLocation: CLLocationCoordinate2D? = nil
     var previewDeviceAccuracy: Double? = nil
@@ -27,6 +27,7 @@ struct iPhone_DeviceMapView: View {
     @State private var deviceAccuracy: Double? // in Meters
     @State private var deviceTimestamp: Date? = nil
     @ObservedObject private var settings = SettingsManager.shared
+    @StateObject private var deviceStore = KnownDeviceStore.shared // Add device store
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var errorOverlayVisible = false
     @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
@@ -35,6 +36,11 @@ struct iPhone_DeviceMapView: View {
     @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var showEditDeviceSheet = false
+    
+    // Computed property to get the current device from store
+    private var device: KnownDevice? {
+        deviceStore.devices.first { $0.DeviceID == deviceID }
+    }
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -79,7 +85,7 @@ struct iPhone_DeviceMapView: View {
                 }
             }
         }
-        .navigationTitle(device.DeviceName)
+        .navigationTitle(device?.DeviceName ?? "Unknown Device")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -145,7 +151,9 @@ struct iPhone_DeviceMapView: View {
             }
         }
         .sheet(isPresented: $showEditDeviceSheet) {
-            iPhone_EditDeviceView(device: .constant(device), isPresented: $showEditDeviceSheet)
+            if let device = device, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
+                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
+            }
         }
     }
     
@@ -155,7 +163,7 @@ struct iPhone_DeviceMapView: View {
         if #available(iOS 17.0, *) {
             Map(position: $cameraPosition,scope: mapScope) {
                 // If the device location is available, show it on the map
-                if let coordinate = deviceLocation {
+                if let coordinate = deviceLocation, let device = device {
                     // 1. Genauigkeitskreis als separates Map-Element
                     if let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
@@ -205,8 +213,10 @@ struct iPhone_DeviceMapView: View {
             .mapStyle(mapStyleFromSettings(settings.mapType))
         } else {
             // For iOS versions below 17, use a legacy map view implementation
-            iPhone_LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
-                .ignoresSafeArea()
+            if let currentDevice = device {
+                iPhone_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
+                    .ignoresSafeArea()
+            }
         }
     }
 
@@ -222,7 +232,7 @@ struct iPhone_DeviceMapView: View {
     }
     
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
-        guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
+        guard let url = URL(string: settings.miataruServerURL), !deviceID.isEmpty else {
             showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }
@@ -231,7 +241,7 @@ struct iPhone_DeviceMapView: View {
         do {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
-                forDeviceIDs: [device.DeviceID],
+                forDeviceIDs: [deviceID],
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID
             )
             if let loc = locations.first {
@@ -356,7 +366,7 @@ struct iPhone_DeviceMapView: View {
     let mockTimestamp = Date()
     return NavigationView {
         iPhone_DeviceMapView(
-            device: mockDevice,
+            deviceID: mockDevice.DeviceID,
             previewDeviceLocation: mockLocation,
             previewDeviceAccuracy: mockAccuracy,
             previewDeviceTimestamp: mockTimestamp
