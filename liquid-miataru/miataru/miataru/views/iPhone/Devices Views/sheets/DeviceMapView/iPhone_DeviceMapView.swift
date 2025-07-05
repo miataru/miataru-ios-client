@@ -5,6 +5,7 @@ import Combine
 
 struct iPhone_DeviceMapView: View {
     let device: KnownDevice
+    @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco als Standard
         span: spanForZoomLevel(1) // Default, wird in onAppear überschrieben
@@ -27,6 +28,7 @@ struct iPhone_DeviceMapView: View {
     @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
     @State private var mapInteractionID = UUID()
     @State private var currentRegion: MKCoordinateRegion? = nil
+    @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -100,13 +102,16 @@ struct iPhone_DeviceMapView: View {
             // Aktuellen Zoom-Level aus der Karte speichern
             currentMapSpan = context.region.span
             currentRegion = context.region // aktuelle Region für ScaleBar speichern
+            if #available(iOS 17.0, *) {
+                currentMapCamera = context.camera // aktuelle Kamera inkl. Heading speichern
+            }
         }
     }
     
     @ViewBuilder
     private func mapSection() -> some View {
         if #available(iOS 17.0, *) {
-            Map(position: $cameraPosition) {
+            Map(position: $cameraPosition,scope: mapScope) {
                 if let coordinate = deviceLocation {
                     if let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
@@ -156,13 +161,24 @@ struct iPhone_DeviceMapView: View {
                 withAnimation {
                     if #available(iOS 17.0, *) {
                         if resetZoomToSettings {
-                            // Bei manuellem Update: Zoom-Level aus Settings verwenden
+                            // Bei manuellem Update: Karte wieder nach Norden ausrichten (heading = 0)
                             let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
-                            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: settingsSpan))
+                            let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
+                            cameraPosition = .camera(northCamera)
                             currentMapSpan = settingsSpan // Auch currentMapSpan aktualisieren
                         } else {
-                            // Bei automatischem Update: Aktuellen Zoom-Level beibehalten
-                            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                            // Bei automatischem Update: Aktuelle Ausrichtung (heading) beibehalten
+                            if let currentCamera = currentMapCamera {
+                                let newCamera = MapCamera(
+                                    centerCoordinate: coordinate,
+                                    distance: currentCamera.distance,
+                                    heading: currentCamera.heading,
+                                    pitch: currentCamera.pitch
+                                )
+                                cameraPosition = .camera(newCamera)
+                            } else {
+                                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                            }
                         }
                     } else {
                         if resetZoomToSettings {
