@@ -1,24 +1,9 @@
-//
-//  DeviceIDManager.swift
-//  miataru
-//
-//  Created by Daniel Kirstenpfad on 21.06.25.
-//  Copyright © 2025 Miataru. All rights reserved.
-//
 import Foundation
 
 class thisDeviceIDManager {
-    static let shared = thisDeviceIDManager()
     private let legacyFileName = "deviceID.plist"
     private let modernFileName = "deviceIDmodern.plist"
     
-    private init() {}
-    
-    /// Gibt die gespeicherte oder neu generierte deviceID zurück
-    var deviceID: String {
-        return loadDeviceID()!
-    }
-
     private var appDirectory: URL? {
         guard let appSupportDir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true),
               let bundleID = Bundle.main.bundleIdentifier else {
@@ -62,8 +47,7 @@ class thisDeviceIDManager {
         // 2. Prüfe, ob das alte Format existiert und migriere ggf.
         guard let legacyURL = legacyFileURL else { return nil }
         if FileManager.default.fileExists(atPath: legacyURL.path),
-           let data = try? Data(contentsOf: legacyURL),
-           let legacyID = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: data) as String? {
+           let legacyID = NSKeyedUnarchiver.unarchiveObject(withFile: legacyURL.path) as? String {
             // Migriere ins neue Format
             saveDeviceID(legacyID)
             return legacyID
@@ -73,4 +57,8 @@ class thisDeviceIDManager {
         saveDeviceID(newID)
         return newID
     }
-}
+    
+    public var deviceID: String? {
+        return loadDeviceID()
+    }
+} 
