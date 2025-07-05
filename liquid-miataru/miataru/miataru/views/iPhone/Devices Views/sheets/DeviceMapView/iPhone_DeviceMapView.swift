@@ -34,7 +34,7 @@ struct iPhone_DeviceMapView: View {
             VStack {
                 mapSection()
             }
-            errorOverlay()
+            ErrorOverlay(message: errorMessage, visible: errorOverlayVisible)
             // ScaleBar immer ganz oben
             Group {
                 if #available(iOS 17.0, *) {
@@ -121,30 +121,6 @@ struct iPhone_DeviceMapView: View {
         } else {
             iPhone_LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                 .ignoresSafeArea()
-        }
-    }
-
-    @ViewBuilder
-    private func errorOverlay() -> some View {
-        if errorOverlayVisible {
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Text(errorMessage)
-                        .padding(16)
-                        .background(Color.red.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 10)
-                        .multilineTextAlignment(.center)
-                    Spacer()
-                }
-                Spacer()
-            }
-            .transition(.scale.combined(with: .opacity))
-            .animation(.easeInOut(duration: 0.3), value: errorOverlayVisible)
-            .zIndex(1)
         }
     }
 
@@ -256,101 +232,4 @@ struct iPhone_DeviceMapView: View {
         }
     }
 }
-
-// Hilfsfunktion für MapStyle
-@available(iOS 17.0, *)
-fileprivate func mapStyleFromSettings(_ mapType: Int) -> MapStyle {
-    switch mapType {
-    case 2:
-        return .hybrid(elevation: .automatic)
-    case 3:
-        return .imagery(elevation: .automatic)
-    default:
-        return .standard(elevation: .automatic)
-    }
-}
-
-// Hilfsfunktion für Zoom-Level (in km)
-fileprivate func spanForZoomLevel(_ zoomLevel: Int) -> MKCoordinateSpan {
-    // 1° Breitengrad ≈ 111 km
-    let km = Double(zoomLevel)
-    let delta = km / 111.0
-    return MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
-}
-
-// Hilfsfunktion um aktuellen Zoom-Level aus Span zu berechnen
-fileprivate func currentZoomLevelFromSpan(_ span: MKCoordinateSpan) -> Int {
-    // Durchschnitt aus latitude und longitude delta
-    let avgDelta = (span.latitudeDelta + span.longitudeDelta) / 2.0
-    // Umrechnung zurück zu km: 1° ≈ 111 km
-    let km = avgDelta * 111.0
-    return Int(round(km))
-}
-
-// --- Maßstabsleiste (Scale Bar) ---
-struct MapScaleBar: View {
-    let region: MKCoordinateRegion
-    let width: CGFloat
-
-    var body: some View {
-        let distance = distanceForWidth(region: region, width: width)
-        let label = distanceLabel(for: distance)
-        HStack(spacing: 2) {
-            Rectangle()
-                .frame(width: width, height: 2)
-                .foregroundColor(.primary)
-                .cornerRadius(2)
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(.primary)
-        }
-        .padding(4)
-        .background(.thinMaterial)
-        .cornerRadius(4)
-    }
-
-    func distanceForWidth(region: MKCoordinateRegion, width: CGFloat) -> CLLocationDistance {
-        // Berechne die Distanz, die 'width' Punkte auf der Karte abdecken
-        let mapViewWidth = UIScreen.main.bounds.width
-        let span = region.span
-        let center = region.center
-        let loc1 = CLLocation(latitude: center.latitude, longitude: center.longitude - span.longitudeDelta / 2 * Double(width / mapViewWidth))
-        let loc2 = CLLocation(latitude: center.latitude, longitude: center.longitude + span.longitudeDelta / 2 * Double(width / mapViewWidth))
-        return loc1.distance(from: loc2)
-    }
-
-    func distanceLabel(for distance: CLLocationDistance) -> String {
-        let usesMetric: Bool
-        if #available(iOS 16.0, *) {
-            usesMetric = Locale.current.measurementSystem == .metric
-        } else {
-            usesMetric = Locale.current.usesMetricSystem
-        }
-        if usesMetric {
-            if distance > 1000 {
-                // Lokalisiert: Kilometer-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_kilometers", comment: "Scale bar: display distance in kilometers")
-                return String(format: format, distance / 1000)
-            } else {
-                // Lokalisiert: Meter-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_meters", comment: "Scale bar: display distance in meters")
-                return String(format: format, distance)
-            }
-        } else {
-            // Imperial: Meilen und Fuß
-            let distanceInFeet = distance / 0.3048
-            let distanceInMiles = distance / 1609.34
-            if distanceInFeet > 528 { // Mehr als 1/10 Meile
-                // Lokalisiert: Meilen-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_miles", comment: "Scale bar: display distance in miles")
-                return String(format: format, distanceInMiles)
-            } else {
-                // Lokalisiert: Fuß-Einheit für Maßstabsleiste
-                let format = NSLocalizedString("scalebar_feet", comment: "Scale bar: display distance in feet")
-                return String(format: format, distanceInFeet)
-            }
-        }
-    }
-}
-
 
