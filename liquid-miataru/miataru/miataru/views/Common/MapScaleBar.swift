@@ -12,7 +12,7 @@ struct MapScaleBar: View {
             Rectangle()
                 .frame(width: width, height: 2)
                 .foregroundColor(.primary)
-                .cornerRadius(2)
+                .cornerRadius(4)
             Text(label)
                 .font(.caption2)
                 .foregroundColor(.primary)
@@ -66,9 +66,6 @@ struct MapScaleBar: View {
     }
 }
 
-#if DEBUG
-import SwiftUI
-
 #Preview {
     let center = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
     // 10 verschiedene Zoom-Levels von sehr nah bis weit entfernt
@@ -84,7 +81,7 @@ import SwiftUI
                         center: center,
                         span: MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
                     ),
-                    width: 120
+                    width: 100
                 )
             }
         }
@@ -92,11 +89,9 @@ import SwiftUI
     .padding()
     .background(
         LinearGradient(
-            gradient: Gradient(colors: [.blue.opacity(0.2), .purple.opacity(0.2), .orange.opacity(0.2)]),
+            gradient: Gradient(colors: [.blue, .purple, .orange]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     )
-    .previewLayout(.sizeThatFits)
 }
-#endif 
