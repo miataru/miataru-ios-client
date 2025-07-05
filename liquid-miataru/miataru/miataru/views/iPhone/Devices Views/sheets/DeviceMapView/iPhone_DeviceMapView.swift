@@ -7,8 +7,8 @@ struct iPhone_DeviceMapView: View {
     let device: KnownDevice
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco als Standard
-        span: spanForZoomLevel(1) // Default, wird in onAppear überschrieben
+        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco as default
+        span: spanForZoomLevel(1) // Default, will be overwritten in onAppear
     )
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -20,7 +20,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var deviceLocation: CLLocationCoordinate2D?
-    @State private var deviceAccuracy: Double? // in Metern
+    @State private var deviceAccuracy: Double? // in Meters
     @State private var deviceTimestamp: Date? = nil
     @ObservedObject private var settings = SettingsManager.shared
     @State private var timerCancellable: AnyCancellable? = nil
@@ -87,7 +87,7 @@ struct iPhone_DeviceMapView: View {
         .onAppear {
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
-            currentMapSpan = span // Initialen Zoom-Level setzen
+            currentMapSpan = span // Set initial zoom level
             
             if let coordinate = deviceLocation {
                 region = MKCoordinateRegion(center: coordinate, span: span)
@@ -140,7 +140,7 @@ struct iPhone_DeviceMapView: View {
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    // Overlay für Zeitangabe
+                    // Overlay for time display
                     Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
                         if let timestamp = deviceTimestamp {
                             Text(relativeTimeString(from: timestamp))
@@ -153,10 +153,10 @@ struct iPhone_DeviceMapView: View {
                                     Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                 )
                                 .shadow(radius: 2)
-                                .offset(y: -38) // Wert ggf. anpassen, damit es über dem Marker schwebt
+                                .offset(y: -38) // Value may need to be adjusted to hover above the marker
                         }
                     }
-                    // Nativer Marker
+                    // Native Marker
                     Marker(annotationID, systemImage: "mappin", coordinate: coordinate)
                         .tint(Color(device.DeviceColor ?? .blue))
                 }
@@ -182,7 +182,7 @@ struct iPhone_DeviceMapView: View {
     
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
-            showErrorOverlay("Ungültige Server-URL oder DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+            showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }
         isLoading = true
@@ -201,13 +201,13 @@ struct iPhone_DeviceMapView: View {
                 withAnimation {
                     if #available(iOS 17.0, *) {
                         if resetZoomToSettings {
-                            // Bei manuellem Update: Karte wieder nach Norden ausrichten (heading = 0)
+                            // On manual update: realign map to north (heading = 0)
                             let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                             let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
                             cameraPosition = .camera(northCamera)
-                            currentMapSpan = settingsSpan // Auch currentMapSpan aktualisieren
+                            currentMapSpan = settingsSpan // Also update currentMapSpan
                         } else {
-                            // Bei automatischem Update: Aktuelle Ausrichtung (heading) beibehalten
+                            // On automatic update: keep current orientation (heading)
                             if let currentCamera = currentMapCamera {
                                 let newCamera = MapCamera(
                                     centerCoordinate: coordinate,
@@ -222,11 +222,11 @@ struct iPhone_DeviceMapView: View {
                         }
                     } else {
                         if resetZoomToSettings {
-                            // Bei manuellem Update: Zoom-Level aus Settings verwenden
+                            // On manual update: use zoom level from settings
                             let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                             region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
                         } else {
-                            // Bei automatischem Update: Aktuellen Zoom-Level beibehalten
+                            // On automatic update: keep current zoom level
                             let currentZoomLevel = currentZoomLevelFromSpan(region.span)
                             let currentSpan = spanForZoomLevel(currentZoomLevel)
                             region = MKCoordinateRegion(center: coordinate, span: currentSpan)
@@ -234,21 +234,21 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             } else {
-                showErrorOverlay("Keine Standortdaten gefunden", NSLocalizedString("no_location_data_found", comment: "No location available"))
+                showErrorOverlay("No location data found", NSLocalizedString("no_location_data_found", comment: "No location available"))
             }
         } catch let error as MiataruAPIClient.APIError {
-            // Differenzierte Fehlerbehandlung
+            // Differentiated error handling
             switch error {
             case .invalidURL:
-                showErrorOverlay("Ungültige Server-URL", NSLocalizedString("server_url_invalid", comment: "The server URL is invalid."))
+                showErrorOverlay("Invalid server URL", NSLocalizedString("server_url_invalid", comment: "The server URL is invalid."))
             case .invalidResponse(_):
-                showErrorOverlay("Ungültige Serverantwort", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
+                showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
             case .encodingError(let err):
-                showErrorOverlay("Fehler beim Kodieren: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Error encoding the request."))
+                showErrorOverlay("Encoding error: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Error encoding the request."))
             case .decodingError(let err):
-                showErrorOverlay("Fehler beim Verarbeiten der Antwort: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
+                showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
             case .requestFailed(let err):
-                showErrorOverlay("Netzwerkfehler: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
+                showErrorOverlay("Network error: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
             }
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
@@ -256,7 +256,7 @@ struct iPhone_DeviceMapView: View {
     }
 
     private func startAutoUpdate() {
-        stopAutoUpdate() // Falls schon ein Timer läuft
+        stopAutoUpdate() // If a timer is already running
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
         timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
@@ -276,7 +276,7 @@ struct iPhone_DeviceMapView: View {
     }
 
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
-        print("Fehler: \(debugMessage)") // Debug-Ausgabe
+        print("Error: \(debugMessage)") // Debug output
         errorMessage = userMessage
         withAnimation {
             errorOverlayVisible = true
@@ -294,7 +294,7 @@ struct iPhone_DeviceMapView: View {
         let newCamera = MapCamera(
             centerCoordinate: center,
             distance: currentCamera.distance,
-            heading: 0, // Norden
+            heading: 0, // North
             pitch: currentCamera.pitch
         )
         withAnimation {
@@ -315,7 +315,7 @@ struct iPhone_DeviceMapView: View {
         }
     }
 
-    // Hilfsfunktion für relative Zeitangabe
+    // Helper function for relative time display
     private func relativeTimeString(from date: Date?) -> String {
         guard let date = date else { return "–" }
         let formatter = RelativeDateTimeFormatter()
