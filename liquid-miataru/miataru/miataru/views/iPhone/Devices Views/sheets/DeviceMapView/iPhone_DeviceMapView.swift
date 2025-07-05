@@ -29,6 +29,7 @@ struct iPhone_DeviceMapView: View {
     @State private var mapInteractionID = UUID()
     @State private var currentRegion: MKCoordinateRegion? = nil
     @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
+    @StateObject private var errorOverlayManager = ErrorOverlayManager()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -36,7 +37,7 @@ struct iPhone_DeviceMapView: View {
             VStack {
                 mapSection()
             }
-            ErrorOverlay(message: errorMessage, visible: errorOverlayVisible)
+            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
             // ScaleBar immer ganz oben
             Group {
                 if #available(iOS 17.0, *) {
@@ -276,16 +277,8 @@ struct iPhone_DeviceMapView: View {
     }
 
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
-        print("Error: \(debugMessage)") // Debug output
-        errorMessage = userMessage
-        withAnimation {
-            errorOverlayVisible = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            withAnimation {
-                errorOverlayVisible = false
-            }
-        }
+        print("Error: \(debugMessage)")
+        errorOverlayManager.show(message: userMessage)
     }
 
     private func alignMapToNorth() {

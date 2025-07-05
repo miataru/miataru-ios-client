@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct ErrorOverlay: View {
     let message: String
@@ -25,5 +26,27 @@ struct ErrorOverlay: View {
             .animation(.easeInOut(duration: 0.3), value: visible)
             .zIndex(1)
         }
+    }
+}
+
+class ErrorOverlayManager: ObservableObject {
+    @Published var message: String = ""
+    @Published var visible: Bool = false
+
+    private var hideCancellable: AnyCancellable?
+
+    func show(message: String, duration: TimeInterval = 3.0) {
+        self.message = message
+        withAnimation {
+            self.visible = true
+        }
+        hideCancellable?.cancel()
+        hideCancellable = Just(())
+            .delay(for: .seconds(duration), scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                withAnimation {
+                    self?.visible = false
+                }
+            }
     }
 } 
