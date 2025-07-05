@@ -10,7 +10,7 @@ struct MapCompass: View {
             ZStack {
                 // Compass circle
                 Circle()
-                    .stroke(Color.primary, lineWidth: 2)
+                    .stroke(Color.primary.opacity(0.5), lineWidth: 1)
                     .frame(width: size, height: size)
                     .background(Circle().fill(.ultraThinMaterial))
                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
@@ -22,7 +22,7 @@ struct MapCompass: View {
                 CompassNeedle(size: size * 0.5)
                     .rotationEffect(.degrees(heading))
                 // N marker
-                Text(NSLocalizedString("N", comment: "Compass North label"))
+                Text(NSLocalizedString("compass_north_label", comment: "Compass North label"))
                     //.font(.caption2.bold())
                     .font(.caption2.smallCaps().bold())
                     .foregroundColor(.primary)

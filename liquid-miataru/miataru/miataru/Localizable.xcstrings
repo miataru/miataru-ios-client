@@ -408,6 +408,17 @@
         }
       }
     },
+    "compass_north_label" : {
+      "comment" : "Compass North label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        }
+      }
+    },
     "compass_NW" : {
       "comment" : "Compass North-West abbreviation",
       "localizations" : {
@@ -903,17 +914,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This is your devices QR-Code."
-          }
-        }
-      }
-    },
-    "N" : {
-      "comment" : "Compass North label",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "N"
           }
         }
       }
