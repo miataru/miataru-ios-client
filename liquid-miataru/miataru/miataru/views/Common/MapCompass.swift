@@ -18,7 +18,7 @@ struct MapCompass: View {
                     .fill(Color.red)
                     .rotationEffect(.degrees(heading))
                 // N-Markierung
-                Text("N")
+                Text(NSLocalizedString("N", comment: "Compass North label"))
                     .font(.caption2.bold())
                     .foregroundColor(.primary)
                     .offset(y: -size * 0.38)
@@ -35,17 +35,28 @@ struct MapCompass: View {
         .cornerRadius(size/2 + 8)
         .shadow(radius: 1)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Kompass")
+        .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
         .accessibilityValue(compassLabel(for: heading))
     }
 
     /// Gibt z.B. "NE 45°" zurück
     private func compassLabel(for heading: Double) -> String {
-        let directions = ["N", "NO", "O", "SO", "S", "SW", "W", "NW", "N"]
+        let directions = [
+            NSLocalizedString("compass_N", comment: "Compass North abbreviation"),
+            NSLocalizedString("compass_NE", comment: "Compass North-East abbreviation"),
+            NSLocalizedString("compass_E", comment: "Compass East abbreviation"),
+            NSLocalizedString("compass_SE", comment: "Compass South-East abbreviation"),
+            NSLocalizedString("compass_S", comment: "Compass South abbreviation"),
+            NSLocalizedString("compass_SW", comment: "Compass South-West abbreviation"),
+            NSLocalizedString("compass_W", comment: "Compass West abbreviation"),
+            NSLocalizedString("compass_NW", comment: "Compass North-West abbreviation"),
+            NSLocalizedString("compass_N", comment: "Compass North abbreviation (repeat for wraparound)")
+        ]
         let index = Int((heading + 22.5) / 45.0) % 8
         let dir = directions[index]
         let deg = Int(round(heading))
-        return String(format: "%@ %d°", dir, deg)
+        // Formatierter String für Richtung und Gradzahl
+        return String(format: NSLocalizedString("compass_%@ %d°", comment: "Compass direction and degree, e.g. 'NE 45°'"), dir, deg)
     }
 }
 

@@ -353,6 +353,116 @@
         }
       }
     },
+    "Compass" : {
+      "comment" : "Accessibility label for compass",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compass"
+          }
+        }
+      }
+    },
+    "compass_%@ %d°" : {
+      "comment" : "Compass direction and degree, e.g. 'NE 45°'",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %d°"
+          }
+        }
+      }
+    },
+    "compass_E" : {
+      "comment" : "Compass East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E"
+          }
+        }
+      }
+    },
+    "compass_N" : {
+      "comment" : "Compass North abbreviation\nCompass North abbreviation (repeat for wraparound)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        }
+      }
+    },
+    "compass_NE" : {
+      "comment" : "Compass North-East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NE"
+          }
+        }
+      }
+    },
+    "compass_NW" : {
+      "comment" : "Compass North-West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NW"
+          }
+        }
+      }
+    },
+    "compass_S" : {
+      "comment" : "Compass South abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S"
+          }
+        }
+      }
+    },
+    "compass_SE" : {
+      "comment" : "Compass South-East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SE"
+          }
+        }
+      }
+    },
+    "compass_SW" : {
+      "comment" : "Compass South-West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SW"
+          }
+        }
+      }
+    },
+    "compass_W" : {
+      "comment" : "Compass West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W"
+          }
+        }
+      }
+    },
     "Current location" : {
       "comment" : "current position display in Location Tracking Details",
       "localizations" : {
@@ -619,9 +729,6 @@
         }
       }
     },
-    "Kompass" : {
-
-    },
     "Last Background Update:" : {
       "localizations" : {
         "en" : {
@@ -801,7 +908,15 @@
       }
     },
     "N" : {
-
+      "comment" : "Compass North label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        }
+      }
     },
     "network_error" : {
       "comment" : "Network error. Please check your internet connection.",
