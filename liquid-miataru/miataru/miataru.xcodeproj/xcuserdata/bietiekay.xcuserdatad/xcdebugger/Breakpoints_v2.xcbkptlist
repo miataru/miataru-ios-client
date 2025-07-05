@@ -304,8 +304,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "164"
             endingLineNumber = "164"
-            landmarkName = "fetchLocation(resetZoomToSettings:)"
-            landmarkType = "7">
+            landmarkName = "iPhone_DeviceMapView"
+            landmarkType = "14">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

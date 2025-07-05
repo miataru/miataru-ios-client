@@ -41,15 +41,21 @@ struct iPhone_DeviceMapView: View {
             Group {
                 if #available(iOS 17.0, *) {
                     if let region = currentRegion ?? cameraPosition.region {
-                        MapScaleBar(region: region, width: 75)
-                            .padding([.bottom, .trailing], 5)
-                            .zIndex(2)
-                    }
-                } else {
-                    MapScaleBar(region: region, width: 75)
-                        .id("scalebar")
+                        Button(action: { resetZoomToSettings() }) {
+                            MapScaleBar(region: region, width: 50)
+                        }
+                        .buttonStyle(.plain)
                         .padding([.bottom, .trailing], 5)
                         .zIndex(2)
+                    }
+                } else {
+                    Button(action: { resetZoomToSettings() }) {
+                        MapScaleBar(region: region, width: 50)
+                            .id("scalebar")
+                    }
+                    .buttonStyle(.plain)
+                    .padding([.bottom, .trailing], 5)
+                    .zIndex(2)
                 }
             }
             // Kompass oben rechts
@@ -274,6 +280,19 @@ struct iPhone_DeviceMapView: View {
         )
         withAnimation {
             cameraPosition = .camera(newCamera)
+        }
+    }
+
+    private func resetZoomToSettings() {
+        let span = spanForZoomLevel(settings.mapZoomLevel)
+        if let coordinate = deviceLocation {
+            if #available(iOS 17.0, *) {
+                let newRegion = MKCoordinateRegion(center: coordinate, span: span)
+                cameraPosition = .region(newRegion)
+                currentMapSpan = span
+            } else {
+                region = MKCoordinateRegion(center: coordinate, span: span)
+            }
         }
     }
 }
