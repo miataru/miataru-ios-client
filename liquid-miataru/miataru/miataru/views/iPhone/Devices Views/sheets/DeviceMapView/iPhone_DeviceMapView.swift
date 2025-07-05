@@ -5,6 +5,10 @@ import Combine
 
 struct iPhone_DeviceMapView: View {
     let device: KnownDevice
+    // Preview-Parameter (optional)
+    var previewDeviceLocation: CLLocationCoordinate2D? = nil
+    var previewDeviceAccuracy: Double? = nil
+    var previewDeviceTimestamp: Date? = nil
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco as default
@@ -87,6 +91,16 @@ struct iPhone_DeviceMapView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
+            // Preview-Parameter übernehmen, falls gesetzt
+            if let previewLoc = previewDeviceLocation {
+                deviceLocation = previewLoc
+            }
+            if let previewAcc = previewDeviceAccuracy {
+                deviceAccuracy = previewAcc
+            }
+            if let previewTime = previewDeviceTimestamp {
+                deviceTimestamp = previewTime
+            }
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
@@ -137,17 +151,23 @@ struct iPhone_DeviceMapView: View {
     
     @ViewBuilder
     private func mapSection() -> some View {
+        // Use the new Map API for iOS 17 and above
         if #available(iOS 17.0, *) {
             Map(position: $cameraPosition,scope: mapScope) {
+                // If the device location is available, show it on the map
                 if let coordinate = deviceLocation {
+                    // 1. Genauigkeitskreis als separates Map-Element
                     if let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
+                    // 2. Marker-Annotation (ohne Kreis)
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+                   
                     Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
                         ZStack {
-                            VStack(spacing: 1) {
+                            VStack(spacing: 0) {
+                                // Show the timestamp as a relative time if available
                                 if let timestamp = deviceTimestamp {
                                     Text(relativeTimeString(from: timestamp))
                                         .font(.caption2)
@@ -159,12 +179,12 @@ struct iPhone_DeviceMapView: View {
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
                                         .shadow(radius: 2)
-                                        //.offset(y: 10)
                                 }
+                                // Show the custom map marker for the device
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
                             }
-                            // Unsichtbare Fläche für die Geste (mit expliziter Größe und Debug-Rahmen)
+                            // Add a transparent rectangle to increase the tap area for the context menu
                             Rectangle()
                                 .foregroundColor(.clear)
                                 .contentShape(Rectangle())
@@ -177,14 +197,14 @@ struct iPhone_DeviceMapView: View {
                                         Label("Edit device", systemImage: "pencil")
                                     }
                                 }
-                        }
+                        }.offset(y:10)
                     }
-
                 }
             }
             .ignoresSafeArea()
             .mapStyle(mapStyleFromSettings(settings.mapType))
         } else {
+            // For iOS versions below 17, use a legacy map view implementation
             iPhone_LegacyMapViewRepresentable(region: $region, device: device, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                 .ignoresSafeArea()
         }
@@ -329,3 +349,17 @@ struct iPhone_DeviceMapView: View {
     }
 }
 
+#Preview {
+    let mockDevice = KnownDevice(name: "Test Device", deviceID: "1234567890", color: .red)
+    let mockLocation = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405) // Berlin
+    let mockAccuracy = 15.0
+    let mockTimestamp = Date()
+    return NavigationView {
+        iPhone_DeviceMapView(
+            device: mockDevice,
+            previewDeviceLocation: mockLocation,
+            previewDeviceAccuracy: mockAccuracy,
+            previewDeviceTimestamp: mockTimestamp
+        )
+    }
+}
