@@ -4,21 +4,30 @@ import Combine
 
 @objc(DeviceGroup)
 class DeviceGroup: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identifiable {
-    @Published @objc var groupName: String
-    @Published @objc var groupColor: UIColor?
-    @Published @objc var deviceIDs: Set<String> = []
-    @Published @objc var groupPosition: Int = 0
+    @Published @objc var groupName: String {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+    @Published @objc var deviceIDs: Set<String> = [] {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+    @Published @objc var groupPosition: Int = 0 {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
     var id: String { groupName }
     
-    init(name: String, color: UIColor? = nil) {
+    init(name: String) {
         self.groupName = name
-        self.groupColor = color
     }
     
     required init?(coder aDecoder: NSCoder) {
         self.groupName = aDecoder.decodeObject(forKey: "groupName") as? String ?? ""
-        self.groupColor = aDecoder.decodeObject(forKey: "groupColor") as? UIColor
         if let deviceIDsArray = aDecoder.decodeObject(forKey: "deviceIDs") as? [String] {
             self.deviceIDs = Set(deviceIDsArray)
         }
@@ -27,7 +36,6 @@ class DeviceGroup: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
     
     func encode(with aCoder: NSCoder) {
         aCoder.encode(groupName, forKey: "groupName")
-        aCoder.encode(groupColor, forKey: "groupColor")
         aCoder.encode(Array(deviceIDs), forKey: "deviceIDs")
         aCoder.encode(groupPosition, forKey: "groupPosition")
     }

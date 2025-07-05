@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct iPhone_DevicesView: View {
-    @StateObject private var store = KnownDeviceStore()
+    @StateObject private var store = KnownDeviceStore.shared
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
@@ -92,7 +92,7 @@ struct iPhone_DevicesView: View {
 }
 
 #Preview {
-    let store = KnownDeviceStore()
+    let store = KnownDeviceStore.shared
     store.devices = [
         KnownDevice(name: "iPhone 13", deviceID: UUID().uuidString, color: .red),
         KnownDevice(name: "iPad Pro", deviceID: UUID().uuidString, color: .green),

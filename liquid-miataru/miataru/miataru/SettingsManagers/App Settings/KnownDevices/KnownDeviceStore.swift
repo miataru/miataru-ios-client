@@ -6,6 +6,8 @@ import Combine
 // import miataru
 
 class KnownDeviceStore: ObservableObject {
+    static let shared = KnownDeviceStore()
+    
     @Published var devices: [KnownDevice] = [] {
         didSet {
             setupSubscribers()
@@ -28,7 +30,8 @@ class KnownDeviceStore: ObservableObject {
         return appDirectory.appendingPathComponent(fileName)
     }
 
-    init() {
+    // Make init private for singleton
+    private init() {
         self.devices = load()
         // Sicherstellen, dass das eigene Gerät immer in der Liste ist
         let myDeviceID = thisDeviceIDManager.shared.deviceID

@@ -56,7 +56,7 @@ class DeviceGroupStore: ObservableObject {
     private func load() -> [DeviceGroup] {
         guard let data = try? Data(contentsOf: fileURL) else { return [] }
         do {
-            if let groups = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, DeviceGroup.self, UIColor.self], from: data) as? [DeviceGroup] {
+            if let groups = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, DeviceGroup.self], from: data) as? [DeviceGroup] {
                 // Nach gespeicherter Reihenfolge sortieren
                 return groups.sorted { $0.groupPosition < $1.groupPosition }
             }

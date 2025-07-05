@@ -2,7 +2,7 @@ import SwiftUI
 
 struct iPhone_GroupDetailView: View {
     @ObservedObject var group: DeviceGroup
-    @StateObject private var deviceStore = KnownDeviceStore()
+    @StateObject private var deviceStore = KnownDeviceStore.shared
 
     var body: some View {
         List {
@@ -17,6 +17,13 @@ struct iPhone_GroupDetailView: View {
         }
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: iPhone_GroupMapView(group: group)) {
+                    Text("show")
+                }
+            }
+        }
     }
 }
 
@@ -48,10 +55,10 @@ struct iPhone_GroupDeviceRowView: View {
 }
 
 #Preview {
-    let group = DeviceGroup(name: "Test Group", color: .blue)
+    let group = DeviceGroup(name: "Test Group")
     group.addDevice("device1")
     
-    let deviceStore = KnownDeviceStore()
+    let deviceStore = KnownDeviceStore.shared
     deviceStore.devices = [
         KnownDevice(name: "iPhone 13", deviceID: "device1", color: .red),
         KnownDevice(name: "iPad Pro", deviceID: "device2", color: .green),

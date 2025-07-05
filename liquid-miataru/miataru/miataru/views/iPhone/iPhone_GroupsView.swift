@@ -53,9 +53,9 @@ struct iPhone_GroupsView: View {
 #Preview {
     let groupStore = DeviceGroupStore.shared
     groupStore.groups = [
-        DeviceGroup(name: "Family", color: .blue),
-        DeviceGroup(name: "Work", color: .green),
-        DeviceGroup(name: "Friends", color: .orange)
+        DeviceGroup(name: "Family"),
+        DeviceGroup(name: "Work"),
+        DeviceGroup(name: "Friends")
     ]
     return iPhone_GroupsView().environmentObject(groupStore)
 } 

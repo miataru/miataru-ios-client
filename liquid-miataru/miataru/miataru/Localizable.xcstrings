@@ -711,6 +711,7 @@
       }
     },
     "group_color" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -721,6 +722,7 @@
       }
     },
     "group_color_picker" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
