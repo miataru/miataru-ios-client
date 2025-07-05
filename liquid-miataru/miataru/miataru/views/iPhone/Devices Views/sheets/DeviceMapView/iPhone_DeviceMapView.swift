@@ -271,9 +271,10 @@ struct iPhone_DeviceMapView: View {
     }
 
     private func alignMapToNorth() {
-        guard let currentCamera = currentMapCamera else { return }
+        let coordinate = deviceLocation ?? currentMapCamera?.centerCoordinate
+        guard let center = coordinate, let currentCamera = currentMapCamera else { return }
         let newCamera = MapCamera(
-            centerCoordinate: currentCamera.centerCoordinate,
+            centerCoordinate: center,
             distance: currentCamera.distance,
             heading: 0, // Norden
             pitch: currentCamera.pitch
