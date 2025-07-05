@@ -27,6 +27,7 @@ struct iPhone_GroupMapView: View {
     @State private var currentMapCamera: MapCamera? = nil
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var timerCancellable: AnyCancellable? = nil
+    @State private var userHasRotatedMap = false // Track if user manually rotated the map
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -98,6 +99,12 @@ struct iPhone_GroupMapView: View {
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
+            
+            // Track if user manually rotated the map (heading changed but not due to automatic updates)
+            if headingChanged && !isLoading {
+                userHasRotatedMap = true
+            }
+            
             if headingChanged || zoomChanged {
                 currentMapCamera = context.camera
                 currentRegion = context.region
@@ -225,7 +232,18 @@ struct iPhone_GroupMapView: View {
                 let coordinate = validCoordinates.first!
                 let span = spanForZoomLevel(settings.mapZoomLevel)
                 if #available(iOS 17.0, *) {
-                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                    if userHasRotatedMap, let currentCamera = currentMapCamera {
+                        // Preserve user's rotation and pitch
+                        let newCamera = MapCamera(
+                            centerCoordinate: coordinate,
+                            distance: currentCamera.distance,
+                            heading: currentCamera.heading,
+                            pitch: currentCamera.pitch
+                        )
+                        cameraPosition = .camera(newCamera)
+                    } else {
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                    }
                 } else {
                     region = MKCoordinateRegion(center: coordinate, span: span)
                 }
@@ -248,7 +266,18 @@ struct iPhone_GroupMapView: View {
                 let span = MKCoordinateSpan(latitudeDelta: max(latDelta, 0.01), longitudeDelta: max(lonDelta, 0.01))
                 
                 if #available(iOS 17.0, *) {
-                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    if userHasRotatedMap, let currentCamera = currentMapCamera {
+                        // Preserve user's rotation and pitch
+                        let newCamera = MapCamera(
+                            centerCoordinate: center,
+                            distance: currentCamera.distance,
+                            heading: currentCamera.heading,
+                            pitch: currentCamera.pitch
+                        )
+                        cameraPosition = .camera(newCamera)
+                    } else {
+                        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    }
                 } else {
                     region = MKCoordinateRegion(center: center, span: span)
                 }
@@ -313,6 +342,9 @@ struct iPhone_GroupMapView: View {
     
     private func resetZoomToFit() {
         // Always allow manual reset, regardless of settings
+        // Reset the user rotation flag since this is a manual reset
+        userHasRotatedMap = false
+        
         let validCoordinates = deviceLocations.values.filter { coordinate in
             coordinate.latitude != 0 && coordinate.longitude != 0
         }

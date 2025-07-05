@@ -710,28 +710,6 @@
         }
       }
     },
-    "group_color" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Group Color"
-          }
-        }
-      }
-    },
-    "group_color_picker" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose group color"
-          }
-        }
-      }
-    },
     "group_name" : {
       "localizations" : {
         "en" : {
