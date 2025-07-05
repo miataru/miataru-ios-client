@@ -23,7 +23,7 @@ struct iPhone_AddDeviceView: View {
                     TextField("device_id2", text: $deviceID)
                 }
                 Section(header: Text("device_color")) {
-                    ColorPicker("device_color2", selection: $deviceColor)
+                    ColorPicker("device_colorpicker", selection: $deviceColor)
                 }
             }
             .navigationTitle("new_device")

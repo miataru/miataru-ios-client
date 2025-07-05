@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct iPhone_GroupsView: View {
-    @StateObject private var groupStore = DeviceGroupStore()
+    @EnvironmentObject private var groupStore: DeviceGroupStore
     @State private var showingAddGroup = false
     @State private var editMode: EditMode = .inactive
 
@@ -51,7 +51,7 @@ struct iPhone_GroupsView: View {
 }
 
 #Preview {
-    let groupStore = DeviceGroupStore()
+    let groupStore = DeviceGroupStore.shared
     groupStore.groups = [
         DeviceGroup(name: "Family", color: .blue),
         DeviceGroup(name: "Work", color: .green),

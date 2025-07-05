@@ -90,7 +90,42 @@ class KnownDeviceStore: ObservableObject {
     }
 
     func remove(atOffsets offsets: IndexSet) {
+        // Get device IDs that will be removed
+        let deviceIDsToRemove = offsets.map { devices[$0].DeviceID }
+        
+        // Remove devices from the list
         devices.remove(atOffsets: offsets)
+        
+        // Remove devices from all groups
+        removeDevicesFromAllGroups(deviceIDs: deviceIDsToRemove)
+        
         save()
+    }
+    
+    func removeDevice(byID deviceID: String) {
+        // Remove device from the list
+        devices.removeAll { $0.DeviceID == deviceID }
+        
+        // Remove device from all groups
+        removeDevicesFromAllGroups(deviceIDs: [deviceID])
+        
+        save()
+    }
+    
+    private func removeDevicesFromAllGroups(deviceIDs: [String]) {
+        let groupStore = DeviceGroupStore.shared
+        
+        for group in groupStore.groups {
+            var changed = false
+            for deviceID in deviceIDs {
+                if group.deviceIDs.contains(deviceID) {
+                    group.removeDevice(deviceID)
+                    changed = true
+                }
+            }
+            if changed {
+                group.objectWillChange.send()
+            }
+        }
     }
 } 

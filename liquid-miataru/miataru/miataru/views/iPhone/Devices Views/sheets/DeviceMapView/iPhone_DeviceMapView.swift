@@ -194,7 +194,7 @@ struct iPhone_DeviceMapView: View {
                                     Button {
                                         showEditDeviceSheet = true
                                     } label: {
-                                        Label("Edit device", systemImage: "pencil")
+                                        Label("edit_device", systemImage: "pencil")
                                     }
                                 }
                         }.offset(y:10)

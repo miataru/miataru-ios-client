@@ -27,6 +27,7 @@ struct iPhone_RootView: View {
                     Label("settings", systemImage: "gear")
                 }
         }
+        .environmentObject(DeviceGroupStore.shared)
     }
 }
 

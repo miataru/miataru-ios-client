@@ -16,9 +16,7 @@ struct iPhone_DevicesView: View {
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
-                                if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
-                                    store.remove(atOffsets: IndexSet(integer: index))
-                                }
+                                store.removeDevice(byID: device.DeviceID)
                             } label: {
                                 Label("delete_device", systemImage: "trash")
                             }
@@ -39,9 +37,7 @@ struct iPhone_DevicesView: View {
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
-                                    if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
-                                        store.remove(atOffsets: IndexSet(integer: index))
-                                    }
+                                    store.removeDevice(byID: device.DeviceID)
                                 } label: {
                                     Label("delete_device", systemImage: "trash")
                                 }

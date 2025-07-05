@@ -546,17 +546,6 @@
         }
       }
     },
-    "device" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "device"
-          }
-        }
-      }
-    },
     "device_color" : {
       "localizations" : {
         "en" : {
@@ -567,7 +556,7 @@
         }
       }
     },
-    "device_color2" : {
+    "device_colorpicker" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -677,9 +666,6 @@
           }
         }
       }
-    },
-    "Edit device" : {
-
     },
     "edit_device" : {
       "localizations" : {

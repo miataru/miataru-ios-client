@@ -33,7 +33,7 @@ struct iPhone_EditDeviceView: View {
                     }
                 }
                 Section(header: Text("device_color")) {
-                    ColorPicker("device_color2", selection: $tempDeviceColor)
+                    ColorPicker("device_colorpicker", selection: $tempDeviceColor)
                 }
                 Section(header: Text("device_qr_code")) {
                     let qrContent = QRCodeShape(

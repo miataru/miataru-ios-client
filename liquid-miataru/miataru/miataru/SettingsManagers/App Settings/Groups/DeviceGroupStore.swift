@@ -3,6 +3,8 @@ import UIKit
 import Combine
 
 class DeviceGroupStore: ObservableObject {
+    static let shared = DeviceGroupStore()
+    
     @Published var groups: [DeviceGroup] = [] {
         didSet {
             setupSubscribers()
@@ -25,7 +27,8 @@ class DeviceGroupStore: ObservableObject {
         return appDirectory.appendingPathComponent(fileName)
     }
 
-    init() {
+    // Make init private for singleton
+    private init() {
         self.groups = load()
         setupSubscribers()
     }

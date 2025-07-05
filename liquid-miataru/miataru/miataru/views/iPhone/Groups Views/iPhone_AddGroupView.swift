@@ -38,6 +38,6 @@ struct iPhone_AddGroupView: View {
 }
 
 #Preview {
-    let groupStore = DeviceGroupStore()
-    return iPhone_AddGroupView(groupStore: groupStore, isPresented: .constant(true))
+    let groupStore = DeviceGroupStore.shared
+    iPhone_AddGroupView(groupStore: groupStore, isPresented: .constant(true))
 } 
