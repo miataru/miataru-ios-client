@@ -1125,6 +1125,17 @@
         }
       }
     },
+    "remove_from_group" : {
+      "comment" : "Action to remove a device from a group",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from group"
+          }
+        }
+      }
+    },
     "sat_map" : {
       "localizations" : {
         "en" : {
