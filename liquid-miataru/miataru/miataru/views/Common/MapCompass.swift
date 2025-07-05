@@ -17,7 +17,6 @@ struct MapCompass: View {
                 CompassNeedle(size: size * 0.7)
                     .fill(Color.red)
                     .rotationEffect(.degrees(heading))
-                    .animation(.easeInOut(duration: 0.2), value: heading)
                 // N-Markierung
                 Text("N")
                     .font(.caption2.bold())
