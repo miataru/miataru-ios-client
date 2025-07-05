@@ -52,6 +52,16 @@ struct iPhone_DeviceMapView: View {
                         .zIndex(2)
                 }
             }
+            // Kompass oben rechts
+            Group {
+                if #available(iOS 17.0, *) {
+                    let heading = currentMapCamera?.heading ?? 0
+                    MapCompass(heading: heading, size: 40)
+                        .padding([.top, .trailing], 10)
+                        .zIndex(3)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                }
+            }
         }
         .navigationTitle(device.DeviceName)
         .navigationBarTitleDisplayMode(.inline)

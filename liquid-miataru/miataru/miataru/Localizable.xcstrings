@@ -797,6 +797,9 @@
         }
       }
     },
+    "N" : {
+
+    },
     "network_error" : {
       "comment" : "Network error. Please check your internet connection.",
       "localizations" : {
