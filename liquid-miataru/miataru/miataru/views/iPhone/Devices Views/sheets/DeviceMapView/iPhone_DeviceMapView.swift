@@ -320,7 +320,12 @@ struct MapScaleBar: View {
     }
 
     func distanceLabel(for distance: CLLocationDistance) -> String {
-        let usesMetric = Locale.current.usesMetricSystem
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
         if usesMetric {
             if distance > 1000 {
                 // Lokalisiert: Kilometer-Einheit für Maßstabsleiste
