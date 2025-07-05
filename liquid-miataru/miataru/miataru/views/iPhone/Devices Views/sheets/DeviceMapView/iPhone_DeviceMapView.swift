@@ -108,7 +108,7 @@ struct iPhone_DeviceMapView: View {
                 cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
             }
         }
-        .onMapCameraChange { context in
+        .onMapCameraChange(frequency: .continuous) { context in
             // Aktuellen Zoom-Level aus der Karte speichern
             currentMapSpan = context.region.span
             currentRegion = context.region // aktuelle Region für ScaleBar speichern
