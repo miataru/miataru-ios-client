@@ -157,9 +157,12 @@ struct iPhone_DeviceMapView: View {
                                 .offset(y: -38) // Value may need to be adjusted to hover above the marker
                         }
                     }
-                    // Native Marker
-                    Marker(annotationID, systemImage: "mappin", coordinate: coordinate)
-                        .tint(Color(device.DeviceColor ?? .blue))
+                    // Native Marker (ersetzt durch CustomMapMarker)
+                    Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
+                        MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                            .frame(width: 30, height: 40)
+                            .shadow(radius: 2)
+                    }
                 }
             }
             .ignoresSafeArea()
