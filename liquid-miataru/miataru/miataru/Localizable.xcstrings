@@ -1044,6 +1044,17 @@
         }
       }
     },
+    "relative_time_now" : {
+      "comment" : "Indicates that the location update just happened or is happening right now in a relative time on the map marker.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "now"
+          }
+        }
+      }
+    },
     "sat_map" : {
       "localizations" : {
         "en" : {

@@ -307,13 +307,5 @@ struct iPhone_DeviceMapView: View {
             }
         }
     }
-
-    // Helper function for relative time display
-    private func relativeTimeString(from date: Date?) -> String {
-        guard let date = date else { return "–" }
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .full
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
 }
 
