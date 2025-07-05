@@ -273,7 +273,15 @@
       }
     },
     "Accuracy" : {
-      "comment" : "Accuracy display in Location Tracking Details"
+      "comment" : "Accuracy display in Location Tracking Details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy"
+          }
+        }
+      }
     },
     "add" : {
       "localizations" : {
@@ -931,6 +939,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
+          }
+        }
+      }
+    },
+    "scalebar_feet" : {
+      "comment" : "Maßstabsleiste: Anzeige der Distanz in Fuß",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ft"
+          }
+        }
+      }
+    },
+    "scalebar_kilometers" : {
+      "comment" : "Maßstabsleiste: Anzeige der Distanz in Kilometern",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "km"
+          }
+        }
+      }
+    },
+    "scalebar_meters" : {
+      "comment" : "Maßstabsleiste: Anzeige der Distanz in Metern",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m"
+          }
+        }
+      }
+    },
+    "scalebar_miles" : {
+      "comment" : "Maßstabsleiste: Anzeige der Distanz in Meilen",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mi"
           }
         }
       }

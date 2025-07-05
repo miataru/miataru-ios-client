@@ -39,14 +39,14 @@ struct iPhone_DeviceMapView: View {
             Group {
                 if #available(iOS 17.0, *) {
                     if let region = currentRegion ?? cameraPosition.region {
-                        MapScaleBar(region: region, width: 100)
-                            .padding([.bottom, .trailing], 16)
+                        MapScaleBar(region: region, width: 75)
+                            .padding([.bottom, .trailing], 5)
                             .zIndex(2)
                     }
                 } else {
-                    MapScaleBar(region: region, width: 100)
+                    MapScaleBar(region: region, width: 75)
                         .id("scalebar")
-                        .padding([.bottom, .trailing], 16)
+                        .padding([.bottom, .trailing], 5)
                         .zIndex(2)
                 }
             }
@@ -295,18 +295,18 @@ struct MapScaleBar: View {
     var body: some View {
         let distance = distanceForWidth(region: region, width: width)
         let label = distanceLabel(for: distance)
-        HStack(spacing: 4) {
+        HStack(spacing: 2) {
             Rectangle()
-                .frame(width: width, height: 4)
+                .frame(width: width, height: 2)
                 .foregroundColor(.primary)
                 .cornerRadius(2)
             Text(label)
                 .font(.caption2)
                 .foregroundColor(.primary)
         }
-        .padding(8)
+        .padding(4)
         .background(.thinMaterial)
-        .cornerRadius(8)
+        .cornerRadius(4)
     }
 
     func distanceForWidth(region: MKCoordinateRegion, width: CGFloat) -> CLLocationDistance {
@@ -320,10 +320,30 @@ struct MapScaleBar: View {
     }
 
     func distanceLabel(for distance: CLLocationDistance) -> String {
-        if distance > 1000 {
-            return String(format: "%.0f km", distance / 1000)
+        let usesMetric = Locale.current.usesMetricSystem
+        if usesMetric {
+            if distance > 1000 {
+                // Lokalisiert: Kilometer-Einheit für Maßstabsleiste
+                let format = NSLocalizedString("scalebar_kilometers", comment: "Maßstabsleiste: Anzeige der Distanz in Kilometern")
+                return String(format: format, distance / 1000)
+            } else {
+                // Lokalisiert: Meter-Einheit für Maßstabsleiste
+                let format = NSLocalizedString("scalebar_meters", comment: "Maßstabsleiste: Anzeige der Distanz in Metern")
+                return String(format: format, distance)
+            }
         } else {
-            return String(format: "%.0f m", distance)
+            // Imperial: Meilen und Fuß
+            let distanceInFeet = distance / 0.3048
+            let distanceInMiles = distance / 1609.34
+            if distanceInFeet > 528 { // Mehr als 1/10 Meile
+                // Lokalisiert: Meilen-Einheit für Maßstabsleiste
+                let format = NSLocalizedString("scalebar_miles", comment: "Maßstabsleiste: Anzeige der Distanz in Meilen")
+                return String(format: format, distanceInMiles)
+            } else {
+                // Lokalisiert: Fuß-Einheit für Maßstabsleiste
+                let format = NSLocalizedString("scalebar_feet", comment: "Maßstabsleiste: Anzeige der Distanz in Fuß")
+                return String(format: format, distanceInFeet)
+            }
         }
     }
 }
