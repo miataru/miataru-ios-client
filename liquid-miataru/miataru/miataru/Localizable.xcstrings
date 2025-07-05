@@ -12,6 +12,16 @@
         }
       }
     },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
     "1day" : {
       "localizations" : {
         "en" : {
@@ -526,6 +536,27 @@
         }
       }
     },
+    "delete_group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Group"
+          }
+        }
+      }
+    },
+    "device" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "device"
+          }
+        }
+      }
+    },
     "device_color" : {
       "localizations" : {
         "en" : {
@@ -689,6 +720,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Full permissions granted"
+          }
+        }
+      }
+    },
+    "group_color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Color"
+          }
+        }
+      }
+    },
+    "group_color_picker" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose group color"
+          }
+        }
+      }
+    },
+    "group_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Name"
+          }
+        }
+      }
+    },
+    "group_name_placeholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter group name"
+          }
+        }
+      }
+    },
+    "grouplist_edit_done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "grouplist_editbutton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
           }
         }
       }
@@ -938,6 +1029,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add a new Device"
+          }
+        }
+      }
+    },
+    "new_group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Group"
           }
         }
       }

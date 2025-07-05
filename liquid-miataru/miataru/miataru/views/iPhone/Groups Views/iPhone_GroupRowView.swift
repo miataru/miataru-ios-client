@@ -1,0 +1,30 @@
+import SwiftUI
+
+struct iPhone_GroupRowView: View {
+    @ObservedObject var group: DeviceGroup
+    @StateObject private var deviceStore = KnownDeviceStore()
+
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(Color(group.groupColor ?? UIColor.gray))
+                .frame(width: 16, height: 16)
+            VStack(alignment: .leading) {
+                Text(group.groupName)
+                    .font(.headline)
+                Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? "device" : "devices")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+#Preview {
+    let group = DeviceGroup(name: "Test Group", color: .blue)
+    group.addDevice("device1")
+    group.addDevice("device2")
+    return iPhone_GroupRowView(group: group)
+} 
