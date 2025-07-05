@@ -30,6 +30,7 @@ struct iPhone_DeviceMapView: View {
     @State private var currentRegion: MKCoordinateRegion? = nil
     @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    @State private var showEditDeviceSheet = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -129,6 +130,9 @@ struct iPhone_DeviceMapView: View {
                 currentMapSpan = context.region.span
             }
         }
+        .sheet(isPresented: $showEditDeviceSheet) {
+            iPhone_EditDeviceView(device: .constant(device), isPresented: $showEditDeviceSheet)
+        }
     }
     
     @ViewBuilder
@@ -141,27 +145,39 @@ struct iPhone_DeviceMapView: View {
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    // Zeit-Overlay-Annotation danach (oben)
-                    Annotation("time-\(annotationID)", coordinate: coordinate, anchor: .bottom) {
-                        if let timestamp = deviceTimestamp {
-                            Text(relativeTimeString(from: timestamp))
-                                .font(.caption2)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Capsule())
-                                .overlay(
-                                    Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                )
-                                .shadow(radius: 2)
-                                .offset(y: -40) // Wert ggf. anpassen, damit es über dem Pin ist
-                        }
-                    }
-                    // Pin-Annotation zuerst (unten)
                     Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
-                        MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
-                            .frame(width: 30, height: 40)
-                            .shadow(radius: 2)
+                        ZStack {
+                            VStack(spacing: 1) {
+                                if let timestamp = deviceTimestamp {
+                                    Text(relativeTimeString(from: timestamp))
+                                        .font(.caption2)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                        )
+                                        .shadow(radius: 2)
+                                        //.offset(y: 10)
+                                }
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                                    .shadow(radius: 2)
+                            }
+                            // Unsichtbare Fläche für die Geste (mit expliziter Größe und Debug-Rahmen)
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .contentShape(Rectangle())
+                                .frame(width: 60, height: 80)
+                                .zIndex(1)
+                                .contextMenu {
+                                    Button {
+                                        showEditDeviceSheet = true
+                                    } label: {
+                                        Label("Edit device", systemImage: "pencil")
+                                    }
+                                }
+                        }
                     }
 
                 }
