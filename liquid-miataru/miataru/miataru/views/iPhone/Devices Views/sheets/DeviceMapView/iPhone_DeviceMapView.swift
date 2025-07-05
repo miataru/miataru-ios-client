@@ -109,11 +109,13 @@ struct iPhone_DeviceMapView: View {
             }
         }
         .onMapCameraChange(frequency: .continuous) { context in
-            // Aktuellen Zoom-Level aus der Karte speichern
-            currentMapSpan = context.region.span
-            currentRegion = context.region // aktuelle Region für ScaleBar speichern
-            if #available(iOS 17.0, *) {
-                currentMapCamera = context.camera // aktuelle Kamera inkl. Heading speichern
+            let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
+            let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
+                              abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
+            if headingChanged || zoomChanged {
+                currentMapCamera = context.camera
+                currentRegion = context.region
+                currentMapSpan = context.region.span
             }
         }
     }
