@@ -3,7 +3,7 @@ import CoreLocation
 
 struct iPhone_LocationStatusView: View {
     @ObservedObject private var locationManager = LocationManager.shared
-    @ObservedObject private var backgroundManager = BackgroundLocationManager.shared
+    @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
     
     var body: some View {
@@ -370,7 +370,7 @@ struct PermissionStatusView: View {
 }
 
 struct BackgroundStatusCard: View {
-    @ObservedObject private var backgroundManager = BackgroundLocationManager.shared
+    @ObservedObject private var backgroundManager = LocationManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -380,13 +380,6 @@ struct BackgroundStatusCard: View {
                 Text("Background-Status")
                     .font(.headline)
                 Spacer()
-            }
-            
-            HStack {
-                Text("Background Task:")
-                Spacer()
-                Text(backgroundManager.backgroundTaskStatus)
-                    .foregroundColor(.secondary)
             }
             
             HStack {

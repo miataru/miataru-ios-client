@@ -25,8 +25,8 @@ struct miataruApp: App {
         locationManager.startTracking()
         
         // BackgroundLocationManager initialisieren
-        _ = BackgroundLocationManager.shared
-        print("Background Location Manager initialisiert")
+        //_ = BackgroundLocationManager.shared
+        //print("Background Location Manager initialisiert")
     }
     
     var body: some Scene {
@@ -36,14 +36,10 @@ struct miataruApp: App {
         .onChange(of: scenePhase) {
             switch scenePhase {
             case .active:
-                print("[miataruApp] App is active")
-                //BackgroundLocationManager.shared.stopBackgroundTracking()
-            case .inactive:
-                print("[miataruApp] App is inactive")
+                LocationManager.shared.appDidEnterForeground()
             case .background:
-                print("[miataruApp] App is in background")
-                //BackgroundLocationManager.shared.startBackgroundTracking()
-            @unknown default:
+                LocationManager.shared.appDidEnterBackground()
+            default:
                 break
             }
         }

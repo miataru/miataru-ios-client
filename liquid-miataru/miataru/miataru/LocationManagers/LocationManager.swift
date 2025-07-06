@@ -16,6 +16,8 @@ final class LocationManager: NSObject, ObservableObject {
     @Published var lastServerUpdate: Date?
     @Published var serverUpdateStatus: ServerUpdateStatus = .idle
     @Published var updateLog: [UpdateLogEntry] = []
+    @Published var lastBackgroundUpdate: Date?
+    @Published var backgroundUpdateCount: Int = 0
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
@@ -215,6 +217,53 @@ final class LocationManager: NSObject, ObservableObject {
         }
         foregroundLocationTimer?.invalidate()
         foregroundLocationTimer = nil
+    }
+    
+    // MARK: - Background Tracking API
+    func startBackgroundTracking() {
+        guard settings.trackAndReportLocation else { return }
+        startSignificantChangeUpdates()
+        lastBackgroundUpdate = Date()
+        backgroundUpdateCount += 1
+    }
+    
+    func stopBackgroundTracking() {
+        stopTracking()
+    }
+    
+    // MARK: - App Delegate Extension
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        startBackgroundTracking()
+    }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        stopBackgroundTracking()
+    }
+    
+    // MARK: - App Lifecycle Hooks
+    func appDidEnterForeground() {
+        print("[LocationManager] App did enter foreground")
+        guard isTracking else { return }
+        stopSignificantChangeUpdates()
+        startHighAccuracyUpdates()
+    }
+
+    func appDidEnterBackground() {
+        print("[LocationManager] App did enter background")
+        guard isTracking else { return }
+        stopHighAccuracyUpdates()
+        startSignificantChangeUpdates()
+    }
+
+    private func stopHighAccuracyUpdates() {
+        print("[LocationManager] Stopping high accuracy updates")
+        locationManager.stopUpdatingLocation()
+        stopForegroundLocationTimer()
+    }
+
+    private func stopSignificantChangeUpdates() {
+        print("[LocationManager] Stopping significant change updates")
+        locationManager.stopMonitoringSignificantLocationChanges()
     }
 }
 

@@ -324,6 +324,7 @@
       }
     },
     "Background Task:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
