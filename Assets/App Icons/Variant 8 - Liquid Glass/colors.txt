@@ -1,0 +1,5 @@
+background: 163748ff
+layer 1 M: ffffffff
+layer 2: 58a5cbff
+layer 3: 347ea4ff
+layer 4: 29627fff

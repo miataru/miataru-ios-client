@@ -60,7 +60,7 @@ class LocationManager: NSObject, ObservableObject {
         locationManager.distanceFilter = distanceFilter
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.showsBackgroundLocationIndicator = true
+        locationManager.showsBackgroundLocationIndicator = false
     }
     
     private func setupObservers() {
@@ -96,7 +96,8 @@ class LocationManager: NSObject, ObservableObject {
     func requestLocationPermission() {
         switch locationManager.authorizationStatus {
         case .notDetermined:
-            locationManager.requestAlwaysAuthorization()
+            // Erst nach "When In Use" Berechtigung fragen
+            locationManager.requestWhenInUseAuthorization()
         case .denied, .restricted:
             locationStatus = .denied
         case .authorizedWhenInUse:
@@ -118,14 +119,16 @@ class LocationManager: NSObject, ObservableObject {
             startLocationUpdates()
         case .authorizedWhenInUse:
             locationStatus = .authorizedWhenInUse
-            // Versuche Upgrade auf "Always"
-            locationManager.requestAlwaysAuthorization()
+            // Starte Tracking auch mit "When In Use" Berechtigung
             startLocationUpdates()
+            // Versuche Upgrade auf "Always" für Background-Tracking
+            locationManager.requestAlwaysAuthorization()
         case .denied, .restricted:
             locationStatus = .denied
             return
         case .notDetermined:
-            locationManager.requestAlwaysAuthorization()
+            // Erst nach "When In Use" Berechtigung fragen
+            locationManager.requestWhenInUseAuthorization()
             return
         @unknown default:
             locationStatus = .unavailable
@@ -264,6 +267,10 @@ extension LocationManager: CLLocationManagerDelegate {
             locationStatus = .authorizedWhenInUse
             if settings.trackAndReportLocation {
                 startTracking()
+            }
+            // Automatisch nach "Always" Berechtigung fragen für Background-Tracking
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.locationManager.requestAlwaysAuthorization()
             }
         case .authorizedAlways:
             locationStatus = .authorizedAlways
