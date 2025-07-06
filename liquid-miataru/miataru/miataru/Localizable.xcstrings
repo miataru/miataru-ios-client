@@ -324,15 +324,11 @@
       }
     },
     "Back" : {
-
-    },
-    "Background Task:" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Background task:"
+            "value" : "Back"
           }
         }
       }
@@ -489,7 +485,7 @@
       }
     },
     "Current location" : {
-      "comment" : "current position display in Location Tracking Details",
+      "comment" : "Current position display in Location Tracking Details",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -704,7 +700,14 @@
       }
     },
     "Finish" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish"
+          }
+        }
+      }
     },
     "Full permissions granted" : {
       "comment" : "permission text in Location Tracking Status",
@@ -777,9 +780,6 @@
         }
       }
     },
-    "Im Hintergrund werden Standortänderungen nur bei größeren Bewegungen (ca. 500m) erkannt, um Akku zu sparen." : {
-
-    },
     "indicate_location_accuracy" : {
       "localizations" : {
         "en" : {
@@ -842,9 +842,6 @@
         }
       }
     },
-    "Letzte Standort-Updates:" : {
-
-    },
     "Location access denied" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
@@ -900,11 +897,23 @@
       }
     },
     "Location Tracking Status" : {
+      "comment" : "Header for location tracking status section",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Tracking Status"
+          }
+        }
+      }
+    },
+    "Location updates in the background are only detected when they are significant (>500m)." : {
+      "comment" : "Hint for background location update behavior",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location updates in the background are only detected when they are significant (>500m)."
           }
         }
       }
@@ -1023,7 +1032,14 @@
       }
     },
     "Next" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
     },
     "no_location_data_found" : {
       "comment" : "No location available",
@@ -1099,12 +1115,6 @@
         }
       }
     },
-    "Permissions" : {
-
-    },
-    "Please enter your server URL ..." : {
-
-    },
     "qr" : {
       "localizations" : {
         "en" : {
@@ -1132,6 +1142,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ready"
+          }
+        }
+      }
+    },
+    "Recent location updates:" : {
+      "comment" : "Header for recent location updates log",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent location updates:"
           }
         }
       }
@@ -1253,9 +1274,6 @@
         }
       }
     },
-    "Server URL" : {
-
-    },
     "server_or_deviceid_invalid" : {
       "comment" : "Error: Server or DeviceID invalid",
       "localizations" : {
@@ -1320,7 +1338,14 @@
       }
     },
     "Show Onboarding Wizard Again" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Onboarding Wizard Again"
+          }
+        }
+      }
     },
     "show_history_days" : {
       "localizations" : {
@@ -1353,9 +1378,6 @@
         }
       }
     },
-    "This app helps you ..." : {
-
-    },
     "track_and_history" : {
       "localizations" : {
         "en" : {
@@ -1377,6 +1399,28 @@
         }
       }
     },
+    "Tracking mode: Battery saving (only significant movements)" : {
+      "comment" : "Tracking mode text for background mode",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Battery saving (only significant movements)"
+          }
+        }
+      }
+    },
+    "Tracking mode: Live (GPS)" : {
+      "comment" : "Tracking mode text for foreground mode",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Live (GPS)"
+          }
+        }
+      }
+    },
     "update" : {
       "localizations" : {
         "en" : {
@@ -1387,11 +1431,8 @@
         }
       }
     },
-    "We need your location ..." : {
-
-    },
-    "Welcome to Miataru!" : {
-
+    "Welcome to Miataru." : {
+      "comment" : "OnboardingView"
     },
     "zoom_to_fit_for_groups" : {
       "localizations" : {

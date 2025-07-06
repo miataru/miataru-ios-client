@@ -15,7 +15,7 @@ struct iPhone_LocationStatusView: View {
                     .font(.title2)
                 
                 VStack(alignment: .leading) {
-                    Text("Location Tracking Status")
+                    Text(NSLocalizedString("Location Tracking Status", comment: "Header for location tracking status section"))
                         .font(.headline)
                     Text(statusText)
                         .font(.caption)
@@ -37,7 +37,7 @@ struct iPhone_LocationStatusView: View {
             
             // Hinweistext für Hintergrund-Tracking
             if isInBackground {
-                Text("Im Hintergrund werden Standortänderungen nur bei größeren Bewegungen (ca. 500m) erkannt, um Akku zu sparen.")
+                Text(NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior"))
                     .font(.caption2)
                     .foregroundColor(.gray)
                     .padding(.bottom, 4)
@@ -49,7 +49,7 @@ struct iPhone_LocationStatusView: View {
                     // Aktuelle Location
                     if let location = locationManager.currentLocation {
                         LocationInfoRow(
-                            title: NSLocalizedString("Current location", comment: "current position display in Location Tracking Details"),
+                            title: NSLocalizedString("Current location", comment: "Current position display in Location Tracking Details"),
                             value: String(format: "%.6f, %.6f",
                                         location.coordinate.latitude, 
                                         location.coordinate.longitude),
@@ -97,7 +97,7 @@ struct iPhone_LocationStatusView: View {
             // Log der letzten Updates
             if !updateLog.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Letzte Standort-Updates:")
+                    Text(NSLocalizedString("Recent location updates:", comment: "Header for recent location updates log"))
                         .font(.caption)
                     ForEach(updateLog, id: \ .timestamp) { entry in
                         HStack {
@@ -187,9 +187,9 @@ struct iPhone_LocationStatusView: View {
     // Tracking-Modus-Text
     private var trackingModeText: String {
         if isInBackground {
-            return "Tracking-Modus: Batteriesparend (nur große Bewegungen)"
+            return NSLocalizedString("Tracking mode: Battery saving (only significant movements)", comment: "Tracking mode text for background mode")
         } else {
-            return "Tracking-Modus: Live (GPS)"
+            return NSLocalizedString("Tracking mode: Live (GPS)", comment: "Tracking mode text for foreground mode")
         }
     }
     
