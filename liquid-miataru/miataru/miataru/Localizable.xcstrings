@@ -323,6 +323,9 @@
         }
       }
     },
+    "Back" : {
+
+    },
     "Background Task:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -700,6 +703,9 @@
         }
       }
     },
+    "Finish" : {
+
+    },
     "Full permissions granted" : {
       "comment" : "permission text in Location Tracking Status",
       "localizations" : {
@@ -1016,6 +1022,9 @@
         }
       }
     },
+    "Next" : {
+
+    },
     "no_location_data_found" : {
       "comment" : "No location available",
       "localizations" : {
@@ -1089,6 +1098,12 @@
           }
         }
       }
+    },
+    "Permissions" : {
+
+    },
+    "Please enter your server URL ..." : {
+
     },
     "qr" : {
       "localizations" : {
@@ -1238,6 +1253,9 @@
         }
       }
     },
+    "Server URL" : {
+
+    },
     "server_or_deviceid_invalid" : {
       "comment" : "Error: Server or DeviceID invalid",
       "localizations" : {
@@ -1301,6 +1319,9 @@
         }
       }
     },
+    "Show Onboarding Wizard Again" : {
+
+    },
     "show_history_days" : {
       "localizations" : {
         "en" : {
@@ -1332,6 +1353,9 @@
         }
       }
     },
+    "This app helps you ..." : {
+
+    },
     "track_and_history" : {
       "localizations" : {
         "en" : {
@@ -1362,6 +1386,12 @@
           }
         }
       }
+    },
+    "We need your location ..." : {
+
+    },
+    "Welcome to Miataru!" : {
+
     },
     "zoom_to_fit_for_groups" : {
       "localizations" : {

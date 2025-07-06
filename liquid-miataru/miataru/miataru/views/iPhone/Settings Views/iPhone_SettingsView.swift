@@ -4,6 +4,7 @@ struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
     @State private var showingLocationStatus = false
     @State private var showingLocationTest = false
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         NavigationView {
@@ -75,7 +76,12 @@ struct iPhone_SettingsView: View {
                         .foregroundColor(.blue)
                     }
                 }
-                
+                Section {
+                    Button("Show Onboarding Wizard Again") {
+                        UserDefaults.standard.hasCompletedOnboarding = false
+                        appState.showOnboarding = true
+                    }
+                }
             }
             .navigationTitle("settings")
             .sheet(isPresented: $showingLocationStatus) {

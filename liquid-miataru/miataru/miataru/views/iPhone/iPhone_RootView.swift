@@ -4,7 +4,6 @@
 //
 //  Created by Daniel Kirstenpfad on 20.06.25.
 //
-
 import SwiftUI
 
 struct iPhone_RootView: View {
@@ -34,4 +33,3 @@ struct iPhone_RootView: View {
 #Preview {
     iPhone_RootView()
 }
-

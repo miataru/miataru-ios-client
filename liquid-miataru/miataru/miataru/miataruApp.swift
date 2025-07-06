@@ -7,9 +7,21 @@
 
 import SwiftUI
 
+extension UserDefaults {
+    var hasCompletedOnboarding: Bool {
+        get { bool(forKey: "hasCompletedOnboarding") }
+        set { set(newValue, forKey: "hasCompletedOnboarding") }
+    }
+}
+
+class AppState: ObservableObject {
+    @Published var showOnboarding: Bool = !UserDefaults.standard.hasCompletedOnboarding
+}
+
 @main
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var appState = AppState()
     
     init() {
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
@@ -24,14 +36,18 @@ struct miataruApp: App {
         // Stelle sicher, dass das Tracking direkt beim App-Start aktiviert wird
         locationManager.startTracking()
         
-        // BackgroundLocationManager initialisieren
-        //_ = BackgroundLocationManager.shared
-        //print("Background Location Manager initialisiert")
+        // Debuging: Remove before flight !!!!! ##########################
+        UserDefaults.standard.hasCompletedOnboarding = false
+     
     }
     
     var body: some Scene {
         WindowGroup {
             MiataruRootView()
+                .environmentObject(appState)
+                .fullScreenCover(isPresented: $appState.showOnboarding) {
+                    OnboardingContainerView(isPresented: $appState.showOnboarding)
+                }
         }
         .onChange(of: scenePhase) {
             switch scenePhase {
