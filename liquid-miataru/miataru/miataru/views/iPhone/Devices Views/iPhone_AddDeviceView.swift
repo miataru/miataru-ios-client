@@ -50,7 +50,7 @@ struct iPhone_AddDeviceView: View {
                 case .success(let res):
                     let prefix = "miataru://"
                     if res.string.hasPrefix(prefix) {
-                        deviceID = String(res.string.dropFirst(prefix.count))
+                        deviceID = String(res.string.dropFirst(prefix.count)).uppercased()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             isShowingScanner = false
                         }
