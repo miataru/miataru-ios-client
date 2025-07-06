@@ -37,7 +37,7 @@ struct miataruApp: App {
         locationManager.startTracking()
         
         // Debuging: Remove before flight !!!!! ##########################
-        UserDefaults.standard.hasCompletedOnboarding = false
+        //UserDefaults.standard.hasCompletedOnboarding = false
      
     }
     
