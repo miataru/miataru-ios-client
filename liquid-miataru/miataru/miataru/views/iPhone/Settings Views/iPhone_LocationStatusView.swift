@@ -20,6 +20,9 @@ struct iPhone_LocationStatusView: View {
                     Text(statusText)
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Text(trackingModeText)
+                        .font(.caption2)
+                        .foregroundColor(.gray)
                 }
                 
                 Spacer()
@@ -31,6 +34,14 @@ struct iPhone_LocationStatusView: View {
             .padding()
             .background(Color(.systemGray6))
             .cornerRadius(12)
+            
+            // Hinweistext für Hintergrund-Tracking
+            if isInBackground {
+                Text("Im Hintergrund werden Standortänderungen nur bei größeren Bewegungen (ca. 500m) erkannt, um Akku zu sparen.")
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 4)
+            }
             
             // Detaillierte Informationen
             if settings.trackAndReportLocation {
@@ -78,10 +89,30 @@ struct iPhone_LocationStatusView: View {
             }
             
             // Berechtigungs-Status
-            PermissionStatusView(status: locationManager.locationStatus)
+            PermissionStatusView(status: locationManager.authorizationStatus)
             
             // Background Status
             BackgroundStatusCard()
+            
+            // Log der letzten Updates
+            if !updateLog.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Letzte Standort-Updates:")
+                        .font(.caption)
+                    ForEach(updateLog, id: \ .timestamp) { entry in
+                        HStack {
+                            Text(formatDate(entry.timestamp))
+                                .font(.caption2)
+                            Text(entry.mode)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .padding(8)
+                .background(Color(.systemGray5))
+                .cornerRadius(8)
+            }
         }
         .padding()
     }
@@ -92,7 +123,7 @@ struct iPhone_LocationStatusView: View {
             return "location.slash"
         }
         
-        switch locationManager.locationStatus {
+        switch locationManager.authorizationStatus {
         case .authorizedAlways:
             return locationManager.isTracking ? "location.fill" : "location"
         case .authorizedWhenInUse:
@@ -101,7 +132,7 @@ struct iPhone_LocationStatusView: View {
             return "location.slash"
         case .notDetermined:
             return "location.slash"
-        case .unavailable:
+        @unknown default:
             return "exclamationmark.triangle"
         }
     }
@@ -111,7 +142,7 @@ struct iPhone_LocationStatusView: View {
             return .gray
         }
         
-        switch locationManager.locationStatus {
+        switch locationManager.authorizationStatus {
         case .authorizedAlways:
             return locationManager.isTracking ? .green : .orange
         case .authorizedWhenInUse:
@@ -120,7 +151,7 @@ struct iPhone_LocationStatusView: View {
             return .red
         case .notDetermined:
             return .gray
-        case .unavailable:
+        @unknown default:
             return .red
         }
     }
@@ -130,7 +161,7 @@ struct iPhone_LocationStatusView: View {
             return NSLocalizedString("Location tracking deactivated", comment: "Location Tracking Status statusText")
         }
         
-        switch locationManager.locationStatus {
+        switch locationManager.authorizationStatus {
         case .authorizedAlways:
             return locationManager.isTracking ? NSLocalizedString("Tracking inactive (fore- & background)", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", comment: "Location Tracking Status statusText")
         case .authorizedWhenInUse:
@@ -141,7 +172,7 @@ struct iPhone_LocationStatusView: View {
             return NSLocalizedString("Location access restricted", comment: "Location Tracking Status statusText")
         case .notDetermined:
             return NSLocalizedString("Permission not determined", comment: "Location Tracking Status statusText")
-        case .unavailable:
+        @unknown default:
             return NSLocalizedString("Location services not available", comment: "Location Tracking Status statusText")
         }
     }
@@ -151,6 +182,25 @@ struct iPhone_LocationStatusView: View {
         formatter.dateStyle = .none
         formatter.timeStyle = .medium
         return formatter.string(from: date)
+    }
+    
+    // Tracking-Modus-Text
+    private var trackingModeText: String {
+        if isInBackground {
+            return "Tracking-Modus: Batteriesparend (nur große Bewegungen)"
+        } else {
+            return "Tracking-Modus: Live (GPS)"
+        }
+    }
+    
+    // Ist die App im Hintergrund?
+    private var isInBackground: Bool {
+        UIApplication.shared.applicationState == .background
+    }
+    
+    // Log der letzten Updates (Dummy-Implementierung, sollte mit echten Daten aus LocationManager ersetzt werden)
+    private var updateLog: [LocationManager.UpdateLogEntry] {
+        locationManager.updateLog
     }
 }
 
@@ -242,7 +292,7 @@ struct ServerStatusRow: View {
 }
 
 struct PermissionStatusView: View {
-    let status: LocationManager.LocationStatus
+    let status: CLAuthorizationStatus
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -281,7 +331,7 @@ struct PermissionStatusView: View {
             return "xmark.shield.fill"
         case .notDetermined:
             return "questionmark.shield"
-        case .unavailable:
+        @unknown default:
             return "exclamationmark.shield"
         }
     }
@@ -296,7 +346,7 @@ struct PermissionStatusView: View {
             return .red
         case .notDetermined:
             return .gray
-        case .unavailable:
+        @unknown default:
             return .red
         }
     }
@@ -313,7 +363,7 @@ struct PermissionStatusView: View {
             return NSLocalizedString("Location access restricted", comment: "permission text in Location Tracking Status")
         case .notDetermined:
             return NSLocalizedString("Permission not determined", comment: "permission text in Location Tracking Status")
-        case .unavailable:
+        @unknown default:
             return NSLocalizedString("Location services not available", comment: "permission text in Location Tracking Status")
         }
     }

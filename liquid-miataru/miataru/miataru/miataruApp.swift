@@ -12,7 +12,6 @@ struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     
     init() {
-        BackgroundLocationManager.shared.registerBackgroundTasks()
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
@@ -22,6 +21,8 @@ struct miataruApp: App {
         // LocationManager initialisieren und Berechtigungen anfordern
         let locationManager = LocationManager.shared
         locationManager.requestLocationPermission()
+        // Stelle sicher, dass das Tracking direkt beim App-Start aktiviert wird
+        locationManager.startTracking()
         
         // BackgroundLocationManager initialisieren
         _ = BackgroundLocationManager.shared
@@ -35,13 +36,13 @@ struct miataruApp: App {
         .onChange(of: scenePhase) {
             switch scenePhase {
             case .active:
-                print("App ist aktiv")
-                BackgroundLocationManager.shared.handleAppWillEnterForeground()
+                print("[miataruApp] App is active")
+                //BackgroundLocationManager.shared.stopBackgroundTracking()
             case .inactive:
-                print("App ist inaktiv")
+                print("[miataruApp] App is inactive")
             case .background:
-                print("App ist im Hintergrund")
-                BackgroundLocationManager.shared.handleAppDidEnterBackground()
+                print("[miataruApp] App is in background")
+                //BackgroundLocationManager.shared.startBackgroundTracking()
             @unknown default:
                 break
             }

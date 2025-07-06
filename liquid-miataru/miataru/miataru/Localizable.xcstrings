@@ -770,6 +770,9 @@
         }
       }
     },
+    "Im Hintergrund werden Standortänderungen nur bei größeren Bewegungen (ca. 500m) erkannt, um Akku zu sparen." : {
+
+    },
     "indicate_location_accuracy" : {
       "localizations" : {
         "en" : {
@@ -831,6 +834,9 @@
           }
         }
       }
+    },
+    "Letzte Standort-Updates:" : {
+
     },
     "Location access denied" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",

@@ -112,8 +112,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "52"
             endingLineNumber = "52"
-            landmarkName = "KnownDevice"
-            landmarkType = "3">
+            landmarkName = "init?(coder:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -128,8 +128,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "37"
             endingLineNumber = "37"
-            landmarkName = "init?(coder:)"
-            landmarkType = "7">
+            landmarkName = "DeviceColor"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -353,6 +353,22 @@
             startingLineNumber = "270"
             endingLineNumber = "270"
             landmarkName = "fetchLocation(resetZoomToSettings:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3D324B61-4AAD-4C50-BB43-602A288BBBDB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "miataru/LocationManagers/LocationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "185"
+            endingLineNumber = "185"
+            landmarkName = "addUpdateLogEntry(mode:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

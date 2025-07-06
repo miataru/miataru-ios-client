@@ -4,34 +4,25 @@ import Combine
 import MiataruAPIClient
 import UIKit
 
-class LocationManager: NSObject, ObservableObject {
+/// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
+final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
     
     // MARK: - Published Properties
     @Published var currentLocation: CLLocation?
-    @Published var locationStatus: LocationStatus = .notDetermined
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var lastUpdateTime: Date?
     @Published var isTracking: Bool = false
     @Published var lastServerUpdate: Date?
     @Published var serverUpdateStatus: ServerUpdateStatus = .idle
+    @Published var updateLog: [UpdateLogEntry] = []
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
-    private let settings = SettingsManager.shared
-    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
-    private var locationUpdateTimer: Timer?
-    private var serverUpdateTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Location Status
-    enum LocationStatus {
-        case notDetermined
-        case denied
-        case restricted
-        case authorizedWhenInUse
-        case authorizedAlways
-        case unavailable
-    }
+    private let settings = SettingsManager.shared
+    private var foregroundLocationTimer: Timer?
+    private var foregroundLocationUpdateTimerTimeframe: Double = 10
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -41,149 +32,128 @@ class LocationManager: NSObject, ObservableObject {
         case failed(String)
     }
     
-    // MARK: - Configuration
-    private let desiredAccuracy: CLLocationAccuracy = kCLLocationAccuracyBest
-    private let distanceFilter: CLLocationDistance = 10 // 10 Meter
-    private let updateInterval: TimeInterval = 30 // 30 Sekunden
-    
-    override init() {
-        super.init()
-        setupLocationManager()
-        setupObservers()
-        loadSettings()
+    struct UpdateLogEntry: Identifiable {
+        let id = UUID()
+        let timestamp: Date
+        let mode: String
     }
     
-    // MARK: - Setup
-    private func setupLocationManager() {
+    // MARK: - Init
+    override private init() {
+        super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = desiredAccuracy
-        locationManager.distanceFilter = distanceFilter
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
+        locationManager.activityType = .automotiveNavigation
+        observeSettings()
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
-    private func setupObservers() {
-        // Beobachte Settings-Änderungen
-        settings.$trackAndReportLocation
-            .sink { [weak self] shouldTrack in
-                if shouldTrack {
-                    self?.startTracking()
-                } else {
-                    self?.stopTracking()
-                }
-            }
-            .store(in: &cancellables)
-        
-        settings.$miataruServerURL
-            .sink { [weak self] _ in
-                // Bei Server-URL-Änderung sofort aktualisieren
-                if self?.isTracking == true {
-                    self?.sendLocationToServer()
-                }
-            }
-            .store(in: &cancellables)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
-    private func loadSettings() {
-        // Initiale Einstellung basierend auf gespeicherten Settings
-        if settings.trackAndReportLocation {
-            startTracking()
+    @objc private func appDidBecomeActive() {
+        print("App did become active")
+        if isTracking {
+            startHighAccuracyUpdates()
         }
     }
     
-    // MARK: - Public Methods
+    // MARK: - Settings Observer
+    private func observeSettings() {
+        settings.$trackAndReportLocation
+            .sink { [weak self] shouldTrack in
+                guard let self else { return }
+                if shouldTrack {
+                    self.startTracking()
+                } else {
+                    self.stopTracking()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Permissions
     func requestLocationPermission() {
         switch locationManager.authorizationStatus {
         case .notDetermined:
-            // Erst nach "When In Use" Berechtigung fragen
             locationManager.requestWhenInUseAuthorization()
-        case .denied, .restricted:
-            locationStatus = .denied
         case .authorizedWhenInUse:
-            // Upgrade auf "Always" anfordern
             locationManager.requestAlwaysAuthorization()
-        case .authorizedAlways:
-            locationStatus = .authorizedAlways
-        @unknown default:
-            locationStatus = .unavailable
+        default:
+            break
         }
     }
     
+    // MARK: - Tracking Control
     func startTracking() {
+        print("startTracking called")
         guard settings.trackAndReportLocation else { return }
-        
-        switch locationManager.authorizationStatus {
-        case .authorizedAlways:
-            locationStatus = .authorizedAlways
-            startLocationUpdates()
-        case .authorizedWhenInUse:
-            locationStatus = .authorizedWhenInUse
-            // Starte Tracking auch mit "When In Use" Berechtigung
-            startLocationUpdates()
-            // Versuche Upgrade auf "Always" für Background-Tracking
-            locationManager.requestAlwaysAuthorization()
-        case .denied, .restricted:
-            locationStatus = .denied
-            return
-        case .notDetermined:
-            // Erst nach "When In Use" Berechtigung fragen
-            locationManager.requestWhenInUseAuthorization()
-            return
-        @unknown default:
-            locationStatus = .unavailable
-            return
-        }
+        isTracking = true
+        updateTrackingMode()
     }
     
     func stopTracking() {
-        stopLocationUpdates()
+        print("stopTracking called")
         isTracking = false
-    }
-    
-    // MARK: - Private Methods
-    private func startLocationUpdates() {
-        guard !isTracking else { return }
-        
-        isTracking = true
-        locationManager.startUpdatingLocation()
-        
-        // Timer für regelmäßige Server-Updates
-        startServerUpdateTimer()
-        
-        print("Location-Tracking gestartet")
-    }
-    
-    private func stopLocationUpdates() {
         locationManager.stopUpdatingLocation()
-        stopServerUpdateTimer()
-        endBackgroundTask()
-        
-        print("Location-Tracking gestoppt")
+        locationManager.stopMonitoringSignificantLocationChanges()
+        stopForegroundLocationTimer()
     }
     
-    private func startServerUpdateTimer() {
-        serverUpdateTimer?.invalidate()
-        serverUpdateTimer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true) { [weak self] _ in
-            self?.sendLocationToServer()
+    private func updateTrackingMode() {
+        let state = UIApplication.shared.applicationState
+        let status = locationManager.authorizationStatus
+        print("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
+        switch status {
+        case .authorizedAlways, .authorizedWhenInUse:
+            if isTracking && state == .active {
+                startHighAccuracyUpdates()
+            } else if isTracking && state != .active {
+                startSignificantChangeUpdates()
+            } else {
+                stopTracking()
+            }
+        default:
+            stopTracking()
         }
     }
     
-    private func stopServerUpdateTimer() {
-        serverUpdateTimer?.invalidate()
-        serverUpdateTimer = nil
+    private func startHighAccuracyUpdates() {
+        print("Calling startHighAccuracyUpdates")
+        locationManager.allowsBackgroundLocationUpdates = false
+        print("allowsBackgroundLocationUpdates set to false (foreground)")
+        locationManager.stopMonitoringSignificantLocationChanges()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.startUpdatingLocation()
+        if foregroundLocationTimer == nil {
+            print("App is active, will start foreground location timer")
+            startForegroundLocationTimer()
+        } else {
+            print("Foreground location timer already running")
+        }
     }
     
-    private func sendLocationToServer() {
-        guard let location = currentLocation,
-              !settings.miataruServerURL.isEmpty,
+    func startSignificantChangeUpdates() {
+        print("startSignificantChangeUpdates called")
+        locationManager.allowsBackgroundLocationUpdates = true
+        print("allowsBackgroundLocationUpdates set to true (background)")
+        locationManager.stopUpdatingLocation()
+        locationManager.startMonitoringSignificantLocationChanges()
+        stopForegroundLocationTimer()
+    }
+    
+    // MARK: - Server Communication
+    private func sendLocationToServer(_ location: CLLocation) {
+        guard !settings.miataruServerURL.isEmpty,
               let serverURL = URL(string: settings.miataruServerURL) else {
-            serverUpdateStatus = .failed("Ungültige Konfiguration")
+            serverUpdateStatus = .failed("Invalid server configuration")
             return
         }
-        
         serverUpdateStatus = .updating
-        
         let locationData = UpdateLocationPayload(
             Device: thisDeviceIDManager.shared.deviceID,
             Timestamp: String(Int64(location.timestamp.timeIntervalSince1970)),
@@ -191,7 +161,6 @@ class LocationManager: NSObject, ObservableObject {
             Latitude: location.coordinate.latitude,
             HorizontalAccuracy: location.horizontalAccuracy
         )
-        
         Task {
             do {
                 let success = try await MiataruAPIClient.updateLocation(
@@ -200,37 +169,52 @@ class LocationManager: NSObject, ObservableObject {
                     enableHistory: settings.saveLocationHistoryOnServer,
                     retentionTime: settings.locationDataRetentionTime
                 )
-                
-                await MainActor.run {
-                    if success {
-                        self.serverUpdateStatus = .success
-                        self.lastServerUpdate = Date()
-                        //print("Location erfolgreich an Server gesendet: \(location.coordinate)")
-                    } else {
-                        self.serverUpdateStatus = .failed("Server-Antwort war nicht erfolgreich")
-                    }
+                if success {
+                    self.serverUpdateStatus = .success
+                    self.lastServerUpdate = Date()
+                } else {
+                    self.serverUpdateStatus = .failed("Server response was not successful")
                 }
             } catch {
-                await MainActor.run {
-                    self.serverUpdateStatus = .failed(error.localizedDescription)
-                    print("Fehler beim Senden der Location: \(error)")
-                }
+                self.serverUpdateStatus = .failed(error.localizedDescription)
             }
         }
     }
     
-    private func beginBackgroundTask() {
-        endBackgroundTask()
-        backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
-            self?.endBackgroundTask()
+    // MARK: - Logging
+    private func addUpdateLogEntry(mode: String) {
+        let entry = UpdateLogEntry(timestamp: Date(), mode: mode)
+        updateLog.insert(entry, at: 0)
+        if updateLog.count > 10 {
+            updateLog = Array(updateLog.prefix(10))
         }
     }
     
-    private func endBackgroundTask() {
-        if backgroundTask != .invalid {
-            UIApplication.shared.endBackgroundTask(backgroundTask)
-            backgroundTask = .invalid
+    // MARK: - Foreground Location Timer
+    private func startForegroundLocationTimer() {
+        print("Starting foreground location timer")
+        stopForegroundLocationTimer()
+        foregroundLocationTimer = Timer.scheduledTimer(withTimeInterval: foregroundLocationUpdateTimerTimeframe, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            if UIApplication.shared.applicationState == .active && self.isTracking {
+                print("[Timer] Requesting location...")
+                self.locationManager.requestLocation()
+            } else {
+                print("[Timer] Not active or not tracking, skipping requestLocation")
+            }
         }
+        RunLoop.main.add(foregroundLocationTimer!, forMode: .common)
+        print("ForegroundLocationTimer created at: \(Unmanaged.passUnretained(foregroundLocationTimer!).toOpaque())")
+    }
+    
+    private func stopForegroundLocationTimer() {
+        if let timer = foregroundLocationTimer {
+            print("Stopping foreground location timer at: \(Unmanaged.passUnretained(timer).toOpaque())")
+        } else {
+            print("stopForegroundLocationTimer called, but timer was already nil")
+        }
+        foregroundLocationTimer?.invalidate()
+        foregroundLocationTimer = nil
     }
 }
 
@@ -238,63 +222,26 @@ class LocationManager: NSObject, ObservableObject {
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        
-        currentLocation = location
-        lastUpdateTime = Date()
-        
-        // Sofort an Server senden bei neuer Location
-        sendLocationToServer()
-        
-        //print("Neue Location erhalten: \(location.coordinate)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location-Fehler: \(error.localizedDescription)")
-        locationStatus = .unavailable
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            locationStatus = .notDetermined
-        case .denied:
-            locationStatus = .denied
-            stopTracking()
-        case .restricted:
-            locationStatus = .restricted
-            stopTracking()
-        case .authorizedWhenInUse:
-            locationStatus = .authorizedWhenInUse
-            if settings.trackAndReportLocation {
-                startTracking()
-            }
-            // Automatisch nach "Always" Berechtigung fragen für Background-Tracking
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.locationManager.requestAlwaysAuthorization()
-            }
-        case .authorizedAlways:
-            locationStatus = .authorizedAlways
-            if settings.trackAndReportLocation {
-                startTracking()
-            }
-        @unknown default:
-            locationStatus = .unavailable
+        let mode = UIApplication.shared.applicationState == .active ? "Foreground" : "Background"
+        print("[LocationManager] Location update (", mode, "): (lat: \(location.coordinate.latitude), lon: \(location.coordinate.longitude)) sent to server.")
+        DispatchQueue.main.async {
+            self.currentLocation = location
+            self.lastUpdateTime = Date()
+            self.sendLocationToServer(location)
+            self.addUpdateLogEntry(mode: mode)
         }
     }
     
-    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
-        print("Location-Updates pausiert")
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        DispatchQueue.main.async {
+            self.authorizationStatus = status
+            self.updateTrackingMode()
+        }
     }
     
-    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
-        print("Location-Updates fortgesetzt")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        print("Region betreten: \(region.identifier)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        print("Region verlassen: \(region.identifier)")
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        DispatchQueue.main.async {
+            self.serverUpdateStatus = .failed(error.localizedDescription)
+        }
     }
 } 
