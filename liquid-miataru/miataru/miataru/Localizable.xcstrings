@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%lld" : {
       "comment" : "Number of background updates",
       "localizations" : {
@@ -293,12 +296,89 @@
         }
       }
     },
+    "activity_type_accuracy_settings_title" : {
+      "comment" : "Section header for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location tracking sensitivity"
+          }
+        }
+      }
+    },
+    "activity_type_automotive" : {
+      "comment" : "Automotive Navigation (car) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highest (Navigation)"
+          }
+        }
+      }
+    },
+    "activity_type_explanation" : {
+      "comment" : "Explanation for location activity type picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can choose the update frequency of your location. Standard is recommended for most users and saves battery."
+          }
+        }
+      }
+    },
+    "activity_type_fitness" : {
+      "comment" : "Fitness (walking, running, cycling) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium (Cycling, Running)"
+          }
+        }
+      }
+    },
+    "activity_type_other" : {
+      "comment" : "Other (default, battery saving) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard (default)"
+          }
+        }
+      }
+    },
     "add" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "add"
+          }
+        }
+      }
+    },
+    "adddevice_duplicate_device_already_exists_message" : {
+      "comment" : "Alert text shown when user tries to add a duplicate device.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A device with this DeviceID already exists."
+          }
+        }
+      }
+    },
+    "adddevice_duplicate_device_id_title" : {
+      "comment" : "Alert title shown when user tries to add a duplicate device.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate device"
           }
         }
       }

@@ -24,7 +24,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
-    private var foregroundLocationUpdateTimerTimeframe: Double = 10
+    private var foregroundLocationUpdateTimerTimeframe: Double = 30
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -47,9 +47,10 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
-        locationManager.activityType = .automotiveNavigation
+        locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
         observeSettings()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        observeActivityType()
     }
     
     deinit {
@@ -77,6 +78,38 @@ final class LocationManager: NSObject, ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func observeActivityType() {
+        settings.$locationActivityType
+            .sink { [weak self] newValue in
+                guard let self = self else { return }
+                self.locationManager.activityType = Self.activityTypeFrom(newValue)
+                if self.isTracking {
+                    // Restart location updates to apply new activityType immediately
+                    self.updateTrackingMode()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private static func activityTypeFrom(_ value: Int) -> CLActivityType {
+        switch value {
+        case 1: return .automotiveNavigation
+        case 2: return .fitness
+        case 3: return .otherNavigation
+        case 4:
+#if swift(>=5.0)
+            if #available(iOS 12.0, *) {
+                return .airborne
+            } else {
+                return .other
+            }
+#else
+            return .other
+#endif
+        default: return .other
+        }
+    }
+    
     // MARK: - Permissions
     func requestLocationPermission() {
         switch locationManager.authorizationStatus {
@@ -92,7 +125,6 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Tracking Control
     func startTracking() {
         print("startTracking called")
-        guard settings.trackAndReportLocation else { return }
         isTracking = true
         updateTrackingMode()
     }

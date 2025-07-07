@@ -9,6 +9,7 @@ struct iPhone_AddDeviceView: View {
     @State private var deviceColor: Color = .gray
     @State private var isShowingScanner = false
     @State private var showInvalidQRAlert = false
+    @State private var showDuplicateAlert = false
     
     var body: some View {
         NavigationView {
@@ -37,8 +38,12 @@ struct iPhone_AddDeviceView: View {
                     Button("add") {
                         let uiColor = UIColor(deviceColor)
                         let newDevice = KnownDevice(name: deviceName, deviceID: deviceID, color: uiColor)
-                        store.add(device: newDevice)
-                        isPresented = false
+                        let success = store.add(device: newDevice)
+                        if success {
+                            isPresented = false
+                        } else {
+                            showDuplicateAlert = true
+                        }
                     }
                     .disabled(deviceName.isEmpty || deviceID.isEmpty)
                 }
@@ -72,6 +77,13 @@ struct iPhone_AddDeviceView: View {
             Alert(
                 title: Text("invalid_miataru_qr_code"),
                 message: Text("invalid_miataru_qr_code_error_text"), //"Der QR-Code muss mit 'miataru://' beginnen."
+                dismissButton: .default(Text("ok"))
+            )
+        }
+        .alert(isPresented: $showDuplicateAlert) {
+            Alert(
+                title: Text(NSLocalizedString("adddevice_duplicate_device_id_title", comment: "Alert title shown when user tries to add a duplicate device.")),
+                message: Text(NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.")),
                 dismissButton: .default(Text("ok"))
             )
         }

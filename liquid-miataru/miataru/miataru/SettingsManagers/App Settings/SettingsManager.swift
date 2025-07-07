@@ -45,6 +45,9 @@ class SettingsManager: ObservableObject {
     @Published var historyNumberOfDays: Int {
         didSet { defaults.set(String(historyNumberOfDays), forKey: Keys.historyNumberOfDays) }
     }
+    @Published var locationActivityType: Int {
+        didSet { defaults.set(locationActivityType, forKey: Keys.locationActivityType) }
+    }
     
     // MARK: - Keys
     private enum Keys {
@@ -58,6 +61,7 @@ class SettingsManager: ObservableObject {
         static let trackAndReportLocation = "track_and_report_location"
         static let saveLocationHistoryOnServer = "save_location_history_on_server"
         static let historyNumberOfDays = "history_number_of_days"
+        static let locationActivityType = "location_activity_type"
     }
     
     // MARK: - Initialwerte laden
@@ -74,6 +78,7 @@ class SettingsManager: ObservableObject {
         self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "5") ?? 5
+        self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
     }
     
     // MARK: - Synchronize

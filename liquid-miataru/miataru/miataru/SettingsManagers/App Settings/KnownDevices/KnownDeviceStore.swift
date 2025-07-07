@@ -79,8 +79,14 @@ class KnownDeviceStore: ObservableObject {
         return []
     }
 
-    func add(device: KnownDevice) {
+    /// Fügt ein Gerät hinzu, wenn die DeviceID noch nicht existiert. Gibt true zurück, wenn erfolgreich, false bei Duplikat.
+    @discardableResult
+    func add(device: KnownDevice) -> Bool {
+        if devices.contains(where: { $0.DeviceID == device.DeviceID }) {
+            return false
+        }
         devices.append(device)
+        return true
     }
 
     func move(fromOffsets source: IndexSet, toOffset destination: Int) {

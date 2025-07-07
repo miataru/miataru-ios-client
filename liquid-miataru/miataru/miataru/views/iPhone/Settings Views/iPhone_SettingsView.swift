@@ -31,6 +31,17 @@ struct iPhone_SettingsView: View {
                         Text("6hours").tag(360)
                         Text("12hours").tag(720)
                     }
+                    Section(header: Text(NSLocalizedString("activity_type_accuracy_settings_title", comment: "Section header for location activity type"))) {
+                        Picker("", selection: $settings.locationActivityType) {
+                            Text(NSLocalizedString("activity_type_other", comment: "Other (default, battery saving) option for location activity type")).tag(0)
+                            Text(NSLocalizedString("activity_type_fitness", comment: "Fitness (walking, running, cycling) option for location activity type")).tag(2)
+                            Text(NSLocalizedString("activity_type_automotive", comment: "Automotive Navigation (car) option for location activity type")).tag(1)
+                        }
+                        .pickerStyle(.menu)
+                        Text(NSLocalizedString("activity_type_explanation", comment: "Explanation for location activity type picker"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 Section(header: Text("server_url")) {
                     TextField("server_url", text: $settings.miataruServerURL)

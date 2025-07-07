@@ -292,6 +292,40 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Location Activity Type</string>
+			<key>FooterText</key>
+			<string>Choose the type of activity for location updates. 'Other' is recommended for most users.</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>0</string>
+			<key>Key</key>
+			<string>location_activity_type</string>
+			<key>Title</key>
+			<string>Location Activity Type</string>
+			<key>Titles</key>
+			<array>
+				<string>Other (default)</string>
+				<string>Automotive Navigation</string>
+				<string>Fitness</string>
+				<string>Other Navigation</string>
+				<string>Airborne</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>0</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+			</array>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

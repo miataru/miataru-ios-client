@@ -33,8 +33,13 @@ struct miataruApp: App {
         // LocationManager initialisieren und Berechtigungen anfordern
         let locationManager = LocationManager.shared
         locationManager.requestLocationPermission()
-        // Stelle sicher, dass das Tracking direkt beim App-Start aktiviert wird
-        locationManager.startTracking()
+        // Do NOT call startTracking() here!
+        // Tracking is now controlled by the observer in LocationManager.observeSettings().
+        // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.
+        // If the setting is enabled, tracking will start automatically.
+        // If the setting is disabled, tracking will be stopped automatically.
+        // This ensures the app always respects the user's preference, even on app launch.
+        // locationManager.startTracking() // Removed to ensure correct behavior
         
         // Debuging: Remove before flight !!!!! ##########################
         //UserDefaults.standard.hasCompletedOnboarding = false
