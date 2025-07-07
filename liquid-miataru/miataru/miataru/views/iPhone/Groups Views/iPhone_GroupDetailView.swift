@@ -3,65 +3,36 @@ import SwiftUI
 struct iPhone_GroupDetailView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
-    @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
 
     var body: some View {
         List {
             ForEach(deviceStore.devices) { device in
-                if editMode == .inactive {
-                    iPhone_GroupDeviceRowView(
-                        device: device,
-                        isInGroup: group.containsDevice(device.DeviceID)
-                    ) {
-                        group.toggleDevice(device.DeviceID)
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            group.removeDevice(device.DeviceID)
-                        } label: {
-                            Label("remove_from_group", systemImage: "minus.circle")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            editingDevice = device
-                        } label: {
-                            Label("edit_device", systemImage: "pencil")
-                        }
-                        .tint(.blue)
-                    }
-                } else {
-                    iPhone_GroupDeviceRowView(
-                        device: device,
-                        isInGroup: group.containsDevice(device.DeviceID)
-                    ) {
-                        group.toggleDevice(device.DeviceID)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        editingDevice = device
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            group.removeDevice(device.DeviceID)
-                        } label: {
-                            Label("remove_from_group", systemImage: "minus.circle")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            editingDevice = device
-                        } label: {
-                            Label("edit_device", systemImage: "pencil")
-                        }
-                        .tint(.blue)
+                iPhone_GroupDeviceRowView(
+                    device: device,
+                    isInGroup: group.containsDevice(device.DeviceID)
+                ) {
+                    group.toggleDevice(device.DeviceID)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        group.removeDevice(device.DeviceID)
+                    } label: {
+                        Label("remove_from_group", systemImage: "minus.circle")
                     }
                 }
-            }
-            .onMove { indices, newOffset in
-                // Note: This would require implementing move functionality in DeviceGroup
-                // For now, we'll leave this as a placeholder
+                .swipeActions(edge: .leading) {
+                    Button {
+                        editingDevice = device
+                    } label: {
+                        Label("edit_device", systemImage: "pencil")
+                    }
+                    .tint(.blue)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    editingDevice = device
+                }
             }
             .onDelete { indices in
                 // Remove devices from group based on indices
@@ -71,15 +42,9 @@ struct iPhone_GroupDetailView: View {
                 }
             }
         }
-        .environment(\.editMode, $editMode)
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(editMode == .active ? "grouplist_edit_done" : "grouplist_editbutton") {
-                    editMode = editMode == .active ? .inactive : .active
-                }
-            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: iPhone_GroupMapView(group: group)) {
                     Text("show")

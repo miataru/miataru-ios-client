@@ -3,6 +3,7 @@ import CoreLocation
 import Combine
 import MiataruAPIClient
 import UIKit
+import Network
 
 /// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
 final class LocationManager: NSObject, ObservableObject {
@@ -25,6 +26,8 @@ final class LocationManager: NSObject, ObservableObject {
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
     private var foregroundLocationUpdateTimerTimeframe: Double = 30
+    private let networkMonitor = NWPathMonitor()
+    private var isNetworkAvailable: Bool = true
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -51,6 +54,11 @@ final class LocationManager: NSObject, ObservableObject {
         observeSettings()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         observeActivityType()
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+            self?.isNetworkAvailable = (path.status == .satisfied)
+        }
+        let queue = DispatchQueue(label: "NetworkMonitor")
+        networkMonitor.start(queue: queue)
     }
     
     deinit {
@@ -182,6 +190,11 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Server Communication
     private func sendLocationToServer(_ location: CLLocation) {
+        guard isNetworkAvailable else {
+            print("No network available, skipping server update.")
+            serverUpdateStatus = .failed("No network connection")
+            return
+        }
         guard !settings.miataruServerURL.isEmpty,
               let serverURL = URL(string: settings.miataruServerURL) else {
             serverUpdateStatus = .failed("Invalid server configuration")
