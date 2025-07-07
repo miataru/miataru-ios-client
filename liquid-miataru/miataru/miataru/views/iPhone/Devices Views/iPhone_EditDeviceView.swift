@@ -43,7 +43,7 @@ struct iPhone_EditDeviceView: View {
                     HStack {
                         Spacer()
                         ZStack {
-                            Color.white
+                            Color(UIColor.systemBackground)
                             qrContent
                                 .components(.eyeOuter)
                                 .fill(Color.primary)

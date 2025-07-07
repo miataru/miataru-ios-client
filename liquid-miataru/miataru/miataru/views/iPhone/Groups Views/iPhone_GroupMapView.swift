@@ -163,7 +163,7 @@ struct iPhone_GroupMapView: View {
                                 VStack(spacing: 0) {
                                     // Show timestamp if available
                                     if let timestamp = deviceTimestamps[deviceID] {
-                                        Text(relativeTimeString(from: timestamp, to: now))
+                                        Text(relativeTimeString(from: timestamp, to: now, unitsStyle: .abbreviated))
                                             .font(.caption2)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
@@ -482,12 +482,6 @@ struct iPhone_GroupMapView: View {
                 region = MKCoordinateRegion(center: center, span: span)
             }
         }
-    }
-    
-    private func relativeTimeString(from date: Date, to now: Date = Date()) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: now)
     }
 }
 
