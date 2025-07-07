@@ -803,6 +803,17 @@
         }
       }
     },
+    "group_map_could_fetch_device_location" : {
+      "comment" : "Could not fetch location for device: %@",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "could not fetch location for device: %@"
+          }
+        }
+      }
+    },
     "group_name" : {
       "localizations" : {
         "en" : {
@@ -819,28 +830,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter group name"
-          }
-        }
-      }
-    },
-    "grouplist_edit_done" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Done"
-          }
-        }
-      }
-    },
-    "grouplist_editbutton" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Edit"
           }
         }
       }

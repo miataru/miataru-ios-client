@@ -199,6 +199,7 @@ struct iPhone_GroupMapView: View {
         defer { isLoading = false }
         
         do {
+            // Erster Versuch: Multi-Device-Call
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: groupDeviceIDs,
@@ -216,10 +217,33 @@ struct iPhone_GroupMapView: View {
             // Update map region to fit all devices
             updateMapRegionToFitDevices()
             
-        } catch let error as MiataruAPIClient.APIError {
-            handleAPIError(error)
         } catch {
-            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
+            // Multi-Device-Call fehlgeschlagen: Einzelabfragen
+            var anySuccess = false
+            for deviceID in groupDeviceIDs {
+                do {
+                    let locations = try await MiataruAPIClient.getLocation(
+                        serverURL: url,
+                        forDeviceIDs: [deviceID],
+                        requestingDeviceID: thisDeviceIDManager.shared.deviceID
+                    )
+                    if let location = locations.first {
+                        let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
+                        deviceLocations[location.Device] = coordinate
+                        deviceAccuracies[location.Device] = location.HorizontalAccuracy
+                        deviceTimestamps[location.Device] = location.TimestampDate
+                        anySuccess = true
+                    }
+                } catch {
+                    // Fehler für dieses Device: Name suchen und anzeigen
+                    let deviceName = deviceStore.devices.first(where: { $0.DeviceID == deviceID })?.DeviceName ?? deviceID
+                    let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", comment: "Could not fetch location for device: %@"), deviceName)
+                    showErrorOverlay("Failed to fetch location for device: \(deviceID)", userMessage)
+                }
+            }
+            if anySuccess {
+                updateMapRegionToFitDevices()
+            }
         }
     }
     
