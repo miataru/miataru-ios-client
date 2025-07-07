@@ -757,6 +757,9 @@
         }
       }
     },
+    "edit_group" : {
+
+    },
     "encoding_error" : {
       "comment" : "Error encoding the request.",
       "localizations" : {
@@ -821,6 +824,7 @@
       }
     },
     "grouplist_edit_done" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -831,6 +835,7 @@
       }
     },
     "grouplist_editbutton" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

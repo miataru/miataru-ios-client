@@ -4,6 +4,7 @@ struct iPhone_GroupsView: View {
     @EnvironmentObject private var groupStore: DeviceGroupStore
     @State private var showingAddGroup = false
     @State private var editMode: EditMode = .inactive
+    @State private var editingGroup: DeviceGroup? = nil
 
     var body: some View {
         NavigationView {
@@ -21,6 +22,14 @@ struct iPhone_GroupsView: View {
                             Label("delete_group", systemImage: "trash")
                         }
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button {
+                            editingGroup = group
+                        } label: {
+                            Label("edit_group", systemImage: "pencil")
+                        }
+                        .tint(.blue)
+                    }
                 }
                 .onMove { indices, newOffset in
                     groupStore.move(fromOffsets: indices, toOffset: newOffset)
@@ -32,11 +41,6 @@ struct iPhone_GroupsView: View {
             .environment(\.editMode, $editMode)
             .navigationTitle("groups")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(editMode == .active ? "grouplist_edit_done" : "grouplist_editbutton") {
-                        editMode = editMode == .active ? .inactive : .active
-                    }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddGroup = true }) {
                         Image(systemName: "plus")
@@ -45,6 +49,12 @@ struct iPhone_GroupsView: View {
             }
             .sheet(isPresented: $showingAddGroup) {
                 iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
+            }
+            .sheet(item: $editingGroup) { group in
+                iPhone_EditGroupNameView(group: group, isPresented: Binding(
+                    get: { editingGroup != nil },
+                    set: { if !$0 { editingGroup = nil } }
+                ))
             }
         }
     }
