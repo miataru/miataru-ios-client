@@ -302,7 +302,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Location tracking sensitivity"
+            "value" : "Location tracking sensitivity (foreground)"
           }
         }
       }
@@ -324,7 +324,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can choose the update frequency of your location. Standard is recommended for most users and saves battery."
+            "value" : "You can choose the update frequency of your location when the app is used in the foreground. Standard is recommended for most users and saves battery."
           }
         }
       }
