@@ -32,9 +32,9 @@ struct MapCompass: View {
             // Degree and direction label
             Text(compassLabel(for: heading))
                 //.font(.caption2)
-                .font(.caption2.smallCaps())
+                .font(.caption2.monospacedDigit())
                 .foregroundColor(.primary)
-                .frame(width: 60)
+                .frame(width: 50, alignment: .center)
                 .padding(.top, 2)
         }
         .padding(4)
