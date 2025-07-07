@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension UserDefaults {
     var hasCompletedOnboarding: Bool {
@@ -22,6 +23,7 @@ class AppState: ObservableObject {
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState = AppState()
+    @State private var autolockCancellable: AnyCancellable? = nil
     
     init() {
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
@@ -43,7 +45,6 @@ struct miataruApp: App {
         
         // Debuging: Remove before flight !!!!! ##########################
         //UserDefaults.standard.hasCompletedOnboarding = false
-     
     }
     
     var body: some Scene {
@@ -52,6 +53,16 @@ struct miataruApp: App {
                 .environmentObject(appState)
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
                     OnboardingContainerView(isPresented: $appState.showOnboarding)
+                }
+                .onAppear {
+#if os(iOS)
+                    // Set initial value
+                    UIApplication.shared.isIdleTimerDisabled = SettingsManager.shared.disableDeviceAutolock
+                    // Subscribe to changes
+                    autolockCancellable = SettingsManager.shared.$disableDeviceAutolock.sink { value in
+                        UIApplication.shared.isIdleTimerDisabled = value
+                    }
+#endif
                 }
         }
         .onChange(of: scenePhase) {
