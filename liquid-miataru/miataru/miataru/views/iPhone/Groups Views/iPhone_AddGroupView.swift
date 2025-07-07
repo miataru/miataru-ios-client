@@ -12,7 +12,7 @@ struct iPhone_AddGroupView: View {
                     TextField("group_name_placeholder", text: $groupName)
                 }
             }
-            .navigationTitle("new_group")
+            .navigationTitle("add_new_group")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("cancel") {

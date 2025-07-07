@@ -361,6 +361,16 @@
         }
       }
     },
+    "add_new_group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a new group"
+          }
+        }
+      }
+    },
     "adddevice_duplicate_device_already_exists_message" : {
       "comment" : "Alert text shown when user tries to add a duplicate device.",
       "localizations" : {
@@ -737,9 +747,6 @@
         }
       }
     },
-    "devices should be added using +" : {
-
-    },
     "done" : {
       "localizations" : {
         "en" : {
@@ -804,7 +811,24 @@
       }
     },
     "group_detailview_edit" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "group_empty_add_devices_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "add devices using the Edit button"
+          }
+        }
+      }
     },
     "group_map_could_fetch_device_location" : {
       "comment" : "Could not fetch location for device: %@",
@@ -818,7 +842,14 @@
       }
     },
     "group_member_devices" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "select devices that should be in this group"
+          }
+        }
+      }
     },
     "group_name" : {
       "localizations" : {
@@ -841,10 +872,24 @@
       }
     },
     "group_name_section" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Name"
+          }
+        }
+      }
     },
     "group_name_textfield" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enter a group name here"
+          }
+        }
+      }
     },
     "groups" : {
       "localizations" : {
@@ -1102,17 +1147,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add a new Device"
-          }
-        }
-      }
-    },
-    "new_group" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New Group"
+            "value" : "Add a new device"
           }
         }
       }

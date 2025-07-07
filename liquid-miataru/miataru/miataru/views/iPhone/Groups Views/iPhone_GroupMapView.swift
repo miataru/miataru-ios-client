@@ -37,7 +37,7 @@ struct iPhone_GroupMapView: View {
             if groupDeviceIDs.isEmpty {
                 VStack {
                     Spacer()
-                    Text("devices should be added using +")
+                    Text("group_empty_add_devices_message")
                         .font(.title3)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -109,12 +109,12 @@ struct iPhone_GroupMapView: View {
         .onDisappear {
             stopAutoUpdate()
         }
-        .onChange(of: settings.mapUpdateInterval) {
+        .onChange(of: settings.mapUpdateInterval) { _, _ in
             if !groupDeviceIDs.isEmpty {
                 restartAutoUpdate()
             }
         }
-        .onChange(of: group.deviceIDs.count) { newCount in
+        .onChange(of: group.deviceIDs.count) { _, newCount in
             if newCount > 0 {
                 // Devices wurden hinzugefügt: Karte anzeigen und Locations sofort aktualisieren
                 Task { await fetchAllLocations() }

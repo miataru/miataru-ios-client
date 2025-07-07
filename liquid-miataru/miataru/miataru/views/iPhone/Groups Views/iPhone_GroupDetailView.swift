@@ -4,12 +4,23 @@ struct iPhone_GroupDetailView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @State private var editingDevice: KnownDevice? = nil
+    @State private var previousGroupName: String = ""
 
     var body: some View {
         List {
             Section(header: Text("group_name_section")) {
                 HStack {
                     TextField("group_name_textfield", text: $group.groupName)
+                        .onTapGesture {
+                            previousGroupName = group.groupName
+                        }
+                        .onSubmit {
+                            if group.groupName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                group.groupName = previousGroupName
+                            } else {
+                                previousGroupName = group.groupName
+                            }
+                        }
                 }
             }
             Section(header: Text("group_member_devices")) {
@@ -68,6 +79,9 @@ struct iPhone_GroupDetailView: View {
                     )
                 )
             }
+        }
+        .onAppear {
+            previousGroupName = group.groupName
         }
     }
 }
