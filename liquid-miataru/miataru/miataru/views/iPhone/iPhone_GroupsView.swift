@@ -10,7 +10,7 @@ struct iPhone_GroupsView: View {
         NavigationView {
             List {
                 ForEach(groupStore.groups) { group in
-                    NavigationLink(destination: iPhone_GroupDetailView(group: group)) {
+                    NavigationLink(destination: iPhone_GroupMapView(group: group)) {
                         iPhone_GroupRowView(group: group)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -21,14 +21,6 @@ struct iPhone_GroupsView: View {
                         } label: {
                             Label("delete_group", systemImage: "trash")
                         }
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        Button {
-                            editingGroup = group
-                        } label: {
-                            Label("edit_group", systemImage: "pencil")
-                        }
-                        .tint(.blue)
                     }
                 }
                 .onMove { indices, newOffset in
@@ -51,10 +43,7 @@ struct iPhone_GroupsView: View {
                 iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
             }
             .sheet(item: $editingGroup) { group in
-                iPhone_EditGroupNameView(group: group, isPresented: Binding(
-                    get: { editingGroup != nil },
-                    set: { if !$0 { editingGroup = nil } }
-                ))
+                iPhone_GroupDetailView(group: group)
             }
         }
     }

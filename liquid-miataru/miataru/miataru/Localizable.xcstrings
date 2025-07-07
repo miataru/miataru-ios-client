@@ -757,9 +757,6 @@
         }
       }
     },
-    "edit_group" : {
-
-    },
     "encoding_error" : {
       "comment" : "Error encoding the request.",
       "localizations" : {
@@ -803,6 +800,9 @@
         }
       }
     },
+    "group_detailview_edit" : {
+
+    },
     "group_map_could_fetch_device_location" : {
       "comment" : "Could not fetch location for device: %@",
       "localizations" : {
@@ -813,6 +813,9 @@
           }
         }
       }
+    },
+    "group_member_devices" : {
+
     },
     "group_name" : {
       "localizations" : {
@@ -833,6 +836,12 @@
           }
         }
       }
+    },
+    "group_name_section" : {
+
+    },
+    "group_name_textfield" : {
+
     },
     "groups" : {
       "localizations" : {

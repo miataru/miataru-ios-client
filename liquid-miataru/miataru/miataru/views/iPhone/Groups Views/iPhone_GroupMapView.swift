@@ -178,10 +178,8 @@ struct iPhone_GroupMapView: View {
     
     @ViewBuilder
     private func updateButton() -> some View {
-        Button("update") {
-            Task {
-                await fetchAllLocations()
-            }
+        NavigationLink(destination: iPhone_GroupDetailView(group: group)) {
+            Text("group_detailview_edit")
         }
     }
     

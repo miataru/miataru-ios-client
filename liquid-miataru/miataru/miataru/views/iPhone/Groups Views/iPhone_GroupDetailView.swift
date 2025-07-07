@@ -7,49 +7,56 @@ struct iPhone_GroupDetailView: View {
 
     var body: some View {
         List {
-            ForEach(deviceStore.devices) { device in
-                iPhone_GroupDeviceRowView(
-                    device: device,
-                    isInGroup: group.containsDevice(device.DeviceID)
-                ) {
-                    group.toggleDevice(device.DeviceID)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        group.removeDevice(device.DeviceID)
-                    } label: {
-                        Label("remove_from_group", systemImage: "minus.circle")
-                    }
-                }
-                .swipeActions(edge: .leading) {
-                    Button {
-                        editingDevice = device
-                    } label: {
-                        Label("edit_device", systemImage: "pencil")
-                    }
-                    .tint(.blue)
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    editingDevice = device
+            Section(header: Text("group_name_section")) {
+                HStack {
+                    TextField("group_name_textfield", text: $group.groupName)
                 }
             }
-            .onDelete { indices in
-                // Remove devices from group based on indices
-                let devicesToRemove = indices.map { deviceStore.devices[$0] }
-                for device in devicesToRemove {
-                    group.removeDevice(device.DeviceID)
+            Section(header: Text("group_member_devices")) {
+                ForEach(deviceStore.devices) { device in
+                    iPhone_GroupDeviceRowView(
+                        device: device,
+                        isInGroup: group.containsDevice(device.DeviceID)
+                    ) {
+                        group.toggleDevice(device.DeviceID)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            group.removeDevice(device.DeviceID)
+                        } label: {
+                            Label("remove_from_group", systemImage: "minus.circle")
+                        }
+                    }
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            editingDevice = device
+                        } label: {
+                            Label("edit_device", systemImage: "pencil")
+                        }
+                        .tint(.blue)
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        editingDevice = device
+                    }
+                }
+                .onDelete { indices in
+                    // Remove devices from group based on indices
+                    let devicesToRemove = indices.map { deviceStore.devices[$0] }
+                    for device in devicesToRemove {
+                        group.removeDevice(device.DeviceID)
+                    }
                 }
             }
         }
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink(destination: iPhone_GroupMapView(group: group)) {
-                    Text("show")
-                }
-            }
+            // ToolbarItem(placement: .navigationBarTrailing) {
+            //     NavigationLink(destination: iPhone_GroupMapView(group: group)) {
+            //         Text("show")
+            //     }
+            // }
         }
         .sheet(item: $editingDevice) { device in
             if let index = deviceStore.devices.firstIndex(where: { $0.id == device.id }) {
