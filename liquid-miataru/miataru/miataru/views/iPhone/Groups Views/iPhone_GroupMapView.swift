@@ -28,6 +28,8 @@ struct iPhone_GroupMapView: View {
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var userHasRotatedMap = false // Track if user manually rotated the map
+    @State private var now = Date() // Timer für relative Zeit
+    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -110,6 +112,9 @@ struct iPhone_GroupMapView: View {
                 currentRegion = context.region
             }
         }
+        .onReceive(timeUpdateTimer) { input in
+            now = input
+        }
     }
     
     @ViewBuilder
@@ -134,7 +139,7 @@ struct iPhone_GroupMapView: View {
                                 VStack(spacing: 0) {
                                     // Show timestamp if available
                                     if let timestamp = deviceTimestamps[deviceID] {
-                                        Text(relativeTimeString(from: timestamp))
+                                        Text(relativeTimeString(from: timestamp, to: now))
                                             .font(.caption2)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
@@ -426,6 +431,12 @@ struct iPhone_GroupMapView: View {
                 region = MKCoordinateRegion(center: center, span: span)
             }
         }
+    }
+    
+    private func relativeTimeString(from date: Date, to now: Date = Date()) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: now)
     }
 }
 

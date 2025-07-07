@@ -36,6 +36,8 @@ struct iPhone_DeviceMapView: View {
     @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var showEditDeviceSheet = false
+    @State private var now = Date() // Timer für relative Zeit
+    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     // Computed property to get the current device from store
     private var device: KnownDevice? {
@@ -150,6 +152,9 @@ struct iPhone_DeviceMapView: View {
                 currentMapSpan = context.region.span
             }
         }
+        .onReceive(timeUpdateTimer) { input in
+            now = input
+        }
         .sheet(isPresented: $showEditDeviceSheet) {
             if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
@@ -177,7 +182,7 @@ struct iPhone_DeviceMapView: View {
                             VStack(spacing: 0) {
                                 // Show the timestamp as a relative time if available
                                 if let timestamp = deviceTimestamp {
-                                    Text(relativeTimeString(from: timestamp))
+                                    Text(relativeTimeString(from: timestamp, to: now))
                                         .font(.caption2)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
