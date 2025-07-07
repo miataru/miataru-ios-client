@@ -4,7 +4,7 @@ import MiataruAPIClient
 import Combine
 
 struct iPhone_GroupMapView: View {
-    let group: DeviceGroup
+    @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var settings = SettingsManager.shared
     
@@ -33,46 +33,59 @@ struct iPhone_GroupMapView: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            // Map and error overlay
-            VStack {
-                mapSection()
-            }
-            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
-            
-            // Scale bar always on top
-            Group {
-                if #available(iOS 17.0, *) {
-                    if let region = currentRegion ?? cameraPosition.region {
+            // Wenn keine Devices in der Gruppe sind, Hinweis anzeigen und keine Map/Serveranfrage
+            if groupDeviceIDs.isEmpty {
+                VStack {
+                    Spacer()
+                    Text("devices should be added using +")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                }
+            } else {
+                // Map and error overlay
+                VStack {
+                    mapSection()
+                }
+                ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
+                
+                // Scale bar always on top
+                Group {
+                    if #available(iOS 17.0, *) {
+                        if let region = currentRegion ?? cameraPosition.region {
+                            Button(action: { resetZoomToFit() }) {
+                                MapScaleBar(region: region, width: 50)
+                            }
+                            .buttonStyle(.plain)
+                            .padding([.bottom, .trailing], 5)
+                            .zIndex(2)
+                        }
+                    } else {
                         Button(action: { resetZoomToFit() }) {
                             MapScaleBar(region: region, width: 50)
+                                .id("scalebar")
                         }
                         .buttonStyle(.plain)
                         .padding([.bottom, .trailing], 5)
                         .zIndex(2)
                     }
-                } else {
-                    Button(action: { resetZoomToFit() }) {
-                        MapScaleBar(region: region, width: 50)
-                            .id("scalebar")
-                    }
-                    .buttonStyle(.plain)
-                    .padding([.bottom, .trailing], 5)
-                    .zIndex(2)
                 }
-            }
-            
-            // Compass top right
-            Group {
-                if #available(iOS 17.0, *) {
-                    let heading = currentMapCamera?.heading ?? 0
-                    Button(action: {
-                        alignMapToNorth()
-                    }) {
-                        MapCompass(heading: heading, size: 40)
+                
+                // Compass top right
+                Group {
+                    if #available(iOS 17.0, *) {
+                        let heading = currentMapCamera?.heading ?? 0
+                        Button(action: {
+                            alignMapToNorth()
+                        }) {
+                            MapCompass(heading: heading, size: 40)
+                        }
+                        .padding([.top, .trailing], 10)
+                        .zIndex(3)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     }
-                    .padding([.top, .trailing], 10)
-                    .zIndex(3)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
             }
         }
@@ -88,14 +101,25 @@ struct iPhone_GroupMapView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
-            Task { await fetchAllLocations() }
-            startAutoUpdate()
+            if !groupDeviceIDs.isEmpty {
+                Task { await fetchAllLocations() }
+                startAutoUpdate()
+            }
         }
         .onDisappear {
             stopAutoUpdate()
         }
         .onChange(of: settings.mapUpdateInterval) {
-            restartAutoUpdate()
+            if !groupDeviceIDs.isEmpty {
+                restartAutoUpdate()
+            }
+        }
+        .onChange(of: group.deviceIDs.count) { newCount in
+            if newCount > 0 {
+                // Devices wurden hinzugefügt: Karte anzeigen und Locations sofort aktualisieren
+                Task { await fetchAllLocations() }
+                startAutoUpdate()
+            }
         }
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
@@ -189,6 +213,10 @@ struct iPhone_GroupMapView: View {
     
     private func fetchAllLocations() async {
         guard let url = URL(string: settings.miataruServerURL), !groupDeviceIDs.isEmpty else {
+            if groupDeviceIDs.isEmpty {
+                // Keine Devices: Keine Serveranfrage, keine Fehlermeldung
+                return
+            }
             showErrorOverlay("Invalid server URL or no devices in group", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }

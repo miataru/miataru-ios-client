@@ -737,6 +737,9 @@
         }
       }
     },
+    "devices should be added using +" : {
+
+    },
     "done" : {
       "localizations" : {
         "en" : {
