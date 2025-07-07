@@ -151,7 +151,7 @@ struct iPhone_GroupMapView: View {
                        let coordinate = deviceLocations[deviceID] {
                         
                         // Accuracy circle
-                        if let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
+                        if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
                             MapCircle(center: coordinate, radius: accuracy)
                                 .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
                         }
@@ -194,7 +194,8 @@ struct iPhone_GroupMapView: View {
                 deviceStore: deviceStore,
                 deviceLocations: deviceLocations,
                 deviceAccuracies: deviceAccuracies,
-                mapType: settings.mapType
+                mapType: settings.mapType,
+                settings: settings
             )
             .ignoresSafeArea()
         }
@@ -498,6 +499,7 @@ struct iPhone_LegacyGroupMapViewRepresentable: UIViewRepresentable {
     let deviceLocations: [String: CLLocationCoordinate2D]
     let deviceAccuracies: [String: Double]
     let mapType: Int
+    @ObservedObject var settings: SettingsManager = SettingsManager.shared
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -527,7 +529,7 @@ struct iPhone_LegacyGroupMapViewRepresentable: UIViewRepresentable {
                 uiView.addAnnotation(annotation)
                 
                 // Accuracy circle
-                if let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
+                if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
                     let circle = MKCircle(center: coordinate, radius: accuracy)
                     uiView.addOverlay(circle)
                 }

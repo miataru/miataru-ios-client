@@ -8,6 +8,7 @@ struct iPhone_LegacyMapViewRepresentable: UIViewRepresentable {
     let deviceLocation: CLLocationCoordinate2D?
     let deviceAccuracy: Double?
     let mapType: Int
+    @ObservedObject var settings: SettingsManager = SettingsManager.shared
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -30,12 +31,10 @@ struct iPhone_LegacyMapViewRepresentable: UIViewRepresentable {
             annotation.title = device.DeviceName
             uiView.addAnnotation(annotation)
             // Genauigkeitskreis
-            if let accuracy = deviceAccuracy, accuracy > 0 {
-                uiView.removeOverlays(uiView.overlays)
+            uiView.removeOverlays(uiView.overlays)
+            if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                 let circle = MKCircle(center: coordinate, radius: accuracy)
                 uiView.addOverlay(circle)
-            } else {
-                uiView.removeOverlays(uiView.overlays)
             }
         } else {
             uiView.removeOverlays(uiView.overlays)

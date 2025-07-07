@@ -170,7 +170,7 @@ struct iPhone_DeviceMapView: View {
                 // If the device location is available, show it on the map
                 if let coordinate = deviceLocation, let device = device {
                     // 1. Genauigkeitskreis als separates Map-Element
-                    if let accuracy = deviceAccuracy, accuracy > 0 {
+                    if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
                             .foregroundStyle(Color.blue.opacity(0.2))
                     }
