@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct iPhone_OnboardingServerView: View {
+struct iPhone_3_OnboardingServerView: View {
     var body: some View {
         VStack {
             //Text("Server URL")
@@ -10,5 +10,5 @@ struct iPhone_OnboardingServerView: View {
 }
 
 #Preview {
-    iPhone_OnboardingServerView()
+    iPhone_3_OnboardingServerView()
 } 

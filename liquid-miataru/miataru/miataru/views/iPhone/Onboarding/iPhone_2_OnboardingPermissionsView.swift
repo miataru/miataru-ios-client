@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct iPhone_OnboardingPermissionsView: View {
+struct iPhone_2_OnboardingPermissionsView: View {
     var body: some View {
         VStack {
             //Text("Permissions")
@@ -10,5 +10,5 @@ struct iPhone_OnboardingPermissionsView: View {
 }
 
 #Preview {
-    iPhone_OnboardingPermissionsView()
+    iPhone_2_OnboardingPermissionsView()
 } 

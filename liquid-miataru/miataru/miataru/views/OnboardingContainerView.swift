@@ -6,19 +6,19 @@ struct OnboardingContainerView: View {
     @State private var currentPage = 0
     
     private let iPhone_pages: [AnyView] = [
-        AnyView(iPhone_OnboardingWelcomeView()),
-        AnyView(iPhone_OnboardingPermissionsView()),
-        AnyView(iPhone_OnboardingServerView())
+        AnyView(iPhone_1_OnboardingWelcomeView()),
+        AnyView(iPhone_2_OnboardingPermissionsView()),
+        AnyView(iPhone_3_OnboardingServerView())
     ]
     private let iPad_pages: [AnyView] = [
-        AnyView(iPhone_OnboardingWelcomeView()),
-        AnyView(iPhone_OnboardingPermissionsView()),
-        AnyView(iPhone_OnboardingServerView())
+        AnyView(iPhone_1_OnboardingWelcomeView()),
+        AnyView(iPhone_2_OnboardingPermissionsView()),
+        AnyView(iPhone_3_OnboardingServerView())
     ]
     private let macOS_pages: [AnyView] = [
-        AnyView(iPhone_OnboardingWelcomeView()),
-        AnyView(iPhone_OnboardingPermissionsView()),
-        AnyView(iPhone_OnboardingServerView())
+        AnyView(iPhone_1_OnboardingWelcomeView()),
+        AnyView(iPhone_2_OnboardingPermissionsView()),
+        AnyView(iPhone_3_OnboardingServerView())
     ]
     
     
