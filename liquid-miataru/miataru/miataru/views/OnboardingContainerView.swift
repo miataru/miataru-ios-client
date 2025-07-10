@@ -8,7 +8,8 @@ struct OnboardingContainerView: View {
     private let iPhone_pages: [AnyView] = [
         AnyView(iPhone_1_OnboardingWelcomeView()),
         AnyView(iPhone_2_OnboardingPermissionsView()),
-        AnyView(iPhone_3_OnboardingServerView())
+        AnyView(iPhone_3_OnboardingServerView()),
+        AnyView(iPhone_4_OnboardingLocationHistoryView())
     ]
     private let iPad_pages: [AnyView] = [
         AnyView(iPhone_1_OnboardingWelcomeView()),
