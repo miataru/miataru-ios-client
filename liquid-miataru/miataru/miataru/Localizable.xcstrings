@@ -435,6 +435,7 @@
       }
     },
     "Back" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1336,6 +1337,9 @@
 
     },
     "Please enter a valid https server URL." : {
+
+    },
+    "Previous" : {
 
     },
     "qr" : {
