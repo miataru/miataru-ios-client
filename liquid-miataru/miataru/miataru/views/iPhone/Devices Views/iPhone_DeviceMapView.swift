@@ -34,6 +34,7 @@ struct iPhone_DeviceMapView: View {
     @State private var mapInteractionID = UUID()
     @State private var currentRegion: MKCoordinateRegion? = nil
     @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
+    @State private var userHasRotatedMap = false // Track if user manually rotated the map
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var showEditDeviceSheet = false
     @State private var now = Date() // Timer für relative Zeit
@@ -76,16 +77,20 @@ struct iPhone_DeviceMapView: View {
             Group {
                 if #available(iOS 17.0, *) {
                     let heading = currentMapCamera?.heading ?? 0
-                    Button(action: {
-                        alignMapToNorth()
-                    }) {
-                        MapCompass(heading: heading, size: 40)
+                    if userHasRotatedMap {
+                        Button(action: {
+                            alignMapToNorth()
+                        }) {
+                            MapCompass(heading: heading, size: 40)
+                        }
+                        .padding([.top, .trailing], 10)
+                        .zIndex(3)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                        .transition(.opacity)
                     }
-                    .padding([.top, .trailing], 10)
-                    .zIndex(3)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
             }
+            .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
         }
         .navigationTitle(device?.DeviceName ?? "Unknown Device")
         .navigationBarTitleDisplayMode(.inline)
@@ -146,6 +151,9 @@ struct iPhone_DeviceMapView: View {
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
+            if headingChanged {
+                userHasRotatedMap = true
+            }
             if headingChanged || zoomChanged {
                 currentMapCamera = context.camera
                 currentRegion = context.region
@@ -347,6 +355,7 @@ struct iPhone_DeviceMapView: View {
         )
         withAnimation {
             cameraPosition = .camera(newCamera)
+            userHasRotatedMap = false // Kompass ausblenden, wenn wieder nach Norden
         }
     }
 

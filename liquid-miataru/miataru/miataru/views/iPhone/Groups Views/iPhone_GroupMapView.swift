@@ -30,6 +30,8 @@ struct iPhone_GroupMapView: View {
     @State private var userHasRotatedMap = false // Track if user manually rotated the map
     @State private var now = Date() // Timer für relative Zeit
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var editingDeviceID: String? = nil // State für das zu editierende Device
+    @State private var showEditDeviceSheet: Bool = false // Sheet-Trigger
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -77,16 +79,20 @@ struct iPhone_GroupMapView: View {
                 Group {
                     if #available(iOS 17.0, *) {
                         let heading = currentMapCamera?.heading ?? 0
-                        Button(action: {
-                            alignMapToNorth()
-                        }) {
-                            MapCompass(heading: heading, size: 40)
+                        if userHasRotatedMap {
+                            Button(action: {
+                                alignMapToNorth()
+                            }) {
+                                MapCompass(heading: heading, size: 40)
+                            }
+                            .padding([.top, .trailing], 10)
+                            .zIndex(3)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                            .transition(.opacity)
                         }
-                        .padding([.top, .trailing], 10)
-                        .zIndex(3)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
             }
         }
         .navigationTitle(group.groupName)
@@ -139,6 +145,12 @@ struct iPhone_GroupMapView: View {
         .onReceive(timeUpdateTimer) { input in
             now = input
         }
+        // Sheet für Edit Device
+        .sheet(isPresented: $showEditDeviceSheet) {
+            if let deviceID = editingDeviceID, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
+                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
+            }
+        }
     }
     
     @ViewBuilder
@@ -179,6 +191,19 @@ struct iPhone_GroupMapView: View {
                                     MiataruMapMarker(color: Color(device.DeviceColor ?? UIColor.blue))
                                         .shadow(radius: 2)
                                 }
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .contentShape(Rectangle())
+                                    .frame(width: 60, height: 80)
+                                    .zIndex(1)
+                                    .contextMenu {
+                                        Button {
+                                            editingDeviceID = deviceID
+                                            showEditDeviceSheet = true
+                                        } label: {
+                                            Label("edit_device", systemImage: "pencil")
+                                        }
+                                    }
                             }.offset(y: 10)
                         }
                     }
@@ -404,8 +429,8 @@ struct iPhone_GroupMapView: View {
     }
     
     private func alignMapToNorth() {
-        let center = currentMapCamera?.centerCoordinate ?? region.center
-        guard let currentCamera = currentMapCamera else { return }
+        let coordinate = currentMapCamera?.centerCoordinate
+        guard let center = coordinate, let currentCamera = currentMapCamera else { return }
         let newCamera = MapCamera(
             centerCoordinate: center,
             distance: currentCamera.distance,
@@ -414,6 +439,7 @@ struct iPhone_GroupMapView: View {
         )
         withAnimation {
             cameraPosition = .camera(newCamera)
+            userHasRotatedMap = false // Kompass ausblenden, wenn wieder nach Norden
         }
     }
     

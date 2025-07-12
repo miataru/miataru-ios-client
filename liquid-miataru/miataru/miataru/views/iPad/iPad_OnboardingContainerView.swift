@@ -45,7 +45,7 @@ struct iPad_OnboardingContainerView: View {
 
 #Preview {
     // Beispiel-Bindings für die Vorschau
-    @State var isPresented = true
-    @State var currentPage = 0
+    @Previewable @State var isPresented = true
+    @Previewable @State var currentPage = 0
     return iPad_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage)
 }
