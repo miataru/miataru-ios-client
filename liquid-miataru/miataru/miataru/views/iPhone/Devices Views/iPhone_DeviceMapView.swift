@@ -151,7 +151,9 @@ struct iPhone_DeviceMapView: View {
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
-            if headingChanged {
+            if abs(context.camera.heading) < 0.1 {
+                userHasRotatedMap = false
+            } else if headingChanged {
                 userHasRotatedMap = true
             }
             if headingChanged || zoomChanged {

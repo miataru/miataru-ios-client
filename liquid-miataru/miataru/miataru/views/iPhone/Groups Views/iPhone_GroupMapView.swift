@@ -131,12 +131,11 @@ struct iPhone_GroupMapView: View {
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
-            
-            // Track if user manually rotated the map (heading changed but not due to automatic updates)
-            if headingChanged && !isLoading {
+            if abs(context.camera.heading) < 0.1 {
+                userHasRotatedMap = false
+            } else if headingChanged && !isLoading {
                 userHasRotatedMap = true
             }
-            
             if headingChanged || zoomChanged {
                 currentMapCamera = context.camera
                 currentRegion = context.region

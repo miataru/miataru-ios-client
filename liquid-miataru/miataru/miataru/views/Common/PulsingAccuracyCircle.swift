@@ -24,7 +24,7 @@ struct PulsingAccuracyCircle: View {
             Circle()
                 .fill(pulsingColor.gradient)
                 .frame(width: size, height: size)
-                .blendMode(.lighten)
+                //.blendMode(.lighten)
                 .opacity(0.1)
                 .scaleEffect(isPulsing ? 0.1 : 1.2)
                 .zIndex(isPulsing ? 0 : 1)
@@ -59,7 +59,14 @@ struct PulsingAccuracyCircle: View {
 }
 
 #Preview {
-    Spacer()
-    PulsingAccuracyCircle(pulsingColor: Color(#colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)), size: 172)
-    Spacer()
+    ZStack() {
+        PulsingAccuracyCircle(pulsingColor: Color(#colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1)), size: 172)
+    }
+    .background(
+        LinearGradient(
+            gradient: Gradient(colors: [.blue, .purple, .orange]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    )
 }

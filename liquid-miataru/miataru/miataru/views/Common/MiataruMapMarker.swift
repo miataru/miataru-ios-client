@@ -23,6 +23,7 @@ struct MiataruMapMarker: View {
     var body: some View {
         // Proportionen
         let circleDiameter = height * 0.65 // z.B. 26 bei 40
+        let pulsatingDiameter = circleDiameter * 1.5
         let triangleHeight = height * 0.45 // z.B. 14 bei 40
         let triangleWidth = circleDiameter * 0.54 // z.B. 14 bei 26
         let iconSize = circleDiameter * 0.54 // z.B. 14 bei 26
@@ -53,6 +54,8 @@ struct MiataruMapMarker: View {
                 .frame(width: triangleWidth, height: triangleHeight)
                 .offset(y: circleDiameter/2 - triangleHeight/2 + 6)
                 .shadow(radius: 1, y: 1)
+            
+            PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
             // Kopf (Kreis) mit getintetem Material
             Circle()
                 // Farbiger Kreis mit dezentem Verlauf
