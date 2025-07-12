@@ -53,8 +53,9 @@ struct iPhone_LegacyMapViewRepresentable: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let circle = overlay as? MKCircle {
                 let renderer = MKCircleRenderer(circle: circle)
-                renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
-                renderer.strokeColor = UIColor.blue.withAlphaComponent(0.4)
+                let color = device.DeviceColor ?? UIColor.blue
+                renderer.fillColor = color.withAlphaComponent(0.2)
+                renderer.strokeColor = color.withAlphaComponent(0.4)
                 renderer.lineWidth = 1
                 return renderer
             }

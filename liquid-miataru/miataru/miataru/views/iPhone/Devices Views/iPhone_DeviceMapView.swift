@@ -172,7 +172,7 @@ struct iPhone_DeviceMapView: View {
                     // 1. Genauigkeitskreis als separates Map-Element
                     if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
-                            .foregroundStyle(Color.blue.opacity(0.2))
+                            .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
                     }
                     // 2. Marker-Annotation (ohne Kreis)
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
