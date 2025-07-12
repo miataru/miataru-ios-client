@@ -75,6 +75,7 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Settings Observer
     private func observeSettings() {
         settings.$trackAndReportLocation
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] shouldTrack in
                 guard let self else { return }
                 if shouldTrack {
@@ -88,6 +89,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     private func observeActivityType() {
         settings.$locationActivityType
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 self.locationManager.activityType = Self.activityTypeFrom(newValue)

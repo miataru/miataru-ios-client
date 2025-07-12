@@ -464,6 +464,15 @@
         }
       }
     },
+    "Camera Access" : {
+
+    },
+    "Camera access is needed to scan QR codes for device pairing and quick setup." : {
+
+    },
+    "Camera Permission Required" : {
+
+    },
     "Camera: To scan QR codes for easy sharing." : {
 
     },
@@ -476,6 +485,9 @@
           }
         }
       }
+    },
+    "Choose how long your last location should be kept on the server:" : {
+
     },
     "Choose Your Server" : {
 
@@ -616,6 +628,9 @@
       }
     },
     "Custom server URL" : {
+
+    },
+    "Custom server URL (must start with https://)" : {
 
     },
     "deactivate_device_lock" : {
@@ -1024,6 +1039,9 @@
     "Let's get you set up in just a few steps." : {
 
     },
+    "Location Access" : {
+
+    },
     "Location access denied" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
@@ -1045,6 +1063,12 @@
           }
         }
       }
+    },
+    "Location History Options" : {
+
+    },
+    "Location Permission Required" : {
+
     },
     "Location services not available" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
@@ -1263,6 +1287,9 @@
         }
       }
     },
+    "Only store last location for a limited time" : {
+
+    },
     "Open app settings in iOS to change location permission state." : {
       "localizations" : {
         "en" : {
@@ -1306,6 +1333,9 @@
       }
     },
     "Permissions Needed" : {
+
+    },
+    "Please enter a valid https server URL." : {
 
     },
     "qr" : {
@@ -1371,6 +1401,15 @@
           }
         }
       }
+    },
+    "Request Camera Permission" : {
+
+    },
+    "Request Location Permission" : {
+
+    },
+    "Retention Time" : {
+
     },
     "sat_map" : {
       "localizations" : {
@@ -1448,6 +1487,9 @@
           }
         }
       }
+    },
+    "Self-host your own server (GitHub)" : {
+
     },
     "send_location_to_server" : {
       "localizations" : {
@@ -1568,6 +1610,12 @@
     "Start Using Miataru" : {
 
     },
+    "Status: " : {
+
+    },
+    "Storage Option" : {
+
+    },
     "store_history_before_autoremove" : {
       "localizations" : {
         "en" : {
@@ -1654,10 +1702,19 @@
     "Use Default Server" : {
 
     },
+    "Use server location history" : {
+
+    },
+    "We need your location to provide core app functionality, such as sharing your position with trusted contacts." : {
+
+    },
     "Welcome to Miataru!" : {
 
     },
     "What is Miataru?" : {
+
+    },
+    "You can choose how your location data is stored on the Miataru server.\n\nIf you enable server history, the server will keep a history of your last locations (default: 1000, depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time. After this time, your location is automatically deleted from the server." : {
 
     },
     "You're Ready to Go!" : {
