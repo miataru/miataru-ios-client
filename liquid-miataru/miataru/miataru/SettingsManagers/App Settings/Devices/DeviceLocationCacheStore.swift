@@ -81,7 +81,7 @@ class DeviceLocationCacheStore: ObservableObject {
     private func load() -> [CachedDeviceLocation] {
         guard let data = try? Data(contentsOf: fileURL) else { return [] }
         do {
-            if let locations = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, CachedDeviceLocation.self], from: data) as? [CachedDeviceLocation] {
+            if let locations = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, CachedDeviceLocation.self, NSDate.self, NSString.self], from: data) as? [CachedDeviceLocation] {
                 return locations
             }
         } catch {
