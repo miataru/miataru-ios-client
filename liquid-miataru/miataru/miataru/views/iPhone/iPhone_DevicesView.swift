@@ -13,6 +13,7 @@ struct iPhone_DevicesView: View {
                     if editMode == .inactive {
                         NavigationLink(destination: iPhone_DeviceMapView(deviceID: device.DeviceID)) {
                             iPhone_DeviceRowView(device: device)
+                                .listRowBackground(Color(.systemBackground))
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
@@ -31,6 +32,7 @@ struct iPhone_DevicesView: View {
                         }
                     } else {
                         iPhone_DeviceRowView(device: device)
+                            .listRowBackground(Color(.systemBackground))
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingDevice = device

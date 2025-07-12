@@ -11,6 +11,7 @@ struct iPhone_DeviceRowView: View {
             VStack(alignment: .leading) {
                 Text(device.DeviceName)
                     .font(.headline)
+                    .foregroundColor(.primary)
             }
             Spacer()
         }
