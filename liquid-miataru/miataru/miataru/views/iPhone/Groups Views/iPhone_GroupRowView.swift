@@ -9,6 +9,7 @@ struct iPhone_GroupRowView: View {
             VStack(alignment: .leading) {
                 Text(group.groupName)
                     .font(.headline)
+                    .foregroundColor(.primary)
                 Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? "device" : "devices")")
                     .font(.caption)
                     .foregroundColor(.secondary)
