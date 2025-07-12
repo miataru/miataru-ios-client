@@ -14,7 +14,8 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
             Image("mapandpin")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 1024)
+                .frame(maxWidth: 300)
+                .padding(.horizontal)
             HStack(alignment: .top) {
                 Image(systemName: "location.fill")
                     .foregroundColor(.blue)
@@ -41,6 +42,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                     }
                 }
             }
+            Text("").padding(.bottom,16)
             Spacer()
         }
         .padding()

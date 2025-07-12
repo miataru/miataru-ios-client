@@ -11,7 +11,8 @@ struct iPhone_1_OnboardingWelcomeView: View {
             Image("yourlocationyourcontrol")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 1024)
+                .frame(maxWidth: 300)
+                .padding(.horizontal)
             //Image(systemName: "location.circle.fill")
             //               .resizable()
             //               .frame(width: 100, height: 100)
@@ -44,9 +45,10 @@ struct iPhone_1_OnboardingWelcomeView: View {
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            Text("").padding(.bottom,16)
             Spacer()
             
-        }
+        }.padding()
     }
 }
 

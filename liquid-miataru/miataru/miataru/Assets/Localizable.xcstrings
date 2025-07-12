@@ -4,12 +4,6 @@
     "" : {
 
     },
-    "- To add: Scan a QR code from another device." : {
-
-    },
-    "- To share: Show your QR code to someone you trust." : {
-
-    },
     "'." : {
 
     },
@@ -35,18 +29,6 @@
       }
     },
     "•" : {
-
-    },
-    "• Miataru is a privacy-focused location sharing app." : {
-
-    },
-    "• Share your device's location with friends, family, or groups." : {
-
-    },
-    "• You control who sees your location." : {
-
-    },
-    "• Your data stays on the server you choose." : {
 
     },
     "1day" : {
@@ -309,6 +291,9 @@
         }
       }
     },
+    "A number of your last location updates ist stored on the server (default: last 1000)." : {
+
+    },
     "Accuracy" : {
       "comment" : "Accuracy display in Location Tracking Details",
       "localizations" : {
@@ -427,9 +412,6 @@
         }
       }
     },
-    "Allow Location Access" : {
-
-    },
     "Allow While Using App" : {
 
     },
@@ -463,18 +445,6 @@
         }
       }
     },
-    "Camera Access" : {
-
-    },
-    "Camera access is needed to scan QR codes for device pairing and quick setup." : {
-
-    },
-    "Camera Permission Required" : {
-
-    },
-    "Camera: To scan QR codes for easy sharing." : {
-
-    },
     "cancel" : {
       "localizations" : {
         "en" : {
@@ -485,13 +455,7 @@
         }
       }
     },
-    "Choose how long your last location should be kept on the server:" : {
-
-    },
     "Choose the server you trust." : {
-
-    },
-    "Choose Your Server" : {
 
     },
     "Compass" : {
@@ -615,9 +579,6 @@
         }
       }
     },
-    "Continue" : {
-
-    },
     "Current location" : {
       "comment" : "Current position display in Location Tracking Details",
       "localizations" : {
@@ -628,9 +589,6 @@
           }
         }
       }
-    },
-    "Custom server URL" : {
-
     },
     "Custom server URL (must start with https://)" : {
 
@@ -810,7 +768,7 @@
         }
       }
     },
-    "Easily share your device ID or add others by scanning QR codes." : {
+    "Easily share your device ID or add others by scanning QR-Codes." : {
 
     },
     "edit_device" : {
@@ -822,9 +780,6 @@
           }
         }
       }
-    },
-    "Enable Location Access" : {
-
     },
     "Enable Location Tracking" : {
 
@@ -874,9 +829,6 @@
           }
         }
       }
-    },
-    "Get Started" : {
-
     },
     "group_detailview_edit" : {
       "localizations" : {
@@ -969,7 +921,7 @@
         }
       }
     },
-    "How often should Miataru update your location while the app is open?\nMore frequent updates = more accuracy, but may use more battery." : {
+    "History Options" : {
 
     },
     "hybrid_map" : {
@@ -981,6 +933,9 @@
           }
         }
       }
+    },
+    "If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time." : {
+
     },
     "indicate_location_accuracy" : {
       "localizations" : {
@@ -1044,9 +999,6 @@
         }
       }
     },
-    "Let's get you set up in just a few steps." : {
-
-    },
     "Location Access" : {
 
     },
@@ -1072,7 +1024,7 @@
         }
       }
     },
-    "Location History Options" : {
+    "Location History" : {
 
     },
     "Location Permissions" : {
@@ -1121,9 +1073,6 @@
         }
       }
     },
-    "Location Update Frequency" : {
-
-    },
     "Location updates in the background are only detected when they are significant (>500m)." : {
       "comment" : "Hint for background location update behavior",
       "localizations" : {
@@ -1144,9 +1093,6 @@
           }
         }
       }
-    },
-    "Location: To update and share your position." : {
-
     },
     "map_configuration" : {
       "localizations" : {
@@ -1191,16 +1137,10 @@
     "Miataru helps you share your (device) location with people and groups you trust." : {
 
     },
-    "Miataru helps you share your device's location with people and groups you trust." : {
-
-    },
-    "Miataru is set up and ready.\nYou can change your settings or permissions anytime in the app." : {
+    "Miataru is set up and ready." : {
 
     },
     "Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts." : {
-
-    },
-    "Miataru needs your location to share it with your trusted contacts. You can choose how often updates happen." : {
 
     },
     "Miataru server status" : {
@@ -1280,9 +1220,6 @@
         }
       }
     },
-    "Notifications: To alert you about important updates." : {
-
-    },
     "ok" : {
       "localizations" : {
         "en" : {
@@ -1304,7 +1241,10 @@
         }
       }
     },
-    "Only store last location for a limited time" : {
+    "only store last location" : {
+
+    },
+    "Only the last location is stored for a fixed time on the server (default 30 minutes)." : {
 
     },
     "Open app settings in iOS to change location permission state." : {
@@ -1348,9 +1288,6 @@
           }
         }
       }
-    },
-    "Permissions Needed" : {
-
     },
     "Please enter a valid https server URL." : {
 
@@ -1422,12 +1359,6 @@
         }
       }
     },
-    "Request Camera Permission" : {
-
-    },
-    "Retention Time" : {
-
-    },
     "sat_map" : {
       "localizations" : {
         "en" : {
@@ -1444,6 +1375,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
+          }
+        }
+      }
+    },
+    "save_location_history_to_server" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save location history to server"
           }
         }
       }
@@ -1492,7 +1433,7 @@
         }
       }
     },
-    "Scan a QR Code" : {
+    "Scan a QR-Code from another device running Miataru." : {
 
     },
     "scan_qr_code" : {
@@ -1501,16 +1442,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "touch here to scan QR code"
-          }
-        }
-      }
-    },
-    "send_location_to_server" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "send location to server"
           }
         }
       }
@@ -1582,7 +1513,7 @@
         }
       }
     },
-    "Share & Scan with QR Codes" : {
+    "Share & Scan with QR-Codes" : {
 
     },
     "show" : {
@@ -1595,9 +1526,6 @@
         }
       }
     },
-    "Show My QR Code" : {
-
-    },
     "Show Onboarding Wizard Again" : {
       "localizations" : {
         "en" : {
@@ -1608,26 +1536,31 @@
         }
       }
     },
+    "Show your QR-Code to someone you trust." : {
+
+    },
     "show_history_days" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "History days to display"
+            "value" : "Days of history shown"
           }
         }
       }
     },
     "Skip" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
     },
-    "Start Using Miataru" : {
-
-    },
-    "Status: " : {
-
-    },
-    "Storage Option" : {
+    "store location history" : {
 
     },
     "store_history_before_autoremove" : {
@@ -1654,10 +1587,13 @@
     "Swipe left to get you set up in just a few steps." : {
 
     },
-    "Tap below to see your device's QR code, or scan someone else's." : {
+    "To add:" : {
 
     },
     "To give Miataru the permission please enable the toggle and answer the following dialog with '" : {
+
+    },
+    "To share:" : {
 
     },
     "track_and_history" : {
@@ -1703,9 +1639,6 @@
         }
       }
     },
-    "Try QR Code Sharing" : {
-
-    },
     "update" : {
       "localizations" : {
         "en" : {
@@ -1716,34 +1649,25 @@
         }
       }
     },
-    "Update Frequency" : {
-
-    },
     "Use Default Server" : {
-
-    },
-    "Use server location history" : {
 
     },
     "Welcome to Miataru!" : {
 
     },
-    "What is Miataru?" : {
+    "You are Ready to Go!" : {
 
     },
-    "You can choose how your location data is stored on the Miataru server.\n\nIf you enable server history, the server will keep a history of your last locations (default: 1000, depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time. After this time, your location is automatically deleted from the server." : {
+    "You can change your settings or permissions anytime in the app." : {
 
     },
-    "You're Ready to Go!" : {
+    "You can choose how your location data is stored on the Miataru server." : {
 
     },
     "Your data is only sent when you specifically activate it" : {
 
     },
     "Your data stays on the server you choose for the time you choose" : {
-
-    },
-    "Your location data is stored on a server you trust.\n- Use the default Miataru server, or\n- Enter your own server address." : {
 
     },
     "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address." : {

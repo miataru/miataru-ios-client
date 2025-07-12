@@ -77,7 +77,7 @@ class SettingsManager: ObservableObject {
         self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1
         self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
-        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "5") ?? 5
+        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
     }
     

@@ -4,18 +4,20 @@ struct iPhone_OnboardingContainerView: View {
     @Binding var isPresented: Bool
     @Binding var currentPage: Int
     
-    private let iPhone_pages: [AnyView] = [
+    private let pages: [AnyView] = [
         AnyView(iPhone_1_OnboardingWelcomeView()),
         AnyView(iPhone_2_OnboardingLocationPermissionView()),
         AnyView(iPhone_3_OnboardingServerView()),
-        AnyView(iPhone_4_OnboardingLocationHistoryView())
+        AnyView(iPhone_4_OnboardingLocationHistoryView()),
+        AnyView(iPhone_5_OnboardingQRcodeView()),
+        AnyView(iPhone_6_OnboardingDoneView())
     ]
     
     var body: some View {
         VStack {
             TabView(selection: $currentPage) {
-                ForEach(0..<iPhone_pages.count, id: \.self) { index in
-                    iPhone_pages[index]
+                ForEach(0..<pages.count, id: \.self) { index in
+                    pages[index]
                         .tag(index)
                 }
             }
@@ -27,7 +29,7 @@ struct iPhone_OnboardingContainerView: View {
                     Button("Previous") { currentPage -= 1 }
                 }
                 Spacer()
-                if currentPage < iPhone_pages.count - 1 {
+                if currentPage < pages.count - 1 {
                     Button("Next") { currentPage += 1 }
                 } else {
                     Button("Finish") {
@@ -39,4 +41,12 @@ struct iPhone_OnboardingContainerView: View {
             .padding()
         }
     }
-} 
+}
+
+struct iPhone_OnboardingContainerView_Previews: PreviewProvider {
+    @State static var isPresented = true
+    @State static var currentPage = 0
+    static var previews: some View {
+        iPhone_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage)
+    }
+}

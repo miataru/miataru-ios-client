@@ -11,25 +11,18 @@ struct iPhone_SettingsView: View {
             Form {
                 Section(header: Text("track_and_history")) {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
-                    Toggle("send_location_to_server", isOn: $settings.saveLocationHistoryOnServer)
-                    Picker("show_history_days", selection: $settings.historyNumberOfDays) {
-                        Text("1day").tag(1)
-                        Text("2days").tag(2)
-                        Text("3days").tag(3)
-                        Text("4days").tag(4)
-                        Text("5days").tag(5)
-                        Text("6days").tag(6)
-                        Text("7days").tag(7)
-                        Text("14days").tag(14)
-                        Text("31days").tag(31)
-                        Text("all_available").tag(10000000)
-                    }
-                    Picker("store_history_before_autoremove", selection: $settings.locationDataRetentionTime) {
-                        Text("30minutes").tag(30)
-                        Text("1hour").tag(60)
-                        Text("2hours").tag(120)
-                        Text("6hours").tag(360)
-                        Text("12hours").tag(720)
+                    if settings.trackAndReportLocation {
+                        Toggle("save_location_history_to_server", isOn: $settings.saveLocationHistoryOnServer)
+
+                        if !settings.saveLocationHistoryOnServer {
+                            Picker("store_history_before_autoremove", selection: $settings.locationDataRetentionTime) {
+                                Text("30minutes").tag(30)
+                                Text("1hour").tag(60)
+                                Text("2hours").tag(120)
+                                Text("6hours").tag(360)
+                                Text("12hours").tag(720)
+                            }
+                        }
                     }
                 }
                 Section(header: Text(NSLocalizedString("activity_type_accuracy_settings_title", comment: "Section header for location activity type"))) {
@@ -50,6 +43,18 @@ struct iPhone_SettingsView: View {
                 Section(header: Text("app_behaviour")) {
                     Toggle("deactivate_device_lock", isOn: $settings.disableDeviceAutolock)
                     Toggle("indicate_location_accuracy", isOn: $settings.indicateAccuracyOnMap)
+                    Picker("show_history_days", selection: $settings.historyNumberOfDays) {
+                        Text("1day").tag(1)
+                        Text("2days").tag(2)
+                        Text("3days").tag(3)
+                        Text("4days").tag(4)
+                        Text("5days").tag(5)
+                        Text("6days").tag(6)
+                        Text("7days").tag(7)
+                        Text("14days").tag(14)
+                        Text("31days").tag(31)
+                        Text("all_available").tag(10000000)
+                    }
                 }
                 Section(header: Text("map_configuration")) {
                     Picker("map_type", selection: $settings.mapType) {

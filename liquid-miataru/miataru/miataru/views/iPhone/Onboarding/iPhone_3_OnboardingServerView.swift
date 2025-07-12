@@ -18,7 +18,8 @@ struct iPhone_3_OnboardingServerView: View {
             Image("selectserver")
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: 1024)
+                .frame(maxWidth: 300)
+                .padding(.horizontal)
             Text("Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.")
                 .font(.body)
                 .multilineTextAlignment(.center)
@@ -37,6 +38,9 @@ struct iPhone_3_OnboardingServerView: View {
             .onChange(of: useDefaultServer) {
                 if !useDefaultServer {
                     customServerFieldIsFocused = true
+                } else {
+                    settings.miataruServerURL = defaultServer
+                    customServerURL = defaultServer
                 }
             }
             VStack(alignment: .leading, spacing: 32) {
@@ -66,8 +70,8 @@ struct iPhone_3_OnboardingServerView: View {
                                 showURLError = true
                             }
                         }) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(isValidHTTPSURL(customServerURL) ? .accentColor : .gray)
+                            Image(systemName: isValidHTTPSURL(customServerURL) ? "checkmark.circle.fill" : "checkmark.circle")
+                                .foregroundColor(isValidHTTPSURL(customServerURL) ? .accentColor : .secondary)
                         }
                         .disabled(!isValidHTTPSURL(customServerURL))
                         .padding(.trailing, 12)
@@ -80,9 +84,20 @@ struct iPhone_3_OnboardingServerView: View {
                         .padding(.horizontal)
                 }
             }
+            Text("").padding(.bottom,16)
+
             Spacer()
 
         }.padding()
+        .onAppear {
+            if settings.miataruServerURL != defaultServer {
+                useDefaultServer = false
+                customServerURL = settings.miataruServerURL
+            } else {
+                useDefaultServer = true
+                customServerURL = ""
+            }
+        }
         .onDisappear {
             if !useDefaultServer && isValidHTTPSURL(customServerURL) {
                 settings.miataruServerURL = customServerURL
