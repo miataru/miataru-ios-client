@@ -183,7 +183,7 @@ struct iPhone_GroupMapView: View {
                                     // Show timestamp if available
                                     if let timestamp = deviceTimestamps[deviceID] {
                                         Text(relativeTimeString(from: timestamp, to: now, unitsStyle: .abbreviated))
-                                            .font(.caption2)
+                                            .font(.caption)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
                                             .background(.ultraThinMaterial)
@@ -192,6 +192,7 @@ struct iPhone_GroupMapView: View {
                                                 Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                             )
                                             .shadow(radius: 2)
+                                            .shimmering(active: isLoading)
                                     }
                                     
                                     // Custom map marker
@@ -253,10 +254,20 @@ struct iPhone_GroupMapView: View {
             showErrorOverlay("Invalid server URL or no devices in group", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }
-        
+        let minShimmerDuration: TimeInterval = 1.5
+        let startTime = Date()
         isLoading = true
-        defer { isLoading = false }
-        
+        defer {
+            let elapsed = Date().timeIntervalSince(startTime)
+            let remaining = minShimmerDuration - elapsed
+            if remaining > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + remaining) {
+                    isLoading = false
+                }
+            } else {
+                isLoading = false
+            }
+        }
         do {
             // Erster Versuch: Multi-Device-Call
             let locations = try await MiataruAPIClient.getLocation(
@@ -264,7 +275,6 @@ struct iPhone_GroupMapView: View {
                 forDeviceIDs: groupDeviceIDs,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID
             )
-            
             // Update device locations
             for location in locations {
                 let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
@@ -274,10 +284,8 @@ struct iPhone_GroupMapView: View {
                 // Caching: Neue Location speichern
                 DeviceLocationCacheStore.shared.setLocation(for: location.Device, latitude: location.Latitude, longitude: location.Longitude, accuracy: location.HorizontalAccuracy, timestamp: location.TimestampDate)
             }
-            
             // Update map region to fit all devices
             updateMapRegionToFitDevices()
-            
         } catch {
             // Multi-Device-Call fehlgeschlagen: Einzelabfragen
             var anySuccess = false

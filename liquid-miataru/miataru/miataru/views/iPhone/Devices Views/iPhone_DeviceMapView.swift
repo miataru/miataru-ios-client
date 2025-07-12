@@ -195,10 +195,9 @@ struct iPhone_DeviceMapView: View {
                     Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
                         ZStack {
                             VStack(spacing: 0) {
-                                // Show the timestamp as a relative time if available
                                 if let timestamp = deviceTimestamp {
                                     Text(relativeTimeString(from: timestamp, to: now))
-                                        .font(.caption2)
+                                        .font(.caption)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
                                         .background(.ultraThinMaterial)
@@ -207,8 +206,8 @@ struct iPhone_DeviceMapView: View {
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
                                         .shadow(radius: 2)
+                                        .shimmering(active: isLoading)
                                 }
-                                // Show the custom map marker for the device
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
                             }
@@ -256,8 +255,20 @@ struct iPhone_DeviceMapView: View {
             showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             return
         }
+        let minShimmerDuration: TimeInterval = 1.5
+        let startTime = Date()
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            let elapsed = Date().timeIntervalSince(startTime)
+            let remaining = minShimmerDuration - elapsed
+            if remaining > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + remaining) {
+                    isLoading = false
+                }
+            } else {
+                isLoading = false
+            }
+        }
         do {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
