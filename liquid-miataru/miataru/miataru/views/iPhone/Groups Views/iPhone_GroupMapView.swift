@@ -177,7 +177,7 @@ struct iPhone_GroupMapView: View {
                         
                         // Device marker
                         let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                        Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
+                        Annotation("", coordinate: coordinate, anchor: .bottom) {
                             ZStack {
                                 VStack(spacing: 0) {
                                     // Show timestamp if available
@@ -191,13 +191,35 @@ struct iPhone_GroupMapView: View {
                                             .overlay(
                                                 Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                             )
-                                            .shadow(radius: 2)
                                             .shimmering(active: isLoading)
+                                            .shadow(radius: 2)
                                     }
                                     
                                     // Custom map marker
                                     MiataruMapMarker(color: Color(device.DeviceColor ?? UIColor.blue))
                                         .shadow(radius: 2)
+                                    // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
+                                    ZStack {
+                                        // Stroke (Outline) – automatisch kontrastierend zur Umgebung
+                                        Text(device.DeviceName)
+                                            .font(.footnote)
+                                            .foregroundColor(Color(UIColor.label).isLight() ? Color.black : Color.white)
+                                            .padding(.top, 2)
+                                            .overlay(
+                                                Text(annotationID)
+                                                    .font(.footnote)
+                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                    .padding(.top, 2)
+                                                    .blur(radius: 1.2)
+                                                    .shadow(radius: 4)
+                                            )
+                                        // Haupttext
+                                        Text(annotationID)
+                                            .font(.footnote)
+                                            .foregroundColor(Color(UIColor.label))
+                                            .padding(.top, 2)
+                                            .shadow(radius: 4)
+                                    }
                                 }
                                 Rectangle()
                                     .foregroundColor(.clear)

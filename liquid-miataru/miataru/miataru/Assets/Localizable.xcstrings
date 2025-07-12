@@ -1559,17 +1559,6 @@
         }
       }
     },
-    "Skip" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skip"
-          }
-        }
-      }
-    },
     "store location history" : {
 
     },

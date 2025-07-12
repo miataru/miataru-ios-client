@@ -191,8 +191,8 @@ struct iPhone_DeviceMapView: View {
                     }
                     // 2. Marker-Annotation (ohne Kreis)
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                   
-                    Annotation(annotationID, coordinate: coordinate, anchor: .bottom) {
+                    //let annotationID = "blah"
+                    Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
                             VStack(spacing: 0) {
                                 if let timestamp = deviceTimestamp {
@@ -205,11 +205,34 @@ struct iPhone_DeviceMapView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shadow(radius: 2)
                                         .shimmering(active: isLoading)
+                                        .shadow(radius: 2)
+                                        
                                 }
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
+                                // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
+                                ZStack {
+                                    // Stroke (Outline) – automatisch kontrastierend zur Umgebung
+                                    Text(annotationID)
+                                        .font(.footnote)
+                                        .foregroundColor(Color(UIColor.label).isLight() ? Color.black : Color.white)
+                                        .padding(.top, 2)
+                                        .overlay(
+                                            Text(device.DeviceName)
+                                                .font(.footnote)
+                                                .foregroundColor(Color(UIColor.systemBackground))
+                                                .padding(.top, 2)
+                                                .blur(radius: 1.2)
+                                                .shadow(radius: 4)
+                                        )
+                                    // Haupttext
+                                    Text(annotationID)
+                                        .font(.footnote)
+                                        .foregroundColor(Color(UIColor.label))
+                                        .padding(.top, 2)
+                                        .shadow(radius: 4)
+                                }
                             }
                             // Add a transparent rectangle to increase the tap area for the context menu
                             Rectangle()
