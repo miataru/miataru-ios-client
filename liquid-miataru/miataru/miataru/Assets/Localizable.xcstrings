@@ -1,0 +1,1746 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "- To add: Scan a QR code from another device." : {
+
+    },
+    "- To share: Show your QR code to someone you trust." : {
+
+    },
+    "%lld" : {
+      "comment" : "Number of background updates",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
+    "• Miataru is a privacy-focused location sharing app." : {
+
+    },
+    "• Share your device's location with friends, family, or groups." : {
+
+    },
+    "• You control who sees your location." : {
+
+    },
+    "• Your data stays on the server you choose." : {
+
+    },
+    "1day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 day"
+          }
+        }
+      }
+    },
+    "1hour" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 hour"
+          }
+        }
+      }
+    },
+    "1km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 km"
+          }
+        }
+      }
+    },
+    "2days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 days"
+          }
+        }
+      }
+    },
+    "2hours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 hours"
+          }
+        }
+      }
+    },
+    "2km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km"
+          }
+        }
+      }
+    },
+    "3days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 days"
+          }
+        }
+      }
+    },
+    "4days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 days"
+          }
+        }
+      }
+    },
+    "5days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 days"
+          }
+        }
+      }
+    },
+    "5km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 km"
+          }
+        }
+      }
+    },
+    "5s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 seconds"
+          }
+        }
+      }
+    },
+    "6days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 days"
+          }
+        }
+      }
+    },
+    "6hours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 hours"
+          }
+        }
+      }
+    },
+    "7days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 days"
+          }
+        }
+      }
+    },
+    "10km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 km"
+          }
+        }
+      }
+    },
+    "10s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 seconds"
+          }
+        }
+      }
+    },
+    "12hours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 hours"
+          }
+        }
+      }
+    },
+    "14days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "14 days"
+          }
+        }
+      }
+    },
+    "15s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "15 seconds"
+          }
+        }
+      }
+    },
+    "25km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 km"
+          }
+        }
+      }
+    },
+    "30minutes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 minutes"
+          }
+        }
+      }
+    },
+    "30s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 seconds"
+          }
+        }
+      }
+    },
+    "31days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "31 days"
+          }
+        }
+      }
+    },
+    "50km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 km"
+          }
+        }
+      }
+    },
+    "60s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "60 seconds"
+          }
+        }
+      }
+    },
+    "100km" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100 km"
+          }
+        }
+      }
+    },
+    "Accuracy" : {
+      "comment" : "Accuracy display in Location Tracking Details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy"
+          }
+        }
+      }
+    },
+    "activity_type_accuracy_settings_title" : {
+      "comment" : "Section header for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location tracking sensitivity (foreground)"
+          }
+        }
+      }
+    },
+    "activity_type_automotive" : {
+      "comment" : "Automotive Navigation (car) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highest (Navigation)"
+          }
+        }
+      }
+    },
+    "activity_type_explanation" : {
+      "comment" : "Explanation for location activity type picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can choose the update frequency of your location when the app is used in the foreground. Standard is recommended for most users and saves battery."
+          }
+        }
+      }
+    },
+    "activity_type_fitness" : {
+      "comment" : "Fitness (walking, running, cycling) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium (Cycling, Running)"
+          }
+        }
+      }
+    },
+    "activity_type_other" : {
+      "comment" : "Other (default, battery saving) option for location activity type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard (default)"
+          }
+        }
+      }
+    },
+    "add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "add"
+          }
+        }
+      }
+    },
+    "add_new_group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a new group"
+          }
+        }
+      }
+    },
+    "adddevice_duplicate_device_already_exists_message" : {
+      "comment" : "Alert text shown when user tries to add a duplicate device.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A device with this DeviceID already exists."
+          }
+        }
+      }
+    },
+    "adddevice_duplicate_device_id_title" : {
+      "comment" : "Alert title shown when user tries to add a duplicate device.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate device"
+          }
+        }
+      }
+    },
+    "all_available" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "all available data"
+          }
+        }
+      }
+    },
+    "Allow Location Access" : {
+
+    },
+    "app_behaviour" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Application behaviour"
+          }
+        }
+      }
+    },
+    "Background Updates:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Number of background updates:"
+          }
+        }
+      }
+    },
+    "Background-Status" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background-Status"
+          }
+        }
+      }
+    },
+    "Camera Access" : {
+
+    },
+    "Camera access is needed to scan QR codes for device pairing and quick setup." : {
+
+    },
+    "Camera Permission Required" : {
+
+    },
+    "Camera: To scan QR codes for easy sharing." : {
+
+    },
+    "cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cancel"
+          }
+        }
+      }
+    },
+    "Choose how long your last location should be kept on the server:" : {
+
+    },
+    "Choose Your Server" : {
+
+    },
+    "Compass" : {
+      "comment" : "Accessibility label for compass",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compass"
+          }
+        }
+      }
+    },
+    "compass_%@ %d°" : {
+      "comment" : "Compass direction and degree, e.g. 'NE 45°'",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %d°"
+          }
+        }
+      }
+    },
+    "compass_E" : {
+      "comment" : "Compass East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E"
+          }
+        }
+      }
+    },
+    "compass_N" : {
+      "comment" : "Compass North abbreviation\nCompass North abbreviation (repeat for wraparound)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        }
+      }
+    },
+    "compass_NE" : {
+      "comment" : "Compass North-East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NE"
+          }
+        }
+      }
+    },
+    "compass_north_label" : {
+      "comment" : "Compass North label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        }
+      }
+    },
+    "compass_NW" : {
+      "comment" : "Compass North-West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NW"
+          }
+        }
+      }
+    },
+    "compass_S" : {
+      "comment" : "Compass South abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S"
+          }
+        }
+      }
+    },
+    "compass_SE" : {
+      "comment" : "Compass South-East abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SE"
+          }
+        }
+      }
+    },
+    "compass_SW" : {
+      "comment" : "Compass South-West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SW"
+          }
+        }
+      }
+    },
+    "compass_W" : {
+      "comment" : "Compass West abbreviation",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W"
+          }
+        }
+      }
+    },
+    "Continue" : {
+
+    },
+    "Current location" : {
+      "comment" : "Current position display in Location Tracking Details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current location"
+          }
+        }
+      }
+    },
+    "Custom server URL" : {
+
+    },
+    "Custom server URL (must start with https://)" : {
+
+    },
+    "deactivate_device_lock" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "deactivate device lock"
+          }
+        }
+      }
+    },
+    "decoding_error" : {
+      "comment" : "Error processing the server response.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not get device location data from the Miataru server. Device might not exist."
+          }
+        }
+      }
+    },
+    "default_map" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "default map"
+          }
+        }
+      }
+    },
+    "delete_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "delete_group" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Group"
+          }
+        }
+      }
+    },
+    "device_color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Color"
+          }
+        }
+      }
+    },
+    "device_colorpicker" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pick a color"
+          }
+        }
+      }
+    },
+    "device_id" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID"
+          }
+        }
+      }
+    },
+    "device_id_copied_to_clipboard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID was copied to the clipboard."
+          }
+        }
+      }
+    },
+    "device_id2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enter the ID here or scan QR code"
+          }
+        }
+      }
+    },
+    "device_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Name"
+          }
+        }
+      }
+    },
+    "device_name2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "device_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "this devices QR-Code"
+          }
+        }
+      }
+    },
+    "devicelist_edit_done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "devicelist_editbutton" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "devices" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devices"
+          }
+        }
+      }
+    },
+    "done" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "done"
+          }
+        }
+      }
+    },
+    "Easily share your device ID or add others by scanning QR codes." : {
+
+    },
+    "edit_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Device"
+          }
+        }
+      }
+    },
+    "Enable Location Access" : {
+
+    },
+    "encoding_error" : {
+      "comment" : "Error encoding the request.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error while encoding the location update."
+          }
+        }
+      }
+    },
+    "Enter Custom Server" : {
+
+    },
+    "error_loading_locationdata" : {
+      "comment" : "Error loading location data",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error when loading location data."
+          }
+        }
+      }
+    },
+    "Finish" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish"
+          }
+        }
+      }
+    },
+    "Full permissions granted" : {
+      "comment" : "permission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full permissions granted"
+          }
+        }
+      }
+    },
+    "Get Started" : {
+
+    },
+    "group_detailview_edit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
+      }
+    },
+    "group_empty_add_devices_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "add devices using the Edit button"
+          }
+        }
+      }
+    },
+    "group_map_could_fetch_device_location" : {
+      "comment" : "Could not fetch location for device: %@",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "could not fetch location for device: %@"
+          }
+        }
+      }
+    },
+    "group_member_devices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "select devices that should be in this group"
+          }
+        }
+      }
+    },
+    "group_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Name"
+          }
+        }
+      }
+    },
+    "group_name_placeholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter group name"
+          }
+        }
+      }
+    },
+    "group_name_section" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Name"
+          }
+        }
+      }
+    },
+    "group_name_textfield" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enter a group name here"
+          }
+        }
+      }
+    },
+    "groups" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groups"
+          }
+        }
+      }
+    },
+    "How often should Miataru update your location while the app is open?\nMore frequent updates = more accuracy, but may use more battery." : {
+
+    },
+    "hybrid_map" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hybrid map"
+          }
+        }
+      }
+    },
+    "indicate_location_accuracy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "indicate location accuracy"
+          }
+        }
+      }
+    },
+    "invalid_miataru_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid QR-Code"
+          }
+        }
+      }
+    },
+    "invalid_miataru_qr_code_error_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The QR-Code has to begin with 'miataru://'."
+          }
+        }
+      }
+    },
+    "Last Background Update:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Background Update:"
+          }
+        }
+      }
+    },
+    "Last GPS update" : {
+      "comment" : "Last GPS update",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last GPS update"
+          }
+        }
+      }
+    },
+    "Last server update" : {
+      "comment" : "Last Server-Update status line in Location Tracking details",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last server update"
+          }
+        }
+      }
+    },
+    "Let's get you set up in just a few steps." : {
+
+    },
+    "Location Access" : {
+
+    },
+    "Location access denied" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access denied"
+          }
+        }
+      }
+    },
+    "Location access restricted" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access restricted"
+          }
+        }
+      }
+    },
+    "Location History Options" : {
+
+    },
+    "Location Permissions" : {
+
+    },
+    "Location services not available" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location services not available"
+          }
+        }
+      }
+    },
+    "Location tracking deactivated" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location tracking deactivated"
+          }
+        }
+      }
+    },
+    "Location Tracking Details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Tracking Details"
+          }
+        }
+      }
+    },
+    "Location Tracking Status" : {
+      "comment" : "Header for location tracking status section",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Tracking Status"
+          }
+        }
+      }
+    },
+    "Location Update Frequency" : {
+
+    },
+    "Location updates in the background are only detected when they are significant (>500m)." : {
+      "comment" : "Hint for background location update behavior",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location updates in the background are only detected when they are significant (>500m)."
+          }
+        }
+      }
+    },
+    "location_track" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "track device location"
+          }
+        }
+      }
+    },
+    "Location: To update and share your position." : {
+
+    },
+    "map_configuration" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map settings"
+          }
+        }
+      }
+    },
+    "map_type" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Map type"
+          }
+        }
+      }
+    },
+    "map_update_interval" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update interval on map"
+          }
+        }
+      }
+    },
+    "map_zoom_level" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default map zoom level"
+          }
+        }
+      }
+    },
+    "Miataru helps you share your (device) location with people and groups you trust." : {
+
+    },
+    "Miataru helps you share your device's location with people and groups you trust." : {
+
+    },
+    "Miataru is set up and ready.\nYou can change your settings or permissions anytime in the app." : {
+
+    },
+    "Miataru needs your location to share it with your trusted contacts. You can choose how often updates happen." : {
+
+    },
+    "Miataru server status" : {
+      "comment" : "Server Status Row",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru server status"
+          }
+        }
+      }
+    },
+    "Miataru uses battery optimized background location tracking" : {
+
+    },
+    "my_device" : {
+      "comment" : "Name for the user's own device in the device list",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "this Device"
+          }
+        }
+      }
+    },
+    "my_device_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is your devices QR-Code."
+          }
+        }
+      }
+    },
+    "network_error" : {
+      "comment" : "Network error. Please check your internet connection.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error. Check server URL or network connection."
+          }
+        }
+      }
+    },
+    "new_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a new device"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "no_location_data_found" : {
+      "comment" : "No location available",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No location data could be found."
+          }
+        }
+      }
+    },
+    "Notifications: To alert you about important updates." : {
+
+    },
+    "ok" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Only allowed when app in foregrond" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only allowed when app in foregrond"
+          }
+        }
+      }
+    },
+    "Only store last location for a limited time" : {
+
+    },
+    "Open app settings in iOS to change location permission state." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open app settings in iOS to change location permission state."
+          }
+        }
+      }
+    },
+    "Permission granted, but not active" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission granted, but not active"
+          }
+        }
+      }
+    },
+    "Permission not determined" : {
+      "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission not determined"
+          }
+        }
+      }
+    },
+    "Permission state" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location permission state"
+          }
+        }
+      }
+    },
+    "Permissions Needed" : {
+
+    },
+    "Please enter a valid https server URL." : {
+
+    },
+    "Previous" : {
+
+    },
+    "qr" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code"
+          }
+        }
+      }
+    },
+    "qr_code_explanation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
+          }
+        }
+      }
+    },
+    "Ready" : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
+      }
+    },
+    "Recent location updates:" : {
+      "comment" : "Header for recent location updates log",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent location updates:"
+          }
+        }
+      }
+    },
+    "relative_time_now" : {
+      "comment" : "Indicates that the location update just happened or is happening right now in a relative time on the map marker.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "now"
+          }
+        }
+      }
+    },
+    "remove_from_group" : {
+      "comment" : "Action to remove a device from a group",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from group"
+          }
+        }
+      }
+    },
+    "Request Camera Permission" : {
+
+    },
+    "Request Location Permission" : {
+
+    },
+    "Retention Time" : {
+
+    },
+    "sat_map" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "satelite map"
+          }
+        }
+      }
+    },
+    "save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "scalebar_feet" : {
+      "comment" : "Scale bar: display distance in feet",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f km"
+          }
+        }
+      }
+    },
+    "scalebar_kilometers" : {
+      "comment" : "Scale bar: display distance in kilometers",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f km"
+          }
+        }
+      }
+    },
+    "scalebar_meters" : {
+      "comment" : "Scale bar: display distance in meters",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f m"
+          }
+        }
+      }
+    },
+    "scalebar_miles" : {
+      "comment" : "Scale bar: display distance in miles",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f mi"
+          }
+        }
+      }
+    },
+    "Scan a QR Code" : {
+
+    },
+    "scan_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "touch here to scan QR code"
+          }
+        }
+      }
+    },
+    "Self-host your own server (GitHub)" : {
+
+    },
+    "send_location_to_server" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "send location to server"
+          }
+        }
+      }
+    },
+    "Sending..." : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending..."
+          }
+        }
+      }
+    },
+    "Server" : {
+
+    },
+    "server_or_deviceid_invalid" : {
+      "comment" : "Error: Server or DeviceID invalid",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server URL or DeviceID is wrong."
+          }
+        }
+      }
+    },
+    "server_response_invalid" : {
+      "comment" : "The server response was invalid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response from Miataru server is invalid."
+          }
+        }
+      }
+    },
+    "server_url" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru Server URL"
+          }
+        }
+      }
+    },
+    "server_url_invalid" : {
+      "comment" : "The server URL is invalid.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru Server-URL is invalid"
+          }
+        }
+      }
+    },
+    "settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Share & Scan with QR Codes" : {
+
+    },
+    "show" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "show"
+          }
+        }
+      }
+    },
+    "Show My QR Code" : {
+
+    },
+    "Show Onboarding Wizard Again" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Onboarding Wizard Again"
+          }
+        }
+      }
+    },
+    "show_history_days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History days to display"
+          }
+        }
+      }
+    },
+    "Skip" : {
+
+    },
+    "Start Using Miataru" : {
+
+    },
+    "Status: " : {
+
+    },
+    "Storage Option" : {
+
+    },
+    "store_history_before_autoremove" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoremove location data after"
+          }
+        }
+      }
+    },
+    "Successful" : {
+      "comment" : "statusText LocationTracking Status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successful"
+          }
+        }
+      }
+    },
+    "Tap below to see your device's QR code, or scan someone else's." : {
+
+    },
+    "track_and_history" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking & History"
+          }
+        }
+      }
+    },
+    "Tracking inactive (fore- & background)" : {
+      "comment" : "Location Tracking Status statusText",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking inactive (fore- & background)"
+          }
+        }
+      }
+    },
+    "Tracking mode: Battery saving (only significant movements)" : {
+      "comment" : "Tracking mode text for background mode",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Battery saving (only significant movements)"
+          }
+        }
+      }
+    },
+    "Tracking mode: Live (GPS)" : {
+      "comment" : "Tracking mode text for foreground mode",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Live (GPS)"
+          }
+        }
+      }
+    },
+    "Try QR Code Sharing" : {
+
+    },
+    "update" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "update"
+          }
+        }
+      }
+    },
+    "Update Frequency" : {
+
+    },
+    "Use Default Server" : {
+
+    },
+    "Use server location history" : {
+
+    },
+    "We need your location to provide core app functionality, such as sharing your position with trusted contacts." : {
+
+    },
+    "Welcome to Miataru!" : {
+
+    },
+    "What is Miataru?" : {
+
+    },
+    "You can choose how your location data is stored on the Miataru server.\n\nIf you enable server history, the server will keep a history of your last locations (default: 1000, depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time. After this time, your location is automatically deleted from the server." : {
+
+    },
+    "You're Ready to Go!" : {
+
+    },
+    "Your data is only sent when you specifically activate it" : {
+
+    },
+    "Your data stays on the server you choose for the time you choose" : {
+
+    },
+    "Your location data is stored on a server you trust.\n- Use the default Miataru server, or\n- Enter your own server address." : {
+
+    },
+    "zoom_to_fit_for_groups" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zoom to fit groups"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

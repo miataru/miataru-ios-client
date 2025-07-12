@@ -6,10 +6,14 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Location Permission Required")
-                .font(.title)
-                .bold()
-                .padding(.bottom, 8)
+            Spacer()
+            Text("Location Permissions")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            Image("mapandpin")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: 1024)
             HStack(alignment: .top) {
                 Image(systemName: "location.fill")
                     .foregroundColor(.blue)
