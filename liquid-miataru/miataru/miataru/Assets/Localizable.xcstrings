@@ -221,6 +221,16 @@
         }
       }
     },
+    "24hours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24 hours"
+          }
+        }
+      }
+    },
     "25km" : {
       "localizations" : {
         "en" : {
@@ -291,7 +301,7 @@
         }
       }
     },
-    "A number of your last location updates ist stored on the server (default: last 1000)." : {
+    "A number of your last location updates is stored on the server (default: last 1000)." : {
 
     },
     "Accuracy" : {

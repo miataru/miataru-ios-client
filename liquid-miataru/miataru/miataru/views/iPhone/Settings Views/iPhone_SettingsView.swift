@@ -21,6 +21,8 @@ struct iPhone_SettingsView: View {
                                 Text("2hours").tag(120)
                                 Text("6hours").tag(360)
                                 Text("12hours").tag(720)
+                                Text("24hours").tag(1440)
+                                Text("7days").tag(10080)
                             }
                         }
                     }

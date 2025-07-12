@@ -73,7 +73,7 @@ class SettingsManager: ObservableObject {
         self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? "https://service.miataru.com"
         self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false
         self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false
-        self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "30") ?? 30
+        self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "1440") ?? 1440
         self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1
         self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1

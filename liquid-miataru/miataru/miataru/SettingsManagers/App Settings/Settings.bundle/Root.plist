@@ -62,6 +62,8 @@
 				<string>2 hours</string>
 				<string>6 hours</string>
 				<string>12 hours</string>
+				<string>24 hours</string>
+				<string>7 days</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -72,6 +74,8 @@
 				<string>120</string>
 				<string>360</string>
 				<string>720</string>
+				<string>1440</string>
+				<string>10080</string>
 			</array>
 		</dict>
 		<dict>

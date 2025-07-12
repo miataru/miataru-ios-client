@@ -10,7 +10,9 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
         ("1 hour", 60),
         ("2 hours", 120),
         ("6 hours", 360),
-        ("12 hours", 720)
+        ("12 hours", 720),
+        ("24 hours", 1440),
+        ("7 days", 10080)
     ]
     
     var body: some View {
@@ -48,7 +50,7 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
                     .fontWeight(.bold)
                     .padding(.horizontal)
             } else {
-                Text("A number of your last location updates ist stored on the server (default: last 1000).")
+                Text("A number of your last location updates is stored on the server (default: last 1000).")
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .padding(.horizontal)
