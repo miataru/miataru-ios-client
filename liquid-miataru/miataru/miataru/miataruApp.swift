@@ -32,9 +32,11 @@ struct miataruApp: App {
         let deviceID = thisDeviceIDManager.shared.deviceID
         print("this devices ID: \(deviceID)")
         
-        // LocationManager initialisieren und Berechtigungen anfordern
+        // LocationManager initialisieren und Berechtigungen nur anfordern, wenn gewünscht
         let locationManager = LocationManager.shared
-        locationManager.requestLocationPermission()
+        if SettingsManager.shared.trackAndReportLocation {
+            locationManager.requestLocationPermission()
+        }
         // Do NOT call startTracking() here!
         // Tracking is now controlled by the observer in LocationManager.observeSettings().
         // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.

@@ -10,6 +10,9 @@
     "- To share: Show your QR code to someone you trust." : {
 
     },
+    "'." : {
+
+    },
     "%lld" : {
       "comment" : "Number of background updates",
       "localizations" : {
@@ -427,6 +430,9 @@
     "Allow Location Access" : {
 
     },
+    "Allow While Using App" : {
+
+    },
     "app_behaviour" : {
       "localizations" : {
         "en" : {
@@ -480,6 +486,9 @@
       }
     },
     "Choose how long your last location should be kept on the server:" : {
+
+    },
+    "Choose the server you trust." : {
 
     },
     "Choose Your Server" : {
@@ -788,6 +797,9 @@
         }
       }
     },
+    "Documentation to setup your own server (GitHub)" : {
+
+    },
     "done" : {
       "localizations" : {
         "en" : {
@@ -812,6 +824,9 @@
       }
     },
     "Enable Location Access" : {
+
+    },
+    "Enable Location Tracking" : {
 
     },
     "encoding_error" : {
@@ -1182,6 +1197,9 @@
     "Miataru is set up and ready.\nYou can change your settings or permissions anytime in the app." : {
 
     },
+    "Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts." : {
+
+    },
     "Miataru needs your location to share it with your trusted contacts. You can choose how often updates happen." : {
 
     },
@@ -1407,9 +1425,6 @@
     "Request Camera Permission" : {
 
     },
-    "Request Location Permission" : {
-
-    },
     "Retention Time" : {
 
     },
@@ -1489,9 +1504,6 @@
           }
         }
       }
-    },
-    "Self-host your own server (GitHub)" : {
-
     },
     "send_location_to_server" : {
       "localizations" : {
@@ -1639,7 +1651,13 @@
         }
       }
     },
+    "Swipe left to get you set up in just a few steps." : {
+
+    },
     "Tap below to see your device's QR code, or scan someone else's." : {
+
+    },
+    "To give Miataru the permission please enable the toggle and answer the following dialog with '" : {
 
     },
     "track_and_history" : {
@@ -1707,9 +1725,6 @@
     "Use server location history" : {
 
     },
-    "We need your location to provide core app functionality, such as sharing your position with trusted contacts." : {
-
-    },
     "Welcome to Miataru!" : {
 
     },
@@ -1729,6 +1744,9 @@
 
     },
     "Your location data is stored on a server you trust.\n- Use the default Miataru server, or\n- Enter your own server address." : {
+
+    },
+    "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address." : {
 
     },
     "zoom_to_fit_for_groups" : {

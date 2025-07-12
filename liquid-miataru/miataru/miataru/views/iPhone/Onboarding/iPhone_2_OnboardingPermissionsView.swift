@@ -3,6 +3,7 @@ import CoreLocation
 
 struct iPhone_2_OnboardingLocationPermissionView: View {
     @ObservedObject private var locationManager = LocationManager.shared
+    @ObservedObject private var settings = SettingsManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -18,23 +19,26 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                 Image(systemName: "location.fill")
                     .foregroundColor(.blue)
                     .padding(.top, 2)
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Location Access")
                         .font(.headline)
-                    Text("We need your location to provide core app functionality, such as sharing your position with trusted contacts.")
+                    Text("Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    HStack {
-                        Text("Status: ")
-                        Text(locationStatusText)
-                            .foregroundColor(locationStatusColor)
+                    Text("To give Miataru the permission please enable the toggle and answer the following dialog with '")
+                        .font(.subheadline)
+                        + Text("Allow While Using App").bold()
+                        + Text("'.")
+                        .font(.subheadline)
+                    Toggle(isOn: Binding(
+                        get: { settings.trackAndReportLocation },
+                        set: { newValue in
+                            settings.trackAndReportLocation = newValue
+                            if newValue {
+                                locationManager.requestLocationPermission()                            }
+                        }
+                    )) {
+                        Text("Enable Location Tracking")
                     }
-                    Button(action: {
-                        locationManager.requestLocationPermission()
-                    }) {
-                        Text("Request Location Permission")
-                    }
-                    .disabled(locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse)
                 }
             }
             Spacer()

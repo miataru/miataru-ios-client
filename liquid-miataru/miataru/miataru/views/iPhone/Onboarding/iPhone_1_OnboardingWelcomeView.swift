@@ -37,9 +37,9 @@ struct iPhone_1_OnboardingWelcomeView: View {
                     Text("Miataru uses battery optimized background location tracking")
                         .multilineTextAlignment(.leading)
                 }
-            }
+            }.padding(.horizontal,10)
             
-            Text("Let's get you set up in just a few steps.")
+            Text("Swipe left to get you set up in just a few steps.")
                 .font(.body)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)

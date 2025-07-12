@@ -68,9 +68,9 @@ class SettingsManager: ObservableObject {
     init() {
         let d = UserDefaults.standard
         self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false
-        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? false
-        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? false
-        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? ""
+        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? true
+        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true
+        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? "https://service.miataru.com"
         self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false
         self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false
         self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "30") ?? 30
