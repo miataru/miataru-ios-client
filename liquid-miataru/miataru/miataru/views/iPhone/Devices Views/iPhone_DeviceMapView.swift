@@ -114,10 +114,15 @@ struct iPhone_DeviceMapView: View {
             if let previewTime = previewDeviceTimestamp {
                 deviceTimestamp = previewTime
             }
+            // Caching: Sofort gecachte Location anzeigen, falls vorhanden
+            if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
+                deviceLocation = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                deviceAccuracy = cached.accuracy
+                deviceTimestamp = cached.timestamp
+            }
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
-            
             if let coordinate = deviceLocation {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
@@ -264,6 +269,8 @@ struct iPhone_DeviceMapView: View {
                 deviceLocation = coordinate
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
+                // Caching: Neue Location speichern
+                DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate)
                 withAnimation {
                     if #available(iOS 17.0, *) {
                         if resetZoomToSettings {

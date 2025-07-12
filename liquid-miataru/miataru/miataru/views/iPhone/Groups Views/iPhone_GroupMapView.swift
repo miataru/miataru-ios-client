@@ -108,6 +108,14 @@ struct iPhone_GroupMapView: View {
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
             if !groupDeviceIDs.isEmpty {
+                // Caching: Sofort gecachte Locations anzeigen
+                for deviceID in groupDeviceIDs {
+                    if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
+                        deviceLocations[deviceID] = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                        deviceAccuracies[deviceID] = cached.accuracy
+                        deviceTimestamps[deviceID] = cached.timestamp
+                    }
+                }
                 Task { await fetchAllLocations() }
                 startAutoUpdate()
             }
@@ -263,6 +271,8 @@ struct iPhone_GroupMapView: View {
                 deviceLocations[location.Device] = coordinate
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
+                // Caching: Neue Location speichern
+                DeviceLocationCacheStore.shared.setLocation(for: location.Device, latitude: location.Latitude, longitude: location.Longitude, accuracy: location.HorizontalAccuracy, timestamp: location.TimestampDate)
             }
             
             // Update map region to fit all devices
