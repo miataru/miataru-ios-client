@@ -5,14 +5,16 @@ struct iPhone_GroupsView: View {
     @State private var showingAddGroup = false
     @State private var editMode: EditMode = .inactive
     @State private var editingGroup: DeviceGroup? = nil
+    @State private var selectedGroupID: String? = nil
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(groupStore.groups) { group in
-                    NavigationLink(destination: iPhone_GroupMapView(group: group)) {
+                    NavigationLink(value: group.id) {
                         iPhone_GroupRowView(group: group)
                     }
+                    .listRowBackground(selectedGroupID == group.id ? Color.red : Color(.systemBackground))
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             if let index = groupStore.groups.firstIndex(where: { $0.id == group.id }) {
@@ -44,6 +46,16 @@ struct iPhone_GroupsView: View {
             }
             .sheet(item: $editingGroup) { group in
                 iPhone_GroupDetailView(group: group)
+            }
+            .navigationDestination(for: String.self) { groupID in
+                if let group = groupStore.groups.first(where: { $0.id == groupID }) {
+                    iPhone_GroupMapView(group: group)
+                } else {
+                    Text("Group not found")
+                }
+            }
+            .onChange(of: selectedGroupID) { newValue in
+                // Optional: handle side effects if needed
             }
         }
     }

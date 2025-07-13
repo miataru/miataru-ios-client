@@ -5,16 +5,17 @@ struct iPhone_DevicesView: View {
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
+    @State private var selectedDeviceID: String? = nil
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(store.devices) { device in
                     if editMode == .inactive {
-                        NavigationLink(destination: iPhone_DeviceMapView(deviceID: device.DeviceID)) {
+                        NavigationLink(value: device.DeviceID) {
                             iPhone_DeviceRowView(device: device)
-                                .listRowBackground(Color(.systemBackground))
                         }
+                        .listRowBackground(selectedDeviceID == device.DeviceID ? Color.red : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 store.removeDevice(byID: device.DeviceID)
@@ -32,11 +33,12 @@ struct iPhone_DevicesView: View {
                         }
                     } else {
                         iPhone_DeviceRowView(device: device)
-                            .listRowBackground(Color(.systemBackground))
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingDevice = device
+                                selectedDeviceID = device.DeviceID
                             }
+                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color.red : Color(.systemBackground))
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     store.removeDevice(byID: device.DeviceID)
@@ -74,6 +76,9 @@ struct iPhone_DevicesView: View {
                         Image(systemName: "plus")
                     }
                 }
+            }
+            .navigationDestination(for: String.self) { deviceID in
+                iPhone_DeviceMapView(deviceID: deviceID)
             }
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)

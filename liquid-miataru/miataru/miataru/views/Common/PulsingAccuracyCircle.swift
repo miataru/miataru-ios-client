@@ -30,7 +30,7 @@ struct PulsingAccuracyCircle: View {
                 .zIndex(isPulsing ? 0 : 1)
                 .animation(easeGently.delay(0.4), value: isPulsing)
                 // Prevent perspective distortion by using a flat projection
-                .drawingGroup()
+                //.drawingGroup()
             
             // Middle circle
             Circle()
@@ -42,7 +42,7 @@ struct PulsingAccuracyCircle: View {
                 .zIndex(isPulsing ? 0 : 3)
                 .animation(easeGently.delay(0.6), value: isPulsing)
                 // Prevent perspective distortion
-                .drawingGroup()
+                //.drawingGroup()
             
             // Inner circle
             Circle()
@@ -54,7 +54,7 @@ struct PulsingAccuracyCircle: View {
                 .scaleEffect(isPulsing ? 0.2 : 1.2)
                 .animation(easeGently.delay(0.8), value: isPulsing)
                 // Prevent perspective distortion
-                .drawingGroup()
+                //.drawingGroup()
         }
         .onAppear {
             withAnimation {

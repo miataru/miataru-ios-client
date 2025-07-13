@@ -840,6 +840,9 @@
         }
       }
     },
+    "Group not found" : {
+
+    },
     "group_detailview_edit" : {
       "localizations" : {
         "en" : {
