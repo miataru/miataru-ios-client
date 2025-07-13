@@ -15,7 +15,7 @@ struct iPhone_DevicesView: View {
                         NavigationLink(value: device.DeviceID) {
                             iPhone_DeviceRowView(device: device)
                         }
-                        .listRowBackground(selectedDeviceID == device.DeviceID ? Color.red : Color(.systemBackground))
+                        .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 store.removeDevice(byID: device.DeviceID)
@@ -38,7 +38,7 @@ struct iPhone_DevicesView: View {
                                 editingDevice = device
                                 selectedDeviceID = device.DeviceID
                             }
-                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color.red : Color(.systemBackground))
+                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     store.removeDevice(byID: device.DeviceID)

@@ -14,7 +14,7 @@ struct iPhone_GroupsView: View {
                     NavigationLink(value: group.id) {
                         iPhone_GroupRowView(group: group)
                     }
-                    .listRowBackground(selectedGroupID == group.id ? Color.red : Color(.systemBackground))
+                    .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             if let index = groupStore.groups.firstIndex(where: { $0.id == group.id }) {
