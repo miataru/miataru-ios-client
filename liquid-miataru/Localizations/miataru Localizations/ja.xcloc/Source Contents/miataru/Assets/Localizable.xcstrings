@@ -10,12 +10,6 @@
     "%lld" : {
       "comment" : "Number of background updates",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26,12 +20,6 @@
     },
     "%lld %@" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld %2$@"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -41,23 +29,10 @@
       }
     },
     "•" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "•"
-          }
-        }
-      }
+
     },
     "1day" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Tag"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -68,12 +43,6 @@
     },
     "1hour" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Stunde"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -84,12 +53,6 @@
     },
     "1km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -100,12 +63,6 @@
     },
     "2days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -116,12 +73,6 @@
     },
     "2hours" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Stunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -132,12 +83,6 @@
     },
     "2km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -148,12 +93,6 @@
     },
     "3days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -164,12 +103,6 @@
     },
     "4days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -180,12 +113,6 @@
     },
     "5days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -196,12 +123,6 @@
     },
     "5km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -212,12 +133,6 @@
     },
     "5s" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 Sekunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -228,12 +143,6 @@
     },
     "6days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -244,12 +153,6 @@
     },
     "6hours" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 Stunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -260,12 +163,6 @@
     },
     "7days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "7 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -276,12 +173,6 @@
     },
     "10km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -292,12 +183,6 @@
     },
     "10s" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "10 Sekunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -308,12 +193,6 @@
     },
     "12hours" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 Stunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -324,12 +203,6 @@
     },
     "14days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "14 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -340,12 +213,6 @@
     },
     "15s" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "15 Sekunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -356,12 +223,6 @@
     },
     "24hours" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 Stunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -372,12 +233,6 @@
     },
     "25km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -388,12 +243,6 @@
     },
     "30minutes" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 Minuten"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -404,12 +253,6 @@
     },
     "30s" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 Sekunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -420,12 +263,6 @@
     },
     "31days" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "31 Tage"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -436,12 +273,6 @@
     },
     "50km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -452,12 +283,6 @@
     },
     "60s" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "60 Sekunden"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -468,12 +293,6 @@
     },
     "100km" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "100 km"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
