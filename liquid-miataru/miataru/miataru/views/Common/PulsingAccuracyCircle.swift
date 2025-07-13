@@ -20,7 +20,7 @@ struct PulsingAccuracyCircle: View {
     
     var body: some View {
         ZStack {
-            // Outer
+            // Outer circle - using opacity and scale that work better with 3D
             Circle()
                 .fill(pulsingColor.gradient)
                 .frame(width: size, height: size)
@@ -29,8 +29,10 @@ struct PulsingAccuracyCircle: View {
                 .scaleEffect(isPulsing ? 0.1 : 1.2)
                 .zIndex(isPulsing ? 0 : 1)
                 .animation(easeGently.delay(0.4), value: isPulsing)
+                // Prevent perspective distortion by using a flat projection
+                .drawingGroup()
             
-            // Middle
+            // Middle circle
             Circle()
                 .fill(pulsingColor.gradient)
                 .frame(width: size, height: size)
@@ -39,8 +41,10 @@ struct PulsingAccuracyCircle: View {
                 .scaleEffect(isPulsing ? 0.3 : 1.1)
                 .zIndex(isPulsing ? 0 : 3)
                 .animation(easeGently.delay(0.6), value: isPulsing)
+                // Prevent perspective distortion
+                .drawingGroup()
             
-            // Inner
+            // Inner circle
             Circle()
                 .fill(pulsingColor.gradient)
                 .frame(width: size, height: size)
@@ -49,6 +53,8 @@ struct PulsingAccuracyCircle: View {
                 .zIndex(isPulsing ? 0 : 3)
                 .scaleEffect(isPulsing ? 0.2 : 1.2)
                 .animation(easeGently.delay(0.8), value: isPulsing)
+                // Prevent perspective distortion
+                .drawingGroup()
         }
         .onAppear {
             withAnimation {
