@@ -325,6 +325,14 @@ struct iPhone_GroupMapView: View {
             }
             // Update map region to fit all devices
             updateMapRegionToFitDevices()
+            // Fehlende Devices: ErrorOverlay anzeigen
+            let foundIDs = Set(locations.map { $0.Device })
+            let missingIDs = Set(groupDeviceIDs).subtracting(foundIDs)
+            for missingID in missingIDs {
+                let deviceName = deviceStore.devices.first(where: { $0.DeviceID == missingID })?.DeviceName ?? missingID
+                let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", comment: "Could not fetch location for device: %@"), deviceName)
+                showErrorOverlay("No location data for device: \(missingID)", userMessage)
+            }
         } catch {
             // Multi-Device-Call fehlgeschlagen: Einzelabfragen
             var anySuccess = false
