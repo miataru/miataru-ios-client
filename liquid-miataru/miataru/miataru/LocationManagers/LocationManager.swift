@@ -321,8 +321,8 @@ extension LocationManager: CLLocationManagerDelegate {
         let mode = UIApplication.shared.applicationState == .active ? "Foreground" : "Background"
         
         // Only accept updates if distance or accuracy criteria are met
-        let minimumDistance: CLLocationDistance = 100 // meters
-        let significantAccuracyImprovement: CLLocationAccuracy = 20 // meters
+        let minimumDistance: CLLocationDistance = 5 // meters
+        let significantAccuracyImprovement: CLLocationAccuracy = 5 // meters
         var shouldAcceptUpdate = false
         if let previousLocation = self.currentLocation {
             let distance = location.distance(from: previousLocation)
