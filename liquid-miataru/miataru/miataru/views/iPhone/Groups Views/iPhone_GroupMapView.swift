@@ -114,6 +114,7 @@ struct iPhone_GroupMapView: View {
                         deviceLocations[deviceID] = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                         deviceAccuracies[deviceID] = cached.accuracy
                         deviceTimestamps[deviceID] = cached.timestamp
+                        now = Date() // <-- Zeit sofort aktualisieren (bei jedem Treffer)
                     }
                 }
                 Task { await fetchAllLocations() }
@@ -303,6 +304,7 @@ struct iPhone_GroupMapView: View {
                 deviceLocations[location.Device] = coordinate
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
+                now = Date() // <-- Zeit sofort aktualisieren (bei jedem Treffer)
                 // Caching: Neue Location speichern
                 DeviceLocationCacheStore.shared.setLocation(for: location.Device, latitude: location.Latitude, longitude: location.Longitude, accuracy: location.HorizontalAccuracy, timestamp: location.TimestampDate)
             }

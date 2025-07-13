@@ -113,12 +113,14 @@ struct iPhone_DeviceMapView: View {
             }
             if let previewTime = previewDeviceTimestamp {
                 deviceTimestamp = previewTime
+                now = Date() // <-- Zeit sofort aktualisieren
             }
             // Caching: Sofort gecachte Location anzeigen, falls vorhanden
             if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
                 deviceLocation = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                 deviceAccuracy = cached.accuracy
                 deviceTimestamp = cached.timestamp
+                now = Date() // <-- Zeit sofort aktualisieren
             }
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
@@ -303,6 +305,7 @@ struct iPhone_DeviceMapView: View {
                 deviceLocation = coordinate
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
+                now = Date() // <-- Zeit sofort aktualisieren
                 // Caching: Neue Location speichern
                 DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate)
                 withAnimation {
