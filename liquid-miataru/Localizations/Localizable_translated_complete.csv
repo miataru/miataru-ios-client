@@ -1,0 +1,214 @@
+Key,English Text,Deutsche Übersetzung,Japanische Übersetzung
+,,,
+'.,,'.,'.
+%lld,%lld,%lld,%lld
+%lld %@,%1$lld %2$@,%1$lld %2$@,%1$lld %2$@
+•,,•,・
+1day,1 day,1 Tag,1日
+1hour,1 hour,1 Stunde,1時間
+1km,1 km,1 km,1キロメートル
+2days,2 days,2 Tage,2日間
+2hours,2 hours,2 Stunden,2時間
+2km,2 km,2 km,2キロメートル
+3days,3 days,3 Tage,3日間
+4days,4 days,4 Tage,4日間
+5days,5 days,5 Tage,5日間
+5km,5 km,5 km,5キロメートル
+5s,5 seconds,5 s,5秒
+6days,6 days,6 Tage,6日間
+6hours,6 hours,6 Stunden,6時間
+7days,7 days,7 Tage,7日間
+10km,10 km,10 km,10キロメートル
+10s,10 seconds,10 s,10秒
+12hours,12 hours,12 Stunden,12時間
+14days,14 days,14 Tage,14日間
+15s,15 seconds,15 s,15秒
+24hours,24 hours,24 Stunden,24時間
+25km,25 km,25 km,25キロメートル
+30minutes,30 minutes,30 Minuten,30分
+30s,30 seconds,30 s,30秒
+31days,31 days,31 Tage,31日間
+50km,50 km,50 km,50キロメートル
+60s,60 seconds,60 s,60秒
+100km,100 km,100 km,100キロメートル
+A number of your last location updates is stored on the server (default: last 1000).,A number of your last location updates is stored on the server (default: last 1000).,Eine Anzahl deiner letzten Standort-Updates wird auf dem Server gespeichert (Standard: die letzten 1000).,サーバーにはあなたの最後の位置情報更新が一定数（デフォルト: 最新1000件）保存されます。
+Accuracy,Accuracy,Genauigkeit,精度
+activity_type_accuracy_explanation,You can choose the update frequency of your location when the app is used in the foreground. Standard is recommended for most users and saves battery.,Du kannst die Aktualisierungsfrequenz deines Standorts im Hintergrund auswählen. Standard wird den meisten Nutzern empfohlen und spart Akku.,アプリがバックグラウンドにある際の位置情報更新頻度を選択できます。標準がほとんどのユーザーに推奨され、バッテリーを節約します。
+activity_type_accuracy_settings_title,Location tracking sensitivity (foreground),Empfindlichkeit der Standortverfolgung (Vordergrund),位置追跡の感度（フォアグラウンド）
+activity_type_automotive,Highest (Navigation),Höchste (Navigation),最高（ナビ）
+activity_type_fitness,"Medium (Cycling, Running)","Mittel (Radfahren, Laufen)",中（サイクリング、ランニング）
+activity_type_other,Standard (default),Standard (Voreinstellung),標準（デフォルト）
+activity_type_tracking_accuracy_title,how aggressive should your device location be updated?,Wie aggressiv sollen die Standortaktualisierungen deines Geräts sein?,デバイスの位置情報更新のアグレッシブさはどの程度にしますか？
+add,add,hinzufügen,追加
+add_new_group,Add a new group,Neue Gruppe hinzufügen,新しいグループを追加
+adddevice_duplicate_device_already_exists_message,A device with this DeviceID already exists.,Ein Gerät mit dieser Geräte-ID existiert bereits.,このデバイスIDを持つデバイスは既に存在します。
+adddevice_duplicate_device_id_title,Duplicate device,Doppeltes Gerät,重複したデバイス
+all_available,all available data,alle verfügbaren Daten,利用可能なすべてのデータ
+Allow While Using App,Allow While Using App,"Zulassen, während die App verwendet wird",アプリ使用中のみ許可
+app_behaviour,Application behaviour,Anwendungsverhalten,アプリの動作
+Background Updates:,Number of background updates:,Anzahl der Hintergrundaktualisierungen:,バックグラウンド更新数：
+Background-Status,Background-Status,Hintergrund-Status,バックグラウンドステータス
+cancel,cancel,abbrechen,キャンセル
+Choose the server you trust.,Choose the server you trust.,"Wähle den Server, dem du vertraust.",信頼できるサーバーを選択してください。
+Compass,Compass,Kompass,コンパス
+compass_%@ %d°,%@ %d°,%@ %d°,%@ %d°
+compass_E,E,O,東
+compass_N,N,N,北
+compass_NE,NE,NO,北東
+compass_north_label,N,N,北
+compass_NW,NW,NW,北西
+compass_S,S,S,南
+compass_SE,SE,SO,南東
+compass_SW,SW,SW,南西
+compass_W,W,W,西
+Current location,Current location,Aktueller Standort,現在の位置
+Custom server URL (must start with https://),Custom server URL (must start with https://),Benutzerdefinierte Server-URL (muss mit https:// beginnen),カスタムサーバーのURL（https://で始まる必要があります）
+deactivate_device_lock,deactivate device lock,Gerätesperre deaktivieren,デバイスロックを無効化
+decoding_error,Could not get device location data from the Miataru server. Device might not exist.,Standortdaten des Geräts konnten nicht vom Miataru-Server abgerufen werden. Das Gerät existiert möglicherweise nicht.,Miataruサーバーからデバイスの位置情報データを取得できませんでした。デバイスが存在しない可能性があります。
+default_map,default map,Standardkarte,デフォルトマップ
+delete_device,Delete,Löschen,削除
+delete_group,Delete Group,Gruppe löschen,グループを削除
+device_color,Device Color,Gerätefarbe,デバイスの色
+device_colorpicker,pick a color,Farbe auswählen,色を選択してください
+device_id,Device ID,Geräte‑ID,デバイスID
+device_id_copied_to_clipboard,Device ID was copied to the clipboard.,Geräte‑ID wurde in die Zwischenablage kopiert.,デバイスIDがクリップボードにコピーされました。
+device_id2,enter the ID here or scan QR code,Gib die ID hier ein oder scanne den QR‑Code,IDをここに入力するか、QRコードをスキャンしてください。
+device_name,Device Name,Gerätename,デバイス名
+device_name2,Name,Name,名前
+device_qr_code,this devices QR-Code,QR‑Code dieses Geräts,このデバイスのQRコード
+device_row_distance,Distance,Entfernung,距離
+device_row_feet_unit,ft,ft,フィート
+device_row_kilometer_unit,km,km,キロメートル
+device_row_last_seen,Last seen,Zuletzt gesehen,最終確認
+device_row_meter_unit,m,m,メートル
+device_row_miles_unit,mi,mi,マイル
+device_row_never,never,nie,なし
+device_row_separator,•,•,・
+device_row_unknown,unknown,unbekannt,不明
+devicelist_edit_done,Done,Fertig,完了
+devicelist_editbutton,Edit,Bearbeiten,編集
+devices,Devices,Geräte,デバイス
+Documentation to setup your own server (GitHub),Documentation to setup your own server (GitHub),Dokumentation zum Einrichten deines eigenen Servers (GitHub),独自のサーバーを設定するためのドキュメント（GitHub）
+done,done,Fertig,完了
+Easily share your device ID or add others by scanning QR-Codes.,Easily share your device ID or add others by scanning QR-Codes.,"Teile deine Geräte‑ID einfach oder füge andere hinzu, indem du QR‑Codes scannst.",QRコードをスキャンしてデバイスIDを簡単に共有したり、他のユーザーを追加したりできます。
+edit_device,Edit Device,Gerät bearbeiten,デバイスを編集
+Enable Location Tracking,Enable Location Tracking,Standortverfolgung aktivieren,位置情報追跡を有効にする
+encoding_error,Error while encoding the location update.,Fehler beim Kodieren des Standort‑Updates.,位置情報更新のエンコード中にエラーが発生しました。
+Enter Custom Server,Enter Custom Server,Eigene Server-URL eingeben,カスタムサーバーURLを入力
+error_loading_locationdata,Error when loading location data.,Fehler beim Laden der Standortdaten.,位置情報データの読み込み中にエラーが発生しました。
+Finish,Finish,Fertig,完了
+Full permissions granted,Full permissions granted,Volle Berechtigungen erteilt,すべての権限が付与されました。
+Group not found,Group not found,Gruppe nicht gefunden,グループが見つかりません。
+group_detailview_edit,Edit,Bearbeiten,編集
+group_empty_add_devices_message,add devices using the Edit button,Füge Geräte mit dem Bearbeiten‑Button hinzu,編集ボタンを使用してデバイスを追加してください
+group_map_could_fetch_device_location,could not fetch location for device: %@,Standort für Gerät konnte nicht abgerufen werden: %@,デバイスの位置情報を取得できませんでした: %@
+group_member_devices,select devices that should be in this group,"Wähle Geräte aus, die in dieser Gruppe sein sollen",このグループに含めるデバイスを選択してください
+group_name,Group Name,Gruppenname,グループ名
+group_name_placeholder,Enter group name,Gruppennamen eingeben,グループ名を入力してください
+group_name_section,Group Name,Gruppenname,グループ名
+group_name_textfield,enter a group name here,Gib hier einen Gruppennamen ein,ここにグループ名を入力してください
+groups,Groups,Gruppen,グループ
+History Options,History Options,Verlaufseinstellungen,履歴オプション
+hybrid_map,Hybrid map,Hybridkarte,ハイブリッドマップ
+"If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).
+
+If you prefer not to keep a history, you can choose to only store your last location for a limited time.","If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).
+
+If you prefer not to keep a history, you can choose to only store your last location for a limited time.","Wenn du die Serverhistorie aktivierst, speichert der Server eine Historie deiner letzten Standorte (abhängig vom Server und der Aktualisierungsfrequenz). Wenn du keinen Verlauf speichern möchtest, kannst du wählen, nur deinen letzten Standort für einen begrenzten Zeitraum zu speichern.",サーバー履歴を有効にすると、サーバーはあなたの最後の位置情報の履歴を保存します（サーバーおよび更新頻度によります）。履歴を保持したくない場合は、最後の位置情報のみを一定期間保存するよう選択できます。
+indicate_location_accuracy,indicate location accuracy,Genauigkeit anzeigen,位置情報の精度を示す
+invalid_miataru_qr_code,Invalid QR-Code,Ungültiger QR-Code,無効なQRコード
+invalid_miataru_qr_code_error_text,The QR-Code has to begin with 'miataru://'.,"Der QR-Code muss mit ""miataru://"" beginnen.",QRコードは「miataru://」で始まる必要があります。
+Last Background Update:,Last Background Update:,Letztes Hintergrund-Update:,最終バックグラウンド更新:
+Last GPS update,Last GPS update,Letztes GPS-Update,最終GPS更新
+Last server update,Last server update,Letztes Server-Update,最終サーバー更新
+Location Access,Location Access,Standortzugriff,位置情報アクセス
+Location access denied,Location access denied,Standortzugriff verweigert,位置情報アクセスが拒否されました
+Location access restricted,Location access restricted,Standortzugriff eingeschränkt,位置情報アクセスが制限されています
+Location History,Location History,Standortverlauf,位置情報履歴
+Location Permissions,Location Permissions,Standortberechtigungen,位置情報許可
+Location services not available,Location services not available,Standortdienste nicht verfügbar,位置情報サービスが利用できません
+Location tracking deactivated,Location tracking deactivated,Standortverfolgung deaktiviert,位置情報追跡が無効になっています
+Location Tracking Details,Location Tracking Details,Details zur Standortverfolgung,位置追跡の詳細
+Location Tracking Status,Location Tracking Status,Status der Standortverfolgung,位置追跡のステータス
+Location updates in the background are only detected when they are significant (>500m).,Location updates in the background are only detected when they are significant (>500m).,"Standort-Updates im Hintergrund werden nur erkannt, wenn sie signifikant sind (>500 m).",バックグラウンドでの位置情報更新は、重要な変化（>500m）があった場合にのみ検出されます。
+location_sensitivity_explanation,This option determines the sensitivity of how often location updates are sent to the server. It’s a combination of how much distance and accuracy of the location has changed compared to the last update.,"Diese Option legt fest, wie empfindlich die App auf Änderungen der Standortgenauigkeit im Vergleich zur letzten Aktualisierung reagiert und wie häufig Standort-Updates angefordert werden.",このオプションは、前回の更新と比較して位置情報の精度がどの程度変化したかに応じて、位置情報更新を要求する感度を決定します。
+location_sensitivity_title,Location Update Sensitivity,Empfindlichkeit der Standort-Updates,位置情報更新の感度
+location_track,track device location,Standort des Geräts verfolgen,デバイスの位置を追跡
+location_tracking_update_sensitivity_balanced_short,Balanced (10m/10m),Ausgewogen (10 m/10 m),バランス (10m/10m)
+location_tracking_update_sensitivity_battery_saver_short,Battery saver (25m/20m),Energiesparmodus (25 m/20 m),省電力 (25m/20m)
+location_tracking_update_sensitivity_default_short,Default (5m/5m),Standard (5 m/5 m),デフォルト (5m/5m)
+location_tracking_update_sensitivity_minimal_short,Minimal (50m/40m),Minimal (50 m/40 m),最小 (50m/40m)
+location_tracking_update_sensitivity_very_sensitive_short,Very sensitive (3m/2m),Sehr empfindlich (3 m/2 m),非常に高感度 (3m/2m)
+map_configuration,Map settings,Karteneinstellungen,マップ設定
+map_type,Map type,Kartentyp,マップタイプ
+map_update_interval,Update interval on map,Aktualisierungsintervall auf der Karte,マップの更新間隔
+map_zoom_level,Default map zoom level,Standard-Zoomstufe der Karte,マップのデフォルトズームレベル
+Miataru helps you share your (device) location with people and groups you trust.,Miataru helps you share your (device) location with people and groups you trust.,"Miataru hilft dir, deinen (Geräte-)Standort mit Personen und Gruppen zu teilen, denen du vertraust.",Miataruは信頼できる人やグループとデバイスの位置情報を共有するのに役立ちます。
+Miataru is set up and ready.,Miataru is set up and ready.,Miataru ist eingerichtet und bereit.,Miataruは設定され、使用可能です。
+"Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.","Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.","Miataru benötigt deinen Standort, um Kernfunktionen der App bereitzustellen, z. B. das Teilen deiner Position mit vertrauenswürdigen Kontakten.",Miataruは、信頼できる連絡先と位置情報を共有するなど、アプリの主要な機能を提供するためにあなたの位置情報が必要です。
+Miataru server status,Miataru server status,Serverstatus von Miataru,Miataruサーバーのステータス
+Miataru uses battery optimized background location tracking,Miataru uses battery optimized background location tracking,Miataru verwendet batterieverbrauchsoptimierte Hintergrund-Standortverfolgung,Miataruはバッテリー消費を最適化したバックグラウンド位置情報追跡を使用します。
+my_device,this Device,Mein Gerät,私のデバイス
+my_device_qr_code,This is your devices QR-Code.,QR-Code meines Geräts,私のデバイスのQRコード
+network_error,Network error. Check server URL or network connection.,Netzwerkfehler,ネットワークエラー
+new_device,Add a new device,Neues Gerät,新しいデバイス
+Next,Next,Weiter,次へ
+no_location_data_found,No location data could be found.,Keine Standortdaten gefunden,位置情報データが見つかりませんでした
+ok,OK,OK,OK
+Only allowed when app in foregrond,Only allowed when app in foregrond,"Nur erlaubt, wenn die App im Vordergrund ist",アプリがフォアグラウンドにあるときのみ許可されます
+only store last location,only store last location,Nur letzten Standort speichern,最後の位置情報のみ保存
+Only the last location is stored for a fixed time on the server (default 30 minutes).,Only the last location is stored for a fixed time on the server (default 30 minutes).,Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten).,サーバーには最後の位置情報のみが一定期間保存されます（デフォルト: 30分）。
+Open app settings in iOS to change location permission state.,Open app settings in iOS to change location permission state.,"Öffne die App-Einstellungen auf iOS, um den Standortberechtigungsstatus zu ändern.",iOSのアプリ設定を開いて位置情報の権限状態を変更してください。
+"Permission granted, but not active","Permission granted, but not active","Berechtigung erteilt, aber nicht aktiv",権限は付与されましたが、アクティブではありません
+Permission not determined,Permission not determined,Berechtigung nicht festgelegt,権限が決定されていません
+Permission state,Location permission state,Berechtigungsstatus,権限の状態
+Please enter a valid https server URL.,Please enter a valid https server URL.,Bitte gib eine gültige HTTPS-Server-URL ein.,有効なHTTPSサーバーのURLを入力してください。
+Previous,Previous,Zurück,戻る
+qr,QR-Code,QR-Code,QRコード
+qr_code_explanation,You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru.,"Du kannst diesen QR-Code verwenden, um deine Geräte-ID mit anderen zu teilen.",このQRコードを使用して、デバイスIDを他の人と共有できます。
+Ready,Ready,Bereit,準備完了
+Recent location updates:,Recent location updates:,Letzte Standort-Updates:,最近の位置情報更新:
+relative_time_now,now,,
+remove_from_group,Remove from group,,
+sat_map,satelite map,,
+save,Save,,
+save_location_history_to_server,Save location history to server,Standortverlauf auf dem Server speichern,位置情報履歴をサーバーに保存
+scalebar_feet,%.0f km,ft,フィート
+scalebar_kilometers,%.0f km,km,キロメートル
+scalebar_meters,%.0f m,m,メートル
+scalebar_miles,%.1f mi,mi,マイル
+Scan a QR-Code from another device running Miataru.,Scan a QR-Code from another device running Miataru.,Scanne einen QR-Code eines anderen Geräts mit Miataru.,Miataruを実行している別のデバイスのQRコードをスキャンしてください。
+scan_qr_code,touch here to scan QR code,QR-Code scannen,QRコードをスキャン
+Sending...,Sending...,Wird gesendet…,送信中…
+Server,Server,Server,サーバー
+server_or_deviceid_invalid,Server URL or DeviceID is wrong.,Server- oder Geräte-ID ungültig,サーバーまたはデバイスIDが無効です
+server_response_invalid,Response from Miataru server is invalid.,Ungültige Serverantwort,サーバー応答が無効です
+server_url,Miataru Server URL,Server-URL,サーバーURL
+server_url_invalid,Miataru Server-URL is invalid,Ungültige Server-URL,無効なサーバーURLです
+settings,Settings,Einstellungen,設定
+Share & Scan with QR-Codes,Share & Scan with QR-Codes,Teilen & Scannen mit QR-Codes,QRコードで共有＆スキャン
+show,show,Anzeigen,表示
+Show Onboarding Wizard Again,Show Onboarding Wizard Again,Onboarding-Assistent erneut anzeigen,オンボーディングウィザードを再表示
+Show your QR-Code to someone you trust.,Show your QR-Code to someone you trust.,"Zeige deinen QR-Code jemandem, dem du vertraust.",信頼する人にあなたのQRコードを見せてください。
+show_history_days,Days of history shown,Anzahl der anzuzeigenden Tage,履歴表示日数
+store location history,store location history,Standortverlauf speichern,位置情報履歴を保存
+store_history_before_autoremove,Autoremove location data after,Verlauf speichern bevor automatische Löschung,自動削除前に履歴を保存
+Successful,Successful,Erfolgreich,完了
+Swipe left to get you set up in just a few steps.,Swipe left to get you set up in just a few steps.,"Wische nach links, um in wenigen Schritten loszulegen.",左にスワイプして、数ステップで設定を完了できます。
+To add:,To add:,Zum Hinzufügen:,追加するには:
+To give Miataru the permission please enable the toggle and answer the following dialog with ',To give Miataru the permission please enable the toggle and answer the following dialog with ',"Um Miataru die Erlaubnis zu erteilen, aktiviere den Schalter und beantworte den folgenden Dialog mit '",Miataruに許可を与えるには、トグルを有効にし、次のダイアログで「で応答してください
+To share:,To share:,Zum Teilen:,共有するには:
+track_and_history,Tracking & History,Verfolgung & Verlauf,追跡＆履歴
+Tracking inactive (fore- & background),Tracking inactive (fore- & background),Verfolgung inaktiv (Vorder- & Hintergrund),追跡無効（フォアグラウンド＆バックグラウンド）
+Tracking mode: Battery saving (only significant movements),Tracking mode: Battery saving (only significant movements),Verfolgungsmodus: Energiesparmodus (nur signifikante Bewegungen),追跡モード：省電力（重要な移動のみ）
+Tracking mode: Live (GPS),Tracking mode: Live (GPS),Verfolgungsmodus: Echtzeit (GPS),追跡モード：ライブ（GPS）
+update,update,Aktualisieren,更新
+Use Default Server,Use Default Server,Standard-Server verwenden,デフォルトサーバーを使用
+Welcome to Miataru!,Welcome to Miataru!,Willkommen bei Miataru!,Miataruへようこそ！
+You are Ready to Go!,You are Ready to Go!,Du bist startklar!,準備完了！
+You can change your settings or permissions anytime in the app.,You can change your settings or permissions anytime in the app.,Du kannst deine Einstellungen oder Berechtigungen jederzeit in der App ändern.,アプリ内でいつでも設定や権限を変更できます。
+You can choose how your location data is stored on the Miataru server.,You can choose how your location data is stored on the Miataru server.,"Du kannst wählen, wie deine Standortdaten auf dem Miataru-Server gespeichert werden.",Miataruサーバーで位置情報がどのように保存されるかを選択できます。
+Your data is only sent when you specifically activate it,Your data is only sent when you specifically activate it,"Deine Daten werden nur gesendet, wenn du sie gezielt aktivierst.",データは、あなたが明示的に有効にしたときにのみ送信されます。
+Your data stays on the server you choose for the time you choose,Your data stays on the server you choose for the time you choose,"Deine Daten bleiben so lange auf dem Server, wie du es festlegst.",データは、選択したサーバーに選択した期間だけ保存されます。
+"Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.","Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.",,
+zoom_to_fit_for_groups,zoom to fit groups,Zoom für Gruppen anpassen,グループに合わせてズーム
