@@ -319,7 +319,31 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         let mode = UIApplication.shared.applicationState == .active ? "Foreground" : "Background"
-        print("[LocationManager] Location update (", mode, "): (lat: \(location.coordinate.latitude), lon: \(location.coordinate.longitude)) sent to server.")
+        
+        // Only accept updates if distance or accuracy criteria are met
+        let minimumDistance: CLLocationDistance = 100 // meters
+        let significantAccuracyImprovement: CLLocationAccuracy = 20 // meters
+        var shouldAcceptUpdate = false
+        if let previousLocation = self.currentLocation {
+            let distance = location.distance(from: previousLocation)
+            let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
+            if distance >= minimumDistance {
+                shouldAcceptUpdate = true
+                print("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+            } else if accuracyImprovement >= significantAccuracyImprovement {
+                shouldAcceptUpdate = true
+                print("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+            } else {
+                print("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+            }
+        } else {
+            // Always accept the very first location
+            shouldAcceptUpdate = true
+            print("[LocationManager] First location update accepted.")
+        }
+        
+        guard shouldAcceptUpdate else { return }
+        
         DispatchQueue.main.async {
             self.currentLocation = location
             self.lastUpdateTime = Date()
