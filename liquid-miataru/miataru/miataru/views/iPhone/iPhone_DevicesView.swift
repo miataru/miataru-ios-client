@@ -1,4 +1,5 @@
 import SwiftUI
+import MiataruAPIClient
 
 struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
@@ -95,6 +96,39 @@ struct iPhone_DevicesView: View {
                     )
                 }
             }
+            .refreshable {
+                await refreshAllDeviceLocations()
+            }
+        }
+    }
+
+    private func refreshAllDeviceLocations() async {
+        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return }
+        let deviceIDs = store.devices.map { $0.DeviceID }
+        do {
+            let locations = try await MiataruAPIClient.getLocation(
+                serverURL: url,
+                forDeviceIDs: deviceIDs,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID
+            )
+            for location in locations {
+                DeviceLocationCacheStore.shared.setLocation(
+                    for: location.Device,
+                    latitude: location.Latitude,
+                    longitude: location.Longitude,
+                    accuracy: location.HorizontalAccuracy,
+                    timestamp: location.TimestampDate
+                )
+            }
+            // Für Devices ohne Location den Cache-Eintrag entfernen
+            let foundIDs = Set(locations.map { $0.Device })
+            let missingIDs = Set(deviceIDs).subtracting(foundIDs)
+            for missingID in missingIDs {
+                DeviceLocationCacheStore.shared.removeLocation(for: missingID)
+            }
+        } catch {
+            print("Error refreshing device locations: \(error)")
+            // Optional: User-Overlay anzeigen
         }
     }
 }

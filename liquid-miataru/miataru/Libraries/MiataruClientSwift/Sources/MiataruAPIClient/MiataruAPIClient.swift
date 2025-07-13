@@ -196,6 +196,18 @@ public struct MiataruLocationData: Codable {
 /// The structure of the response for a GetLocation request.
 public struct MiataruGetLocationResponse: Codable {
     let MiataruLocation: [MiataruLocationData]
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruLocation
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // Versuche als [MiataruLocationData?] zu decodieren
+        let rawLocations = try container.decodeIfPresent([MiataruLocationData?].self, forKey: .MiataruLocation) ?? []
+        // Filtere nil heraus
+        self.MiataruLocation = rawLocations.compactMap { $0 }
+    }
 }
 
 /// The structure of the response for a GetLocationHistory request.
