@@ -54,7 +54,7 @@ struct iPhone_GroupsView: View {
                     Text("Group not found")
                 }
             }
-            .onChange(of: selectedGroupID) { newValue in
+            .onChange(of: selectedGroupID) {
                 // Optional: handle side effects if needed
             }
         }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
+    @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
@@ -13,7 +14,7 @@ struct iPhone_DevicesView: View {
                 ForEach(store.devices) { device in
                     if editMode == .inactive {
                         NavigationLink(value: device.DeviceID) {
-                            iPhone_DeviceRowView(device: device)
+                            iPhone_DeviceRowView(device: device, cache: cache)
                         }
                         .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -32,7 +33,7 @@ struct iPhone_DevicesView: View {
                             .tint(.blue)
                         }
                     } else {
-                        iPhone_DeviceRowView(device: device)
+                        iPhone_DeviceRowView(device: device, cache: cache)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingDevice = device

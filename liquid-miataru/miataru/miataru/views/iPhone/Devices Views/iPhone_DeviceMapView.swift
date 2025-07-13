@@ -318,44 +318,47 @@ struct iPhone_DeviceMapView: View {
             )
             if let loc = locations.first {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
+                let coordinateChanged = deviceLocation?.latitude != coordinate.latitude || deviceLocation?.longitude != coordinate.longitude
                 deviceLocation = coordinate
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 now = Date() // <-- Zeit sofort aktualisieren
                 // Caching: Neue Location speichern
                 DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate)
-                withAnimation {
-                    if #available(iOS 17.0, *) {
-                        if resetZoomToSettings {
-                            // On manual update: realign map to north (heading = 0)
-                            let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
-                            let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
-                            cameraPosition = .camera(northCamera)
-                            currentMapSpan = settingsSpan // Also update currentMapSpan
-                        } else {
-                            // On automatic update: keep current orientation (heading)
-                            if let currentCamera = currentMapCamera {
-                                let newCamera = MapCamera(
-                                    centerCoordinate: coordinate,
-                                    distance: currentCamera.distance,
-                                    heading: currentCamera.heading,
-                                    pitch: currentCamera.pitch
-                                )
-                                cameraPosition = .camera(newCamera)
+                if coordinateChanged {
+                    withAnimation {
+                        if #available(iOS 17.0, *) {
+                            if resetZoomToSettings {
+                                // On manual update: realign map to north (heading = 0)
+                                let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                                let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
+                                cameraPosition = .camera(northCamera)
+                                currentMapSpan = settingsSpan // Also update currentMapSpan
                             } else {
-                                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                                // On automatic update: keep current orientation (heading)
+                                if let currentCamera = currentMapCamera {
+                                    let newCamera = MapCamera(
+                                        centerCoordinate: coordinate,
+                                        distance: currentCamera.distance,
+                                        heading: currentCamera.heading,
+                                        pitch: currentCamera.pitch
+                                    )
+                                    cameraPosition = .camera(newCamera)
+                                } else {
+                                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                                }
                             }
-                        }
-                    } else {
-                        if resetZoomToSettings {
-                            // On manual update: use zoom level from settings
-                            let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
-                            region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
                         } else {
-                            // On automatic update: keep current zoom level
-                            let currentZoomLevel = currentZoomLevelFromSpan(region.span)
-                            let currentSpan = spanForZoomLevel(currentZoomLevel)
-                            region = MKCoordinateRegion(center: coordinate, span: currentSpan)
+                            if resetZoomToSettings {
+                                // On manual update: use zoom level from settings
+                                let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                                region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
+                            } else {
+                                // On automatic update: keep current zoom level
+                                let currentZoomLevel = currentZoomLevelFromSpan(region.span)
+                                let currentSpan = spanForZoomLevel(currentZoomLevel)
+                                region = MKCoordinateRegion(center: coordinate, span: currentSpan)
+                            }
                         }
                     }
                 }
@@ -373,7 +376,7 @@ struct iPhone_DeviceMapView: View {
                 showErrorOverlay("Encoding error: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Error encoding the request."))
             case .decodingError(let err):
                 showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
-            case .requestFailed(let err):
+            case .requestFailed(_):
                 // Show only the network error icon, not the overlay
                 withAnimation {
                     showNetworkErrorIcon = true

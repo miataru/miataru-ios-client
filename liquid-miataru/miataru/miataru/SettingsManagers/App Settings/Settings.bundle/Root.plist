@@ -24,6 +24,40 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Location Sensitivity</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Controls how sensitive location updates are. Lower values mean more frequent updates, higher values mean less frequent updates.</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>2</string>
+			<key>Key</key>
+			<string>location_sensitivity_level</string>
+			<key>Title</key>
+			<string>Location Sensitivity</string>
+			<key>Titles</key>
+			<array>
+				<string>Very Sensitive (3m/2m)</string>
+				<string>Default (5m/5m)</string>
+				<string>Balanced (10m/10m)</string>
+				<string>Battery Saver (25m/20m)</string>
+				<string>Minimal (50m/40m)</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+				<string>4</string>
+				<string>5</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Location History</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

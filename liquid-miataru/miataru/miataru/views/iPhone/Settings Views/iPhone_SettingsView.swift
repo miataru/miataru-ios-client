@@ -27,18 +27,38 @@ struct iPhone_SettingsView: View {
                         }
                     }
                 }
-                Section(header: Text(NSLocalizedString("activity_type_accuracy_settings_title", comment: "Section header for location activity type"))) {
-                    Picker("", selection: $settings.locationActivityType) {
-                        Text(NSLocalizedString("activity_type_other", comment: "Other (default, battery saving) option for location activity type")).tag(0)
-                        Text(NSLocalizedString("activity_type_fitness", comment: "Fitness (walking, running, cycling) option for location activity type")).tag(2)
-                        Text(NSLocalizedString("activity_type_automotive", comment: "Automotive Navigation (car) option for location activity type")).tag(1)
+                if settings.trackAndReportLocation {
+                    Section(header: Text(NSLocalizedString("activity_type_accuracy_settings_title", comment: "Section header for location activity type"))) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(NSLocalizedString("activity_type_tracking_accuracy_title", comment: "Title for tracking accuracy picker"))
+                                .font(.headline)
+                            Picker("", selection: $settings.locationActivityType) {
+                                Text(NSLocalizedString("activity_type_other", comment: "Other (default, battery saving) option for location activity type")).tag(0)
+                                Text(NSLocalizedString("activity_type_fitness", comment: "Fitness (walking, running, cycling) option for location activity type")).tag(2)
+                                Text(NSLocalizedString("activity_type_automotive", comment: "Automotive Navigation (car) option for location activity type")).tag(1)
+                            }
+                            .pickerStyle(.menu)
+                        }
+                        Text(NSLocalizedString("activity_type_accuracy_explanation", comment: "Explanation for location tracking accuracy picker"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(NSLocalizedString("location_sensitivity_title", comment: "Title for location sensitivity picker"))
+                                .font(.headline)
+                            Picker("", selection: $settings.locationSensitivityLevel) {
+                                Text(NSLocalizedString("location_tracking_update_sensitivity_very_sensitive_short", comment: "Very sensitive (3m/2m) option for location sensitivity")).tag(1)
+                                Text(NSLocalizedString("location_tracking_update_sensitivity_default_short", comment: "Default (5m/5m) option for location sensitivity")).tag(2)
+                                Text(NSLocalizedString("location_tracking_update_sensitivity_balanced_short", comment: "Balanced (10m/10m) option for location sensitivity")).tag(3)
+                                Text(NSLocalizedString("location_tracking_update_sensitivity_battery_saver_short", comment: "Battery saver (25m/20m) option for location sensitivity")).tag(4)
+                                Text(NSLocalizedString("location_tracking_update_sensitivity_minimal_short", comment: "Minimal (50m/40m) option for location sensitivity")).tag(5)
+                            }
+                            .pickerStyle(.menu)
+                        }
+                        Text(NSLocalizedString("location_sensitivity_explanation", comment: "Explanation for location sensitivity picker"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .pickerStyle(.menu)
-                    Text(NSLocalizedString("activity_type_explanation", comment: "Explanation for location activity type picker"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
-                
                 Section(header: Text("server_url")) {
                     TextField("server_url", text: $settings.miataruServerURL)
                 }

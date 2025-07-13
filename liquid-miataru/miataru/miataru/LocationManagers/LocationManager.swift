@@ -312,6 +312,17 @@ final class LocationManager: NSObject, ObservableObject {
         print("[LocationManager] Stopping significant change updates")
         locationManager.stopMonitoringSignificantLocationChanges()
     }
+    
+    private func mappedSensitivityValues(for level: Int) -> (distance: CLLocationDistance, accuracy: CLLocationAccuracy) {
+        switch level {
+        case 1: return (3, 2)
+        case 2: return (5, 5)
+        case 3: return (10, 10)
+        case 4: return (25, 20)
+        case 5: return (50, 40)
+        default: return (5, 5)
+        }
+    }
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -321,8 +332,7 @@ extension LocationManager: CLLocationManagerDelegate {
         let mode = UIApplication.shared.applicationState == .active ? "Foreground" : "Background"
         
         // Only accept updates if distance or accuracy criteria are met
-        let minimumDistance: CLLocationDistance = 5 // meters
-        let significantAccuracyImprovement: CLLocationAccuracy = 5 // meters
+        let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
         var shouldAcceptUpdate = false
         if let previousLocation = self.currentLocation {
             let distance = location.distance(from: previousLocation)

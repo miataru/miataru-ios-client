@@ -48,6 +48,9 @@ class SettingsManager: ObservableObject {
     @Published var locationActivityType: Int {
         didSet { defaults.set(locationActivityType, forKey: Keys.locationActivityType) }
     }
+    @Published var locationSensitivityLevel: Int {
+        didSet { defaults.set(locationSensitivityLevel, forKey: Keys.locationSensitivityLevel) }
+    }
     
     // MARK: - Keys
     private enum Keys {
@@ -62,6 +65,7 @@ class SettingsManager: ObservableObject {
         static let saveLocationHistoryOnServer = "save_location_history_on_server"
         static let historyNumberOfDays = "history_number_of_days"
         static let locationActivityType = "location_activity_type"
+        static let locationSensitivityLevel = "location_sensitivity_level"
     }
     
     // MARK: - Initialwerte laden
@@ -79,6 +83,7 @@ class SettingsManager: ObservableObject {
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
+        self.locationSensitivityLevel = d.object(forKey: Keys.locationSensitivityLevel) as? Int ?? 2
     }
     
     // MARK: - Synchronize
