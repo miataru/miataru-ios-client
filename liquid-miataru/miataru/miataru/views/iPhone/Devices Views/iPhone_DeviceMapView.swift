@@ -39,6 +39,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showEditDeviceSheet = false
     @State private var now = Date() // Timer für relative Zeit
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var showNetworkErrorIcon = false // Show network error icon
     
     // Computed property to get the current device from store
     private var device: KnownDevice? {
@@ -52,6 +53,21 @@ struct iPhone_DeviceMapView: View {
                 mapSection()
             }
             ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
+            // Network error icon (top left)
+            Group {
+                if showNetworkErrorIcon {
+                    Image(systemName: "network.slash")
+                        .foregroundColor(Color(.systemRed))
+                        .font(.system(size: 28))
+                        .padding(.top, 10)
+                        .padding(.leading, 10)
+                        .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
+                        .transition(.opacity)
+                        .zIndex(10)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
             // ScaleBar immer ganz oben
             Group {
                 if #available(iOS 17.0, *) {
@@ -358,7 +374,15 @@ struct iPhone_DeviceMapView: View {
             case .decodingError(let err):
                 showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
             case .requestFailed(let err):
-                showErrorOverlay("Network error: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
+                // Show only the network error icon, not the overlay
+                withAnimation {
+                    showNetworkErrorIcon = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        showNetworkErrorIcon = false
+                    }
+                }
             }
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
