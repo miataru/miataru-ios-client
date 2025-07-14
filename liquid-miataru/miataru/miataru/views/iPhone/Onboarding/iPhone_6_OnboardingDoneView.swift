@@ -20,7 +20,7 @@ struct iPhone_6_OnboardingDoneView: View {
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Text("Tap on "+"Finish"+" to start using Miataru.")
+            Text("Tap on Finish to start using Miataru.")
                 .font(.body)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)

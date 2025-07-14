@@ -2,10 +2,23 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-
+      "shouldTranslate" : false
     },
     "'." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'."
+          }
+        }
+      }
     },
     "%lld" : {
       "comment" : "Number of background updates",
@@ -17,6 +30,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -37,12 +56,24 @@
             "state" : "new",
             "value" : "%1$lld %2$@"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
         }
       }
     },
     "•" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "•"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "•"
@@ -63,6 +94,12 @@
             "state" : "translated",
             "value" : "1 day"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日"
+          }
         }
       }
     },
@@ -79,6 +116,12 @@
             "state" : "translated",
             "value" : "1 hour"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1時間"
+          }
         }
       }
     },
@@ -91,6 +134,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 km"
@@ -111,6 +160,12 @@
             "state" : "translated",
             "value" : "2 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2日間"
+          }
         }
       }
     },
@@ -127,6 +182,12 @@
             "state" : "translated",
             "value" : "2 hours"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2時間"
+          }
         }
       }
     },
@@ -139,6 +200,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "2 km"
@@ -159,6 +226,12 @@
             "state" : "translated",
             "value" : "3 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3日間"
+          }
         }
       }
     },
@@ -174,6 +247,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "4 days"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4日間"
           }
         }
       }
@@ -191,6 +270,12 @@
             "state" : "translated",
             "value" : "5 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5日間"
+          }
         }
       }
     },
@@ -203,6 +288,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 km"
@@ -223,6 +314,12 @@
             "state" : "translated",
             "value" : "5 seconds"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5秒"
+          }
         }
       }
     },
@@ -238,6 +335,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "6 days"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6日間"
           }
         }
       }
@@ -255,6 +358,12 @@
             "state" : "translated",
             "value" : "6 hours"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6時間"
+          }
         }
       }
     },
@@ -271,6 +380,12 @@
             "state" : "translated",
             "value" : "7 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7日間"
+          }
         }
       }
     },
@@ -283,6 +398,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "10 km"
@@ -303,6 +424,12 @@
             "state" : "translated",
             "value" : "10 seconds"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10秒"
+          }
         }
       }
     },
@@ -318,6 +445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "12 hours"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12時間"
           }
         }
       }
@@ -335,6 +468,12 @@
             "state" : "translated",
             "value" : "14 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "14日間"
+          }
         }
       }
     },
@@ -350,6 +489,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "15 seconds"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "15秒"
           }
         }
       }
@@ -367,6 +512,12 @@
             "state" : "translated",
             "value" : "24 hours"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24時間"
+          }
         }
       }
     },
@@ -379,6 +530,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "25 km"
@@ -399,6 +556,12 @@
             "state" : "translated",
             "value" : "30 minutes"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30分"
+          }
         }
       }
     },
@@ -414,6 +577,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30 seconds"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30秒"
           }
         }
       }
@@ -431,6 +600,12 @@
             "state" : "translated",
             "value" : "31 days"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "31日間"
+          }
         }
       }
     },
@@ -443,6 +618,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "50 km"
@@ -463,6 +644,12 @@
             "state" : "translated",
             "value" : "60 seconds"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "60秒"
+          }
         }
       }
     },
@@ -479,15 +666,33 @@
             "state" : "translated",
             "value" : "100 km"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100 km"
+          }
         }
       }
     },
     "A number of your last location updates is stored on the server (default: last 1000)." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Anzahl deiner letzten Standort-Updates wird auf dem Server gespeichert (Standard: die letzten 1000)."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "A number of your last location updates is stored on the server (default: last 1000)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーにはあなたの最後の位置情報更新が一定数（デフォルト: 最新1000件）保存されます。"
           }
         }
       }
@@ -495,10 +700,22 @@
     "Accuracy" : {
       "comment" : "Accuracy display in Location Tracking Details",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genauigkeit"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accuracy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "精度"
           }
         }
       }
@@ -506,10 +723,22 @@
     "activity_type_accuracy_explanation" : {
       "comment" : "Explanation for location tracking accuracy picker",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst die Aktualisierungsfrequenz deines Standorts im Hintergrund auswählen. Standard wird den meisten Nutzern empfohlen und spart Akku."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can choose the update frequency of your location when the app is used in the foreground. Standard is recommended for most users and saves battery."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリがバックグラウンドにある際の位置情報更新頻度を選択できます。標準がほとんどのユーザーに推奨され、バッテリーを節約します。"
           }
         }
       }
@@ -517,10 +746,22 @@
     "activity_type_accuracy_settings_title" : {
       "comment" : "Section header for location activity type",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empfindlichkeit der Standortverfolgung (Vordergrund)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location tracking sensitivity (foreground)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置追跡の感度（フォアグラウンド）"
           }
         }
       }
@@ -528,10 +769,22 @@
     "activity_type_automotive" : {
       "comment" : "Automotive Navigation (car) option for location activity type",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchste (Navigation)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Highest (Navigation)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最高（ナビ）"
           }
         }
       }
@@ -539,10 +792,22 @@
     "activity_type_fitness" : {
       "comment" : "Fitness (walking, running, cycling) option for location activity type",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittel (Radfahren, Laufen)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Medium (Cycling, Running)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中（サイクリング、ランニング）"
           }
         }
       }
@@ -550,10 +815,22 @@
     "activity_type_other" : {
       "comment" : "Other (default, battery saving) option for location activity type",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard (Voreinstellung)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standard (default)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準（デフォルト）"
           }
         }
       }
@@ -561,30 +838,66 @@
     "activity_type_tracking_accuracy_title" : {
       "comment" : "Title for tracking accuracy picker",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie aggressiv sollen die Standortaktualisierungen deines Geräts sein?"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "how aggressive should your device location be updated?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの位置情報更新のアグレッシブさはどの程度にしますか？"
           }
         }
       }
     },
     "add" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hinzufügen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "add"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追加"
           }
         }
       }
     },
     "add_new_group" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Gruppe hinzufügen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add a new group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいグループを追加"
           }
         }
       }
@@ -592,10 +905,22 @@
     "adddevice_duplicate_device_already_exists_message" : {
       "comment" : "Alert text shown when user tries to add a duplicate device.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Gerät mit dieser Geräte-ID existiert bereits."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "A device with this DeviceID already exists."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスIDを持つデバイスは既に存在します。"
           }
         }
       }
@@ -603,80 +928,176 @@
     "adddevice_duplicate_device_id_title" : {
       "comment" : "Alert title shown when user tries to add a duplicate device.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doppeltes Gerät"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplicate device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したデバイス"
           }
         }
       }
     },
     "all_available" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "alle verfügbaren Daten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "all available data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用可能なすべてのデータ"
           }
         }
       }
     },
     "Allow While Using App" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beim Verwenden der App erlauben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allow While Using App"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ使用中のみ許可"
           }
         }
       }
     },
     "app_behaviour" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anwendungsverhalten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Application behaviour"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリの動作"
           }
         }
       }
     },
     "Background Updates:" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzahl der Hintergrundaktualisierungen:"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Number of background updates:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンド更新数："
           }
         }
       }
     },
     "Background-Status" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund-Status"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Background-Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドステータス"
           }
         }
       }
     },
     "cancel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "abbrechen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "cancel"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャンセル"
           }
         }
       }
     },
     "Choose the server you trust." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle den Server, dem du vertraust."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose the server you trust."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信頼できるサーバーを選択してください。"
           }
         }
       }
@@ -684,10 +1105,22 @@
     "Compass" : {
       "comment" : "Accessibility label for compass",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kompass"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compass"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コンパス"
           }
         }
       }
@@ -695,7 +1128,19 @@
     "compass_%@ %d°" : {
       "comment" : "Compass direction and degree, e.g. 'NE 45°'",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %d°"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %d°"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ %d°"
@@ -706,10 +1151,22 @@
     "compass_E" : {
       "comment" : "Compass East abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "E"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "東"
           }
         }
       }
@@ -717,10 +1174,22 @@
     "compass_N" : {
       "comment" : "Compass North abbreviation\nCompass North abbreviation (repeat for wraparound)",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "N"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "北"
           }
         }
       }
@@ -728,10 +1197,22 @@
     "compass_NE" : {
       "comment" : "Compass North-East abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NO"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "NE"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "北東"
           }
         }
       }
@@ -739,10 +1220,22 @@
     "compass_north_label" : {
       "comment" : "Compass North label",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "N"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "北"
           }
         }
       }
@@ -750,10 +1243,22 @@
     "compass_NW" : {
       "comment" : "Compass North-West abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NW"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "NW"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "北西"
           }
         }
       }
@@ -761,10 +1266,22 @@
     "compass_S" : {
       "comment" : "Compass South abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "S"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "南"
           }
         }
       }
@@ -772,10 +1289,22 @@
     "compass_SE" : {
       "comment" : "Compass South-East abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SO"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SE"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "南東"
           }
         }
       }
@@ -783,10 +1312,22 @@
     "compass_SW" : {
       "comment" : "Compass South-West abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SW"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SW"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "南西"
           }
         }
       }
@@ -794,10 +1335,22 @@
     "compass_W" : {
       "comment" : "Compass West abbreviation",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "W"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "西"
           }
         }
       }
@@ -805,30 +1358,66 @@
     "Current location" : {
       "comment" : "Current position display in Location Tracking Details",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktueller Standort"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current location"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の位置"
           }
         }
       }
     },
     "Custom server URL (must start with https://)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzerdefinierte Server-URL (muss mit https:// beginnen)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Custom server URL (must start with https://)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタムサーバーのURL（https://で始まる必要があります）"
           }
         }
       }
     },
     "deactivate_device_lock" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerätesperre deaktivieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "deactivate device lock"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスロックを無効化"
           }
         }
       }
@@ -836,120 +1425,264 @@
     "decoding_error" : {
       "comment" : "Error processing the server response.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortdaten des Geräts konnten nicht vom Miataru-Server abgerufen werden. Das Gerät existiert möglicherweise nicht."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Could not get device location data from the Miataru server. Device might not exist."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruサーバーからデバイスの位置情報を取得できませんでした。デバイスが存在しない可能性があります。"
           }
         }
       }
     },
     "default_map" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standardkarte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "default map"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトマップ"
           }
         }
       }
     },
     "delete_device" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除"
           }
         }
       }
     },
     "delete_group" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppe löschen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete Group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループを削除"
           }
         }
       }
     },
     "device_color" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerätefarbe"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Device Color"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの色"
           }
         }
       }
     },
     "device_colorpicker" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe auswählen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "pick a color"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "色を選択してください"
           }
         }
       }
     },
     "device_id" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte‑ID"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Device ID"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスID"
           }
         }
       }
     },
     "device_id_copied_to_clipboard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte‑ID wurde in die Zwischenablage kopiert."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Device ID was copied to the clipboard."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスIDがクリップボードにコピーされました。"
           }
         }
       }
     },
     "device_id2" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib die ID hier ein oder scanne den QR‑Code"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "enter the ID here or scan QR code"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IDをここに入力するか、QRコードをスキャンしてください。"
           }
         }
       }
     },
     "device_name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerätename"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Device Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス名"
           }
         }
       }
     },
     "device_name2" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前"
           }
         }
       }
     },
     "device_qr_code" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR‑Code dieses Geräts"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "this devices QR-Code"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスのQRコード"
           }
         }
       }
@@ -957,10 +1690,22 @@
     "device_row_distance" : {
       "comment" : "Label for the distance to the device in the device list row",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernung"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Distance"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距離"
           }
         }
       }
@@ -968,7 +1713,19 @@
     "device_row_feet_unit" : {
       "comment" : "Unit for feet in device row distance display (imperial)",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ft"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ft"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ft"
@@ -979,7 +1736,19 @@
     "device_row_kilometer_unit" : {
       "comment" : "Unit for kilometers in device row distance display",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "km"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "km"
@@ -990,10 +1759,22 @@
     "device_row_last_seen" : {
       "comment" : "Label for the last seen time of a device in the device list row",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letztes Update"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Last seen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終確認"
           }
         }
       }
@@ -1001,7 +1782,19 @@
     "device_row_meter_unit" : {
       "comment" : "Unit for meters in device row distance display",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "m"
@@ -1012,7 +1805,19 @@
     "device_row_miles_unit" : {
       "comment" : "Unit for miles in device row distance display (imperial)",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mi"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mi"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "mi"
@@ -1023,10 +1828,22 @@
     "device_row_never" : {
       "comment" : "Default value for never seen device",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nie"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "never"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "なし"
           }
         }
       }
@@ -1034,7 +1851,19 @@
     "device_row_separator" : {
       "comment" : "Separator between last seen and distance in device row subtitle",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "•"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "•"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "•"
@@ -1045,30 +1874,66 @@
     "device_row_unknown" : {
       "comment" : "Default value for unknown distance",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "unbekannt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "unknown"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明"
           }
         }
       }
     },
     "devicelist_edit_done" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Done"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
           }
         }
       }
     },
     "devicelist_editbutton" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bearbeiten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編集"
           }
         }
       }
@@ -1076,60 +1941,132 @@
     "devices" : {
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Devices"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス"
           }
         }
       }
     },
     "Documentation to setup your own server (GitHub)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dokumentation zum Einrichten deines eigenen Servers (GitHub)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Documentation to setup your own server (GitHub)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "独自のサーバーを設定するためのドキュメント（GitHub）"
           }
         }
       }
     },
     "done" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "done"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
           }
         }
       }
     },
     "Easily share your device ID or add others by scanning QR-Codes." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teile deine Geräte‑ID einfach oder füge andere hinzu, indem du QR‑Codes scannst."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Easily share your device ID or add others by scanning QR-Codes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードをスキャンしてデバイスIDを簡単に共有したり、他のユーザーを追加したりできます。"
           }
         }
       }
     },
     "edit_device" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerät bearbeiten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit Device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスを編集"
           }
         }
       }
     },
     "Enable Location Tracking" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverfolgung aktivieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enable Location Tracking"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報追跡を有効にする"
           }
         }
       }
@@ -1137,20 +2074,44 @@
     "encoding_error" : {
       "comment" : "Error encoding the request.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Kodieren des Standort‑Updates."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error while encoding the location update."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報更新のエンコード中にエラーが発生しました。"
           }
         }
       }
     },
     "Enter Custom Server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigene Server-URL eingeben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter Custom Server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタムサーバーURLを入力"
           }
         }
       }
@@ -1158,20 +2119,44 @@
     "error_loading_locationdata" : {
       "comment" : "Error loading location data",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Laden der Standortdaten."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error when loading location data."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報データの読み込み中にエラーが発生しました。"
           }
         }
       }
     },
     "Finish" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finish"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
           }
         }
       }
@@ -1179,40 +2164,88 @@
     "Full permissions granted" : {
       "comment" : "permission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volle Berechtigungen erteilt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Full permissions granted"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての権限が付与されました。"
           }
         }
       }
     },
     "Group not found" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppe nicht gefunden"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Group not found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループが見つかりません。"
           }
         }
       }
     },
     "group_detailview_edit" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bearbeiten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編集"
           }
         }
       }
     },
     "group_empty_add_devices_message" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge Geräte mit dem Bearbeiten‑Button hinzu"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "add devices using the Edit button"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編集ボタンを使用してデバイスを追加してください"
           }
         }
       }
@@ -1220,140 +2253,308 @@
     "group_map_could_fetch_device_location" : {
       "comment" : "Could not fetch location for device: %@",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort für Gerät konnte nicht abgerufen werden: %@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "could not fetch location for device: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの位置情報を取得できませんでした: %@"
           }
         }
       }
     },
     "group_member_devices" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle Geräte aus, die in dieser Gruppe sein sollen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "select devices that should be in this group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このグループに含めるデバイスを選択してください"
           }
         }
       }
     },
     "group_name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppenname"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Group Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ名"
           }
         }
       }
     },
     "group_name_placeholder" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppennamen eingeben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter group name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ名を入力してください"
           }
         }
       }
     },
     "group_name_section" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppenname"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Group Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ名"
           }
         }
       }
     },
     "group_name_textfield" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib hier einen Gruppennamen ein"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "enter a group name here"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ここにグループ名を入力してください"
           }
         }
       }
     },
     "groups" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Groups"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ"
           }
         }
       }
     },
     "History Options" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlaufseinstellungen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "History Options"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴オプション"
           }
         }
       }
     },
     "hybrid_map" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hybridkarte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hybrid map"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ハイブリッドマップ"
           }
         }
       }
     },
     "If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit aktiviertem Serververlauf speichert der Server deine Standorthistorie (je nach Server und Aktualisierung). Ohne Verlauf wird nur der letzte Standort für eine gewisse Zeit gespeichert."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time."
+            "value" : "With server history enabled, the server stores your location history (depending on server and update rate). Without history, only the last location is kept for a while."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー履歴を有効にすると、位置履歴が保存されます（サーバーや更新頻度による）。無効にすると、最後の位置のみ一定期間保存されます。"
           }
         }
       }
     },
     "indicate_location_accuracy" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genauigkeit anzeigen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "indicate location accuracy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報の精度を示す"
           }
         }
       }
     },
     "invalid_miataru_qr_code" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültiger QR-Code"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid QR-Code"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効なQRコード"
           }
         }
       }
     },
     "invalid_miataru_qr_code_error_text" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der QR-Code muss mit \"miataru://\" beginnen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The QR-Code has to begin with 'miataru://'."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードは「miataru://」で始まる必要があります。"
           }
         }
       }
     },
     "Last Background Update:" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letztes Hintergrund-Update:"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Last Background Update:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終バックグラウンド更新:"
           }
         }
       }
@@ -1361,10 +2562,22 @@
     "Last GPS update" : {
       "comment" : "Last GPS update",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letztes GPS-Update"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Last GPS update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終GPS更新"
           }
         }
       }
@@ -1372,20 +2585,44 @@
     "Last server update" : {
       "comment" : "Last Server-Update status line in Location Tracking details",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letztes Server-Update"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Last server update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終サーバー更新"
           }
         }
       }
     },
     "Location Access" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortzugriff"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Access"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報アクセス"
           }
         }
       }
@@ -1393,10 +2630,22 @@
     "Location access denied" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortzugriff verweigert"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location access denied"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報アクセスが拒否されました"
           }
         }
       }
@@ -1404,30 +2653,66 @@
     "Location access restricted" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortzugriff eingeschränkt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location access restricted"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報アクセスが制限されています"
           }
         }
       }
     },
     "Location History" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverlauf"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location History"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報履歴"
           }
         }
       }
     },
     "Location Permissions" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortberechtigungen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Permissions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報許可"
           }
         }
       }
@@ -1435,10 +2720,22 @@
     "Location services not available" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortdienste nicht verfügbar"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location services not available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報サービスが利用できません"
           }
         }
       }
@@ -1446,20 +2743,44 @@
     "Location tracking deactivated" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverfolgung deaktiviert"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location tracking deactivated"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報追跡が無効になっています"
           }
         }
       }
     },
     "Location Tracking Details" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details zur Standortverfolgung"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Tracking Details"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置追跡の詳細"
           }
         }
       }
@@ -1467,10 +2788,22 @@
     "Location Tracking Status" : {
       "comment" : "Header for location tracking status section",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status der Standortverfolgung"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Tracking Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置追跡のステータス"
           }
         }
       }
@@ -1478,10 +2811,22 @@
     "Location updates in the background are only detected when they are significant (>500m)." : {
       "comment" : "Hint for background location update behavior",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Updates im Hintergrund werden nur erkannt, wenn sie signifikant sind (>500 m)."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location updates in the background are only detected when they are significant (>500m)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドでの位置情報更新は、重要な変化（>500m）があった場合にのみ検出されます。"
           }
         }
       }
@@ -1489,10 +2834,22 @@
     "location_sensitivity_explanation" : {
       "comment" : "Explanation for location sensitivity picker",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Option legt fest, wie empfindlich die App auf Änderungen der Standortgenauigkeit im Vergleich zur letzten Aktualisierung reagiert und wie häufig Standort-Updates angefordert werden."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This option determines the sensitivity of how often location updates are sent to the server. It’s a combination of how much distance and accuracy of the location has changed compared to the last update."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このオプションは、前回の更新と比較して位置情報の精度がどの程度変化したかに応じて、位置情報更新を要求する感度を決定します。"
           }
         }
       }
@@ -1500,20 +2857,44 @@
     "location_sensitivity_title" : {
       "comment" : "Title for location sensitivity picker",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empfindlichkeit der Standort-Updates"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location Update Sensitivity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報更新の感度"
           }
         }
       }
     },
     "location_track" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort des Geräts verfolgen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "track device location"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの位置を追跡"
           }
         }
       }
@@ -1521,10 +2902,22 @@
     "location_tracking_update_sensitivity_balanced_short" : {
       "comment" : "Balanced (10m/10m) option for location sensitivity",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewogen (10 m/10 m)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Balanced (10m/10m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バランス (10m/10m)"
           }
         }
       }
@@ -1532,10 +2925,22 @@
     "location_tracking_update_sensitivity_battery_saver_short" : {
       "comment" : "Battery saver (25m/20m) option for location sensitivity",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energiesparmodus (25 m/20 m)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Battery saver (25m/20m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "省電力 (25m/20m)"
           }
         }
       }
@@ -1543,10 +2948,22 @@
     "location_tracking_update_sensitivity_default_short" : {
       "comment" : "Default (5m/5m) option for location sensitivity",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard (5 m/5 m)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Default (5m/5m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルト (5m/5m)"
           }
         }
       }
@@ -1554,10 +2971,22 @@
     "location_tracking_update_sensitivity_minimal_short" : {
       "comment" : "Minimal (50m/40m) option for location sensitivity",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimal (50 m/40 m)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Minimal (50m/40m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小 (50m/40m)"
           }
         }
       }
@@ -1565,80 +2994,176 @@
     "location_tracking_update_sensitivity_very_sensitive_short" : {
       "comment" : "Very sensitive (3m/2m) option for location sensitivity",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr empfindlich (3 m/2 m)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Very sensitive (3m/2m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非常に高感度 (3m/2m)"
           }
         }
       }
     },
     "map_configuration" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karteneinstellungen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Map settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップ設定"
           }
         }
       }
     },
     "map_type" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartentyp"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Map type"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップタイプ"
           }
         }
       }
     },
     "map_update_interval" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisierungsintervall auf der Karte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Update interval on map"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップの更新間隔"
           }
         }
       }
     },
     "map_zoom_level" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard-Zoomstufe der Karte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Default map zoom level"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップのデフォルトズームレベル"
           }
         }
       }
     },
     "Miataru helps you share your (device) location with people and groups you trust." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru hilft dir, deinen (Geräte-)Standort mit Personen und Gruppen zu teilen, denen du vertraust."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru helps you share your (device) location with people and groups you trust."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruは信頼できる人やグループとデバイスの位置情報を共有するのに役立ちます。"
           }
         }
       }
     },
     "Miataru is set up and ready." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru ist eingerichtet und bereit."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru is set up and ready."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruは設定され、使用可能です。"
           }
         }
       }
     },
     "Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru benötigt deinen Standort, um Kernfunktionen der App bereitzustellen, z. B. das Teilen deiner Position mit vertrauenswürdigen Kontakten."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruは、信頼できる連絡先と位置情報を共有するなど、アプリの主要な機能を提供するためにあなたの位置情報が必要です。"
           }
         }
       }
@@ -1646,20 +3171,44 @@
     "Miataru server status" : {
       "comment" : "Server Status Row",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverstatus von Miataru"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru server status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruサーバーのステータス"
           }
         }
       }
     },
     "Miataru uses battery optimized background location tracking" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru verwendet batterieverbrauchsoptimierte Hintergrund-Standortverfolgung"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru uses battery optimized background location tracking"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruはバッテリー消費を最適化したバックグラウンド位置情報追跡を使用します。"
           }
         }
       }
@@ -1667,20 +3216,44 @@
     "my_device" : {
       "comment" : "Name for the user's own device in the device list",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dieses Gerät"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "this Device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイス"
           }
         }
       }
     },
     "my_device_qr_code" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code meines Geräts"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This is your devices QR-Code."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私のデバイスのQRコード"
           }
         }
       }
@@ -1688,30 +3261,66 @@
     "network_error" : {
       "comment" : "Network error. Please check your internet connection.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Netzwerkfehler"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Network error. Check server URL or network connection."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークエラー"
           }
         }
       }
     },
     "new_device" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neues Gerät"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Add a new device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいデバイスを追加"
           }
         }
       }
     },
     "Next" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次へ"
           }
         }
       }
@@ -1719,17 +3328,41 @@
     "no_location_data_found" : {
       "comment" : "No location available",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Standortdaten gefunden"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No location data could be found."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報データが見つかりませんでした"
           }
         }
       }
     },
     "ok" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
@@ -1740,40 +3373,88 @@
     "Only allowed when app in foregrond" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur erlaubt, wenn die App im Vordergrund ist"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Only allowed when app in foregrond"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリがフォアグラウンドにあるときのみ許可されます"
           }
         }
       }
     },
     "only store last location" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur letzten Standort speichern"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "only store last location"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後の位置情報のみ保存"
           }
         }
       }
     },
     "Only the last location is stored for a fixed time on the server (default 30 minutes)." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten)."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Only the last location is stored for a fixed time on the server (default 30 minutes)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーには最後の位置情報のみが一定期間保存されます（デフォルト: 30分）。"
           }
         }
       }
     },
     "Open app settings in iOS to change location permission state." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne die App-Einstellungen auf iOS, um den Standortberechtigungsstatus zu ändern."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Open app settings in iOS to change location permission state."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSのアプリ設定を開いて位置情報の権限状態を変更してください。"
           }
         }
       }
@@ -1781,10 +3462,22 @@
     "Permission granted, but not active" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berechtigung erteilt, aber nicht aktiv"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permission granted, but not active"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限は付与されましたが、アクティブではありません"
           }
         }
       }
@@ -1792,60 +3485,132 @@
     "Permission not determined" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berechtigung nicht festgelegt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Permission not determined"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限が決定されていません"
           }
         }
       }
     },
     "Permission state" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berechtigungsstatus"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Location permission state"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限の状態"
           }
         }
       }
     },
     "Please enter a valid https server URL." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte gib eine gültige HTTPS-Server-URL ein."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Please enter a valid https server URL."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効なHTTPSサーバーのURLを入力してください。"
           }
         }
       }
     },
     "Previous" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Previous"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻る"
           }
         }
       }
     },
     "qr" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "QR-Code"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコード"
           }
         }
       }
     },
     "qr_code_explanation" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst diesen QR-Code verwenden, um deine Geräte-ID mit anderen zu teilen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このQRコードを使用して、デバイスIDを他の人と共有できます。"
           }
         }
       }
@@ -1853,10 +3618,22 @@
     "Ready" : {
       "comment" : "statusText LocationTracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ready"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完了"
           }
         }
       }
@@ -1864,10 +3641,22 @@
     "Recent location updates:" : {
       "comment" : "Header for recent location updates log",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Standort-Updates:"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Recent location updates:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近の位置情報更新:"
           }
         }
       }
@@ -1875,10 +3664,22 @@
     "relative_time_now" : {
       "comment" : "Indicates that the location update just happened or is happening right now in a relative time on the map marker.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jetzt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "now"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今"
           }
         }
       }
@@ -1886,40 +3687,88 @@
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Gruppe entfernen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Remove from group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループから削除"
           }
         }
       }
     },
     "sat_map" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satellitenkarte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "satelite map"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "衛星地図"
           }
         }
       }
     },
     "save" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
           }
         }
       }
     },
     "save_location_history_to_server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverlauf auf dem Server speichern"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save location history to server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報履歴をサーバーに保存"
           }
         }
       }
@@ -1927,10 +3776,22 @@
     "scalebar_feet" : {
       "comment" : "Scale bar: display distance in feet",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f ft"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%.0f km"
+            "value" : "%.0f ft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f ft"
           }
         }
       }
@@ -1938,7 +3799,19 @@
     "scalebar_kilometers" : {
       "comment" : "Scale bar: display distance in kilometers",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f km"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f km"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.0f km"
@@ -1949,7 +3822,19 @@
     "scalebar_meters" : {
       "comment" : "Scale bar: display distance in meters",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f m"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f m"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.0f m"
@@ -1960,7 +3845,19 @@
     "scalebar_miles" : {
       "comment" : "Scale bar: display distance in miles",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f mi"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f mi"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.1f mi"
@@ -1970,20 +3867,44 @@
     },
     "Scan a QR-Code from another device running Miataru." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanne einen QR-Code eines anderen Geräts mit Miataru."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scan a QR-Code from another device running Miataru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruを実行している別のデバイスのQRコードをスキャンしてください。"
           }
         }
       }
     },
     "scan_qr_code" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code scannen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "touch here to scan QR code"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードをスキャン"
           }
         }
       }
@@ -1991,20 +3912,44 @@
     "Sending..." : {
       "comment" : "statusText LocationTracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird gesendet…"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sending..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "送信中…"
           }
         }
       }
     },
     "Server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー"
           }
         }
       }
@@ -2012,10 +3957,22 @@
     "server_or_deviceid_invalid" : {
       "comment" : "Error: Server or DeviceID invalid",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server- oder Geräte-ID ungültig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Server URL or DeviceID is wrong."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーまたはデバイスIDが無効です"
           }
         }
       }
@@ -2023,20 +3980,44 @@
     "server_response_invalid" : {
       "comment" : "The server response was invalid.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültige Serverantwort"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Response from Miataru server is invalid."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー応答が無効です"
           }
         }
       }
     },
     "server_url" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru Server-URL"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru Server URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーURL"
           }
         }
       }
@@ -2044,90 +4025,198 @@
     "server_url_invalid" : {
       "comment" : "The server URL is invalid.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültige Miataru Server-URL"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Miataru Server-URL is invalid"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効なサーバーURLです"
           }
         }
       }
     },
     "settings" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
           }
         }
       }
     },
     "Share & Scan with QR-Codes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen & Scannen mit QR-Codes"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share & Scan with QR-Codes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードで共有＆スキャン"
           }
         }
       }
     },
     "show" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzeigen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "show"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示"
           }
         }
       }
     },
     "Show Onboarding Wizard Again" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onboarding-Assistent erneut anzeigen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show Onboarding Wizard Again"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オンボーディングウィザードを再表示"
           }
         }
       }
     },
     "Show your QR-Code to someone you trust." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeige deinen QR-Code jemandem, dem du vertraust."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show your QR-Code to someone you trust."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信頼する人にあなたのQRコードを見せてください。"
           }
         }
       }
     },
     "show_history_days" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzahl der anzuzeigenden Tage"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Days of history shown"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴表示日数"
           }
         }
       }
     },
     "store location history" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverlauf speichern"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "store location history"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報履歴を保存"
           }
         }
       }
     },
     "store_history_before_autoremove" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortdaten automatisch entfernen nach …"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autoremove location data after"
+            "value" : "Remove location data automatically after"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報を自動的に削除します"
           }
         }
       }
@@ -2135,60 +4224,148 @@
     "Successful" : {
       "comment" : "statusText LocationTracking Status",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfolgreich"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Successful"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
           }
         }
       }
     },
     "Swipe left to get you set up in just a few steps." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wische nach links, um in wenigen Schritten loszulegen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Swipe left to get you set up in just a few steps."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左にスワイプして、数ステップで設定を完了できます。"
+          }
+        }
+      }
+    },
+    "Tap on Finish to start using Miataru." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf „Fertig“, um Miataru zu verwenden."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「完了」をタップして、Miataruを使い始めてください。"
           }
         }
       }
     },
     "To add:" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Hinzufügen:"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "To add:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追加するには:"
           }
         }
       }
     },
     "To give Miataru the permission please enable the toggle and answer the following dialog with '" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um Miataru die Erlaubnis zu erteilen, aktiviere den Schalter und beantworte den folgenden Dialog mit '"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "To give Miataru the permission please enable the toggle and answer the following dialog with '"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruに許可を与えるには、トグルを有効にし、次のダイアログで「で応答してください"
           }
         }
       }
     },
     "To share:" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Teilen:"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "To share:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有するには:"
           }
         }
       }
     },
     "track_and_history" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgung & Verlauf"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking & History"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡＆履歴"
           }
         }
       }
@@ -2196,10 +4373,22 @@
     "Tracking inactive (fore- & background)" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgung inaktiv (Vorder- & Hintergrund)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking inactive (fore- & background)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡無効（フォアグラウンド＆バックグラウンド）"
           }
         }
       }
@@ -2207,10 +4396,22 @@
     "Tracking mode: Battery saving (only significant movements)" : {
       "comment" : "Tracking mode text for background mode",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgungsmodus: Energiesparmodus (nur signifikante Bewegungen)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking mode: Battery saving (only significant movements)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡モード：省電力（重要な移動のみ）"
           }
         }
       }
@@ -2218,110 +4419,242 @@
     "Tracking mode: Live (GPS)" : {
       "comment" : "Tracking mode text for foreground mode",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgungsmodus: Echtzeit (GPS)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tracking mode: Live (GPS)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡モード：ライブ（GPS）"
           }
         }
       }
     },
     "update" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
           }
         }
       }
     },
     "Use Default Server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard-Server verwenden"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Use Default Server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトサーバーを使用"
           }
         }
       }
     },
     "Welcome to Miataru!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei Miataru!"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Welcome to Miataru!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruへようこそ！"
           }
         }
       }
     },
     "You are Ready to Go!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bist startklar!"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You are Ready to Go!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完了！"
           }
         }
       }
     },
     "You can change your settings or permissions anytime in the app." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst deine Einstellungen oder Berechtigungen jederzeit in der App ändern."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can change your settings or permissions anytime in the app."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ内でいつでも設定や権限を変更できます。"
           }
         }
       }
     },
     "You can choose how your location data is stored on the Miataru server." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst wählen, wie deine Standortdaten auf dem Miataru-Server gespeichert werden."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can choose how your location data is stored on the Miataru server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruサーバーで位置情報がどのように保存されるかを選択できます。"
           }
         }
       }
     },
     "Your data is only sent when you specifically activate it" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Daten werden nur gesendet, wenn du sie gezielt aktivierst."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your data is only sent when you specifically activate it"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データは、あなたが明示的に有効にしたときにのみ送信されます。"
           }
         }
       }
     },
     "Your data stays on the server you choose for the time you choose" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Daten bleiben so lange auf dem Server, wie du es festlegst."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your data stays on the server you choose for the time you choose"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データは、選択したサーバーに選択した期間だけ保存されます。"
           }
         }
       }
     },
     "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Standortdaten werden auf einem Server gespeichert, dem du vertraust. Du kannst den Standard-Miataru-Server verwenden oder deine eigene Serveradresse eingeben."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの位置情報は、信頼できるサーバーに保存されます。デフォルトのMiataruサーバーを使用するか、自分のサーバーアドレスを入力してください。"
           }
         }
       }
     },
     "zoom_to_fit_for_groups" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom für Gruppen anpassen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "zoom to fit groups"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループに合わせてズーム"
           }
         }
       }
