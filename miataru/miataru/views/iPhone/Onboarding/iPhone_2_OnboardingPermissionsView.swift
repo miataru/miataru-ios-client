@@ -26,11 +26,17 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                             .font(.headline)
                         Text("Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.")
                             .font(.subheadline)
-                        Text("To give Miataru the permission please enable the toggle and answer the following dialog with '")
-                            .font(.subheadline)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                        (
+                            Text("To give Miataru the permission please enable the toggle and answer the following dialog with '")
                             + Text("Allow While Using App").bold()
                             + Text("'.")
-                            .font(.subheadline)
+                        )
+                        .font(.subheadline)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+
                     }
                 }
                 HStack(spacing: 12) {

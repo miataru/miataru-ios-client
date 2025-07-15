@@ -27,16 +27,19 @@ struct iPhone_1_OnboardingWelcomeView: View {
                     Text("•")
                     Text("Your data stays on the server you choose for the time you choose")
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(alignment: .top) {
                     Text("•")
                     Text("Your data is only sent when you specifically activate it")
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(alignment: .top) {
                     Text("•")
                     Text("Miataru uses battery optimized background location tracking")
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }.padding(.horizontal,10)
             
