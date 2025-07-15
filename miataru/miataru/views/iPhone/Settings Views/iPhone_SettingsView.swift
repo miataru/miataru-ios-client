@@ -64,7 +64,13 @@ struct iPhone_SettingsView: View {
                 }
                 Section(header: Text("app_behaviour")) {
                     Toggle("deactivate_device_lock", isOn: $settings.disableDeviceAutolock)
+                    Text(NSLocalizedString("explanation_deactivate_device_lock", comment: "Explanation for deactivate device lock toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Toggle("indicate_location_accuracy", isOn: $settings.indicateAccuracyOnMap)
+                    Text(NSLocalizedString("explanation_indicate_location_accuracy", comment: "Explanation for indicate location accuracy toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Picker("show_history_days", selection: $settings.historyNumberOfDays) {
                         Text("1day").tag(1)
                         Text("2days").tag(2)
@@ -77,6 +83,9 @@ struct iPhone_SettingsView: View {
                         Text("31days").tag(31)
                         Text("all_available").tag(10000000)
                     }
+                    Text(NSLocalizedString("explanation_show_history_days", comment: "Explanation for show history days picker"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 Section(header: Text("map_configuration")) {
                     Picker("map_type", selection: $settings.mapType) {
@@ -84,6 +93,9 @@ struct iPhone_SettingsView: View {
                         Text("hybrid_map").tag(2)
                         Text("sat_map").tag(3)
                     }
+                    Text(NSLocalizedString("explanation_map_type", comment: "Explanation for map type picker"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Picker("map_update_interval", selection: $settings.mapUpdateInterval) {
                         Text("5s").tag(5)
                         Text("10s").tag(10)
@@ -91,6 +103,9 @@ struct iPhone_SettingsView: View {
                         Text("30s").tag(30)
                         Text("60s").tag(60)
                     }
+                    Text(NSLocalizedString("explanation_map_update_interval", comment: "Explanation for map update interval picker"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Picker("map_zoom_level", selection: $settings.mapZoomLevel) {
                         Text("1km").tag(1)
                         Text("2km").tag(2)
@@ -100,7 +115,13 @@ struct iPhone_SettingsView: View {
                         Text("50km").tag(50)
                         Text("100km").tag(100)
                     }
+                    Text(NSLocalizedString("explanation_map_zoom_level", comment: "Explanation for map zoom level picker"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Toggle("zoom_to_fit_for_groups", isOn: $settings.groupsZoomToFit)
+                    Text(NSLocalizedString("explanation_zoom_to_fit_for_groups", comment: "Explanation for zoom to fit for groups toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {

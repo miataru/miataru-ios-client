@@ -2156,6 +2156,167 @@
         }
       }
     },
+    "explanation_deactivate_device_lock" : {
+      "comment" : "Explanation for deactivate device lock toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verhindert, dass das Gerät während der Nutzung dieser App automatisch gesperrt wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the app will prevent your device from automatically locking while Miataru is open."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ使用中にデバイスが自動的にロックされるのを防ぎます。"
+          }
+        }
+      }
+    },
+    "explanation_indicate_location_accuracy" : {
+      "comment" : "Explanation for indicate location accuracy toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, zeigt die Karte die geschätzte Genauigkeit deines aktuellen Standorts an."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the map will display the estimated accuracy of your current location."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、マップに現在位置の推定精度が表示されます。"
+          }
+        }
+      }
+    },
+    "explanation_map_type" : {
+      "comment" : "Explanation for map type picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle das Erscheinungsbild der Karte: Standard-, Hybrid- oder Satellitenansicht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the appearance of the map: standard, hybrid, or satellite view."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図の表示スタイルを選択してください：標準、ハイブリッド、または衛星ビュー。"
+          }
+        }
+      }
+    },
+    "explanation_map_update_interval" : {
+      "comment" : "Explanation for map update interval picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lege fest, wie oft die Karte aktualisiert und die angezeigten Standorte erneuert werden sollen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set how often the map should refresh and update the displayed locations."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図をどの頻度で更新して位置情報を表示し直すかを設定してください。"
+          }
+        }
+      }
+    },
+    "explanation_map_zoom_level" : {
+      "comment" : "Explanation for map zoom level picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle den Standard-Zoomfaktor der Karte, um festzulegen, wie viel Fläche sichtbar ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the default zoom level for the map, determining how much area is visible."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図のデフォルトのズームレベルを選択して、どの範囲が表示されるかを決定します。"
+          }
+        }
+      }
+    },
+    "explanation_show_history_days" : {
+      "comment" : "Explanation for show history days picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle aus, wie viele Tage Standortverlauf auf der Karte angezeigt werden sollen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select how many days of location history should be shown on the map."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図に表示する位置情報履歴の日数を選択してください。"
+          }
+        }
+      }
+    },
+    "explanation_zoom_to_fit_for_groups" : {
+      "comment" : "Explanation for zoom to fit for groups toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, passt die Karte den Zoom automatisch an, um alle Gruppenmitglieder gleichzeitig anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the map will automatically adjust the zoom to show all group members at once."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、地図のズームが自動的に調整され、全てのグループメンバーが一度に表示されます。"
+          }
+        }
+      }
+    },
     "Finish" : {
       "localizations" : {
         "de" : {
@@ -2622,6 +2783,52 @@
         }
       }
     },
+    "lm_background_status" : {
+      "comment" : "shown in the Location Status overview for background updates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背景 "
+          }
+        }
+      }
+    },
+    "lm_foreground_status" : {
+      "comment" : "shown in the Location Status overview for foreground updates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vordergrund"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foreground"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前景"
+          }
+        }
+      }
+    },
     "Location Access" : {
       "localizations" : {
         "de" : {
@@ -3080,7 +3287,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualisierungsintervall auf der Karte"
+            "value" : "Aktualisierungsintervall für Devices"
           }
         },
         "en" : {
