@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ncipollo/release-action@v1
+      name: Create GitHub Release
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy to CocoaPods
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      run: |
+        set -eo pipefail
+        pod spec lint --allow-warnings
+        pod trunk push --allow-warnings
