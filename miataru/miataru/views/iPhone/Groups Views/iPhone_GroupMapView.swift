@@ -212,7 +212,10 @@ struct iPhone_GroupMapView: View {
                                     }
                                     
                                     // Custom map marker
-                                    MiataruMapMarker(color: Color(device.DeviceColor ?? UIColor.blue))
+                                    MiataruMapMarker(
+                                        color: Color(device.DeviceColor ?? UIColor.blue),
+                                        pulsing: groupDeviceIDs.count <= 5
+                                    )
                                         .shadow(radius: 2)
                                     // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
                                     ZStack {
