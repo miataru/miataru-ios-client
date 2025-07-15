@@ -10,7 +10,7 @@ struct iPhone_GroupRowView: View {
                 Text(group.groupName)
                     .font(.headline)
                     .foregroundColor(.primary)
-                Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? "device" : "devices")")
+                Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? NSLocalizedString("device", comment: "GroupRow Device singular") : NSLocalizedString("devices", comment: "GroupRow Device plural"))")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

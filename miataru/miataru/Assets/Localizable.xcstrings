@@ -863,7 +863,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "hinzufügen"
+            "value" : "Hinzufügen"
           }
         },
         "en" : {
@@ -885,7 +885,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neue Gruppe hinzufügen"
+            "value" : "Gruppe hinzufügen"
           }
         },
         "en" : {
@@ -897,7 +897,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新しいグループを追加"
+            "value" : "グループ追加"
           }
         }
       }
@@ -1063,7 +1063,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "abbrechen"
+            "value" : "Abbrechen"
           }
         },
         "en" : {
@@ -1507,6 +1507,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "グループを削除"
+          }
+        }
+      }
+    },
+    "device" : {
+      "comment" : "GroupRow Device singular",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerät"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス"
           }
         }
       }
