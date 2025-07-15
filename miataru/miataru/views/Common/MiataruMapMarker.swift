@@ -20,6 +20,7 @@ struct MiataruMapMarker: View {
     var color: Color = .red
     var iconName: String = "mappin"
     var height: CGFloat = 40
+    var pulsing: Bool = true // <-- Option für Pulsing
     var body: some View {
         // Proportionen
         let circleDiameter = height * 0.65 // z.B. 26 bei 40
@@ -54,8 +55,10 @@ struct MiataruMapMarker: View {
                 .frame(width: triangleWidth, height: triangleHeight)
                 .offset(y: circleDiameter/2 - triangleHeight/2 + 6)
                 .shadow(radius: 1, y: 1)
-            
-            PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
+            // Pulsing nur wenn aktiviert
+            if pulsing {
+                PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
+            }
             // Kopf (Kreis) mit getintetem Material
             Circle()
                 // Farbiger Kreis mit dezentem Verlauf
@@ -103,21 +106,6 @@ struct MiataruMapMarker: View {
                             )
                         )
                 )
-                // Dunkler radialer Verlauf für Plastizität
-                /*.overlay(
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                gradient: Gradient(colors: [
-                                    Color.black.opacity(0.18), // außen dunkler
-                                    Color.clear // innen transparent
-                                ]),
-                                center: .center,
-                                startRadius: circleDiameter * 0.5,
-                                endRadius: circleDiameter * 0.98
-                            )
-                        )
-                )*/
                 .frame(width: circleDiameter, height: circleDiameter)
                 .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
                 .overlay(
@@ -145,10 +133,10 @@ struct Triangle: Shape {
 
 #Preview {
     VStack(spacing: 20) {
-        MiataruMapMarker(color: .red, height: 40)
-        MiataruMapMarker(color: .blue, iconName: "car", height: 60)
-        MiataruMapMarker(color: .green, iconName: "bicycle", height: 30)
-        MiataruMapMarker(color: .orange, iconName: "star", height: 80)
+        MiataruMapMarker(color: .red, height: 40, pulsing: true)
+        MiataruMapMarker(color: .blue, iconName: "car", height: 60, pulsing: false)
+        MiataruMapMarker(color: .green, iconName: "bicycle", height: 30, pulsing: true)
+        MiataruMapMarker(color: .orange, iconName: "star", height: 80, pulsing: false)
     }
     .padding()
     .background(

@@ -15,6 +15,7 @@ struct iPhone_DeviceRowView: View {
             Circle()
                 .fill(Color(device.DeviceColor ?? UIColor.gray))
                 .frame(width: 16, height: 16)
+                .shadow(color: Color(device.DeviceColor ?? UIColor.gray).opacity(0.6), radius: 4)
             VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
                     .font(.headline)
