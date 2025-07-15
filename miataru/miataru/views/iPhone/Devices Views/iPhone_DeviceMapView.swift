@@ -231,25 +231,23 @@ struct iPhone_DeviceMapView: View {
                                     .shadow(radius: 2)
                                 // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
                                 ZStack {
-                                    // Stroke (Outline) – automatisch kontrastierend zur Umgebung
+                                    // Dickere Outline (Stroke) in alle Richtungen
+                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                            if x != 0 || y != 0 {
+                                                Text(annotationID)
+                                                    .font(.callout)
+                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                    .padding(.top, 2)
+                                                    .offset(x: CGFloat(x), y: CGFloat(y))
+                                            }
+                                        }
+                                    }
+                                    // Main text
                                     Text(annotationID)
-                                        .font(.footnote)
-                                        .foregroundColor(Color(UIColor.label).isLight() ? Color.black : Color.white)
-                                        .padding(.top, 2)
-                                        .overlay(
-                                            Text(device.DeviceName)
-                                                .font(.footnote)
-                                                .foregroundColor(Color(UIColor.systemBackground))
-                                                .padding(.top, 2)
-                                                .blur(radius: 1.2)
-                                                .shadow(radius: 4)
-                                        )
-                                    // Haupttext
-                                    Text(annotationID)
-                                        .font(.footnote)
+                                        .font(.callout)
                                         .foregroundColor(Color(UIColor.label))
                                         .padding(.top, 2)
-                                        .shadow(radius: 4)
                                 }
                             }
                             // Add a transparent rectangle to increase the tap area for the context menu
@@ -447,7 +445,7 @@ struct iPhone_DeviceMapView: View {
 }
 
 #Preview {
-    let mockDevice = KnownDevice(name: "Test Device", deviceID: "1234567890", color: .red)
+    let mockDevice = KnownDevice(name: "Test Device", deviceID: "0C7B98BD-F10F-40BC-AFFE-54484493EB25", color: .red)
     let mockLocation = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405) // Berlin
     let mockAccuracy = 15.0
     let mockTimestamp = Date()
