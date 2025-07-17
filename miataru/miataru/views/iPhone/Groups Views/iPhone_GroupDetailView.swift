@@ -6,6 +6,7 @@ struct iPhone_GroupDetailView: View {
     @State private var editingDevice: KnownDevice? = nil
     @State private var previousGroupName: String = ""
     @State private var groupNameField: String = ""
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         List {
@@ -66,6 +67,11 @@ struct iPhone_GroupDetailView: View {
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("done") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
             // ToolbarItem(placement: .navigationBarTrailing) {
             //     NavigationLink(destination: iPhone_GroupMapView(group: group)) {
             //         Text("show")
