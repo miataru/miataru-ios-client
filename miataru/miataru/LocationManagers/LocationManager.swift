@@ -55,7 +55,9 @@ final class LocationManager: NSObject, ObservableObject {
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         observeActivityType()
         networkMonitor.pathUpdateHandler = { [weak self] path in
-            self?.isNetworkAvailable = (path.status == .satisfied)
+            Task { @MainActor in
+                self?.isNetworkAvailable = (path.status == .satisfied)
+            }
         }
         let queue = DispatchQueue(label: "NetworkMonitor")
         networkMonitor.start(queue: queue)
@@ -191,18 +193,19 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     // MARK: - Server Communication
+    @MainActor
     private func sendLocationToServer(_ location: CLLocation) {
         guard isNetworkAvailable else {
             print("No network available, skipping server update.")
-            serverUpdateStatus = .failed("No network connection")
+            self.serverUpdateStatus = .failed("No network connection")
             return
         }
         guard !settings.miataruServerURL.isEmpty,
               let serverURL = URL(string: settings.miataruServerURL) else {
-            serverUpdateStatus = .failed("Invalid server configuration")
+            self.serverUpdateStatus = .failed("Invalid server configuration")
             return
         }
-        serverUpdateStatus = .updating
+        self.serverUpdateStatus = .updating
         let locationData = UpdateLocationPayload(
             Device: thisDeviceIDManager.shared.deviceID,
             Timestamp: String(Int64(location.timestamp.timeIntervalSince1970)),
@@ -328,49 +331,44 @@ final class LocationManager: NSObject, ObservableObject {
 // MARK: - CLLocationManagerDelegate
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        let mode = UIApplication.shared.applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
-        
-        // Only accept updates if distance or accuracy criteria are met
-        let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
-        var shouldAcceptUpdate = false
-        if let previousLocation = self.currentLocation {
-            let distance = location.distance(from: previousLocation)
-            let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
-            if distance >= minimumDistance {
-                shouldAcceptUpdate = true
-                print("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
-            } else if accuracyImprovement >= significantAccuracyImprovement {
-                shouldAcceptUpdate = true
-                print("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+        Task { @MainActor in
+            guard let location = locations.last else { return }
+            let mode = UIApplication.shared.applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
+            // Only accept updates if distance or accuracy criteria are met
+            let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
+            var shouldAcceptUpdate = false
+            if let previousLocation = self.currentLocation {
+                let distance = location.distance(from: previousLocation)
+                let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
+                if distance >= minimumDistance {
+                    shouldAcceptUpdate = true
+                    print("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+                } else if accuracyImprovement >= significantAccuracyImprovement {
+                    shouldAcceptUpdate = true
+                    print("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+                } else {
+                    print("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+                }
             } else {
-                print("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+                // Always accept the very first location
+                shouldAcceptUpdate = true
+                print("[LocationManager] First location update accepted.")
             }
-        } else {
-            // Always accept the very first location
-            shouldAcceptUpdate = true
-            print("[LocationManager] First location update accepted.")
-        }
-        
-        guard shouldAcceptUpdate else { return }
-        
-        DispatchQueue.main.async {
+            guard shouldAcceptUpdate else { return }
             self.currentLocation = location
             self.lastUpdateTime = Date()
             self.sendLocationToServer(location)
             self.addUpdateLogEntry(mode: mode)
         }
     }
-    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.authorizationStatus = status
             self.updateTrackingMode()
         }
     }
-    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.serverUpdateStatus = .failed(error.localizedDescription)
         }
     }
