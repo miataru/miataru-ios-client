@@ -11,7 +11,5 @@
 	<array>
 		<string>location</string>
 	</array>
-	<key>CFBundleDisplayName</key>
-	<string>Miataru</string>
 </dict>
 </plist>
