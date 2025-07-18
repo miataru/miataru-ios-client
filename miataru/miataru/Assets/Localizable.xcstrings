@@ -1601,6 +1601,9 @@
         }
       }
     },
+    "device_hint_add_more" : {
+      "comment" : "Hint shown when only the user's own device is present in the device list."
+    },
     "device_id" : {
       "localizations" : {
         "de" : {
