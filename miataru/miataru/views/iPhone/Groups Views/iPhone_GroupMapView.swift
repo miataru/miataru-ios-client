@@ -144,12 +144,13 @@ struct iPhone_GroupMapView: View {
                 restartAutoUpdate()
             }
         }
-        .onChange(of: group.deviceIDs.count) { _, newCount in
-            if newCount > 0 {
-                // Devices wurden hinzugefügt: Karte anzeigen und Locations sofort aktualisieren
-                Task { await fetchAllLocations() }
-                startAutoUpdate()
-            }
+        .onChange(of: group.deviceIDs) { _, _ in
+            // Entferne alle Locations, die nicht mehr zur Gruppe gehören
+            let validIDs = Set(groupDeviceIDs)
+            deviceLocations = deviceLocations.filter { validIDs.contains($0.key) }
+            deviceAccuracies = deviceAccuracies.filter { validIDs.contains($0.key) }
+            deviceTimestamps = deviceTimestamps.filter { validIDs.contains($0.key) }
+            updateMapRegionToFitDevices()
         }
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
