@@ -1058,6 +1058,29 @@
         }
       }
     },
+    "Brightness" : {
+      "comment" : "Accessibility label for brightness slider in color picker\nLabel for brightness slider in color picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helligkeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brightness"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明度"
+          }
+        }
+      }
+    },
     "cancel" : {
       "localizations" : {
         "de" : {
@@ -1518,6 +1541,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gerät"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "device"
           }
         },
         "ja" : {
@@ -2000,7 +2029,8 @@
         }
       }
     },
-    "done" : {
+    "Done" : {
+      "comment" : "Button to close color picker sheet",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2011,7 +2041,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "done"
+            "value" : "Done"
           }
         },
         "ja" : {
@@ -2601,6 +2631,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴オプション"
+          }
+        }
+      }
+    },
+    "Hue" : {
+      "comment" : "Accessibility label for hue slider in color picker\nLabel for hue slider in color picker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbton"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hue"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "色相"
           }
         }
       }
@@ -3751,6 +3804,29 @@
         }
       }
     },
+    "Pick Color" : {
+      "comment" : "Button label to open color picker sheet\nTitle for color picker sheet",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe wählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a color"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "色を選ぶ"
+          }
+        }
+      }
+    },
     "Please enter a valid https server URL." : {
       "localizations" : {
         "de" : {
@@ -4496,6 +4572,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tippe auf „Fertig“, um Miataru zu verwenden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap on Finish to start using Miataru."
           }
         },
         "ja" : {

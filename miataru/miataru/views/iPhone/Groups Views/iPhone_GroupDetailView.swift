@@ -68,7 +68,7 @@ struct iPhone_GroupDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("done") {
+                Button("Done") {
                     presentationMode.wrappedValue.dismiss()
                 }
             }

@@ -151,7 +151,7 @@ struct iPhone_SettingsView: View {
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("done") {
+                                Button("Done") {
                                     showingLocationStatus = false
                                 }
                             }

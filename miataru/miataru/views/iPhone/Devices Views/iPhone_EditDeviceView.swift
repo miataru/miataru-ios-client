@@ -7,6 +7,7 @@ struct iPhone_EditDeviceView: View {
     @State private var copiedIDFeedback = false
     @State private var tempDeviceName: String = ""
     @State private var tempDeviceColor: Color = .gray
+    @State private var showColorPickerSheet = false
 
     var body: some View {
         NavigationView {
@@ -33,7 +34,17 @@ struct iPhone_EditDeviceView: View {
                     }
                 }
                 Section(header: Text("device_color")) {
-                    ColorPicker("device_colorpicker", selection: $tempDeviceColor)
+                    // Button wie in ColorPickerButtonDemo, öffnet das Sheet
+                    Button(action: { showColorPickerSheet = true }) {
+                        HStack {
+                            Circle().fill(tempDeviceColor).frame(width: 24, height: 24)
+                            Text(NSLocalizedString("Pick Color", comment: "Button label to open color picker sheet"))
+                        }
+                    }
+                    .sheet(isPresented: $showColorPickerSheet) {
+                        ColorPickerSheet(selectedColor: $tempDeviceColor)
+                            .presentationDetents([.medium])
+                    }
                 }
                 Section(header: Text("device_qr_code")) {
                     let qrContent = QRCodeShape(
