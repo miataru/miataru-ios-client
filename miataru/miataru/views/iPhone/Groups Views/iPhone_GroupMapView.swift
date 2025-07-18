@@ -179,99 +179,78 @@ struct iPhone_GroupMapView: View {
     
     @ViewBuilder
     private func mapSection() -> some View {
-        if #available(iOS 17.0, *) {
-            Map(position: $cameraPosition, scope: mapScope) {
-                // Show all devices in the group
-                ForEach(groupDeviceIDs, id: \.self) { deviceID in
-                    if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-                       let coordinate = deviceLocations[deviceID] {
-                        
-                        // Accuracy circle
-                        if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
-                            MapCircle(center: coordinate, radius: accuracy)
-                                .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
-                        }
-                        
-                        // Device marker
-                        let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                        Annotation("", coordinate: coordinate, anchor: .bottom) {
-                            ZStack {
-                                VStack(spacing: 0) {
-                                    // Show timestamp if available
-                                    if let timestamp = deviceTimestamps[deviceID] {
-                                        Text(relativeTimeString(from: timestamp, to: now, unitsStyle: .abbreviated))
-                                            .font(.caption)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(.ultraThinMaterial)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                            )
-                                            .shimmering(active: isLoading)
-                                            .shadow(radius: 2)
-                                    }
-                                    
-                                    // Custom map marker
-                                    MiataruMapMarker(
-                                        color: Color(device.DeviceColor ?? UIColor.blue),
-                                        pulsing: groupDeviceIDs.count <= 5
-                                    )
+        Map(position: $cameraPosition, scope: mapScope) {
+            // Show all devices in the group
+            ForEach(groupDeviceIDs, id: \.self) { deviceID in
+                if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+                   let coordinate = deviceLocations[deviceID] {
+                    // Accuracy circle
+                    if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
+                        MapCircle(center: coordinate, radius: accuracy)
+                            .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
+                    }
+                    // Device marker
+                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+                    Annotation("", coordinate: coordinate, anchor: .bottom) {
+                        ZStack {
+                            VStack(spacing: 0) {
+                                // Show timestamp if available
+                                if let timestamp = deviceTimestamps[deviceID] {
+                                    Text(relativeTimeString(from: timestamp, to: now, unitsStyle: .abbreviated))
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                        )
+                                        .shimmering(active: isLoading)
                                         .shadow(radius: 2)
-                                    // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
-                                    ZStack {
-                                        // Dickere Outline (Stroke) in alle Richtungen
-                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                            ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                                if x != 0 || y != 0 {
-                                                    Text(annotationID)
-                                                        .font(.callout)
-                                                        .foregroundColor(Color(UIColor.systemBackground))
-                                                        .padding(.top, 2)
-                                                        .offset(x: CGFloat(x), y: CGFloat(y))
-                                                }
+                                }
+                                MiataruMapMarker(
+                                    color: Color(device.DeviceColor ?? UIColor.blue),
+                                    pulsing: groupDeviceIDs.count <= 5
+                                )
+                                    .shadow(radius: 2)
+                                ZStack {
+                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                            if x != 0 || y != 0 {
+                                                Text(annotationID)
+                                                    .font(.callout)
+                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                    .padding(.top, 2)
+                                                    .offset(x: CGFloat(x), y: CGFloat(y))
                                             }
                                         }
-                                        // Main text
-                                        Text(annotationID)
-                                            .font(.callout)
-                                            .foregroundColor(Color(UIColor.label))
-                                            .padding(.top, 2)
+                                    }
+                                    Text(annotationID)
+                                        .font(.callout)
+                                        .foregroundColor(Color(UIColor.label))
+                                        .padding(.top, 2)
+                                }
+                            }
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .contentShape(Rectangle())
+                                .frame(width: 60, height: 80)
+                                .zIndex(1)
+                                .contextMenu {
+                                    Button {
+                                        editingDeviceID = deviceID
+                                        showEditDeviceSheet = true
+                                    } label: {
+                                        Label("edit_device", systemImage: "pencil")
                                     }
                                 }
-                                Rectangle()
-                                    .foregroundColor(.clear)
-                                    .contentShape(Rectangle())
-                                    .frame(width: 60, height: 80)
-                                    .zIndex(1)
-                                    .contextMenu {
-                                        Button {
-                                            editingDeviceID = deviceID
-                                            showEditDeviceSheet = true
-                                        } label: {
-                                            Label("edit_device", systemImage: "pencil")
-                                        }
-                                    }
-                            }.offset(y: 10)
-                        }
+                        }.offset(y: 10)
                     }
                 }
             }
-            .ignoresSafeArea()
-            .mapStyle(mapStyleFromSettings(settings.mapType))
-        } else {
-            // Legacy map view for iOS versions below 17
-            iPhone_LegacyGroupMapViewRepresentable(
-                region: $region,
-                group: group,
-                deviceStore: deviceStore,
-                deviceLocations: deviceLocations,
-                deviceAccuracies: deviceAccuracies,
-                mapType: settings.mapType,
-                settings: settings
-            )
-            .ignoresSafeArea()
         }
+        .ignoresSafeArea()
+        .mapStyle(mapStyleFromSettings(settings.mapType))
     }
     
     @ViewBuilder
@@ -383,92 +362,56 @@ struct iPhone_GroupMapView: View {
     }
     
     private func updateMapRegionToFitDevices() {
-        let validCoordinates = deviceLocations.values.filter { coordinate in
-            coordinate.latitude != 0 && coordinate.longitude != 0
-        }
-        
+        let validIDs = Set(groupDeviceIDs)
+        let validCoordinates = deviceLocations.filter { validIDs.contains($0.key) }.values.filter { $0.latitude != 0 && $0.longitude != 0 }
         guard !validCoordinates.isEmpty else { return }
-        
-        // Check if zoom to fit is enabled in settings
         if settings.groupsZoomToFit {
+            let minDelta: CLLocationDegrees = 0.005 // ~550m, noch größerer Mindestabstand
             if validCoordinates.count == 1 {
-                // Single device: center on it with default zoom
                 let coordinate = validCoordinates.first!
-                let span = spanForZoomLevel(settings.mapZoomLevel)
-                if #available(iOS 17.0, *) {
-                    if userHasRotatedMap, let currentCamera = currentMapCamera {
-                        // Preserve user's rotation and pitch
-                        let newCamera = MapCamera(
-                            centerCoordinate: coordinate,
-                            distance: currentCamera.distance,
-                            heading: currentCamera.heading,
-                            pitch: currentCamera.pitch
-                        )
-                        cameraPosition = .camera(newCamera)
-                    } else {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                    }
-                } else {
-                    region = MKCoordinateRegion(center: coordinate, span: span)
-                }
+                let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
+                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
             } else {
-                // Multiple devices: fit all in view with generous padding
                 let latitudes = validCoordinates.map { $0.latitude }
                 let longitudes = validCoordinates.map { $0.longitude }
-                
                 let minLat = latitudes.min()!
                 let maxLat = latitudes.max()!
                 let minLon = longitudes.min()!
                 let maxLon = longitudes.max()!
-                
                 let centerLat = (minLat + maxLat) / 2
                 let centerLon = (minLon + maxLon) / 2
                 let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
-                
-                // Calculate the raw differences
                 let rawLatDelta = maxLat - minLat
                 let rawLonDelta = maxLon - minLon
-                
-                // Add generous padding (50% instead of 20%)
-                let paddedLatDelta = rawLatDelta * 1.5
-                let paddedLonDelta = rawLonDelta * 1.5
-                
-                // For longitude, account for latitude-dependent scaling
-                let avgLatRadians = centerLat * .pi / 180
-                let correctedLonDelta = paddedLonDelta / cos(avgLatRadians)
-                
-                // Ensure minimum spans for visibility and add extra buffer
-                let minLatDelta = max(paddedLatDelta, 0.05) // Increased minimum
-                let minLonDelta = max(correctedLonDelta, 0.05) // Increased minimum
-                
-                // Add extra buffer for very small differences
-                let finalLatDelta = minLatDelta < 0.1 ? minLatDelta * 2 : minLatDelta
-                let finalLonDelta = minLonDelta < 0.1 ? minLonDelta * 2 : minLonDelta
-                
-                let span = MKCoordinateSpan(
-                    latitudeDelta: finalLatDelta,
-                    longitudeDelta: finalLonDelta
-                )
-                
-                if #available(iOS 17.0, *) {
-                    if userHasRotatedMap, let currentCamera = currentMapCamera {
-                        // Preserve user's rotation and pitch
-                        let newCamera = MapCamera(
-                            centerCoordinate: center,
-                            distance: currentCamera.distance,
-                            heading: currentCamera.heading,
-                            pitch: currentCamera.pitch
-                        )
-                        cameraPosition = .camera(newCamera)
-                    } else {
-                        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
-                    }
-                } else {
-                    region = MKCoordinateRegion(center: center, span: span)
+                if rawLatDelta == 0 && rawLonDelta == 0 {
+                    // Alle Geräte exakt auf einem Punkt
+                    let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
+                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    return
                 }
+                let paddedLatDelta = rawLatDelta * 1.5
+                let avgLatRadians = centerLat * .pi / 180
+                let cosLat = cos(avgLatRadians)
+                let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat // nie 0
+                let paddedLonDelta = (rawLonDelta * 1.5) / safeCosLat
+                let latitudeDelta = max(paddedLatDelta, minDelta)
+                let longitudeDelta = max(paddedLonDelta, minDelta)
+                // Debug-Ausgabe: Berechne und logge die tatsächliche Distanz in Metern
+                let metersPerDegreeLat = 111_000.0
+                let metersPerDegreeLon = 111_320.0 * cos(centerLat * .pi / 180)
+                let latDist = latitudeDelta * metersPerDegreeLat
+                let lonDist = longitudeDelta * metersPerDegreeLon
+                print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta), latDist: \(latDist)m, lonDist: \(lonDist)m")
+                if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
+                    print("[Map] Ungültige Region, setze Fallback")
+                    let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
+                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    return
+                }
+                let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+                cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
             }
         }
-        // If zoom to fit is disabled, don't change the current map position
     }
     
     private func handleAPIError(_ error: MiataruAPIClient.APIError) {
@@ -541,11 +484,7 @@ struct iPhone_GroupMapView: View {
             // Single device: center on it with default zoom
             let coordinate = validCoordinates.first!
             let span = spanForZoomLevel(settings.mapZoomLevel)
-            if #available(iOS 17.0, *) {
-                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-            } else {
-                region = MKCoordinateRegion(center: coordinate, span: span)
-            }
+            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
         } else {
             // Multiple devices: fit all in view with generous padding
             let latitudes = validCoordinates.map { $0.latitude }
@@ -570,7 +509,9 @@ struct iPhone_GroupMapView: View {
             
             // For longitude, account for latitude-dependent scaling
             let avgLatRadians = centerLat * .pi / 180
-            let correctedLonDelta = paddedLonDelta / cos(avgLatRadians)
+            let cosLat = cos(avgLatRadians)
+            let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat // nie 0
+            let correctedLonDelta = paddedLonDelta / safeCosLat
             
             // Ensure minimum spans for visibility and add extra buffer
             let minLatDelta = max(paddedLatDelta, 0.05) // Increased minimum
@@ -585,92 +526,8 @@ struct iPhone_GroupMapView: View {
                 longitudeDelta: finalLonDelta
             )
             
-            if #available(iOS 17.0, *) {
-                cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
-            } else {
-                region = MKCoordinateRegion(center: center, span: span)
-            }
+            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
         }
-    }
-}
-
-// Legacy map view for iOS versions below 17
-struct iPhone_LegacyGroupMapViewRepresentable: UIViewRepresentable {
-    @Binding var region: MKCoordinateRegion
-    let group: DeviceGroup
-    let deviceStore: KnownDeviceStore
-    let deviceLocations: [String: CLLocationCoordinate2D]
-    let deviceAccuracies: [String: Double]
-    let mapType: Int
-    @ObservedObject var settings: SettingsManager = SettingsManager.shared
-
-    func makeUIView(context: Context) -> MKMapView {
-        let mapView = MKMapView()
-        mapView.delegate = context.coordinator
-        mapView.isRotateEnabled = true
-        mapView.isPitchEnabled = true
-        mapView.showsUserLocation = false
-        mapView.setRegion(region, animated: false)
-        mapView.mapType = mapTypeFromSettings(mapType)
-        return mapView
-    }
-
-    func updateUIView(_ uiView: MKMapView, context: Context) {
-        uiView.setRegion(region, animated: true)
-        uiView.mapType = mapTypeFromSettings(mapType)
-        uiView.removeAnnotations(uiView.annotations)
-        uiView.removeOverlays(uiView.overlays)
-        
-        // Add annotations and overlays for all devices in the group
-        for deviceID in group.deviceIDs {
-            if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-               let coordinate = deviceLocations[deviceID] {
-                
-                let annotation = MKPointAnnotation()
-                annotation.coordinate = coordinate
-                annotation.title = device.DeviceName
-                uiView.addAnnotation(annotation)
-                
-                // Accuracy circle
-                if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
-                    let circle = MKCircle(center: coordinate, radius: accuracy)
-                    uiView.addOverlay(circle)
-                }
-            }
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, MKMapViewDelegate {
-        var parent: iPhone_LegacyGroupMapViewRepresentable
-        init(_ parent: iPhone_LegacyGroupMapViewRepresentable) {
-            self.parent = parent
-        }
-        
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            if let circle = overlay as? MKCircle {
-                let renderer = MKCircleRenderer(circle: circle)
-                renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
-                renderer.strokeColor = UIColor.blue.withAlphaComponent(0.4)
-                renderer.lineWidth = 1
-                return renderer
-            }
-            return MKOverlayRenderer(overlay: overlay)
-        }
-    }
-}
-
-fileprivate func mapTypeFromSettings(_ mapType: Int) -> MKMapType {
-    switch mapType {
-    case 2:
-        return .hybrid
-    case 3:
-        return .satellite
-    default:
-        return .standard
     }
 }
 
