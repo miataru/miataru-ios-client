@@ -4,14 +4,19 @@ struct iPhone_OnboardingContainerView: View {
     @Binding var isPresented: Bool
     @Binding var currentPage: Int
     
-    private let pages: [AnyView] = [
-        AnyView(iPhone_1_OnboardingWelcomeView()),
-        AnyView(iPhone_2_OnboardingLocationPermissionView()),
-        AnyView(iPhone_3_OnboardingServerView()),
-        AnyView(iPhone_4_OnboardingLocationHistoryView()),
-        AnyView(iPhone_5_OnboardingQRcodeView()),
-        AnyView(iPhone_6_OnboardingDoneView())
-    ]
+    private var pages: [AnyView] {
+        [
+            AnyView(iPhone_1_OnboardingWelcomeView()),
+            AnyView(iPhone_2_OnboardingLocationPermissionView()),
+            AnyView(iPhone_3_OnboardingServerView()),
+            AnyView(iPhone_4_OnboardingLocationHistoryView()),
+            AnyView(iPhone_5_OnboardingQRcodeView()),
+            AnyView(iPhone_6_OnboardingDoneView(onFinish: {
+                UserDefaults.standard.hasCompletedOnboarding = true
+                isPresented = false
+            }))
+        ]
+    }
     
     var body: some View {
         VStack {
@@ -31,12 +36,8 @@ struct iPhone_OnboardingContainerView: View {
                 Spacer()
                 if currentPage < pages.count - 1 {
                     Button("Next") { currentPage += 1 }
-                } else {
-                    Button("Finish") {
-                        UserDefaults.standard.hasCompletedOnboarding = true
-                        isPresented = false
-                    }
                 }
+                // Finish-Button entfernt, da jetzt im Done-View
             }
             .padding()
         }

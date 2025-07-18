@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct iPhone_6_OnboardingDoneView: View {
+    var onFinish: () -> Void = {}
+
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
@@ -25,8 +27,11 @@ struct iPhone_6_OnboardingDoneView: View {
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            Button("Finish") {
+                onFinish()
+            }
+            .buttonStyle(.borderedProminent)
             Spacer()
-            
         }.padding()
     }
 }
