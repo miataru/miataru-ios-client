@@ -1601,6 +1601,17 @@
         }
       }
     },
+    "device_hint_add_more" : {
+      "comment" : "Hint shown when only the user's own device is present in the device list.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can add more devices by tapping the + button."
+          }
+        }
+      }
+    },
     "device_id" : {
       "localizations" : {
         "de" : {
@@ -2393,6 +2404,7 @@
       }
     },
     "Group not found" : {
+      "comment" : "Shown when a group with the given ID does not exist",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2592,6 +2604,7 @@
       }
     },
     "groups" : {
+      "comment" : "Navigation title for the groups list",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3602,6 +3615,29 @@
         }
       }
     },
+    "No groups yet" : {
+      "comment" : "Shown when there are no groups in the list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Gruppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No groups yet"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループがまだありません"
+          }
+        }
+      }
+    },
     "no_location_data_found" : {
       "comment" : "No location available",
       "localizations" : {
@@ -4584,6 +4620,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "「完了」をタップして、Miataruを使い始めてください。"
+          }
+        }
+      }
+    },
+    "Tap the + button to create a new group." : {
+      "comment" : "Instruction to create a new group when none exist",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf den + Button, um eine neue Gruppe zu erstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the + button to create a new group."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「＋」ボタンをタップして新しいグループを作成してください。"
           }
         }
       }
