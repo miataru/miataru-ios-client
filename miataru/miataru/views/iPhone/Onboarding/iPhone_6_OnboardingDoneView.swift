@@ -31,6 +31,7 @@ struct iPhone_6_OnboardingDoneView: View {
                 onFinish()
             }
             .buttonStyle(.borderedProminent)
+            .tint(.blue)
             Spacer()
         }.padding()
     }
