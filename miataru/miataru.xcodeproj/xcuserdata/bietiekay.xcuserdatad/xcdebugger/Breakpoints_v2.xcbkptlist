@@ -382,8 +382,8 @@
             filePath = "miataru/views/iPhone/iPhone_DevicesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
             landmarkName = "refreshAllDeviceLocations()"
             landmarkType = "7">
          </BreakpointContent>

@@ -99,19 +99,6 @@ struct iPhone_DevicesView: View {
             .refreshable {
                 await refreshAllDeviceLocations()
             }
-            // Hinweis anzeigen, wenn nur das eigene Gerät vorhanden ist
-            if store.devices.count == 1, let onlyDevice = store.devices.first, onlyDevice.DeviceID == thisDeviceIDManager.shared.deviceID {
-                VStack() {
-                    Image(systemName: "person.3.fill")
-                        .font(.system(size: 48))
-                        .foregroundColor(.gray)
-                    Text(NSLocalizedString("device_hint_add_more", comment: "Hint shown when only the user's own device is present in the device list."))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
-                        .padding(.vertical, 32)
-                }
-                .frame(maxWidth: .infinity)
-            }
         }
     }
 
