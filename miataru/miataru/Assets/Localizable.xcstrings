@@ -1601,17 +1601,6 @@
         }
       }
     },
-    "device_hint_add_more" : {
-      "comment" : "Hint shown when only the user's own device is present in the device list.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You can add more devices by tapping the + button."
-          }
-        }
-      }
-    },
     "device_id" : {
       "localizations" : {
         "de" : {
