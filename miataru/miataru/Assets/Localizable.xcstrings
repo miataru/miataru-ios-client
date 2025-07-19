@@ -2201,20 +2201,20 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eigene Server-URL eingeben"
+            "state" : "needs_review",
+            "value" : "Eigener Server"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter Custom Server"
+            "value" : "Custom Server"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "カスタムサーバーURLを入力"
+            "state" : "needs_review",
+            "value" : "標準サーバー"
           }
         }
       }
@@ -3823,7 +3823,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur letzten Standort speichern"
+            "value" : "Nur letzten Standort"
           }
         },
         "en" : {
@@ -4674,7 +4674,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standortverlauf speichern"
+            "value" : "Verlauf speichern"
           }
         },
         "en" : {
@@ -4986,19 +4986,19 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard-Server verwenden"
+            "state" : "needs_review",
+            "value" : "Standardserver"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Use Default Server"
+            "value" : "Default Server"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "デフォルトサーバーを使用"
           }
         }
