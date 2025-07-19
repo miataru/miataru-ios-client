@@ -370,7 +370,9 @@ struct iPhone_GroupMapView: View {
             if validCoordinates.count == 1 {
                 let coordinate = validCoordinates.first!
                 let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                }
             } else {
                 let latitudes = validCoordinates.map { $0.latitude }
                 let longitudes = validCoordinates.map { $0.longitude }
@@ -385,7 +387,9 @@ struct iPhone_GroupMapView: View {
                 let rawLonDelta = maxLon - minLon
                 if rawLatDelta == 0 && rawLonDelta == 0 {
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    }
                     return
                 }
                 let paddedLatDelta = rawLatDelta * 1.01
@@ -399,11 +403,15 @@ struct iPhone_GroupMapView: View {
                 if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
                     print("[Map] Ungültige Region, setze Fallback")
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    }
                     return
                 }
                 let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-                cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                }
             }
         }
     }
@@ -472,7 +480,9 @@ struct iPhone_GroupMapView: View {
         if validCoordinates.count == 1 {
             let coordinate = validCoordinates.first!
             let span = spanForZoomLevel(settings.mapZoomLevel)
-            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+            }
         } else {
             let latitudes = validCoordinates.map { $0.latitude }
             let longitudes = validCoordinates.map { $0.longitude }
@@ -497,7 +507,9 @@ struct iPhone_GroupMapView: View {
                 latitudeDelta: minLatDelta,
                 longitudeDelta: minLonDelta
             )
-            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+            }
         }
     }
 }
