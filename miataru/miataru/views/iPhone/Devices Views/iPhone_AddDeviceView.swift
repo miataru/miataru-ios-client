@@ -11,6 +11,7 @@ struct iPhone_AddDeviceView: View {
     @State private var isShowingScanner = false
     @State private var showInvalidQRAlert = false
     @State private var showDuplicateAlert = false
+    @State private var showColorPickerSheet = false
     
     init(store: KnownDeviceStore, isPresented: Binding<Bool>, prefillDeviceID: String? = nil) {
         self.store = store
@@ -34,7 +35,16 @@ struct iPhone_AddDeviceView: View {
                     TextField("device_id2", text: $deviceID)
                 }
                 Section(header: Text("device_color")) {
-                    ColorPicker("device_colorpicker", selection: $deviceColor)
+                    Button(action: { showColorPickerSheet = true }) {
+                        HStack {
+                            Circle().fill(deviceColor).frame(width: 24, height: 24)
+                            Text(NSLocalizedString("Pick Color", comment: "Button label to open color picker sheet"))
+                        }
+                    }
+                    .sheet(isPresented: $showColorPickerSheet) {
+                        ColorPickerSheet(selectedColor: $deviceColor)
+                            .presentationDetents([.medium])
+                    }
                 }
             }
             .navigationTitle("new_device")

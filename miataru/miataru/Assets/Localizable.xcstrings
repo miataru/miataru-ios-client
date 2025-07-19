@@ -1614,6 +1614,7 @@
       }
     },
     "device_colorpicker" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
