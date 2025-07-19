@@ -36,7 +36,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8B057FAB2E10677200E3FD7F /* Exceptions for "miataru" folder in "miataru" target */ = {
+		8B5D717E2E2C15FC00983B55 /* Exceptions for "miataru" folder in "miataru" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -49,7 +49,7 @@
 		8BA62CEA2E057D1700F54650 /* miataru */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				8B057FAB2E10677200E3FD7F /* Exceptions for "miataru" folder in "miataru" target */,
+				8B5D717E2E2C15FC00983B55 /* Exceptions for "miataru" folder in "miataru" target */,
 			);
 			path = miataru;
 			sourceTree = "<group>";
@@ -441,12 +441,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = OldMiataruIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = miataru/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Miataru;
+				INFOPLIST_KEY_CFBundleDisplayName = "${PRODUCT_NAME}";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
@@ -478,12 +479,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = OldMiataruIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = miataru/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Miataru;
+				INFOPLIST_KEY_CFBundleDisplayName = "${PRODUCT_NAME}";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
