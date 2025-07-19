@@ -8,6 +8,8 @@ struct iPhone_DevicesView: View {
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
     @State private var selectedDeviceID: String? = nil
+    @State private var lastDeviceListRefresh: Date? = nil
+    @State private var isVisible: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -99,6 +101,38 @@ struct iPhone_DevicesView: View {
             .refreshable {
                 await refreshAllDeviceLocations()
             }
+            .onAppear {
+                isVisible = true
+            }
+            .onDisappear {
+                isVisible = false
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
+                guard isVisible, UIApplication.shared.applicationState == .active else { return }
+                let interval = Double(SettingsManager.shared.mapUpdateInterval)
+                let now = Date()
+                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
+                    // Throttle: do not refresh yet
+                    return
+                }
+                lastDeviceListRefresh = now
+                Task {
+                    await refreshAllDeviceLocations()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                guard isVisible, UIApplication.shared.applicationState == .active else { return }
+                let interval = Double(SettingsManager.shared.mapUpdateInterval)
+                let now = Date()
+                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
+                    // Throttle: do not refresh yet
+                    return
+                }
+                lastDeviceListRefresh = now
+                Task {
+                    await refreshAllDeviceLocations()
+                }
+            }
         }
     }
 
@@ -106,6 +140,7 @@ struct iPhone_DevicesView: View {
         guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return }
         let deviceIDs = store.devices.map { $0.DeviceID }
         do {
+            print("[iPhone_DevicesView] refreshAllDeviceLocations")
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: deviceIDs,

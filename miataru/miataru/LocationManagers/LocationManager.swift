@@ -224,6 +224,7 @@ final class LocationManager: NSObject, ObservableObject {
                 if success {
                     self.serverUpdateStatus = .success
                     self.lastServerUpdate = Date()
+                    NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
                 } else {
                     self.serverUpdateStatus = .failed("Server response was not successful")
                 }
@@ -372,4 +373,8 @@ extension LocationManager: CLLocationManagerDelegate {
             self.serverUpdateStatus = .failed(error.localizedDescription)
         }
     }
+} 
+
+extension Notification.Name {
+    static let didSendOwnLocationUpdate = Notification.Name("didSendOwnLocationUpdate")
 } 
