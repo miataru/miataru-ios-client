@@ -21,8 +21,7 @@ struct MiataruRootView: View {
             iPhone_RootView()
         } else {
             // iPad-spezifische View
-            //iPad_RootView()
-            iPhone_RootView() // for now
+            iPad_RootView()
         }
         #endif
     }
