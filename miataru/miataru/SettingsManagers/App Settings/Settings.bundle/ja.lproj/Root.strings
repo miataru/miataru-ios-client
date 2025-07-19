@@ -56,4 +56,6 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "グループに合わせてズーム"; 
+"zoom_to_fit_for_groups" = "グループに合わせてズーム";
+"auto_refresh_device_list" = "デバイスリストを自動更新";
+"explanation_auto_refresh_device_list" = "有効にすると、位置情報の更新やアプリがフォアグラウンドになるたびにデバイスリストが自動的に更新されます。"; 

@@ -51,6 +51,9 @@ class SettingsManager: ObservableObject {
     @Published var locationSensitivityLevel: Int {
         didSet { defaults.set(locationSensitivityLevel, forKey: Keys.locationSensitivityLevel) }
     }
+    @Published var autoRefreshDeviceList: Bool {
+        didSet { defaults.set(autoRefreshDeviceList, forKey: Keys.autoRefreshDeviceList) }
+    }
     
     // MARK: - Keys
     private enum Keys {
@@ -66,6 +69,7 @@ class SettingsManager: ObservableObject {
         static let historyNumberOfDays = "history_number_of_days"
         static let locationActivityType = "location_activity_type"
         static let locationSensitivityLevel = "location_sensitivity_level"
+        static let autoRefreshDeviceList = "auto_refresh_device_list"
     }
     
     // MARK: - Initialwerte laden
@@ -84,6 +88,7 @@ class SettingsManager: ObservableObject {
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
         self.locationSensitivityLevel = d.object(forKey: Keys.locationSensitivityLevel) as? Int ?? 2
+        self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
     }
     
     // MARK: - Synchronize

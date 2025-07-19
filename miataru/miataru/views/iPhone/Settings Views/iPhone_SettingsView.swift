@@ -71,6 +71,10 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_indicate_location_accuracy", comment: "Explanation for indicate location accuracy toggle"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Toggle("auto_refresh_device_list", isOn: $settings.autoRefreshDeviceList)
+                    Text(NSLocalizedString("explanation_auto_refresh_device_list", comment: "Explanation for auto refresh device list toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Picker("show_history_days", selection: $settings.historyNumberOfDays) {
                         Text("1day").tag(1)
                         Text("2days").tag(2)

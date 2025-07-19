@@ -4,6 +4,7 @@ import MiataruAPIClient
 struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
+    @ObservedObject private var settings = SettingsManager.shared
     @State private var showingAddDevice = false
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
@@ -108,7 +109,7 @@ struct iPhone_DevicesView: View {
                 isVisible = false
             }
             .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
-                guard isVisible, UIApplication.shared.applicationState == .active else { return }
+                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
                 let interval = Double(SettingsManager.shared.mapUpdateInterval)
                 let now = Date()
                 if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
@@ -121,7 +122,7 @@ struct iPhone_DevicesView: View {
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                guard isVisible, UIApplication.shared.applicationState == .active else { return }
+                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
                 let interval = Double(SettingsManager.shared.mapUpdateInterval)
                 let now = Date()
                 if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {

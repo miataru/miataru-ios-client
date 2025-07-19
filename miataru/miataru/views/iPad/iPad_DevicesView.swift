@@ -4,10 +4,13 @@ import MiataruAPIClient
 struct iPad_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
+    @ObservedObject private var settings = SettingsManager.shared
     @State private var selection: String? = nil // DeviceID
     @State private var showingAddDevice = false
     @State private var editingDevice: KnownDevice? = nil
     @State private var editMode: EditMode = .inactive
+    @State private var lastDeviceListRefresh: Date? = nil
+    @State private var isVisible: Bool = false
 
     var body: some View {
         NavigationSplitView {
@@ -53,6 +56,38 @@ struct iPad_DevicesView: View {
             .environment(\.editMode, $editMode)
             .refreshable {
                 await refreshAllDeviceLocations()
+            }
+            .onAppear {
+                isVisible = true
+            }
+            .onDisappear {
+                isVisible = false
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
+                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
+                let interval = Double(SettingsManager.shared.mapUpdateInterval)
+                let now = Date()
+                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
+                    // Throttle: do not refresh yet
+                    return
+                }
+                lastDeviceListRefresh = now
+                Task {
+                    await refreshAllDeviceLocations()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
+                let interval = Double(SettingsManager.shared.mapUpdateInterval)
+                let now = Date()
+                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
+                    // Throttle: do not refresh yet
+                    return
+                }
+                lastDeviceListRefresh = now
+                Task {
+                    await refreshAllDeviceLocations()
+                }
             }
         } detail: {
             if let selectedID = selection, let device = store.devices.first(where: { $0.DeviceID == selectedID }) {

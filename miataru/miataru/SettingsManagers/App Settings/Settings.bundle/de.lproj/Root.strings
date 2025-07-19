@@ -56,4 +56,6 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "Zoom für Gruppen anpassen"; 
+"zoom_to_fit_for_groups" = "Zoom für Gruppen anpassen";
+"auto_refresh_device_list" = "Geräteliste automatisch aktualisieren";
+"explanation_auto_refresh_device_list" = "Wenn aktiviert, wird die Geräteliste automatisch aktualisiert, sobald ein Standort-Update gesendet wird oder das Gerät in den Vordergrund kommt."; 

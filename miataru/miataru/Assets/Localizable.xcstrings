@@ -12,6 +12,12 @@
             "value" : "'."
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -53,7 +59,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "%1$lld %2$@"
           }
         },
@@ -68,6 +74,12 @@
     "•" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "•"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "•"
@@ -1010,6 +1022,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アプリの動作"
+          }
+        }
+      }
+    },
+    "auto_refresh_device_list" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräteliste automatisch aktualisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device list refreshes automatically"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスリストを自動的に更新する"
           }
         }
       }
@@ -2204,6 +2238,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "位置情報データの読み込み中にエラーが発生しました。"
+          }
+        }
+      }
+    },
+    "explanation_auto_refresh_device_list" : {
+      "comment" : "Explanation for auto refresh device list toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, wird die Geräteliste automatisch aktualisiert, sobald ein Standort-Update gesendet wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the device list will automatically refresh whenever a location update is sent."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、位置情報の更新が送信されるたびにデバイスリストが自動的に更新されます"
           }
         }
       }
