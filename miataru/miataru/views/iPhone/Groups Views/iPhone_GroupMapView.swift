@@ -366,7 +366,7 @@ struct iPhone_GroupMapView: View {
         let validCoordinates = deviceLocations.filter { validIDs.contains($0.key) }.values.filter { $0.latitude != 0 && $0.longitude != 0 }
         guard !validCoordinates.isEmpty else { return }
         if settings.groupsZoomToFit {
-            let minDelta: CLLocationDegrees = 0.005 // ~550m, noch größerer Mindestabstand
+            let minDelta: CLLocationDegrees = 0.01 // wie bisher
             if validCoordinates.count == 1 {
                 let coordinate = validCoordinates.first!
                 let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
@@ -384,24 +384,18 @@ struct iPhone_GroupMapView: View {
                 let rawLatDelta = maxLat - minLat
                 let rawLonDelta = maxLon - minLon
                 if rawLatDelta == 0 && rawLonDelta == 0 {
-                    // Alle Geräte exakt auf einem Punkt
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
                     cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
                     return
                 }
-                let paddedLatDelta = rawLatDelta * 1.5
+                let paddedLatDelta = rawLatDelta * 1.01
                 let avgLatRadians = centerLat * .pi / 180
                 let cosLat = cos(avgLatRadians)
-                let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat // nie 0
-                let paddedLonDelta = (rawLonDelta * 1.5) / safeCosLat
+                let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
+                let paddedLonDelta = (rawLonDelta * 1.01) / safeCosLat
                 let latitudeDelta = max(paddedLatDelta, minDelta)
                 let longitudeDelta = max(paddedLonDelta, minDelta)
-                // Debug-Ausgabe: Berechne und logge die tatsächliche Distanz in Metern
-                let metersPerDegreeLat = 111_000.0
-                let metersPerDegreeLon = 111_320.0 * cos(centerLat * .pi / 180)
-                let latDist = latitudeDelta * metersPerDegreeLat
-                let lonDist = longitudeDelta * metersPerDegreeLon
-                print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta), latDist: \(latDist)m, lonDist: \(lonDist)m")
+                print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta)")
                 if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
                     print("[Map] Ungültige Region, setze Fallback")
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
@@ -470,62 +464,39 @@ struct iPhone_GroupMapView: View {
     }
     
     private func resetZoomToFit() {
-        // Always allow manual reset, regardless of settings
-        // Reset the user rotation flag since this is a manual reset
         userHasRotatedMap = false
-        
         let validCoordinates = deviceLocations.values.filter { coordinate in
             coordinate.latitude != 0 && coordinate.longitude != 0
         }
-        
         guard !validCoordinates.isEmpty else { return }
-        
         if validCoordinates.count == 1 {
-            // Single device: center on it with default zoom
             let coordinate = validCoordinates.first!
             let span = spanForZoomLevel(settings.mapZoomLevel)
             cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
         } else {
-            // Multiple devices: fit all in view with generous padding
             let latitudes = validCoordinates.map { $0.latitude }
             let longitudes = validCoordinates.map { $0.longitude }
-            
             let minLat = latitudes.min()!
             let maxLat = latitudes.max()!
             let minLon = longitudes.min()!
             let maxLon = longitudes.max()!
-            
             let centerLat = (minLat + maxLat) / 2
             let centerLon = (minLon + maxLon) / 2
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
-            
-            // Calculate the raw differences
             let rawLatDelta = maxLat - minLat
             let rawLonDelta = maxLon - minLon
-            
-            // Add generous padding (50% instead of 20%)
-            let paddedLatDelta = rawLatDelta * 1.5
-            let paddedLonDelta = rawLonDelta * 1.5
-            
-            // For longitude, account for latitude-dependent scaling
+            let paddedLatDelta = rawLatDelta * 1.01
+            let paddedLonDelta = rawLonDelta * 1.01
             let avgLatRadians = centerLat * .pi / 180
             let cosLat = cos(avgLatRadians)
-            let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat // nie 0
+            let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
             let correctedLonDelta = paddedLonDelta / safeCosLat
-            
-            // Ensure minimum spans for visibility and add extra buffer
-            let minLatDelta = max(paddedLatDelta, 0.05) // Increased minimum
-            let minLonDelta = max(correctedLonDelta, 0.05) // Increased minimum
-            
-            // Add extra buffer for very small differences
-            let finalLatDelta = minLatDelta < 0.1 ? minLatDelta * 2 : minLatDelta
-            let finalLonDelta = minLonDelta < 0.1 ? minLonDelta * 2 : minLonDelta
-            
+            let minLatDelta = max(paddedLatDelta, 0.01)
+            let minLonDelta = max(correctedLonDelta, 0.01)
             let span = MKCoordinateSpan(
-                latitudeDelta: finalLatDelta,
-                longitudeDelta: finalLonDelta
+                latitudeDelta: minLatDelta,
+                longitudeDelta: minLonDelta
             )
-            
             cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
         }
     }
