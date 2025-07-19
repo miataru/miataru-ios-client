@@ -24,6 +24,8 @@ struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState = AppState()
     @State private var autolockCancellable: AnyCancellable? = nil
+    @State private var showAddDeviceSheet = false
+    @State private var pendingDeviceID: String? = nil
     
     init() {
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
@@ -65,6 +67,20 @@ struct miataruApp: App {
                         UIApplication.shared.isIdleTimerDisabled = value
                     }
 #endif
+                }
+                .onOpenURL { url in
+                    if url.scheme == "miataru" {
+                        let deviceID = url.host?.uppercased() ?? ""
+                        if !deviceID.isEmpty {
+                            pendingDeviceID = deviceID
+                            showAddDeviceSheet = true
+                        }
+                    }
+                }
+                .sheet(isPresented: $showAddDeviceSheet, onDismiss: { pendingDeviceID = nil }) {
+                    if let deviceID = pendingDeviceID {
+                        iPhone_AddDeviceView(store: KnownDeviceStore.shared, isPresented: $showAddDeviceSheet, prefillDeviceID: deviceID)
+                    }
                 }
         }
         .onChange(of: scenePhase) {

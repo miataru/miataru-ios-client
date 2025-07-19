@@ -7,6 +7,19 @@
 		<string>com.miataru.ios.background-location</string>
 		<string>com.miataru.ios.background-server-update</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.miataru.ios</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>miataru</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

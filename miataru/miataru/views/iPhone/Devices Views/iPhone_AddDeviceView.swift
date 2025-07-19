@@ -4,12 +4,22 @@ import CodeScanner
 struct iPhone_AddDeviceView: View {
     @ObservedObject var store: KnownDeviceStore
     @Binding var isPresented: Bool
+    var prefillDeviceID: String? = nil
     @State private var deviceName: String = ""
     @State private var deviceID: String = ""
     @State private var deviceColor: Color = .gray
     @State private var isShowingScanner = false
     @State private var showInvalidQRAlert = false
     @State private var showDuplicateAlert = false
+    
+    init(store: KnownDeviceStore, isPresented: Binding<Bool>, prefillDeviceID: String? = nil) {
+        self.store = store
+        self._isPresented = isPresented
+        self.prefillDeviceID = prefillDeviceID
+        if let prefill = prefillDeviceID {
+            _deviceID = State(initialValue: prefill)
+        }
+    }
     
     var body: some View {
         NavigationView {

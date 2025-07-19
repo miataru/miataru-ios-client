@@ -6,6 +6,7 @@ struct iPhone_DevicesView: View {
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
     @State private var showingAddDevice = false
+    @State private var prefillDeviceID: String? = nil
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
     @State private var selectedDeviceID: String? = nil
@@ -86,7 +87,7 @@ struct iPhone_DevicesView: View {
                 iPhone_DeviceMapView(deviceID: deviceID)
             }
             .sheet(isPresented: $showingAddDevice) {
-                iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
+                iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)
             }
             .sheet(item: $editingDevice) { device in
                 if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
