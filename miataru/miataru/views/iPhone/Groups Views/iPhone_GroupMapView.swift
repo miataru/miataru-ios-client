@@ -34,6 +34,9 @@ struct iPhone_GroupMapView: View {
     @State private var showEditDeviceSheet: Bool = false // Sheet-Trigger
     @State private var showNetworkErrorIcon = false // Show network error icon
     
+    private static let verticalPaddingFactor: CLLocationDegrees = 1.7
+    private static let horizontalPaddingFactor: CLLocationDegrees = 1.1
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // Wenn keine Devices in der Gruppe sind, Hinweis anzeigen und keine Map/Serveranfrage
@@ -367,6 +370,8 @@ struct iPhone_GroupMapView: View {
         guard !validCoordinates.isEmpty else { return }
         if settings.groupsZoomToFit {
             let minDelta: CLLocationDegrees = 0.01 // wie bisher
+            let verticalPaddingFactor = Self.verticalPaddingFactor
+            let horizontalPaddingFactor = Self.horizontalPaddingFactor
             if validCoordinates.count == 1 {
                 let coordinate = validCoordinates.first!
                 let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
@@ -392,11 +397,11 @@ struct iPhone_GroupMapView: View {
                     }
                     return
                 }
-                let paddedLatDelta = rawLatDelta * 1.01
+                let paddedLatDelta = rawLatDelta * verticalPaddingFactor
                 let avgLatRadians = centerLat * .pi / 180
                 let cosLat = cos(avgLatRadians)
                 let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
-                let paddedLonDelta = (rawLonDelta * 1.01) / safeCosLat
+                let paddedLonDelta = (rawLonDelta * horizontalPaddingFactor) / safeCosLat
                 let latitudeDelta = max(paddedLatDelta, minDelta)
                 let longitudeDelta = max(paddedLonDelta, minDelta)
                 print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta)")
@@ -477,6 +482,8 @@ struct iPhone_GroupMapView: View {
             coordinate.latitude != 0 && coordinate.longitude != 0
         }
         guard !validCoordinates.isEmpty else { return }
+        let verticalPaddingFactor = Self.verticalPaddingFactor
+        let horizontalPaddingFactor = Self.horizontalPaddingFactor
         if validCoordinates.count == 1 {
             let coordinate = validCoordinates.first!
             let span = spanForZoomLevel(settings.mapZoomLevel)
@@ -495,12 +502,11 @@ struct iPhone_GroupMapView: View {
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
             let rawLatDelta = maxLat - minLat
             let rawLonDelta = maxLon - minLon
-            let paddedLatDelta = rawLatDelta * 1.01
-            let paddedLonDelta = rawLonDelta * 1.01
+            let paddedLatDelta = rawLatDelta * verticalPaddingFactor
             let avgLatRadians = centerLat * .pi / 180
             let cosLat = cos(avgLatRadians)
             let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
-            let correctedLonDelta = paddedLonDelta / safeCosLat
+            let correctedLonDelta = (rawLonDelta * horizontalPaddingFactor) / safeCosLat
             let minLatDelta = max(paddedLatDelta, 0.01)
             let minLonDelta = max(correctedLonDelta, 0.01)
             let span = MKCoordinateSpan(

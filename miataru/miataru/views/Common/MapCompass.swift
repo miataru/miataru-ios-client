@@ -22,11 +22,11 @@ struct MapCompass: View {
                 CompassNeedle(size: size * 0.5)
                     .rotationEffect(.degrees(-heading))
                 // N marker
-                Text(NSLocalizedString("compass_north_label", comment: "Compass North label"))
+                /*Text(NSLocalizedString("compass_north_label", comment: "Compass North label"))
                     //.font(.caption2.bold())
                     .font(.caption2.smallCaps().bold())
                     .foregroundColor(.primary)
-                    .offset(y: -size * 0.36)
+                    .offset(y: -size * 0.36)*/
             }
             .frame(width: size, height: size)
             // Degree and direction label
