@@ -1613,29 +1613,6 @@
         }
       }
     },
-    "device_colorpicker" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farbe auswählen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "pick a color"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "色を選択してください"
-          }
-        }
-      }
-    },
     "device_id" : {
       "localizations" : {
         "de" : {
