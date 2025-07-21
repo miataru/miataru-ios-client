@@ -20,7 +20,7 @@ struct MapCompass: View {
                     .offset(y: -size * 0.04)
                 // Needle (points North)
                 CompassNeedle(size: size * 0.5)
-                    .rotationEffect(.degrees(heading))
+                    .rotationEffect(.degrees(-heading))
                 // N marker
                 Text(NSLocalizedString("compass_north_label", comment: "Compass North label"))
                     //.font(.caption2.bold())
