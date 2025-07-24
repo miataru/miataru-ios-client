@@ -34,7 +34,8 @@ struct iPhone_GroupMapView: View {
     @State private var showEditDeviceSheet: Bool = false // Sheet-Trigger
     @State private var showNetworkErrorIcon = false // Show network error icon
     
-    private static let verticalPaddingFactor: CLLocationDegrees = 1.7
+    private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
+    private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
     private static let horizontalPaddingFactor: CLLocationDegrees = 1.1
     
     var body: some View {
@@ -370,7 +371,8 @@ struct iPhone_GroupMapView: View {
         guard !validCoordinates.isEmpty else { return }
         if settings.groupsZoomToFit {
             let minDelta: CLLocationDegrees = 0.01 // wie bisher
-            let verticalPaddingFactor = Self.verticalPaddingFactor
+            let verticalPaddingFactorTop = Self.verticalPaddingFactorTop
+            let verticalPaddingFactorBottom = Self.verticalPaddingFactorBottom
             let horizontalPaddingFactor = Self.horizontalPaddingFactor
             if validCoordinates.count == 1 {
                 let coordinate = validCoordinates.first!
@@ -397,7 +399,8 @@ struct iPhone_GroupMapView: View {
                     }
                     return
                 }
-                let paddedLatDelta = rawLatDelta * verticalPaddingFactor
+                // Unterschiedliche Padding-Faktoren oben/unten
+                let paddedLatDelta = (maxLat - centerLat) * verticalPaddingFactorTop + (centerLat - minLat) * verticalPaddingFactorBottom
                 let avgLatRadians = centerLat * .pi / 180
                 let cosLat = cos(avgLatRadians)
                 let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
@@ -482,7 +485,8 @@ struct iPhone_GroupMapView: View {
             coordinate.latitude != 0 && coordinate.longitude != 0
         }
         guard !validCoordinates.isEmpty else { return }
-        let verticalPaddingFactor = Self.verticalPaddingFactor
+        let verticalPaddingFactorTop = Self.verticalPaddingFactorTop
+        let verticalPaddingFactorBottom = Self.verticalPaddingFactorBottom
         let horizontalPaddingFactor = Self.horizontalPaddingFactor
         if validCoordinates.count == 1 {
             let coordinate = validCoordinates.first!
@@ -502,7 +506,8 @@ struct iPhone_GroupMapView: View {
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
             let rawLatDelta = maxLat - minLat
             let rawLonDelta = maxLon - minLon
-            let paddedLatDelta = rawLatDelta * verticalPaddingFactor
+            // Unterschiedliche Padding-Faktoren oben/unten
+            let paddedLatDelta = (maxLat - centerLat) * verticalPaddingFactorTop + (centerLat - minLat) * verticalPaddingFactorBottom
             let avgLatRadians = centerLat * .pi / 180
             let cosLat = cos(avgLatRadians)
             let safeCosLat = abs(cosLat) < 0.00001 ? 0.00001 : cosLat
