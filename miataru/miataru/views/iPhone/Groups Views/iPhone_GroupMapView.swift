@@ -30,8 +30,8 @@ struct iPhone_GroupMapView: View {
     @State private var userHasRotatedMap = false // Track if user manually rotated the map
     @State private var now = Date() // Timer für relative Zeit
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var editingDeviceID: String? = nil // State für das zu editierende Device
-    @State private var showEditDeviceSheet: Bool = false // Sheet-Trigger
+    @State private var editingDeviceID: String? = nil // State for the device being edited
+    @State private var showEditDeviceSheet: Bool = false // Sheet trigger for editing device
     @State private var showNetworkErrorIcon = false // Show network error icon
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
@@ -40,7 +40,7 @@ struct iPhone_GroupMapView: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            // Wenn keine Devices in der Gruppe sind, Hinweis anzeigen und keine Map/Serveranfrage
+            // If there are no devices in the group, show a hint and do not request map/server
             if groupDeviceIDs.isEmpty {
                 VStack {
                     Spacer()
@@ -127,13 +127,13 @@ struct iPhone_GroupMapView: View {
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
             if !groupDeviceIDs.isEmpty {
-                // Caching: Sofort gecachte Locations anzeigen
+                // Caching: Immediately show cached locations
                 for deviceID in groupDeviceIDs {
                     if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
                         deviceLocations[deviceID] = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                         deviceAccuracies[deviceID] = cached.accuracy
                         deviceTimestamps[deviceID] = cached.timestamp
-                        now = Date() // <-- Zeit sofort aktualisieren (bei jedem Treffer)
+                        now = Date() // Update time immediately for each hit
                     }
                 }
                 Task { await fetchAllLocations() }
@@ -149,7 +149,7 @@ struct iPhone_GroupMapView: View {
             }
         }
         .onChange(of: group.deviceIDs) { _, _ in
-            // Entferne alle Locations, die nicht mehr zur Gruppe gehören
+            // Remove all locations that no longer belong to the group
             let validIDs = Set(groupDeviceIDs)
             deviceLocations = deviceLocations.filter { validIDs.contains($0.key) }
             deviceAccuracies = deviceAccuracies.filter { validIDs.contains($0.key) }
@@ -173,7 +173,7 @@ struct iPhone_GroupMapView: View {
         .onReceive(timeUpdateTimer) { input in
             now = input
         }
-        // Sheet für Edit Device
+        // Sheet for editing device
         .sheet(isPresented: $showEditDeviceSheet) {
             if let deviceID = editingDeviceID, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
@@ -218,6 +218,7 @@ struct iPhone_GroupMapView: View {
                                 )
                                     .shadow(radius: 2)
                                 ZStack {
+                                    // Draw device name/ID with shadow for better readability
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
                                         ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
                                             if x != 0 || y != 0 {
@@ -271,7 +272,7 @@ struct iPhone_GroupMapView: View {
     private func fetchAllLocations() async {
         guard let url = URL(string: settings.miataruServerURL), !groupDeviceIDs.isEmpty else {
             if groupDeviceIDs.isEmpty {
-                // Keine Devices: Keine Serveranfrage, keine Fehlermeldung
+                // No devices: No server request, no error message
                 return
             }
             showErrorOverlay("Invalid server URL or no devices in group", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
@@ -292,7 +293,7 @@ struct iPhone_GroupMapView: View {
             }
         }
         do {
-            // Erster Versuch: Multi-Device-Call
+            // First attempt: Multi-device call
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: groupDeviceIDs,
@@ -304,13 +305,13 @@ struct iPhone_GroupMapView: View {
                 deviceLocations[location.Device] = coordinate
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
-                now = Date() // <-- Zeit sofort aktualisieren (bei jedem Treffer)
-                // Caching: Neue Location speichern
+                now = Date() // Update time immediately for each hit
+                // Caching: Save new location
                 DeviceLocationCacheStore.shared.setLocation(for: location.Device, latitude: location.Latitude, longitude: location.Longitude, accuracy: location.HorizontalAccuracy, timestamp: location.TimestampDate)
             }
             // Update map region to fit all devices
             updateMapRegionToFitDevices()
-            // Fehlende Devices: ErrorOverlay anzeigen
+            // Missing devices: Show error overlay
             let foundIDs = Set(locations.map { $0.Device })
             let missingIDs = Set(groupDeviceIDs).subtracting(foundIDs)
             for missingID in missingIDs {
@@ -319,7 +320,7 @@ struct iPhone_GroupMapView: View {
                 showErrorOverlay("No location data for device: \(missingID)", userMessage)
             }
         } catch {
-            // Multi-Device-Call fehlgeschlagen: Einzelabfragen
+            // Multi-device call failed: Try single device requests
             var anySuccess = false
             for deviceID in groupDeviceIDs {
                 do {
@@ -336,7 +337,7 @@ struct iPhone_GroupMapView: View {
                         anySuccess = true
                     }
                 } catch let error as MiataruAPIClient.APIError {
-                    // Fehler für dieses Device: Name suchen und anzeigen
+                    // Error for this device: Find name and show
                     switch error {
                     case .requestFailed(_):
                         // Show only the network error icon, not the overlay
@@ -370,7 +371,7 @@ struct iPhone_GroupMapView: View {
         let validCoordinates = deviceLocations.filter { validIDs.contains($0.key) }.values.filter { $0.latitude != 0 && $0.longitude != 0 }
         guard !validCoordinates.isEmpty else { return }
         if settings.groupsZoomToFit {
-            let minDelta: CLLocationDegrees = 0.01 // wie bisher
+            let minDelta: CLLocationDegrees = 0.01 // Minimum span for zoom
             let verticalPaddingFactorTop = Self.verticalPaddingFactorTop
             let verticalPaddingFactorBottom = Self.verticalPaddingFactorBottom
             let horizontalPaddingFactor = Self.horizontalPaddingFactor
@@ -399,7 +400,7 @@ struct iPhone_GroupMapView: View {
                     }
                     return
                 }
-                // Unterschiedliche Padding-Faktoren oben/unten
+                // Different padding factors for top/bottom
                 let paddedLatDelta = (maxLat - centerLat) * verticalPaddingFactorTop + (centerLat - minLat) * verticalPaddingFactorBottom
                 let avgLatRadians = centerLat * .pi / 180
                 let cosLat = cos(avgLatRadians)
@@ -409,7 +410,7 @@ struct iPhone_GroupMapView: View {
                 let longitudeDelta = max(paddedLonDelta, minDelta)
                 print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta)")
                 if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
-                    print("[Map] Ungültige Region, setze Fallback")
+                    print("[Map] Invalid region, setting fallback")
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
                     withAnimation(.easeInOut(duration: 0.5)) {
                         cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
@@ -475,7 +476,7 @@ struct iPhone_GroupMapView: View {
         )
         withAnimation {
             cameraPosition = .camera(newCamera)
-            userHasRotatedMap = false // Kompass ausblenden, wenn wieder nach Norden
+            userHasRotatedMap = false // Hide compass when aligned to north
         }
     }
     
@@ -506,7 +507,7 @@ struct iPhone_GroupMapView: View {
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
             let rawLatDelta = maxLat - minLat
             let rawLonDelta = maxLon - minLon
-            // Unterschiedliche Padding-Faktoren oben/unten
+            // Different padding factors for top/bottom
             let paddedLatDelta = (maxLat - centerLat) * verticalPaddingFactorTop + (centerLat - minLat) * verticalPaddingFactorBottom
             let avgLatRadians = centerLat * .pi / 180
             let cosLat = cos(avgLatRadians)
