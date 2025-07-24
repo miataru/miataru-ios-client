@@ -197,12 +197,13 @@ struct iPhone_DeviceMapView: View {
             }
         }
         // Animate marker position when deviceLocation changes
-        .onChange(of: deviceLocation) { newValue in
+        // TODO: this is not working as expected, the marker is not animated / compile crashes
+        /*.onChange(of: deviceLocation) { newValue in
             guard let newValue else { return }
             withAnimation(.easeInOut(duration: 0.7)) {
                 animatedDeviceLocation = newValue
             }
-        }
+        }*/
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
             now = input

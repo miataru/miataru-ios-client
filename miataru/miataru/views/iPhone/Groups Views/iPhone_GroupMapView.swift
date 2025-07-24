@@ -159,7 +159,8 @@ struct iPhone_GroupMapView: View {
             deviceTimestamps = deviceTimestamps.filter { validIDs.contains($0.key) }
             updateMapRegionToFitDevices()
         }
-        .onChange(of: deviceLocations) { newValue in
+        // TODO: this is not working as expected, the marker is not animated / compile crashes
+        /*.onChange(of: deviceLocations) { newValue in
             // Für alle deviceIDs, die sich geändert haben, animiere die Position
             for (deviceID, newCoord) in newValue {
                 let oldCoord = animatedDeviceLocations[deviceID]
@@ -172,7 +173,7 @@ struct iPhone_GroupMapView: View {
             // Entferne Marker, die nicht mehr existieren
             let validIDs = Set(newValue.keys)
             animatedDeviceLocations = animatedDeviceLocations.filter { validIDs.contains($0.key) }
-        }
+        }*/
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
