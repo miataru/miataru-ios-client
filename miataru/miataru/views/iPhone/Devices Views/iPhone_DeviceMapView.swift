@@ -24,6 +24,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var deviceLocation: CLLocationCoordinate2D?
+    @State private var animatedDeviceLocation: CLLocationCoordinate2D? // Animierte Position für Marker
     @State private var deviceAccuracy: Double? // in Meters
     @State private var deviceTimestamp: Date? = nil
     @ObservedObject private var settings = SettingsManager.shared
@@ -138,6 +139,8 @@ struct iPhone_DeviceMapView: View {
                 deviceTimestamp = cached.timestamp
                 now = Date() // <-- Zeit sofort aktualisieren
             }
+            // Animierte Marker-Position initialisieren
+            animatedDeviceLocation = deviceLocation
             // Zoom-Level initial setzen
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
@@ -176,6 +179,12 @@ struct iPhone_DeviceMapView: View {
                 }
             }
         }
+        .onChange(of: deviceLocation) { newValue in
+            guard let newValue else { return }
+            withAnimation(.easeInOut(duration: 0.7)) {
+                animatedDeviceLocation = newValue
+            }
+        }
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
@@ -207,7 +216,7 @@ struct iPhone_DeviceMapView: View {
         if #available(iOS 17.0, *) {
             Map(position: $cameraPosition,scope: mapScope) {
                 // If the device location is available, show it on the map
-                if let coordinate = deviceLocation, let device = device {
+                if let coordinate = animatedDeviceLocation, let device = device {
                     // 1. Genauigkeitskreis als separates Map-Element
                     if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
