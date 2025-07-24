@@ -4,15 +4,15 @@ import MiataruAPIClient
 import Combine
 
 struct iPhone_DeviceMapView: View {
-    let deviceID: String // Change from device to deviceID
-    // Preview-Parameter (optional)
+    let deviceID: String // Device identifier
+    // Preview parameters (optional, for SwiftUI preview)
     var previewDeviceLocation: CLLocationCoordinate2D? = nil
     var previewDeviceAccuracy: Double? = nil
     var previewDeviceTimestamp: Date? = nil
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco as default
-        span: spanForZoomLevel(1) // Default, will be overwritten in onAppear
+        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // Default: San Francisco
+        span: spanForZoomLevel(1) // Default zoom level, will be overwritten in onAppear
     )
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -20,39 +20,40 @@ struct iPhone_DeviceMapView: View {
             span: spanForZoomLevel(1)
         )
     )
-    @State private var isLoading = false
-    @State private var showError = false
-    @State private var errorMessage = ""
-    @State private var deviceLocation: CLLocationCoordinate2D?
-    @State private var animatedDeviceLocation: CLLocationCoordinate2D? // Animierte Position für Marker
-    @State private var deviceAccuracy: Double? // in Meters
-    @State private var deviceTimestamp: Date? = nil
-    @ObservedObject private var settings = SettingsManager.shared
-    @StateObject private var deviceStore = KnownDeviceStore.shared // Add device store
-    @State private var timerCancellable: AnyCancellable? = nil
-    @State private var errorOverlayVisible = false
-    @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Aktueller Zoom-Level der Karte
-    @State private var mapInteractionID = UUID()
-    @State private var currentRegion: MKCoordinateRegion? = nil
-    @State private var currentMapCamera: MapCamera? = nil // Speichert die aktuelle Kamera inkl. Heading
-    @State private var userHasRotatedMap = false // Track if user manually rotated the map
-    @StateObject private var errorOverlayManager = ErrorOverlayManager()
-    @State private var showEditDeviceSheet = false
-    @State private var now = Date() // Timer für relative Zeit
-    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var showNetworkErrorIcon = false // Show network error icon
+    @State private var isLoading = false // Indicates if location is being fetched
+    @State private var showError = false // Controls error overlay visibility
+    @State private var errorMessage = "" // Error message to display
+    @State private var deviceLocation: CLLocationCoordinate2D? // Current device location
+    @State private var animatedDeviceLocation: CLLocationCoordinate2D? // Animated marker position for smooth transitions
+    @State private var deviceAccuracy: Double? // Location accuracy in meters
+    @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
+    @ObservedObject private var settings = SettingsManager.shared // App settings
+    @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
+    @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
+    @State private var errorOverlayVisible = false // Controls error overlay visibility
+    @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Current map zoom level
+    @State private var mapInteractionID = UUID() // Used to force map updates
+    @State private var currentRegion: MKCoordinateRegion? = nil // Current visible region
+    @State private var currentMapCamera: MapCamera? = nil // Current camera including heading
+    @State private var userHasRotatedMap = false // Tracks if user manually rotated the map
+    @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay
+    @State private var showEditDeviceSheet = false // Controls device edit sheet
+    @State private var now = Date() // Timer for relative time display
+    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Timer for updating 'now'
+    @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     
-    // Computed property to get the current device from store
+    // Computed property to get the current device from the store
     private var device: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == deviceID }
     }
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            // Karte und Fehler-Overlay
+            // Map and error overlay
             VStack {
                 mapSection()
             }
+            // Error overlay for user feedback
             ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
             // Network error icon (top left)
             Group {
@@ -69,7 +70,7 @@ struct iPhone_DeviceMapView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
-            // ScaleBar immer ganz oben
+            // Scale bar always on top
             Group {
                 if #available(iOS 17.0, *) {
                     if let region = currentRegion ?? cameraPosition.region {
@@ -90,7 +91,7 @@ struct iPhone_DeviceMapView: View {
                     .zIndex(2)
                 }
             }
-            // Kompass oben rechts
+            // Compass in the top right corner
             Group {
                 if #available(iOS 17.0, *) {
                     let heading = currentMapCamera?.heading ?? 0
@@ -121,7 +122,7 @@ struct iPhone_DeviceMapView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         .onAppear {
-            // Preview-Parameter übernehmen, falls gesetzt
+            // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {
                 deviceLocation = previewLoc
             }
@@ -130,18 +131,18 @@ struct iPhone_DeviceMapView: View {
             }
             if let previewTime = previewDeviceTimestamp {
                 deviceTimestamp = previewTime
-                now = Date() // <-- Zeit sofort aktualisieren
+                now = Date() // Update time immediately
             }
-            // Caching: Sofort gecachte Location anzeigen, falls vorhanden
+            // Show cached location immediately if available
             if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
                 deviceLocation = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                 deviceAccuracy = cached.accuracy
                 deviceTimestamp = cached.timestamp
-                now = Date() // <-- Zeit sofort aktualisieren
+                now = Date() // Update time immediately
             }
-            // Animierte Marker-Position initialisieren
+            // Initialize animated marker position
             animatedDeviceLocation = deviceLocation
-            // Zoom-Level initial setzen
+            // Set initial zoom level
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
             if let coordinate = deviceLocation {
@@ -179,12 +180,7 @@ struct iPhone_DeviceMapView: View {
                 }
             }
         }
-        .onChange(of: deviceLocation) { newValue in
-            guard let newValue else { return }
-            withAnimation(.easeInOut(duration: 0.7)) {
-                animatedDeviceLocation = newValue
-            }
-        }
+        // Track map camera and region changes for heading/zoom/region state
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
@@ -200,9 +196,18 @@ struct iPhone_DeviceMapView: View {
                 currentMapSpan = context.region.span
             }
         }
+        // Animate marker position when deviceLocation changes
+        .onChange(of: deviceLocation) { newValue in
+            guard let newValue else { return }
+            withAnimation(.easeInOut(duration: 0.7)) {
+                animatedDeviceLocation = newValue
+            }
+        }
+        // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
             now = input
         }
+        // Show edit device sheet when requested
         .sheet(isPresented: $showEditDeviceSheet) {
             if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
@@ -215,19 +220,19 @@ struct iPhone_DeviceMapView: View {
         // Use the new Map API for iOS 17 and above
         if #available(iOS 17.0, *) {
             Map(position: $cameraPosition,scope: mapScope) {
-                // If the device location is available, show it on the map
+                // Show device marker if location is available
                 if let coordinate = animatedDeviceLocation, let device = device {
-                    // 1. Genauigkeitskreis als separates Map-Element
+                    // Draw accuracy circle if enabled and accuracy is valid
                     if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
                             .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
                     }
-                    // 2. Marker-Annotation (ohne Kreis)
+                    // Marker annotation for the device
                     let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    //let annotationID = "blah"
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
                             VStack(spacing: 0) {
+                                // Show relative timestamp above marker
                                 if let timestamp = deviceTimestamp {
                                     Text(relativeTimeString(from: timestamp, to: now))
                                         .font(.caption)
@@ -240,13 +245,12 @@ struct iPhone_DeviceMapView: View {
                                         )
                                         .shimmering(active: isLoading)
                                         .shadow(radius: 2)
-                                        
                                 }
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
-                                // Label für Gerätename unter dem Pin mit Stroke und Systemfarben
+                                // Device name label below the marker with outline for readability
                                 ZStack {
-                                    // Dickere Outline (Stroke) in alle Richtungen
+                                    // Draw thicker outline (stroke) in all directions
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
                                         ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
                                             if x != 0 || y != 0 {
@@ -295,15 +299,15 @@ struct iPhone_DeviceMapView: View {
 
     @ViewBuilder
     private func updateButton() -> some View {
-        //Button(isLoading ? "loading" : "update") {
+        // Button to manually update device location
         Button("update") {
             Task {
                 await fetchLocation(resetZoomToSettings: true)
             }
         }
-        //.disabled(isLoading)
     }
     
+    // Fetches the latest location for the device from the server
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !deviceID.isEmpty else {
             showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
@@ -335,8 +339,8 @@ struct iPhone_DeviceMapView: View {
                 deviceLocation = coordinate
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
-                now = Date() // <-- Zeit sofort aktualisieren
-                // Caching: Neue Location speichern
+                now = Date() // Update time immediately
+                // Cache the new location
                 DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate)
                 if coordinateChanged {
                     withAnimation {
@@ -405,8 +409,9 @@ struct iPhone_DeviceMapView: View {
         }
     }
 
+    // Starts the auto-update timer for fetching location
     private func startAutoUpdate() {
-        stopAutoUpdate() // If a timer is already running
+        stopAutoUpdate() // Cancel any existing timer
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
         timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
@@ -416,20 +421,24 @@ struct iPhone_DeviceMapView: View {
             }
     }
 
+    // Stops the auto-update timer
     private func stopAutoUpdate() {
         timerCancellable?.cancel()
         timerCancellable = nil
     }
 
+    // Restarts the auto-update timer
     private func restartAutoUpdate() {
         startAutoUpdate()
     }
 
+    // Shows the error overlay with a debug and user message
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         print("Error: \(debugMessage)")
         errorOverlayManager.show(message: userMessage)
     }
 
+    // Aligns the map to north (heading = 0)
     private func alignMapToNorth() {
         let coordinate = deviceLocation ?? currentMapCamera?.centerCoordinate
         guard let center = coordinate, let currentCamera = currentMapCamera else { return }
@@ -441,10 +450,11 @@ struct iPhone_DeviceMapView: View {
         )
         withAnimation {
             cameraPosition = .camera(newCamera)
-            userHasRotatedMap = false // Kompass ausblenden, wenn wieder nach Norden
+            userHasRotatedMap = false // Hide compass when aligned to north
         }
     }
 
+    // Resets the map zoom to the value from settings
     private func resetZoomToSettings() {
         let span = spanForZoomLevel(settings.mapZoomLevel)
         if let coordinate = deviceLocation {

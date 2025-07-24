@@ -20,6 +20,7 @@ struct iPhone_GroupMapView: View {
         )
     )
     @State private var deviceLocations: [String: CLLocationCoordinate2D] = [:]
+    @State private var animatedDeviceLocations: [String: CLLocationCoordinate2D] = [:] // Animierte Positionen für Marker
     @State private var deviceAccuracies: [String: Double] = [:]
     @State private var deviceTimestamps: [String: Date] = [:]
     @State private var isLoading = false
@@ -136,6 +137,8 @@ struct iPhone_GroupMapView: View {
                         now = Date() // Update time immediately for each hit
                     }
                 }
+                // Animierte Marker-Positionen initialisieren
+                animatedDeviceLocations = deviceLocations
                 Task { await fetchAllLocations() }
                 startAutoUpdate()
             }
@@ -155,6 +158,20 @@ struct iPhone_GroupMapView: View {
             deviceAccuracies = deviceAccuracies.filter { validIDs.contains($0.key) }
             deviceTimestamps = deviceTimestamps.filter { validIDs.contains($0.key) }
             updateMapRegionToFitDevices()
+        }
+        .onChange(of: deviceLocations) { newValue in
+            // Für alle deviceIDs, die sich geändert haben, animiere die Position
+            for (deviceID, newCoord) in newValue {
+                let oldCoord = animatedDeviceLocations[deviceID]
+                if oldCoord?.latitude != newCoord.latitude || oldCoord?.longitude != newCoord.longitude {
+                    withAnimation(.easeInOut(duration: 0.7)) {
+                        animatedDeviceLocations[deviceID] = newCoord
+                    }
+                }
+            }
+            // Entferne Marker, die nicht mehr existieren
+            let validIDs = Set(newValue.keys)
+            animatedDeviceLocations = animatedDeviceLocations.filter { validIDs.contains($0.key) }
         }
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
@@ -187,7 +204,7 @@ struct iPhone_GroupMapView: View {
             // Show all devices in the group
             ForEach(groupDeviceIDs, id: \.self) { deviceID in
                 if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-                   let coordinate = deviceLocations[deviceID] {
+                   let coordinate = animatedDeviceLocations[deviceID] {
                     // Accuracy circle
                     if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
                         MapCircle(center: coordinate, radius: accuracy)
