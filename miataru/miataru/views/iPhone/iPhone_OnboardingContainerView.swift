@@ -41,6 +41,7 @@ struct iPhone_OnboardingContainerView: View {
             }
             .padding()
         }
+        .background(Color(.systemBackground).ignoresSafeArea())
     }
 }
 

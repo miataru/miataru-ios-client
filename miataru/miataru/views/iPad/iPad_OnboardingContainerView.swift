@@ -40,6 +40,7 @@ struct iPad_OnboardingContainerView: View {
             }
             .padding()
         }
+        .background(Color(.systemBackground).ignoresSafeArea())
     }
 }
 
