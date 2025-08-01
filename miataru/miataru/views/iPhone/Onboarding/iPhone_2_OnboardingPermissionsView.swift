@@ -58,6 +58,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
             Spacer()
         }
         .padding()
+        .background(Color(.systemBackground))
     }
     
     private var locationStatusText: String {

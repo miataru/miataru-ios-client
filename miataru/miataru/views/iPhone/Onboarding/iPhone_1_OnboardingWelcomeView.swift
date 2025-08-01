@@ -51,7 +51,9 @@ struct iPhone_1_OnboardingWelcomeView: View {
             Text("").padding(.bottom,16)
             Spacer()
             
-        }.padding()
+        }
+        .padding()
+        .background(Color(.systemBackground))
     }
 }
 

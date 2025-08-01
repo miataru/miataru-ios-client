@@ -57,7 +57,9 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
             }
             Text("").padding(.bottom,16)
             Spacer()
-        }.padding()
+        }
+        .padding()
+        .background(Color(.systemBackground))
     }
 }
 

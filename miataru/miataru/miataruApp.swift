@@ -57,6 +57,8 @@ struct miataruApp: App {
                 .environmentObject(appState)
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
                     OnboardingContainerView(isPresented: $appState.showOnboarding)
+                        .background(Color(.systemBackground))
+                        .ignoresSafeArea()
                 }
                 .onAppear {
 #if os(iOS)

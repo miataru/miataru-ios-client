@@ -114,13 +114,21 @@ struct iPhone_DeviceMapView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
+                // Button to manually update device location
                 updateButton()
             }
         }
-        .toolbarBackground(.visible, for: .navigationBar)
+        // iOS 26
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarBackgroundVisibility(.hidden)
+        .toolbarBackground(.hidden, for: .tabBar)
+        .toolbarBackgroundVisibility(.hidden)
+
+        // iOS prior 26
+        /*.toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .tabBar)
-        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)*/
         .onAppear {
             // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {
@@ -307,7 +315,6 @@ struct iPhone_DeviceMapView: View {
             }
         }
     }
-    
     // Fetches the latest location for the device from the server
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !deviceID.isEmpty else {

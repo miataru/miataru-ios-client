@@ -88,7 +88,9 @@ struct iPhone_3_OnboardingServerView: View {
 
             Spacer()
 
-        }.padding()
+        }
+        .padding()
+        .background(Color(.systemBackground))
         .onAppear {
             if settings.miataruServerURL != defaultServer {
                 useDefaultServer = false

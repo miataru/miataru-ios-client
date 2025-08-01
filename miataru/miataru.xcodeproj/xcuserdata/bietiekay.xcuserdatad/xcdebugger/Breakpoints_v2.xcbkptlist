@@ -14,9 +14,9 @@
             filePath = "miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "365"
-            endingLineNumber = "365"
-            landmarkName = "updateMapRegionToFitDevices()"
+            startingLineNumber = "372"
+            endingLineNumber = "372"
+            landmarkName = "fetchAllLocations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -30,8 +30,8 @@
             filePath = "miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "389"
-            endingLineNumber = "389"
+            startingLineNumber = "396"
+            endingLineNumber = "396"
             landmarkName = "updateMapRegionToFitDevices()"
             landmarkType = "7">
          </BreakpointContent>

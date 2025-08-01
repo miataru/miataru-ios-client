@@ -24,7 +24,9 @@ struct iPhone_5_OnboardingQRcodeView: View {
                 }.padding(.horizontal,10)
             Text("").padding(.bottom,16)
             Spacer()
-        }.padding()
+        }
+        .padding()
+        .background(Color(.systemBackground))
     }
 }
 
