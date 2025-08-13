@@ -8,11 +8,13 @@ struct OffScreenDeviceArrow: View {
     let deviceCoordinate: CLLocationCoordinate2D
     let mapRegion: MKCoordinateRegion
     let screenSize: CGSize
+    let isMapRotated: Bool
     
     @State private var isVisible = false
     
     var body: some View {
-        if let arrowPosition = calculateArrowPosition() {
+        // Hide arrow when map is rotated
+        if !isMapRotated, let arrowPosition = calculateArrowPosition() {
             VStack(spacing: 4) {
                 // Arrow pointing to device
                 Image(systemName: "arrow.up")
@@ -160,7 +162,8 @@ extension CGPoint {
                 center: CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515),
                 span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
             ),
-            screenSize: CGSize(width: 300, height: 400)
+            screenSize: CGSize(width: 300, height: 400),
+            isMapRotated: false
         )
     }
 }

@@ -105,7 +105,7 @@ struct iPhone_DeviceMapView: View {
             // Network error icon (top left)
             networkErrorIconView()
             
-            // Off-screen device arrow (only shown when device is outside visible area)
+            // Off-screen device arrow (only shown when device is outside visible area and map is not rotated)
             if !screenSize.width.isZero && !screenSize.height.isZero,
                let device = device,
                let coordinate = deviceLocation,
@@ -116,7 +116,8 @@ struct iPhone_DeviceMapView: View {
                     screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
                     deviceCoordinate: coordinate,
                     mapRegion: region,
-                    screenSize: screenSize
+                    screenSize: screenSize,
+                    isMapRotated: userHasRotatedMap
                 )
             }
             

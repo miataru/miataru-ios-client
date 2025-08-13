@@ -123,7 +123,7 @@ struct iPhone_GroupMapView: View {
                 }
                 .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
                 
-                // Off-screen device arrows
+                // Off-screen device arrows (only shown when map is not rotated)
                 if !screenSize.width.isZero && !screenSize.height.isZero {
                     ForEach(groupDeviceIDs, id: \.self) { deviceID in
                         if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
@@ -135,7 +135,8 @@ struct iPhone_GroupMapView: View {
                                 screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
                                 deviceCoordinate: coordinate,
                                 mapRegion: region,
-                                screenSize: screenSize
+                                screenSize: screenSize,
+                                isMapRotated: userHasRotatedMap
                             )
                         }
                     }
