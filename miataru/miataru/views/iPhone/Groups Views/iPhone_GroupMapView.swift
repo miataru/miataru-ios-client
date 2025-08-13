@@ -128,7 +128,10 @@ struct iPhone_GroupMapView: View {
                 // Caching: Immediately show cached locations
                 for deviceID in groupDeviceIDs {
                     if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
-                        deviceLocations[deviceID] = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                        let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                        deviceLocations[deviceID] = coordinate
+                        // Initialize animated location with cached location
+                        animatedDeviceLocations[deviceID] = coordinate
                         deviceAccuracies[deviceID] = cached.accuracy
                         deviceTimestamps[deviceID] = cached.timestamp
                         now = Date() // Update time immediately for each hit
@@ -318,6 +321,8 @@ struct iPhone_GroupMapView: View {
             for location in locations {
                 let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
                 deviceLocations[location.Device] = coordinate
+                // Update animated location immediately to ensure marker moves
+                animatedDeviceLocations[location.Device] = coordinate
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
                 now = Date() // Update time immediately for each hit
@@ -347,6 +352,8 @@ struct iPhone_GroupMapView: View {
                     if let location = locations.first {
                         let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
                         deviceLocations[location.Device] = coordinate
+                        // Update animated location immediately to ensure marker moves
+                        animatedDeviceLocations[location.Device] = coordinate
                         deviceAccuracies[location.Device] = location.HorizontalAccuracy
                         deviceTimestamps[location.Device] = location.TimestampDate
                         anySuccess = true
