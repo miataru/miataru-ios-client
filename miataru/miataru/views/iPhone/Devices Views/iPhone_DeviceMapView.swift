@@ -42,6 +42,7 @@ struct iPhone_DeviceMapView: View {
     @State private var now = Date() // Timer for relative time display
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Timer for updating 'now'
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
+    @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
@@ -88,10 +89,37 @@ struct iPhone_DeviceMapView: View {
             VStack {
                 mapSection()
             }
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear {
+                            screenSize = geometry.size
+                        }
+                        .onChange(of: geometry.size) { _, newSize in
+                            screenSize = newSize
+                        }
+                }
+            )
             // Error overlay for user feedback
             ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
             // Network error icon (top left)
             networkErrorIconView()
+            
+            // Off-screen device arrow (only shown when device is outside visible area)
+            if !screenSize.width.isZero && !screenSize.height.isZero,
+               let device = device,
+               let coordinate = deviceLocation,
+               let region = currentRegion ?? cameraPosition.region {
+                OffScreenDeviceArrow(
+                    deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
+                    deviceColor: Color(device.DeviceColor ?? UIColor.blue),
+                    screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
+                    deviceCoordinate: coordinate,
+                    mapRegion: region,
+                    screenSize: screenSize
+                )
+            }
+            
             // Scale bar always on top
             scaleBarView()
             // Compass in the top right corner
@@ -176,6 +204,8 @@ struct iPhone_DeviceMapView: View {
                 currentRegion = context.region
                 currentMapSpan = context.region.span
             }
+            // Always update region for off-screen arrows
+            currentRegion = context.region
         }
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
