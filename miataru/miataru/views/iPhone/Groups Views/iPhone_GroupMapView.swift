@@ -520,7 +520,7 @@ struct iPhone_GroupMapView: View {
             let centerLat = (minLat + maxLat) / 2
             let centerLon = (minLon + maxLon) / 2
             let center = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
-            let rawLatDelta = maxLat - minLat
+            //let rawLatDelta = maxLat - minLat
             let rawLonDelta = maxLon - minLon
             // Different padding factors for top/bottom
             let paddedLatDelta = (maxLat - centerLat) * verticalPaddingFactorTop + (centerLat - minLat) * verticalPaddingFactorBottom
