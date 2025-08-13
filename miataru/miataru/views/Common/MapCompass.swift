@@ -6,44 +6,75 @@ struct MapCompass: View {
     let size: CGFloat
 
     var body: some View {
-        VStack(spacing: 2) {
-            ZStack {
-                // Compass circle
-                Circle()
-                    .stroke(Color.primary.opacity(0.5), lineWidth: 1)
-                    .frame(width: size, height: size)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
-                Circle()
-                    .stroke(Color.white.opacity(0.5), lineWidth: 1)
-                    .frame(width: size * 0.96, height: size * 0.96)
-                    .offset(y: -size * 0.04)
-                // Needle (points North)
-                CompassNeedle(size: size * 0.5)
-                    .rotationEffect(.degrees(-heading))
-                // N marker
-                /*Text(NSLocalizedString("compass_north_label", comment: "Compass North label"))
-                    //.font(.caption2.bold())
-                    .font(.caption2.smallCaps().bold())
-                    .foregroundColor(.primary)
-                    .offset(y: -size * 0.36)*/
-            }
-            .frame(width: size, height: size)
-            // Degree and direction label
-            Text(compassLabel(for: heading))
+        if #available(iOS 26.0, *) {
+            // iOS26 version
+            VStack(spacing: 2) {
+                ZStack {
+                    // Compass circle
+                    Circle()
+                        .stroke(Color.primary.opacity(0.5), lineWidth: 1)
+                        .frame(width: size, height: size)
+                        //.background(Circle().fill(.ultraThinMaterial))
+                        //.shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                    Circle()
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                        .frame(width: size * 0.96, height: size * 0.96)
+                        .offset(y: -size * 0.04)
+                    // Needle (points North)
+                    CompassNeedle(size: size * 0.5)
+                        .rotationEffect(.degrees(-heading))
+                }
+                .frame(width: size, height: size)
+                // Degree and direction label
+                Text(compassLabel(for: heading))
                 //.font(.caption2)
-                .font(.caption2.monospacedDigit())
-                .foregroundColor(.primary)
-                .frame(width: 50, alignment: .center)
-                .padding(.top, 2)
+                    .font(.caption2.monospacedDigit())
+                    .foregroundColor(.primary)
+                    .frame(width: 50, alignment: .center)
+                    .padding(.top, 2)
+            }
+            .padding(4)
+            .glassEffect(in: .rect(cornerRadius: size/5 + 8))
+            //.cornerRadius(size/5 + 8)
+            //.shadow(radius: 1)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
+            .accessibilityValue(compassLabel(for: heading))
+        } else {
+            // Fallback on earlier versions
+            VStack(spacing: 2) {
+                ZStack {
+                    // Compass circle
+                    Circle()
+                        .stroke(Color.primary.opacity(0.5), lineWidth: 1)
+                        .frame(width: size, height: size)
+                        .background(Circle().fill(.ultraThinMaterial))
+                        .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 2)
+                    Circle()
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                        .frame(width: size * 0.96, height: size * 0.96)
+                        .offset(y: -size * 0.04)
+                    // Needle (points North)
+                    CompassNeedle(size: size * 0.5)
+                        .rotationEffect(.degrees(-heading))
+                }
+                .frame(width: size, height: size)
+                // Degree and direction label
+                Text(compassLabel(for: heading))
+                //.font(.caption2)
+                    .font(.caption2.monospacedDigit())
+                    .foregroundColor(.primary)
+                    .frame(width: 50, alignment: .center)
+                    .padding(.top, 2)
+            }
+            .padding(4)
+            .background(.ultraThinMaterial)
+            .cornerRadius(size/5 + 8)
+            .shadow(radius: 1)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
+            .accessibilityValue(compassLabel(for: heading))
         }
-        .padding(4)
-        .background(.ultraThinMaterial)
-        .cornerRadius(size/5 + 8)
-        .shadow(radius: 1)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
-        .accessibilityValue(compassLabel(for: heading))
     }
 
     /// Returns e.g. "NE 45°"

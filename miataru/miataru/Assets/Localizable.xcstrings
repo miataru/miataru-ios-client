@@ -1276,6 +1276,7 @@
     },
     "compass_north_label" : {
       "comment" : "Compass North label",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
