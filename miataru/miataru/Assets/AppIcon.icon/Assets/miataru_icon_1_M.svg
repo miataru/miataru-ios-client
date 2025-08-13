@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="486.50571"
+   height="479.36002"
+   id="svg2"
+   version="1.1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><defs
+     id="defs4" /><metadata
+     id="metadata7"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><style
+     type="text/css"
+     id="mapStyle">
+/* Cascading Style Sheet (CSS) definitions for region colours */
+
+/* land: #E0E0E0 -- outside area (or default land colour)
+ * sea: #FFFFFF -- ocean / sea / lake
+ * border: #646464 -- land borders
+ * subject land: #336733 -- subject colour
+ * other land: #C6DEBD -- other lands of the same political unity
+ * coast: #646464 -- lake's coast, rivers, sea coasts
+ * political border: #646464 -- Other minor political borders
+ * interest border: #335033 -- border colour for areas of interest
+ */
+
+/* basic styles */
+path{
+   stroke-linejoin: bevel;
+}
+
+path,circle{
+   stroke-width: 0.5;
+}
+
+/* Main region definition */
+
+.region{
+   fill: #E0E0E0;
+   stroke: #646464;
+   stroke-width: 0.5;
+}
+
+/* Political groupings */
+
+.political{
+   fill: #C6DEBD;
+   stroke: #646464;
+}
+
+/* Subject / area of interest */
+
+.subject{
+   fill: #336733;
+   stroke: #335033;
+}
+
+circle.highlight{
+   stroke-width: 1.25;
+}
+
+/* Rivers */
+
+.river{
+   fill: none;
+   stroke: #646464;
+   stroke-width: 0.25;
+}
+
+/* Sea and decoration */
+.seabase{
+   fill: #FFFFFF;
+   stroke: none;
+}
+
+.mapborder{
+   fill: none;
+   stroke: #646464;
+   stroke-width: 1.25;
+}
+
+.mapshadow{
+  fill: url(#grSea);
+  stroke: none;
+}
+
+/* Grid lines */
+.grid{
+  fill: none;
+  stroke: #646464;
+}
+
+/* Colouring a particular country, use '*' with group ID */
+/*
+ * #gNZL *{
+ *   fill: #ff0000;
+ *   stroke: black;
+ * }
+ */
+/* ...or '.' with country name */
+/*
+ * .NZL *{
+ *   fill: #ff0000;
+ *   stroke: black;
+ * }
+ */
+</style><g
+     id="layer1"
+     transform="translate(-271.09244,-233.37861)"
+     style="display:inline"><g
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:1046.56px;line-height:125%;font-family:'Apple LiGothic';-inkscape-font-specification:'Apple LiGothic Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       id="text6059"
+       transform="matrix(0.99064243,0,0,0.87395899,9.843471,100.35714)"><path
+         d="M 633.32062,323.82738 510.66091,700.6982 h -1.08156 L 386.88983,324.49025 340.4911,640.09815 h -76.77438 l 94.72169,-487.89253 h 56.64905 l 95.21437,339.13621 94.12864,-337.70524 H 661.8249 L 754.81794,637.9517 H 678.04356 L 633.32062,323.82738"
+         style="font-family:'Apple LiGothic';-inkscape-font-specification:'Apple LiGothic Bold';fill:#ffffff;fill-opacity:1"
+         id="path6064" /></g></g></svg>
