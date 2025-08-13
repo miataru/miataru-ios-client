@@ -11,12 +11,12 @@ struct iPhone_DeviceMapView: View {
     var previewDeviceTimestamp: Date? = nil
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // Default: San Francisco
+        center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
         span: spanForZoomLevel(1) // Default zoom level, will be overwritten in onAppear
     )
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+            center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
             span: spanForZoomLevel(1)
         )
     )
@@ -29,6 +29,7 @@ struct iPhone_DeviceMapView: View {
     @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
     @ObservedObject private var settings = SettingsManager.shared // App settings
     @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
+    @StateObject private var locationManager = LocationManager.shared // Access to user's location
     @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
     @State private var errorOverlayVisible = false // Controls error overlay visibility
     @State private var currentMapSpan: MKCoordinateSpan = spanForZoomLevel(1) // Current map zoom level
@@ -45,6 +46,40 @@ struct iPhone_DeviceMapView: View {
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == deviceID }
+    }
+    
+    // Computed property to get the best available location for map initialization
+    private var bestAvailableLocation: CLLocationCoordinate2D {
+        // First priority: Device location (if available)
+        if let deviceLoc = deviceLocation {
+            return deviceLoc
+        }
+        
+        // Second priority: Cached device location
+        if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
+            return CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+        }
+        
+        // Third priority: User's own location (if available and authorized)
+        if locationManager.authorizationStatus == .authorizedWhenInUse || 
+           locationManager.authorizationStatus == .authorizedAlways,
+           let userLocation = locationManager.currentLocation {
+            return userLocation.coordinate
+        }
+        
+        // Fallback: Use fallback location (never returns nil)
+        return fallbackLocation
+    }
+    
+    // Computed property to get a sensible default location when no location is available
+    private var fallbackLocation: CLLocationCoordinate2D {
+        // Use user's location if available, otherwise use a central European location
+        if let userLocation = locationManager.currentLocation {
+            return userLocation.coordinate
+        }
+        
+        // Fallback to central Europe (Germany) instead of San Francisco
+        return CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515)
     }
     
     var body: some View {
@@ -99,21 +134,13 @@ struct iPhone_DeviceMapView: View {
             // Set initial zoom level
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
-            if let coordinate = deviceLocation {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    region = MKCoordinateRegion(center: coordinate, span: span)
-                    if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                    }
-                }
-            } else {
-                // Default: San Francisco
-                let defaultCoord = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    region = MKCoordinateRegion(center: defaultCoord, span: span)
-                    if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: defaultCoord, span: span))
-                    }
+            
+            // Use the best available location for map initialization
+            let coordinate = bestAvailableLocation
+            withAnimation(.easeInOut(duration: 0.5)) {
+                region = MKCoordinateRegion(center: coordinate, span: span)
+                if #available(iOS 17.0, *) {
+                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
                 }
             }
             Task { await fetchLocation(resetZoomToSettings: true) }
@@ -453,10 +480,10 @@ struct iPhone_DeviceMapView: View {
 
     // Aligns the map to north (heading = 0)
     private func alignMapToNorth() {
-        let coordinate = deviceLocation ?? currentMapCamera?.centerCoordinate
-        guard let center = coordinate, let currentCamera = currentMapCamera else { return }
+        let coordinate = bestAvailableLocation
+        guard let currentCamera = currentMapCamera else { return }
         let newCamera = MapCamera(
-            centerCoordinate: center,
+            centerCoordinate: coordinate,
             distance: currentCamera.distance,
             heading: 0, // North
             pitch: currentCamera.pitch
@@ -470,17 +497,16 @@ struct iPhone_DeviceMapView: View {
     // Resets the map zoom to the value from settings
     private func resetZoomToSettings() {
         let span = spanForZoomLevel(settings.mapZoomLevel)
-        if let coordinate = deviceLocation {
-            if #available(iOS 17.0, *) {
-                let newRegion = MKCoordinateRegion(center: coordinate, span: span)
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    cameraPosition = .region(newRegion)
-                    currentMapSpan = span
-                }
-            } else {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    region = MKCoordinateRegion(center: coordinate, span: span)
-                }
+        let coordinate = bestAvailableLocation
+        if #available(iOS 17.0, *) {
+            let newRegion = MKCoordinateRegion(center: coordinate, span: span)
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .region(newRegion)
+                currentMapSpan = span
+            }
+        } else {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                region = MKCoordinateRegion(center: coordinate, span: span)
             }
         }
     }

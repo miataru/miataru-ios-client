@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "396"
             endingLineNumber = "396"
-            landmarkName = "updateMapRegionToFitDevices()"
+            landmarkName = "fetchAllLocations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

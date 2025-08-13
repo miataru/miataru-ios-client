@@ -7,15 +7,16 @@ struct iPhone_GroupMapView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @StateObject private var locationManager = LocationManager.shared // Access to user's location
     
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco as default
+        center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
         span: spanForZoomLevel(10) // Default zoom level for groups
     )
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+            center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
             span: spanForZoomLevel(10)
         )
     )
@@ -38,6 +39,42 @@ struct iPhone_GroupMapView: View {
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
     private static let horizontalPaddingFactor: CLLocationDegrees = 1.1
+    
+    // Computed property to get the best available location for map initialization
+    private var bestAvailableLocation: CLLocationCoordinate2D {
+        // First priority: Any device location from the group (if available)
+        if let firstLocation = deviceLocations.values.first {
+            return firstLocation
+        }
+        
+        // Second priority: Cached device locations from the group
+        for deviceID in groupDeviceIDs {
+            if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
+                return CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+            }
+        }
+        
+        // Third priority: User's own location (if available and authorized)
+        if locationManager.authorizationStatus == .authorizedWhenInUse || 
+           locationManager.authorizationStatus == .authorizedAlways,
+           let userLocation = locationManager.currentLocation {
+            return userLocation.coordinate
+        }
+        
+        // Fallback: Use fallback location (never returns nil)
+        return fallbackLocation
+    }
+    
+    // Computed property to get a sensible default location when no location is available
+    private var fallbackLocation: CLLocationCoordinate2D {
+        // Use user's location if available, otherwise use a central European location
+        if let userLocation = locationManager.currentLocation {
+            return userLocation.coordinate
+        }
+        
+        // Fallback to central Europe (Germany) instead of San Francisco
+        return CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515)
+    }
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -139,6 +176,14 @@ struct iPhone_GroupMapView: View {
                 }
                 // Animierte Marker-Positionen initialisieren
                 animatedDeviceLocations = deviceLocations
+                
+                // Set initial map position based on available locations
+                let bestLocation = bestAvailableLocation
+                let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
+                }
+                
                 Task { await fetchAllLocations() }
                 startAutoUpdate()
             }
@@ -391,7 +436,16 @@ struct iPhone_GroupMapView: View {
     private func updateMapRegionToFitDevices() {
         let validIDs = Set(groupDeviceIDs)
         let validCoordinates = deviceLocations.filter { validIDs.contains($0.key) }.values.filter { $0.latitude != 0 && $0.longitude != 0 }
-        guard !validCoordinates.isEmpty else { return }
+        
+        // If no valid coordinates, use fallback location
+        guard !validCoordinates.isEmpty else {
+            let fallbackCoord = fallbackLocation
+            let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .region(MKCoordinateRegion(center: fallbackCoord, span: span))
+            }
+            return
+        }
         if settings.groupsZoomToFit {
             let minDelta: CLLocationDegrees = 0.01 // Minimum span for zoom
             let verticalPaddingFactorTop = Self.verticalPaddingFactorTop
