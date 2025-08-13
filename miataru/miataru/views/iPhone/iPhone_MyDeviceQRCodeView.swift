@@ -23,102 +23,136 @@ struct iPhone_MyDeviceQRCodeView: View {
     let gradient = Gradient(colors: [.black, .pink])
     
     var body: some View {
-        let qrContent = QRCodeShape(
-                    data: content.data(using: .utf8) ?? Data(),
-                    errorCorrection: correction
-                )
-        
-        ZStack {
-            VStack(spacing: 20) {
-                ZStack {
-                    backgroundColor
-                    qrContent
-                        .components(.eyeOuter)
-                        .fill(eyeColor)
-                    qrContent
-                        .components(.eyePupil)
-                        .fill(pupilColor)
-                    qrContent
-                        .components(.onPixels)
-                        .fill(dataColor)
-                }
-                .frame(width: 250, height: 250, alignment: .center)
-                .padding()
-                
-                Text("my_device_qr_code")
-                    .font(.title)
-                
-                Text("qr_code_explanation")
-                    .foregroundColor(.secondary)
-                
-                // Device-ID Anzeige mit Kopier-Button
-                VStack(spacing: 12) {
-                    Text("device_id")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    HStack(spacing: 8) {
-                        Text(thisDeviceIDManager.shared.deviceID)
-                            .font(.system(.footnote, design: .monospaced))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                        
-                        Button(action: {
-                            UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                showCopiedAlert = true
-                            }
-                            
-                            // Alert nach 2 Sekunden automatisch ausblenden
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showCopiedAlert = false
-                                }
-                            }
-                        }) {
-                            Image(systemName: "doc.on.doc")
-                                .foregroundColor(.blue)
-                                .font(.title2)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                .padding(.top, 10)
-            }
-            .padding()
-            .navigationTitle("my_device")
+        GeometryReader { geometry in
+            let isLandscape = geometry.size.width > geometry.size.height
             
-            // Overlay für Kopier-Bestätigung
-            if showCopiedAlert {
-                VStack {
-                    Spacer()
-                    
-                    HStack(spacing: 12) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                            .font(.title2)
+            ScrollView {
+                VStack(spacing: 0) {
+                    // QR Code Section
+                    VStack(spacing: isLandscape ? 16 : 20) {
+                        ZStack {
+                            backgroundColor
+                            qrContent
+                                .components(.eyeOuter)
+                                .fill(eyeColor)
+                            qrContent
+                                .components(.eyePupil)
+                                .fill(pupilColor)
+                            qrContent
+                                .components(.onPixels)
+                                .fill(dataColor)
+                        }
+                        .frame(
+                            width: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
+                            height: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
+                            alignment: .center
+                        )
+                        .padding(.horizontal, isLandscape ? 20 : 16)
+                        .padding(.vertical, isLandscape ? 12 : 16)
                         
-                        Text("device_id_copied_to_clipboard")
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white)
+                        // Title and explanation
+                        VStack(spacing: isLandscape ? 8 : 12) {
+                            Text("my_device_qr_code")
+                                .font(isLandscape ? .title2 : .title)
+                                .multilineTextAlignment(.center)
+                            
+                            Text("qr_code_explanation")
+                                .font(isLandscape ? .caption : .body)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, isLandscape ? 40 : 20)
+                        }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.black.opacity(0.8))
-                    )
-                    .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                    .padding(.top, isLandscape ? 20 : 30)
                     
-                    Spacer()
+                    // Device ID Section
+                    VStack(spacing: isLandscape ? 12 : 16) {
+                        Text("device_id")
+                            .font(isLandscape ? .subheadline : .headline)
+                            .foregroundColor(.secondary)
+                        
+                        HStack(spacing: isLandscape ? 6 : 8) {
+                            Text(thisDeviceIDManager.shared.deviceID)
+                                .font(.system(isLandscape ? .caption : .footnote, design: .monospaced))
+                                .padding(.horizontal, isLandscape ? 8 : 12)
+                                .padding(.vertical, isLandscape ? 6 : 8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            
+                            Button(action: {
+                                UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showCopiedAlert = true
+                                }
+                                
+                                // Alert nach 2 Sekunden automatisch ausblenden
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showCopiedAlert = false
+                                    }
+                                }
+                            }) {
+                                Image(systemName: "doc.on.doc")
+                                    .foregroundColor(.blue)
+                                    .font(isLandscape ? .title3 : .title2)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .padding(.horizontal, isLandscape ? 20 : 16)
+                    .padding(.top, isLandscape ? 16 : 20)
+                    .padding(.bottom, isLandscape ? 20 : 30)
                 }
-                .transition(.opacity.combined(with: .scale(scale: 0.8)))
-                .zIndex(1)
+                .frame(
+                    width: geometry.size.width,
+                    height: geometry.size.height,
+                    alignment: isLandscape ? .center : .top
+                )
             }
+            .navigationTitle("my_device")
+            .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
         }
+        .overlay(
+            // Overlay für Kopier-Bestätigung
+            Group {
+                if showCopiedAlert {
+                    VStack {
+                        Spacer()
+                        
+                        HStack(spacing: 12) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.title2)
+                            
+                            Text("device_id_copied_to_clipboard")
+                                .font(.body)
+                                .fontWeight(.medium)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.8))
+                        )
+                        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                        
+                        Spacer()
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                    .zIndex(1)
+                }
+            }
+        )
+    }
+    
+    private var qrContent: QRCodeShape {
+        QRCodeShape(
+            data: content.data(using: .utf8) ?? Data(),
+            errorCorrection: correction
+        )
     }
 }
 
