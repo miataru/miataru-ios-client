@@ -56,59 +56,11 @@ struct iPhone_DeviceMapView: View {
             // Error overlay for user feedback
             ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
             // Network error icon (top left)
-            Group {
-                if showNetworkErrorIcon {
-                    Image(systemName: "network.slash")
-                        .foregroundColor(Color(.systemRed))
-                        .font(.system(size: 28))
-                        .padding(.top, 10)
-                        .padding(.leading, 10)
-                        .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
-                        .transition(.opacity)
-                        .zIndex(10)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                }
-            }
-            .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+            networkErrorIconView()
             // Scale bar always on top
-            Group {
-                if #available(iOS 17.0, *) {
-                    if let region = currentRegion ?? cameraPosition.region {
-                        Button(action: { resetZoomToSettings() }) {
-                            MapScaleBar(region: region, width: 50)
-                        }
-                        .buttonStyle(.plain)
-                        .padding([.bottom, .trailing], 5)
-                        .zIndex(2)
-                    }
-                } else {
-                    Button(action: { resetZoomToSettings() }) {
-                        MapScaleBar(region: region, width: 50)
-                            .id("scalebar")
-                    }
-                    .buttonStyle(.plain)
-                    .padding([.bottom, .trailing], 5)
-                    .zIndex(2)
-                }
-            }
+            scaleBarView()
             // Compass in the top right corner
-            Group {
-                if #available(iOS 17.0, *) {
-                    let heading = currentMapCamera?.heading ?? 0
-                    if userHasRotatedMap {
-                        Button(action: {
-                            alignMapToNorth()
-                        }) {
-                            MapCompass(heading: heading, size: 40)
-                        }
-                        .padding([.top, .trailing], 10)
-                        .zIndex(3)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                        .transition(.opacity)
-                    }
-                }
-            }
-            .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+            compassView()
         }
         .navigationTitle(device?.DeviceName ?? "Unknown Device")
         .navigationBarTitleDisplayMode(.inline)
@@ -123,6 +75,7 @@ struct iPhone_DeviceMapView: View {
             // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {
                 deviceLocation = previewLoc
+                animatedDeviceLocation = previewLoc
             }
             if let previewAcc = previewDeviceAccuracy {
                 deviceAccuracy = previewAcc
@@ -137,9 +90,12 @@ struct iPhone_DeviceMapView: View {
                 deviceAccuracy = cached.accuracy
                 deviceTimestamp = cached.timestamp
                 now = Date() // Update time immediately
+                // Initialize animated marker position with cached location
+                animatedDeviceLocation = deviceLocation
+            } else {
+                // Initialize animated marker position with preview or default
+                animatedDeviceLocation = deviceLocation
             }
-            // Initialize animated marker position
-            animatedDeviceLocation = deviceLocation
             // Set initial zoom level
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
@@ -194,14 +150,6 @@ struct iPhone_DeviceMapView: View {
                 currentMapSpan = context.region.span
             }
         }
-        // Animate marker position when deviceLocation changes
-        // TODO: this is not working as expected, the marker is not animated / compile crashes
-        /*.onChange(of: deviceLocation) { newValue in
-            guard let newValue else { return }
-            withAnimation(.easeInOut(duration: 0.7)) {
-                animatedDeviceLocation = newValue
-            }
-        }*/
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
             now = input
@@ -212,6 +160,71 @@ struct iPhone_DeviceMapView: View {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
+    }
+    
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private func networkErrorIconView() -> some View {
+        Group {
+            if showNetworkErrorIcon {
+                Image(systemName: "network.slash")
+                    .foregroundColor(Color(.systemRed))
+                    .font(.system(size: 28))
+                    .padding(.top, 10)
+                    .padding(.leading, 10)
+                    .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
+                    .transition(.opacity)
+                    .zIndex(10)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+    }
+    
+    @ViewBuilder
+    private func scaleBarView() -> some View {
+        Group {
+            if #available(iOS 17.0, *) {
+                if let region = currentRegion ?? cameraPosition.region {
+                    Button(action: { resetZoomToSettings() }) {
+                        MapScaleBar(region: region, width: 50)
+                    }
+                    .buttonStyle(.plain)
+                    .padding([.bottom, .trailing], 5)
+                    .zIndex(2)
+                }
+            } else {
+                Button(action: { resetZoomToSettings() }) {
+                    MapScaleBar(region: region, width: 50)
+                        .id("scalebar")
+                }
+                .buttonStyle(.plain)
+                .padding([.bottom, .trailing], 5)
+                .zIndex(2)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func compassView() -> some View {
+        Group {
+            if #available(iOS 17.0, *) {
+                let heading = currentMapCamera?.heading ?? 0
+                if userHasRotatedMap {
+                    Button(action: {
+                        alignMapToNorth()
+                    }) {
+                        MapCompass(heading: heading, size: 40)
+                    }
+                    .padding([.top, .trailing], 10)
+                    .zIndex(3)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .transition(.opacity)
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
     }
     
     @ViewBuilder
@@ -335,6 +348,8 @@ struct iPhone_DeviceMapView: View {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
                 let coordinateChanged = deviceLocation?.latitude != coordinate.latitude || deviceLocation?.longitude != coordinate.longitude
                 deviceLocation = coordinate
+                // Update animated location immediately to ensure marker moves
+                animatedDeviceLocation = coordinate
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 now = Date() // Update time immediately
