@@ -356,6 +356,10 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             }
+            .mapControls {
+                MapCompass(heading: 1, size: 10)
+                    .mapControlVisibility(.hidden)
+            }
             .ignoresSafeArea()
             .mapStyle(mapStyleFromSettings(settings.mapType))
         } else {
