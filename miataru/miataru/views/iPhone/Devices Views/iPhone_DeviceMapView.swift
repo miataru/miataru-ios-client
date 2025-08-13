@@ -126,7 +126,7 @@ struct iPhone_DeviceMapView: View {
             // Compass in the top right corner
             compassView()
         }
-        .navigationTitle(device?.DeviceName ?? "Unknown Device")
+        .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? "Unknown Device"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -543,6 +543,19 @@ struct iPhone_DeviceMapView: View {
             withAnimation(.easeInOut(duration: 0.5)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
+        }
+    }
+}
+
+// Custom modifier to conditionally show navigation title based on iOS version
+struct NavigationTitleModifier: ViewModifier {
+    let deviceName: String
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+        } else {
+            content.navigationTitle(deviceName)
         }
     }
 }
