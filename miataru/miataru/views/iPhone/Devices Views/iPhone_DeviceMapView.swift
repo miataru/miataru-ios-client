@@ -118,17 +118,7 @@ struct iPhone_DeviceMapView: View {
                 updateButton()
             }
         }
-        // iOS 26
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbarBackgroundVisibility(.hidden)
-        .toolbarBackground(.hidden, for: .tabBar)
-        .toolbarBackgroundVisibility(.hidden)
-
-        // iOS prior 26
-        /*.toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        .toolbarBackground(.visible, for: .tabBar)
-        .toolbarBackground(.ultraThinMaterial, for: .tabBar)*/
+        .adaptiveToolbarBackground()
         .onAppear {
             // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {

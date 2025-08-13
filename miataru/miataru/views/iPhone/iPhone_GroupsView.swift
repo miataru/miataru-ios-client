@@ -9,6 +9,7 @@ struct iPhone_GroupsView: View {
 
     var body: some View {
         NavigationStack {
+            // iOS 26: transparent background, iOS prior: ultrathin material
             if groupStore.groups.isEmpty {
                 VStack(spacing: 16) {
                     Image(systemName: "person.3.fill")
@@ -86,6 +87,7 @@ struct iPhone_GroupsView: View {
                 }
             }
         }
+        .adaptiveNavigationBackground()
     }
 }
 

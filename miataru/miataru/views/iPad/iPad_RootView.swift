@@ -28,6 +28,7 @@ struct iPad_RootView: View {
                 }
         }
         .environmentObject(DeviceGroupStore.shared)
+        .adaptiveToolbarBackground()
     }
 }
 

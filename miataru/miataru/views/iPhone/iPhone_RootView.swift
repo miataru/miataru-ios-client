@@ -27,6 +27,7 @@ struct iPhone_RootView: View {
                 }
         }
         .environmentObject(DeviceGroupStore.shared)
+        .adaptiveToolbarBackground()
     }
 }
 

@@ -122,17 +122,7 @@ struct iPhone_GroupMapView: View {
                 updateButton()
             }
         }
-        // iOS 26
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbarBackgroundVisibility(.hidden)
-        .toolbarBackground(.hidden, for: .tabBar)
-        .toolbarBackgroundVisibility(.hidden)
-
-        // prior to iOS26
-        /*.toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        .toolbarBackground(.visible, for: .tabBar)
-        .toolbarBackground(.ultraThinMaterial, for: .tabBar)*/
+        .adaptiveToolbarBackground()
         .onAppear {
             if !groupDeviceIDs.isEmpty {
                 // Caching: Immediately show cached locations
