@@ -35,6 +35,7 @@ struct iPhone_GroupMapView: View {
     @State private var editingDeviceID: String? = nil // State for the device being edited
     @State private var showEditDeviceSheet: Bool = false // Sheet trigger for editing device
     @State private var showNetworkErrorIcon = false // Show network error icon
+    @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
@@ -94,6 +95,17 @@ struct iPhone_GroupMapView: View {
                 VStack {
                     mapSection()
                 }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                screenSize = geometry.size
+                            }
+                            .onChange(of: geometry.size) { _, newSize in
+                                screenSize = newSize
+                            }
+                    }
+                )
                 ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
                 // Network error icon (top left)
                 Group {
@@ -110,6 +122,25 @@ struct iPhone_GroupMapView: View {
                     }
                 }
                 .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+                
+                // Off-screen device arrows
+                if !screenSize.width.isZero && !screenSize.height.isZero {
+                    ForEach(groupDeviceIDs, id: \.self) { deviceID in
+                        if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+                           let coordinate = deviceLocations[deviceID],
+                           let region = currentRegion ?? cameraPosition.region {
+                            OffScreenDeviceArrow(
+                                deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
+                                deviceColor: Color(device.DeviceColor ?? UIColor.blue),
+                                screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
+                                deviceCoordinate: coordinate,
+                                mapRegion: region,
+                                screenSize: screenSize
+                            )
+                        }
+                    }
+                }
+                
                 // Scale bar always on top
                 Group {
                     if #available(iOS 17.0, *) {
@@ -232,6 +263,8 @@ struct iPhone_GroupMapView: View {
                 currentMapCamera = context.camera
                 currentRegion = context.region
             }
+            // Always update region for off-screen arrows
+            currentRegion = context.region
         }
         .onReceive(timeUpdateTimer) { input in
             now = input
