@@ -25,7 +25,13 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(miataruServerURL, forKey: Keys.miataruServerURL) }
     }
     @Published var trackAndReportLocation: Bool {
-        didSet { defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation) }
+        didSet { 
+            defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation)
+            // Check location permissions when tracking is enabled
+            if trackAndReportLocation {
+                checkAndRequestLocationPermissions()
+            }
+        }
     }
     @Published var saveLocationHistoryOnServer: Bool {
         didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }
@@ -70,6 +76,12 @@ class SettingsManager: ObservableObject {
         static let locationActivityType = "location_activity_type"
         static let locationSensitivityLevel = "location_sensitivity_level"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
+    }
+    
+    // MARK: - Location Permission Management
+    private func checkAndRequestLocationPermissions() {
+        // Reuse the existing LocationManager instance instead of creating a duplicate
+        LocationManager.shared.requestLocationPermission()
     }
     
     // MARK: - Initialwerte laden
