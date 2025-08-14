@@ -11,6 +11,7 @@ struct iPad_DevicesView: View {
     @State private var editMode: EditMode = .inactive
     @State private var lastDeviceListRefresh: Date? = nil
     @State private var isVisible: Bool = false
+    @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
 
     var body: some View {
         NavigationSplitView {
@@ -92,6 +93,7 @@ struct iPad_DevicesView: View {
         } detail: {
             if let selectedID = selection, let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
                 iPhone_DeviceMapView(deviceID: device.DeviceID)
+                    .id(mapViewKey) // Force view refresh when device changes
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: { editingDevice = device }) {
@@ -117,6 +119,10 @@ struct iPad_DevicesView: View {
         }
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
+        }
+        .onChange(of: selection) { _, newSelection in
+            // Force map view refresh when device selection changes
+            mapViewKey = UUID()
         }
     }
 
