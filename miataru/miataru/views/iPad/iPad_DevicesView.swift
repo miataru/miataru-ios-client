@@ -34,7 +34,7 @@ struct iPad_DevicesView: View {
                             }
                     }
                     .onDelete { indices in
-                        store.remove(atOffsets: indices)
+                        store.removeDevice(byID: store.devices[indices.first!].DeviceID)
                     }
                     .onMove { indices, newOffset in
                         store.move(fromOffsets: indices, toOffset: newOffset)
@@ -60,6 +60,10 @@ struct iPad_DevicesView: View {
             }
             .onAppear {
                 isVisible = true
+                // Automatically select the first device if no selection is made yet
+                if selection == nil && !store.devices.isEmpty {
+                    selection = store.devices.first?.DeviceID
+                }
             }
             .onDisappear {
                 isVisible = false

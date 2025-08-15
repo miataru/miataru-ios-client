@@ -66,7 +66,9 @@ struct iPhone_DevicesView: View {
                     store.devices.move(fromOffsets: indices, toOffset: newOffset)
                 }
                 .onDelete { indices in
-                    store.remove(atOffsets: indices)
+                    for index in indices {
+                        store.removeDevice(byID: store.devices[index].DeviceID)
+                    }
                 }
             }
             .environment(\.editMode, $editMode)
