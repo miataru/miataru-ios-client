@@ -4,14 +4,19 @@ struct iPad_OnboardingContainerView: View {
     @Binding var isPresented: Bool
     @Binding var currentPage: Int
     
-    private let pages: [AnyView] = [
-        AnyView(iPhone_1_OnboardingWelcomeView()),
-        AnyView(iPhone_2_OnboardingLocationPermissionView()),
-        AnyView(iPhone_3_OnboardingServerView()),
-        AnyView(iPhone_4_OnboardingLocationHistoryView()),
-        AnyView(iPhone_5_OnboardingQRcodeView()),
-        AnyView(iPhone_6_OnboardingDoneView())
-    ]
+    private var pages: [AnyView] {
+        [
+            AnyView(iPhone_1_OnboardingWelcomeView()),
+            AnyView(iPhone_2_OnboardingLocationPermissionView()),
+            AnyView(iPhone_3_OnboardingServerView()),
+            AnyView(iPhone_4_OnboardingLocationHistoryView()),
+            AnyView(iPhone_5_OnboardingQRcodeView()),
+            AnyView(iPhone_6_OnboardingDoneView(onFinish: {
+                UserDefaults.standard.hasCompletedOnboarding = true
+                isPresented = false
+            }))
+        ]
+    }
     
     var body: some View {
         VStack {
@@ -23,22 +28,6 @@ struct iPad_OnboardingContainerView: View {
             }
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-            
-            HStack {
-                if currentPage > 0 {
-                    Button("Previous") { currentPage -= 1 }
-                }
-                Spacer()
-                if currentPage < pages.count - 1 {
-                    Button("Next") { currentPage += 1 }
-                } else {
-                    Button("Finish") {
-                        UserDefaults.standard.hasCompletedOnboarding = true
-                        isPresented = false
-                    }
-                }
-            }
-            .padding()
         }
         .background(Color(.systemBackground))
         .ignoresSafeArea()

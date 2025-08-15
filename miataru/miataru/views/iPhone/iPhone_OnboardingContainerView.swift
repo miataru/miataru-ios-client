@@ -28,18 +28,6 @@ struct iPhone_OnboardingContainerView: View {
             }
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-            
-            /*HStack {
-                if currentPage > 0 {
-                    Button("Previous") { currentPage -= 1 }
-                }
-                Spacer()
-                if currentPage < pages.count - 1 {
-                    Button("Next") { currentPage += 1 }
-                }
-                // Finish-Button entfernt, da jetzt im Done-View
-            }
-            .padding()*/
         }
         .background(Color(.systemBackground))
         .ignoresSafeArea()
