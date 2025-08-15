@@ -105,20 +105,40 @@ struct iPad_DeviceMapView: View {
             // Network error icon (top left)
             networkErrorIconView()
             
-            // Off-screen device arrow (only shown when device is outside visible area and map is not rotated)
+            // Off-screen device arrows for all known devices (only shown when map is not rotated)
             if !screenSize.width.isZero && !screenSize.height.isZero,
-               let device = device,
-               let coordinate = deviceLocation,
                let region = currentRegion ?? cameraPosition.region {
-                OffScreenDeviceArrow(
-                    deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
-                    deviceColor: Color(device.DeviceColor ?? UIColor.blue),
-                    screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
-                    deviceCoordinate: coordinate,
-                    mapRegion: region,
-                    screenSize: screenSize,
-                    isMapRotated: userHasRotatedMap
-                )
+                // Show arrow for the current device
+                if let device = device,
+                   let coordinate = deviceLocation {
+                    OffScreenDeviceArrow(
+                        deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
+                        deviceColor: Color(device.DeviceColor ?? UIColor.blue),
+                        screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
+                        deviceCoordinate: coordinate,
+                        mapRegion: region,
+                        screenSize: screenSize,
+                        isMapRotated: userHasRotatedMap
+                    )
+                }
+                
+                // Show arrows for other known devices that are outside the visible area (only if setting is enabled)
+                if settings.showOffscreenArrowsForOtherDevices {
+                    ForEach(deviceStore.devices.filter { $0.DeviceID != deviceID }, id: \.DeviceID) { otherDevice in
+                        if let cached = DeviceLocationCacheStore.shared.getLocation(for: otherDevice.DeviceID) {
+                            let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                            OffScreenDeviceArrow(
+                                deviceName: otherDevice.DeviceName.isEmpty ? otherDevice.DeviceID : otherDevice.DeviceName,
+                                deviceColor: Color(otherDevice.DeviceColor ?? UIColor.blue),
+                                screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
+                                deviceCoordinate: coordinate,
+                                mapRegion: region,
+                                screenSize: screenSize,
+                                isMapRotated: userHasRotatedMap
+                            )
+                        }
+                    }
+                }
             }
             
             // Scale bar always on top

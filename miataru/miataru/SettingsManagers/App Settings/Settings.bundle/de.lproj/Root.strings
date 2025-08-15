@@ -26,6 +26,7 @@
 "app_behaviour" = "Anwendungsverhalten";
 "deactivate_device_lock" = "Gerätesperre deaktivieren";
 "indicate_location_accuracy" = "Genauigkeit anzeigen";
+"show_offscreen_arrows_for_other_devices" = "Offscreen-Pfeile für andere Geräte anzeigen";
 "show_history_days" = "Anzahl der anzuzeigenden Tage";
 "1day" = "1 Tag";
 "2days" = "2 Tage";

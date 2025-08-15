@@ -67,20 +67,32 @@ struct OffScreenDeviceArrow: View {
         // Convert device coordinate to screen position
         let deviceScreenPoint = coordinateToScreenPoint(deviceCoordinate)
         
+        // Debug: Print screen coordinates
+        let _ = print("📍 Device \(deviceName) screen position: \(deviceScreenPoint), screen size: \(screenSize)")
+        
+
+        
         // Check if device is outside screen bounds
-        let margin: CGFloat = 20
+        let margin: CGFloat = 50 // Increased margin for better detection
         let isOutsideScreen = deviceScreenPoint.x < margin || 
                              deviceScreenPoint.x > screenSize.width - margin ||
                              deviceScreenPoint.y < margin || 
                              deviceScreenPoint.y > screenSize.height - margin
         
-        guard isOutsideScreen else { return nil }
+        let _ = print("🔍 Device \(deviceName) is outside screen: \(isOutsideScreen) (margin: \(margin))")
+        
+        guard isOutsideScreen else { 
+            let _ = print("❌ Device \(deviceName) is inside screen bounds, no arrow needed")
+            return nil 
+        }
         
         // Calculate arrow position on screen edge
         let arrowPosition = calculateEdgePosition(deviceScreenPoint: deviceScreenPoint)
         
         // Calculate rotation angle to point towards device
         let rotation = calculateRotationAngle(from: arrowPosition, to: deviceScreenPoint)
+        
+        let _ = print("✅ Showing arrow for \(deviceName) at position: \(arrowPosition) with rotation: \(rotation)")
         
         return (position: arrowPosition, rotation: rotation)
     }
@@ -92,6 +104,14 @@ struct OffScreenDeviceArrow: View {
         
         let screenX = screenCenter.x + CGFloat(lonRatio) * screenSize.width
         let screenY = screenCenter.y - CGFloat(latRatio) * screenSize.height // Inverted Y axis
+        
+        // Debug: Print coordinate conversion details
+        let _ = print("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
+        let _ = print("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
+        let _ = print("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
+        let _ = print("📊 Ratios: lat=\(latRatio), lon=\(lonRatio)")
+        let _ = print("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
+        let _ = print("🎯 Calculated screen position: \(screenX), \(screenY)")
         
         return CGPoint(x: screenX, y: screenY)
     }

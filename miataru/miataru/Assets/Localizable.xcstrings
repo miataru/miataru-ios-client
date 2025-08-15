@@ -2358,6 +2358,29 @@
         }
       }
     },
+    "explanation_show_offscreen_arrows_for_other_devices" : {
+      "comment" : "Explanation for show offscreen arrows for other devices toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, werden auf der Karte Pfeile angezeigt, die auf andere bekannte Geräte zeigen, die sich außerhalb des sichtbaren Bereichs befinden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the map will show arrows pointing to other known devices that are located outside the visible area."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、マップに表示範囲外にある他の既知のデバイスを指す矢印が表示されます。"
+          }
+        }
+      }
+    },
     "explanation_zoom_to_fit_for_groups" : {
       "comment" : "Explanation for zoom to fit for groups toggle",
       "localizations" : {
@@ -4620,6 +4643,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴表示日数"
+          }
+        }
+      }
+    },
+    "show_offscreen_arrows_for_other_devices" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offscreen-Pfeile für andere Geräte anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show offscreen arrows for other devices"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "他のデバイスのオフスクリーン矢印を表示"
           }
         }
       }

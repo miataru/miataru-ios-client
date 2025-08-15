@@ -160,6 +160,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>show_offscreen_arrows_for_other_devices</string>
+			<key>Key</key>
+			<string>show_offscreen_arrows_for_other_devices</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>auto_refresh_device_list</string>
 			<key>Key</key>
 			<string>auto_refresh_device_list</string>

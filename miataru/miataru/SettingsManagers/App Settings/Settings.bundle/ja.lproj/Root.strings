@@ -26,6 +26,7 @@
 "app_behaviour" = "アプリの動作";
 "deactivate_device_lock" = "デバイスロックを無効化";
 "indicate_location_accuracy" = "位置情報の精度を示す";
+"show_offscreen_arrows_for_other_devices" = "他のデバイスのオフスクリーン矢印を表示";
 "show_history_days" = "履歴表示日数";
 "1day" = "1日";
 "2days" = "2日間";
