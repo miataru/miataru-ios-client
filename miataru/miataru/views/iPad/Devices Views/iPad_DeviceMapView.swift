@@ -290,87 +290,87 @@ struct iPad_DeviceMapView: View {
     @ViewBuilder
     private func mapSection() -> some View {
         // Use the new Map API for iOS 17 and above
-        if #available(iOS 17.0, *) {
-            Map(position: $cameraPosition, scope: mapScope) {
-                // Show device marker if location is available
-                if let coordinate = animatedDeviceLocation, let device = device {
-                    // Draw accuracy circle if enabled and accuracy is valid
-                    if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
-                        MapCircle(center: coordinate, radius: accuracy)
-                            .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
-                    }
-                    // Marker annotation for the device
-                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    Annotation("", coordinate: coordinate, anchor: .bottom) {
-                        ZStack {
-                            VStack(spacing: 0) {
-                                // Show relative timestamp above marker
-                                if let timestamp = deviceTimestamp {
-                                    Text(relativeTimeString(from: timestamp, to: now))
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                        )
-                                        .shimmering(active: isLoading)
+            if #available(iOS 17.0, *) {
+                Map(position: $cameraPosition, scope: mapScope) {
+                    // Show device marker if location is available
+                    if let coordinate = animatedDeviceLocation, let device = device {
+                        // Draw accuracy circle if enabled and accuracy is valid
+                        if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
+                            MapCircle(center: coordinate, radius: accuracy)
+                                .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
+                        }
+                        // Marker annotation for the device
+                        let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+                        Annotation("", coordinate: coordinate, anchor: .bottom) {
+                            ZStack {
+                                VStack(spacing: 0) {
+                                    // Show relative timestamp above marker
+                                    if let timestamp = deviceTimestamp {
+                                        Text(relativeTimeString(from: timestamp, to: now))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                            )
+                                            .shimmering(active: isLoading)
+                                            .shadow(radius: 2)
+                                    }
+                                    MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                         .shadow(radius: 2)
-                                }
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
-                                    .shadow(radius: 2)
-                                // Device name label below the marker with outline for readability
-                                ZStack {
-                                    // Draw thicker outline (stroke) in all directions
-                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                            if x != 0 || y != 0 {
-                                                Text(annotationID)
-                                                    .font(.callout)
-                                                    .foregroundColor(Color(UIColor.systemBackground))
-                                                    .padding(.top, 2)
-                                                    .offset(x: CGFloat(x), y: CGFloat(y))
+                                    // Device name label below the marker with outline for readability
+                                    ZStack {
+                                        // Draw thicker outline (stroke) in all directions
+                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                            ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                                if x != 0 || y != 0 {
+                                                    Text(annotationID)
+                                                        .font(.callout)
+                                                        .foregroundColor(Color(UIColor.systemBackground))
+                                                        .padding(.top, 2)
+                                                        .offset(x: CGFloat(x), y: CGFloat(y))
+                                                }
                                             }
                                         }
+                                        // Main text
+                                        Text(annotationID)
+                                            .font(.callout)
+                                            .foregroundColor(Color(UIColor.label))
+                                            .padding(.top, 2)
                                     }
-                                    // Main text
-                                    Text(annotationID)
-                                        .font(.callout)
-                                        .foregroundColor(Color(UIColor.label))
-                                        .padding(.top, 2)
                                 }
+                                    // Add a transparent rectangle to increase the tap area for the context menu
+                                    Rectangle()
+                                        .foregroundColor(.clear)
+                                        .contentShape(Rectangle())
+                                        .frame(width: 60, height: 80)
+                                        .zIndex(1)
+                                        .contextMenu {
+                                            Button("edit_device") {
+                                                showEditDeviceSheet = true
+                                            }
+                                        }
                             }
-                            // Add a transparent rectangle to increase the tap area for the context menu
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .contentShape(Rectangle())
-                                .frame(width: 60, height: 80)
-                                .zIndex(1)
-                                .contextMenu {
-                                    Button {
-                                        showEditDeviceSheet = true
-                                    } label: {
-                                        Label("edit_device", systemImage: "pencil")
-                                    }
-                                }
-                        }.offset(y:10)
+                            .offset(y:10)
+                        }
                     }
                 }
+                .mapControls {
+                    MapCompass(heading: 1, size: 10)
+                        .mapControlVisibility(.hidden)
+                }
+                .ignoresSafeArea()
+                .mapStyle(mapStyleFromSettings(settings.mapType))
+            } else {
+                // For iOS versions below 17, use a legacy map view implementation
+                if let currentDevice = device {
+                    iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
+                        .ignoresSafeArea()
+                }
             }
-            .mapControls {
-                MapCompass(heading: 1, size: 10)
-                    .mapControlVisibility(.hidden)
-            }
-            .ignoresSafeArea()
-            .mapStyle(mapStyleFromSettings(settings.mapType))
-        } else {
-            // For iOS versions below 17, use a legacy map view implementation
-            if let currentDevice = device {
-                iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
-                    .ignoresSafeArea()
-            }
-        }
+
     }
 
     @ViewBuilder
@@ -421,7 +421,7 @@ struct iPad_DeviceMapView: View {
                 // Cache the new location
                 DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate)
                 if coordinateChanged {
-                    // iPad-specific: Enhanced location change animations
+                    // iPad-specific: Enhanced location change animations with explicit map movement
                     withAnimation(.easeInOut(duration: 1.2)) {
                         if #available(iOS 17.0, *) {
                             if resetZoomToSettings {
@@ -431,7 +431,7 @@ struct iPad_DeviceMapView: View {
                                 cameraPosition = .camera(northCamera)
                                 currentMapSpan = settingsSpan // Also update currentMapSpan
                             } else {
-                                // On automatic update: keep current orientation (heading)
+                                // On automatic update: keep current orientation (heading) but animate map movement
                                 if let currentCamera = currentMapCamera {
                                     let newCamera = MapCamera(
                                         centerCoordinate: coordinate,
@@ -450,7 +450,7 @@ struct iPad_DeviceMapView: View {
                                 let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
                             } else {
-                                // On automatic update: keep current zoom level
+                                // On automatic update: keep current zoom level but animate map movement
                                 let currentZoomLevel = currentZoomLevelFromSpan(region.span)
                                 let currentSpan = spanForZoomLevel(currentZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: currentSpan)

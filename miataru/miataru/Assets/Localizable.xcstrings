@@ -1274,30 +1274,6 @@
         }
       }
     },
-    "compass_north_label" : {
-      "comment" : "Compass North label",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "N"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "N"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "北"
-          }
-        }
-      }
-    },
     "compass_NW" : {
       "comment" : "Compass North-West abbreviation",
       "localizations" : {

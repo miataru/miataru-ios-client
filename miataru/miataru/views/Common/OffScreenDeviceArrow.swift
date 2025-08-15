@@ -12,6 +12,24 @@ struct OffScreenDeviceArrow: View {
     
     @State private var isVisible = false
     
+    // Computed property to determine the best text color for contrast
+    private var textColor: Color {
+        // Convert device color to UIColor to check brightness
+        let uiColor = UIColor(deviceColor)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        // Calculate perceived brightness using standard formula
+        let brightness = (0.299 * red + 0.587 * green + 0.114 * blue)
+        
+        // Use white text for dark backgrounds, black text for light backgrounds
+        return brightness > 0.5 ? .black : .white
+    }
+    
     var body: some View {
         // Hide arrow when map is rotated
         if !isMapRotated, let arrowPosition = calculateArrowPosition() {
@@ -27,7 +45,7 @@ struct OffScreenDeviceArrow: View {
                 Text(deviceName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .foregroundColor(textColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(deviceColor)
