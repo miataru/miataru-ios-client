@@ -94,8 +94,6 @@ struct iPad_LegacyMapViewRepresentable: UIViewRepresentable {
             UIGraphicsBeginImageContextWithOptions(size, false, 0)
             defer { UIGraphicsEndImageContext() }
             
-            guard let context = UIGraphicsGetCurrentContext() else { return nil }
-            
             // Draw a custom marker shape
             let path = UIBezierPath()
             path.move(to: CGPoint(x: 15, y: 0))
