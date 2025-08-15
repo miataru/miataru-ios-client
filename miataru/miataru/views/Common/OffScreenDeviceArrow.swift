@@ -80,9 +80,6 @@ struct OffScreenDeviceArrow: View {
     
     private func calculateEdgePosition(deviceScreenPoint: CGPoint) -> CGPoint {
         let margin: CGFloat = 30
-        let screenBounds = CGRect(x: margin, y: margin, 
-                                width: screenSize.width - 2 * margin, 
-                                height: screenSize.height - 2 * margin)
         
         // Calculate intersection with screen edges
         let center = screenCenter

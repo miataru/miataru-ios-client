@@ -92,7 +92,7 @@ struct iPad_DevicesView: View {
             }
         } detail: {
             if let selectedID = selection, let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
-                iPhone_DeviceMapView(deviceID: device.DeviceID)
+                iPad_DeviceMapView(deviceID: device.DeviceID)
                     .id(mapViewKey) // Force view refresh when device changes
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
