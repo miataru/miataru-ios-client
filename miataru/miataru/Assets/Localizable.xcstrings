@@ -2085,29 +2085,6 @@
         }
       }
     },
-    "edit_group" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gruppe bearbeiten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Edit Group"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "グループを編集"
-          }
-        }
-      }
-    },
     "Enable Location Tracking" : {
       "localizations" : {
         "de" : {
@@ -4371,29 +4348,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイスを選択"
-          }
-        }
-      }
-    },
-    "Select a group to view details" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wähle eine Gruppe aus"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select a group to view details"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "グループを選択"
           }
         }
       }
