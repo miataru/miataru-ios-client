@@ -236,6 +236,44 @@ struct iPhone_GroupMapView: View {
             deviceTimestamps = deviceTimestamps.filter { validIDs.contains($0.key) }
             updateMapRegionToFitDevices()
         }
+        .onChange(of: group.id) { _, _ in
+            // Reset state when switching to a different group
+            deviceLocations.removeAll()
+            deviceAccuracies.removeAll()
+            deviceTimestamps.removeAll()
+            animatedDeviceLocations.removeAll()
+            
+            // Clear any existing timer
+            stopAutoUpdate()
+            
+            // Re-initialize the view for the new group
+            if !groupDeviceIDs.isEmpty {
+                // Caching: Immediately show cached locations
+                for deviceID in groupDeviceIDs {
+                    if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
+                        let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                        deviceLocations[deviceID] = coordinate
+                        // Initialize animated location with cached location
+                        animatedDeviceLocations[deviceID] = coordinate
+                        deviceAccuracies[deviceID] = cached.accuracy
+                        deviceTimestamps[deviceID] = cached.timestamp
+                        now = Date() // Update time immediately for each hit
+                    }
+                }
+                // Animierte Marker-Positionen initialisieren
+                animatedDeviceLocations = deviceLocations
+                
+                // Set initial map position based on available locations
+                let bestLocation = bestAvailableLocation
+                let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
+                }
+                
+                Task { await fetchAllLocations() }
+                startAutoUpdate()
+            }
+        }
         // TODO: this is not working as expected, the marker is not animated / compile crashes
         /*.onChange(of: deviceLocations) { newValue in
             // Für alle deviceIDs, die sich geändert haben, animiere die Position
