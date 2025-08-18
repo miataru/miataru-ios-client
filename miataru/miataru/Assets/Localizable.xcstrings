@@ -2086,6 +2086,7 @@
       }
     },
     "edit_group" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3728,6 +3729,9 @@
         }
       }
     },
+    "no_groups_available_create_new" : {
+      "comment" : "No groups available. Create a new group to get started."
+    },
     "no_location_data_found" : {
       "comment" : "No location available",
       "localizations" : {
@@ -4358,6 +4362,7 @@
       }
     },
     "Select a group to view details" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

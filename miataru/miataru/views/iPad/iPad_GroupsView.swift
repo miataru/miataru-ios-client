@@ -6,6 +6,7 @@ struct iPad_GroupsView: View {
     @State private var showingAddGroup = false
     @State private var editingGroup: DeviceGroup? = nil
     @State private var editMode: EditMode = .inactive
+    @State private var currentGroup: DeviceGroup? = nil // Track the currently displayed group
 
     var body: some View {
         NavigationSplitView {
@@ -15,11 +16,11 @@ struct iPad_GroupsView: View {
                         iPhone_GroupRowView(group: group)
                             .tag(group.id)
                             .contextMenu {
-                                Button {
+                                /*Button {
                                     editingGroup = group
                                 } label: {
                                     Label("edit_group", systemImage: "pencil")
-                                }
+                                }*/
                                 Button(role: .destructive) {
                                     groupStore.remove(group: group)
                                 } label: {
@@ -51,10 +52,11 @@ struct iPad_GroupsView: View {
             .environment(\.editMode, $editMode)
         } detail: {
             if let selectedID = selection, let group = groupStore.groups.first(where: { $0.id == selectedID }) {
-                iPhone_GroupMapView(group: group)
+                iPad_GroupMapView(group: group)
+                    .environmentObject(groupStore) // Pass the groupStore to the map view
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { editingGroup = group }) {
+                            Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
                                 Image(systemName: "pencil")
                             }
                         }
@@ -62,13 +64,59 @@ struct iPad_GroupsView: View {
                     .sheet(item: $editingGroup) { group in
                         iPhone_GroupDetailView(group: group)
                     }
+                    .onChange(of: editingGroup) { _, newValue in
+                        // When the editingGroup becomes nil (sheet is dismissed), 
+                        // force a refresh of the map view
+                        if newValue == nil {
+                            // Trigger a refresh by temporarily clearing and restoring the selection
+                            let currentSelection = selection
+                            selection = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                selection = currentSelection
+                            }
+                        }
+                    }
+            } else if let firstGroup = groupStore.groups.first {
+                // Automatically show the first group if no group is selected
+                iPad_GroupMapView(group: firstGroup)
+                    .environmentObject(groupStore)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: { editingGroup = firstGroup }) {
+                                Image(systemName: "pencil")
+                            }
+                        }
+                    }
+                    .sheet(item: $editingGroup) { group in
+                        iPhone_GroupDetailView(group: group)
+                    }
+                    .onChange(of: editingGroup) { _, newValue in
+                        // When the editingGroup becomes nil (sheet is dismissed), 
+                        // force a refresh of the map view
+                        if newValue == nil {
+                            // Trigger a refresh by temporarily clearing and restoring the selection
+                            let currentSelection = selection
+                            selection = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                selection = currentSelection
+                            }
+                        }
+                    }
             } else {
-                Text("Select a group to view details")
+                Text(NSLocalizedString("no_groups_available_create_new", comment: "No groups available. Create a new group to get started."))
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
             }
         }
         .sheet(isPresented: $showingAddGroup) {
             iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
+        }
+        .onAppear {
+            // Automatically select the first group if no group is currently selected
+            if selection == nil && !groupStore.groups.isEmpty {
+                selection = groupStore.groups.first?.id
+            }
         }
     }
 }

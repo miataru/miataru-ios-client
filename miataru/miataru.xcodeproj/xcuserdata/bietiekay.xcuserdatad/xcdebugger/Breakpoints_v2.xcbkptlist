@@ -16,8 +16,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "369"
             endingLineNumber = "369"
-            landmarkName = "iPhone_GroupMapView"
-            landmarkType = "14">
+            landmarkName = "mapSection()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "393"
             endingLineNumber = "393"
-            landmarkName = "fetchAllLocations()"
+            landmarkName = "mapSection()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
