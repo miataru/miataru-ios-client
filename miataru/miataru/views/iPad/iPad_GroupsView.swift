@@ -62,7 +62,7 @@ struct iPad_GroupsView: View {
                         }
                     }
                     .sheet(item: $editingGroup) { group in
-                        iPhone_GroupDetailView(group: group)
+                        iPad_GroupDetailView(group: group)
                     }
                     .onChange(of: editingGroup) { _, newValue in
                         // When the editingGroup becomes nil (sheet is dismissed), 
@@ -88,7 +88,7 @@ struct iPad_GroupsView: View {
                         }
                     }
                     .sheet(item: $editingGroup) { group in
-                        iPhone_GroupDetailView(group: group)
+                        iPad_GroupDetailView(group: group)
                     }
                     .onChange(of: editingGroup) { _, newValue in
                         // When the editingGroup becomes nil (sheet is dismissed), 

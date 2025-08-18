@@ -2019,7 +2019,7 @@
       }
     },
     "Done" : {
-      "comment" : "Button to close color picker sheet",
+      "comment" : "Button to close color picker sheet\nDone button to dismiss the current view",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3730,7 +3730,21 @@
       }
     },
     "no_groups_available_create_new" : {
-      "comment" : "No groups available. Create a new group to get started."
+      "comment" : "No groups available. Create a new group to get started.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Gruppen verfügbar. Erstelle eine neue Gruppe, um zu beginnen."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用できるグループはありません。新しいグループを作成して開始してください。"
+          }
+        }
+      }
     },
     "no_location_data_found" : {
       "comment" : "No location available",

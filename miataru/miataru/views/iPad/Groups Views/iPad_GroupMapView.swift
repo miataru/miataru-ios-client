@@ -416,7 +416,7 @@ struct iPad_GroupMapView: View {
     
     @ViewBuilder
     private func updateButton() -> some View {
-        NavigationLink(destination: iPhone_GroupDetailView(group: group)) {
+        NavigationLink(destination: iPad_GroupDetailView(group: group)) {
             Text("group_detailview_edit")
         }
     }
