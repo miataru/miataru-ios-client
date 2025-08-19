@@ -44,6 +44,7 @@ struct iPad_DeviceMapView: View {
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Timer for updating 'now'
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
+    @State private var isUpdating = false // Controls update button animation state
     
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
@@ -423,10 +424,19 @@ struct iPad_DeviceMapView: View {
     @ViewBuilder
     private func updateButton() -> some View {
         // Button to manually update device location
-        Button("update") {
+        Button {
+            withAnimation {
+                isUpdating = true
+            }
             Task {
                 await fetchLocation(resetZoomToSettings: true)
+                withAnimation {
+                    isUpdating = false
+                }
             }
+        } label: {
+            Image(systemName: "arrow.clockwise")
+                .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
         }
     }
     

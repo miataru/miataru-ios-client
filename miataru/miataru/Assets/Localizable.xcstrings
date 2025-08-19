@@ -4973,6 +4973,7 @@
     },
     "update" : {
       "comment" : "Update button to refresh device location",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
