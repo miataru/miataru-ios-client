@@ -12,6 +12,8 @@ struct iPhone_DevicesView: View {
     @State private var selectedDeviceID: String? = nil
     @State private var lastDeviceListRefresh: Date? = nil
     @State private var isVisible: Bool = false
+    @State private var navigateToDeviceID: String? = nil // For navigation from DeviceMapView
+    @State private var navigationTrigger = UUID() // Force navigation refresh
 
     var body: some View {
         NavigationStack {
@@ -86,7 +88,24 @@ struct iPhone_DevicesView: View {
                 }
             }
             .navigationDestination(for: String.self) { deviceID in
-                iPhone_DeviceMapView(deviceID: deviceID)
+                iPhone_DeviceMapView(
+                    deviceID: deviceID,
+                    onNavigateToDevice: { newDeviceID in
+                        // Navigate to the new device
+                        navigateToDeviceID = newDeviceID
+                        navigationTrigger = UUID() // Force navigation refresh
+                    }
+                )
+            }
+            .navigationDestination(item: $navigateToDeviceID) { deviceID in
+                iPhone_DeviceMapView(
+                    deviceID: deviceID,
+                    onNavigateToDevice: { newDeviceID in
+                        // Navigate to the new device
+                        navigateToDeviceID = newDeviceID
+                        navigationTrigger = UUID() // Force navigation refresh
+                    }
+                )
             }
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)

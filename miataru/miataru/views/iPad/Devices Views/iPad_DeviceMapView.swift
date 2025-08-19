@@ -9,6 +9,7 @@ struct iPad_DeviceMapView: View {
     var previewDeviceLocation: CLLocationCoordinate2D? = nil
     var previewDeviceAccuracy: Double? = nil
     var previewDeviceTimestamp: Date? = nil
+    var onNavigateToDevice: ((String) -> Void)? = nil // Callback for navigation
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
@@ -120,7 +121,21 @@ struct iPad_DeviceMapView: View {
                         screenSize: screenSize,
                         isMapRotated: userHasRotatedMap,
                         arrowIndex: 0,
-                        totalArrows: 1
+                        totalArrows: 1,
+                        behavior: .jumpToLocation,
+                        onTap: {
+                            // Animate to device location
+                            withAnimation(.easeInOut(duration: 0.8)) {
+                                if #available(iOS 17.0, *) {
+                                    if let currentRegion = cameraPosition.region {
+                                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                                    }
+                                } else {
+                                    // Fallback for older iOS versions
+                                    self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                                }
+                            }
+                        }
                     )
                 }
                 
@@ -139,7 +154,12 @@ struct iPad_DeviceMapView: View {
                                 screenSize: screenSize,
                                 isMapRotated: userHasRotatedMap,
                                 arrowIndex: index,
-                                totalArrows: offscreenDevices.count
+                                totalArrows: offscreenDevices.count,
+                                behavior: .navigateToDevice,
+                                onTap: {
+                                    // Navigate to device detail view
+                                    onNavigateToDevice?(otherDevice.DeviceID)
+                                }
                             )
                         }
                     }
@@ -576,6 +596,7 @@ struct iPad_DeviceMapView: View {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
         }
+
     }
 }
 
@@ -589,7 +610,10 @@ struct iPad_DeviceMapView: View {
             deviceID: mockDevice.DeviceID,
             previewDeviceLocation: mockLocation,
             previewDeviceAccuracy: mockAccuracy,
-            previewDeviceTimestamp: mockTimestamp
+            previewDeviceTimestamp: mockTimestamp,
+            onNavigateToDevice: { deviceID in
+                print("Preview: Would navigate to device \(deviceID)")
+            }
         )
     }
 }

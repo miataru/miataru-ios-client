@@ -11,8 +11,11 @@ struct OffScreenDeviceArrow: View {
     let isMapRotated: Bool
     let arrowIndex: Int // New parameter for positioning
     let totalArrows: Int // New parameter for positioning
+    let behavior: ArrowBehavior // Determines what happens when tapped
+    let onTap: () -> Void // Callback when arrow is tapped
     
     @State private var isVisible = false
+    @State private var isPressed = false // Track press state for visual feedback
     
     // Computed property to determine the best text color for contrast
     private var textColor: Color {
@@ -56,7 +59,22 @@ struct OffScreenDeviceArrow: View {
             }
             .position(arrowPosition.position)
             .opacity(isVisible ? 1.0 : 0.0)
+            .scaleEffect(isPressed ? 0.9 : 1.0) // Visual feedback when pressed
             .animation(.easeInOut(duration: 0.3), value: isVisible)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .onTapGesture {
+                // Haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                
+                // Call the onTap callback
+                onTap()
+            }
+            .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = pressing
+                }
+            }, perform: {})
             .onAppear {
                 withAnimation(.easeInOut(duration: 0.3).delay(0.1)) {
                     isVisible = true
@@ -228,6 +246,11 @@ enum Edge {
     case left, right, top, bottom
 }
 
+enum ArrowBehavior {
+    case navigateToDevice // Navigate to device detail view
+    case jumpToLocation   // Jump to location on current map
+}
+
 extension CGPoint {
     func distance(to other: CGPoint) -> CGFloat {
         let dx = x - other.x
@@ -253,7 +276,11 @@ extension CGPoint {
             screenSize: CGSize(width: 300, height: 400),
             isMapRotated: false,
             arrowIndex: 0,
-            totalArrows: 1
+            totalArrows: 1,
+            behavior: .jumpToLocation,
+            onTap: {
+                print("Preview: Tapped on iPhone 13 arrow")
+            }
         )
     }
 }

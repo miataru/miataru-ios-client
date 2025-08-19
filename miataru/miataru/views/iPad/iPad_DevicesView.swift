@@ -96,7 +96,13 @@ struct iPad_DevicesView: View {
             }
         } detail: {
             if let selectedID = selection, let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
-                iPad_DeviceMapView(deviceID: device.DeviceID)
+                iPad_DeviceMapView(
+                    deviceID: device.DeviceID,
+                    onNavigateToDevice: { newDeviceID in
+                        // Navigate to the new device in the split view
+                        selection = newDeviceID
+                    }
+                )
                     .id(mapViewKey) // Force view refresh when device changes
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {

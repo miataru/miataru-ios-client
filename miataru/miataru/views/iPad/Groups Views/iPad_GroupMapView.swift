@@ -102,7 +102,21 @@ struct iPad_GroupMapView: View {
                     screenSize: screenSize,
                     isMapRotated: userHasRotatedMap,
                     arrowIndex: index,
-                    totalArrows: groupDeviceIDs.count
+                    totalArrows: groupDeviceIDs.count,
+                    behavior: .jumpToLocation,
+                    onTap: {
+                        // Animate to device location
+                        withAnimation(.easeInOut(duration: 0.8)) {
+                            if #available(iOS 17.0, *) {
+                                if let currentRegion = cameraPosition.region {
+                                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                                }
+                            } else {
+                                // Fallback for older iOS versions
+                                self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                            }
+                        }
+                    }
                 )
             }
         }
