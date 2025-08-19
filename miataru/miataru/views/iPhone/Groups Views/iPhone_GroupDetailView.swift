@@ -65,12 +65,12 @@ struct iPhone_GroupDetailView: View {
                 }
             }
         }
-        .navigationTitle(group.groupName)
+        .navigationTitle("edit_group")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showsDoneButton {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(NSLocalizedString("done", comment: "Close group details")) {
+                    Button(NSLocalizedString("Done", comment: "Close group details")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }

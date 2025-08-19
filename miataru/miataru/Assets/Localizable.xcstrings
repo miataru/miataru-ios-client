@@ -2021,11 +2021,8 @@
         }
       }
     },
-    "done" : {
-      "comment" : "Close group details"
-    },
     "Done" : {
-      "comment" : "Button to close color picker sheet\nDone button to dismiss the current view",
+      "comment" : "Button to close color picker sheet\nClose group details\nDone button to dismiss the current view",
       "localizations" : {
         "de" : {
           "stringUnit" : {
