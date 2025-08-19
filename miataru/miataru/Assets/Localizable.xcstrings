@@ -2064,6 +2064,7 @@
       }
     },
     "edit_device" : {
+      "comment" : "Edit device button",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4331,6 +4332,7 @@
       }
     },
     "Select a device to view details" : {
+      "comment" : "Select a device to view details",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4934,6 +4936,7 @@
       }
     },
     "update" : {
+      "comment" : "Update button to refresh device location",
       "localizations" : {
         "de" : {
           "stringUnit" : {
