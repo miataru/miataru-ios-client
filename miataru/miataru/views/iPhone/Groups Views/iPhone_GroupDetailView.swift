@@ -2,6 +2,7 @@ import SwiftUI
 
 struct iPhone_GroupDetailView: View {
     @ObservedObject var group: DeviceGroup
+    var showsDoneButton: Bool = true
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @State private var editingDevice: KnownDevice? = nil
     @State private var previousGroupName: String = ""
@@ -67,9 +68,11 @@ struct iPhone_GroupDetailView: View {
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
+            if showsDoneButton {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(NSLocalizedString("done", comment: "Close group details")) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
             }
             // ToolbarItem(placement: .navigationBarTrailing) {

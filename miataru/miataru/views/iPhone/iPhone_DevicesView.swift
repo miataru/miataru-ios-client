@@ -76,8 +76,15 @@ struct iPhone_DevicesView: View {
             .navigationTitle("devices")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(editMode == .active ? "devicelist_edit_done" : "devicelist_editbutton") {
+                    Button {
                         editMode = editMode == .active ? .inactive : .active
+                    } label: {
+                        if editMode == .active {
+                            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
+                        } else {
+                            Image(systemName: "pencil")
+                                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {

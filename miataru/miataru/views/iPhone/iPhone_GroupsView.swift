@@ -27,6 +27,18 @@ struct iPhone_GroupsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle(NSLocalizedString("groups", comment: "Navigation title for the groups list"))
                 .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            editMode = editMode == .active ? .inactive : .active
+                        } label: {
+                            if editMode == .active {
+                                Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+                            } else {
+                                Image(systemName: "pencil")
+                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
@@ -52,6 +64,19 @@ struct iPhone_GroupsView: View {
                                 Label("delete_group", systemImage: "trash")
                             }
                         }
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                editingGroup = group
+                                selectedGroupID = group.id
+                            } label: {
+                                Label {
+                                    Text(NSLocalizedString("edit_group", comment: "Edit group"))
+                                } icon: {
+                                    Image(systemName: "pencil")
+                                }
+                            }
+                            .tint(.blue)
+                        }
                     }
                     .onMove { indices, newOffset in
                         groupStore.move(fromOffsets: indices, toOffset: newOffset)
@@ -63,6 +88,18 @@ struct iPhone_GroupsView: View {
                 .environment(\.editMode, $editMode)
                 .navigationTitle(NSLocalizedString("groups", comment: "Navigation title for the groups list"))
                 .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            editMode = editMode == .active ? .inactive : .active
+                        } label: {
+                            if editMode == .active {
+                                Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+                            } else {
+                                Image(systemName: "pencil")
+                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
@@ -73,7 +110,13 @@ struct iPhone_GroupsView: View {
                     iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
                 }
                 .sheet(item: $editingGroup) { group in
-                    iPhone_GroupDetailView(group: group)
+                    GroupEditSheetContainer(group: group) {
+                        editingGroup = nil
+                        selectedGroupID = nil
+                    } onSave: {
+                        editingGroup = nil
+                        selectedGroupID = nil
+                    }
                 }
                 .navigationDestination(for: String.self) { groupID in
                     if let group = groupStore.groups.first(where: { $0.id == groupID }) {
@@ -85,9 +128,55 @@ struct iPhone_GroupsView: View {
                 .onChange(of: selectedGroupID) {
                     // Optional: handle side effects if needed
                 }
+                .onChange(of: editingGroup) {
+                    if editingGroup == nil {
+                        selectedGroupID = nil
+                    }
+                }
             }
         }
         .adaptiveNavigationBackground()
+    }
+}
+
+// MARK: - Group Edit Sheet Container
+
+struct GroupEditSheetContainer: View {
+    @ObservedObject var group: DeviceGroup
+    let onCancel: () -> Void
+    let onSave: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var originalGroupName: String = ""
+    @State private var originalDeviceIDs: Set<String> = []
+
+    var body: some View {
+        NavigationStack {
+            iPhone_GroupDetailView(group: group, showsDoneButton: false)
+                .navigationTitle(group.groupName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(NSLocalizedString("cancel", comment: "Cancel editing the group")) {
+                            group.groupName = originalGroupName
+                            group.deviceIDs = originalDeviceIDs
+                            dismiss()
+                            onCancel()
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(NSLocalizedString("save", comment: "Save changes to the group")) {
+                            dismiss()
+                            onSave()
+                        }
+                    }
+                }
+                .onAppear {
+                    originalGroupName = group.groupName
+                    originalDeviceIDs = group.deviceIDs
+                }
+        }
     }
 }
 

@@ -211,7 +211,7 @@ struct iPhone_GroupMapView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                updateButton()
+                groupEditButton()
             }
         }
         .adaptiveToolbarBackground()
@@ -422,9 +422,10 @@ struct iPhone_GroupMapView: View {
     }
     
     @ViewBuilder
-    private func updateButton() -> some View {
+    private func groupEditButton() -> some View {
         NavigationLink(destination: iPhone_GroupDetailView(group: group)) {
-            Text("group_detailview_edit")
+            Image(systemName: "pencil")
+                .accessibilityLabel(Text(NSLocalizedString("group_detailview_edit", comment: "Edit group details")))
         }
     }
     

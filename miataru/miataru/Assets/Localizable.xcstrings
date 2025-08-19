@@ -1116,6 +1116,7 @@
       }
     },
     "cancel" : {
+      "comment" : "Cancel editing the group",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1930,6 +1931,7 @@
       }
     },
     "devicelist_edit_done" : {
+      "comment" : "Finish editing the device list.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1952,6 +1954,7 @@
       }
     },
     "devicelist_editbutton" : {
+      "comment" : "Edit device list",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2018,6 +2021,9 @@
         }
       }
     },
+    "done" : {
+      "comment" : "Close group details"
+    },
     "Done" : {
       "comment" : "Button to close color picker sheet\nDone button to dismiss the current view",
       "localizations" : {
@@ -2082,6 +2088,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイスを編集"
+          }
+        }
+      }
+    },
+    "edit_group" : {
+      "comment" : "Edit group",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppe bearbeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループを編集"
           }
         }
       }
@@ -2452,6 +2481,7 @@
       }
     },
     "group_detailview_edit" : {
+      "comment" : "Edit group details",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2629,6 +2659,7 @@
       }
     },
     "grouplist_edit_done" : {
+      "comment" : "Finish editing the groups list.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2651,6 +2682,7 @@
       }
     },
     "grouplist_editbutton" : {
+      "comment" : "Edit groups list",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3716,6 +3748,12 @@
             "value" : "Keine Gruppen verfügbar. Erstelle eine neue Gruppe, um zu beginnen."
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No groups available. Create a new group to get started."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4152,6 +4190,7 @@
       }
     },
     "save" : {
+      "comment" : "Save changes to the group",
       "localizations" : {
         "de" : {
           "stringUnit" : {
