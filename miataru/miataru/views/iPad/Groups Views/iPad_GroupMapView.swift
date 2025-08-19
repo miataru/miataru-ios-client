@@ -436,13 +436,13 @@ struct iPad_GroupMapView: View {
         .mapStyle(mapStyleFromSettings(settings.mapType))
 
     }
-    
+    /*
     @ViewBuilder
     private func updateButton() -> some View {
         NavigationLink(destination: iPad_GroupDetailView(group: group)) {
             Text("group_detailview_edit")
         }
-    }
+    }*/
     
     private var groupDeviceIDs: [String] {
         return Array(group.deviceIDs)

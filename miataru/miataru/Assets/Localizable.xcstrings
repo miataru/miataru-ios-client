@@ -1558,7 +1558,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "device"
+            "value" : "Device"
           }
         },
         "ja" : {
@@ -2067,7 +2067,7 @@
       }
     },
     "edit_device" : {
-      "comment" : "Edit device button",
+      "comment" : "Edit the selected device.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2090,7 +2090,7 @@
       }
     },
     "edit_group" : {
-      "comment" : "Edit group",
+      "comment" : "Edit group\nEdit the selected group..",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2656,7 +2656,7 @@
       }
     },
     "grouplist_edit_done" : {
-      "comment" : "Finish editing the groups list.",
+      "comment" : "Finish editing the group list.\nFinish editing the groups list.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2679,7 +2679,7 @@
       }
     },
     "grouplist_editbutton" : {
-      "comment" : "Edit groups list",
+      "comment" : "Edit group list\nEdit groups list",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4967,30 +4967,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "追跡モード：ライブ（GPS）"
-          }
-        }
-      }
-    },
-    "update" : {
-      "comment" : "Update button to refresh device location",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualisieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "update"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更新"
           }
         }
       }

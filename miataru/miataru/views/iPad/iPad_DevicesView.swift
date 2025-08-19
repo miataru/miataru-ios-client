@@ -117,8 +117,9 @@ struct iPad_DevicesView: View {
                     .id(mapViewKey) // Force view refresh when device changes
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("edit_device") {
-                                editingDevice = device
+                            Button(action: { editingDevice = device }) {
+                                Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
+                                    .labelStyle(.titleAndIcon)
                             }
                         }
                     }

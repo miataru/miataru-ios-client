@@ -7,6 +7,7 @@ struct iPad_GroupsView: View {
     @State private var editingGroup: DeviceGroup? = nil
     @State private var editMode: EditMode = .inactive
     @State private var currentGroup: DeviceGroup? = nil // Track the currently displayed group
+    @State private var lastSelectedGroupID: String? = nil // Preserve selection across edit mode toggles
 
     var body: some View {
         NavigationSplitView {
@@ -39,8 +40,15 @@ struct iPad_GroupsView: View {
             .navigationTitle("groups")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(editMode == .active ? "grouplist_edit_done" : "grouplist_editbutton") {
+                    Button {
                         editMode = editMode == .active ? .inactive : .active
+                    } label: {
+                        if editMode == .active {
+                            Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the group list."))
+                        } else {
+                            Image(systemName: "pencil")
+                                .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list")))
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -51,39 +59,15 @@ struct iPad_GroupsView: View {
             }
             .environment(\.editMode, $editMode)
         } detail: {
-            if let selectedID = selection, let group = groupStore.groups.first(where: { $0.id == selectedID }) {
+            let resolvedSelection = selection ?? lastSelectedGroupID ?? groupStore.groups.first?.id
+            if let selectedID = resolvedSelection, let group = groupStore.groups.first(where: { $0.id == selectedID }) {
                 iPad_GroupMapView(group: group)
                     .environmentObject(groupStore) // Pass the groupStore to the map view
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
-                                Image(systemName: "pencil")
-                            }
-                        }
-                    }
-                    .sheet(item: $editingGroup) { group in
-                        iPad_GroupDetailView(group: group)
-                    }
-                    .onChange(of: editingGroup) { _, newValue in
-                        // When the editingGroup becomes nil (sheet is dismissed), 
-                        // force a refresh of the map view
-                        if newValue == nil {
-                            // Trigger a refresh by temporarily clearing and restoring the selection
-                            let currentSelection = selection
-                            selection = nil
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                selection = currentSelection
-                            }
-                        }
-                    }
-            } else if let firstGroup = groupStore.groups.first {
-                // Automatically show the first group if no group is selected
-                iPad_GroupMapView(group: firstGroup)
-                    .environmentObject(groupStore)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { editingGroup = firstGroup }) {
-                                Image(systemName: "pencil")
+                                Label(NSLocalizedString("edit_group", comment: "Edit the selected group.."), systemImage: "pencil")
+                                    .labelStyle(.titleAndIcon)
                             }
                         }
                     }
@@ -115,7 +99,22 @@ struct iPad_GroupsView: View {
         .onAppear {
             // Automatically select the first group if no group is currently selected
             if selection == nil && !groupStore.groups.isEmpty {
-                selection = groupStore.groups.first?.id
+                let firstID = groupStore.groups.first?.id
+                selection = firstID
+                lastSelectedGroupID = firstID
+            }
+        }
+        .onChange(of: selection) { _, newSelection in
+            if let newSelection = newSelection, newSelection != lastSelectedGroupID {
+                lastSelectedGroupID = newSelection
+            }
+        }
+        .onChange(of: editMode) { _, newMode in
+            // Restore previous selection when entering edit mode to avoid detail reset
+            if newMode == .active {
+                if selection == nil, let last = lastSelectedGroupID {
+                    selection = last
+                }
             }
         }
     }
