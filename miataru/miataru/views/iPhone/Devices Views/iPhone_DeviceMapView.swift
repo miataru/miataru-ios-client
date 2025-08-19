@@ -118,13 +118,16 @@ struct iPhone_DeviceMapView: View {
                         deviceCoordinate: coordinate,
                         mapRegion: region,
                         screenSize: screenSize,
-                        isMapRotated: userHasRotatedMap
+                        isMapRotated: userHasRotatedMap,
+                        arrowIndex: 0,
+                        totalArrows: 1
                     )
                 }
                 
                 // Show arrows for other known devices that are outside the visible area (only if setting is enabled)
                 if settings.showOffscreenArrowsForOtherDevices {
-                    ForEach(deviceStore.devices.filter { $0.DeviceID != deviceID }, id: \.DeviceID) { otherDevice in
+                    let offscreenDevices = deviceStore.devices.filter { $0.DeviceID != deviceID }
+                    ForEach(Array(offscreenDevices.enumerated()), id: \.element.DeviceID) { index, otherDevice in
                         if let cached = DeviceLocationCacheStore.shared.getLocation(for: otherDevice.DeviceID) {
                             let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                             OffScreenDeviceArrow(
@@ -134,7 +137,9 @@ struct iPhone_DeviceMapView: View {
                                 deviceCoordinate: coordinate,
                                 mapRegion: region,
                                 screenSize: screenSize,
-                                isMapRotated: userHasRotatedMap
+                                isMapRotated: userHasRotatedMap,
+                                arrowIndex: index,
+                                totalArrows: offscreenDevices.count
                             )
                         }
                     }

@@ -86,6 +86,28 @@ struct iPad_GroupMapView: View {
         return CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515)
     }
     
+    // Helper view for off-screen device arrows to avoid complex expressions in body
+    @ViewBuilder
+    private func offscreenDeviceArrowsView() -> some View {
+        ForEach(Array(groupDeviceIDs.enumerated()), id: \.element) { index, deviceID in
+            if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+               let coordinate = deviceLocations[deviceID],
+               let region = currentRegion ?? cameraPosition.region {
+                OffScreenDeviceArrow(
+                    deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
+                    deviceColor: Color(device.DeviceColor ?? UIColor.blue),
+                    screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
+                    deviceCoordinate: coordinate,
+                    mapRegion: region,
+                    screenSize: screenSize,
+                    isMapRotated: userHasRotatedMap,
+                    arrowIndex: index,
+                    totalArrows: groupDeviceIDs.count
+                )
+            }
+        }
+    }
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // If there are no devices in the group, show a hint and do not request map/server
@@ -134,21 +156,7 @@ struct iPad_GroupMapView: View {
                 
                 // Off-screen device arrows (only shown when map is not rotated)
                 if !screenSize.width.isZero && !screenSize.height.isZero {
-                    ForEach(groupDeviceIDs, id: \.self) { deviceID in
-                        if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-                           let coordinate = deviceLocations[deviceID],
-                           let region = currentRegion ?? cameraPosition.region {
-                            OffScreenDeviceArrow(
-                                deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
-                                deviceColor: Color(device.DeviceColor ?? UIColor.blue),
-                                screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
-                                deviceCoordinate: coordinate,
-                                mapRegion: region,
-                                screenSize: screenSize,
-                                isMapRotated: userHasRotatedMap
-                            )
-                        }
-                    }
+                    offscreenDeviceArrowsView()
                 }
                 
                 // Scale bar always on top

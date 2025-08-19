@@ -9,6 +9,8 @@ struct OffScreenDeviceArrow: View {
     let mapRegion: MKCoordinateRegion
     let screenSize: CGSize
     let isMapRotated: Bool
+    let arrowIndex: Int // New parameter for positioning
+    let totalArrows: Int // New parameter for positioning
     
     @State private var isVisible = false
     
@@ -86,8 +88,8 @@ struct OffScreenDeviceArrow: View {
             return nil 
         }
         
-        // Calculate arrow position on screen edge
-        let arrowPosition = calculateEdgePosition(deviceScreenPoint: deviceScreenPoint)
+        // Calculate arrow position on screen edge with intelligent spacing
+        let arrowPosition = calculateIntelligentEdgePosition(deviceScreenPoint: deviceScreenPoint)
         
         // Calculate rotation angle to point towards device
         let rotation = calculateRotationAngle(from: arrowPosition, to: deviceScreenPoint)
@@ -97,26 +99,7 @@ struct OffScreenDeviceArrow: View {
         return (position: arrowPosition, rotation: rotation)
     }
     
-    private func coordinateToScreenPoint(_ coordinate: CLLocationCoordinate2D) -> CGPoint {
-        // Convert coordinate to screen point using map region
-        let latRatio = (coordinate.latitude - mapRegion.center.latitude) / mapRegion.span.latitudeDelta
-        let lonRatio = (coordinate.longitude - mapRegion.center.longitude) / mapRegion.span.longitudeDelta
-        
-        let screenX = screenCenter.x + CGFloat(lonRatio) * screenSize.width
-        let screenY = screenCenter.y - CGFloat(latRatio) * screenSize.height // Inverted Y axis
-        
-        // Debug: Print coordinate conversion details
-        let _ = print("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
-        let _ = print("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
-        let _ = print("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
-        let _ = print("📊 Ratios: lat=\(latRatio), lon=\(lonRatio)")
-        let _ = print("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
-        let _ = print("🎯 Calculated screen position: \(screenX), \(screenY)")
-        
-        return CGPoint(x: screenX, y: screenY)
-    }
-    
-    private func calculateEdgePosition(deviceScreenPoint: CGPoint) -> CGPoint {
+    private func calculateIntelligentEdgePosition(deviceScreenPoint: CGPoint) -> CGPoint {
         let margin: CGFloat = 30
         
         // Calculate intersection with screen edges
@@ -153,18 +136,84 @@ struct OffScreenDeviceArrow: View {
         if let closest = validIntersections.min(by: { 
             $0.distance(to: devicePoint) < $1.distance(to: devicePoint) 
         }) {
-            return closest
+            // Apply intelligent spacing to prevent overlapping
+            return applyIntelligentSpacing(to: closest, edge: determineEdge(for: closest))
         }
         
         // Fallback to nearest edge
         let edgeX = devicePoint.x < center.x ? margin : screenSize.width - margin
         let edgeY = devicePoint.y < center.y ? margin : screenSize.height - margin
         
+        let fallbackPosition: CGPoint
         if abs(devicePoint.x - center.x) > abs(devicePoint.y - center.y) {
-            return CGPoint(x: edgeX, y: devicePoint.y)
+            fallbackPosition = CGPoint(x: edgeX, y: devicePoint.y)
         } else {
-            return CGPoint(x: devicePoint.x, y: edgeY)
+            fallbackPosition = CGPoint(x: devicePoint.x, y: edgeY)
         }
+        
+        return applyIntelligentSpacing(to: fallbackPosition, edge: determineEdge(for: fallbackPosition))
+    }
+    
+    private func determineEdge(for position: CGPoint) -> Edge {
+        let margin: CGFloat = 30
+        
+        if abs(position.x - margin) < 10 {
+            return .left
+        } else if abs(position.x - (screenSize.width - margin)) < 10 {
+            return .right
+        } else if abs(position.y - margin) < 10 {
+            return .top
+        } else {
+            return .bottom
+        }
+    }
+    
+    private func applyIntelligentSpacing(to position: CGPoint, edge: Edge) -> CGPoint {
+        let arrowSpacing: CGFloat = 80
+        let margin: CGFloat = 30
+        
+        // Calculate offset based on arrow index and total arrows
+        let offset = calculateOffset(for: edge, index: arrowIndex, total: totalArrows, spacing: arrowSpacing)
+        
+        switch edge {
+        case .left, .right:
+            // Vertical positioning for left/right edges
+            let adjustedY = margin + offset
+            return CGPoint(x: position.x, y: max(margin, min(screenSize.height - margin, adjustedY)))
+            
+        case .top, .bottom:
+            // Horizontal positioning for top/bottom edges
+            let adjustedX = margin + offset
+            return CGPoint(x: max(margin, min(screenSize.width - margin, adjustedX)), y: position.y)
+        }
+    }
+    
+    private func calculateOffset(for edge: Edge, index: Int, total: Int, spacing: CGFloat) -> CGFloat {
+        // Distribute arrows evenly along the edge
+        let totalSpacing = CGFloat(total - 1) * spacing
+        let startOffset = (edge == .left || edge == .right ? screenSize.height : screenSize.width) - (2 * 30) - totalSpacing
+        let startPosition = startOffset / 2
+        
+        return startPosition + CGFloat(index) * spacing
+    }
+    
+    private func coordinateToScreenPoint(_ coordinate: CLLocationCoordinate2D) -> CGPoint {
+        // Convert coordinate to screen point using map region
+        let latRatio = (coordinate.latitude - mapRegion.center.latitude) / mapRegion.span.latitudeDelta
+        let lonRatio = (coordinate.longitude - mapRegion.center.longitude) / mapRegion.span.longitudeDelta
+        
+        let screenX = screenCenter.x + CGFloat(lonRatio) * screenSize.width
+        let screenY = screenCenter.y - CGFloat(latRatio) * screenSize.height // Inverted Y axis
+        
+        // Debug: Print coordinate conversion details
+        let _ = print("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
+        let _ = print("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
+        let _ = print("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
+        let _ = print("📊 Ratios: lat=\(latRatio), lon=\(lonRatio)")
+        let _ = print("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
+        let _ = print("🎯 Calculated screen position: \(screenX), \(screenY)")
+        
+        return CGPoint(x: screenX, y: screenY)
     }
     
     private func calculateRotationAngle(from arrowPosition: CGPoint, to devicePoint: CGPoint) -> Double {
@@ -173,6 +222,10 @@ struct OffScreenDeviceArrow: View {
         let angle = atan2(dy, dx) * 180 / .pi
         return angle + 90 // Adjust for arrow pointing up by default
     }
+}
+
+enum Edge {
+    case left, right, top, bottom
 }
 
 extension CGPoint {
@@ -198,7 +251,9 @@ extension CGPoint {
                 span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
             ),
             screenSize: CGSize(width: 300, height: 400),
-            isMapRotated: false
+            isMapRotated: false,
+            arrowIndex: 0,
+            totalArrows: 1
         )
     }
 }
