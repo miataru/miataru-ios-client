@@ -117,7 +117,8 @@ struct iPhone_DevicesView: View {
                 }
             }
             .refreshable {
-                await refreshAllDeviceLocations()
+                let success = await refreshAllDeviceLocations()
+                if success { Haptic.notifySuccess() }
             }
             .onAppear {
                 isVisible = true
@@ -135,7 +136,7 @@ struct iPhone_DevicesView: View {
                 }
                 lastDeviceListRefresh = now
                 Task {
-                    await refreshAllDeviceLocations()
+                    _ = await refreshAllDeviceLocations()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
@@ -148,14 +149,14 @@ struct iPhone_DevicesView: View {
                 }
                 lastDeviceListRefresh = now
                 Task {
-                    await refreshAllDeviceLocations()
+                    _ = await refreshAllDeviceLocations()
                 }
             }
         }
     }
 
-    private func refreshAllDeviceLocations() async {
-        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return }
+    private func refreshAllDeviceLocations() async -> Bool {
+        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return false }
         let deviceIDs = store.devices.map { $0.DeviceID }
         do {
             print("[iPhone_DevicesView] refreshAllDeviceLocations")
@@ -173,12 +174,13 @@ struct iPhone_DevicesView: View {
                     timestamp: location.TimestampDate
                 )
             }
-            // Für Devices ohne Location den Cache-Eintrag entfernen
+            // Remove cache entry for devices without location
             let foundIDs = Set(locations.map { $0.Device })
             let missingIDs = Set(deviceIDs).subtracting(foundIDs)
             for missingID in missingIDs {
                 DeviceLocationCacheStore.shared.removeLocation(for: missingID)
             }
+            return true
         } catch {
             print("Error refreshing device locations: \(error)")
             // Remove all device locations from cache if download fails
@@ -186,6 +188,7 @@ struct iPhone_DevicesView: View {
                 DeviceLocationCacheStore.shared.removeLocation(for: deviceID)
             }
             // Optional: User-Overlay anzeigen
+            return false
         }
     }
 }

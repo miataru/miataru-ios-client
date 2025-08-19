@@ -56,7 +56,8 @@ struct iPad_DevicesView: View {
             }
             .environment(\.editMode, $editMode)
             .refreshable {
-                await refreshAllDeviceLocations()
+                let success = await refreshAllDeviceLocations()
+                if success { Haptic.notifySuccess() }
             }
             .onAppear {
                 isVisible = true
@@ -78,7 +79,7 @@ struct iPad_DevicesView: View {
                 }
                 lastDeviceListRefresh = now
                 Task {
-                    await refreshAllDeviceLocations()
+                    _ = await refreshAllDeviceLocations()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
@@ -91,7 +92,7 @@ struct iPad_DevicesView: View {
                 }
                 lastDeviceListRefresh = now
                 Task {
-                    await refreshAllDeviceLocations()
+                    _ = await refreshAllDeviceLocations()
                 }
             }
         } detail: {
@@ -136,8 +137,8 @@ struct iPad_DevicesView: View {
         }
     }
 
-    private func refreshAllDeviceLocations() async {
-        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return }
+    private func refreshAllDeviceLocations() async -> Bool {
+        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return false }
         let deviceIDs = store.devices.map { $0.DeviceID }
         do {
             let locations = try await MiataruAPIClient.getLocation(
@@ -160,6 +161,7 @@ struct iPad_DevicesView: View {
             for missingID in missingIDs {
                 DeviceLocationCacheStore.shared.removeLocation(for: missingID)
             }
+            return true
         } catch {
             print("Error refreshing device locations: \(error)")
             // Remove all device locations from cache if download fails
@@ -167,6 +169,7 @@ struct iPad_DevicesView: View {
                 DeviceLocationCacheStore.shared.removeLocation(for: deviceID)
             }
             // Optionally: Show user overlay
+            return false
         }
     }
 }
