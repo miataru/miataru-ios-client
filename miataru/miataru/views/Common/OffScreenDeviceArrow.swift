@@ -1,6 +1,23 @@
 import SwiftUI
 import MapKit
 
+/// OffScreenDeviceArrow renders an arrow label at the screen edge pointing towards a device
+/// that is currently outside the visible map region.
+///
+/// Algorithm overview (rotation-aware and smooth at edge transitions):
+/// - Convert the device `CLLocationCoordinate2D` to an approximate screen point using
+///   the current `MKCoordinateRegion` (simple linear mapping).
+/// - Rotate that screen point around the `screenCenter` by the current `mapHeading` so
+///   that the geometry matches the visual rotation of the map content.
+/// - Cast a ray from `screenCenter` to the rotated device point and compute intersections
+///   with all four screen edges. Pick the nearest valid intersection; this prevents abrupt
+///   edge flips compared to angle-sector based edge selection.
+/// - Snap to a corner when close (corner-snapping) to avoid jitter exactly at edge changes.
+/// - Distribute multiple arrows symmetrically around the intersection point to keep motion
+///   visually stable when rotating.
+/// - Compute the arrow rotation to point from the edge position towards the (rotated)
+///   device point.
+
 struct OffScreenDeviceArrow: View {
     let deviceName: String
     let deviceColor: Color
@@ -8,7 +25,10 @@ struct OffScreenDeviceArrow: View {
     let deviceCoordinate: CLLocationCoordinate2D
     let mapRegion: MKCoordinateRegion
     let screenSize: CGSize
+    /// Whether the map is rotated. Kept for backwards compatibility; ignored for rendering while debugging.
     let isMapRotated: Bool
+    /// Current map heading in degrees (clockwise). Used to rotate the device point around `screenCenter`.
+    let mapHeading: Double
     let arrowIndex: Int // New parameter for positioning
     let totalArrows: Int // New parameter for positioning
     let behavior: ArrowBehavior // Determines what happens when tapped
@@ -36,8 +56,11 @@ struct OffScreenDeviceArrow: View {
     }
     
     var body: some View {
-        // Hide arrow when map is rotated
-        if !isMapRotated, let arrowPosition = calculateArrowPosition() {
+        // Renders the arrow when the device is outside the visible bounds.
+        // Map rotation is considered via `mapHeading` inside the geometry functions.
+        if let arrowPosition = calculateArrowPosition() {
+            // Reference to avoid unused warning while we transition away from this flag
+            let _ = isMapRotated
             VStack(spacing: 4) {
                 // Arrow pointing to device
                 Image(systemName: "arrow.up")
@@ -62,6 +85,7 @@ struct OffScreenDeviceArrow: View {
             .scaleEffect(isPressed ? 0.9 : 1.0) // Visual feedback when pressed
             .animation(.easeInOut(duration: 0.3), value: isVisible)
             .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .animation(.easeInOut(duration: 0.2), value: mapHeading) // Animate with heading changes
             .onTapGesture {
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -83,12 +107,22 @@ struct OffScreenDeviceArrow: View {
         }
     }
     
+    /// Calculates the final on-screen arrow position and its rotation angle.
+    ///
+    /// Steps:
+    /// 1. Convert device coordinate to an unrotated screen point using the region.
+    /// 2. Rotate that point by `mapHeading` around `screenCenter`.
+    /// 3. If outside the margin, intersect the center→device ray with all edges and
+    ///    choose the nearest intersection (with corner snapping).
+    /// 4. Compute the rotation so the arrow points towards the (rotated) device point.
     private func calculateArrowPosition() -> (position: CGPoint, rotation: Double)? {
         // Convert device coordinate to screen position
-        let deviceScreenPoint = coordinateToScreenPoint(deviceCoordinate)
+        let deviceScreenPointUnrotated = coordinateToScreenPoint(deviceCoordinate)
+        // Rotate the device point around the screen center by the current map heading (invert sign for correct direction)
+        let deviceScreenPoint = rotate(point: deviceScreenPointUnrotated, around: screenCenter, degrees: -mapHeading)
         
         // Debug: Print screen coordinates
-        let _ = print("📍 Device \(deviceName) screen position: \(deviceScreenPoint), screen size: \(screenSize)")
+        let _ = print("📍 Device \(deviceName) screen position (rotated by heading \(mapHeading)): \(deviceScreenPoint), screen size: \(screenSize)")
         
 
         
@@ -117,50 +151,47 @@ struct OffScreenDeviceArrow: View {
         return (position: arrowPosition, rotation: rotation)
     }
     
+    /// Computes the best edge position to place the arrow, using nearest-ray-intersection
+    /// with corner-snapping and symmetric spacing for multiple arrows.
     private func calculateIntelligentEdgePosition(deviceScreenPoint: CGPoint) -> CGPoint {
         let margin: CGFloat = 30
         let center = screenCenter
         let devicePoint = deviceScreenPoint
         
-        // Vector from center to device
-        let dx = devicePoint.x - center.x
-        let dy = devicePoint.y - center.y
+        // Compute intersection with all edges and choose the closest valid one.
+        var candidates: [(point: CGPoint, edge: Edge)] = []
+        if let p = intersectionPoint(for: .left, from: center, towards: devicePoint, margin: margin) { candidates.append((p, .left)) }
+        if let p = intersectionPoint(for: .right, from: center, towards: devicePoint, margin: margin) { candidates.append((p, .right)) }
+        if let p = intersectionPoint(for: .top, from: center, towards: devicePoint, margin: margin) { candidates.append((p, .top)) }
+        if let p = intersectionPoint(for: .bottom, from: center, towards: devicePoint, margin: margin) { candidates.append((p, .bottom)) }
         
-        // Determine edge by angle sectors to ensure top/bottom usage when pointing up/down
-        let angleRad = atan2(dy, dx) // -pi..pi (screen y grows downwards)
-        let angleDeg = angleRad * 180 / .pi // -180..180
-        let chosenEdge: Edge
-        if angleDeg >= -135 && angleDeg < -45 {
-            chosenEdge = .top
-        } else if angleDeg >= 45 && angleDeg < 135 {
-            chosenEdge = .bottom
-        } else if angleDeg >= -45 && angleDeg < 45 {
-            chosenEdge = .right
-        } else {
-            chosenEdge = .left
+        if let best = candidates.min(by: { $0.point.distance(to: center) < $1.point.distance(to: center) }) {
+            // Corner snap: if near a corner, snap to the exact corner to avoid edge flip jitter
+            let (cornerPoint, cornerDistance) = nearestCorner(to: best.point, margin: margin)
+            let cornerSnapThreshold: CGFloat = 24
+            if cornerDistance < cornerSnapThreshold {
+                return cornerPoint
+            }
+            return applyIntelligentSpacing(to: best.point, edge: best.edge)
         }
         
-        if let p = intersectionPoint(for: chosenEdge, from: center, towards: devicePoint, margin: margin) {
-            return applyIntelligentSpacing(to: p, edge: chosenEdge)
-        }
-        
-        // Fallback: clamp to edge in chosen orientation
-        switch chosenEdge {
-        case .top:
-            let x = max(margin, min(screenSize.width - margin, devicePoint.x))
-            return applyIntelligentSpacing(to: CGPoint(x: x, y: margin), edge: .top)
-        case .bottom:
-            let x = max(margin, min(screenSize.width - margin, devicePoint.x))
-            return applyIntelligentSpacing(to: CGPoint(x: x, y: screenSize.height - margin), edge: .bottom)
-        case .left:
-            let y = max(margin, min(screenSize.height - margin, devicePoint.y))
-            return applyIntelligentSpacing(to: CGPoint(x: margin, y: y), edge: .left)
-        case .right:
-            let y = max(margin, min(screenSize.height - margin, devicePoint.y))
-            return applyIntelligentSpacing(to: CGPoint(x: screenSize.width - margin, y: y), edge: .right)
-        }
+        // Fallback: clamp device point to the nearest edge
+        let clampedX = max(margin, min(screenSize.width - margin, devicePoint.x))
+        let clampedY = max(margin, min(screenSize.height - margin, devicePoint.y))
+        let dxLeft = abs(clampedX - margin)
+        let dxRight = abs(clampedX - (screenSize.width - margin))
+        let dyTop = abs(clampedY - margin)
+        let dyBottom = abs(clampedY - (screenSize.height - margin))
+        let minDist = min(dxLeft, dxRight, dyTop, dyBottom)
+        if minDist == dxLeft { return applyIntelligentSpacing(to: CGPoint(x: margin, y: clampedY), edge: .left) }
+        if minDist == dxRight { return applyIntelligentSpacing(to: CGPoint(x: screenSize.width - margin, y: clampedY), edge: .right) }
+        if minDist == dyTop { return applyIntelligentSpacing(to: CGPoint(x: clampedX, y: margin), edge: .top) }
+        return applyIntelligentSpacing(to: CGPoint(x: clampedX, y: screenSize.height - margin), edge: .bottom)
     }
 
+    /// Intersects the ray from `center` to `devicePoint` with the given screen `edge`,
+    /// considering the `margin` inset. Returns `nil` if the intersection lies outside
+    /// the valid edge segment or behind the ray origin.
     private func intersectionPoint(for edge: Edge, from center: CGPoint, towards devicePoint: CGPoint, margin: CGFloat) -> CGPoint? {
         let dx = devicePoint.x - center.x
         let dy = devicePoint.y - center.y
@@ -214,35 +245,36 @@ struct OffScreenDeviceArrow: View {
         }
     }
     
-    private func applyIntelligentSpacing(to position: CGPoint, edge: Edge) -> CGPoint {
-        let arrowSpacing: CGFloat = 80
+    /// Applies symmetric spacing around the base edge intersection to prevent arrow overlap
+    /// and to keep motion stable when rotating.
+    private func applyIntelligentSpacing(to basePosition: CGPoint, edge: Edge) -> CGPoint {
+        let arrowSpacing: CGFloat = 60
         let margin: CGFloat = 30
         
-        // Calculate offset based on arrow index and total arrows
-        let offset = calculateOffset(for: edge, index: arrowIndex, total: totalArrows, spacing: arrowSpacing)
-        
+        // Symmetric distribution around the base intersection point to keep motion smooth
+        let offset = calculateSymmetricOffset(index: arrowIndex, total: totalArrows, spacing: arrowSpacing)
         switch edge {
         case .left, .right:
-            // Vertical positioning for left/right edges
-            let adjustedY = margin + offset
-            return CGPoint(x: position.x, y: max(margin, min(screenSize.height - margin, adjustedY)))
-            
+            let adjustedY = max(margin, min(screenSize.height - margin, basePosition.y + offset))
+            return CGPoint(x: basePosition.x, y: adjustedY)
         case .top, .bottom:
-            // Horizontal positioning for top/bottom edges
-            let adjustedX = margin + offset
-            return CGPoint(x: max(margin, min(screenSize.width - margin, adjustedX)), y: position.y)
+            let adjustedX = max(margin, min(screenSize.width - margin, basePosition.x + offset))
+            return CGPoint(x: adjustedX, y: basePosition.y)
         }
     }
     
-    private func calculateOffset(for edge: Edge, index: Int, total: Int, spacing: CGFloat) -> CGFloat {
-        // Distribute arrows evenly along the edge
-        let totalSpacing = CGFloat(total - 1) * spacing
-        let startOffset = (edge == .left || edge == .right ? screenSize.height : screenSize.width) - (2 * 30) - totalSpacing
-        let startPosition = startOffset / 2
-        
-        return startPosition + CGFloat(index) * spacing
+    /// Distributes `total` arrows symmetrically around the center index to avoid drift
+    /// during rotation and to keep layout visually balanced.
+    private func calculateSymmetricOffset(index: Int, total: Int, spacing: CGFloat) -> CGFloat {
+        // Distribute arrows symmetrically around the intersection point
+        if total <= 1 { return 0 }
+        let centerIndex = (CGFloat(total - 1)) / 2.0
+        return (CGFloat(index) - centerIndex) * spacing
     }
     
+    /// Approximates the device position in screen coordinates using a linear mapping
+    /// from `MKCoordinateRegion` to the current `screenSize`. This is sufficient for
+    /// computing edge arrows; precise projection is not required here.
     private func coordinateToScreenPoint(_ coordinate: CLLocationCoordinate2D) -> CGPoint {
         // Convert coordinate to screen point using map region
         let latRatio = (coordinate.latitude - mapRegion.center.latitude) / mapRegion.span.latitudeDelta
@@ -262,11 +294,48 @@ struct OffScreenDeviceArrow: View {
         return CGPoint(x: screenX, y: screenY)
     }
     
+    /// Returns the rotation angle (in degrees) for the arrow so that it visually points
+    /// from the arrow's position towards the (rotated) device point. The base arrow asset
+    /// points up, therefore a +90° adjustment is applied.
     private func calculateRotationAngle(from arrowPosition: CGPoint, to devicePoint: CGPoint) -> Double {
         let dx = devicePoint.x - arrowPosition.x
         let dy = devicePoint.y - arrowPosition.y
         let angle = atan2(dy, dx) * 180 / .pi
         return angle + 90 // Adjust for arrow pointing up by default
+    }
+
+    /// Rotates a point around a center by the given degrees (clockwise), returning
+    /// the rotated screen coordinate.
+    private func rotate(point: CGPoint, around center: CGPoint, degrees: Double) -> CGPoint {
+        let radians = degrees * .pi / 180
+        let translatedX = point.x - center.x
+        let translatedY = point.y - center.y
+        let cosA = cos(radians)
+        let sinA = sin(radians)
+        let rotatedX = translatedX * cosA - translatedY * sinA
+        let rotatedY = translatedX * sinA + translatedY * cosA
+        return CGPoint(x: rotatedX + center.x, y: rotatedY + center.y)
+    }
+
+    /// Finds the nearest screen corner (respecting the margin inset) to a given point,
+    /// returning the corner coordinate and the distance. Used for corner-snapping to
+    /// avoid jitter when transitioning between edges.
+    private func nearestCorner(to point: CGPoint, margin: CGFloat) -> (CGPoint, CGFloat) {
+        let topLeft = CGPoint(x: margin, y: margin)
+        let topRight = CGPoint(x: screenSize.width - margin, y: margin)
+        let bottomLeft = CGPoint(x: margin, y: screenSize.height - margin)
+        let bottomRight = CGPoint(x: screenSize.width - margin, y: screenSize.height - margin)
+        let corners = [topLeft, topRight, bottomLeft, bottomRight]
+        var bestCorner = topLeft
+        var bestDistance = CGFloat.greatestFiniteMagnitude
+        for c in corners {
+            let d = point.distance(to: c)
+            if d < bestDistance {
+                bestDistance = d
+                bestCorner = c
+            }
+        }
+        return (bestCorner, bestDistance)
     }
 }
 
@@ -303,6 +372,7 @@ extension CGPoint {
             ),
             screenSize: CGSize(width: 300, height: 400),
             isMapRotated: false,
+            mapHeading: 45,
             arrowIndex: 0,
             totalArrows: 1,
             behavior: .jumpToLocation,
