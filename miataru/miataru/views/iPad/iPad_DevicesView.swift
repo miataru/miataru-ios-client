@@ -12,6 +12,7 @@ struct iPad_DevicesView: View {
     @State private var lastDeviceListRefresh: Date? = nil
     @State private var isVisible: Bool = false
     @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
+    @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
 
     var body: some View {
         NavigationSplitView {
@@ -44,8 +45,15 @@ struct iPad_DevicesView: View {
             .navigationTitle("devices")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(editMode == .active ? "devicelist_edit_done" : "devicelist_editbutton") {
+                    Button {
                         editMode = editMode == .active ? .inactive : .active
+                    } label: {
+                        if editMode == .active {
+                            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
+                        } else {
+                            Image(systemName: "pencil")
+                                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -63,7 +71,9 @@ struct iPad_DevicesView: View {
                 isVisible = true
                 // Automatically select the first device if no selection is made yet
                 if selection == nil && !store.devices.isEmpty {
-                    selection = store.devices.first?.DeviceID
+                    let firstID = store.devices.first?.DeviceID
+                    selection = firstID
+                    lastSelectedDeviceID = firstID
                 }
             }
             .onDisappear {
@@ -96,7 +106,7 @@ struct iPad_DevicesView: View {
                 }
             }
         } detail: {
-            if let selectedID = selection, let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
+            if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
                 iPad_DeviceMapView(
                     deviceID: device.DeviceID,
                     onNavigateToDevice: { newDeviceID in
@@ -131,9 +141,20 @@ struct iPad_DevicesView: View {
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
         }
-        .onChange(of: selection) { _, newSelection in
-            // Force map view refresh when device selection changes
-            mapViewKey = UUID()
+        .onChange(of: selection) { oldSelection, newSelection in
+            // Only refresh map when the selected device actually changes to a different ID
+            if let newSelection = newSelection, newSelection != lastSelectedDeviceID {
+                lastSelectedDeviceID = newSelection
+                mapViewKey = UUID()
+            }
+        }
+        .onChange(of: editMode) { _, newMode in
+            // Preserve and restore selection in edit mode to avoid detail reset
+            if newMode == .active {
+                if selection == nil, let last = lastSelectedDeviceID {
+                    selection = last
+                }
+            }
         }
     }
 
