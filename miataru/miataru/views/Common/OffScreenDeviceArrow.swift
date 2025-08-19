@@ -119,8 +119,6 @@ struct OffScreenDeviceArrow: View {
     
     private func calculateIntelligentEdgePosition(deviceScreenPoint: CGPoint) -> CGPoint {
         let margin: CGFloat = 30
-        
-        // Calculate intersection with screen edges
         let center = screenCenter
         let devicePoint = deviceScreenPoint
         
@@ -128,48 +126,78 @@ struct OffScreenDeviceArrow: View {
         let dx = devicePoint.x - center.x
         let dy = devicePoint.y - center.y
         
-        // Calculate intersection with screen edges
-        let leftIntersection = CGPoint(x: margin, y: center.y + (dy * (margin - center.x) / dx))
-        let rightIntersection = CGPoint(x: screenSize.width - margin, y: center.y + (dy * (screenSize.width - margin - center.x) / dx))
-        let topIntersection = CGPoint(x: center.x + (dx * (margin - center.y) / dy), y: margin)
-        let bottomIntersection = CGPoint(x: center.x + (dx * (screenSize.height - margin - center.y) / dy), y: screenSize.height - margin)
-        
-        // Find the closest valid intersection
-        var validIntersections: [CGPoint] = []
-        
-        if leftIntersection.y >= margin && leftIntersection.y <= screenSize.height - margin && dx < 0 {
-            validIntersections.append(leftIntersection)
-        }
-        if rightIntersection.y >= margin && rightIntersection.y <= screenSize.height - margin && dx > 0 {
-            validIntersections.append(rightIntersection)
-        }
-        if topIntersection.x >= margin && topIntersection.x <= screenSize.width - margin && dy < 0 {
-            validIntersections.append(topIntersection)
-        }
-        if bottomIntersection.x >= margin && bottomIntersection.x <= screenSize.width - margin && dy > 0 {
-            validIntersections.append(bottomIntersection)
-        }
-        
-        // Return the closest intersection to the device
-        if let closest = validIntersections.min(by: { 
-            $0.distance(to: devicePoint) < $1.distance(to: devicePoint) 
-        }) {
-            // Apply intelligent spacing to prevent overlapping
-            return applyIntelligentSpacing(to: closest, edge: determineEdge(for: closest))
-        }
-        
-        // Fallback to nearest edge
-        let edgeX = devicePoint.x < center.x ? margin : screenSize.width - margin
-        let edgeY = devicePoint.y < center.y ? margin : screenSize.height - margin
-        
-        let fallbackPosition: CGPoint
-        if abs(devicePoint.x - center.x) > abs(devicePoint.y - center.y) {
-            fallbackPosition = CGPoint(x: edgeX, y: devicePoint.y)
+        // Determine edge by angle sectors to ensure top/bottom usage when pointing up/down
+        let angleRad = atan2(dy, dx) // -pi..pi (screen y grows downwards)
+        let angleDeg = angleRad * 180 / .pi // -180..180
+        let chosenEdge: Edge
+        if angleDeg >= -135 && angleDeg < -45 {
+            chosenEdge = .top
+        } else if angleDeg >= 45 && angleDeg < 135 {
+            chosenEdge = .bottom
+        } else if angleDeg >= -45 && angleDeg < 45 {
+            chosenEdge = .right
         } else {
-            fallbackPosition = CGPoint(x: devicePoint.x, y: edgeY)
+            chosenEdge = .left
         }
         
-        return applyIntelligentSpacing(to: fallbackPosition, edge: determineEdge(for: fallbackPosition))
+        if let p = intersectionPoint(for: chosenEdge, from: center, towards: devicePoint, margin: margin) {
+            return applyIntelligentSpacing(to: p, edge: chosenEdge)
+        }
+        
+        // Fallback: clamp to edge in chosen orientation
+        switch chosenEdge {
+        case .top:
+            let x = max(margin, min(screenSize.width - margin, devicePoint.x))
+            return applyIntelligentSpacing(to: CGPoint(x: x, y: margin), edge: .top)
+        case .bottom:
+            let x = max(margin, min(screenSize.width - margin, devicePoint.x))
+            return applyIntelligentSpacing(to: CGPoint(x: x, y: screenSize.height - margin), edge: .bottom)
+        case .left:
+            let y = max(margin, min(screenSize.height - margin, devicePoint.y))
+            return applyIntelligentSpacing(to: CGPoint(x: margin, y: y), edge: .left)
+        case .right:
+            let y = max(margin, min(screenSize.height - margin, devicePoint.y))
+            return applyIntelligentSpacing(to: CGPoint(x: screenSize.width - margin, y: y), edge: .right)
+        }
+    }
+
+    private func intersectionPoint(for edge: Edge, from center: CGPoint, towards devicePoint: CGPoint, margin: CGFloat) -> CGPoint? {
+        let dx = devicePoint.x - center.x
+        let dy = devicePoint.y - center.y
+        
+        // Guard against zero direction vector
+        guard dx != 0 || dy != 0 else { return nil }
+        
+        switch edge {
+        case .left:
+            guard dx != 0 else { return nil }
+            let t = (margin - center.x) / dx
+            guard t > 0 else { return nil }
+            let y = center.y + t * dy
+            guard y >= margin && y <= screenSize.height - margin else { return nil }
+            return CGPoint(x: margin, y: y)
+        case .right:
+            guard dx != 0 else { return nil }
+            let t = ((screenSize.width - margin) - center.x) / dx
+            guard t > 0 else { return nil }
+            let y = center.y + t * dy
+            guard y >= margin && y <= screenSize.height - margin else { return nil }
+            return CGPoint(x: screenSize.width - margin, y: y)
+        case .top:
+            guard dy != 0 else { return nil }
+            let t = (margin - center.y) / dy
+            guard t > 0 else { return nil }
+            let x = center.x + t * dx
+            guard x >= margin && x <= screenSize.width - margin else { return nil }
+            return CGPoint(x: x, y: margin)
+        case .bottom:
+            guard dy != 0 else { return nil }
+            let t = ((screenSize.height - margin) - center.y) / dy
+            guard t > 0 else { return nil }
+            let x = center.x + t * dx
+            guard x >= margin && x <= screenSize.width - margin else { return nil }
+            return CGPoint(x: x, y: screenSize.height - margin)
+        }
     }
     
     private func determineEdge(for position: CGPoint) -> Edge {
