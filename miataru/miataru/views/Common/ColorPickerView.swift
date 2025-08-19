@@ -48,6 +48,7 @@ struct ColorPickerSheet: View {
     // Interne HSB-Werte
     @State private var hue: Double = 0.0
     @State private var brightness: Double = 1.0
+    @State private var selectedDetent: PresentationDetent = .large
     
     // Initialisiert HSB aus der aktuellen Farbe
     private func updateHSB(from color: Color) {
@@ -61,74 +62,79 @@ struct ColorPickerSheet: View {
     }
     
     var body: some View {
-        VStack(spacing: 24) {
-            Text(NSLocalizedString("Pick Color", comment: "Title for color picker sheet"))
-                .font(.headline)
-            // Palette
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(palette, id: \.self) { color in
-                        Circle()
-                            .fill(color)
-                            .frame(width: 32, height: 32)
-                            .overlay(
-                                Circle()
-                                    .stroke(selectedColor == color ? Color.accentColor : Color.clear, lineWidth: 3)
-                            )
-                            .shadow(radius: 1)
-                            .onTapGesture {
-                                selectedColor = color
-                                updateHSB(from: color)
-                            }
+        NavigationStack {
+            VStack(spacing: 24) {
+                // Palette
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(palette, id: \.self) { color in
+                            Circle()
+                                .fill(color)
+                                .frame(width: 32, height: 32)
+                                .overlay(
+                                    Circle()
+                                        .stroke(selectedColor == color ? Color.accentColor : Color.clear, lineWidth: 3)
+                                )
+                                .shadow(radius: 1)
+                                .onTapGesture {
+                                    selectedColor = color
+                                    updateHSB(from: color)
+                                }
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                }
+                // Preview
+                Circle()
+                    .fill(selectedColor)
+                    .frame(width: 48, height: 48)
+                    .shadow(radius: 2)
+                    .padding(.top, 8)
+                // Hue Slider
+                VStack(alignment: .leading) {
+                    Text(NSLocalizedString("Hue", comment: "Label for hue slider in color picker"))
+                        .font(.caption)
+                    Slider(value: $hue, in: 0...1, step: 0.01) {
+                        Text(NSLocalizedString("Hue", comment: "Accessibility label for hue slider in color picker"))
+                    } minimumValueLabel: {
+                        // text minimum
+                    } maximumValueLabel: {
+                        // text maximum
+                    }
+                    .onChange(of: hue) {
+                        selectedColor = Color(hue: hue, saturation: 1, brightness: brightness)
                     }
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 16)
-            }
-            // Vorschau
-            Circle()
-                .fill(selectedColor)
-                .frame(width: 48, height: 48)
-                .shadow(radius: 2)
-                .padding(.top, 8)
-            // Hue Slider
-            VStack(alignment: .leading) {
-                Text(NSLocalizedString("Hue", comment: "Label for hue slider in color picker"))
-                    .font(.caption)
-                Slider(value: $hue, in: 0...1, step: 0.01) {
-                    Text(NSLocalizedString("Hue", comment: "Accessibility label for hue slider in color picker"))
-                } minimumValueLabel: {
-                   // text minimum
-                } maximumValueLabel: {
-                    // text maximum
-                }
-                .onChange(of: hue) {
-                    selectedColor = Color(hue: hue, saturation: 1, brightness: brightness)
+                // Brightness Slider
+                VStack(alignment: .leading) {
+                    Text(NSLocalizedString("Brightness", comment: "Label for brightness slider in color picker"))
+                        .font(.caption)
+                    Slider(value: $brightness, in: 0...1, step: 0.01) {
+                        Text(NSLocalizedString("Brightness", comment: "Accessibility label for brightness slider in color picker"))
+                    } minimumValueLabel: {
+                        // text minimum
+                    } maximumValueLabel: {
+                        // text maximum
+                    }
+                    .onChange(of: brightness) {
+                        selectedColor = Color(hue: hue, saturation: 1, brightness: brightness)
+                    }
                 }
             }
-            // Brightness Slider
-            VStack(alignment: .leading) {
-                Text(NSLocalizedString("Brightness", comment: "Label for brightness slider in color picker"))
-                    .font(.caption)
-                Slider(value: $brightness, in: 0...1, step: 0.01) {
-                    Text(NSLocalizedString("Brightness", comment: "Accessibility label for brightness slider in color picker"))
-                } minimumValueLabel: {
-                    // text minimum
-                } maximumValueLabel: {
-                    // text maximum
-                }
-                .onChange(of: brightness) {
-                    selectedColor = Color(hue: hue, saturation: 1, brightness: brightness)
+            .padding()
+            .navigationTitle(NSLocalizedString("Pick Color", comment: "Title for color picker sheet"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(NSLocalizedString("Done", comment: "Button to close color picker sheet")) {
+                        dismiss()
+                    }
                 }
             }
-            // Fertig-Button
-            Button(NSLocalizedString("Done", comment: "Button to close color picker sheet")) {
-                dismiss()
-            }
-            .buttonStyle(.borderedProminent)
-            .padding(.top, 8)
         }
-        .padding()
+        .presentationDetents([.medium, .large], selection: $selectedDetent)
+        .presentationDragIndicator(.visible)
         .onAppear {
             updateHSB(from: selectedColor)
         }
