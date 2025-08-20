@@ -94,6 +94,51 @@ miataru/
 - Use clear, descriptive names for files
 - Follow the established pattern for platform-specific views
 
+## Copyright Header Requirements
+
+### Mandatory Copyright Header
+**ALWAYS** add the following copyright header to the top of every new Swift file:
+
+```swift
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * [FileName].swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on [CurrentDate].
+ */
+```
+
+#### ✅ Correct Implementation
+```swift
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * MyNewView.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 2025-01-25.
+ */
+
+import SwiftUI
+// ... rest of the file content
+```
+
+#### ❌ Incorrect Implementation
+```swift
+import SwiftUI
+// Missing copyright header
+// ... rest of the file content
+```
+
+### Header Guidelines
+- Place the header at the very top of the file, before any imports
+- Replace `[FileName]` with the actual filename (e.g., `MyNewView.swift`)
+- Replace `[CurrentDate]` with the current date in format YYYY-MM-DD (e.g., 2025-01-25)
+- Keep the exact copyright text and format
+- The header must be the first content in every Swift file
+
 ## Architecture Patterns
 
 ### MVVM with SwiftUI
@@ -177,6 +222,7 @@ withAnimation(.easeInOut(duration: 0.5)) {
 
 ## Code Review Checklist
 
+- [ ] Copyright header is present and correctly formatted
 - [ ] All user-facing strings use `NSLocalizedString`
 - [ ] Proper error handling implemented
 - [ ] Memory leaks prevented (timers, publishers cancelled)

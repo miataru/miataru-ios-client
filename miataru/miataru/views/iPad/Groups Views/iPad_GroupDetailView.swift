@@ -1,10 +1,11 @@
-//
-//  iPad_GroupDetailView.swift
-//  miataru
-//
-//  Created by Daniel Kirstenpfad on 18.08.25.
-//  Copyright © 2025 Miataru. All rights reserved.
-//
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * iPad_GroupDetailView.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
 
 import SwiftUI
 

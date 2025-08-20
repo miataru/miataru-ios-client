@@ -1,7 +1,11 @@
-//
-//  IncomingCall.swift
-//  Incoming Call Animation
-
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * PulsingAccuracyCircle.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
 
 import SwiftUI
 

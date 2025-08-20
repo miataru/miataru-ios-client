@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * ColorPickerView.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
+
 import SwiftUI
 
 /// A simple, reusable color picker view that mimics the basic functionality of SwiftUI's ColorPicker.

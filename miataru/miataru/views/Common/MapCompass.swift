@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * MapCompass.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
+
 import SwiftUI
 
 struct MapCompass: View {

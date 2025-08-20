@@ -1,5 +1,12 @@
-// This SwiftUI view acts as a container for onboarding screens.
-// It selects the appropriate onboarding view depending on the platform and device size.
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * OnboardingContainerView.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
+
 import SwiftUI
 
 struct OnboardingContainerView: View {

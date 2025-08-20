@@ -1,5 +1,12 @@
-// DeviceLocationCacheStore speichert die letzte bekannte Location jedes Devices lokal (analog zu DeviceGroupStore/KnownDeviceStore)
-// Siehe README oder DeviceGroupStore für Details zum Speicherort und Format.
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * DeviceLocationCacheStore.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
+
 import Foundation
 import UIKit
 import Combine

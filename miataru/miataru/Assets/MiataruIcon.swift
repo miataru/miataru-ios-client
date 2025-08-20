@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ * MiataruIcon.swift
+ * miataru
+ *
+ * Created by Daniel Kirstenpfad on 20.06.25.
+ */
+
 import SwiftUI
 enum MiataruPalette {
     static let background_color = Color(red: 22/255, green: 55/255, blue: 72/255, opacity: 1.0)
