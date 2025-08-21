@@ -21,7 +21,15 @@ class thisDeviceIDManager {
         if let cached = cachedDeviceID {
             return cached
         }
-        let loaded = loadDeviceID()!
+        // Safely attempt to load the persisted ID; fall back to generating
+        // and storing a new one if loading fails for any reason.
+        guard let loaded = loadDeviceID() else {
+            // Fallback: create a fresh ID to avoid crashes on startup
+            let newID = UUID().uuidString
+            saveDeviceID(newID)
+            cachedDeviceID = newID
+            return newID
+        }
         cachedDeviceID = loaded
         return loaded
     }
@@ -67,9 +75,13 @@ class thisDeviceIDManager {
     private func loadDeviceID() -> String? {
         print("[DEBUG] Attempting to load deviceID...")
         ensureAppDirectoryExists()
+        // If we cannot resolve the target URL, generate and persist a fresh ID
+        // rather than returning nil.
         guard let modernURL = modernFileURL else {
-            print("[DEBUG] modernFileURL is nil. Cannot load deviceID.")
-            return nil
+            print("[DEBUG] modernFileURL is nil. Generating new deviceID.")
+            let newID = UUID().uuidString
+            saveDeviceID(newID)
+            return newID
         }
         // 1. Prüfe, ob das neue Format existiert
         if FileManager.default.fileExists(atPath: modernURL.path) {
@@ -78,15 +90,15 @@ class thisDeviceIDManager {
                 print("[DEBUG] Loaded deviceID from modern file: \(id)")
                 return id
             } else {
-                print("[DEBUG] Failed to read deviceID from modern file.")
+                print("[DEBUG] Failed to read deviceID from modern file. Generating new deviceID.")
+                let newID = UUID().uuidString
+                saveDeviceID(newID)
+                return newID
             }
         }
         // 2. Prüfe, ob das alte Format existiert und migriere ggf.
-        guard let legacyURL = legacyFileURL else {
-            print("[DEBUG] legacyFileURL is nil. Cannot check legacy deviceID.")
-            return nil
-        }
-        if FileManager.default.fileExists(atPath: legacyURL.path),
+        if let legacyURL = legacyFileURL,
+           FileManager.default.fileExists(atPath: legacyURL.path),
            let data = try? Data(contentsOf: legacyURL),
            let legacyID = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: data) as String? {
             print("[DEBUG] Found legacy deviceID file at: \(legacyURL.path). Migrating to modern format.")
