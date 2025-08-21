@@ -10,12 +10,13 @@
 import SwiftUI
 
 struct PulsingAccuracyCircle: View {
-    
+
     @State private var isPulsing = false
     let easeGently = Animation.easeOut(duration: 1).repeatForever(autoreverses: true)
-    
+
     let pulsingColor: Color
     let size: CGFloat
+    private let maxScale: CGFloat = 1.2
     
     init(pulsingColor: Color = .blue, size: CGFloat) {
         self.pulsingColor = pulsingColor
@@ -33,9 +34,7 @@ struct PulsingAccuracyCircle: View {
                 .scaleEffect(isPulsing ? 0.1 : 1.2)
                 .zIndex(isPulsing ? 0 : 1)
                 .animation(easeGently.delay(0.4), value: isPulsing)
-                // Prevent perspective distortion by using a flat projection
-                //.drawingGroup()
-            
+
             // Middle circle
             Circle()
                 .fill(pulsingColor.gradient)
@@ -45,9 +44,7 @@ struct PulsingAccuracyCircle: View {
                 .scaleEffect(isPulsing ? 0.3 : 1.1)
                 .zIndex(isPulsing ? 0 : 3)
                 .animation(easeGently.delay(0.6), value: isPulsing)
-                // Prevent perspective distortion
-                //.drawingGroup()
-            
+
             // Inner circle
             Circle()
                 .fill(pulsingColor.gradient)
@@ -57,9 +54,11 @@ struct PulsingAccuracyCircle: View {
                 .zIndex(isPulsing ? 0 : 3)
                 .scaleEffect(isPulsing ? 0.2 : 1.2)
                 .animation(easeGently.delay(0.8), value: isPulsing)
-                // Prevent perspective distortion
-                //.drawingGroup()
         }
+        // Give the drawing group enough space for the scaled circles
+        .frame(width: size * maxScale, height: size * maxScale)
+        // Flatten the view so it isn't affected by MapKit's perspective
+        .drawingGroup()
         .onAppear {
             withAnimation {
                 isPulsing.toggle()
