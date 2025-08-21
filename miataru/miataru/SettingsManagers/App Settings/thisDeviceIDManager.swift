@@ -1,5 +1,5 @@
 //
-//  DeviceIDManager.swift
+//  thisDeviceIDManager.swift
 //  miataru
 //
 //  Created by Daniel Kirstenpfad on 21.06.25.
