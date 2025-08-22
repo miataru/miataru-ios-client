@@ -16,7 +16,8 @@ import MapKit // For CLLocationCoordinate2D
 
 struct iPhone_DeviceRowView: View {
     @ObservedObject var device: KnownDevice
-    @ObservedObject var cache: DeviceLocationCacheStore // <-- hinzugefügt
+    @ObservedObject var cache: DeviceLocationCacheStore
+    @State private var isGeocoding = false
     // For live updates, you could use @ObservedObject for the cache, but for now, fetch on render
     
     var body: some View {
@@ -32,6 +33,11 @@ struct iPhone_DeviceRowView: View {
                 // Subtitle: last seen + distance
                 if let subtitle = subtitleText() {
                     Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                if let place = placemarkText() {
+                    Text(place)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -55,7 +61,7 @@ struct iPhone_DeviceRowView: View {
         let now = Date()
         let relativeTime = relativeTimeString(from: cached.timestamp, to: now, unitsStyle: .abbreviated)
         // Distance calculation
-        guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else { // <-- cache statt .shared
+        guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
             let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
             return "\(lastSeen): \(relativeTime)"
         }
@@ -93,6 +99,29 @@ struct iPhone_DeviceRowView: View {
         let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
         return "\(lastSeen): \(relativeTime) \(separator) \(distanceLabel): \(formattedDistance)"
     }
+
+    private func placemarkText() -> String? {
+        guard let cached = cache.getLocation(for: device.DeviceID) else { return nil }
+        if let placemark = cache.getPlacemark(for: device.DeviceID), let country = placemark.country, let locality = placemark.locality {
+            return "\(locality), \(country)"
+        } else {
+            if !isGeocoding {
+                isGeocoding = true
+                let location = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
+                CLGeocoder().reverseGeocodeLocation(location) { placemarks, _ in
+                    defer { isGeocoding = false }
+                    if let pm = placemarks?.first {
+                        let country = pm.country
+                        let locality = pm.locality ?? pm.subAdministrativeArea ?? pm.administrativeArea
+                        DispatchQueue.main.async {
+                            cache.setPlacemark(for: device.DeviceID, country: country, locality: locality)
+                        }
+                    }
+                }
+            }
+            return nil
+        }
+    }
 }
 
 extension Color {
@@ -124,7 +153,7 @@ extension Color {
 // }
 
 #Preview {
-    @Previewable @State var device = KnownDevice(name: "Testgerät", deviceID: "12345", color: .blue)
-    iPhone_DeviceRowView(device: device, cache: DeviceLocationCacheStore.shared) // <-- cache übergeben
-} 
+    @Previewable @State var device = KnownDevice(name: "Test Device", deviceID: "12345", color: .blue)
+    iPhone_DeviceRowView(device: device, cache: DeviceLocationCacheStore.shared)
+}
 
