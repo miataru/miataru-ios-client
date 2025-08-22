@@ -25,6 +25,7 @@ struct iPad_RootView: View {
                     Label("qr", systemImage: "qrcode")
                 }
             iPhone_SettingsView()
+                .navigationViewStyle(.stack)
                 .tabItem {
                     Label("settings", systemImage: "gear")
                 }
