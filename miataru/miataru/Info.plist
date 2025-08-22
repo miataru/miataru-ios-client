@@ -25,5 +25,9 @@
 		<string>location</string>
 		<string>fetch</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to show your position and share with your devices.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need background location to keep your device location updated even when the app is not open.</string>
 </dict>
 </plist>

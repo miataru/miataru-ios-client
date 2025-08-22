@@ -31,12 +31,18 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
+    private let userDefaults = UserDefaults.standard
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
     private var foregroundLocationUpdateTimerTimeframe: Double = 30
     private let networkMonitor = NWPathMonitor()
     private var isNetworkAvailable: Bool = true
+    private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
+    private var hasRequestedAlwaysAuthorization: Bool {
+        get { userDefaults.bool(forKey: alwaysAuthorizationRequestedKey) }
+        set { userDefaults.set(newValue, forKey: alwaysAuthorizationRequestedKey) }
+    }
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -70,6 +76,8 @@ final class LocationManager: NSObject, ObservableObject {
         }
         let queue = DispatchQueue(label: "NetworkMonitor")
         networkMonitor.start(queue: queue)
+        // Ensure permission state is handled on startup
+        ensureAuthorizationIfNeeded()
     }
     
     deinit {
@@ -78,6 +86,8 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        // Re-check permission escalation / first-time prompt if needed
+        ensureAuthorizationIfNeeded()
         if isTracking {
             startHighAccuracyUpdates()
         }
@@ -142,6 +152,26 @@ final class LocationManager: NSObject, ObservableObject {
             break
         }
     }
+
+    private func ensureAuthorizationIfNeeded() {
+        let status = locationManager.authorizationStatus
+        if settings.trackAndReportLocation {
+            switch status {
+            case .notDetermined:
+                // Trigger first-time prompt
+                locationManager.requestWhenInUseAuthorization()
+            case .authorizedWhenInUse:
+                // Escalate to Always once if user opted-in to tracking
+                if !hasRequestedAlwaysAuthorization {
+                    debugLog("Ensuring Always authorization after WhenInUse…")
+                    hasRequestedAlwaysAuthorization = true
+                    locationManager.requestAlwaysAuthorization()
+                }
+            default:
+                break
+            }
+        }
+    }
     
     // MARK: - Tracking Control
     func startTracking() {
@@ -164,15 +194,26 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
-            if isTracking && state == .active {
-                startHighAccuracyUpdates()
-            } else if isTracking && state != .active {
-                startSignificantChangeUpdates()
+            if isTracking {
+                if state == .active {
+                    startHighAccuracyUpdates()
+                } else {
+                    startSignificantChangeUpdates()
+                }
             } else {
-                stopTracking()
+                // Ensure updates are stopped but preserve user's tracking preference flag
+                stopHighAccuracyUpdates()
+                stopSignificantChangeUpdates()
             }
-        default:
+        case .notDetermined:
+            // Do not reset isTracking while the user has not decided yet
+            break
+        case .denied, .restricted:
+            // Explicitly stop tracking if permission is denied/restricted
             stopTracking()
+        @unknown default:
+            stopHighAccuracyUpdates()
+            stopSignificantChangeUpdates()
         }
     }
     
@@ -374,6 +415,14 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         Task { @MainActor in
             self.authorizationStatus = status
+            if status == .authorizedWhenInUse,
+               settings.trackAndReportLocation,
+               !hasRequestedAlwaysAuthorization {
+                // Escalate to Always once, if user opted-in to tracking
+                debugLog("Authorized WhenInUse. Requesting Always authorization…")
+                hasRequestedAlwaysAuthorization = true
+                self.locationManager.requestAlwaysAuthorization()
+            }
             self.updateTrackingMode()
         }
     }
