@@ -34,7 +34,7 @@ struct iPad_DevicesView: View {
                                 Button {
                                     editingDevice = device
                                 } label: {
-                                    Label("edit_device", systemImage: "pencil")
+                                    Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
                                 }
                                 Button(role: .destructive) {
                                     store.removeDevice(byID: device.DeviceID)
@@ -60,8 +60,9 @@ struct iPad_DevicesView: View {
                         if editMode == .active {
                             Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
                         } else {
-                            Image(systemName: "pencil")
-                                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
+                            Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list"))
+                            //Image(systemName: "pencil")
+                            //    .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
                         }
                     }
                 }
