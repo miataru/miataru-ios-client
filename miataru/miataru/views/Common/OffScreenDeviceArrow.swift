@@ -48,10 +48,10 @@ struct OffScreenDeviceArrow: View {
 
     // MARK: - Centralized visual/geometry constants (C)
     /// Margin used to decide if a device is considered "outside" (visibility hysteresis).
-    private let visibilityMargin: CGFloat = 10
+    private let visibilityMargin: CGFloat = 20
     /// Inset from the screen edge used for intersection and placement.
-    private let edgeInsetPortrait: CGFloat = 24
-    private let edgeInsetLandscape: CGFloat = 20
+    private let edgeInsetPortrait: CGFloat = 30
+    private let edgeInsetLandscape: CGFloat = 0
     /// Reduced in landscape to keep arrows closer to the top edge on short heights.
     private var edgeInset: CGFloat {
         // Landscape if width > height
