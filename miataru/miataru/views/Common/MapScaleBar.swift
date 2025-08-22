@@ -17,15 +17,19 @@ struct MapScaleBar: View {
     var body: some View {
         let distance = distanceForWidth(region: region, width: width)
         let label = distanceLabel(for: distance)
-        HStack(spacing: 2) {
+        // Stack label above the bar while keeping a fixed component width
+        VStack(spacing: 2) {
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
             Rectangle()
                 .frame(width: width, height: 2)
                 .foregroundColor(.primary)
                 .cornerRadius(4)
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(.primary)
         }
+        .frame(width: width)
         .padding(4)
         .background(.ultraThinMaterial)
         .cornerRadius(8)
