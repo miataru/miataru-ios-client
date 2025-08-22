@@ -26,16 +26,24 @@ struct iPad_GroupsView: View {
                         iPhone_GroupRowView(group: group)
                             .tag(group.id)
                             .contextMenu {
-                                /*Button {
+                                Button {
                                     editingGroup = group
                                 } label: {
-                                    Label("edit_group", systemImage: "pencil")
-                                }*/
+                                    Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                }
                                 Button(role: .destructive) {
                                     groupStore.remove(group: group)
                                 } label: {
                                     Label("delete_group", systemImage: "trash")
                                 }
+                            }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    editingGroup = group
+                                } label: {
+                                    Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                }
+                                .tint(.blue)
                             }
                     }
                     .onDelete { indices in

@@ -2090,7 +2090,7 @@
       }
     },
     "edit_group" : {
-      "comment" : "Edit group\nEdit the selected group..",
+      "comment" : "Edit group\nEdit the selected group..\nEdit this group.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
