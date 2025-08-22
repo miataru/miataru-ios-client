@@ -104,7 +104,7 @@ class SettingsManager: ObservableObject {
         self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
-        self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
+        self.locationActivityType = d.object(forKey: Keys.locationActivityType) as? Int ?? 0
         self.locationSensitivityLevel = d.object(forKey: Keys.locationSensitivityLevel) as? Int ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
