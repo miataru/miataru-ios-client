@@ -9,6 +9,8 @@
 
 import SwiftUI
 import QRCode
+import MessageUI
+import UIKit
 
 struct iPhone_MyDeviceQRCodeView: View {
     @State var content: String = "miataru://" + thisDeviceIDManager.shared.deviceID
@@ -26,8 +28,10 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State var dataInset: Double = 0
     @State var cornerRadiusFraction: Double = 0.5
     @State var rotationFraction: Double = 0.0
-    
+
     @State private var showCopiedAlert = false
+    @State private var showMailComposer = false
+    @State private var qrImage: UIImage? = nil
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -89,7 +93,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .cornerRadius(8)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
-                            
+
                             Button(action: {
                                 UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
                                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -108,6 +112,29 @@ struct iPhone_MyDeviceQRCodeView: View {
                                     .font(isLandscape ? .title3 : .title2)
                             }
                             .buttonStyle(PlainButtonStyle())
+
+                            if let url = URL(string: content) {
+                                ShareLink(item: url) {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(.blue)
+                                        .font(isLandscape ? .title3 : .title2)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text("share_device_url_button_label"))
+                            }
+
+                            Button(action: {
+                                if MFMailComposeViewController.canSendMail(), let img = generateQRCodeImage() {
+                                    qrImage = img
+                                    showMailComposer = true
+                                }
+                            }) {
+                                Image(systemName: "envelope")
+                                    .foregroundColor(.blue)
+                                    .font(isLandscape ? .title3 : .title2)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .accessibilityLabel(Text("share_device_email_button_label"))
                         }
                     }
                     .padding(.horizontal, isLandscape ? 20 : 16)
@@ -155,16 +182,56 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
             }
         )
+        .sheet(isPresented: $showMailComposer) {
+            if let qrImage = qrImage {
+                MailView(deviceID: thisDeviceIDManager.shared.deviceID, qrImage: qrImage)
+            }
+        }
     }
-    
+
     private var qrContent: QRCodeShape {
         QRCodeShape(
             data: content.data(using: .utf8) ?? Data(),
             errorCorrection: correction
         )
     }
+
+    private func generateQRCodeImage() -> UIImage? {
+        if let qr = try? QRCode(utf8String: content, errorCorrection: correction) {
+            return try? qr.uiImage(CGSize(width: 300, height: 300))
+        }
+        return nil
+    }
+}
+
+struct MailView: UIViewControllerRepresentable {
+    let deviceID: String
+    let qrImage: UIImage
+
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            controller.dismiss(animated: true)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.mailComposeDelegate = context.coordinator
+        let subject = NSLocalizedString("share_device_email_subject", comment: "")
+        let body = String(format: NSLocalizedString("share_device_email_body", comment: ""), deviceID, "miataru://\(deviceID)")
+        vc.setSubject(subject)
+        vc.setMessageBody(body, isHTML: false)
+        if let data = qrImage.pngData() {
+            vc.addAttachmentData(data, mimeType: "image/png", fileName: "device-qrcode.png")
+        }
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
 }
 
 #Preview {
     iPhone_MyDeviceQRCodeView()
-} 
+}
