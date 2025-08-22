@@ -386,6 +386,7 @@ struct iPad_GroupMapView: View {
                                         )
                                         .shimmering(active: isLoading)
                                         .shadow(radius: 2)
+                                        .zIndex(2)
                                 }
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue),
