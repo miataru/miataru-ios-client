@@ -65,6 +65,9 @@ class SettingsManager: ObservableObject {
     @Published var showOffscreenArrowsForOtherDevices: Bool {
         didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: Keys.showOffscreenArrowsForOtherDevices) }
     }
+    @Published var navigationTransportType: Int {
+        didSet { defaults.set(navigationTransportType, forKey: Keys.navigationTransportType) }
+    }
     
     // MARK: - Keys
     private enum Keys {
@@ -82,6 +85,7 @@ class SettingsManager: ObservableObject {
         static let locationSensitivityLevel = "location_sensitivity_level"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
+        static let navigationTransportType = "navigation_transport_type"
     }
     
     // MARK: - Location Permission Management
@@ -108,6 +112,7 @@ class SettingsManager: ObservableObject {
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
+        self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
     }
     
     // MARK: - Synchronize
