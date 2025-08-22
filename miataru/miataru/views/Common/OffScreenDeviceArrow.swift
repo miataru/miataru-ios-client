@@ -10,6 +10,17 @@
 import SwiftUI
 import MapKit
 
+// Conditional debug logger: compiled out in non-Debug builds
+#if DEBUG
+@inline(__always)
+private func debugLog(_ message: @autoclosure () -> String) {
+	print(message())
+}
+#else
+@inline(__always)
+private func debugLog(_ message: @autoclosure () -> String) {}
+#endif
+
 /// OffScreenDeviceArrow renders an arrow label at the screen edge pointing towards a device
 /// that is currently outside the visible map region.
 ///
@@ -131,7 +142,7 @@ struct OffScreenDeviceArrow: View {
         let deviceScreenPoint = rotate(point: deviceScreenPointUnrotated, around: screenCenter, degrees: -mapHeading)
         
         // Debug: Print screen coordinates
-        let _ = print("📍 Device \(deviceName) screen position (rotated by heading \(mapHeading)): \(deviceScreenPoint), screen size: \(screenSize)")
+        debugLog("📍 Device \(deviceName) screen position (rotated by heading \(mapHeading)): \(deviceScreenPoint), screen size: \(screenSize)")
         
 
         
@@ -142,10 +153,10 @@ struct OffScreenDeviceArrow: View {
                              deviceScreenPoint.y < margin || 
                              deviceScreenPoint.y > screenSize.height - margin
         
-        let _ = print("🔍 Device \(deviceName) is outside screen: \(isOutsideScreen) (margin: \(margin))")
+        debugLog("🔍 Device \(deviceName) is outside screen: \(isOutsideScreen) (margin: \(margin))")
         
         guard isOutsideScreen else { 
-            let _ = print("❌ Device \(deviceName) is inside screen bounds, no arrow needed")
+            debugLog("❌ Device \(deviceName) is inside screen bounds, no arrow needed")
             return nil 
         }
         
@@ -155,7 +166,7 @@ struct OffScreenDeviceArrow: View {
         // Calculate rotation angle to point towards device
         let rotation = calculateRotationAngle(from: arrowPosition, to: deviceScreenPoint)
         
-        let _ = print("✅ Showing arrow for \(deviceName) at position: \(arrowPosition) with rotation: \(rotation)")
+        debugLog("✅ Showing arrow for \(deviceName) at position: \(arrowPosition) with rotation: \(rotation)")
         
         return (position: arrowPosition, rotation: rotation)
     }
@@ -293,12 +304,12 @@ struct OffScreenDeviceArrow: View {
         let screenY = screenCenter.y - CGFloat(latRatio) * screenSize.height // Inverted Y axis
         
         // Debug: Print coordinate conversion details
-        let _ = print("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
-        let _ = print("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
-        let _ = print("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
-        let _ = print("📊 Ratios: lat=\(latRatio), lon=\(lonRatio)")
-        let _ = print("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
-        let _ = print("🎯 Calculated screen position: \(screenX), \(screenY)")
+        debugLog("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
+        debugLog("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
+        debugLog("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
+        debugLog("📊 Ratios: lat=\(latRatio), lon=\(lonRatio)")
+        debugLog("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
+        debugLog("🎯 Calculated screen position: \(screenX), \(screenY)")
         
         return CGPoint(x: screenX, y: screenY)
     }
@@ -386,7 +397,7 @@ extension CGPoint {
             totalArrows: 1,
             behavior: .jumpToLocation,
             onTap: {
-                print("Preview: Tapped on iPhone 13 arrow")
+                debugLog("Preview: Tapped on iPhone 13 arrow")
             }
         )
     }
