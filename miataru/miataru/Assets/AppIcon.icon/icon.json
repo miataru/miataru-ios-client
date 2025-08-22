@@ -2,7 +2,7 @@
   "fill-specializations" : [
     {
       "value" : {
-        "solid" : "extended-srgb:0.33333,0.74510,0.94118,1.00000"
+        "solid" : "srgb:0.33333,0.74510,0.94118,1.00000"
       }
     },
     {
@@ -93,11 +93,17 @@
         {
           "blend-mode-specializations" : [
             {
+              "value" : "plus-darker"
+            },
+            {
               "appearance" : "dark",
               "value" : "lighten"
             }
           ],
           "fill-specializations" : [
+            {
+              "value" : "automatic"
+            },
             {
               "appearance" : "dark",
               "value" : "automatic"
