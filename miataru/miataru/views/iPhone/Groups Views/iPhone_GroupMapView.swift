@@ -595,9 +595,9 @@ struct iPhone_GroupMapView: View {
                 let paddedLonDelta = (rawLonDelta * horizontalPaddingFactor) / safeCosLat
                 let latitudeDelta = max(paddedLatDelta, minDelta)
                 let longitudeDelta = max(paddedLonDelta, minDelta)
-                print("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta)")
+                debugLog("[Map] latitudeDelta: \(latitudeDelta), longitudeDelta: \(longitudeDelta)")
                 if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
-                    print("[Map] Invalid region, setting fallback")
+                    debugLog("[Map] Invalid region, setting fallback")
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
                     withAnimation(.easeInOut(duration: 0.5)) {
                         cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
@@ -648,7 +648,7 @@ struct iPhone_GroupMapView: View {
     }
     
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
-        print("Error: \(debugMessage)")
+        debugLog("Error: \(debugMessage)")
         errorOverlayManager.show(message: userMessage)
     }
     

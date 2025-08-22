@@ -77,7 +77,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     @objc private func appDidBecomeActive() {
-        print("App did become active")
+        debugLog("App did become active")
         if isTracking {
             startHighAccuracyUpdates()
         }
@@ -145,13 +145,13 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Tracking Control
     func startTracking() {
-        print("startTracking called")
+        debugLog("startTracking called")
         isTracking = true
         updateTrackingMode()
     }
     
     func stopTracking() {
-        print("stopTracking called")
+        debugLog("stopTracking called")
         isTracking = false
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
@@ -161,7 +161,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func updateTrackingMode() {
         let state = UIApplication.shared.applicationState
         let status = locationManager.authorizationStatus
-        print("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
+        debugLog("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
             if isTracking && state == .active {
@@ -177,25 +177,25 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     private func startHighAccuracyUpdates() {
-        print("Calling startHighAccuracyUpdates")
+        debugLog("Calling startHighAccuracyUpdates")
         locationManager.allowsBackgroundLocationUpdates = false
-        print("allowsBackgroundLocationUpdates set to false (foreground)")
+        debugLog("allowsBackgroundLocationUpdates set to false (foreground)")
         locationManager.stopMonitoringSignificantLocationChanges()
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.startUpdatingLocation()
         if foregroundLocationTimer == nil {
-            print("App is active, will start foreground location timer")
+            debugLog("App is active, will start foreground location timer")
             startForegroundLocationTimer()
         } else {
-            print("Foreground location timer already running")
+            debugLog("Foreground location timer already running")
         }
     }
     
     func startSignificantChangeUpdates() {
-        print("startSignificantChangeUpdates called")
+        debugLog("startSignificantChangeUpdates called")
         locationManager.allowsBackgroundLocationUpdates = true
-        print("allowsBackgroundLocationUpdates set to true (background)")
+        debugLog("allowsBackgroundLocationUpdates set to true (background)")
         locationManager.stopUpdatingLocation()
         locationManager.startMonitoringSignificantLocationChanges()
         stopForegroundLocationTimer()
@@ -205,7 +205,7 @@ final class LocationManager: NSObject, ObservableObject {
     @MainActor
     private func sendLocationToServer(_ location: CLLocation) {
         guard isNetworkAvailable else {
-            print("No network available, skipping server update.")
+            debugLog("No network available, skipping server update.")
             self.serverUpdateStatus = .failed("No network connection")
             return
         }
@@ -254,26 +254,26 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Foreground Location Timer
     private func startForegroundLocationTimer() {
-        print("Starting foreground location timer")
+        debugLog("Starting foreground location timer")
         stopForegroundLocationTimer()
         foregroundLocationTimer = Timer.scheduledTimer(withTimeInterval: foregroundLocationUpdateTimerTimeframe, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             if UIApplication.shared.applicationState == .active && self.isTracking {
-                print("[Timer] Requesting location...")
+                debugLog("[Timer] Requesting location...")
                 self.locationManager.requestLocation()
             } else {
-                print("[Timer] Not active or not tracking, skipping requestLocation")
+                debugLog("[Timer] Not active or not tracking, skipping requestLocation")
             }
         }
         RunLoop.main.add(foregroundLocationTimer!, forMode: .common)
-        print("ForegroundLocationTimer created at: \(Unmanaged.passUnretained(foregroundLocationTimer!).toOpaque())")
+        debugLog("ForegroundLocationTimer created at: \(Unmanaged.passUnretained(foregroundLocationTimer!).toOpaque())")
     }
     
     private func stopForegroundLocationTimer() {
         if let timer = foregroundLocationTimer {
-            print("Stopping foreground location timer at: \(Unmanaged.passUnretained(timer).toOpaque())")
+            debugLog("Stopping foreground location timer at: \(Unmanaged.passUnretained(timer).toOpaque())")
         } else {
-            print("stopForegroundLocationTimer called, but timer was already nil")
+            debugLog("stopForegroundLocationTimer called, but timer was already nil")
         }
         foregroundLocationTimer?.invalidate()
         foregroundLocationTimer = nil
@@ -302,27 +302,27 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - App Lifecycle Hooks
     func appDidEnterForeground() {
-        print("[LocationManager] App did enter foreground")
+        debugLog("[LocationManager] App did enter foreground")
         guard isTracking else { return }
         stopSignificantChangeUpdates()
         startHighAccuracyUpdates()
     }
 
     func appDidEnterBackground() {
-        print("[LocationManager] App did enter background")
+        debugLog("[LocationManager] App did enter background")
         guard isTracking else { return }
         stopHighAccuracyUpdates()
         startSignificantChangeUpdates()
     }
 
     private func stopHighAccuracyUpdates() {
-        print("[LocationManager] Stopping high accuracy updates")
+        debugLog("[LocationManager] Stopping high accuracy updates")
         locationManager.stopUpdatingLocation()
         stopForegroundLocationTimer()
     }
 
     private func stopSignificantChangeUpdates() {
-        print("[LocationManager] Stopping significant change updates")
+        debugLog("[LocationManager] Stopping significant change updates")
         locationManager.stopMonitoringSignificantLocationChanges()
     }
     
@@ -352,17 +352,17 @@ extension LocationManager: CLLocationManagerDelegate {
                 let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
                 if distance >= minimumDistance {
                     shouldAcceptUpdate = true
-                    print("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+                    debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
                 } else if accuracyImprovement >= significantAccuracyImprovement {
                     shouldAcceptUpdate = true
-                    print("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+                    debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
                 } else {
-                    print("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+                    debugLog("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
                 }
             } else {
                 // Always accept the very first location
                 shouldAcceptUpdate = true
-                print("[LocationManager] First location update accepted.")
+                debugLog("[LocationManager] First location update accepted.")
             }
             guard shouldAcceptUpdate else { return }
             self.currentLocation = location

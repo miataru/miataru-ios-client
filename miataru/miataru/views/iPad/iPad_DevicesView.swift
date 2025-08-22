@@ -194,7 +194,7 @@ struct iPad_DevicesView: View {
             }
             return true
         } catch {
-            print("Error refreshing device locations: \(error)")
+            debugLog("Error refreshing device locations: \(error)")
             // Remove all device locations from cache if download fails
             for deviceID in deviceIDs {
                 DeviceLocationCacheStore.shared.removeLocation(for: deviceID)

@@ -168,7 +168,7 @@ struct iPhone_DevicesView: View {
         guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return false }
         let deviceIDs = store.devices.map { $0.DeviceID }
         do {
-            print("[iPhone_DevicesView] refreshAllDeviceLocations")
+            debugLog("[iPhone_DevicesView] refreshAllDeviceLocations")
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: deviceIDs,
@@ -191,7 +191,7 @@ struct iPhone_DevicesView: View {
             }
             return true
         } catch {
-            print("Error refreshing device locations: \(error)")
+            debugLog("Error refreshing device locations: \(error)")
             // Remove all device locations from cache if download fails
             for deviceID in deviceIDs {
                 DeviceLocationCacheStore.shared.removeLocation(for: deviceID)

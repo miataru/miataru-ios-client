@@ -577,7 +577,7 @@ struct iPhone_DeviceMapView: View {
 
     // Shows the error overlay with a debug and user message
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
-        print("Error: \(debugMessage)")
+        debugLog("Error: \(debugMessage)")
         errorOverlayManager.show(message: userMessage)
     }
 
@@ -641,7 +641,7 @@ struct NavigationTitleModifier: ViewModifier {
             previewDeviceAccuracy: mockAccuracy,
             previewDeviceTimestamp: mockTimestamp,
             onNavigateToDevice: { deviceID in
-                print("Preview: Would navigate to device \(deviceID)")
+                debugLog("Preview: Would navigate to device \(deviceID)")
             }
         )
     }

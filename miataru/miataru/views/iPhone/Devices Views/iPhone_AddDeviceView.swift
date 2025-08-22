@@ -119,7 +119,6 @@ struct iPhone_AddDeviceView: View {
     }
 }
 
-#if DEBUG
 struct iPhone_AddDeviceView_Previews: PreviewProvider {
     static var previews: some View {
         // Beispiel-Daten für die Vorschau
@@ -127,4 +126,3 @@ struct iPhone_AddDeviceView_Previews: PreviewProvider {
         iPhone_AddDeviceView(store: store, isPresented: .constant(true))
     }
 }
-#endif 
