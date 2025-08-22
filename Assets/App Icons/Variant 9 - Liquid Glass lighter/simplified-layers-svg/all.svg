@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="938.17395"
+   height="985.72644"
+   id="svg2"
+   version="1.1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><defs
+     id="defs4" /><metadata
+     id="metadata7"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><style
+     type="text/css"
+     id="mapStyle">
+/* Cascading Style Sheet (CSS) definitions for region colours */
+
+/* land: #E0E0E0 -- outside area (or default land colour)
+ * sea: #FFFFFF -- ocean / sea / lake
+ * border: #646464 -- land borders
+ * subject land: #336733 -- subject colour
+ * other land: #C6DEBD -- other lands of the same political unity
+ * coast: #646464 -- lake's coast, rivers, sea coasts
+ * political border: #646464 -- Other minor political borders
+ * interest border: #335033 -- border colour for areas of interest
+ */
+
+/* basic styles */
+path{
+   stroke-linejoin: bevel;
+}
+
+path,circle{
+   stroke-width: 0.5;
+}
+
+/* Main region definition */
+
+.region{
+   fill: #E0E0E0;
+   stroke: #646464;
+   stroke-width: 0.5;
+}
+
+/* Political groupings */
+
+.political{
+   fill: #C6DEBD;
+   stroke: #646464;
+}
+
+/* Subject / area of interest */
+
+.subject{
+   fill: #336733;
+   stroke: #335033;
+}
+
+circle.highlight{
+   stroke-width: 1.25;
+}
+
+/* Rivers */
+
+.river{
+   fill: none;
+   stroke: #646464;
+   stroke-width: 0.25;
+}
+
+/* Sea and decoration */
+.seabase{
+   fill: #FFFFFF;
+   stroke: none;
+}
+
+.mapborder{
+   fill: none;
+   stroke: #646464;
+   stroke-width: 1.25;
+}
+
+.mapshadow{
+  fill: url(#grSea);
+  stroke: none;
+}
+
+/* Grid lines */
+.grid{
+  fill: none;
+  stroke: #646464;
+}
+
+/* Colouring a particular country, use '*' with group ID */
+/*
+ * #gNZL *{
+ *   fill: #ff0000;
+ *   stroke: black;
+ * }
+ */
+/* ...or '.' with country name */
+/*
+ * .NZL *{
+ *   fill: #ff0000;
+ *   stroke: black;
+ * }
+ */
+</style><g
+     id="layer7"
+     transform="translate(-45.597622,-19.437984)"><path
+       style="display:inline;fill:#29627f;fill-opacity:1;stroke:none;stroke-width:2.01366;stroke-linejoin:bevel;stroke-dasharray:2.01366, 2.01366"
+       d="M 517.53726,19.438799 C 1322.9303,18.403531 924.58544,1005.4693 516.1162,1005.0443 108.4614,1000.4816 -299.36525,20.488861 517.53726,19.438799 Z"
+       id="path7" /></g><g
+     id="layer6"
+     transform="translate(-45.597622,-19.437984)"><path
+       style="display:inline;fill:#347ea4;fill-opacity:1;stroke:none;stroke-width:1.77218;stroke-linejoin:bevel;stroke-dasharray:1.77218, 1.77218"
+       d="M 516.99644,63.318337 C 1169.7885,62.329033 846.91961,1005.5705 515.84463,1005.1643 185.4298,1000.8043 -145.12433,64.321778 516.99644,63.318337 Z"
+       id="path6" /></g><g
+     id="layer4"
+     style="display:inline"
+     transform="translate(-45.597622,-19.437984)"><path
+       style="fill:#58a5cb;fill-opacity:1;stroke:none;stroke-width:1.80128;stroke-linejoin:bevel;stroke-dasharray:1.80128, 1.80128"
+       d="M 496.03226,975.14022 C 388.12371,842.7731 285.76919,700.31843 232.16708,536.46933 201.78403,435.98593 208.74577,320.25996 270.67873,232.73342 331.1604,141.54285 444.05388,84.165049 553.78333,103.19632 c 149.17582,21.20681 265.33533,167.2169 257.57703,316.88063 -3.75769,137.06797 -72.27275,261.2653 -143.52594,374.57447 -45.93071,70.90553 -97.63236,137.90907 -152.02932,202.48933 -6.59095,-7.33351 -13.18189,-14.66702 -19.77284,-22.00053 z"
+       id="path4-1" /></g><g
+     id="layer1"
+     transform="translate(-45.597622,-47.800167)"
+     style="display:inline"><g
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:1046.56px;line-height:125%;font-family:'Apple LiGothic';-inkscape-font-specification:'Apple LiGothic Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       id="text6059"
+       transform="matrix(0.99064243,0,0,0.87395899,9.843471,100.35714)"><path
+         d="m 633.32062,323.82738 c -40.88657,125.62361 -81.77314,251.24721 -122.65971,376.87082 -5.1917,-8.17747 -7.1475,-20.81386 -11.09526,-30.70542 -37.55861,-115.16751 -75.11721,-230.33502 -112.67582,-345.50253 -15.46624,105.20263 -30.93249,210.40527 -46.39873,315.6079 -25.59146,0 -51.18292,0 -76.77438,0 31.5739,-162.63084 63.14779,-325.26169 94.72169,-487.89253 18.88302,0 37.76603,0 56.64905,0 31.73812,113.0454 63.47625,226.09081 95.21437,339.13621 31.37621,-112.56841 62.75243,-225.13683 94.12864,-337.70524 19.13148,0 38.26295,0 57.39443,0 30.99768,161.43837 61.99536,322.87674 92.99304,484.31511 -25.59146,0 -51.18292,0 -76.77438,0 C 663.13591,533.24359 648.22827,428.53549 633.32062,323.82738 Z"
+         style="font-family:'Apple LiGothic';-inkscape-font-specification:'Apple LiGothic Bold';fill:#ffffff;fill-opacity:1"
+         id="path6064" /></g></g></svg>
