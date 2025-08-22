@@ -422,7 +422,7 @@ struct iPad_GroupMapView: View {
                                         editingDeviceID = deviceID
                                         showEditDeviceSheet = true
                                     } label: {
-                                        Label("edit_device", systemImage: "pencil")
+                                        Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
                                     }
                                 }
                         }.offset(y: 10)

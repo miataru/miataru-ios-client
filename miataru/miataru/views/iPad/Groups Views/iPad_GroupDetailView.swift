@@ -55,7 +55,7 @@ struct iPad_GroupDetailView: View {
                         Button {
                             editingDevice = device
                         } label: {
-                            Label("edit_device", systemImage: "pencil")
+                            Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
                         }
                         .tint(.blue)
                     }

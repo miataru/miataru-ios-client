@@ -55,8 +55,9 @@ struct iPad_GroupsView: View {
                         if editMode == .active {
                             Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the group list."))
                         } else {
-                            Image(systemName: "pencil")
-                                .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list")))
+                            Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list"))
+                            //Image(systemName: "pencil")
+                            //    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list")))
                         }
                     }
                 }
