@@ -38,6 +38,7 @@ struct iPhone_DeviceMapView: View {
     @State private var deviceAccuracy: Double? // Location accuracy in meters
     @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
     @ObservedObject private var settings = SettingsManager.shared // App settings
+    @ObservedObject private var cache = DeviceLocationCacheStore.shared // Device location cache
     @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
     @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
@@ -154,7 +155,7 @@ struct iPhone_DeviceMapView: View {
                 if settings.showOffscreenArrowsForOtherDevices {
                     let offscreenDevices = deviceStore.devices.filter { $0.DeviceID != deviceID }
                     ForEach(Array(offscreenDevices.enumerated()), id: \.element.DeviceID) { index, otherDevice in
-                        if let cached = DeviceLocationCacheStore.shared.getLocation(for: otherDevice.DeviceID) {
+                        if let cached = cache.getLocation(for: otherDevice.DeviceID) {
                             let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
                             OffScreenDeviceArrow(
                                 deviceName: otherDevice.DeviceName.isEmpty ? otherDevice.DeviceID : otherDevice.DeviceName,
