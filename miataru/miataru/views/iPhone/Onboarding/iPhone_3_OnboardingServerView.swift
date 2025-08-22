@@ -29,7 +29,7 @@ struct iPhone_3_OnboardingServerView: View {
                 .scaledToFit()
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
-            Text("Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.")
+            Text("Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)

@@ -2125,12 +2125,12 @@
         }
       }
     },
-    "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address." : {
+    "Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address."
+            "value" : "Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address."
           }
         }
       }
