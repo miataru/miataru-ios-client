@@ -1,0 +1,4 @@
+/* English InfoPlist strings */
+"NSLocationWhenInUseUsageDescription" = "We use your location to show your position and share with your devices.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "We need background location to keep your device location updated even when the app is not open.";
+

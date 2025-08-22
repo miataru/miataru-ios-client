@@ -1,0 +1,4 @@
+/* Japanese InfoPlist strings */
+"NSLocationWhenInUseUsageDescription" = "位置情報は現在地の表示とデバイス間の共有に使用します。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "アプリが開いていない時でも位置情報を最新に保つため、バックグラウンドでの位置情報アクセスが必要です。";
+
