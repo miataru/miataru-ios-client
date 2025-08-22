@@ -58,7 +58,7 @@ class DeviceGroupStore: ObservableObject {
             let data = try NSKeyedArchiver.archivedData(withRootObject: groups, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
-            print("Fehler beim Speichern der DeviceGroups: \(error)")
+            debugLog("Fehler beim Speichern der DeviceGroups: \(error)")
         }
     }
 
@@ -70,7 +70,7 @@ class DeviceGroupStore: ObservableObject {
                 return groups.sorted { $0.groupPosition < $1.groupPosition }
             }
         } catch {
-            print("Fehler beim Laden der DeviceGroups: \(error)")
+            debugLog("Fehler beim Laden der DeviceGroups: \(error)")
         }
         return []
     }

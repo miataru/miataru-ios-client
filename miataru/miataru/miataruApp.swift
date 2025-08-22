@@ -34,7 +34,7 @@ struct miataruApp: App {
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
         let deviceID = thisDeviceIDManager.shared.deviceID
-        print("this devices ID: \(deviceID)")
+        debugLog("this devices ID: \(deviceID)")
         
         // LocationManager initialisieren und Berechtigungen nur anfordern, wenn gewünscht
         let locationManager = LocationManager.shared

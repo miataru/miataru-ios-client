@@ -48,7 +48,7 @@ class KnownDeviceStore: ObservableObject {
             let myDeviceName = NSLocalizedString("my_device", comment: "Name for the user's own device in the device list")
             let myDevice = KnownDevice(name: myDeviceName, deviceID: myDeviceID, color: UIColor.systemBlue)
             self.devices.insert(myDevice, at: 0)
-            print("[DEBUG] Eigenes Gerät mit DeviceID \(myDeviceID) wurde automatisch als erstes Device hinzugefügt.")
+            debugLog("[DEBUG] Eigenes Gerät mit DeviceID \(myDeviceID) wurde automatisch als erstes Device hinzugefügt.")
             save()
         }
         setupSubscribers()
@@ -70,7 +70,7 @@ class KnownDeviceStore: ObservableObject {
             let data = try NSKeyedArchiver.archivedData(withRootObject: devices, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
-            print("Fehler beim Speichern der KnownDevices: \(error)")
+            debugLog("Fehler beim Speichern der KnownDevices: \(error)")
         }
         //print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
     }
@@ -83,7 +83,7 @@ class KnownDeviceStore: ObservableObject {
                 return devices.sorted { $0.KnownDevicesTablePosition < $1.KnownDevicesTablePosition }
             }
         } catch {
-            print("Fehler beim Laden der KnownDevices: \(error)")
+            debugLog("Fehler beim Laden der KnownDevices: \(error)")
         }
         return []
     }

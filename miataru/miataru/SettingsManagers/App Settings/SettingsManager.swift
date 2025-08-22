@@ -137,7 +137,7 @@ class SettingsManager: ObservableObject {
             defaults.register(defaults: defaultsToRegister)
             //print("Registrierte Defaults: \(defaultsToRegister)")
         } else {
-            print("Settings.bundle oder Root.plist nicht gefunden!")
+            debugLog("Settings.bundle oder Root.plist nicht gefunden!")
         }
     }
     

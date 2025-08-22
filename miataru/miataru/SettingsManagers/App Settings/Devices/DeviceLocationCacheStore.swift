@@ -81,7 +81,7 @@ class DeviceLocationCacheStore: ObservableObject {
             let data = try NSKeyedArchiver.archivedData(withRootObject: locations, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
-            print("Fehler beim Speichern der DeviceLocations: \(error)")
+            debugLog("Fehler beim Speichern der DeviceLocations: \(error)")
         }
     }
     
@@ -92,7 +92,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 return locations
             }
         } catch {
-            print("Fehler beim Laden der DeviceLocations: \(error)")
+            debugLog("Fehler beim Laden der DeviceLocations: \(error)")
         }
         return []
     }

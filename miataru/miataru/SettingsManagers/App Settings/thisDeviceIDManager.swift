@@ -60,39 +60,39 @@ class thisDeviceIDManager {
     }
     
     private func saveDeviceID(_ id: String) {
-        print("[DEBUG] Attempting to save deviceID: \(id)")
+        debugLog("[DEBUG] Attempting to save deviceID: \(id)")
         ensureAppDirectoryExists()
         guard let modernURL = modernFileURL else {
-            print("[DEBUG] modernFileURL is nil. Cannot save deviceID.")
+            debugLog("[DEBUG] modernFileURL is nil. Cannot save deviceID.")
             return
         }
         do {
             try id.write(to: modernURL, atomically: true, encoding: .utf8)
-            print("[DEBUG] deviceID successfully saved to: \(modernURL.path)")
+            debugLog("[DEBUG] deviceID successfully saved to: \(modernURL.path)")
         } catch {
-            print("[DEBUG] Error saving deviceID: \(error)")
+            debugLog("[DEBUG] Error saving deviceID: \(error)")
         }
     }
     
     private func loadDeviceID() -> String? {
-        print("[DEBUG] Attempting to load deviceID...")
+        debugLog("[DEBUG] Attempting to load deviceID...")
         ensureAppDirectoryExists()
         // If we cannot resolve the target URL, generate and persist a fresh ID
         // rather than returning nil.
         guard let modernURL = modernFileURL else {
-            print("[DEBUG] modernFileURL is nil. Generating new deviceID.")
+            debugLog("[DEBUG] modernFileURL is nil. Generating new deviceID.")
             let newID = UUID().uuidString
             saveDeviceID(newID)
             return newID
         }
         // 1. Prüfe, ob das neue Format existiert
         if FileManager.default.fileExists(atPath: modernURL.path) {
-            print("[DEBUG] Found modern deviceID file at: \(modernURL.path)")
+            debugLog("[DEBUG] Found modern deviceID file at: \(modernURL.path)")
             if let id = try? String(contentsOf: modernURL, encoding: .utf8) {
-                print("[DEBUG] Loaded deviceID from modern file: \(id)")
+                debugLog("[DEBUG] Loaded deviceID from modern file: \(id)")
                 return id
             } else {
-                print("[DEBUG] Failed to read deviceID from modern file. Generating new deviceID.")
+                debugLog("[DEBUG] Failed to read deviceID from modern file. Generating new deviceID.")
                 let newID = UUID().uuidString
                 saveDeviceID(newID)
                 return newID
@@ -103,13 +103,13 @@ class thisDeviceIDManager {
            FileManager.default.fileExists(atPath: legacyURL.path),
            let data = try? Data(contentsOf: legacyURL),
            let legacyID = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: data) as String? {
-            print("[DEBUG] Found legacy deviceID file at: \(legacyURL.path). Migrating to modern format.")
+            debugLog("[DEBUG] Found legacy deviceID file at: \(legacyURL.path). Migrating to modern format.")
             // Migriere ins neue Format
             saveDeviceID(legacyID)
             return legacyID
         }
         // 3. Nichts gefunden: Neue deviceID erzeugen, speichern und zurückgeben
-        print("[DEBUG] No deviceID found. Generating new deviceID.")
+        debugLog("[DEBUG] No deviceID found. Generating new deviceID.")
         let newID = UUID().uuidString
         saveDeviceID(newID)
         return newID
