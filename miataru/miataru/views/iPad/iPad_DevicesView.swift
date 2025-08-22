@@ -42,6 +42,14 @@ struct iPad_DevicesView: View {
                                     Label("delete_device", systemImage: "trash")
                                 }
                             }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    editingDevice = device
+                                } label: {
+                                    Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                     }
                     .onDelete { indices in
                         store.removeDevice(byID: store.devices[indices.first!].DeviceID)

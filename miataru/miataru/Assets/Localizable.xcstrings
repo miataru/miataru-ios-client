@@ -2067,7 +2067,7 @@
       }
     },
     "edit_device" : {
-      "comment" : "Edit the selected device.",
+      "comment" : "Edit the selected device.\nEdit this device.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
