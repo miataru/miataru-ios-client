@@ -2,7 +2,7 @@
   "fill-specializations" : [
     {
       "value" : {
-        "solid" : "srgb:0.33333,0.74510,0.94118,1.00000"
+        "solid" : "srgb:0.31987,0.65168,0.81543,1.00000"
       }
     },
     {
@@ -102,7 +102,9 @@
           ],
           "fill-specializations" : [
             {
-              "value" : "automatic"
+              "value" : {
+                "solid" : "srgb:0.21598,0.44566,0.56442,1.00000"
+              }
             },
             {
               "appearance" : "dark",
