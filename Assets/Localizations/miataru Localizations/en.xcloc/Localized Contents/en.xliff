@@ -551,9 +551,9 @@ permission text in Location Tracking Status</note>
         <target state="translated">Your data stays on the server you choose for the time you choose</target>
         <note/>
       </trans-unit>
-      <trans-unit id="Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address." xml:space="preserve">
-        <source>Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.</source>
-        <target state="translated">Your location data is stored on a server you trust.You can use the default Miataru server, or Enter your own server address.</target>
+      <trans-unit id="Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address." xml:space="preserve">
+        <source>Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.</source>
+        <target state="translated">Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.</target>
         <note/>
       </trans-unit>
       <trans-unit id="activity_type_accuracy_explanation" xml:space="preserve">
