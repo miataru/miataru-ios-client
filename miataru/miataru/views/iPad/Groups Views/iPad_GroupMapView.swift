@@ -44,6 +44,8 @@ struct iPad_GroupMapView: View {
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var editingDeviceID: String? = nil // State for the device being edited
     @State private var showEditDeviceSheet: Bool = false // Sheet trigger for editing device
+    @State private var navigationDeviceID: String? = nil // Device for navigation
+    @State private var showNavigationSheet: Bool = false // Navigation sheet trigger
     @State private var showNetworkErrorIcon = false // Show network error icon
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     
@@ -354,6 +356,11 @@ struct iPad_GroupMapView: View {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
+        .sheet(isPresented: $showNavigationSheet) {
+            if let deviceID = navigationDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {
+                DeviceNavigationView(device: device)
+            }
+        }
     }
     
     @ViewBuilder
@@ -423,6 +430,12 @@ struct iPad_GroupMapView: View {
                                         showEditDeviceSheet = true
                                     } label: {
                                         Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
+                                    }
+                                    Button {
+                                        navigationDeviceID = deviceID
+                                        showNavigationSheet = true
+                                    } label: {
+                                        Label("navigation", systemImage: "location").labelStyle(.titleAndIcon)
                                     }
                                 }
                         }.offset(y: 10)
