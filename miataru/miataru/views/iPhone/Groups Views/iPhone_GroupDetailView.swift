@@ -130,6 +130,15 @@ struct iPhone_GroupDeviceRowView: View {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                if let place = placemarkText() {
+                    Text(place)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                 }
             }
             Spacer()
@@ -193,6 +202,15 @@ struct iPhone_GroupDeviceRowView: View {
         let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
         let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
         return "\(lastSeen): \(relativeTime) \(separator) \(distanceLabel): \(formattedDistance)"
+    }
+
+    /// Returns the cached placemark text if available. Does not trigger geocoding.
+    private func placemarkText() -> String? {
+        if let placemark = cache.getPlacemark(for: device.DeviceID) {
+            let parts = [placemark.locality, placemark.country].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
+            if !parts.isEmpty { return parts.joined(separator: ", ") }
+        }
+        return nil
     }
 }
 

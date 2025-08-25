@@ -687,6 +687,50 @@
         }
       }
     },
+    "100m" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        }
+      }
+    },
+    "1000m" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        }
+      }
+    },
     "A number of your last location updates is stored on the server (default: last 1000)." : {
       "localizations" : {
         "de" : {
@@ -1798,13 +1842,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letztes Update"
+            "value" : "Update"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last seen"
+            "value" : "seen"
           }
         },
         "ja" : {
@@ -2336,6 +2380,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "地図のデフォルトのズームレベルを選択して、どの範囲が表示されるかを決定します。"
+          }
+        }
+      }
+    },
+    "explanation_reverse_geocoding_threshold" : {
+      "comment" : "Explanation for reverse geocoding distance threshold",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ab welcher Distanzänderung die Adresse neu ermittelt wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimum distance change before address is refreshed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小距離変化でアドレス更新"
           }
         }
       }
@@ -3231,7 +3298,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This option determines the sensitivity of how often location updates are sent to the server. It’s a combination of how much distance and accuracy of the location has changed compared to the last update."
+            "value" : "This option determines the sensitivity of how often location updates are sent to the server. It's a combination of how much distance and accuracy of the location has changed compared to the last update."
           }
         },
         "ja" : {
@@ -3854,7 +3921,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten)."
+            "value" : "Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten)."
           }
         },
         "en" : {
@@ -4160,6 +4227,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "グループから削除"
+          }
+        }
+      }
+    },
+    "reverse_geocode_every_update" : {
+      "comment" : "Always reverse geocode on updates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei jedem Update"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "every update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新のたびに"
+          }
+        }
+      }
+    },
+    "reverse_geocoding_threshold" : {
+      "comment" : "Minimum movement before reverse geocoding is triggered",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adress-Namensauflösung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Address name update threshold"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アドレス解決"
           }
         }
       }
@@ -4863,7 +4976,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tippe auf „Fertig“, um Miataru zu verwenden."
+            "value" : "Tippe auf „Fertig"
           }
         },
         "en" : {
