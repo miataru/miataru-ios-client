@@ -26,10 +26,11 @@ struct iPad_DevicesView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Section(header: Text("devices")) {
+                Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         iPhone_DeviceRowView(device: device, cache: cache)
                             .tag(device.DeviceID)
+                            .tint(.primary)
                             .contextMenu {
                                 Button {
                                     editingDevice = device
@@ -59,7 +60,7 @@ struct iPad_DevicesView: View {
                     }
                 }
             }
-            .navigationTitle("devices")
+            .navigationTitle(NSLocalizedString("devices", comment: "Devices list title on iPad"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {

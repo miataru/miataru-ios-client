@@ -18,6 +18,7 @@ struct iPhone_DeviceRowView: View {
     @ObservedObject var device: KnownDevice
     @ObservedObject var cache: DeviceLocationCacheStore // <-- hinzugefügt
     // For live updates, you could use @ObservedObject for the cache, but for now, fetch on render
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -28,12 +29,12 @@ struct iPhone_DeviceRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(colorScheme == .light ? .black : .white)
                 // Subtitle: last seen + distance
                 if let subtitle = subtitleText() {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
                 }
             }
             Spacer()
