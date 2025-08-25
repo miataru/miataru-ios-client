@@ -31,6 +31,7 @@ struct iPhone_MyDeviceQRCodeView: View {
 
     @State private var showCopiedAlert = false
     @State private var showMailComposer = false
+    @State private var showShareFallback = false
     @State private var qrImage: UIImage? = nil
 
     let gradient = Gradient(colors: [.black, .pink])
@@ -113,20 +114,21 @@ struct iPhone_MyDeviceQRCodeView: View {
                             }
                             .buttonStyle(PlainButtonStyle())
 
-                            if let url = URL(string: content) {
-                                ShareLink(item: url) {
-                                    Image(systemName: "square.and.arrow.up")
-                                        .foregroundColor(.blue)
-                                        .font(isLandscape ? .title3 : .title2)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .accessibilityLabel(Text("share_device_url_button_label"))
+                            ShareLink(item: shareText) {
+                                Image(systemName: "square.and.arrow.up")
+                                    .foregroundColor(.blue)
+                                    .font(isLandscape ? .title3 : .title2)
                             }
+                            .buttonStyle(PlainButtonStyle())
+                            .accessibilityLabel(Text("share_device_url_button_label"))
 
                             Button(action: {
-                                if MFMailComposeViewController.canSendMail(), let img = generateQRCodeImage() {
-                                    qrImage = img
+                                if MFMailComposeViewController.canSendMail() {
+                                    if let img = generateQRCodeImage() { qrImage = img }
                                     showMailComposer = true
+                                } else {
+                                    if let img = generateQRCodeImage() { qrImage = img }
+                                    showShareFallback = true
                                 }
                             }) {
                                 Image(systemName: "envelope")
@@ -187,6 +189,14 @@ struct iPhone_MyDeviceQRCodeView: View {
                 MailView(deviceID: thisDeviceIDManager.shared.deviceID, qrImage: qrImage)
             }
         }
+        .sheet(isPresented: $showShareFallback) {
+            let items: [Any] = {
+                var arr: [Any] = [shareText]
+                if let img = qrImage ?? generateQRCodeImage() { arr.append(img) }
+                return arr
+            }()
+            ActivityView(activityItems: items)
+        }
     }
 
     private var qrContent: QRCodeShape {
@@ -201,6 +211,14 @@ struct iPhone_MyDeviceQRCodeView: View {
             return try? qr.uiImage(CGSize(width: 300, height: 300))
         }
         return nil
+    }
+
+    private var shareText: String {
+        String(
+            format: NSLocalizedString("share_device_email_body", comment: "Body for sharing a device link via email or share sheet"),
+            thisDeviceIDManager.shared.deviceID,
+            "miataru://\(thisDeviceIDManager.shared.deviceID)"
+        )
     }
 }
 
@@ -230,6 +248,17 @@ struct MailView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+}
+
+struct ActivityView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    var applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 #Preview {

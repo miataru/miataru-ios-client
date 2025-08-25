@@ -4570,6 +4570,95 @@
         }
       }
     },
+    "share_device_email_body" : {
+      "comment" : "Body for sharing a device link via email or share sheet",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier ist meine Miataru Geräte-ID: %@\n\nMiataru URL: %@\n"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here is my Miataru Device ID: %@\n\nMiataru URL: %@\n"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私のMiataruデバイスID: %@\n\nMiataru URL: %@\n"
+          }
+        }
+      }
+    },
+    "share_device_email_button_label" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code per E-Mail teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share QR code via email"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードをメールで共有"
+          }
+        }
+      }
+    },
+    "share_device_email_subject" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Miataru Geräte-ID"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Miataru Device ID"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私のMiataruデバイスID"
+          }
+        }
+      }
+    },
+    "share_device_url_button_label" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru URL teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Miataru URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru URLを共有"
+          }
+        }
+      }
+    },
     "show" : {
       "localizations" : {
         "de" : {
@@ -5167,34 +5256,6 @@
             "value" : "グループに合わせてズーム"
           }
         }
-      }
-    },
-    "share_device_email_button_label" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "QR-Code per E-Mail teilen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share QR code via email" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "QRコードをメールで共有" } }
-      }
-    },
-    "share_device_url_button_label" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Miataru URL teilen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share Miataru URL" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Miataru URLを共有" } }
-      }
-    },
-    "share_device_email_subject" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meine Miataru Geräte-ID" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "My Miataru Device ID" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "私のMiataruデバイスID" } }
-      }
-    },
-    "share_device_email_body" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hier ist meine Miataru Geräte-ID: %@\n\nMiataru URL: %@\n" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Here is my Miataru Device ID: %@\n\nMiataru URL: %@\n" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "私のMiataruデバイスID: %@\n\nMiataru URL: %@\n" } }
       }
     }
   },
