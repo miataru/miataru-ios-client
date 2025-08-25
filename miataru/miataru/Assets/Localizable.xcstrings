@@ -2702,7 +2702,7 @@
       }
     },
     "groups" : {
-      "comment" : "Navigation title for the groups list",
+      "comment" : "Groups list header on iPad\nGroups list title on iPad\nNavigation title for the groups list",
       "localizations" : {
         "de" : {
           "stringUnit" : {

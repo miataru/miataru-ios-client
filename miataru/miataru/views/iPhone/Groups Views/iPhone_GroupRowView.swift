@@ -12,16 +12,17 @@ import SwiftUI
 struct iPhone_GroupRowView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Text(group.groupName)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(colorScheme == .light ? .black : .white)
                 Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? NSLocalizedString("device", comment: "GroupRow Device singular") : NSLocalizedString("devices", comment: "GroupRow Device plural"))")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
             }
             Spacer()
         }

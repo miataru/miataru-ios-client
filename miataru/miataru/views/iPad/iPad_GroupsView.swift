@@ -21,10 +21,11 @@ struct iPad_GroupsView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Section(header: Text("groups")) {
+                Section(header: Text(NSLocalizedString("groups", comment: "Groups list header on iPad"))) {
                     ForEach(groupStore.groups) { group in
                         iPhone_GroupRowView(group: group)
                             .tag(group.id)
+                            .tint(.primary)
                             .contextMenu {
                                 Button {
                                     editingGroup = group
@@ -54,7 +55,7 @@ struct iPad_GroupsView: View {
                     }
                 }
             }
-            .navigationTitle("groups")
+            .navigationTitle(NSLocalizedString("groups", comment: "Groups list title on iPad"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
