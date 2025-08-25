@@ -8,11 +8,14 @@
  */
 
 import SwiftUI
+import CoreLocation
+import MapKit // For CLLocationCoordinate2D
 
 struct iPhone_GroupDetailView: View {
     @ObservedObject var group: DeviceGroup
     var showsDoneButton: Bool = true
     @StateObject private var deviceStore = KnownDeviceStore.shared
+    @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @State private var editingDevice: KnownDevice? = nil
     @State private var previousGroupName: String = ""
     @State private var groupNameField: String = ""
@@ -41,6 +44,7 @@ struct iPhone_GroupDetailView: View {
                 ForEach(deviceStore.devices) { device in
                     iPhone_GroupDeviceRowView(
                         device: device,
+                        cache: cache,
                         isInGroup: group.containsDevice(device.DeviceID)
                     ) {
                         group.toggleDevice(device.DeviceID)
@@ -110,6 +114,7 @@ struct iPhone_GroupDetailView: View {
 
 struct iPhone_GroupDeviceRowView: View {
     @ObservedObject var device: KnownDevice
+    @ObservedObject var cache: DeviceLocationCacheStore
     let isInGroup: Bool
     let onToggle: () -> Void
 
@@ -118,9 +123,14 @@ struct iPhone_GroupDeviceRowView: View {
             Circle()
                 .fill(Color(device.DeviceColor ?? UIColor.gray))
                 .frame(width: 16, height: 16)
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
                     .font(.headline)
+                if let subtitle = subtitleText() {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             Spacer()
             Image(systemName: isInGroup ? "checkmark.circle.fill" : "circle")
@@ -132,6 +142,57 @@ struct iPhone_GroupDeviceRowView: View {
         .onTapGesture {
             onToggle()
         }
+    }
+
+    /// Returns the subtitle string for the device row: last seen + distance
+    private func subtitleText() -> String? {
+        guard let cached = cache.getLocation(for: device.DeviceID) else {
+            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
+            let never = NSLocalizedString("device_row_never", comment: "Default value for never seen device")
+            let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
+            let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
+            let unknown = NSLocalizedString("device_row_unknown", comment: "Default value for unknown distance")
+            return "\(lastSeen): \(never) \(separator) \(distanceLabel): \(unknown)"
+        }
+        let now = Date()
+        let relativeTime = relativeTimeString(from: cached.timestamp, to: now, unitsStyle: .abbreviated)
+        guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
+            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
+            return "\(lastSeen): \(relativeTime)"
+        }
+        let deviceLoc = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
+        let myLoc = CLLocation(latitude: myCached.latitude, longitude: myCached.longitude)
+        let distance = deviceLoc.distance(from: myLoc) // in meters
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        let formattedDistance: String
+        if usesMetric {
+            let meterUnit = NSLocalizedString("device_row_meter_unit", comment: "Unit for meters in device row distance display")
+            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", comment: "Unit for kilometers in device row distance display")
+            if distance < 1000 {
+                formattedDistance = String(format: "%.0f %@", distance, meterUnit)
+            } else {
+                formattedDistance = String(format: "%d %@", Int(round(distance / 1000)), kilometerUnit)
+            }
+        } else {
+            let feetUnit = NSLocalizedString("device_row_feet_unit", comment: "Unit for feet in device row distance display (imperial)")
+            let milesUnit = NSLocalizedString("device_row_miles_unit", comment: "Unit for miles in device row distance display (imperial)")
+            let distanceInFeet = distance / 0.3048
+            let distanceInMiles = distance / 1609.34
+            if distanceInFeet > 528 {
+                formattedDistance = String(format: "%.2f %@", distanceInMiles, milesUnit)
+            } else {
+                formattedDistance = String(format: "%.0f %@", distanceInFeet, feetUnit)
+            }
+        }
+        let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
+        let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
+        let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
+        return "\(lastSeen): \(relativeTime) \(separator) \(distanceLabel): \(formattedDistance)"
     }
 }
 
