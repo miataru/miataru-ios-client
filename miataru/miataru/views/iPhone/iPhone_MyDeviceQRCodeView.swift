@@ -184,10 +184,11 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
             }
         )
-        .sheet(isPresented: $showMailComposer) {
-            if let qrImage = qrImage {
-                MailView(deviceID: thisDeviceIDManager.shared.deviceID, qrImage: qrImage)
-            }
+        .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
+            MailView(
+                deviceID: thisDeviceIDManager.shared.deviceID,
+                qrImage: qrImage ?? (generateQRCodeImage() ?? UIImage())
+            )
         }
         .sheet(isPresented: $showShareFallback) {
             let items: [Any] = {
