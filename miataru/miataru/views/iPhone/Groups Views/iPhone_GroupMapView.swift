@@ -89,37 +89,56 @@ struct iPhone_GroupMapView: View {
     // Helper view for off-screen device arrows to avoid complex expressions in body
     @ViewBuilder
     private func offscreenDeviceArrowsView() -> some View {
-        ForEach(Array(groupDeviceIDs.enumerated()), id: \.element) { index, deviceID in
-            if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-               let coordinate = deviceLocations[deviceID],
-               let region = currentRegion ?? cameraPosition.region {
-                OffScreenDeviceArrow(
-                    deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
-                    deviceColor: Color(device.DeviceColor ?? UIColor.blue),
-                    screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
-                    deviceCoordinate: coordinate,
-                    mapRegion: region,
-                    screenSize: screenSize,
-                    isMapRotated: false,
-                    mapHeading: currentMapCamera?.heading ?? 0,
-                    arrowIndex: index,
-                    totalArrows: groupDeviceIDs.count,
-                    behavior: .jumpToLocation,
-                    onTap: {
-                        // Animate to device location
+        var devicesByEdge: [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, onTap: () -> Void)]] = [:]
+
+        if let region = currentRegion ?? cameraPosition.region {
+            for deviceID in groupDeviceIDs {
+                if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+                   let coordinate = deviceLocations[deviceID],
+                   let edge = OffscreenDeviceEdgeHelper.edge(for: coordinate,
+                                                            in: region,
+                                                            screenSize: screenSize,
+                                                            heading: currentMapCamera?.heading ?? 0) {
+                    let tap = {
                         withAnimation(.easeInOut(duration: 0.8)) {
                             if #available(iOS 17.0, *) {
                                 if let currentRegion = cameraPosition.region {
                                     cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
                                 }
                             } else {
-                                // Fallback for older iOS versions
                                 self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
                             }
                         }
                     }
-                )
+                    devicesByEdge[edge, default: []].append((device, coordinate, tap))
+                }
             }
+
+            let screenCenter = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+            return AnyView(
+                ForEach([Edge.left, .right, .top, .bottom], id: \.self) { edge in
+                    if let group = devicesByEdge[edge] {
+                        ForEach(Array(group.enumerated()), id: \.element.device.DeviceID) { index, info in
+                            OffScreenDeviceArrow(
+                                deviceName: info.device.DeviceName.isEmpty ? info.device.DeviceID : info.device.DeviceName,
+                                deviceColor: Color(info.device.DeviceColor ?? UIColor.blue),
+                                screenCenter: screenCenter,
+                                deviceCoordinate: info.coordinate,
+                                mapRegion: region,
+                                screenSize: screenSize,
+                                isMapRotated: false,
+                                mapHeading: currentMapCamera?.heading ?? 0,
+                                arrowIndex: index,
+                                totalArrows: group.count,
+                                behavior: .jumpToLocation,
+                                onTap: info.onTap
+                            )
+                        }
+                    }
+                }
+            )
+        } else {
+            return AnyView(EmptyView())
         }
     }
     
