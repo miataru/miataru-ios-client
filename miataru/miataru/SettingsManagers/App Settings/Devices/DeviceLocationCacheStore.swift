@@ -68,6 +68,12 @@ class DeviceLocationCacheStore: ObservableObject {
         }
     }
     private let fileName = "deviceLocations.plist"
+    private let geocoder = CLGeocoder()
+    private var geocodeQueue: [String] = []
+    private var isProcessingGeocode: Bool = false
+    private var geocodeDistanceThresholdMeters: CLLocationDistance {
+        CLLocationDistance(SettingsManager.shared.reverseGeocodingThresholdMeters)
+    }
     
     private var fileURL: URL {
         let fileManager = FileManager.default
@@ -83,6 +89,10 @@ class DeviceLocationCacheStore: ObservableObject {
     
     private init() {
         self.locations = load()
+        // Enqueue reverse geocoding for any cached entries missing placemarks
+        for loc in locations where (loc.country == nil && loc.locality == nil) {
+            enqueueGeocodingIfNeeded(for: loc.deviceID)
+        }
     }
     
     private func save() {
@@ -118,12 +128,25 @@ class DeviceLocationCacheStore: ObservableObject {
                 longitude: longitude,
                 accuracy: accuracy,
                 timestamp: timestamp,
-                country: moved ? nil : existing.country,
-                locality: moved ? nil : existing.locality
+                // Preserve previous placemark to avoid UI flicker; will be updated by geocoding
+                country: existing.country,
+                locality: existing.locality
             )
             locations[idx] = updated
+            if moved {
+                // Re-geocode only on significant movement or if no placemark exists yet
+                let hasPlacemark = (existing.country != nil) || (existing.locality != nil)
+                let oldLoc = CLLocation(latitude: existing.latitude, longitude: existing.longitude)
+                let newLoc = CLLocation(latitude: latitude, longitude: longitude)
+                let distance = oldLoc.distance(from: newLoc)
+                if !hasPlacemark || distance >= geocodeDistanceThresholdMeters {
+                    enqueueGeocodingIfNeeded(for: deviceID, force: true)
+                }
+            }
         } else {
             locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp))
+            // New entry: if no placemark present, enqueue
+            enqueueGeocodingIfNeeded(for: deviceID)
         }
     }
 
@@ -154,5 +177,52 @@ class DeviceLocationCacheStore: ObservableObject {
     
     func removeLocation(for deviceID: String) {
         locations.removeAll { $0.deviceID == deviceID }
+    }
+
+    // MARK: - Reverse Geocoding Queue
+    func enqueueGeocodingIfNeeded(for deviceID: String, force: Bool = false) {
+        // If not forced and placemark already present, skip
+        if !force {
+            if let placemark = getPlacemark(for: deviceID), placemark.country != nil || placemark.locality != nil {
+                return
+            }
+        }
+        guard let _ = getLocation(for: deviceID) else { return }
+        // Avoid duplicates in queue
+        if !geocodeQueue.contains(deviceID) {
+            geocodeQueue.append(deviceID)
+        }
+        processNextGeocode()
+    }
+
+    private func processNextGeocode() {
+        guard !isProcessingGeocode else { return }
+        guard !geocodeQueue.isEmpty else { return }
+        isProcessingGeocode = true
+        let nextDeviceID = geocodeQueue.removeFirst()
+        guard let cached = getLocation(for: nextDeviceID) else {
+            isProcessingGeocode = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.processNextGeocode()
+            }
+            return
+        }
+        let location = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, _ in
+            guard let self = self else { return }
+            let pm = placemarks?.first
+            DispatchQueue.main.async {
+                if let pm = pm {
+                    let country = pm.country
+                    let locality = pm.locality ?? pm.subAdministrativeArea ?? pm.administrativeArea
+                    self.setPlacemark(for: nextDeviceID, country: country, locality: locality)
+                }
+                self.isProcessingGeocode = false
+                // Be polite with geocoder
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.processNextGeocode()
+                }
+            }
+        }
     }
 } 
