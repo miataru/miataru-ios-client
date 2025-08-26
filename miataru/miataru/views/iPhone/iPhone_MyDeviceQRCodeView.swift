@@ -9,6 +9,8 @@
 
 import SwiftUI
 import QRCode
+import MessageUI
+import UIKit
 
 struct iPhone_MyDeviceQRCodeView: View {
     @State var content: String = "miataru://" + thisDeviceIDManager.shared.deviceID
@@ -26,8 +28,11 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State var dataInset: Double = 0
     @State var cornerRadiusFraction: Double = 0.5
     @State var rotationFraction: Double = 0.0
-    
+
     @State private var showCopiedAlert = false
+    @State private var showMailComposer = false
+    @State private var showShareFallback = false
+    @State private var qrImage: UIImage? = nil
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -80,34 +85,119 @@ struct iPhone_MyDeviceQRCodeView: View {
                             .font(isLandscape ? .subheadline : .headline)
                             .foregroundColor(.secondary)
                         
-                        HStack(spacing: isLandscape ? 6 : 8) {
-                            Text(thisDeviceIDManager.shared.deviceID)
-                                .font(.system(isLandscape ? .caption : .footnote, design: .monospaced))
-                                .padding(.horizontal, isLandscape ? 8 : 12)
-                                .padding(.vertical, isLandscape ? 6 : 8)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                            
-                            Button(action: {
-                                UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showCopiedAlert = true
-                                }
-                                
-                                // Alert nach 2 Sekunden automatisch ausblenden
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        if isLandscape {
+                            HStack(spacing: 6) {
+                                Text(thisDeviceIDManager.shared.deviceID)
+                                    .font(.system(.caption, design: .monospaced))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+
+                                Button(action: {
+                                    UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
                                     withAnimation(.easeInOut(duration: 0.3)) {
-                                        showCopiedAlert = false
+                                        showCopiedAlert = true
                                     }
+
+                                    // Automatically hide alert after 2 seconds
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showCopiedAlert = false
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: "doc.on.doc")
+                                        .foregroundColor(.blue)
+                                        .font(.title3)
                                 }
-                            }) {
-                                Image(systemName: "doc.on.doc")
-                                    .foregroundColor(.blue)
-                                    .font(isLandscape ? .title3 : .title2)
+                                .buttonStyle(PlainButtonStyle())
+
+                                ShareLink(item: shareText) {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(.blue)
+                                        .font(.title3)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text("share_device_url_button_label"))
+
+                                Button(action: {
+                                    if MFMailComposeViewController.canSendMail() {
+                                        if let img = generateQRCodeImage() { qrImage = img }
+                                        showMailComposer = true
+                                    } else {
+                                        if let img = generateQRCodeImage() { qrImage = img }
+                                        showShareFallback = true
+                                    }
+                                }) {
+                                    Image(systemName: "envelope")
+                                        .foregroundColor(.blue)
+                                        .font(.title3)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text("share_device_email_button_label"))
                             }
-                            .buttonStyle(PlainButtonStyle())
+                        } else {
+                            // Portrait: device id + copy on first row
+                            HStack(spacing: 8) {
+                                Text(thisDeviceIDManager.shared.deviceID)
+                                    .font(.system(.footnote, design: .monospaced))
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+
+                                Button(action: {
+                                    UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showCopiedAlert = true
+                                    }
+
+                                    // Automatically hide alert after 2 seconds
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showCopiedAlert = false
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: "doc.on.doc")
+                                        .foregroundColor(.blue)
+                                        .font(.title2)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+
+                            // Portrait: share buttons on second row below
+                            HStack(spacing: 16) {
+                                ShareLink(item: shareText) {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(.blue)
+                                        .font(.title2)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text("share_device_url_button_label"))
+
+                                Button(action: {
+                                    if MFMailComposeViewController.canSendMail() {
+                                        if let img = generateQRCodeImage() { qrImage = img }
+                                        showMailComposer = true
+                                    } else {
+                                        if let img = generateQRCodeImage() { qrImage = img }
+                                        showShareFallback = true
+                                    }
+                                }) {
+                                    Image(systemName: "envelope")
+                                        .foregroundColor(.blue)
+                                        .font(.title2)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text("share_device_email_button_label"))
+                            }
+                            .padding(.top, 4)
                         }
                     }
                     .padding(.horizontal, isLandscape ? 20 : 16)
@@ -155,16 +245,84 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
             }
         )
+        .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
+            MailView(
+                deviceID: thisDeviceIDManager.shared.deviceID,
+                qrImage: qrImage ?? (generateQRCodeImage() ?? UIImage())
+            )
+        }
+        .sheet(isPresented: $showShareFallback) {
+            let items: [Any] = {
+                var arr: [Any] = [shareText]
+                if let img = qrImage ?? generateQRCodeImage() { arr.append(img) }
+                return arr
+            }()
+            ActivityView(activityItems: items)
+        }
     }
-    
+
     private var qrContent: QRCodeShape {
         QRCodeShape(
             data: content.data(using: .utf8) ?? Data(),
             errorCorrection: correction
         )
     }
+
+    private func generateQRCodeImage() -> UIImage? {
+        if let qr = try? QRCode(utf8String: content, errorCorrection: correction) {
+            return try? qr.uiImage(CGSize(width: 300, height: 300))
+        }
+        return nil
+    }
+
+    private var shareText: String {
+        String(
+            format: NSLocalizedString("share_device_email_body", comment: "Body for sharing a device link via email or share sheet"),
+            thisDeviceIDManager.shared.deviceID,
+            "miataru://\(thisDeviceIDManager.shared.deviceID)"
+        )
+    }
+}
+
+struct MailView: UIViewControllerRepresentable {
+    let deviceID: String
+    let qrImage: UIImage
+
+    class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            controller.dismiss(animated: true)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.mailComposeDelegate = context.coordinator
+        let subject = NSLocalizedString("share_device_email_subject", comment: "")
+        let body = String(format: NSLocalizedString("share_device_email_body", comment: ""), deviceID, "miataru://\(deviceID)")
+        vc.setSubject(subject)
+        vc.setMessageBody(body, isHTML: false)
+        if let data = qrImage.pngData() {
+            vc.addAttachmentData(data, mimeType: "image/png", fileName: "device-qrcode.png")
+        }
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+}
+
+struct ActivityView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    var applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 #Preview {
     iPhone_MyDeviceQRCodeView()
-} 
+}

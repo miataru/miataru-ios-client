@@ -687,6 +687,50 @@
         }
       }
     },
+    "100m" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100m"
+          }
+        }
+      }
+    },
+    "1000m" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1000m"
+          }
+        }
+      }
+    },
     "A number of your last location updates is stored on the server (default: last 1000)." : {
       "localizations" : {
         "de" : {
@@ -1798,13 +1842,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letztes Update"
+            "value" : "Update"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last seen"
+            "value" : "seen"
           }
         },
         "ja" : {
@@ -2340,6 +2384,29 @@
         }
       }
     },
+    "explanation_reverse_geocoding_threshold" : {
+      "comment" : "Explanation for reverse geocoding distance threshold",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ab welcher Distanzänderung die Adresse neu ermittelt wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimum distance change before address is refreshed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最小距離変化でアドレス更新"
+          }
+        }
+      }
+    },
     "explanation_show_history_days" : {
       "comment" : "Explanation for show history days picker",
       "localizations" : {
@@ -2702,7 +2769,7 @@
       }
     },
     "groups" : {
-      "comment" : "Navigation title for the groups list",
+      "comment" : "Groups list header on iPad\nGroups list title on iPad\nNavigation title for the groups list",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3231,7 +3298,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This option determines the sensitivity of how often location updates are sent to the server. It’s a combination of how much distance and accuracy of the location has changed compared to the last update."
+            "value" : "This option determines the sensitivity of how often location updates are sent to the server. It's a combination of how much distance and accuracy of the location has changed compared to the last update."
           }
         },
         "ja" : {
@@ -3854,7 +3921,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten)."
+            "value" : "Auf dem Server wird nur der letzte Standort für eine begrenzte Zeit gespeichert (Standard: 30 Minuten)."
           }
         },
         "en" : {
@@ -4160,6 +4227,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "グループから削除"
+          }
+        }
+      }
+    },
+    "reverse_geocode_every_update" : {
+      "comment" : "Always reverse geocode on updates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei jedem Update"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "every update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新のたびに"
+          }
+        }
+      }
+    },
+    "reverse_geocoding_threshold" : {
+      "comment" : "Minimum movement before reverse geocoding is triggered",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adress-Namensauflösung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Address name update threshold"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アドレス解決"
           }
         }
       }
@@ -4570,6 +4683,95 @@
         }
       }
     },
+    "share_device_email_body" : {
+      "comment" : "Body for sharing a device link via email or share sheet",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier ist meine Miataru Geräte-ID: %@\n\nMiataru URL: %@\n"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here is my Miataru Device ID: %@\n\nMiataru URL: %@\n"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私のMiataruデバイスID: %@\n\nMiataru URL: %@\n"
+          }
+        }
+      }
+    },
+    "share_device_email_button_label" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR-Code per E-Mail teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share QR code via email"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QRコードをメールで共有"
+          }
+        }
+      }
+    },
+    "share_device_email_subject" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Miataru Geräte-ID"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Miataru Device ID"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私のMiataruデバイスID"
+          }
+        }
+      }
+    },
+    "share_device_url_button_label" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru URL teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Miataru URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru URLを共有"
+          }
+        }
+      }
+    },
     "show" : {
       "localizations" : {
         "de" : {
@@ -4774,7 +4976,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tippe auf „Fertig“, um Miataru zu verwenden."
+            "value" : "Tippe auf „Fertig"
           }
         },
         "en" : {
