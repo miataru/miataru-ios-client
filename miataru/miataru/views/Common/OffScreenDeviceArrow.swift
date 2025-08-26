@@ -50,8 +50,8 @@ struct OffScreenDeviceArrow: View {
     /// Margin used to decide if a device is considered "outside" (visibility hysteresis).
     private let visibilityMargin: CGFloat = 20
     /// Inset from the screen edge used for intersection and placement.
-    private let edgeInsetPortrait: CGFloat = 32
-    private let edgeInsetLandscape: CGFloat = 32
+    private let edgeInsetPortrait: CGFloat = 42
+    private let edgeInsetLandscape: CGFloat = 42
     /// Reduced in landscape to keep arrows closer to the top edge on short heights.
     private var edgeInset: CGFloat {
         // Landscape if width > height
@@ -60,7 +60,7 @@ struct OffScreenDeviceArrow: View {
     /// Distance threshold for snapping to corners to avoid edge-flip jitter.
     private let cornerSnapThreshold: CGFloat = 24
     /// Spacing between multiple arrows on the same edge or at corners.
-    private let arrowSpacing: CGFloat = 60
+    private let arrowSpacing: CGFloat = 80
 
     // Computed property to determine the best text color for contrast
     private var textColor: Color {
