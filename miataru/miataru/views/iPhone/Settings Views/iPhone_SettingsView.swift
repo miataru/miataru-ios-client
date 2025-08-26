@@ -149,6 +149,14 @@ struct iPhone_SettingsView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                Section(header: Text("navigation")) {
+                    Picker("transport_mode", selection: $settings.navigationTransportType) {
+                        Text("transport_walk").tag(0)
+                        Text("transport_bike").tag(1)
+                        Text("transport_car").tag(2)
+                        Text("transport_transit").tag(3)
+                    }
+                }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {
                     HStack {

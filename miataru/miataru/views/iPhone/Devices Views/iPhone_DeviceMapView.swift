@@ -50,6 +50,7 @@ struct iPhone_DeviceMapView: View {
     @State private var userHasRotatedMap = false // Tracks if user manually rotated the map
     @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay
     @State private var showEditDeviceSheet = false // Controls device edit sheet
+    @State private var showNavigationSheet = false // Controls navigation view
     @State private var now = Date() // Timer for relative time display
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Timer for updating 'now'
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
@@ -309,6 +310,11 @@ struct iPhone_DeviceMapView: View {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
+        .navigationDestination(isPresented: $showNavigationSheet) {
+            if let device = device {
+                DeviceNavigationView(device: device)
+            }
+        }
     }
     
     // MARK: - View Components
@@ -442,6 +448,11 @@ struct iPhone_DeviceMapView: View {
                                         showEditDeviceSheet = true
                                     } label: {
                                         Label("edit_device", systemImage: "pencil")
+                                    }
+                                    Button {
+                                        showNavigationSheet = true
+                                    } label: {
+                                        Label("navigation", systemImage: "location")
                                     }
                                 }
                         }.offset(y:10)
