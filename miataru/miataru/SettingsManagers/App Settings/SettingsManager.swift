@@ -65,6 +65,21 @@ class SettingsManager: ObservableObject {
     @Published var showOffscreenArrowsForOtherDevices: Bool {
         didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: Keys.showOffscreenArrowsForOtherDevices) }
     }
+
+    @Published var lastOpenedDeviceID: String? {
+        didSet {
+            if let id = lastOpenedDeviceID {
+                defaults.set(id, forKey: Keys.lastOpenedDeviceID)
+            } else {
+                defaults.removeObject(forKey: Keys.lastOpenedDeviceID)
+            }
+        }
+    }
+    
+    @Published var reverseGeocodingThresholdMeters: Int {
+        didSet { defaults.set(String(reverseGeocodingThresholdMeters), forKey: Keys.reverseGeocodingThresholdMeters) }
+    }
+    
     @Published var navigationTransportType: Int {
         didSet { defaults.set(navigationTransportType, forKey: Keys.navigationTransportType) }
     }
@@ -85,6 +100,8 @@ class SettingsManager: ObservableObject {
         static let locationSensitivityLevel = "location_sensitivity_level"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
+        static let lastOpenedDeviceID = "last_opened_device_id"
+        static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
         static let navigationTransportType = "navigation_transport_type"
     }
     
@@ -112,6 +129,9 @@ class SettingsManager: ObservableObject {
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
+        self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)
+        // Default: 1000m, Off=0, 100m=100, 10km=10000
+        self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
         self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
     }
     
