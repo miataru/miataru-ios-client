@@ -48,7 +48,7 @@ struct iPhone_DeviceRowView: View {
                 let place = placemarkText(from: displayedCachedLocation)
                 Text(place)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .contentTransition(.identity)
