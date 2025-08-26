@@ -348,7 +348,7 @@ struct iPhone_GroupMapView: View {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
-        .sheet(isPresented: $showNavigationSheet) {
+        .navigationDestination(isPresented: $showNavigationSheet) {
             if let deviceID = navigationDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {
                 DeviceNavigationView(device: device)
             }
