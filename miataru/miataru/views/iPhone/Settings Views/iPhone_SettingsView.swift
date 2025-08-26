@@ -156,6 +156,9 @@ struct iPhone_SettingsView: View {
                         Text("transport_car").tag(2)
                         Text("transport_transit").tag(3)
                     }
+                    Text(NSLocalizedString("explanation_navigation_mode", comment: "Explanation on the navigation mode selection"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {

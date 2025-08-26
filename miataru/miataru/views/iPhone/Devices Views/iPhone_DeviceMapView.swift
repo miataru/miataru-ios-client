@@ -312,7 +312,7 @@ struct iPhone_DeviceMapView: View {
         }
         .navigationDestination(isPresented: $showNavigationSheet) {
             if let device = device {
-                DeviceNavigationView(device: device)
+                iPhone_DeviceNavigationView(device: device)
             }
         }
     }

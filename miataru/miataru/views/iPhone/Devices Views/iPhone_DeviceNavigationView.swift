@@ -1,0 +1,341 @@
+/*
+ * iPhone_DeviceNavigationView.swift
+ * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ *
+ *
+ * Created by Daniel Kirstenpfad on 25.08.25.
+ * Displays route between the user's device and a selected device.
+ */
+
+import SwiftUI
+import MapKit
+import Combine
+import MiataruAPIClient
+
+struct iPhone_DeviceNavigationView: View {
+    var device: KnownDevice
+
+    @ObservedObject private var cache = DeviceLocationCacheStore.shared
+    @ObservedObject private var locationManager = LocationManager.shared
+    @ObservedObject private var settings = SettingsManager.shared
+    @StateObject private var deviceStore = KnownDeviceStore.shared
+
+    @Namespace private var mapScope
+    @State private var userCoordinate: CLLocationCoordinate2D?
+    @State private var deviceCoordinate: CLLocationCoordinate2D?
+    @State private var animatedUserCoordinate: CLLocationCoordinate2D?
+    @State private var animatedDeviceCoordinate: CLLocationCoordinate2D?
+    @State private var route: MKRoute?
+    @State private var mapPosition: MapCameraPosition = .automatic
+    @State private var travelTime: String?
+    @State private var currentRegion: MKCoordinateRegion?
+    @State private var hasSetInitialRegion = false
+    @State private var userHasInteractedWithMap = false
+    @State private var isUpdating = false
+    @State private var timerCancellable: AnyCancellable? = nil
+    @State private var deviceTimestamp: Date? = nil
+    @State private var userTimestamp: Date? = nil
+    @State private var isLoading: Bool = false
+    @State private var now = Date()
+    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        VStack {
+            Map(position: $mapPosition, scope: mapScope) {
+                if let coord = animatedUserCoordinate {
+                    Annotation("", coordinate: coord, anchor: .bottom) {
+                        ZStack {
+                            VStack(spacing: 0) {
+                                if let ts = userTimestamp {
+                                    Text(relativeTimeString(from: ts, to: now))
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                        )
+                                        .shimmering(active: isLoading)
+                                        .shadow(radius: 2)
+                                        .zIndex(2)
+                                }
+                                let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
+                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+                                    .shadow(radius: 2)
+                                ZStack {
+                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                            if x != 0 || y != 0 {
+                                                Text(myDevice?.DeviceName.isEmpty == false ? (myDevice?.DeviceName ?? "") : thisDeviceIDManager.shared.deviceID)
+                                                    .font(.callout)
+                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                    .padding(.top, 2)
+                                                    .offset(x: CGFloat(x), y: CGFloat(y))
+                                            }
+                                        }
+                                    }
+                                    Text(myDevice?.DeviceName.isEmpty == false ? (myDevice?.DeviceName ?? "") : thisDeviceIDManager.shared.deviceID)
+                                        .font(.callout)
+                                        .foregroundColor(Color(UIColor.label))
+                                        .padding(.top, 2)
+                                }
+                            }
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .contentShape(Rectangle())
+                                .frame(width: 60, height: 80)
+                                .zIndex(1)
+                        }
+                        .offset(y: 10)
+                    }
+                }
+                if let coord = animatedDeviceCoordinate {
+                    Annotation("", coordinate: coord, anchor: .bottom) {
+                        ZStack {
+                            VStack(spacing: 0) {
+                                if let timestamp = deviceTimestamp {
+                                    Text(relativeTimeString(from: timestamp, to: now))
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                        )
+                                        .shimmering(active: isLoading)
+                                        .shadow(radius: 2)
+                                        .zIndex(2)
+                                }
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                                    .shadow(radius: 2)
+                                ZStack {
+                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                            if x != 0 || y != 0 {
+                                                Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
+                                                    .font(.callout)
+                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                    .padding(.top, 2)
+                                                    .offset(x: CGFloat(x), y: CGFloat(y))
+                                            }
+                                        }
+                                    }
+                                    Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
+                                        .font(.callout)
+                                        .foregroundColor(Color(UIColor.label))
+                                        .padding(.top, 2)
+                                }
+                            }
+                            Rectangle()
+                                .foregroundColor(.clear)
+                                .contentShape(Rectangle())
+                                .frame(width: 60, height: 80)
+                                .zIndex(1)
+                        }
+                        .offset(y: 10)
+                    }
+                }
+                if let polyline = route?.polyline {
+                    MapPolyline(polyline)
+                        .stroke(.blue, lineWidth: 4)
+                }
+            }
+            .ignoresSafeArea()
+            .onAppear {
+                updateCoordinates(recenter: true)
+                calculateRoute()
+                Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
+                startAutoUpdate()
+            }
+            .onReceive(locationManager.$currentLocation) { _ in
+                updateCoordinates()
+            }
+            .onReceive(cache.$locations) { _ in
+                updateCoordinates()
+            }
+            .onReceive(timeUpdateTimer) { input in
+                now = input
+            }
+            .onDisappear {
+                stopAutoUpdate()
+            }
+            .onChange(of: settings.mapUpdateInterval) {
+                restartAutoUpdate()
+            }
+            .overlay(alignment: .top) {
+                if let travelTime {
+                    Text(travelTime)
+                        .padding(8)
+                        .background(.thinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding()
+                }
+            }
+
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    withAnimation { isUpdating = true }
+                    Task {
+                        await fetchTargetDeviceLocation(resetAndRecenter: true)
+                        withAnimation { isUpdating = false }
+                    }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
+                }
+                .buttonStyle(.plain)
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: openInAppleMaps) {
+                    Image(systemName: "map")
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func updateCoordinates(recenter: Bool = false) {
+        if let loc = locationManager.currentLocation {
+            let coord = loc.coordinate
+            let changed = userCoordinate?.latitude != coord.latitude || userCoordinate?.longitude != coord.longitude
+            userCoordinate = coord
+            userTimestamp = loc.timestamp
+            if changed || animatedUserCoordinate == nil {
+                withAnimation { animatedUserCoordinate = coord }
+            }
+        }
+        if let cached = cache.getLocation(for: device.DeviceID) {
+            let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+            let changed = deviceCoordinate?.latitude != coord.latitude || deviceCoordinate?.longitude != coord.longitude
+            deviceCoordinate = coord
+            if changed || animatedDeviceCoordinate == nil {
+                withAnimation { animatedDeviceCoordinate = coord }
+            }
+        }
+        if let user = userCoordinate, let dest = deviceCoordinate,
+           (!hasSetInitialRegion || recenter || !userHasInteractedWithMap) {
+            let region = regionThatFits(user: user, dest: dest)
+            withAnimation {
+                mapPosition = .region(region)
+            }
+            hasSetInitialRegion = true
+        }
+    }
+
+    private func regionThatFits(user: CLLocationCoordinate2D, dest: CLLocationCoordinate2D) -> MKCoordinateRegion {
+        let center = CLLocationCoordinate2D(latitude: (user.latitude + dest.latitude) / 2,
+                                            longitude: (user.longitude + dest.longitude) / 2)
+        let span = MKCoordinateSpan(latitudeDelta: abs(user.latitude - dest.latitude) * 2.5,
+                                    longitudeDelta: abs(user.longitude - dest.longitude) * 2.5)
+        return MKCoordinateRegion(center: center, span: span)
+    }
+
+    private func calculateRoute() {
+        guard let user = userCoordinate, let dest = deviceCoordinate else { return }
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+        request.transportType = transportTypeFromSetting(settings.navigationTransportType)
+        Task {
+            do {
+                let response = try await MKDirections(request: request).calculate()
+                if let first = response.routes.first {
+                    route = first
+                    let formatter = DateComponentsFormatter()
+                    formatter.unitsStyle = .short
+                    travelTime = formatter.string(from: first.expectedTravelTime)
+                }
+            } catch {
+                debugLog("Route calculation failed: \(error)")
+            }
+        }
+    }
+
+    private func openInAppleMaps() {
+        guard let user = userCoordinate, let dest = deviceCoordinate else { return }
+        let source = MKMapItem(placemark: MKPlacemark(coordinate: user))
+        let destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+        var options: [String: Any] = [:]
+        switch settings.navigationTransportType {
+        case 0: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeWalking
+        case 1: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeDefault
+        case 3: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeTransit
+        default: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeDriving
+        }
+        MKMapItem.openMaps(with: [source, destination], launchOptions: options)
+    }
+
+    private func transportTypeFromSetting(_ value: Int) -> MKDirectionsTransportType {
+        switch value {
+        case 0: return .walking
+        case 1: return .any
+        case 3: return .transit
+        default: return .automobile
+        }
+    }
+
+    // MARK: - Remote updates for the selected device only
+
+    private func fetchTargetDeviceLocation(resetAndRecenter: Bool) async {
+        guard let url = URL(string: settings.miataruServerURL) else { return }
+        do {
+            isLoading = true
+            defer { isLoading = false }
+            let locations = try await MiataruAPIClient.getLocation(
+                serverURL: url,
+                forDeviceIDs: [device.DeviceID],
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID
+            )
+            if let loc = locations.first {
+                let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
+                let changed = deviceCoordinate?.latitude != coordinate.latitude || deviceCoordinate?.longitude != coordinate.longitude
+                // Update cache first to keep consistency with the rest of the app
+                DeviceLocationCacheStore.shared.setLocation(
+                    for: device.DeviceID,
+                    latitude: loc.Latitude,
+                    longitude: loc.Longitude,
+                    accuracy: loc.HorizontalAccuracy,
+                    timestamp: loc.TimestampDate
+                )
+                deviceCoordinate = coordinate
+                deviceTimestamp = loc.TimestampDate
+                if changed || animatedDeviceCoordinate == nil {
+                    withAnimation { animatedDeviceCoordinate = coordinate }
+                }
+                if resetAndRecenter {
+                    updateCoordinates(recenter: true)
+                    calculateRoute()
+                }
+            } else {
+                DeviceLocationCacheStore.shared.removeLocation(for: device.DeviceID)
+            }
+        } catch {
+            debugLog("[iPhone_DeviceNavigationView] fetchTargetDeviceLocation error: \(error)")
+        }
+    }
+
+    private func startAutoUpdate() {
+        stopAutoUpdate()
+        let interval = Double(settings.mapUpdateInterval)
+        guard interval > 0 else { return }
+        timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
+            }
+    }
+
+    private func stopAutoUpdate() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+    }
+
+    private func restartAutoUpdate() {
+        startAutoUpdate()
+    }
+}
+
