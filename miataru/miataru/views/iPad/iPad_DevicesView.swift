@@ -132,37 +132,39 @@ struct iPad_DevicesView: View {
                 }
             }
         } detail: {
-            if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
-                iPad_DeviceMapView(
-                    deviceID: device.DeviceID,
-                    onNavigateToDevice: { newDeviceID in
-                        // Navigate to the new device in the split view
-                        selection = newDeviceID
-                    }
-                )
-                    .id(mapViewKey) // Force view refresh when device changes
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { editingDevice = device }) {
-                                Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
-                                    .labelStyle(.titleAndIcon)
+            NavigationStack {
+                if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
+                    iPad_DeviceMapView(
+                        deviceID: device.DeviceID,
+                        onNavigateToDevice: { newDeviceID in
+                            // Navigate to the new device in the split view
+                            selection = newDeviceID
+                        }
+                    )
+                        .id(mapViewKey) // Force view refresh when device changes
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button(action: { editingDevice = device }) {
+                                    Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
+                                        .labelStyle(.titleAndIcon)
+                                }
                             }
                         }
-                    }
-                    .sheet(item: $editingDevice) { device in
-                        if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
-                            iPhone_EditDeviceView(
-                                device: $store.devices[index],
-                                isPresented: Binding(
-                                    get: { editingDevice != nil },
-                                    set: { if !$0 { editingDevice = nil } }
+                        .sheet(item: $editingDevice) { device in
+                            if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
+                                iPhone_EditDeviceView(
+                                    device: $store.devices[index],
+                                    isPresented: Binding(
+                                        get: { editingDevice != nil },
+                                        set: { if !$0 { editingDevice = nil } }
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
-            } else {
-                Text("Select a device to view details")
-                    .foregroundColor(.secondary)
+                } else {
+                    Text("Select a device to view details")
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .sheet(isPresented: $showingAddDevice) {
