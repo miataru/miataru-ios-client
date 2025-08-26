@@ -167,7 +167,7 @@ struct iPhone_DevicesView: View {
                     _ = await refreshAllDeviceLocations()
                 }
             }
-            .onChange(of: scenePhase) { newPhase in
+            .onChange(of: scenePhase) { _, newPhase in
                 if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
                     settings.lastOpenedDeviceID = nil
                 }

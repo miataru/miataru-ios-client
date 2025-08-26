@@ -168,7 +168,7 @@ struct iPad_DevicesView: View {
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if (newPhase == .inactive || newPhase == .background) && (selection ?? lastSelectedDeviceID) == nil {
                 settings.lastOpenedDeviceID = nil
             }
