@@ -74,7 +74,8 @@ class SettingsManager: ObservableObject {
                 defaults.removeObject(forKey: Keys.lastOpenedDeviceID)
             }
         }
-
+    }
+    
     @Published var reverseGeocodingThresholdMeters: Int {
         didSet { defaults.set(String(reverseGeocodingThresholdMeters), forKey: Keys.reverseGeocodingThresholdMeters) }
     }
