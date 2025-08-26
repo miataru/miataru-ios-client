@@ -223,6 +223,7 @@ struct iPhone_DeviceMapView: View {
         }
         .adaptiveToolbarBackground()
         .onAppear {
+            settings.lastOpenedDeviceID = deviceID
             // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {
                 deviceLocation = previewLoc
@@ -264,6 +265,9 @@ struct iPhone_DeviceMapView: View {
         }
         .onDisappear {
             stopAutoUpdate()
+            if settings.lastOpenedDeviceID == deviceID {
+                settings.lastOpenedDeviceID = nil
+            }
         }
         .onChange(of: settings.mapUpdateInterval) {
             restartAutoUpdate()
