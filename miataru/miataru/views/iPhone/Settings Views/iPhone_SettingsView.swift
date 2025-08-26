@@ -139,6 +139,15 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_zoom_to_fit_for_groups", comment: "Explanation for zoom to fit for groups toggle"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Picker(NSLocalizedString("reverse_geocoding_threshold", comment: "Minimum movement before reverse geocoding is triggered"), selection: $settings.reverseGeocodingThresholdMeters) {
+                        Text(NSLocalizedString("reverse_geocode_every_update", comment: "Always reverse geocode on updates")).tag(0)
+                        Text("100m").tag(100)
+                        Text("1000m").tag(1000)
+                        Text("10km").tag(10000)
+                    }
+                    Text(NSLocalizedString("explanation_reverse_geocoding_threshold", comment: "Explanation for reverse geocoding distance threshold"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {

@@ -408,6 +408,14 @@ extension LocationManager: CLLocationManagerDelegate {
             guard shouldAcceptUpdate else { return }
             self.currentLocation = location
             self.lastUpdateTime = Date()
+            // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
+            DeviceLocationCacheStore.shared.setLocation(
+                for: thisDeviceIDManager.shared.deviceID,
+                latitude: location.coordinate.latitude,
+                longitude: location.coordinate.longitude,
+                accuracy: location.horizontalAccuracy,
+                timestamp: location.timestamp
+            )
             self.sendLocationToServer(location)
             self.addUpdateLogEntry(mode: mode)
         }

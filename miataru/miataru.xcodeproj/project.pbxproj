@@ -445,7 +445,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -453,15 +453,14 @@
 				INFOPLIST_KEY_CFBundleDisplayName = miataru;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need background location to keep your device location updated even when the app is not open.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show your position and share with your devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -484,7 +483,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -492,15 +491,14 @@
 				INFOPLIST_KEY_CFBundleDisplayName = miataru;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
 				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
-				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need background location to keep your device location updated even when the app is not open.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show your position and share with your devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
