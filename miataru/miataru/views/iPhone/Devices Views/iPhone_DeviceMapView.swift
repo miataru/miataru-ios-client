@@ -277,7 +277,7 @@ struct iPhone_DeviceMapView: View {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
-        .sheet(isPresented: $showNavigationSheet) {
+        .navigationDestination(isPresented: $showNavigationSheet) {
             if let device = device {
                 DeviceNavigationView(device: device)
             }

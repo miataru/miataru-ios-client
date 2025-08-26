@@ -3646,6 +3646,9 @@
         }
       }
     },
+    "navigation" : {
+
+    },
     "network_error" : {
       "comment" : "Network error. Please check your internet connection.",
       "localizations" : {
@@ -3892,6 +3895,9 @@
           }
         }
       }
+    },
+    "open_in_apple_maps" : {
+
     },
     "Permission granted, but not active" : {
       "comment" : "Location Tracking Status statusText",
@@ -4140,6 +4146,9 @@
           }
         }
       }
+    },
+    "reload_route" : {
+
     },
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
@@ -4970,6 +4979,21 @@
           }
         }
       }
+    },
+    "transport_bike" : {
+
+    },
+    "transport_car" : {
+
+    },
+    "transport_mode" : {
+
+    },
+    "transport_transit" : {
+
+    },
+    "transport_walk" : {
+
     },
     "Use Default Server" : {
       "localizations" : {

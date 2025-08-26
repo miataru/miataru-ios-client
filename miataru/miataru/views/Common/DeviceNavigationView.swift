@@ -46,12 +46,6 @@ struct DeviceNavigationView: View {
                 }
             }
             .ignoresSafeArea()
-            .onMapCameraChange { context in
-                currentRegion = context.region
-                if context.reason == .userInteraction {
-                    userHasInteractedWithMap = true
-                }
-            }
             .onAppear {
                 updateCoordinates(recenter: true)
                 calculateRoute()
