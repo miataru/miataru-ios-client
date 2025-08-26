@@ -4253,6 +4253,52 @@
         }
       }
     },
+    "reload" : {
+      "comment" : "Reload target device location",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zielgerät-Standort neu laden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload target device location"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "対象デバイスの位置情報を再読み込み"
+          }
+        }
+      }
+    },
+    "reload_longpress_hint" : {
+      "comment" : "Long-press to toggle automatic route updates.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lange drücken, um automatische Routenaktualisierungen umzuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long-press to toggle automatic route updates."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長押しで自動ルート更新を切り替えます。"
+          }
+        }
+      }
+    },
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
       "localizations" : {
@@ -4318,6 +4364,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アドレス解決"
+          }
+        }
+      }
+    },
+    "route_generation_failed" : {
+      "comment" : "Route calculation failed. Please try again.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es konnte keine Route zwischen den Devices erstellt werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not generate a route between the locations."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地点間のルートを生成できませんでした。"
+          }
+        }
+      }
+    },
+    "route_not_found" : {
+      "comment" : "Could not generate a route between the locations.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routenberechnung fehlgeschlagen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route calculation failed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルート計算に失敗しました。"
           }
         }
       }

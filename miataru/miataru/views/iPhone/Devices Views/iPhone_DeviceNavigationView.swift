@@ -38,6 +38,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isLoading: Bool = false
     @State private var now = Date()
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var isAutoRouteUpdateLocked: Bool = false
+    @StateObject private var errorOverlayManager = ErrorOverlayManager()
 
     var body: some View {
         VStack {
@@ -175,19 +177,12 @@ struct iPhone_DeviceNavigationView: View {
             }
 
         }
+        .overlay(
+            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
+        )
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    withAnimation { isUpdating = true }
-                    Task {
-                        await fetchTargetDeviceLocation(resetAndRecenter: true)
-                        withAnimation { isUpdating = false }
-                    }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
-                }
-                .buttonStyle(.plain)
+                reloadToolbarButton()
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: openInAppleMaps) {
@@ -196,6 +191,38 @@ struct iPhone_DeviceNavigationView: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    @ViewBuilder
+    private func reloadToolbarButton() -> some View {
+        ZStack(alignment: .topTrailing) {
+            Image(systemName: "arrow.clockwise")
+                .foregroundStyle(isAutoRouteUpdateLocked ? Color.green : Color.primary)
+                .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 8)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation { isUpdating = true }
+                    Task {
+                        await fetchTargetDeviceLocation(resetAndRecenter: true)
+                        withAnimation { isUpdating = false }
+                    }
+                }
+                .onLongPressGesture(minimumDuration: 0.6) {
+                    isAutoRouteUpdateLocked.toggle()
+                    if isAutoRouteUpdateLocked {
+                        Haptic.notifySuccess()
+                        calculateRoute()
+                    } else {
+                        Haptic.notifyWarning()
+                    }
+                }
+                .accessibilityLabel(Text(NSLocalizedString("reload", comment: "Reload target device location")))
+                .accessibilityHint(Text(NSLocalizedString("reload_longpress_hint", comment: "Long-press to toggle automatic route updates.")))
+        }
+        .animation(.easeInOut(duration: 0.2), value: isAutoRouteUpdateLocked)
+        .accessibilityAddTraits(.isButton)
     }
 
     private func updateCoordinates(recenter: Bool = false) {
@@ -248,9 +275,21 @@ struct iPhone_DeviceNavigationView: View {
                     let formatter = DateComponentsFormatter()
                     formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
+                } else {
+                    route = nil
+                    travelTime = nil
+                    showErrorOverlay(
+                        "No route found",
+                        NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
+                    )
                 }
             } catch {
-                debugLog("Route calculation failed: \(error)")
+                route = nil
+                travelTime = nil
+                showErrorOverlay(
+                    "Route calculation failed: \(error.localizedDescription)",
+                    NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
+                )
             }
         }
     }
@@ -276,6 +315,11 @@ struct iPhone_DeviceNavigationView: View {
         case 3: return .transit
         default: return .automobile
         }
+    }
+
+    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
+        debugLog("Error: \(debugMessage)")
+        errorOverlayManager.show(message: userMessage)
     }
 
     // MARK: - Remote updates for the selected device only
@@ -325,7 +369,12 @@ struct iPhone_DeviceNavigationView: View {
         timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
-                Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
+                Task {
+                    await fetchTargetDeviceLocation(resetAndRecenter: false)
+                    if isAutoRouteUpdateLocked {
+                        calculateRoute()
+                    }
+                }
             }
     }
 
