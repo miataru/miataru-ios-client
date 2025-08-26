@@ -23,6 +23,7 @@ struct iPhone_DevicesView: View {
     @State private var isVisible: Bool = false
     @State private var navigationPath: [String] = [] // Typed navigation path for device IDs
     @State private var didAutoNavigateFromSavedDevice: Bool = false
+    @State private var hasPerformedInitialAutoNavigate: Bool = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -133,13 +134,14 @@ struct iPhone_DevicesView: View {
             }
             .onAppear {
                 isVisible = true
-                if !didAutoNavigateFromSavedDevice,
+                if !hasPerformedInitialAutoNavigate,
                    navigationPath.isEmpty,
                    let lastID = settings.lastOpenedDeviceID,
                    store.devices.contains(where: { $0.DeviceID == lastID }) {
                     navigationPath.append(lastID)
                     didAutoNavigateFromSavedDevice = true
                 }
+                hasPerformedInitialAutoNavigate = true
             }
             .onDisappear {
                 isVisible = false
@@ -175,11 +177,8 @@ struct iPhone_DevicesView: View {
                     settings.lastOpenedDeviceID = nil
                 }
             }
-            .onChange(of: settings.lastOpenedDeviceID) { _, newValue in
-                if newValue == nil {
-                    didAutoNavigateFromSavedDevice = false
-                }
-            }
+            // Intentionally do not reset didAutoNavigateFromSavedDevice on
+            // changes to lastOpenedDeviceID to avoid unintended re-pushes
         }
     }
 

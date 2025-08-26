@@ -370,7 +370,7 @@ struct iPhone_GroupMapView: View {
         }
         .navigationDestination(isPresented: $showNavigationSheet) {
             if let deviceID = navigationDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {
-                DeviceNavigationView(device: device)
+                iPhone_DeviceNavigationView(device: device)
             }
         }
     }

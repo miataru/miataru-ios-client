@@ -2384,6 +2384,29 @@
         }
       }
     },
+    "explanation_navigation_mode" : {
+      "comment" : "Explanation on the navigation mode selection",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle das Transportmittel für die Navigation."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the transportation mode to be used for navigation."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナビゲーションに使用する移動手段を選択してください"
+          }
+        }
+      }
+    },
     "explanation_reverse_geocoding_threshold" : {
       "comment" : "Explanation for reverse geocoding distance threshold",
       "localizations" : {
@@ -3714,7 +3737,26 @@
       }
     },
     "navigation" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナビゲート"
+          }
+        }
+      }
     },
     "network_error" : {
       "comment" : "Network error. Please check your internet connection.",
@@ -3963,9 +4005,6 @@
         }
       }
     },
-    "open_in_apple_maps" : {
-
-    },
     "Permission granted, but not active" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
@@ -4213,9 +4252,6 @@
           }
         }
       }
-    },
-    "reload_route" : {
-
     },
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
@@ -5183,19 +5219,114 @@
       }
     },
     "transport_bike" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fahrrad"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bike"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自転車"
+          }
+        }
+      }
     },
     "transport_car" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Car"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "車"
+          }
+        }
+      }
     },
     "transport_mode" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transportmittel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mode of transport"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動手段"
+          }
+        }
+      }
     },
     "transport_transit" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffentliche Verkehrsmittel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "transit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交通機関"
+          }
+        }
+      }
     },
     "transport_walk" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu Fuß"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "walking"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "徒歩"
+          }
+        }
+      }
     },
     "Use Default Server" : {
       "localizations" : {
