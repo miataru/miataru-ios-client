@@ -56,6 +56,69 @@ struct iPhone_DeviceMapView: View {
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
     
+    // MARK: - Offscreen arrows support types/helpers
+    private struct ArrowData {
+        let device: KnownDevice
+        let coordinate: CLLocationCoordinate2D
+        let behavior: ArrowBehavior
+        let onTap: () -> Void
+    }
+    
+    private var screenCenterPoint: CGPoint {
+        CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+    }
+    
+    private func computeOffscreenDevicesByEdge(region: MKCoordinateRegion) -> [Edge: [ArrowData]] {
+        var devicesByEdge: [Edge: [ArrowData]] = [:]
+        
+        // Current device
+        if let device = device, let coordinate = deviceLocation,
+           let edge = OffscreenDeviceEdgeHelper.edge(
+                for: coordinate,
+                in: region,
+                screenSize: screenSize,
+                heading: currentMapCamera?.heading ?? 0
+            ) {
+            let tap = {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    if #available(iOS 17.0, *) {
+                        if let currentRegion = cameraPosition.region {
+                            cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                        }
+                    } else {
+                        self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                    }
+                }
+            }
+            devicesByEdge[edge, default: []].append(ArrowData(device: device, coordinate: coordinate, behavior: .jumpToLocation, onTap: tap))
+        }
+        
+        // Other devices
+        if settings.showOffscreenArrowsForOtherDevices {
+            let otherDevices = deviceStore.devices.filter { $0.DeviceID != deviceID }
+            for otherDevice in otherDevices {
+                if let cached = cache.getLocation(for: otherDevice.DeviceID) {
+                    let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                    if let edge = OffscreenDeviceEdgeHelper.edge(
+                        for: coordinate,
+                        in: region,
+                        screenSize: screenSize,
+                        heading: currentMapCamera?.heading ?? 0
+                    ) {
+                        let tap: () -> Void = {
+                            if let onNavigateToDevice {
+                                onNavigateToDevice(otherDevice.DeviceID)
+                            }
+                        }
+                        devicesByEdge[edge, default: []].append(ArrowData(device: otherDevice, coordinate: coordinate, behavior: .navigateToDevice, onTap: tap))
+                    }
+                }
+            }
+        }
+        
+        return devicesByEdge
+    }
+    
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == deviceID }
@@ -120,49 +183,9 @@ struct iPhone_DeviceMapView: View {
             // Off-screen device arrows grouped by screen edge (only shown when map is not rotated)
             if !screenSize.width.isZero && !screenSize.height.isZero,
                let region = currentRegion ?? cameraPosition.region {
-
-                typealias ArrowData = (device: KnownDevice, coordinate: CLLocationCoordinate2D, behavior: ArrowBehavior, onTap: () -> Void)
-                var devicesByEdge: [Edge: [ArrowData]] = [:]
-
-                // Current device
-                if let device = device, let coordinate = deviceLocation,
-                   let edge = OffscreenDeviceEdgeHelper.edge(for: coordinate,
-                                                            in: region,
-                                                            screenSize: screenSize,
-                                                            heading: currentMapCamera?.heading ?? 0) {
-                    let tap = {
-                        withAnimation(.easeInOut(duration: 0.8)) {
-                            if #available(iOS 17.0, *) {
-                                if let currentRegion = cameraPosition.region {
-                                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
-                                }
-                            } else {
-                                self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
-                            }
-                        }
-                    }
-                    devicesByEdge[edge, default: []].append((device, coordinate, .jumpToLocation, tap))
-                }
-
-                // Other devices
-                if settings.showOffscreenArrowsForOtherDevices {
-                    let otherDevices = deviceStore.devices.filter { $0.DeviceID != deviceID }
-                    for otherDevice in otherDevices {
-                        if let cached = cache.getLocation(for: otherDevice.DeviceID) {
-                            let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
-                            if let edge = OffscreenDeviceEdgeHelper.edge(for: coordinate,
-                                                                         in: region,
-                                                                         screenSize: screenSize,
-                                                                         heading: currentMapCamera?.heading ?? 0) {
-                                let tap = { onNavigateToDevice?(otherDevice.DeviceID) }
-                                devicesByEdge[edge, default: []].append((otherDevice, coordinate, .navigateToDevice, tap))
-                            }
-                        }
-                    }
-                }
-
+                let devicesByEdge = computeOffscreenDevicesByEdge(region: region)
+                let screenCenter = screenCenterPoint
                 // Render arrows grouped by edge
-                let screenCenter = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
                 ForEach([Edge.left, .right, .top, .bottom], id: \.self) { edge in
                     if let group = devicesByEdge[edge] {
                         ForEach(Array(group.enumerated()), id: \.element.device.DeviceID) { index, info in
