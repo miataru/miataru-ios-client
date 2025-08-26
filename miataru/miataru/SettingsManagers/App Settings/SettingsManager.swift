@@ -80,6 +80,10 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(String(reverseGeocodingThresholdMeters), forKey: Keys.reverseGeocodingThresholdMeters) }
     }
     
+    @Published var navigationTransportType: Int {
+        didSet { defaults.set(navigationTransportType, forKey: Keys.navigationTransportType) }
+    }
+    
     // MARK: - Keys
     private enum Keys {
         static let mapType = "map_type"
@@ -98,6 +102,7 @@ class SettingsManager: ObservableObject {
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
         static let lastOpenedDeviceID = "last_opened_device_id"
         static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
+        static let navigationTransportType = "navigation_transport_type"
     }
     
     // MARK: - Location Permission Management
@@ -127,6 +132,7 @@ class SettingsManager: ObservableObject {
         self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)
         // Default: 1000m, Off=0, 100m=100, 10km=10000
         self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
+        self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
     }
     
     // MARK: - Synchronize
