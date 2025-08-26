@@ -375,14 +375,16 @@ struct OffScreenDeviceArrow: View {
         let dLon = deltaLongitude(coordinate.longitude, mapRegion.center.longitude)
         let dLat = coordinate.latitude - mapRegion.center.latitude
         
-        let latRatioRaw = dLat / latDelta
-        let lonRatioRaw = dLon / lonDelta
+        let latRatioRaw = CGFloat(dLat / latDelta)
+        let lonRatioRaw = CGFloat(dLon / lonDelta)
 
-        // Clamp ratios to a reasonable number of screen widths/heights to avoid extreme positions.
+        // Proportionally scale ratios so the largest magnitude fits within the screen bounds.
         let maxScreens: CGFloat = 4
-        let latRatio = CGFloat(latRatioRaw).clamped(to: -maxScreens...maxScreens)
-        let lonRatio = CGFloat(lonRatioRaw).clamped(to: -maxScreens...maxScreens)
-        
+        let maxRatio = max(abs(latRatioRaw), abs(lonRatioRaw))
+        let scale = (maxRatio > maxScreens) ? (maxScreens / maxRatio) : 1
+        let latRatio = latRatioRaw * scale
+        let lonRatio = lonRatioRaw * scale
+
         let screenX = screenCenter.x + lonRatio * screenSize.width
         let screenY = screenCenter.y - latRatio * screenSize.height // Inverted Y axis
         
@@ -390,7 +392,7 @@ struct OffScreenDeviceArrow: View {
         debugLog("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
         debugLog("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
         debugLog("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
-        debugLog("📊 Ratios (raw/clamped): lat=\(latRatioRaw)→\(latRatio), lon=\(lonRatioRaw)→\(lonRatio)")
+        debugLog("📊 Ratios (raw/scaled): lat=\(latRatioRaw)→\(latRatio), lon=\(lonRatioRaw)→\(lonRatio)")
         debugLog("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
         debugLog("🎯 Calculated screen position: \(screenX), \(screenY)")
         
