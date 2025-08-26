@@ -22,6 +22,8 @@ struct iPhone_DevicesView: View {
     @State private var lastDeviceListRefresh: Date? = nil
     @State private var isVisible: Bool = false
     @State private var navigationPath: [String] = [] // Typed navigation path for device IDs
+    @State private var didAutoNavigateFromSavedDevice: Bool = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -131,6 +133,13 @@ struct iPhone_DevicesView: View {
             }
             .onAppear {
                 isVisible = true
+                if !didAutoNavigateFromSavedDevice,
+                   navigationPath.isEmpty,
+                   let lastID = settings.lastOpenedDeviceID,
+                   store.devices.contains(where: { $0.DeviceID == lastID }) {
+                    navigationPath.append(lastID)
+                    didAutoNavigateFromSavedDevice = true
+                }
             }
             .onDisappear {
                 isVisible = false
@@ -159,6 +168,16 @@ struct iPhone_DevicesView: View {
                 lastDeviceListRefresh = now
                 Task {
                     _ = await refreshAllDeviceLocations()
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
+                    settings.lastOpenedDeviceID = nil
+                }
+            }
+            .onChange(of: settings.lastOpenedDeviceID) { _, newValue in
+                if newValue == nil {
+                    didAutoNavigateFromSavedDevice = false
                 }
             }
         }

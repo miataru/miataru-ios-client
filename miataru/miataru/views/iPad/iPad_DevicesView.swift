@@ -22,14 +22,16 @@ struct iPad_DevicesView: View {
     @State private var isVisible: Bool = false
     @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Section(header: Text("devices")) {
+                Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         iPhone_DeviceRowView(device: device, cache: cache)
                             .tag(device.DeviceID)
+                            .tint(.primary)
                             .contextMenu {
                                 Button {
                                     editingDevice = device
@@ -59,7 +61,7 @@ struct iPad_DevicesView: View {
                     }
                 }
             }
-            .navigationTitle("devices")
+            .navigationTitle(NSLocalizedString("devices", comment: "Devices list title on iPad"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -89,9 +91,15 @@ struct iPad_DevicesView: View {
                 isVisible = true
                 // Automatically select the first device if no selection is made yet
                 if selection == nil && !store.devices.isEmpty {
-                    let firstID = store.devices.first?.DeviceID
-                    selection = firstID
-                    lastSelectedDeviceID = firstID
+                    if let lastID = settings.lastOpenedDeviceID,
+                       store.devices.contains(where: { $0.DeviceID == lastID }) {
+                        selection = lastID
+                        lastSelectedDeviceID = lastID
+                    } else {
+                        let firstID = store.devices.first?.DeviceID
+                        selection = firstID
+                        lastSelectedDeviceID = firstID
+                    }
                 }
             }
             .onDisappear {
@@ -159,6 +167,11 @@ struct iPad_DevicesView: View {
         }
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if (newPhase == .inactive || newPhase == .background) && (selection ?? lastSelectedDeviceID) == nil {
+                settings.lastOpenedDeviceID = nil
+            }
         }
         .onChange(of: selection) { oldSelection, newSelection in
             // Only refresh map when the selected device actually changes to a different ID

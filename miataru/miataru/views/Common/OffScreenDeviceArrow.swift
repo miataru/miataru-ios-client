@@ -50,8 +50,8 @@ struct OffScreenDeviceArrow: View {
     /// Margin used to decide if a device is considered "outside" (visibility hysteresis).
     private let visibilityMargin: CGFloat = 20
     /// Inset from the screen edge used for intersection and placement.
-    private let edgeInsetPortrait: CGFloat = 30
-    private let edgeInsetLandscape: CGFloat = 0
+    private let edgeInsetPortrait: CGFloat = 42
+    private let edgeInsetLandscape: CGFloat = 42
     /// Reduced in landscape to keep arrows closer to the top edge on short heights.
     private var edgeInset: CGFloat {
         // Landscape if width > height
@@ -60,7 +60,7 @@ struct OffScreenDeviceArrow: View {
     /// Distance threshold for snapping to corners to avoid edge-flip jitter.
     private let cornerSnapThreshold: CGFloat = 24
     /// Spacing between multiple arrows on the same edge or at corners.
-    private let arrowSpacing: CGFloat = 60
+    private let arrowSpacing: CGFloat = 80
 
     // Computed property to determine the best text color for contrast
     private var textColor: Color {
@@ -375,14 +375,16 @@ struct OffScreenDeviceArrow: View {
         let dLon = deltaLongitude(coordinate.longitude, mapRegion.center.longitude)
         let dLat = coordinate.latitude - mapRegion.center.latitude
         
-        let latRatioRaw = dLat / latDelta
-        let lonRatioRaw = dLon / lonDelta
+        let latRatioRaw = CGFloat(dLat / latDelta)
+        let lonRatioRaw = CGFloat(dLon / lonDelta)
 
-        // Clamp ratios to a reasonable number of screen widths/heights to avoid extreme positions.
+        // Proportionally scale ratios so the largest magnitude fits within the screen bounds.
         let maxScreens: CGFloat = 4
-        let latRatio = CGFloat(latRatioRaw).clamped(to: -maxScreens...maxScreens)
-        let lonRatio = CGFloat(lonRatioRaw).clamped(to: -maxScreens...maxScreens)
-        
+        let maxRatio = max(abs(latRatioRaw), abs(lonRatioRaw))
+        let scale = (maxRatio > maxScreens) ? (maxScreens / maxRatio) : 1
+        let latRatio = latRatioRaw * scale
+        let lonRatio = lonRatioRaw * scale
+
         let screenX = screenCenter.x + lonRatio * screenSize.width
         let screenY = screenCenter.y - latRatio * screenSize.height // Inverted Y axis
         
@@ -390,7 +392,7 @@ struct OffScreenDeviceArrow: View {
         debugLog("🌍 Device \(deviceName) coordinate: \(coordinate.latitude), \(coordinate.longitude)")
         debugLog("🗺️ Map region center: \(mapRegion.center.latitude), \(mapRegion.center.longitude)")
         debugLog("📏 Map span: \(mapRegion.span.latitudeDelta), \(mapRegion.span.longitudeDelta)")
-        debugLog("📊 Ratios (raw/clamped): lat=\(latRatioRaw)→\(latRatio), lon=\(lonRatioRaw)→\(lonRatio)")
+        debugLog("📊 Ratios (raw/scaled): lat=\(latRatioRaw)→\(latRatio), lon=\(lonRatioRaw)→\(lonRatio)")
         debugLog("🖥️ Screen center: \(screenCenter), screen size: \(screenSize)")
         debugLog("🎯 Calculated screen position: \(screenX), \(screenY)")
         

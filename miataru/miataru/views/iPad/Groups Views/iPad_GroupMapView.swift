@@ -89,40 +89,60 @@ struct iPad_GroupMapView: View {
         return CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515)
     }
     
+    private func computeDevicesByEdge(in region: MKCoordinateRegion) -> [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, onTap: () -> Void)]] {
+        var devicesByEdge: [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, onTap: () -> Void)]] = [:]
+        for deviceID in groupDeviceIDs {
+            if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+               let coordinate = deviceLocations[deviceID],
+               let edge = OffscreenDeviceEdgeHelper.edge(for: coordinate,
+                                                        in: region,
+                                                        screenSize: screenSize,
+                                                        heading: currentMapCamera?.heading ?? 0) {
+                let tap = {
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        if #available(iOS 17.0, *) {
+                            if let currentRegion = cameraPosition.region {
+                                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                            }
+                        } else {
+                            self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                        }
+                    }
+                }
+                devicesByEdge[edge, default: []].append((device, coordinate, tap))
+            }
+        }
+        return devicesByEdge
+    }
+
     // Helper view for off-screen device arrows to avoid complex expressions in body
     @ViewBuilder
     private func offscreenDeviceArrowsView() -> some View {
-        ForEach(Array(groupDeviceIDs.enumerated()), id: \.element) { index, deviceID in
-            if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-               let coordinate = deviceLocations[deviceID],
-               let region = currentRegion ?? cameraPosition.region {
-                OffScreenDeviceArrow(
-                    deviceName: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
-                    deviceColor: Color(device.DeviceColor ?? UIColor.blue),
-                    screenCenter: CGPoint(x: screenSize.width / 2, y: screenSize.height / 2),
-                    deviceCoordinate: coordinate,
-                    mapRegion: region,
-                    screenSize: screenSize,
-                    isMapRotated: false,
-                    mapHeading: currentMapCamera?.heading ?? 0,
-                    arrowIndex: index,
-                    totalArrows: groupDeviceIDs.count,
-                    behavior: .jumpToLocation,
-                    onTap: {
-                        // Animate to device location
-                        withAnimation(.easeInOut(duration: 0.8)) {
-                            if #available(iOS 17.0, *) {
-                                if let currentRegion = cameraPosition.region {
-                                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
-                                }
-                            } else {
-                                // Fallback for older iOS versions
-                                self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
-                            }
-                        }
+        if let region = currentRegion ?? cameraPosition.region {
+            let devicesByEdge = computeDevicesByEdge(in: region)
+            let screenCenter = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+            ForEach([Edge.left, .right, .top, .bottom], id: \.self) { edge in
+                if let group = devicesByEdge[edge] {
+                    ForEach(Array(group.enumerated()), id: \.element.device.DeviceID) { index, info in
+                        OffScreenDeviceArrow(
+                            deviceName: info.device.DeviceName.isEmpty ? info.device.DeviceID : info.device.DeviceName,
+                            deviceColor: Color(info.device.DeviceColor ?? UIColor.blue),
+                            screenCenter: screenCenter,
+                            deviceCoordinate: info.coordinate,
+                            mapRegion: region,
+                            screenSize: screenSize,
+                            isMapRotated: false,
+                            mapHeading: currentMapCamera?.heading ?? 0,
+                            arrowIndex: index,
+                            totalArrows: group.count,
+                            behavior: .jumpToLocation,
+                            onTap: info.onTap
+                        )
                     }
-                )
+                }
             }
+        } else {
+            EmptyView()
         }
     }
     
