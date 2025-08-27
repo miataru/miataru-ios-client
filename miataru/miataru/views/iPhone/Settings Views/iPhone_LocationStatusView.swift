@@ -124,6 +124,9 @@ struct iPhone_LocationStatusView: View {
             }
         }
         .padding()
+        .safeAreaInset(edge: .top) {
+            Color.clear.frame(height: 10)
+        }
     }
     
     // MARK: - Computed Properties
