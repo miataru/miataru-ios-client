@@ -22,6 +22,7 @@ struct iPad_DevicesView: View {
     @State private var isVisible: Bool = false
     @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
+    @State private var navigationTargetDevice: KnownDevice? = nil
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -45,10 +46,18 @@ struct iPad_DevicesView: View {
                                 }
                             }
                             .swipeActions(edge: .leading) {
+                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                    Button {
+                                        navigationTargetDevice = device
+                                    } label: {
+                                        Label("navigation", systemImage: "location")
+                                    }
+                                    .tint(.green)
+                                }
                                 Button {
                                     editingDevice = device
                                 } label: {
-                                    Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                    Label("edit_device_swipe", systemImage: "pencil")
                                 }
                                 .tint(.blue)
                             }
@@ -142,6 +151,9 @@ struct iPad_DevicesView: View {
                         }
                     )
                         .id(mapViewKey) // Force view refresh when device changes
+                        .navigationDestination(item: $navigationTargetDevice) { device in
+                            iPhone_DeviceNavigationView(device: device)
+                        }
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Button(action: { editingDevice = device }) {
@@ -178,6 +190,8 @@ struct iPad_DevicesView: View {
         .onChange(of: selection) { oldSelection, newSelection in
             // Only refresh map when the selected device actually changes to a different ID
             if let newSelection = newSelection, newSelection != lastSelectedDeviceID {
+                // Reset any active navigation push so only the newly selected device is shown
+                navigationTargetDevice = nil
                 lastSelectedDeviceID = newSelection
                 mapViewKey = UUID()
             }
