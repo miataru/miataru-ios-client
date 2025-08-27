@@ -2390,19 +2390,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle das Transportmittel für die Navigation."
+            "value" : "Ein Transportmittel wählen, um die Route zwischen Geräten zu berechnen. Durch langes Drücken eines Geräte-Pins auf der Karte die Navigation starten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select the transportation mode to be used for navigation."
+            "value" : "Choose a travel mode to calculate the route between devices. Activate by long-press a device pin on the map to start navigation."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ナビゲーションに使用する移動手段を選択してください"
+            "value" : "移動手段を選択してデバイス間のルートを計算します。マップ上のデバイスピンを長押しするとナビゲーションが開始されます。"
           }
         }
       }

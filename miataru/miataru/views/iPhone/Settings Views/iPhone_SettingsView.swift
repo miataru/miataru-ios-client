@@ -88,7 +88,7 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_auto_refresh_device_list", comment: "Explanation for auto refresh device list toggle"))
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Picker("show_history_days", selection: $settings.historyNumberOfDays) {
+                    /*Picker("show_history_days", selection: $settings.historyNumberOfDays) {
                         Text("1day").tag(1)
                         Text("2days").tag(2)
                         Text("3days").tag(3)
@@ -102,7 +102,7 @@ struct iPhone_SettingsView: View {
                     }
                     Text(NSLocalizedString("explanation_show_history_days", comment: "Explanation for show history days picker"))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.secondary)*/
                 }
                 Section(header: Text("map_configuration")) {
                     Picker("map_type", selection: $settings.mapType) {
