@@ -722,19 +722,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1000m"
+            "value" : "1 km"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1000m"
+            "value" : "1 km"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1000m"
+            "value" : "1 km"
           }
         }
       }
@@ -2138,6 +2138,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイスを編集"
+          }
+        }
+      }
+    },
+    "edit_device_swipe" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bearbeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "edit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編集"
           }
         }
       }

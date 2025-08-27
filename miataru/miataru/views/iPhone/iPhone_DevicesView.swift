@@ -24,6 +24,7 @@ struct iPhone_DevicesView: View {
     @State private var navigationPath: [String] = [] // Typed navigation path for device IDs
     @State private var didAutoNavigateFromSavedDevice: Bool = false
     @State private var hasPerformedInitialAutoNavigate: Bool = false
+    @State private var navigationTargetDevice: KnownDevice? = nil
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -43,10 +44,18 @@ struct iPhone_DevicesView: View {
                             }
                         }
                         .swipeActions(edge: .leading) {
+                            if device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                                Button {
+                                    navigationTargetDevice = device
+                                } label: {
+                                    Label("navigation", systemImage: "location")
+                                }
+                                .tint(.blue)
+                            }
                             Button {
                                 editingDevice = device
                             } label: {
-                                Label("edit_device", systemImage: "pencil")
+                                Label("edit_device_swipe", systemImage: "pencil")
                             }
                             .tint(.blue)
                         }
@@ -66,10 +75,18 @@ struct iPhone_DevicesView: View {
                                 }
                             }
                             .swipeActions(edge: .leading) {
+                                if device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                                    Button {
+                                        navigationTargetDevice = device
+                                    } label: {
+                                        Label("navigation", systemImage: "location")
+                                    }
+                                    .tint(.blue)
+                                }
                                 Button {
                                     editingDevice = device
                                 } label: {
-                                    Label("edit_device", systemImage: "pencil")
+                                    Label("edit_device_swipe", systemImage: "pencil")
                                 }
                                 .tint(.blue)
                             }
@@ -113,6 +130,9 @@ struct iPhone_DevicesView: View {
                         navigationPath.append(newDeviceID)
                     }
                 )
+            }
+            .navigationDestination(item: $navigationTargetDevice) { device in
+                iPhone_DeviceNavigationView(device: device)
             }
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)
