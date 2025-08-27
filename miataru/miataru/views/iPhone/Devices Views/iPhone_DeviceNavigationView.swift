@@ -274,7 +274,7 @@ struct iPhone_DeviceNavigationView: View {
             }
         }
         .id(device.DeviceID)
-        .onChange(of: device.DeviceID) { _ in
+        .onChange(of: device.DeviceID) {
             // Reset all device-related state when a new device is injected
             userCoordinate = nil
             deviceCoordinate = nil
