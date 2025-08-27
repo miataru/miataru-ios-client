@@ -32,6 +32,10 @@ struct iPhone_DeviceNavigationView: View {
     @State private var hasSetInitialRegion = false
     @State private var userHasInteractedWithMap = false
     @State private var isUpdating = false
+    @State private var currentMapCamera: MapCamera? = nil
+    @State private var userHasRotatedMap = false
+    @State private var isProgrammaticCameraChange = false
+    @State private var isAutoCenteringEnabled = true
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var deviceTimestamp: Date? = nil
     @State private var userTimestamp: Date? = nil
@@ -144,10 +148,27 @@ struct iPhone_DeviceNavigationView: View {
                         .stroke(.blue, lineWidth: 4)
                 }
             }
+            .mapControls {
+                MapCompass(heading: 1, size: 10)
+                    .mapControlVisibility(.hidden)
+            }
             .ignoresSafeArea()
+            .gesture(
+                DragGesture(minimumDistance: 2)
+                    .onChanged { _ in markUserInteraction() }
+            )
+            .simultaneousGesture(
+                MagnificationGesture()
+                    .onChanged { _ in markUserInteraction() }
+            )
+            .simultaneousGesture(
+                RotationGesture()
+                    .onChanged { _ in markUserInteraction() }
+            )
             .onAppear {
+                isAutoCenteringEnabled = true
                 updateCoordinates(recenter: true)
-                calculateRoute()
+                calculateRoute() // initial load only
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
             }
@@ -166,6 +187,22 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
             }
+            .onMapCameraChange(frequency: .continuous) { context in
+                let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
+                if isProgrammaticCameraChange {
+                    // Ignore user interaction detection for programmatic updates
+                    isProgrammaticCameraChange = false
+                } else {
+                    // User interaction is detected via gestures; here we only deduce rotation state
+                    if abs(context.camera.heading) < 0.1 {
+                        userHasRotatedMap = false
+                    } else if headingChanged {
+                        userHasRotatedMap = true
+                    }
+                }
+                currentMapCamera = context.camera
+                currentRegion = context.region
+            }
             .overlay(alignment: .top) {
                 if let travelTime {
                     Text(travelTime)
@@ -174,6 +211,12 @@ struct iPhone_DeviceNavigationView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding()
                 }
+            }
+            .overlay(alignment: .bottomTrailing) {
+                scaleBarView()
+            }
+            .overlay(alignment: .topTrailing) {
+                compassView()
             }
 
         }
@@ -244,8 +287,9 @@ struct iPhone_DeviceNavigationView: View {
             }
         }
         if let user = userCoordinate, let dest = deviceCoordinate,
-           (!hasSetInitialRegion || recenter || !userHasInteractedWithMap) {
+           (!hasSetInitialRegion || recenter || isAutoCenteringEnabled) {
             let region = regionThatFits(user: user, dest: dest)
+            isProgrammaticCameraChange = true
             withAnimation {
                 mapPosition = .region(region)
             }
@@ -350,8 +394,10 @@ struct iPhone_DeviceNavigationView: View {
                 if changed || animatedDeviceCoordinate == nil {
                     withAnimation { animatedDeviceCoordinate = coordinate }
                 }
+                // Always update coordinates to allow auto-centering when enabled
+                updateCoordinates(recenter: resetAndRecenter)
+                // Recalculate route only on explicit reload (or initial load elsewhere) 
                 if resetAndRecenter {
-                    updateCoordinates(recenter: true)
                     calculateRoute()
                 }
             } else {
@@ -385,6 +431,74 @@ struct iPhone_DeviceNavigationView: View {
 
     private func restartAutoUpdate() {
         startAutoUpdate()
+    }
+
+    // MARK: - Map UI Helpers (Scale bar and Compass)
+
+    private func markUserInteraction() {
+        userHasInteractedWithMap = true
+        isAutoCenteringEnabled = false
+    }
+
+    @ViewBuilder
+    private func scaleBarView() -> some View {
+        Group {
+            if let region = currentRegion {
+                Button(action: {
+                    isAutoCenteringEnabled = true
+                    resetZoomToFitBoth()
+                }) {
+                    MapScaleBar(region: region, width: 50)
+                }
+                .buttonStyle(.plain)
+                .padding([.bottom, .trailing], 5)
+                .zIndex(2)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func compassView() -> some View {
+        Group {
+            if userHasRotatedMap {
+                let heading = currentMapCamera?.heading ?? 0
+                Button(action: {
+                    isAutoCenteringEnabled = true
+                    alignMapToNorth()
+                }) {
+                    MapCompass(heading: heading, size: 40)
+                }
+                .padding([.top, .trailing], 10)
+                .zIndex(3)
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+    }
+
+    private func alignMapToNorth() {
+        guard let currentCamera = currentMapCamera else { return }
+        let newCamera = MapCamera(
+            centerCoordinate: currentCamera.centerCoordinate,
+            distance: currentCamera.distance,
+            heading: 0,
+            pitch: currentCamera.pitch
+        )
+        isProgrammaticCameraChange = true
+        withAnimation {
+            mapPosition = .camera(newCamera)
+            userHasRotatedMap = false
+        }
+    }
+
+    private func resetZoomToFitBoth() {
+        if let user = userCoordinate, let dest = deviceCoordinate {
+            let region = regionThatFits(user: user, dest: dest)
+            isProgrammaticCameraChange = true
+            withAnimation(.easeInOut(duration: 0.5)) {
+                mapPosition = .region(region)
+            }
+        }
     }
 }
 
