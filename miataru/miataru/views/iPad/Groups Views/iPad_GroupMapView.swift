@@ -451,11 +451,13 @@ struct iPad_GroupMapView: View {
                                     } label: {
                                         Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
                                     }
-                                    Button {
-                                        navigationDeviceID = deviceID
-                                        showNavigationSheet = true
-                                    } label: {
-                                        Label("navigation", systemImage: "location").labelStyle(.titleAndIcon)
+                                    if deviceID != thisDeviceIDManager.shared.deviceID {
+                                        Button {
+                                            navigationDeviceID = deviceID
+                                            showNavigationSheet = true
+                                        } label: {
+                                            Label("navigation", systemImage: "location").labelStyle(.titleAndIcon)
+                                        }
                                     }
                                 }
                         }.offset(y: 10)

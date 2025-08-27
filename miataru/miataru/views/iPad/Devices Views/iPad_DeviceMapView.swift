@@ -451,10 +451,12 @@ struct iPad_DeviceMapView: View {
                                             } label: {
                                                 Label("edit_device", systemImage: "pencil")
                                             }
-                                            Button {
-                                                showNavigationSheet = true
-                                            } label: {
-                                                Label("navigation", systemImage: "location")
+                                            if device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                                                Button {
+                                                    showNavigationSheet = true
+                                                } label: {
+                                                    Label("navigation", systemImage: "location")
+                                                }
                                             }
                                         }
                             }
