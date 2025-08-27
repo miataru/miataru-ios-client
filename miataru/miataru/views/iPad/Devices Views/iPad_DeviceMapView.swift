@@ -446,13 +446,15 @@ struct iPad_DeviceMapView: View {
                                         .frame(width: 60, height: 80)
                                         .zIndex(1)
                                         .contextMenu {
-                                            Button("edit_device") {
+                                            Button {
                                                 showEditDeviceSheet = true
+                                            } label: {
+                                                Label("edit_device", systemImage: "pencil")
                                             }
                                             Button {
                                                 showNavigationSheet = true
                                             } label: {
-                                                Label("navigation", systemImage: "location").labelStyle(.titleAndIcon)
+                                                Label("navigation", systemImage: "location")
                                             }
                                         }
                             }

@@ -44,4 +44,6 @@ DerivedData/
 *.lock
 Pods/
 Carthage/
-miataru/miataru.xcodeproj/project.xcworkspace/xcuserdata/bietiekay.xcuserdatad/UserInterfaceState.xcuserstate
+miataru/miataru.xcodeproj/project.xcworkspace/xcuserdata/
+miataru/miataru.xcodeproj/xcuserdata/bietiekay.xcuserdatad/
+
