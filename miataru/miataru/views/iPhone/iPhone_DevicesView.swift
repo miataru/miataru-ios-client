@@ -50,7 +50,7 @@ struct iPhone_DevicesView: View {
                                 } label: {
                                     Label("navigation", systemImage: "location")
                                 }
-                                .tint(.blue)
+                                .tint(.green)
                             }
                             Button {
                                 editingDevice = device
@@ -81,7 +81,7 @@ struct iPhone_DevicesView: View {
                                     } label: {
                                         Label("navigation", systemImage: "location")
                                     }
-                                    .tint(.blue)
+                                    .tint(.green)
                                 }
                                 Button {
                                     editingDevice = device
