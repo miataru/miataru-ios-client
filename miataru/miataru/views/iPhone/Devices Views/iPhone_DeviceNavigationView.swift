@@ -152,6 +152,7 @@ struct iPhone_DeviceNavigationView: View {
                         .stroke(.blue, lineWidth: 4)
                 }
             }
+            .mapStyle(mapStyleFromSettings(settings.mapType))
             .mapControls {
                 MapCompass(heading: 1, size: 10)
                     .mapControlVisibility(.hidden)
