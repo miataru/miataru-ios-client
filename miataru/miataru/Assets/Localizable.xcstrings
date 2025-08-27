@@ -4383,7 +4383,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Es konnte keine Route zwischen den Devices erstellt werden."
+            "value" : "Es konnte keine Route zwischen den Standorten erstellt werden."
           }
         },
         "en" : {
@@ -4395,7 +4395,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地点間のルートを生成できませんでした。"
+            "value" : "場所間のルートを作成できませんでした。"
           }
         }
       }

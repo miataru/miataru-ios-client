@@ -443,11 +443,13 @@ struct iPhone_GroupMapView: View {
                                     } label: {
                                         Label("edit_device", systemImage: "pencil")
                                     }
-                                    Button {
-                                        navigationDeviceID = deviceID
-                                        showNavigationSheet = true
-                                    } label: {
-                                        Label("navigation", systemImage: "location")
+                                    if deviceID != thisDeviceIDManager.shared.deviceID {
+                                        Button {
+                                            navigationDeviceID = deviceID
+                                            showNavigationSheet = true
+                                        } label: {
+                                            Label("navigation", systemImage: "location")
+                                        }
                                     }
                                 }
                         }.offset(y: 10)
