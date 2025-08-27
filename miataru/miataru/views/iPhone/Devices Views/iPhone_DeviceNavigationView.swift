@@ -46,7 +46,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     // Fit configuration: reduce padding around both markers when auto-centering
-    private let fitPaddingMultiplier: Double = 1.6
+    private let fitPaddingMultiplier: Double = 1.8
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
 
     var body: some View {
