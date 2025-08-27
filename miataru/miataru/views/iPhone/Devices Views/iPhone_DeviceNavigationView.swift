@@ -28,6 +28,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var route: MKRoute?
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
+    @State private var distanceText: String?
     @State private var currentRegion: MKCoordinateRegion?
     @State private var hasSetInitialRegion = false
     @State private var userHasInteractedWithMap = false
@@ -207,12 +208,47 @@ struct iPhone_DeviceNavigationView: View {
                 currentRegion = context.region
             }
             .overlay(alignment: .top) {
-                if let travelTime {
-                    Text(travelTime)
+                if travelTime != nil || distanceText != nil {
+                    if #available(iOS 26.0, *) {
+                        HStack(spacing: 8) {
+                            if let travelTime {
+                                Image(systemName: "clock")
+                                    .imageScale(.small)
+                                    .accessibilityHidden(true)
+                                Text(travelTime)
+                            }
+                            if travelTime != nil && distanceText != nil {
+                                Image(systemName: transportSymbolName())
+                                    .imageScale(.small)
+                                    .accessibilityHidden(true)
+                            }
+                            if let distanceText { Text(distanceText) }
+                        }
+                        .font(.callout.monospacedDigit())
+                        .padding(8)
+                        .glassEffect(in: .rect(cornerRadius: 8))
+                        .padding()
+                    } else {
+                        HStack(spacing: 8) {
+                            if let travelTime {
+                                Image(systemName: "clock")
+                                    .imageScale(.small)
+                                    .accessibilityHidden(true)
+                                Text(travelTime)
+                            }
+                            if travelTime != nil && distanceText != nil {
+                                Image(systemName: transportSymbolName())
+                                    .imageScale(.small)
+                                    .accessibilityHidden(true)
+                            }
+                            if let distanceText { Text(distanceText) }
+                        }
+                        .font(.callout.monospacedDigit())
                         .padding(8)
                         .background(.thinMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding()
+                    }
                 }
             }
             .overlay(alignment: .bottomTrailing) {
@@ -325,9 +361,11 @@ struct iPhone_DeviceNavigationView: View {
                     let formatter = DateComponentsFormatter()
                     formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
+                    distanceText = formattedDistance(first.distance)
                 } else {
                     route = nil
                     travelTime = nil
+                    distanceText = nil
                     showErrorOverlay(
                         "No route found",
                         NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
@@ -336,6 +374,7 @@ struct iPhone_DeviceNavigationView: View {
             } catch {
                 route = nil
                 travelTime = nil
+                distanceText = nil
                 showErrorOverlay(
                     "Route calculation failed: \(error.localizedDescription)",
                     NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
@@ -505,6 +544,47 @@ struct iPhone_DeviceNavigationView: View {
             withAnimation(.easeInOut(duration: 0.5)) {
                 mapPosition = .region(region)
             }
+        }
+    }
+}
+
+// MARK: - Distance Formatting
+extension iPhone_DeviceNavigationView {
+    private func formattedDistance(_ meters: CLLocationDistance) -> String {
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        let value: Double
+        let unit: UnitLength
+        if usesMetric {
+            value = meters / 1000.0
+            unit = .kilometers
+        } else {
+            value = meters / 1609.344
+            unit = .miles
+        }
+        let measurement = Measurement(value: value, unit: unit)
+        let formatter = MeasurementFormatter()
+        formatter.locale = .current
+        formatter.unitStyle = .short
+        formatter.unitOptions = .providedUnit
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 0
+        numberFormatter.minimumFractionDigits = 0
+        formatter.numberFormatter = numberFormatter
+        return formatter.string(from: measurement)
+    }
+
+    private func transportSymbolName() -> String {
+        switch settings.navigationTransportType {
+        case 0: return "figure.walk"
+        case 1: return "bicycle"
+        case 2: return "car"
+        case 3: return "tram"
+        default: return "car"
         }
     }
 }
