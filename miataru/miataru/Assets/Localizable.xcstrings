@@ -1,6 +1,29 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "open_in_new_window" : {
+      "comment" : "Open device in a new window.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In neuem Fenster öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in New Window"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいウィンドウで開く"
+          }
+        }
+      }
+    },
     "" : {
       "shouldTranslate" : false
     },

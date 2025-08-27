@@ -24,6 +24,7 @@ struct iPad_DevicesView: View {
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
     @State private var navigationTargetDevice: KnownDevice? = nil
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         NavigationSplitView {
@@ -33,7 +34,14 @@ struct iPad_DevicesView: View {
                         iPhone_DeviceRowView(device: device, cache: cache)
                             .tag(device.DeviceID)
                             .tint(.primary)
+                            .draggable(device.DeviceID)
                             .contextMenu {
+                                Button {
+                                    openWindow(value: device.DeviceID)
+                                } label: {
+                                    Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "uiwindow.split.2x1")
+                                        .labelStyle(.titleAndIcon)
+                                }
                                 Button {
                                     editingDevice = device
                                 } label: {
