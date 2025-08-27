@@ -345,9 +345,10 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func openInAppleMaps() {
-        guard let user = userCoordinate, let dest = deviceCoordinate else { return }
-        let source = MKMapItem(placemark: MKPlacemark(coordinate: user))
+        guard let dest = deviceCoordinate else { return }
+        let source = MKMapItem.forCurrentLocation()
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+        destination.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
         var options: [String: Any] = [:]
         switch settings.navigationTransportType {
         case 0: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeWalking

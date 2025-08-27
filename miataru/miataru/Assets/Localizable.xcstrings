@@ -4383,19 +4383,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Es konnte keine Route zwischen den Standorten erstellt werden."
+            "value" : "Es konnte keine Route zwischen den Standorten erstellt werden. Ändere ggf. das Transportmittel in den Einstellungen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Could not generate a route between the locations."
+            "value" : "Could not generate a route between the locations. Consider changing transportation mode in settings."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "場所間のルートを作成できませんでした。"
+            "value" : "場所間のルートを生成できませんでした。設定で移動手段を変更してください。"
           }
         }
       }
