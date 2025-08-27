@@ -97,5 +97,8 @@ struct miataruApp: App {
                 break
             }
         }
+        WindowGroup(for: String.self) { deviceID in
+            iPad_DeviceMapView(deviceID: deviceID)
+        }
     }
 }
