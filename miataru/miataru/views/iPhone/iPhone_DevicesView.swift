@@ -44,7 +44,7 @@ struct iPhone_DevicesView: View {
                             }
                         }
                         .swipeActions(edge: .leading) {
-                            if device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                            if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                 Button {
                                     navigationTargetDevice = device
                                 } label: {
@@ -75,7 +75,7 @@ struct iPhone_DevicesView: View {
                                 }
                             }
                             .swipeActions(edge: .leading) {
-                                if device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                     Button {
                                         navigationTargetDevice = device
                                     } label: {

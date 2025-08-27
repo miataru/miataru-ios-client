@@ -273,6 +273,28 @@ struct iPhone_DeviceNavigationView: View {
                 .buttonStyle(.plain)
             }
         }
+        .id(device.DeviceID)
+        .onChange(of: device.DeviceID) { _ in
+            // Reset all device-related state when a new device is injected
+            userCoordinate = nil
+            deviceCoordinate = nil
+            animatedUserCoordinate = nil
+            animatedDeviceCoordinate = nil
+            route = nil
+            travelTime = nil
+            distanceText = nil
+            currentRegion = nil
+            hasSetInitialRegion = false
+            userHasInteractedWithMap = false
+            currentMapCamera = nil
+            userHasRotatedMap = false
+            isProgrammaticCameraChange = false
+            isAutoCenteringEnabled = true
+            deviceTimestamp = nil
+            isLoading = false
+            // Fetch and recenter for the new device
+            Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
+        }
     }
 
     @ViewBuilder
