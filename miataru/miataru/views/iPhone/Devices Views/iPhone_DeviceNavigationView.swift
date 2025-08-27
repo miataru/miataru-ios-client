@@ -44,6 +44,9 @@ struct iPhone_DeviceNavigationView: View {
     private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    // Fit configuration: reduce padding around both markers when auto-centering
+    private let fitPaddingMultiplier: Double = 1.6
+    private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
 
     var body: some View {
         VStack {
@@ -300,8 +303,11 @@ struct iPhone_DeviceNavigationView: View {
     private func regionThatFits(user: CLLocationCoordinate2D, dest: CLLocationCoordinate2D) -> MKCoordinateRegion {
         let center = CLLocationCoordinate2D(latitude: (user.latitude + dest.latitude) / 2,
                                             longitude: (user.longitude + dest.longitude) / 2)
-        let span = MKCoordinateSpan(latitudeDelta: abs(user.latitude - dest.latitude) * 2.5,
-                                    longitudeDelta: abs(user.longitude - dest.longitude) * 2.5)
+        let baseLat = abs(user.latitude - dest.latitude)
+        let baseLon = abs(user.longitude - dest.longitude)
+        let paddedLat = max(baseLat * fitPaddingMultiplier, fitMinimumSpan.latitudeDelta)
+        let paddedLon = max(baseLon * fitPaddingMultiplier, fitMinimumSpan.longitudeDelta)
+        let span = MKCoordinateSpan(latitudeDelta: paddedLat, longitudeDelta: paddedLon)
         return MKCoordinateRegion(center: center, span: span)
     }
 
