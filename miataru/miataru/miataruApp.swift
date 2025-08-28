@@ -9,6 +9,7 @@
 
 import SwiftUI
 import Combine
+import UIKit
 
 extension UserDefaults {
     var hasCompletedOnboarding: Bool {
@@ -21,6 +22,18 @@ class AppState: ObservableObject {
     @Published var showOnboarding: Bool = !UserDefaults.standard.hasCompletedOnboarding
 }
 
+@MainActor
+fileprivate final class LaunchGuard {
+    static var isFirstActivation: Bool = true
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool { false }
+    func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool { false }
+    func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool { false }
+    func application(_ application: UIApplication, shouldRestoreSecureApplicationState coder: NSCoder) -> Bool { false }
+}
+
 @main
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
@@ -28,6 +41,7 @@ struct miataruApp: App {
     @State private var autolockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
@@ -54,7 +68,7 @@ struct miataruApp: App {
     }
     
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "main") {
             MiataruRootView()
                 .environmentObject(appState)
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
@@ -98,10 +112,35 @@ struct miataruApp: App {
             }
         }
         WindowGroup(for: String.self) { deviceID in
-            if let deviceID = deviceID.wrappedValue {
-                iPad_DeviceMapView(deviceID: deviceID)
+            DeviceWindowEntrypoint(deviceID: deviceID)
+        }
+    }
+}
+
+private struct DeviceWindowEntrypoint: View {
+    @Binding var deviceID: String?
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+
+    init(deviceID: Binding<String?>) {
+        self._deviceID = deviceID
+    }
+
+    var body: some View {
+        Group {
+            if let id = deviceID {
+                iPad_DeviceMapView(deviceID: id)
             } else {
                 Text(NSLocalizedString("no_device_selected", comment: "No device selected for this window."))
+            }
+        }
+        .task {
+            if LaunchGuard.isFirstActivation {
+                LaunchGuard.isFirstActivation = false
+                openWindow(id: "main")
+                if let id = deviceID {
+                    dismissWindow(value: id)
+                }
             }
         }
     }
