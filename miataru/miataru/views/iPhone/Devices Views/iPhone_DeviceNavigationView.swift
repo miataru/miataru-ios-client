@@ -153,7 +153,7 @@ struct iPhone_DeviceNavigationView: View {
                         let expected = route.expectedTravelTime
                         let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
 
-                        if progress <= 0 {
+                        if progress <= 0.05 { // only when 5% have passed show the route ghost
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
                         } else if progress >= 1 {
