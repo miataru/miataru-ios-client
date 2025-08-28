@@ -97,8 +97,11 @@ struct miataruApp: App {
                 break
             }
         }
-        WindowGroup(for: String.self) { deviceID in
-            if let deviceID = deviceID.wrappedValue {
+        .commands {
+            MiataruMenuCommands()
+        }
+        WindowGroup(id: "deviceWindow", for: String.self) { deviceID in
+            if let deviceID = deviceID.wrappedValue, !deviceID.isEmpty {
                 iPad_DeviceMapView(deviceID: deviceID)
             } else {
                 Text(NSLocalizedString("no_device_selected", comment: "No device selected for this window."))

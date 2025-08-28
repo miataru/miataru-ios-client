@@ -12,6 +12,7 @@
 - [User Experience and Flow](#user-experience-and-flow)
 - [Migration from Earlier Versions](#migration-from-earlier-versions)
 - [Error Handling and Battery Optimization](#error-handling-and-battery-optimization)
+- [Menu Commands on iPad and Mac](#menu-commands-on-ipad-and-mac)
 - [License](#license)
 
 ---
@@ -96,6 +97,15 @@ The app is organized into several key components:
   - The app can disable device auto-lock if requested, but defaults to energy-saving behavior.
   - Background activity is minimized unless explicitly enabled in settings.
   - Observers ensure that tracking and background tasks are only active when necessary.
+
+---
+
+## Menu Commands on iPad and Mac
+
+Miataru uses SwiftUI's `Commands` API to expose additional menu items on platforms that support multiwindow interfaces.
+
+- **iPad**: Attach a hardware keyboard or use the system's menu bar (from the three-dot "more" menu) to access **Window → New Device Window**, which opens a new device window.
+- **Mac**: The same command is available in the Window menu and opens an additional device window using the app's native `openWindow` support.
 
 ---
 
