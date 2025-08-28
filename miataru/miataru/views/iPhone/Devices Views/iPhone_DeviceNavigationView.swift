@@ -147,9 +147,32 @@ struct iPhone_DeviceNavigationView: View {
                         .offset(y: 10)
                     }
                 }
-                if let polyline = route?.polyline {
-                    MapPolyline(polyline)
-                        .stroke(.blue, lineWidth: 4)
+                if let route = route {
+                    if let ts = deviceTimestamp {
+                        let elapsed = now.timeIntervalSince(ts)
+                        let expected = route.expectedTravelTime
+                        let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
+                        let splitDistance = route.distance * progress
+                        if let (done, todo, ghost) = route.polyline.split(at: splitDistance) {
+                            MapPolyline(done)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                            MapPolyline(todo)
+                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            MapCircle(center: ghost, radius: 50)
+                                .foregroundStyle(RouteStyle.completed.opacity(0.2))
+                            Annotation("ghost", coordinate: ghost) {
+                                Image(systemName: "location.circle.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(RouteStyle.completed.opacity(0.5))
+                            }
+                        } else {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                        }
+                    } else {
+                        MapPolyline(route.polyline)
+                            .stroke(RouteStyle.completed, lineWidth: 4)
+                    }
                 }
             }
             .mapStyle(mapStyleFromSettings(settings.mapType))

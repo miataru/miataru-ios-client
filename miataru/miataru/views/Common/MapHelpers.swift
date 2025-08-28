@@ -57,4 +57,44 @@ func relativeTimeString(
     let formatter = RelativeDateTimeFormatter()
     formatter.unitsStyle = unitsStyle
     return formatter.localizedString(for: date, relativeTo: now)
-} 
+}
+
+/// Splits a polyline at the given distance from its start and returns the
+/// traversed and remaining segments plus the interpolated coordinate.
+extension MKPolyline {
+    func split(at distance: CLLocationDistance) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D)? {
+        guard pointCount > 1 else { return nil }
+
+        var coords = [CLLocationCoordinate2D](repeating: kCLLocationCoordinate2DInvalid, count: pointCount)
+        getCoordinates(&coords, range: NSRange(location: 0, length: pointCount))
+
+        var traveled: [CLLocationCoordinate2D] = [coords[0]]
+        var remaining: [CLLocationCoordinate2D] = coords
+        var accumulated: CLLocationDistance = 0
+
+        for i in 1..<coords.count {
+            let start = MKMapPoint(coords[i - 1])
+            let end = MKMapPoint(coords[i])
+            let segment = start.distance(to: end)
+
+            if accumulated + segment >= distance {
+                let ratio = segment > 0 ? (distance - accumulated) / segment : 0
+                let interp = CLLocationCoordinate2D(
+                    latitude: coords[i - 1].latitude + (coords[i].latitude - coords[i - 1].latitude) * ratio,
+                    longitude: coords[i - 1].longitude + (coords[i].longitude - coords[i - 1].longitude) * ratio
+                )
+                traveled.append(interp)
+                remaining[0] = interp
+                let traveledPolyline = MKPolyline(coordinates: traveled, count: traveled.count)
+                let remainingPolyline = MKPolyline(coordinates: remaining, count: remaining.count)
+                return (traveledPolyline, remainingPolyline, interp)
+            }
+
+            traveled.append(coords[i])
+            remaining.remove(at: 0)
+            accumulated += segment
+        }
+
+        return nil
+    }
+}
