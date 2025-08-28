@@ -400,10 +400,11 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func calculateRoute() {
-        guard let user = userCoordinate, let dest = deviceCoordinate else { return }
+        guard let user = userCoordinate, let device = deviceCoordinate else { return }
         let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+        // Draw the route from the other device towards the current user
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: device))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: user))
         request.transportType = transportTypeFromSetting(settings.navigationTransportType)
         Task {
             do {
