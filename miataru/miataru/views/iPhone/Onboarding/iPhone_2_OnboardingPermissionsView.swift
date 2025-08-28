@@ -25,6 +25,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                 .scaledToFit()
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
+                .accessibilityHidden(true)
             VStack(spacing: 12) {
                 HStack(alignment: .top) {
                     Image(systemName: "location.fill")

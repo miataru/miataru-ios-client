@@ -22,6 +22,7 @@ struct iPhone_1_OnboardingWelcomeView: View {
                 .scaledToFit()
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
+                .accessibilityHidden(true)
             //Image(systemName: "location.circle.fill")
             //               .resizable()
             //               .frame(width: 100, height: 100)

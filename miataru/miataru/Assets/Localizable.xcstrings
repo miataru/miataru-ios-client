@@ -1236,6 +1236,52 @@
         }
       }
     },
+    "copy_device_id" : {
+      "comment" : "Copy device ID to clipboard",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte-ID kopieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy device ID"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスIDをコピー"
+          }
+        }
+      }
+    },
+    "copy_device_id_hint" : {
+      "comment" : "Copies your device ID to the clipboard",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert deine Geräte-ID in die Zwischenablage"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copies your device ID to the clipboard"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスIDをクリップボードにコピーします"
+          }
+        }
+      }
+    },
     "Current location" : {
       "comment" : "Current position display in Location Tracking Details",
       "localizations" : {
@@ -1777,6 +1823,52 @@
         }
       }
     },
+    "devicelist_addbutton" : {
+      "comment" : "Add a new device to your list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerät hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスを追加"
+          }
+        }
+      }
+    },
+    "devicelist_addbutton_hint" : {
+      "comment" : "Opens the add device form",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formular zum Hinzufügen eines Geräts öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the add device form"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス追加フォームを開く"
+          }
+        }
+      }
+    },
     "devicelist_edit_done" : {
       "comment" : "Finish editing the device list.",
       "localizations" : {
@@ -1819,6 +1911,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "編集"
+          }
+        }
+      }
+    },
+    "devicelist_editbutton_hint" : {
+      "comment" : "Enters edit mode for the device list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wechselt in den Bearbeitungsmodus der Geräteliste"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enters edit mode for the device list"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス一覧の編集モードに入ります"
           }
         }
       }
@@ -2593,6 +2708,75 @@
         }
       }
     },
+    "group_row_num_devices" : {
+      "comment" : "Accessibility value expressing how many devices are in the group",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d Geräte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d devices"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d台のデバイス"
+          }
+        }
+      }
+    },
+    "grouplist_addbutton" : {
+      "comment" : "Create a new group",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppe erstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create group"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループを作成"
+          }
+        }
+      }
+    },
+    "grouplist_addbutton_hint" : {
+      "comment" : "Opens the create group sheet",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialog zum Erstellen einer Gruppe öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens the create group sheet"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ作成シートを開く"
+          }
+        }
+      }
+    },
     "grouplist_edit_done" : {
       "comment" : "Finish editing the group list.\nFinish editing the groups list.",
       "localizations" : {
@@ -2635,6 +2819,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "編集"
+          }
+        }
+      }
+    },
+    "grouplist_editbutton_hint" : {
+      "comment" : "Enters edit mode for the groups list",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wechselt in den Bearbeitungsmodus der Gruppenliste"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enters edit mode for the groups list"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループ一覧の編集モードに入ります"
           }
         }
       }
@@ -3362,6 +3569,29 @@
         }
       }
     },
+    "map_marker_open_details" : {
+      "comment" : "Opens the selected device details on the map",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet die Gerätedetails auf der Karte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens device details on the map"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図上でデバイスの詳細を開く"
+          }
+        }
+      }
+    },
     "map_type" : {
       "localizations" : {
         "de" : {
@@ -3585,6 +3815,7 @@
       }
     },
     "navigation" : {
+      "comment" : "Navigate to this device",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4120,6 +4351,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近の位置情報更新:"
+          }
+        }
+      }
+    },
+    "refresh_location" : {
+      "comment" : "Refresh the device location now",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort aktualisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh location"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報を更新"
+          }
+        }
+      }
+    },
+    "refresh_location_hint" : {
+      "comment" : "Fetches the latest location and resets zoom if configured",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisiert die Position und setzt ggf. den Zoom zurück"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fetches the latest location and resets zoom if configured"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の位置情報を取得し、設定に応じてズームをリセットします"
           }
         }
       }

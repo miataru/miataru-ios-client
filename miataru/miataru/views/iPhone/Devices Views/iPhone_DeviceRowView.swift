@@ -76,6 +76,9 @@ struct iPhone_DeviceRowView: View {
         }
         .padding(.vertical, 4)
         .frame(height: 56)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))
+        .accessibilityValue(Text(subtitleText(from: displayedCachedLocation)))
     }
     
     /// Returns the subtitle string for the device row: last seen + distance

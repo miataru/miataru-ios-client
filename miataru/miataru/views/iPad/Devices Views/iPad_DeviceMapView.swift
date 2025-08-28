@@ -467,7 +467,7 @@ struct iPad_DeviceMapView: View {
                                                 Button {
                                                     showNavigationSheet = true
                                                 } label: {
-                                                    Label("navigation", systemImage: "location")
+                                                    Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                                 }
                                             }
                                         }
@@ -509,6 +509,8 @@ struct iPad_DeviceMapView: View {
             Image(systemName: "arrow.clockwise")
                 .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
         }
+        .accessibilityLabel(Text(NSLocalizedString("refresh_location", comment: "Refresh the device location now")))
+        .accessibilityHint(Text(NSLocalizedString("refresh_location_hint", comment: "Fetches the latest location and resets zoom if configured")))
     }
     
     // Fetches the latest location for the device from the server

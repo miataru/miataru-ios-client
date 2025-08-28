@@ -48,7 +48,7 @@ struct iPhone_DevicesView: View {
                                 Button {
                                     navigationTargetDevice = device
                                 } label: {
-                                    Label("navigation", systemImage: "location")
+                                    Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                 }
                                 .tint(.green)
                             }
@@ -79,7 +79,7 @@ struct iPhone_DevicesView: View {
                                     Button {
                                         navigationTargetDevice = device
                                     } label: {
-                                        Label("navigation", systemImage: "location")
+                                        Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                     }
                                     .tint(.green)
                                 }
@@ -113,12 +113,15 @@ struct iPhone_DevicesView: View {
                         } else {
                             Image(systemName: "pencil")
                                 .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
+                                .accessibilityHint(Text(NSLocalizedString("devicelist_editbutton_hint", comment: "Enters edit mode for the device list")))
                         }
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddDevice = true }) {
                         Image(systemName: "plus")
+                            .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
+                            .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
                     }
                 }
             }

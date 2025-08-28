@@ -21,6 +21,7 @@ struct iPhone_5_OnboardingQRcodeView: View {
                 .scaledToFit()
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
+                .accessibilityHidden(true)
             Text("Easily share your device ID or add others by scanning QR-Codes.")
                 .font(.body)
                 .multilineTextAlignment(.center)

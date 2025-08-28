@@ -406,12 +406,14 @@ struct iPhone_GroupMapView: View {
                                         .shimmering(active: isLoading)
                                         .shadow(radius: 2)
                                         .zIndex(2)
+                                        .accessibilityHidden(true)
                                 }
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue),
                                     pulsing: groupDeviceIDs.count <= 5
                                 )
                                     .shadow(radius: 2)
+                                    .accessibilityHidden(true)
                                 ZStack {
                                     // Draw device name/ID with shadow for better readability
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
@@ -429,6 +431,7 @@ struct iPhone_GroupMapView: View {
                                         .font(.callout)
                                         .foregroundColor(Color(UIColor.label))
                                         .padding(.top, 2)
+                                        .accessibilityHidden(true)
                                 }
                             }
                             Rectangle()
@@ -448,10 +451,14 @@ struct iPhone_GroupMapView: View {
                                             navigationDeviceID = deviceID
                                             showNavigationSheet = true
                                         } label: {
-                                            Label("navigation", systemImage: "location")
+                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                         }
                                     }
                                 }
+                                .accessibilityLabel(Text(annotationID))
+                                .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))
+                                .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
+                                .accessibilityAddTraits(.isButton)
                         }.offset(y: 10)
                     }
                 }

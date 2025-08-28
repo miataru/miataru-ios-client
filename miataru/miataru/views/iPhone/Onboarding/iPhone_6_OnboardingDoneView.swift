@@ -23,6 +23,7 @@ struct iPhone_6_OnboardingDoneView: View {
                 .scaledToFit()
                 .frame(width: 300)
                 .padding(.horizontal)
+                .accessibilityHidden(true)
             Text("Miataru is set up and ready.")
                 .font(.body)
                 .multilineTextAlignment(.center)

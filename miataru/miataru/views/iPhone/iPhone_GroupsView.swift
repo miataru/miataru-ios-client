@@ -45,12 +45,15 @@ struct iPhone_GroupsView: View {
                             } else {
                                 Image(systemName: "pencil")
                                     .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
+                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
                             }
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
+                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
+                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
                         }
                     }
                 }
@@ -106,12 +109,15 @@ struct iPhone_GroupsView: View {
                             } else {
                                 Image(systemName: "pencil")
                                     .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
+                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
                             }
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
+                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
+                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
                         }
                     }
                 }

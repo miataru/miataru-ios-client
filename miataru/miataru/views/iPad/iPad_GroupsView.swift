@@ -73,6 +73,8 @@ struct iPad_GroupsView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddGroup = true }) {
                         Image(systemName: "plus")
+                            .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
+                            .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
                     }
                 }
             }
