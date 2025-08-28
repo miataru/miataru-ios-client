@@ -42,7 +42,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var userTimestamp: Date? = nil
     @State private var isLoading: Bool = false
     @State private var now = Date()
-    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     // Fit configuration: reduce padding around both markers when auto-centering
@@ -147,9 +147,32 @@ struct iPhone_DeviceNavigationView: View {
                         .offset(y: 10)
                     }
                 }
-                if let polyline = route?.polyline {
-                    MapPolyline(polyline)
-                        .stroke(.blue, lineWidth: 4)
+                if let route = route {
+                    if let ts = deviceTimestamp {
+                        let elapsed = now.timeIntervalSince(ts)
+                        let expected = route.expectedTravelTime
+                        let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
+                        let splitDistance = route.distance * progress
+                        if let (done, todo, ghost) = route.polyline.split(at: splitDistance) {
+                            MapPolyline(done)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                            MapPolyline(todo)
+                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            MapCircle(center: ghost, radius: 50)
+                                .foregroundStyle(RouteStyle.completed.opacity(0.2))
+                            Annotation("ghost", coordinate: ghost) {
+                                Image(systemName: "location.circle.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(RouteStyle.completed.opacity(0.5))
+                            }
+                        } else {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                        }
+                    } else {
+                        MapPolyline(route.polyline)
+                            .stroke(RouteStyle.completed, lineWidth: 4)
+                    }
                 }
             }
             .mapStyle(mapStyleFromSettings(settings.mapType))
@@ -176,6 +199,7 @@ struct iPhone_DeviceNavigationView: View {
                 calculateRoute() // initial load only
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
+                restartTimeUpdateTimer()
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -191,6 +215,11 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
+                restartTimeUpdateTimer()
+            }
+            .onChange(of: travelTime) { _, _ in
+                now = Date()
+                restartTimeUpdateTimer()
             }
             .onMapCameraChange(frequency: .continuous) { context in
                 let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
@@ -500,6 +529,11 @@ struct iPhone_DeviceNavigationView: View {
 
     private func restartAutoUpdate() {
         startAutoUpdate()
+    }
+
+    private func restartTimeUpdateTimer() {
+        let interval = max(1.0, Double(settings.mapUpdateInterval))
+        timeUpdateTimer = Timer.publish(every: interval, on: .main, in: .common).autoconnect()
     }
 
     // MARK: - Map UI Helpers (Scale bar and Compass)
