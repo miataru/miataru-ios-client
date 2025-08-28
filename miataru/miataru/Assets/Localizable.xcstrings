@@ -93,29 +93,6 @@
         }
       }
     },
-    "1day" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Tag"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 day"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1日"
-          }
-        }
-      }
-    },
     "1hour" : {
       "localizations" : {
         "de" : {
@@ -156,29 +133,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 km"
-          }
-        }
-      }
-    },
-    "2days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2日間"
           }
         }
       }
@@ -227,75 +181,6 @@
         }
       }
     },
-    "3days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3日間"
-          }
-        }
-      }
-    },
-    "4days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4日間"
-          }
-        }
-      }
-    },
-    "5days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5日間"
-          }
-        }
-      }
-    },
     "5km" : {
       "localizations" : {
         "de" : {
@@ -336,29 +221,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5秒"
-          }
-        }
-      }
-    },
-    "6days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6日間"
           }
         }
       }
@@ -473,29 +335,6 @@
         }
       }
     },
-    "14days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "14 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "14 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "14日間"
-          }
-        }
-      }
-    },
     "15s" : {
       "localizations" : {
         "de" : {
@@ -602,29 +441,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30秒"
-          }
-        }
-      }
-    },
-    "31days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "31 Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "31 days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "31日間"
           }
         }
       }
@@ -1008,29 +824,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重複したデバイス"
-          }
-        }
-      }
-    },
-    "all_available" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "alle verfügbaren Daten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "all available data"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "利用可能なすべてのデータ"
           }
         }
       }
@@ -5072,29 +4865,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "信頼する人にあなたのQRコードを見せてください。"
-          }
-        }
-      }
-    },
-    "show_history_days" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anzahl der anzuzeigenden Tage"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Days of history shown"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴表示日数"
           }
         }
       }
