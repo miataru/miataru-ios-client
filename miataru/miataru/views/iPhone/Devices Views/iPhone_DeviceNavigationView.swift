@@ -168,20 +168,37 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)
                                 MapCircle(center: ghost, radius: 50)
-                                    .foregroundStyle(RouteStyle.completed.opacity(0.2))
-                                Annotation("ghost", coordinate: ghost) {
-                                    Image(systemName: "location.circle.fill")
-                                        .font(.system(size: 16))
-                                        .foregroundColor(RouteStyle.completed.opacity(0.5))
+                                    .foregroundStyle(RouteStyle.completed.opacity(0.6))
+                                Annotation("", coordinate: ghost) {
+                                    VStack(spacing: 2) {
+                                        Image(systemName: "location.circle.fill")
+                                            .font(.system(size: 16))
+                                            .foregroundColor(RouteStyle.completed.opacity(0.8))
+                                        ZStack {
+                                            ForEach([-1, 0, 1], id: \.self) { x in
+                                                ForEach([-1, 0, 1], id: \.self) { y in
+                                                    if x != 0 || y != 0 {
+                                                        Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
+                                                            .font(.caption2)
+                                                            .foregroundColor(Color(UIColor.systemBackground).opacity(0.8))
+                                                            .offset(x: CGFloat(x), y: CGFloat(y))
+                                                    }
+                                                }
+                                            }
+                                            Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
+                                                .font(.caption2)
+                                                .foregroundColor(Color(UIColor.label).opacity(0.8))
+                                        }
+                                    }
                                 }
                             } else {
                                 MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.completed, lineWidth: 4)
+                                    .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                             }
                         }
                     } else {
                         MapPolyline(route.polyline)
-                            .stroke(RouteStyle.completed, lineWidth: 4)
+                            .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                     }
                 }
             }

@@ -2508,6 +2508,29 @@
         }
       }
     },
+    "explanation_show_route_progress" : {
+      "comment" : "Explanation for show route progress toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, färbt die Karte die Route ein, um anzuzeigen, wie weit sich das andere Gerät seit seinem letzten Update wahrscheinlich bewegt hat."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the map will color the route to indicate how far the other device has likely traveled since its last update."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、地図上のルートに色が付き、前回の更新以降に相手のデバイスがどれだけ移動した可能性があるかを示します。"
+          }
+        }
+      }
+    },
     "explanation_zoom_to_fit_for_groups" : {
       "comment" : "Explanation for zoom to fit for groups toggle",
       "localizations" : {
@@ -5094,6 +5117,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "他のデバイスのオフスクリーン矢印を表示"
+          }
+        }
+      }
+    },
+    "show_route_progress" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routenfortschritt anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show route progress"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルート進行状況を表示"
           }
         }
       }
