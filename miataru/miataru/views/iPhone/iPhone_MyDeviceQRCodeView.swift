@@ -114,6 +114,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                                         .font(.title3)
                                 }
                                 .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
+                                .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
 
                                 ShareLink(item: shareText) {
                                     Image(systemName: "square.and.arrow.up")
@@ -169,6 +171,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                                         .font(.title2)
                                 }
                                 .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
+                                .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
                             }
 
                             // Portrait: share buttons on second row below

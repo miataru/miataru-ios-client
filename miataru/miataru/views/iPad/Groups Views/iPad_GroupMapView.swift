@@ -456,7 +456,7 @@ struct iPad_GroupMapView: View {
                                             navigationDeviceID = deviceID
                                             showNavigationSheet = true
                                         } label: {
-                                            Label("navigation", systemImage: "location").labelStyle(.titleAndIcon)
+                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location").labelStyle(.titleAndIcon)
                                         }
                                     }
                                 }

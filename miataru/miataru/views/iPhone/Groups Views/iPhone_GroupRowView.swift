@@ -27,6 +27,9 @@ struct iPhone_GroupRowView: View {
             Spacer()
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(group.groupName))
+        .accessibilityValue(Text(String(format: NSLocalizedString("group_row_num_devices", comment: "Accessibility value expressing how many devices are in the group"), group.deviceIDs.count)))
     }
 }
 

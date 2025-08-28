@@ -35,6 +35,7 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
                 .scaledToFit()
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
+                .accessibilityHidden(true)
             Text("You can choose how your location data is stored on the Miataru server.")
                 .font(.headline)
                 //.multilineTextAlignment(.center)
