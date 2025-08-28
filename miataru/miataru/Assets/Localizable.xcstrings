@@ -1556,6 +1556,7 @@
       }
     },
     "delete_device" : {
+      "comment" : "Delete this device.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2120,7 +2121,7 @@
       }
     },
     "edit_device" : {
-      "comment" : "Edit the selected device.",
+      "comment" : "Edit the selected device.\nEdit this device.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3879,6 +3880,29 @@
         }
       }
     },
+    "no_device_selected" : {
+      "comment" : "No device selected for this window.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Gerät für dieses Fenster ausgewählt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No device selected for this window."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このウィンドウにデバイスが選択されていません。"
+          }
+        }
+      }
+    },
     "no_groups_available_create_new" : {
       "comment" : "No groups available. Create a new group to get started.",
       "localizations" : {
@@ -4032,6 +4056,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iOSのアプリ設定を開いて位置情報の権限状態を変更してください。"
+          }
+        }
+      }
+    },
+    "open_in_new_window" : {
+      "comment" : "Open device in a new window.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In neuem Fenster öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in New Window"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいウィンドウで開く"
           }
         }
       }

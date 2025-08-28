@@ -56,6 +56,7 @@ struct iPad_DeviceMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
+    @Environment(\.scenePhase) private var scenePhase
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -165,6 +166,7 @@ struct iPad_DeviceMapView: View {
             VStack {
                 mapSection()
             }
+            .id(mapInteractionID)
             .background(
                 GeometryReader { geometry in
                     Color.clear
@@ -215,6 +217,7 @@ struct iPad_DeviceMapView: View {
             compassView()
         }
         .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? "Unknown Device"))
+        .background(Color(.systemBackground))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -225,6 +228,8 @@ struct iPad_DeviceMapView: View {
         .adaptiveToolbarBackground()
         .onAppear {
             settings.lastOpenedDeviceID = deviceID
+            // Force map re-instantiation to avoid black screen on restore
+            mapInteractionID = UUID()
             // Use preview parameters if set (for SwiftUI preview)
             if let previewLoc = previewDeviceLocation {
                 deviceLocation = previewLoc
@@ -264,6 +269,13 @@ struct iPad_DeviceMapView: View {
             }
             Task { await fetchLocation(resetZoomToSettings: true) }
             startAutoUpdate()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                // Known SwiftUI MapKit issue: occasionally renders black after restoration
+                // Recreate the map view by changing its identity
+                mapInteractionID = UUID()
+            }
         }
         .onDisappear {
             stopAutoUpdate()

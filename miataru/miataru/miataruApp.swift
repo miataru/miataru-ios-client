@@ -97,5 +97,12 @@ struct miataruApp: App {
                 break
             }
         }
+        WindowGroup(for: String.self) { deviceID in
+            if let deviceID = deviceID.wrappedValue {
+                iPad_DeviceMapView(deviceID: deviceID)
+            } else {
+                Text(NSLocalizedString("no_device_selected", comment: "No device selected for this window."))
+            }
+        }
     }
 }

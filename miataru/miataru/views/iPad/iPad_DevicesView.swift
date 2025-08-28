@@ -24,43 +24,79 @@ struct iPad_DevicesView: View {
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
     @State private var navigationTargetDevice: KnownDevice? = nil
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
                 Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
-                        iPhone_DeviceRowView(device: device, cache: cache)
-                            .tag(device.DeviceID)
-                            .tint(.primary)
-                            .contextMenu {
-                                Button {
-                                    editingDevice = device
-                                } label: {
-                                    Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
-                                }
-                                Button(role: .destructive) {
-                                    store.removeDevice(byID: device.DeviceID)
-                                } label: {
-                                    Label("delete_device", systemImage: "trash")
-                                }
-                            }
-                            .swipeActions(edge: .leading) {
-                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                        if cache.getLocation(for: device.DeviceID) != nil {
+                            iPhone_DeviceRowView(device: device, cache: cache)
+                                .tag(device.DeviceID)
+                                .tint(.primary)
+                                .draggable(device.DeviceID)
+                                .contextMenu {
                                     Button {
-                                        navigationTargetDevice = device
+                                        openWindow(value: device.DeviceID)
                                     } label: {
-                                        Label("navigation", systemImage: "location")
+                                        Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
+                                            .labelStyle(.titleAndIcon)
                                     }
-                                    .tint(.green)
+                                    Button {
+                                        editingDevice = device
+                                    } label: {
+                                        Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                            .labelStyle(.titleAndIcon)
+                                    }
+                                    Button(role: .destructive) {
+                                        store.removeDevice(byID: device.DeviceID)
+                                    } label: {
+                                        Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
+                                    }
                                 }
-                                Button {
-                                    editingDevice = device
-                                } label: {
-                                    Label("edit_device_swipe", systemImage: "pencil")
+                                .swipeActions(edge: .leading) {
+                                    if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                        Button {
+                                            navigationTargetDevice = device
+                                        } label: {
+                                            Label("navigation", systemImage: "location")
+                                        }
+                                        .tint(.green)
+                                    }
+                                    Button {
+                                        editingDevice = device
+                                    } label: {
+                                        Label("edit_device_swipe", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
                                 }
-                                .tint(.blue)
-                            }
+                        } else {
+                            iPhone_DeviceRowView(device: device, cache: cache)
+                                .tag(device.DeviceID)
+                                .tint(.primary)
+                                .contextMenu {
+                                    Button {
+                                        editingDevice = device
+                                    } label: {
+                                        Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                            .labelStyle(.titleAndIcon)
+                                    }
+                                    Button(role: .destructive) {
+                                        store.removeDevice(byID: device.DeviceID)
+                                    } label: {
+                                        Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        editingDevice = device
+                                    } label: {
+                                        Label("edit_device_swipe", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
                     }
                     .onDelete { indices in
                         store.removeDevice(byID: store.devices[indices.first!].DeviceID)
@@ -181,6 +217,13 @@ struct iPad_DevicesView: View {
         }
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
+        }
+        .dropDestination(for: String.self) { items, _ in
+            if let deviceID = items.first, cache.getLocation(for: deviceID) != nil {
+                openWindow(value: deviceID)
+                return true
+            }
+            return false
         }
         .onChange(of: scenePhase) { _, newPhase in
             if (newPhase == .inactive || newPhase == .background) && (selection ?? lastSelectedDeviceID) == nil {
