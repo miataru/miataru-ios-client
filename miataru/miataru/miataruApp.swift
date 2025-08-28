@@ -25,6 +25,7 @@ class AppState: ObservableObject {
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState = AppState()
+    @StateObject private var groupActionHandler = GroupActionHandler()
     @State private var autolockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
@@ -57,6 +58,7 @@ struct miataruApp: App {
         WindowGroup {
             MiataruRootView()
                 .environmentObject(appState)
+                .environmentObject(groupActionHandler)
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
                     OnboardingContainerView(isPresented: $appState.showOnboarding)
                         .background(Color(.systemBackground))
@@ -86,6 +88,10 @@ struct miataruApp: App {
                         iPhone_AddDeviceView(store: KnownDeviceStore.shared, isPresented: $showAddDeviceSheet, prefillDeviceID: deviceID)
                     }
                 }
+        }
+        .commands {
+            MiataruMenuCommands()
+                .environmentObject(groupActionHandler)
         }
         .onChange(of: scenePhase) {
             switch scenePhase {

@@ -11,11 +11,9 @@ import SwiftUI
 
 struct iPad_GroupsView: View {
     @EnvironmentObject private var groupStore: DeviceGroupStore
+    @EnvironmentObject private var groupActionHandler: GroupActionHandler
     @State private var selection: String? = nil // groupID
-    @State private var showingAddGroup = false
-    @State private var editingGroup: DeviceGroup? = nil
     @State private var editMode: EditMode = .inactive
-    @State private var currentGroup: DeviceGroup? = nil // Track the currently displayed group
     @State private var lastSelectedGroupID: String? = nil // Preserve selection across edit mode toggles
 
     var body: some View {
@@ -28,7 +26,7 @@ struct iPad_GroupsView: View {
                             .tint(.primary)
                             .contextMenu {
                                 Button {
-                                    editingGroup = group
+                                    groupActionHandler.editingGroup = group
                                 } label: {
                                     Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
                                 }
@@ -40,7 +38,7 @@ struct iPad_GroupsView: View {
                             }
                             .swipeActions(edge: .leading) {
                                 Button {
-                                    editingGroup = group
+                                    groupActionHandler.editingGroup = group
                                 } label: {
                                     Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
                                 }
@@ -71,7 +69,7 @@ struct iPad_GroupsView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddGroup = true }) {
+                    Button(action: { groupActionHandler.showAddGroup = true }) {
                         Image(systemName: "plus")
                     }
                 }
@@ -84,17 +82,17 @@ struct iPad_GroupsView: View {
                     .environmentObject(groupStore) // Pass the groupStore to the map view
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
+                            Button(action: { groupActionHandler.editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
                                 Label(NSLocalizedString("edit_group", comment: "Edit the selected group.."), systemImage: "pencil")
                                     .labelStyle(.titleAndIcon)
                             }
                         }
                     }
-                    .sheet(item: $editingGroup) { group in
+                    .sheet(item: $groupActionHandler.editingGroup) { group in
                         iPad_GroupDetailView(group: group)
                     }
-                    .onChange(of: editingGroup) { _, newValue in
-                        // When the editingGroup becomes nil (sheet is dismissed), 
+                    .onChange(of: groupActionHandler.editingGroup) { _, newValue in
+                        // When the editingGroup becomes nil (sheet is dismissed),
                         // force a refresh of the map view
                         if newValue == nil {
                             // Trigger a refresh by temporarily clearing and restoring the selection
@@ -112,8 +110,8 @@ struct iPad_GroupsView: View {
                     .padding()
             }
         }
-        .sheet(isPresented: $showingAddGroup) {
-            iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
+        .sheet(isPresented: $groupActionHandler.showAddGroup) {
+            iPhone_AddGroupView(groupStore: groupStore, isPresented: $groupActionHandler.showAddGroup)
         }
         .onAppear {
             // Automatically select the first group if no group is currently selected
@@ -121,11 +119,19 @@ struct iPad_GroupsView: View {
                 let firstID = groupStore.groups.first?.id
                 selection = firstID
                 lastSelectedGroupID = firstID
+                if let group = groupStore.groups.first(where: { $0.id == firstID }) {
+                    groupActionHandler.currentGroup = group
+                }
             }
         }
         .onChange(of: selection) { _, newSelection in
             if let newSelection = newSelection, newSelection != lastSelectedGroupID {
                 lastSelectedGroupID = newSelection
+            }
+            if let id = newSelection, let group = groupStore.groups.first(where: { $0.id == id }) {
+                groupActionHandler.currentGroup = group
+            } else if newSelection == nil {
+                groupActionHandler.currentGroup = nil
             }
         }
         .onChange(of: editMode) { _, newMode in
@@ -140,5 +146,7 @@ struct iPad_GroupsView: View {
 }
 
 #Preview {
-    iPad_GroupsView().environmentObject(DeviceGroupStore.shared)
-} 
+    iPad_GroupsView()
+        .environmentObject(DeviceGroupStore.shared)
+        .environmentObject(GroupActionHandler())
+}
