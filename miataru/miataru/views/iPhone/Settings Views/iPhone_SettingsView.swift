@@ -159,6 +159,10 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_navigation_mode", comment: "Explanation on the navigation mode selection"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Toggle("show_route_progress", isOn: $settings.showRouteProgress)
+                    Text(NSLocalizedString("explanation_show_route_progress", comment: "Explanation for show route progress toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {

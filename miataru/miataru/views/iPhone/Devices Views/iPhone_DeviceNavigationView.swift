@@ -148,7 +148,7 @@ struct iPhone_DeviceNavigationView: View {
                     }
                 }
                 if let route = route {
-                    if let ts = deviceTimestamp {
+                    if settings.showRouteProgress, let ts = deviceTimestamp {
                         let elapsed = now.timeIntervalSince(ts)
                         let expected = route.expectedTravelTime
                         let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
