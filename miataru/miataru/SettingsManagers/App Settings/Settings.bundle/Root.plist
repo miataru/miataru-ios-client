@@ -178,42 +178,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>show_history_days</string>
-			<key>Key</key>
-			<string>history_number_of_days</string>
-			<key>DefaultValue</key>
-			<string>10000000</string>
-			<key>Titles</key>
-			<array>
-				<string>1day</string>
-				<string>2days</string>
-				<string>3days</string>
-				<string>4days</string>
-				<string>5days</string>
-				<string>6days</string>
-				<string>7days</string>
-				<string>14days</string>
-				<string>31days</string>
-				<string>all_available</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>1</string>
-				<string>2</string>
-				<string>3</string>
-				<string>4</string>
-				<string>5</string>
-				<string>6</string>
-				<string>7</string>
-				<string>14</string>
-				<string>31</string>
-				<string>10000000</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>map_configuration</string>
@@ -305,6 +269,46 @@
 			<string>groups_zoom_to_fit</string>
 			<key>DefaultValue</key>
 			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>navigation</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>transport_mode</string>
+			<key>Key</key>
+			<string>navigation_transport_type</string>
+			<key>DefaultValue</key>
+			<string>2</string>
+			<key>Titles</key>
+			<array>
+				<string>transport_walk</string>
+				<string>transport_bike</string>
+				<string>transport_car</string>
+				<string>transport_transit</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>0</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>show_route_progress</string>
+			<key>Key</key>
+			<string>show_route_progress</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

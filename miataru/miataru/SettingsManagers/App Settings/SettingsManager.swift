@@ -133,7 +133,7 @@ class SettingsManager: ObservableObject {
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
-        self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? true
+        self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false
         self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)
         // Default: 1000m, Off=0, 100m=100, 10km=10000
         self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
