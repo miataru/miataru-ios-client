@@ -48,6 +48,11 @@ struct iPhone_DeviceNavigationView: View {
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
+    // Track the inputs used for the most recent route calculation to avoid unnecessary recalculations
+    @State private var lastRouteUserCoordinate: CLLocationCoordinate2D? = nil
+    @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
+    @State private var lastRouteUserTimestamp: Date? = nil
+    @State private var lastRouteDeviceTimestamp: Date? = nil
 
     var body: some View {
         VStack {
@@ -171,7 +176,7 @@ struct iPhone_DeviceNavigationView: View {
                                     .foregroundStyle(RouteStyle.completed.opacity(0.6))
                                 Annotation("", coordinate: ghost) {
                                     VStack(spacing: 2) {
-                                        Image(systemName: "location.circle.fill")
+                                        Image(systemName: transportSymbolName())
                                             .font(.system(size: 16))
                                             .foregroundColor(RouteStyle.completed.opacity(0.8))
                                         ZStack {
@@ -349,6 +354,10 @@ struct iPhone_DeviceNavigationView: View {
             isAutoCenteringEnabled = true
             deviceTimestamp = nil
             isLoading = false
+            lastRouteUserCoordinate = nil
+            lastRouteDeviceCoordinate = nil
+            lastRouteUserTimestamp = nil
+            lastRouteDeviceTimestamp = nil
             // Fetch and recenter for the new device
             Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
         }
@@ -428,6 +437,23 @@ struct iPhone_DeviceNavigationView: View {
 
     private func calculateRoute() {
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
+
+        // Only recalc when one of the positions changed since the last route calculation (or if there's no route yet)
+        let userTimestampChanged = userTimestamp != lastRouteUserTimestamp
+        let deviceTimestampChanged = deviceTimestamp != lastRouteDeviceTimestamp
+
+        var userCoordinatesChanged = true
+        if let lastUser = lastRouteUserCoordinate {
+            userCoordinatesChanged = (lastUser.latitude != user.latitude) || (lastUser.longitude != user.longitude)
+        }
+
+        var deviceCoordinatesChanged = true
+        if let lastDevice = lastRouteDeviceCoordinate {
+            deviceCoordinatesChanged = (lastDevice.latitude != device.latitude) || (lastDevice.longitude != device.longitude)
+        }
+
+        let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged
+        if !shouldRecalculate { return }
         let request = MKDirections.Request()
         // Draw the route from the current user towards the other device
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
@@ -442,6 +468,11 @@ struct iPhone_DeviceNavigationView: View {
                     formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
                     distanceText = formattedDistance(first.distance)
+                    // Remember inputs used for this route calculation
+                    lastRouteUserCoordinate = user
+                    lastRouteDeviceCoordinate = device
+                    lastRouteUserTimestamp = userTimestamp
+                    lastRouteDeviceTimestamp = deviceTimestamp
                 } else {
                     route = nil
                     travelTime = nil
