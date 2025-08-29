@@ -10,6 +10,7 @@
 import SwiftUI
 import MapKit
 import Combine
+import CoreLocation
 import MiataruAPIClient
 
 struct iPhone_DeviceNavigationView: View {
@@ -45,6 +46,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
+    @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
@@ -53,6 +56,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteUserTimestamp: Date? = nil
     @State private var lastRouteDeviceTimestamp: Date? = nil
+    private let routeRequestDailyLimit: Int = 25000
 
     var body: some View {
         VStack {
@@ -438,6 +442,21 @@ struct iPhone_DeviceNavigationView: View {
     private func calculateRoute() {
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
 
+        let today = Calendar.current.startOfDay(for: Date())
+        let storedDate = Date(timeIntervalSince1970: routeRequestDate)
+        if Calendar.current.startOfDay(for: storedDate) != today {
+            routeRequestDate = today.timeIntervalSince1970
+            routeRequestCount = 0
+        }
+        guard routeRequestCount < routeRequestDailyLimit else {
+            showErrorOverlay(
+                "Daily route request limit reached",
+                NSLocalizedString("route_request_limit_reached", comment: "Daily route request limit reached. Try again tomorrow.")
+            )
+            return
+        }
+        routeRequestCount += 1
+
         // Only recalc when one of the positions changed since the last route calculation (or if there's no route yet)
         let userTimestampChanged = userTimestamp != lastRouteUserTimestamp
         let deviceTimestampChanged = deviceTimestamp != lastRouteDeviceTimestamp
@@ -574,11 +593,32 @@ struct iPhone_DeviceNavigationView: View {
             .sink { _ in
                 Task {
                     await fetchTargetDeviceLocation(resetAndRecenter: false)
-                    if isAutoRouteUpdateLocked {
+                    if isAutoRouteUpdateLocked && hasSignificantMovementSinceLastRoute() {
                         calculateRoute()
                     }
                 }
             }
+    }
+
+    private func hasSignificantMovementSinceLastRoute() -> Bool {
+        let threshold: CLLocationDistance = 100
+        var userMoved = false
+        if let current = userCoordinate, let last = lastRouteUserCoordinate {
+            let distance = CLLocation(latitude: current.latitude, longitude: current.longitude)
+                .distance(from: CLLocation(latitude: last.latitude, longitude: last.longitude))
+            userMoved = distance > threshold
+        } else if lastRouteUserCoordinate == nil {
+            userMoved = true
+        }
+        var deviceMoved = false
+        if let current = deviceCoordinate, let last = lastRouteDeviceCoordinate {
+            let distance = CLLocation(latitude: current.latitude, longitude: current.longitude)
+                .distance(from: CLLocation(latitude: last.latitude, longitude: last.longitude))
+            deviceMoved = distance > threshold
+        } else if lastRouteDeviceCoordinate == nil {
+            deviceMoved = true
+        }
+        return userMoved || deviceMoved
     }
 
     private func stopAutoUpdate() {
