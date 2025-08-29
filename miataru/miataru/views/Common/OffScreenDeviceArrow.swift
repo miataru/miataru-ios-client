@@ -75,8 +75,13 @@ struct OffScreenDeviceArrow: View {
     /// metric locales and miles on imperial locales to keep the visual
     /// representation consistent with user settings.
     private var arrowSegments: Int {
-        let distance = Locale.current.usesMetricSystem ?
-            distanceInKM : distanceInKM / 1.60934
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        let distance = usesMetric ? distanceInKM : distanceInKM / 1.60934
         return min(Int(distance), maxArrowSegments)
     }
 
