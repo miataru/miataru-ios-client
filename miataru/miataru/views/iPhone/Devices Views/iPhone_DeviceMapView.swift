@@ -9,6 +9,7 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 import MiataruAPIClient
 import Combine
 
@@ -61,6 +62,7 @@ struct iPhone_DeviceMapView: View {
     private struct ArrowData {
         let device: KnownDevice
         let coordinate: CLLocationCoordinate2D
+        let distanceKM: Double
         let behavior: ArrowBehavior
         let onTap: () -> Void
     }
@@ -91,7 +93,10 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             }
-            devicesByEdge[edge, default: []].append(ArrowData(device: device, coordinate: coordinate, behavior: .jumpToLocation, onTap: tap))
+            let deviceLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            let centerLocation = CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
+            let distanceKM = deviceLocation.distance(from: centerLocation) / 1000.0
+            devicesByEdge[edge, default: []].append(ArrowData(device: device, coordinate: coordinate, distanceKM: distanceKM, behavior: .jumpToLocation, onTap: tap))
         }
         
         // Other devices
@@ -111,7 +116,10 @@ struct iPhone_DeviceMapView: View {
                                 onNavigateToDevice(otherDevice.DeviceID)
                             }
                         }
-                        devicesByEdge[edge, default: []].append(ArrowData(device: otherDevice, coordinate: coordinate, behavior: .navigateToDevice, onTap: tap))
+                        let deviceLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                        let centerLocation = CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
+                        let distanceKM = deviceLocation.distance(from: centerLocation) / 1000.0
+                        devicesByEdge[edge, default: []].append(ArrowData(device: otherDevice, coordinate: coordinate, distanceKM: distanceKM, behavior: .navigateToDevice, onTap: tap))
                     }
                 }
             }
@@ -197,6 +205,7 @@ struct iPhone_DeviceMapView: View {
                                 deviceCoordinate: info.coordinate,
                                 mapRegion: region,
                                 screenSize: screenSize,
+                                distanceInKM: info.distanceKM,
                                 isMapRotated: false,
                                 mapHeading: currentMapCamera?.heading ?? 0,
                                 arrowIndex: index,
