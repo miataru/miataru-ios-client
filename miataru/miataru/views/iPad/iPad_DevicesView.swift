@@ -43,6 +43,14 @@ struct iPad_DevicesView: View {
                                         Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
                                             .labelStyle(.titleAndIcon)
                                     }
+                                    if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                        Button {
+                                            navigationTargetDevice = device
+                                        } label: {
+                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                .labelStyle(.titleAndIcon)
+                                        }
+                                    }
                                     Button {
                                         editingDevice = device
                                     } label: {
