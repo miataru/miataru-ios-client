@@ -71,18 +71,11 @@ struct OffScreenDeviceArrow: View {
     private let segmentSpacing: CGFloat = 1
     /// Maximum number of distance segments to display.
     private let maxArrowSegments: Int = 10
-    /// Number of arrow segments representing the distance. Uses kilometers on
-    /// metric locales and miles on imperial locales to keep the visual
-    /// representation consistent with user settings.
+    /// Number of arrow segments representing the distance.
+    /// Shows 1 segment per 50 km (capped by `maxArrowSegments`).
     private var arrowSegments: Int {
-        let usesMetric: Bool
-        if #available(iOS 16.0, *) {
-            usesMetric = Locale.current.measurementSystem == .metric
-        } else {
-            usesMetric = Locale.current.usesMetricSystem
-        }
-        let distance = usesMetric ? distanceInKM : distanceInKM / 1.60934
-        return min(Int(distance), maxArrowSegments)
+        let segments = Int(distanceInKM / 50.0)
+        return min(segments, maxArrowSegments)
     }
 
     // Computed property to determine the best text color for contrast
@@ -483,34 +476,51 @@ struct SegmentedArrow: View {
     let segmentLength: CGFloat
     let segmentSpacing: CGFloat
 
-    private let shaftWidth: CGFloat = 4
+    private let shaftWidth: CGFloat = 2
     private let headHeight: CGFloat = 8
     private let headWidth: CGFloat = 12
 
     var body: some View {
         VStack(spacing: segmentSpacing) {
             ArrowHead()
-                .stroke(color, lineWidth: shaftWidth)
+                .stroke(
+                    color,
+                    style: StrokeStyle(
+                        lineWidth: shaftWidth,
+                        lineCap: .round,
+                        lineJoin: .miter,
+                        miterLimit: 10
+                    )
+                )
                 .frame(width: headWidth, height: headHeight)
 
-            ForEach(0..<segments) { _ in
-                Rectangle()
+            if segments < 3 {
+                // Show a continuous shaft with the footprint of 3 segments (including spacing)
+                let totalHeight = (3 * segmentLength) + (2 * segmentSpacing)
+                Capsule(style: .circular)
                     .fill(color)
-                    .frame(width: shaftWidth, height: segmentLength)
+                    .frame(width: shaftWidth, height: totalHeight)
+            } else {
+                ForEach(0..<segments) { _ in
+                    Capsule(style: .circular)
+                        .fill(color)
+                        .frame(width: shaftWidth, height: segmentLength)
+                }
             }
         }
     }
 }
 
-/// Open arrowhead composed of two lines meeting at the tip.
+/// Open arrowhead composed of a single polyline for a sharp, mitered tip.
 struct ArrowHead: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        let tip = CGPoint(x: rect.midX, y: 0)
-        path.move(to: tip)
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.move(to: tip)
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        let left = CGPoint(x: rect.minX, y: rect.maxY)
+        let tip = CGPoint(x: rect.midX, y: rect.minY)
+        let right = CGPoint(x: rect.maxX, y: rect.maxY)
+        path.move(to: left)
+        path.addLine(to: tip)
+        path.addLine(to: right)
         return path
     }
 }
