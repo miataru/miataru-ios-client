@@ -501,7 +501,7 @@ struct SegmentedArrow: View {
                     .fill(color)
                     .frame(width: shaftWidth, height: totalHeight)
             } else {
-                ForEach(0..<segments) { _ in
+                ForEach(0..<segments, id: \.self) { _ in
                     Capsule(style: .circular)
                         .fill(color)
                         .frame(width: shaftWidth, height: segmentLength)
@@ -547,11 +547,6 @@ private extension Comparable {
     func clamped(to range: ClosedRange<Self>) -> Self {
         return min(max(self, range.lowerBound), range.upperBound)
     }
-}
-
-// Allow integers to be used directly in SwiftUI `ForEach` without an explicit ID key path.
-extension Int: Identifiable {
-    public var id: Int { self }
 }
 
 #Preview {
