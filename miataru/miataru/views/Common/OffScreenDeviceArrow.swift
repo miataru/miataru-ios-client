@@ -9,6 +9,7 @@
 
 import SwiftUI
 import MapKit
+import Foundation
 
 /// OffScreenDeviceArrow renders an arrow label at the screen edge pointing towards a device
 /// that is currently outside the visible map region.
@@ -34,6 +35,8 @@ struct OffScreenDeviceArrow: View {
     let deviceCoordinate: CLLocationCoordinate2D
     let mapRegion: MKCoordinateRegion
     let screenSize: CGSize
+    /// Distance between the map center and the device in kilometers. Supplied by the caller.
+    let distanceInKM: Double
     /// Whether the map is rotated. Kept for backwards compatibility; ignored for rendering while debugging.
     let isMapRotated: Bool
     /// Current map heading in degrees (clockwise). Used to rotate the device point around `screenCenter`.
@@ -62,6 +65,21 @@ struct OffScreenDeviceArrow: View {
     /// Spacing between multiple arrows on the same edge or at corners.
     private let arrowSpacing: CGFloat = 80
 
+    /// Segment length (in points) used to visualize distance.
+    private let segmentLength: CGFloat = 3
+    /// Spacing (in points) between arrow segments for clear separation.
+    private let segmentSpacing: CGFloat = 1
+    /// Maximum number of distance segments to display.
+    private let maxArrowSegments: Int = 10
+    /// Number of arrow segments representing the distance. Uses kilometers on
+    /// metric locales and miles on imperial locales to keep the visual
+    /// representation consistent with user settings.
+    private var arrowSegments: Int {
+        let distance = Locale.current.usesMetricSystem ?
+            distanceInKM : distanceInKM / 1.60934
+        return min(Int(distance), maxArrowSegments)
+    }
+
     // Computed property to determine the best text color for contrast
     private var textColor: Color {
         // Convert device color to UIColor to check brightness
@@ -87,10 +105,11 @@ struct OffScreenDeviceArrow: View {
             // Reference to avoid unused warning while we transition away from this flag
             let _ = isMapRotated
             VStack(spacing: 4) {
-                // Arrow pointing to device
-                Image(systemName: "arrow.up")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(deviceColor)
+                // Arrow pointing to device with distance-indicating segments
+                SegmentedArrow(segments: arrowSegments,
+                               color: deviceColor,
+                               segmentLength: segmentLength,
+                               segmentSpacing: segmentSpacing)
                     .rotationEffect(.degrees(arrowPosition.rotation))
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 
@@ -452,6 +471,45 @@ struct OffScreenDeviceArrow: View {
     }
 }
 
+/// A simple vertically segmented arrow pointing up.
+struct SegmentedArrow: View {
+    let segments: Int
+    let color: Color
+    let segmentLength: CGFloat
+    let segmentSpacing: CGFloat
+
+    private let shaftWidth: CGFloat = 4
+    private let headHeight: CGFloat = 8
+    private let headWidth: CGFloat = 12
+
+    var body: some View {
+        VStack(spacing: segmentSpacing) {
+            ArrowHead()
+                .stroke(color, lineWidth: shaftWidth)
+                .frame(width: headWidth, height: headHeight)
+
+            ForEach(0..<segments) { _ in
+                Rectangle()
+                    .fill(color)
+                    .frame(width: shaftWidth, height: segmentLength)
+            }
+        }
+    }
+}
+
+/// Open arrowhead composed of two lines meeting at the tip.
+struct ArrowHead: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let tip = CGPoint(x: rect.midX, y: 0)
+        path.move(to: tip)
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.move(to: tip)
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        return path
+    }
+}
+
 enum Edge {
     case left, right, top, bottom
 }
@@ -476,6 +534,11 @@ private extension Comparable {
     }
 }
 
+// Allow integers to be used directly in SwiftUI `ForEach` without an explicit ID key path.
+extension Int: Identifiable {
+    public var id: Int { self }
+}
+
 #Preview {
     ZStack {
         Color.gray.opacity(0.3)
@@ -491,6 +554,7 @@ private extension Comparable {
                 span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
             ),
             screenSize: CGSize(width: 300, height: 400),
+            distanceInKM: 5,
             isMapRotated: false,
             mapHeading: 45,
             arrowIndex: 0,

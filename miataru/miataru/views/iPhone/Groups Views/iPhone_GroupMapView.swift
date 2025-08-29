@@ -9,6 +9,7 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 import MiataruAPIClient
 import Combine
 
@@ -88,8 +89,8 @@ struct iPhone_GroupMapView: View {
         return CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515)
     }
     
-    private func computeDevicesByEdge(in region: MKCoordinateRegion) -> [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, onTap: () -> Void)]] {
-        var devicesByEdge: [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, onTap: () -> Void)]] = [:]
+    private func computeDevicesByEdge(in region: MKCoordinateRegion) -> [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, distanceKM: Double, onTap: () -> Void)]] {
+        var devicesByEdge: [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, distanceKM: Double, onTap: () -> Void)]] = [:]
         for deviceID in groupDeviceIDs {
             if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
                let coordinate = deviceLocations[deviceID],
@@ -108,7 +109,10 @@ struct iPhone_GroupMapView: View {
                         }
                     }
                 }
-                devicesByEdge[edge, default: []].append((device, coordinate, tap))
+                let deviceLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                let centerLocation = CLLocation(latitude: region.center.latitude, longitude: region.center.longitude)
+                let distanceKM = deviceLocation.distance(from: centerLocation) / 1000.0
+                devicesByEdge[edge, default: []].append((device, coordinate, distanceKM, tap))
             }
         }
         return devicesByEdge
@@ -130,6 +134,7 @@ struct iPhone_GroupMapView: View {
                             deviceCoordinate: info.coordinate,
                             mapRegion: region,
                             screenSize: screenSize,
+                            distanceInKM: info.distanceKM,
                             isMapRotated: false,
                             mapHeading: currentMapCamera?.heading ?? 0,
                             arrowIndex: index,
