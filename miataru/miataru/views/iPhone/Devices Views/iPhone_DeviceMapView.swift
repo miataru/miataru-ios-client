@@ -57,6 +57,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
+    @EnvironmentObject var tabBarState: TabBarState
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -222,6 +223,17 @@ struct iPhone_DeviceMapView: View {
             scaleBarView()
             // Compass in the top right corner
             compassView()
+            if tabBarState.collapsed {
+                Button {
+                    tabBarState.collapsed = false
+                } label: {
+                    Image(systemName: "menubar.rectangle")
+                        .padding(10)
+                        .background(.thinMaterial)
+                        .clipShape(Circle())
+                }
+                .padding()
+            }
         }
         .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? "Unknown Device"))
         .navigationBarTitleDisplayMode(.inline)
@@ -308,6 +320,9 @@ struct iPhone_DeviceMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            if (headingChanged || zoomChanged) && !tabBarState.collapsed {
+                tabBarState.collapsed = true
+            }
         }
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in

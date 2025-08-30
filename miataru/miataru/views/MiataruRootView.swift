@@ -11,16 +11,19 @@ import SwiftUI
 
 struct MiataruRootView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @StateObject private var tabBarState = TabBarState()
 
     var body: some View {
         #if os(macOS)
         // Mac-spezifische View
         //MacRootView()
         iPhone_RootView() // for now
+            .environmentObject(tabBarState)
         #else
         if horizontalSizeClass == .compact {
             // iPhone-spezifische View
             iPhone_RootView()
+                .environmentObject(tabBarState)
         } else {
             // iPad-spezifische View
             iPad_RootView()
