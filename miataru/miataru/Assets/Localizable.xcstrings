@@ -4585,6 +4585,29 @@
         }
       }
     },
+    "route_request_limit_reached" : {
+      "comment" : "Daily route request limit reached. Try again tomorrow.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tägliches Limit für Routenanfragen erreicht. Bitte versuche es morgen erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily route request limit reached. Try again tomorrow."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルートリクエストの1日上限に達しました。明日もう一度お試しください。"
+          }
+        }
+      }
+    },
     "sat_map" : {
       "localizations" : {
         "de" : {
