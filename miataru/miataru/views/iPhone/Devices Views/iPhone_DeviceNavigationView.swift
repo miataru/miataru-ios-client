@@ -56,6 +56,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteUserTimestamp: Date? = nil
     @State private var lastRouteDeviceTimestamp: Date? = nil
+    @State private var lastRouteTransportType: Int? = nil
     private let routeRequestDailyLimit: Int = 17000
 
     var body: some View {
@@ -254,6 +255,9 @@ struct iPhone_DeviceNavigationView: View {
                 restartAutoUpdate()
                 restartTimeUpdateTimer()
             }
+            .onChange(of: settings.navigationTransportType) { _, _ in
+                calculateRoute()
+            }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
                 restartTimeUpdateTimer()
@@ -363,6 +367,7 @@ struct iPhone_DeviceNavigationView: View {
             lastRouteDeviceCoordinate = nil
             lastRouteUserTimestamp = nil
             lastRouteDeviceTimestamp = nil
+            lastRouteTransportType = nil
             // Fetch and recenter for the new device
             Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
         }
@@ -472,7 +477,9 @@ struct iPhone_DeviceNavigationView: View {
             deviceCoordinatesChanged = (lastDevice.latitude != device.latitude) || (lastDevice.longitude != device.longitude)
         }
 
-        let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged
+        let transportTypeChanged = settings.navigationTransportType != lastRouteTransportType
+
+        let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged || transportTypeChanged
         if !shouldRecalculate { return }
         let request = MKDirections.Request()
         // Draw the route from the current user towards the other device
@@ -493,10 +500,12 @@ struct iPhone_DeviceNavigationView: View {
                     lastRouteDeviceCoordinate = device
                     lastRouteUserTimestamp = userTimestamp
                     lastRouteDeviceTimestamp = deviceTimestamp
+                    lastRouteTransportType = settings.navigationTransportType
                 } else {
                     route = nil
                     travelTime = nil
                     distanceText = nil
+                    lastRouteTransportType = nil
                     showErrorOverlay(
                         "No route found",
                         NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
@@ -506,6 +515,7 @@ struct iPhone_DeviceNavigationView: View {
                 route = nil
                 travelTime = nil
                 distanceText = nil
+                lastRouteTransportType = nil
                 showErrorOverlay(
                     "Route calculation failed: \(error.localizedDescription)",
                     NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
