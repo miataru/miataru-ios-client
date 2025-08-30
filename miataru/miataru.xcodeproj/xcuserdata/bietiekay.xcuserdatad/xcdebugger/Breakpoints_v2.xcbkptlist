@@ -48,7 +48,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "373"
             endingLineNumber = "373"
-            landmarkName = "compassView()"
+            landmarkName = "scaleBarView()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

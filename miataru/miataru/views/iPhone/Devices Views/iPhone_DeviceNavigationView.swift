@@ -56,7 +56,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteUserTimestamp: Date? = nil
     @State private var lastRouteDeviceTimestamp: Date? = nil
-    private let routeRequestDailyLimit: Int = 25000
+    private let routeRequestDailyLimit: Int = 17000
 
     var body: some View {
         VStack {
@@ -106,7 +106,7 @@ struct iPhone_DeviceNavigationView: View {
                                 .frame(width: 60, height: 80)
                                 .zIndex(1)
                         }
-                        .offset(y: 10)
+                        .offset(y: 20)
                     }
                 }
                 if let coord = animatedDeviceCoordinate {
@@ -153,7 +153,7 @@ struct iPhone_DeviceNavigationView: View {
                                 .frame(width: 60, height: 80)
                                 .zIndex(1)
                         }
-                        .offset(y: 10)
+                        .offset(y: 20)
                     }
                 }
                 if let route = route {
@@ -177,12 +177,13 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)
                                 MapCircle(center: ghost, radius: 50)
-                                    .foregroundStyle(RouteStyle.completed.opacity(0.6))
+                                    .foregroundStyle(RouteStyle.completed.opacity(0.5))
                                 Annotation("", coordinate: ghost) {
                                     VStack(spacing: 2) {
                                         Image(systemName: transportSymbolName())
                                             .font(.system(size: 16))
-                                            .foregroundColor(RouteStyle.completed.opacity(0.8))
+                                            .foregroundColor(Color.primary.opacity(0.9))
+                                            .shadow(radius: 4)
                                         ZStack {
                                             ForEach([-1, 0, 1], id: \.self) { x in
                                                 ForEach([-1, 0, 1], id: \.self) { y in

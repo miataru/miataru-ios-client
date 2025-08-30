@@ -466,7 +466,7 @@ struct iPhone_DeviceMapView: View {
                                         }
                                     }
                                 }
-                        }.offset(y:10)
+                        }.offset(y:20)
                     }
                 }
             }
