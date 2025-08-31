@@ -129,6 +129,24 @@ struct iPad_DeviceMapView: View {
         return devicesByEdge
     }
     
+    // Returns true if the given coordinate lies within the provided region (handles longitude wrap-around)
+    private func isCoordinate(_ coordinate: CLLocationCoordinate2D, inside region: MKCoordinateRegion) -> Bool {
+        let halfLat = region.span.latitudeDelta / 2.0
+        let halfLon = region.span.longitudeDelta / 2.0
+        // Latitude simple bounds
+        let latOk = abs(coordinate.latitude - region.center.latitude) <= halfLat
+        // Longitude shortest-arc difference (wrap-around at +/-180)
+        func shortestLongitudeDelta(_ lon1: Double, _ lon2: Double) -> Double {
+            var delta = lon1 - lon2
+            while delta > 180 { delta -= 360 }
+            while delta < -180 { delta += 360 }
+            return delta
+        }
+        let lonDelta = abs(shortestLongitudeDelta(coordinate.longitude, region.center.longitude))
+        let lonOk = lonDelta <= halfLon || region.span.longitudeDelta >= 360
+        return latOk && lonOk
+    }
+    
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == deviceID }
@@ -470,7 +488,7 @@ struct iPad_DeviceMapView: View {
                                             Button {
                                                 showEditDeviceSheet = true
                                             } label: {
-                                                Label("edit_device", systemImage: "pencil")
+                                                Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
                                             }
                                             if device.DeviceID != thisDeviceIDManager.shared.deviceID {
                                                 Button {
@@ -482,6 +500,62 @@ struct iPad_DeviceMapView: View {
                                         }
                             }
                             .offset(y:20)
+                        }
+                    }
+                    // Other device markers visible in the current viewport only (iOS 17+)
+                    if let visibleRegion = (currentRegion ?? cameraPosition.region) {
+                        ForEach(deviceStore.devices.filter { $0.DeviceID != deviceID }, id: \.DeviceID) { other in
+                            if let cached = cache.getLocation(for: other.DeviceID) {
+                                let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                                if isCoordinate(coord, inside: visibleRegion) {
+                                    Annotation("", coordinate: coord, anchor: .bottom) {
+                                        ZStack {
+                                            VStack(spacing: 0) {
+                                                // Timestamp above marker
+                                                Text(relativeTimeString(from: cached.timestamp, to: now))
+                                                    .font(.caption)
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(.ultraThinMaterial)
+                                                    .clipShape(Capsule())
+                                                    .overlay(
+                                                        Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                                    )
+                                                    .shimmering(active: isLoading)
+                                                    .shadow(radius: 2)
+                                                    .zIndex(2)
+                                                MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: false)
+                                                    .shadow(radius: 2)
+                                                // Device name label below the marker with outline for readability
+                                                ZStack {
+                                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
+                                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
+                                                            if x != 0 || y != 0 {
+                                                                Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName)
+                                                                    .font(.callout)
+                                                                    .foregroundColor(Color(UIColor.systemBackground))
+                                                                    .padding(.top, 2)
+                                                                    .offset(x: CGFloat(x), y: CGFloat(y))
+                                                            }
+                                                        }
+                                                    }
+                                                    Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName)
+                                                        .font(.callout)
+                                                        .foregroundColor(Color(UIColor.label))
+                                                        .padding(.top, 2)
+                                                }
+                                            }
+                                            // Larger transparent rectangle to match main device hit area and avoid clipping
+                                            Rectangle()
+                                                .foregroundColor(.clear)
+                                                .contentShape(Rectangle())
+                                                .frame(width: 60, height: 80)
+                                                .zIndex(1)
+                                        }
+                                        .offset(y: 20)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
