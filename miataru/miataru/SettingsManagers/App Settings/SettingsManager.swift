@@ -65,6 +65,7 @@ class SettingsManager: ObservableObject {
     @Published var showOffscreenArrowsForOtherDevices: Bool {
         didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: Keys.showOffscreenArrowsForOtherDevices) }
     }
+    // Removed: showOtherDevicesOnMap
     @Published var showRouteProgress: Bool {
         didSet { defaults.set(showRouteProgress, forKey: Keys.showRouteProgress) }
     }

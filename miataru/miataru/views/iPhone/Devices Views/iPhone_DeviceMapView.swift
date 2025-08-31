@@ -488,7 +488,7 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
                 // Other device markers visible in the current viewport only (iOS 17+)
-                if let visibleRegion = (currentRegion ?? cameraPosition.region) {
+                if settings.showOffscreenArrowsForOtherDevices, let visibleRegion = (currentRegion ?? cameraPosition.region) {
                     ForEach(deviceStore.devices.filter { $0.DeviceID != deviceID }, id: \.DeviceID) { other in
                         if let cached = cache.getLocation(for: other.DeviceID) {
                             let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
