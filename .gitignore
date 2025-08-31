@@ -50,3 +50,10 @@ miataru/miataru.xcodeproj/xcuserdata/bietiekay.xcuserdatad/
 
 miataru/Libraries/MiataruClientSwift/.swiftpm/xcode/
 miataru/miataru.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+
+android/gradle/wrapper/gradle-wrapper.jar
