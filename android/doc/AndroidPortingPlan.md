@@ -1,4 +1,6 @@
 # Android Porting Analysis and Implementation Plan
+This document tracks progress of the Android port. Mark tasks as complete once implemented.
+
 
 ## iOS App Feature Overview
 - **Background and foreground tracking** – A shared `LocationManager` switches between high-accuracy updates in the foreground and significant-change monitoring in the background while observing settings and network reachability.
