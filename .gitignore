@@ -9,6 +9,7 @@ Thumbs.db
 
 # Xcode
 miataru/miataru.xcodeproj/project.xcworkspace/xcuserdata/bietiekay.xcuserdatad/UserInterfaceState.xcuserstate
+miataru/miataru.xcodeproj/xcuserdata/*
 *.xcuserstate
 *.xcuserdatad/
 *.xcworkspace/xcuserdata/
