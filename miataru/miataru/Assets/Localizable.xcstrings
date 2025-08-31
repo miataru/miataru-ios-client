@@ -2399,19 +2399,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn aktiviert, werden auf der Karte Pfeile angezeigt, die auf andere bekannte Geräte zeigen, die sich außerhalb des sichtbaren Bereichs befinden."
+            "value" : "Wenn aktiviert, werden auf der Karte Pfeile angezeigt, die auf andere bekannte Geräte zeigen, die sich außerhalb des sichtbaren Bereichs befinden. Wenn sich diese Geräte im sichtbaren Bereich befinden, werden sie auf der Karte angezeigt."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "If enabled, the map will show arrows pointing to other known devices that are located outside the visible area."
+            "value" : "If enabled, the map will show arrows pointing to other known devices that are located outside the visible area. When these devices are in the visible area they will be shown on the map."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効にすると、マップに表示範囲外にある他の既知のデバイスを指す矢印が表示されます。"
+            "value" : "有効にすると、マップに表示範囲外にある他の既知のデバイスを指す矢印が表示されます。それらのデバイスが表示範囲内にある場合は、地図上に表示されます。"
           }
         }
       }

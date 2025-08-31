@@ -80,6 +80,7 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_indicate_location_accuracy", comment: "Explanation for indicate location accuracy toggle"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    // Removed separate toggle for showing other devices on the map. Using offscreen arrows toggle instead.
                     Toggle("show_offscreen_arrows_for_other_devices", isOn: $settings.showOffscreenArrowsForOtherDevices)
                     Text(NSLocalizedString("explanation_show_offscreen_arrows_for_other_devices", comment: "Explanation for show offscreen arrows for other devices toggle"))
                         .font(.caption)
