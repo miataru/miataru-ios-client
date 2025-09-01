@@ -80,38 +80,40 @@ struct iPad_GroupsView: View {
             }
             .environment(\.editMode, $editMode)
         } detail: {
-            let resolvedSelection = selection ?? lastSelectedGroupID ?? groupStore.groups.first?.id
-            if let selectedID = resolvedSelection, let group = groupStore.groups.first(where: { $0.id == selectedID }) {
-                iPad_GroupMapView(group: group)
-                    .environmentObject(groupStore) // Pass the groupStore to the map view
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
-                                Label(NSLocalizedString("edit_group", comment: "Edit the selected group.."), systemImage: "pencil")
-                                    .labelStyle(.titleAndIcon)
+            NavigationStack {
+                let resolvedSelection = selection ?? lastSelectedGroupID ?? groupStore.groups.first?.id
+                if let selectedID = resolvedSelection, let group = groupStore.groups.first(where: { $0.id == selectedID }) {
+                    iPad_GroupMapView(group: group)
+                        .environmentObject(groupStore) // Pass the groupStore to the map view
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
+                                    Label(NSLocalizedString("edit_group", comment: "Edit the selected group.."), systemImage: "pencil")
+                                        .labelStyle(.titleAndIcon)
+                                }
                             }
                         }
-                    }
-                    .sheet(item: $editingGroup) { group in
-                        iPad_GroupDetailView(group: group)
-                    }
-                    .onChange(of: editingGroup) { _, newValue in
-                        // When the editingGroup becomes nil (sheet is dismissed), 
-                        // force a refresh of the map view
-                        if newValue == nil {
-                            // Trigger a refresh by temporarily clearing and restoring the selection
-                            let currentSelection = selection
-                            selection = nil
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                selection = currentSelection
+                        .sheet(item: $editingGroup) { group in
+                            iPad_GroupDetailView(group: group)
+                        }
+                        .onChange(of: editingGroup) { _, newValue in
+                            // When the editingGroup becomes nil (sheet is dismissed), 
+                            // force a refresh of the map view
+                            if newValue == nil {
+                                // Trigger a refresh by temporarily clearing and restoring the selection
+                                let currentSelection = selection
+                                selection = nil
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    selection = currentSelection
+                                }
                             }
                         }
-                    }
-            } else {
-                Text(NSLocalizedString("no_groups_available_create_new", comment: "No groups available. Create a new group to get started."))
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding()
+                } else {
+                    Text(NSLocalizedString("no_groups_available_create_new", comment: "No groups available. Create a new group to get started."))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
             }
         }
         .sheet(isPresented: $showingAddGroup) {
