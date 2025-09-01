@@ -76,12 +76,12 @@ struct iPhone_DeviceNavigationView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shimmering(active: isLoading)
+                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
                                 let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
-                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
                                     .shadow(radius: 2)
                                 ZStack {
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
@@ -124,11 +124,11 @@ struct iPhone_DeviceNavigationView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shimmering(active: isLoading)
+                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
                                     .shadow(radius: 2)
                                 ZStack {
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in

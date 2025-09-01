@@ -437,11 +437,11 @@ struct iPhone_DeviceMapView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shimmering(active: isLoading)
+                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
                                     .shadow(radius: 2)
                                 // Device name label below the marker with outline for readability
                                 ZStack {
@@ -506,10 +506,10 @@ struct iPhone_DeviceMapView: View {
                                                 .overlay(
                                                     Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                                 )
-                                                .shimmering(active: isLoading)
+                                                .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                                 .shadow(radius: 2)
                                                 .zIndex(2)
-                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: false)
+                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
                                                 .shadow(radius: 2)
                                             // Device name label below the marker with outline for readability
                                             ZStack {

@@ -70,6 +70,11 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(showRouteProgress, forKey: Keys.showRouteProgress) }
     }
 
+    // Global toggle for pulsing animation on map markers
+    @Published var pulsingMapMarkers: Bool {
+        didSet { defaults.set(pulsingMapMarkers, forKey: Keys.pulsingMapMarkers) }
+    }
+
     @Published var lastOpenedDeviceID: String? {
         didSet {
             if let id = lastOpenedDeviceID {
@@ -108,6 +113,7 @@ class SettingsManager: ObservableObject {
         static let lastOpenedDeviceID = "last_opened_device_id"
         static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
         static let navigationTransportType = "navigation_transport_type"
+        static let pulsingMapMarkers = "pulsating_map_markers"
     }
     
     // MARK: - Location Permission Management
@@ -139,6 +145,7 @@ class SettingsManager: ObservableObject {
         // Default: 1000m, Off=0, 100m=100, 10km=10000
         self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
         self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
+        self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? false
     }
     
     // MARK: - Synchronize

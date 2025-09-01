@@ -2347,6 +2347,29 @@
         }
       }
     },
+    "explanation_pulsating_map_markers" : {
+      "comment" : "Explanation for pulsating map markers toggle",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, zeigen Kartenmarkierungen eine dezente pulsierende und schimmernde Animation."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, map markers will show a subtle pulsating and shimmering animation."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、マップマーカーに控えめな鼓動およびシマーのアニメーションが表示されます。"
+          }
+        }
+      }
+    },
     "explanation_reverse_geocoding_threshold" : {
       "comment" : "Explanation for reverse geocoding distance threshold",
       "localizations" : {
@@ -4265,6 +4288,28 @@
         }
       }
     },
+    "pulsating_map_markers" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pulsierende und schimmernde Kartenmarkierungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pulsating and shimmering map markers"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップマーカーの鼓動/シマーアニメーション"
+          }
+        }
+      }
+    },
     "qr" : {
       "localizations" : {
         "de" : {
@@ -4522,7 +4567,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adress-Namensauflösung"
+            "value" : "minimale Adress-Namensauflösungs-Radius"
           }
         },
         "en" : {

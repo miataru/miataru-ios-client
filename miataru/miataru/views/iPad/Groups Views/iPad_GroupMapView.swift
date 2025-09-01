@@ -416,13 +416,13 @@ struct iPad_GroupMapView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shimmering(active: isLoading)
+                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue),
-                                    pulsing: groupDeviceIDs.count <= 5
+                                    pulsing: settings.pulsingMapMarkers
                                 )
                                     .shadow(radius: 2)
                                 ZStack {
