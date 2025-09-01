@@ -5219,19 +5219,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Offscreen-Pfeile für andere Geräte anzeigen"
+            "value" : "Andere Geräte auf der Gerätekarte anzeigen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show offscreen arrows for other devices"
+            "value" : "Show other devices on device map"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "他のデバイスのオフスクリーン矢印を表示"
+            "value" : "デバイスマップに他のデバイスを表示"
           }
         }
       }
