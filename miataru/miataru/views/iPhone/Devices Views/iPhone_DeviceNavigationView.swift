@@ -233,6 +233,8 @@ struct iPhone_DeviceNavigationView: View {
             )
             .onAppear {
                 isAutoCenteringEnabled = true
+                // Sync auto-update lock state with global setting on appear
+                isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
                 updateCoordinates(recenter: true)
                 calculateRoute() // initial load only
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
@@ -254,6 +256,10 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
                 restartTimeUpdateTimer()
+            }
+            .onChange(of: settings.automaticRouteUpdateDuringNavigation) { _, newValue in
+                // Keep UI and behavior in sync with the global setting
+                isAutoRouteUpdateLocked = newValue
             }
             .onChange(of: settings.navigationTransportType) { _, _ in
                 calculateRoute()
@@ -361,6 +367,8 @@ struct iPhone_DeviceNavigationView: View {
             userHasRotatedMap = false
             isProgrammaticCameraChange = false
             isAutoCenteringEnabled = true
+            // Ensure auto-update lock state follows global setting for new navigation
+            isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
             deviceTimestamp = nil
             isLoading = false
             lastRouteUserCoordinate = nil
@@ -390,8 +398,10 @@ struct iPhone_DeviceNavigationView: View {
                     }
                 }
                 .onLongPressGesture(minimumDuration: 0.6) {
-                    isAutoRouteUpdateLocked.toggle()
-                    if isAutoRouteUpdateLocked {
+                    // Toggle global setting for automatic route updates while navigating
+                    settings.automaticRouteUpdateDuringNavigation.toggle()
+                    isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
+                    if settings.automaticRouteUpdateDuringNavigation {
                         Haptic.notifySuccess()
                         calculateRoute()
                     } else {
@@ -532,7 +542,6 @@ struct iPhone_DeviceNavigationView: View {
         var options: [String: Any] = [:]
         switch settings.navigationTransportType {
         case 0: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeWalking
-        case 1: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeDefault
         case 3: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeTransit
         default: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeDriving
         }
@@ -542,7 +551,6 @@ struct iPhone_DeviceNavigationView: View {
     private func transportTypeFromSetting(_ value: Int) -> MKDirectionsTransportType {
         switch value {
         case 0: return .walking
-        case 1: return .any
         case 3: return .transit
         default: return .automobile
         }
@@ -748,7 +756,6 @@ extension iPhone_DeviceNavigationView {
     private func transportSymbolName() -> String {
         switch settings.navigationTransportType {
         case 0: return "figure.walk"
-        case 1: return "bicycle"
         case 2: return "car"
         case 3: return "tram"
         default: return "car"

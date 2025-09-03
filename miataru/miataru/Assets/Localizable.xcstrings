@@ -2324,6 +2324,29 @@
         }
       }
     },
+    "explanation_navigation_auto_route_update" : {
+      "comment" : "If enabled, the app will automatically recalculate the route while navigating when significant movement is detected.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, wird während der Navigation die Route bei signifikanter Bewegung automatisch neu berechnet. Es kann während der Navigation durch langen Druck auf den Neuladen-Button umgeschaltet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the route will be recalculated automatically during navigation when significant movement is detected. It can also be toggled via a long press on the reload button while navigating."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、ナビゲーション中に大きな移動が検出された場合、ルートが自動的に再計算されます。ナビゲーション中にリロードボタンを長押しすることで切り替え可能です。"
+          }
+        }
+      }
+    },
     "explanation_navigation_mode" : {
       "comment" : "Explanation on the navigation mode selection",
       "localizations" : {
@@ -3856,6 +3879,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ナビゲート"
+          }
+        }
+      }
+    },
+    "navigation_auto_route_update" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisches Routen-Update"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic route update"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動ルート更新"
           }
         }
       }
@@ -5549,28 +5594,7 @@
         }
       }
     },
-    "transport_bike" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fahrrad"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bike"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自転車"
-          }
-        }
-      }
-    },
+    
     "transport_car" : {
       "localizations" : {
         "de" : {

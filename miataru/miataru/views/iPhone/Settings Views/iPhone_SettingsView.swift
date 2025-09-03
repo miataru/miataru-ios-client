@@ -157,11 +157,14 @@ struct iPhone_SettingsView: View {
                 Section(header: Text("navigation")) {
                     Picker("transport_mode", selection: $settings.navigationTransportType) {
                         Text("transport_walk").tag(0)
-                        Text("transport_bike").tag(1)
                         Text("transport_car").tag(2)
                         Text("transport_transit").tag(3)
                     }
                     Text(NSLocalizedString("explanation_navigation_mode", comment: "Explanation on the navigation mode selection"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Toggle("navigation_auto_route_update", isOn: $settings.automaticRouteUpdateDuringNavigation)
+                    Text(NSLocalizedString("explanation_navigation_auto_route_update", comment: "If enabled, the app will automatically recalculate the route while navigating when significant movement is detected."))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Toggle("show_route_progress", isOn: $settings.showRouteProgress)

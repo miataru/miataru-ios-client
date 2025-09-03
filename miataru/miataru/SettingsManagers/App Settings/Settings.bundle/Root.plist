@@ -288,14 +288,12 @@
 			<key>Titles</key>
 			<array>
 				<string>transport_walk</string>
-				<string>transport_bike</string>
 				<string>transport_car</string>
 				<string>transport_transit</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<string>0</string>
-				<string>1</string>
 				<string>2</string>
 				<string>3</string>
 			</array>
