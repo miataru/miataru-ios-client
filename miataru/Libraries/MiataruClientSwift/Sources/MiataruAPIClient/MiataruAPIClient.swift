@@ -59,6 +59,10 @@ public struct UpdateLocationPayload: Codable {
     public var Longitude: Double
     public var Latitude: Double
     public var HorizontalAccuracy: Double
+    public var Speed: Double?
+    public var BatteryLevel: Double?
+    /// Altitude above mean sea level in meters
+    public var Altitude: Double?
 
     /// Computed property für den Zugriff als Date
     public var TimestampDate: Date {
@@ -75,15 +79,18 @@ public struct UpdateLocationPayload: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
+        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude
     }
 
-    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double) {
+    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil) {
         self.Device = Device
         self.Timestamp = Timestamp
         self.Longitude = Longitude
         self.Latitude = Latitude
         self.HorizontalAccuracy = HorizontalAccuracy
+        self.Speed = Speed
+        self.BatteryLevel = BatteryLevel
+        self.Altitude = Altitude
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -93,6 +100,9 @@ public struct UpdateLocationPayload: Codable {
         try container.encode(String(Longitude), forKey: .Longitude)
         try container.encode(String(Latitude), forKey: .Latitude)
         try container.encode(String(HorizontalAccuracy), forKey: .HorizontalAccuracy)
+        if let Speed = Speed { try container.encode(String(Speed), forKey: .Speed) }
+        if let BatteryLevel = BatteryLevel { try container.encode(String(BatteryLevel), forKey: .BatteryLevel) }
+        if let Altitude = Altitude { try container.encode(String(Altitude), forKey: .Altitude) }
     }
 
     public init(from decoder: Decoder) throws {
@@ -112,6 +122,10 @@ public struct UpdateLocationPayload: Codable {
         Longitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Longitude)
         Latitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Latitude)
         HorizontalAccuracy = try Self.decodeDoubleStringOrNumber(container: container, key: .HorizontalAccuracy)
+        // Optionale Felder
+        Speed = try? Self.decodeDoubleStringOrNumber(container: container, key: .Speed)
+        BatteryLevel = try? Self.decodeDoubleStringOrNumber(container: container, key: .BatteryLevel)
+        Altitude = try? Self.decodeDoubleStringOrNumber(container: container, key: .Altitude)
     }
     
     private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
@@ -132,6 +146,10 @@ public struct MiataruLocationData: Codable {
     public var Longitude: Double
     public var Latitude: Double
     public var HorizontalAccuracy: Double
+    public var Speed: Double?
+    public var BatteryLevel: Double?
+    /// Altitude above mean sea level in meters
+    public var Altitude: Double?
 
     /// Computed property für den Zugriff als Date
     public var TimestampDate: Date {
@@ -143,15 +161,18 @@ public struct MiataruLocationData: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy
+        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude
     }
 
-    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double) {
+    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil) {
         self.Device = Device
         self.Timestamp = Timestamp
         self.Longitude = Longitude
         self.Latitude = Latitude
         self.HorizontalAccuracy = HorizontalAccuracy
+        self.Speed = Speed
+        self.BatteryLevel = BatteryLevel
+        self.Altitude = Altitude
     }
 
     public init(from decoder: Decoder) throws {
@@ -171,6 +192,10 @@ public struct MiataruLocationData: Codable {
         Longitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Longitude)
         Latitude = try Self.decodeDoubleStringOrNumber(container: container, key: .Latitude)
         HorizontalAccuracy = try Self.decodeDoubleStringOrNumber(container: container, key: .HorizontalAccuracy)
+        // Optionale Felder
+        Speed = try? Self.decodeDoubleStringOrNumber(container: container, key: .Speed)
+        BatteryLevel = try? Self.decodeDoubleStringOrNumber(container: container, key: .BatteryLevel)
+        Altitude = try? Self.decodeDoubleStringOrNumber(container: container, key: .Altitude)
     }
     
     private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
@@ -190,6 +215,9 @@ public struct MiataruLocationData: Codable {
         try container.encode(String(Longitude), forKey: .Longitude)
         try container.encode(String(Latitude), forKey: .Latitude)
         try container.encode(String(HorizontalAccuracy), forKey: .HorizontalAccuracy)
+        if let Speed = Speed { try container.encode(String(Speed), forKey: .Speed) }
+        if let BatteryLevel = BatteryLevel { try container.encode(String(BatteryLevel), forKey: .BatteryLevel) }
+        if let Altitude = Altitude { try container.encode(String(Altitude), forKey: .Altitude) }
     }
 }
 
@@ -318,20 +346,23 @@ public enum MiataruAPIClient {
                                   
         let url = serverURL.appendingPathComponent("v1/UpdateLocation")
 
+        var locationDict: [String: Any] = [
+            "Device": locationData.Device,
+            "Timestamp": locationData.Timestamp,
+            "Longitude": locationData.Longitude,
+            "Latitude": locationData.Latitude,
+            "HorizontalAccuracy": locationData.HorizontalAccuracy
+        ]
+        if let speed = locationData.Speed { locationDict["Speed"] = speed }
+        if let battery = locationData.BatteryLevel { locationDict["BatteryLevel"] = battery }
+        if let altitude = locationData.Altitude { locationDict["Altitude"] = altitude }
+
         let jsonPayload: [String: Any] = [
             "MiataruConfig": [
                 "EnableLocationHistory": String(enableHistory),
                 "LocationDataRetentionTime": String(retentionTime)
             ],
-            "MiataruLocation": [
-                [
-                    "Device": locationData.Device,
-                    "Timestamp": locationData.Timestamp,
-                    "Longitude": locationData.Longitude,
-                    "Latitude": locationData.Latitude,
-                    "HorizontalAccuracy": locationData.HorizontalAccuracy
-                ]
-            ]
+            "MiataruLocation": [locationDict]
         ]
         
         let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)

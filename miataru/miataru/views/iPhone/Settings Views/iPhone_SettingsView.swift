@@ -174,15 +174,14 @@ struct iPhone_SettingsView: View {
                 }
                 // Location Tracking Status Section
                 Section(header: Text("Location Tracking Status")) {
-                    HStack {
-                        Image(systemName: "location.fill")
-                            .foregroundColor(.blue)
-                        Text("Location Tracking Details")
-                        Spacer()
-                        Button("show") {
-                            showingLocationStatus = true
+                    NavigationLink(destination: iPhone_LocationStatusView()
+                        .navigationTitle("Location Tracking Details")
+                        .navigationBarTitleDisplayMode(.inline)) {
+                        HStack {
+                            Image(systemName: "location.fill")
+                                .foregroundColor(.blue)
+                            Text("Location Tracking Details")
                         }
-                        .foregroundColor(.blue)
                     }
                 }
                 Section {
@@ -193,20 +192,6 @@ struct iPhone_SettingsView: View {
                 }
             }
             .navigationTitle("settings")
-            .sheet(isPresented: $showingLocationStatus) {
-                NavigationView {
-                    iPhone_LocationStatusView()
-                        .navigationTitle("Location Tracking Details")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") {
-                                    showingLocationStatus = false
-                                }
-                            }
-                        }
-                }
-            }
         }
     }
 }
