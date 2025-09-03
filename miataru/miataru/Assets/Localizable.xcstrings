@@ -938,6 +938,29 @@
         }
       }
     },
+    "Battery level" : {
+      "comment" : "Battery level display in Location Tracking Details",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batteriestand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery level"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー残量"
+          }
+        }
+      }
+    },
     "Brightness" : {
       "comment" : "Accessibility label for brightness slider in color picker\nLabel for brightness slider in color picker",
       "localizations" : {
@@ -4629,6 +4652,29 @@
         }
       }
     },
+    "Route requests" : {
+      "comment" : "Number of route requests counter in Location Tracking Details",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routenanfragen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Route requests"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルートリクエスト数"
+          }
+        }
+      }
+    },
     "route_generation_failed" : {
       "comment" : "Route calculation failed. Please try again.",
       "localizations" : {
@@ -5303,6 +5349,29 @@
         }
       }
     },
+    "Speed" : {
+      "comment" : "Speed display in Location Tracking Details",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschwindigkeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        }
+      }
+    },
     "store location history" : {
       "localizations" : {
         "de" : {
@@ -5594,7 +5663,6 @@
         }
       }
     },
-    
     "transport_car" : {
       "localizations" : {
         "de" : {
@@ -5679,6 +5747,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "徒歩"
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "comment" : "Unknown battery level in Location Tracking Details\nUnknown speed value in Location Tracking Details",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明"
           }
         }
       }
