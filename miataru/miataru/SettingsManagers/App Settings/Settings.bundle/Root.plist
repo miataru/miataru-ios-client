@@ -308,6 +308,56 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>advanced_map_features</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>pulsating_map_markers</string>
+			<key>Key</key>
+			<string>pulsating_map_markers</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>reverse_geocoding_threshold</string>
+			<key>Key</key>
+			<string>reverse_geocoding_threshold_meters</string>
+			<key>DefaultValue</key>
+			<string>1000</string>
+			<key>Titles</key>
+			<array>
+				<string>reverse_geocode_every_update</string>
+				<string>100m</string>
+				<string>1km</string>
+				<string>10km</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>0</string>
+				<string>100</string>
+				<string>1000</string>
+				<string>10000</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>navigation_auto_route_update</string>
+			<key>Key</key>
+			<string>automatic_route_update_during_navigation</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>
