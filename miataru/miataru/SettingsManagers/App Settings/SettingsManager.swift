@@ -75,6 +75,11 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(pulsingMapMarkers, forKey: Keys.pulsingMapMarkers) }
     }
 
+    // Automatically recalculate the route during navigation
+    @Published var automaticRouteUpdateDuringNavigation: Bool {
+        didSet { defaults.set(automaticRouteUpdateDuringNavigation, forKey: Keys.automaticRouteUpdateDuringNavigation) }
+    }
+
     @Published var lastOpenedDeviceID: String? {
         didSet {
             if let id = lastOpenedDeviceID {
@@ -114,6 +119,7 @@ class SettingsManager: ObservableObject {
         static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
         static let navigationTransportType = "navigation_transport_type"
         static let pulsingMapMarkers = "pulsating_map_markers"
+        static let automaticRouteUpdateDuringNavigation = "automatic_route_update_during_navigation"
     }
     
     // MARK: - Location Permission Management
@@ -146,6 +152,7 @@ class SettingsManager: ObservableObject {
         self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
         self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
         self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? false
+        self.automaticRouteUpdateDuringNavigation = d.object(forKey: Keys.automaticRouteUpdateDuringNavigation) as? Bool ?? true
     }
     
     // MARK: - Synchronize
