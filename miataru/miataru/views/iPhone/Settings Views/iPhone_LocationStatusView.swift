@@ -9,11 +9,13 @@
 
 import SwiftUI
 import CoreLocation
+import UIKit
 
 struct iPhone_LocationStatusView: View {
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
     
     var body: some View {
         VStack(spacing: 16) {
@@ -69,6 +71,24 @@ struct iPhone_LocationStatusView: View {
                             title: NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details"),
                             value: String(format: "%.1f m", location.horizontalAccuracy),
                             icon: "target"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("Route requests", comment: "Number of route requests counter in Location Tracking Details"),
+                            value: String(routeRequestCount),
+                            icon: "map"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("Speed", comment: "Speed display in Location Tracking Details"),
+                            value: speedText(for: location),
+                            icon: "speedometer"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("Battery level", comment: "Battery level display in Location Tracking Details"),
+                            value: batteryLevelText,
+                            icon: "battery.100"
                         )
                     }
                     
@@ -213,6 +233,29 @@ struct iPhone_LocationStatusView: View {
     // Log der letzten Updates (Dummy-Implementierung, sollte mit echten Daten aus LocationManager ersetzt werden)
     private var updateLog: [LocationManager.UpdateLogEntry] {
         locationManager.updateLog
+    }
+
+    private func speedText(for location: CLLocation) -> String {
+        let metersPerSecond = location.speed
+        if metersPerSecond >= 0 {
+            let kilometersPerHour = metersPerSecond * 3.6
+            return String(format: "%.1f km/h", kilometersPerHour)
+        } else {
+            return NSLocalizedString("Unknown", comment: "Unknown speed value in Location Tracking Details")
+        }
+    }
+
+    private var batteryLevelText: String {
+        let device = UIDevice.current
+        let wasMonitoringEnabled = device.isBatteryMonitoringEnabled
+        if !wasMonitoringEnabled { device.isBatteryMonitoringEnabled = true }
+        defer { if !wasMonitoringEnabled { device.isBatteryMonitoringEnabled = false } }
+        let level = device.batteryLevel
+        if level < 0 {
+            return NSLocalizedString("Unknown", comment: "Unknown battery level in Location Tracking Details")
+        }
+        let percent = Int(level * 100)
+        return "\(percent) %"
     }
 }
 
