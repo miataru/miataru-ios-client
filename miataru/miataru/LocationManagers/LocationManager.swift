@@ -66,6 +66,8 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
         locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
+        // Enable battery monitoring to report battery percentage with location updates
+        UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         observeActivityType()
@@ -256,12 +258,20 @@ final class LocationManager: NSObject, ObservableObject {
             return
         }
         self.serverUpdateStatus = .updating
+        let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : -1
+        let speedValue: Double? = (location.speed >= 0) ? location.speed : -1
+        let batteryLevelRaw = UIDevice.current.batteryLevel
+        let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : -1
+
         let locationData = UpdateLocationPayload(
             Device: thisDeviceIDManager.shared.deviceID,
             Timestamp: String(Int64(location.timestamp.timeIntervalSince1970)),
             Longitude: location.coordinate.longitude,
             Latitude: location.coordinate.latitude,
-            HorizontalAccuracy: location.horizontalAccuracy
+            HorizontalAccuracy: location.horizontalAccuracy,
+            Speed: speedValue,
+            BatteryLevel: batteryPercent,
+            Altitude: altitudeValue
         )
         Task {
             do {

@@ -850,6 +850,29 @@
         }
       }
     },
+    "Altitude (sea level)" : {
+      "comment" : "Altitude above sea level display in Location Tracking Details",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höhe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitude"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "海抜高度"
+          }
+        }
+      }
+    },
     "app_behaviour" : {
       "localizations" : {
         "de" : {
@@ -5240,6 +5263,7 @@
       }
     },
     "show" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5752,7 +5776,7 @@
       }
     },
     "Unknown" : {
-      "comment" : "Unknown battery level in Location Tracking Details\nUnknown speed value in Location Tracking Details",
+      "comment" : "Unknown altitude value in Location Tracking Details\nUnknown battery level in Location Tracking Details\nUnknown speed value in Location Tracking Details",
       "localizations" : {
         "de" : {
           "stringUnit" : {

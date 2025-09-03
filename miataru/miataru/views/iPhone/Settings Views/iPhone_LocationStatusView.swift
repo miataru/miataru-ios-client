@@ -18,7 +18,8 @@ struct iPhone_LocationStatusView: View {
     @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
     
     var body: some View {
-        VStack(spacing: 16) {
+        ScrollView {
+            VStack(spacing: 16) {
             // Status-Header
             HStack {
                 Image(systemName: statusIcon)
@@ -71,6 +72,12 @@ struct iPhone_LocationStatusView: View {
                             title: NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details"),
                             value: String(format: "%.1f m", location.horizontalAccuracy),
                             icon: "target"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("Altitude (sea level)", comment: "Altitude above sea level display in Location Tracking Details"),
+                            value: altitudeText(for: location),
+                            icon: "arrow.up.and.down.circle"
                         )
 
                         LocationInfoRow(
@@ -142,8 +149,9 @@ struct iPhone_LocationStatusView: View {
                 .background(Color(.systemGray5))
                 .cornerRadius(8)
             }
+            }
+            .padding()
         }
-        .padding()
         .safeAreaInset(edge: .top) {
             Color.clear.frame(height: 10)
         }
@@ -256,6 +264,15 @@ struct iPhone_LocationStatusView: View {
         }
         let percent = Int(level * 100)
         return "\(percent) %"
+    }
+
+    private func altitudeText(for location: CLLocation) -> String {
+        let verticalAccuracy = location.verticalAccuracy
+        if verticalAccuracy >= 0 {
+            return String(format: "%.1f m", location.altitude)
+        } else {
+            return NSLocalizedString("Unknown", comment: "Unknown altitude value in Location Tracking Details")
+        }
     }
 }
 
