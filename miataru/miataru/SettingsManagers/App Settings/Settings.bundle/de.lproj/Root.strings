@@ -56,3 +56,8 @@
 "transport_car" = "Auto";
 "transport_transit" = "ÖPNV";
 "show_route_progress" = "Routenfortschritt anzeigen";
+"advanced_map_features" = "Erweiterte Kartenfunktionen";
+"pulsating_map_markers" = "Pulsierende Kartenmarker";
+"reverse_geocoding_threshold" = "Schwelle für Reverse Geocoding";
+"reverse_geocode_every_update" = "Bei jedem Update";
+"navigation_auto_route_update" = "Route während der Navigation automatisch aktualisieren";

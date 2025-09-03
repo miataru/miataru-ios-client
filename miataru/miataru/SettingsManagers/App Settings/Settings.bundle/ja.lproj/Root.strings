@@ -56,3 +56,8 @@
 "transport_car" = "車";
 "transport_transit" = "公共交通機関";
 "show_route_progress" = "ルート進行状況を表示";
+"advanced_map_features" = "高度なマップ機能";
+"pulsating_map_markers" = "脈動するマップマーカー";
+"reverse_geocoding_threshold" = "逆ジオコーディングのしきい値";
+"reverse_geocode_every_update" = "毎回";
+"navigation_auto_route_update" = "ナビ中に自動でルート更新";
