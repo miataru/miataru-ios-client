@@ -47,6 +47,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
+    // Tracks the day the counter applies to so we can reset every 24h
     @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -458,6 +459,7 @@ struct iPhone_DeviceNavigationView: View {
     private func calculateRoute() {
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
 
+        // Reset daily counter if we crossed to a new day
         let today = Calendar.current.startOfDay(for: Date())
         let storedDate = Date(timeIntervalSince1970: routeRequestDate)
         if Calendar.current.startOfDay(for: storedDate) != today {
