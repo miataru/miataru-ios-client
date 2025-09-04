@@ -17,6 +17,7 @@ struct iPhone_DeviceNavigationView: View {
     var device: KnownDevice
 
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
+    @ObservedObject private var routeCache = RouteCacheStore.shared
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
     @StateObject private var deviceStore = KnownDeviceStore.shared
@@ -52,12 +53,17 @@ struct iPhone_DeviceNavigationView: View {
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
+    // Minimum route progress required before showing ghost/progress segmentation
+    private let minimumProgressToShowGhost: Double = 0.05
+    // Distance threshold (meters) for reusing cached routes and detecting significant movement
+    private let routeReuseDistanceThreshold: CLLocationDistance = 100
     // Track the inputs used for the most recent route calculation to avoid unnecessary recalculations
     @State private var lastRouteUserCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteUserTimestamp: Date? = nil
     @State private var lastRouteDeviceTimestamp: Date? = nil
     @State private var lastRouteTransportType: Int? = nil
+    // Generous daily upper bound to prevent accidental request lockout while developing/testing
     private let routeRequestDailyLimit: Int = 17000
 
     var body: some View {
@@ -158,19 +164,22 @@ struct iPhone_DeviceNavigationView: View {
                         .offset(y: 20)
                     }
                 }
+                // Draw the route if available; optionally show a progress/ghost segment
                 if let route = route {
                     if settings.showRouteProgress, let ts = deviceTimestamp {
                         let elapsed = now.timeIntervalSince(ts)
                         let expected = route.expectedTravelTime
                         let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
 
-                        if progress <= 0.05 { // only when 5% have passed show the route ghost
+                        // Only show the ghost/progress segmentation after threshold to reduce visual noise
+                        if progress <= minimumProgressToShowGhost {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
                         } else if progress >= 1 {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
                         } else {
+                            // Split the route into done/todo and show a small marker advancing from device
                             let distanceFromDevice = route.distance * progress
                             let splitDistance = max(route.distance - distanceFromDevice, 0)
                             if let (todo, done, ghost) = route.polyline.split(at: splitDistance) {
@@ -233,11 +242,14 @@ struct iPhone_DeviceNavigationView: View {
                     .onChanged { _ in markUserInteraction() }
             )
             .onAppear {
+                // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
                 isAutoCenteringEnabled = true
                 // Sync auto-update lock state with global setting on appear
                 isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
                 updateCoordinates(recenter: true)
-                calculateRoute() // initial load only
+                if !useCachedRouteIfValid() { // prefer cached route on appear
+                    calculateRoute()
+                }
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
                 restartTimeUpdateTimer()
@@ -270,6 +282,7 @@ struct iPhone_DeviceNavigationView: View {
                 restartTimeUpdateTimer()
             }
             .onMapCameraChange(frequency: .continuous) { context in
+                // Track camera state changes to detect user rotation and keep a compass affordance
                 let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
                 if isProgrammaticCameraChange {
                     // Ignore user interaction detection for programmatic updates
@@ -354,6 +367,7 @@ struct iPhone_DeviceNavigationView: View {
         .id(device.DeviceID)
         .onChange(of: device.DeviceID) {
             // Reset all device-related state when a new device is injected
+            // We intentionally do NOT clear the route cache here; it is keyed by device id
             userCoordinate = nil
             deviceCoordinate = nil
             animatedUserCoordinate = nil
@@ -384,6 +398,7 @@ struct iPhone_DeviceNavigationView: View {
 
     @ViewBuilder
     private func reloadToolbarButton() -> some View {
+        // Toolbar button to reload target device location; long-press toggles auto route updates
         ZStack(alignment: .topTrailing) {
             Image(systemName: "arrow.clockwise")
                 .foregroundStyle(isAutoRouteUpdateLocked ? Color.green : Color.primary)
@@ -394,7 +409,7 @@ struct iPhone_DeviceNavigationView: View {
                 .onTapGesture {
                     withAnimation { isUpdating = true }
                     Task {
-                        await fetchTargetDeviceLocation(resetAndRecenter: true)
+                        await fetchTargetDeviceLocation(resetAndRecenter: true, ignoreRouteCache: true)
                         withAnimation { isUpdating = false }
                     }
                 }
@@ -417,6 +432,8 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func updateCoordinates(recenter: Bool = false) {
+        // Update user and device coordinates from current sources (LocationManager + cache)
+        // Optionally recenter the map if auto-centering is enabled or explicitly requested
         if let loc = locationManager.currentLocation {
             let coord = loc.coordinate
             let changed = userCoordinate?.latitude != coord.latitude || userCoordinate?.longitude != coord.longitude
@@ -446,6 +463,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func regionThatFits(user: CLLocationCoordinate2D, dest: CLLocationCoordinate2D) -> MKCoordinateRegion {
+        // Compute a region that fits both points with padding and minimum span to avoid over-zooming
         let center = CLLocationCoordinate2D(latitude: (user.latitude + dest.latitude) / 2,
                                             longitude: (user.longitude + dest.longitude) / 2)
         let baseLat = abs(user.latitude - dest.latitude)
@@ -456,10 +474,30 @@ struct iPhone_DeviceNavigationView: View {
         return MKCoordinateRegion(center: center, span: span)
     }
 
-    private func calculateRoute() {
+    private func calculateRoute(ignoreCache: Bool = false) {
+        // Calculate a new route between user and selected device.
+        // Prefers a cached route when movement < 100m; applies a daily network request limit.
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
+        // Try to reuse cached route first unless explicitly told to ignore cache
+        if !ignoreCache {
+            if useCachedRouteIfValid() { return }
+            // Only recalc when one of the positions changed since the last route calculation (or if there's no route yet)
+            let userTimestampChanged = userTimestamp != lastRouteUserTimestamp
+            let deviceTimestampChanged = deviceTimestamp != lastRouteDeviceTimestamp
+            var userCoordinatesChanged = true
+            if let lastUser = lastRouteUserCoordinate {
+                userCoordinatesChanged = (lastUser.latitude != user.latitude) || (lastUser.longitude != user.longitude)
+            }
+            var deviceCoordinatesChanged = true
+            if let lastDevice = lastRouteDeviceCoordinate {
+                deviceCoordinatesChanged = (lastDevice.latitude != device.latitude) || (lastDevice.longitude != device.longitude)
+            }
+            let transportTypeChanged = settings.navigationTransportType != lastRouteTransportType
+            let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged || transportTypeChanged
+            if !shouldRecalculate { return }
+        }
 
-        // Reset daily counter if we crossed to a new day
+        // Reset or check the daily request counter only when we actually perform a new request
         let today = Calendar.current.startOfDay(for: Date())
         let storedDate = Date(timeIntervalSince1970: routeRequestDate)
         if Calendar.current.startOfDay(for: storedDate) != today {
@@ -474,25 +512,6 @@ struct iPhone_DeviceNavigationView: View {
             return
         }
         routeRequestCount += 1
-
-        // Only recalc when one of the positions changed since the last route calculation (or if there's no route yet)
-        let userTimestampChanged = userTimestamp != lastRouteUserTimestamp
-        let deviceTimestampChanged = deviceTimestamp != lastRouteDeviceTimestamp
-
-        var userCoordinatesChanged = true
-        if let lastUser = lastRouteUserCoordinate {
-            userCoordinatesChanged = (lastUser.latitude != user.latitude) || (lastUser.longitude != user.longitude)
-        }
-
-        var deviceCoordinatesChanged = true
-        if let lastDevice = lastRouteDeviceCoordinate {
-            deviceCoordinatesChanged = (lastDevice.latitude != device.latitude) || (lastDevice.longitude != device.longitude)
-        }
-
-        let transportTypeChanged = settings.navigationTransportType != lastRouteTransportType
-
-        let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged || transportTypeChanged
-        if !shouldRecalculate { return }
         let request = MKDirections.Request()
         // Draw the route from the current user towards the other device
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
@@ -513,6 +532,16 @@ struct iPhone_DeviceNavigationView: View {
                     lastRouteUserTimestamp = userTimestamp
                     lastRouteDeviceTimestamp = deviceTimestamp
                     lastRouteTransportType = settings.navigationTransportType
+                    // Store in cache for reuse
+                    routeCache.set(
+                        for: device.DeviceID,
+                        transportType: settings.navigationTransportType,
+                        route: first,
+                        userCoordinate: user,
+                        deviceCoordinate: device,
+                        userTimestamp: userTimestamp,
+                        deviceTimestamp: deviceTimestamp
+                    )
                 } else {
                     route = nil
                     travelTime = nil
@@ -537,6 +566,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func openInAppleMaps() {
+        // Open the route in the Apple Maps app using the selected transport type
         guard let dest = deviceCoordinate else { return }
         let source = MKMapItem.forCurrentLocation()
         let destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
@@ -565,7 +595,10 @@ struct iPhone_DeviceNavigationView: View {
 
     // MARK: - Remote updates for the selected device only
 
-    private func fetchTargetDeviceLocation(resetAndRecenter: Bool) async {
+    private func fetchTargetDeviceLocation(resetAndRecenter: Bool, ignoreRouteCache: Bool = false) async {
+        // Fetch latest location for just the selected device from the server.
+        // Updates the shared device cache and view state. Recalculates route only
+        // when explicitly re-centered (e.g., manual reload) or when auto-update logic decides so.
         guard let url = URL(string: settings.miataruServerURL) else { return }
         do {
             isLoading = true
@@ -595,7 +628,13 @@ struct iPhone_DeviceNavigationView: View {
                 updateCoordinates(recenter: resetAndRecenter)
                 // Recalculate route only on explicit reload (or initial load elsewhere) 
                 if resetAndRecenter {
-                    calculateRoute()
+                    if ignoreRouteCache {
+                        calculateRoute(ignoreCache: true)
+                    } else {
+                        if !useCachedRouteIfValid() {
+                            calculateRoute()
+                        }
+                    }
                 }
             } else {
                 DeviceLocationCacheStore.shared.removeLocation(for: device.DeviceID)
@@ -606,6 +645,8 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func startAutoUpdate() {
+        // Start periodic refresh based on user settings. If auto-route updates are enabled
+        // and movement since last route is significant, we refresh the route, preferring cache.
         stopAutoUpdate()
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
@@ -615,14 +656,18 @@ struct iPhone_DeviceNavigationView: View {
                 Task {
                     await fetchTargetDeviceLocation(resetAndRecenter: false)
                     if isAutoRouteUpdateLocked && hasSignificantMovementSinceLastRoute() {
-                        calculateRoute()
+                        if !useCachedRouteIfValid() {
+                            calculateRoute()
+                        }
                     }
                 }
             }
     }
 
     private func hasSignificantMovementSinceLastRoute() -> Bool {
-        let threshold: CLLocationDistance = 100
+        // Returns true if user OR device has moved more than the threshold since last route
+        // calculation. The threshold is configurable to balance accuracy vs. cost.
+        let threshold: CLLocationDistance = routeReuseDistanceThreshold
         var userMoved = false
         if let current = userCoordinate, let last = lastRouteUserCoordinate {
             let distance = CLLocation(latitude: current.latitude, longitude: current.longitude)
@@ -652,6 +697,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func restartTimeUpdateTimer() {
+        // Update the UI time labels with the same cadence as location refresh (min 1s)
         let interval = max(1.0, Double(settings.mapUpdateInterval))
         timeUpdateTimer = Timer.publish(every: interval, on: .main, in: .common).autoconnect()
     }
@@ -700,6 +746,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func alignMapToNorth() {
+        // Reset map heading to 0 while preserving other camera properties
         guard let currentCamera = currentMapCamera else { return }
         let newCamera = MapCamera(
             centerCoordinate: currentCamera.centerCoordinate,
@@ -715,6 +762,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func resetZoomToFitBoth() {
+        // Smoothly zoom to a region that fits both user and device
         if let user = userCoordinate, let dest = deviceCoordinate {
             let region = regionThatFits(user: user, dest: dest)
             isProgrammaticCameraChange = true
@@ -727,6 +775,44 @@ struct iPhone_DeviceNavigationView: View {
 
 // MARK: - Distance Formatting
 extension iPhone_DeviceNavigationView {
+    /// Attempts to reuse a previously calculated route if the movement since that
+    /// calculation was insignificant. Returns true if a cached route was applied
+    /// to the view state, false otherwise.
+    ///
+    /// A cached route is considered valid when BOTH endpoints (user location and
+    /// target device location) have each moved less than the configured threshold since the
+    /// route was stored. The cache is segregated by device id and transport type.
+    ///
+    /// Side effects when a cached route is used:
+    /// - Updates `route`, `travelTime`, and `distanceText`
+    /// - Aligns all `lastRoute*` fields so subsequent change detection remains accurate
+    private func useCachedRouteIfValid() -> Bool {
+        guard let user = userCoordinate, let device = deviceCoordinate else { return false }
+        let transport = settings.navigationTransportType
+        if let cached = routeCache.get(for: self.device.DeviceID, transportType: transport) {
+            if routeCache.isValid(
+                cached: cached,
+                currentUserCoordinate: user,
+                currentDeviceCoordinate: device,
+                threshold: routeReuseDistanceThreshold
+            ) {
+                // Apply cached route and keep display fields in sync
+                route = cached.route
+                let formatter = DateComponentsFormatter()
+                formatter.unitsStyle = .short
+                travelTime = formatter.string(from: cached.route.expectedTravelTime)
+                distanceText = formattedDistance(cached.route.distance)
+                // Align last-route inputs so existing change detection logic works
+                lastRouteUserCoordinate = cached.userCoordinate
+                lastRouteDeviceCoordinate = cached.deviceCoordinate
+                lastRouteUserTimestamp = cached.userTimestamp
+                lastRouteDeviceTimestamp = cached.deviceTimestamp
+                lastRouteTransportType = transport
+                return true
+            }
+        }
+        return false
+    }
     private func formattedDistance(_ meters: CLLocationDistance) -> String {
         let usesMetric: Bool
         if #available(iOS 16.0, *) {
