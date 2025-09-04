@@ -16,6 +16,7 @@ struct iPhone_LocationStatusView: View {
     @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
     @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
+    @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
     
     var body: some View {
         ScrollView {
@@ -155,6 +156,7 @@ struct iPhone_LocationStatusView: View {
         .safeAreaInset(edge: .top) {
             Color.clear.frame(height: 10)
         }
+        .onAppear(perform: resetRouteRequestsIfNewDay)
     }
     
     // MARK: - Computed Properties
@@ -272,6 +274,18 @@ struct iPhone_LocationStatusView: View {
             return String(format: "%.1f m", location.altitude)
         } else {
             return NSLocalizedString("Unknown", comment: "Unknown altitude value in Location Tracking Details")
+        }
+    }
+}
+
+// MARK: - Daily reset helpers
+extension iPhone_LocationStatusView {
+    private func resetRouteRequestsIfNewDay() {
+        let today = Calendar.current.startOfDay(for: Date())
+        let storedDate = Date(timeIntervalSince1970: routeRequestDate)
+        if Calendar.current.startOfDay(for: storedDate) != today {
+            routeRequestDate = today.timeIntervalSince1970
+            routeRequestCount = 0
         }
     }
 }
