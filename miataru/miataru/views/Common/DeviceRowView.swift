@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
  *
- * iPhone_DeviceRowView.swift
+ * DeviceRowView.swift
  * miataru
  *
- * Created by Daniel Kirstenpfad on 20.06.25.
+ * Created by Daniel Kirstenpfad on 2025-01-25.
  */
 
 import SwiftUI
@@ -15,7 +15,7 @@ import Combine
 // Import relativeTimeString from MapHelpers
 // If module import is not available, copy the function here
 
-struct iPhone_DeviceRowView: View {
+struct DeviceRowView: View {
     @ObservedObject var device: KnownDevice
     @ObservedObject var cache: DeviceLocationCacheStore
     @State private var isGeocoding = false
@@ -241,7 +241,7 @@ extension Color {
         case 6:
             (a, r, g, b) = (255, (int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
         case 8:
-            (a, r, g, b) = ((int >> 24) & 0xFF, (int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
+            (a, r, g, b) = ((int >> 24) & 0xFF, (int >> 16) & 0xFF, (int >> 8) & 0xFF, (int >> 0) & 0xFF)
         default:
             (a, r, g, b) = (255, 200, 200, 200)
         }
@@ -261,6 +261,5 @@ extension Color {
 
 #Preview {
     @Previewable @State var device = KnownDevice(name: "Test Device", deviceID: "12345", color: .blue)
-    iPhone_DeviceRowView(device: device, cache: DeviceLocationCacheStore.shared)
+    DeviceRowView(device: device, cache: DeviceLocationCacheStore.shared)
 }
-
