@@ -36,7 +36,7 @@ struct DeviceRowView: View {
             } else {
                 ZStack {
                     Circle()
-                        .fill(Color(device.DeviceColor ?? UIColor.gray))
+                        .fill(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
                         .frame(width: 16, height: 16)
                         .shadow(radius: 4)
                 }

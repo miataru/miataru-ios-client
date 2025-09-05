@@ -13,6 +13,7 @@ struct DeviceBatterySymbol: View {
     let batteryLevel: Double
     let deviceColor: Color
     let size: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
     
     init(batteryLevel: Double, deviceColor: Color, size: CGFloat = 16) {
         self.batteryLevel = batteryLevel
@@ -25,7 +26,7 @@ struct DeviceBatterySymbol: View {
             .resizable()
             .scaledToFit()
             .frame(width: size, height: size)
-            .foregroundColor(deviceColor)
+            .foregroundColor(Color.adjustedDeviceColor(deviceColor, for: colorScheme))
             .shadow(radius: 4)
     }
     

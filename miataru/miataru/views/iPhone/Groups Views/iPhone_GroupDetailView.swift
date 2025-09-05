@@ -117,11 +117,12 @@ struct iPhone_GroupDeviceRowView: View {
     @ObservedObject var cache: DeviceLocationCacheStore
     let isInGroup: Bool
     let onToggle: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack {
             Circle()
-                .fill(Color(device.DeviceColor ?? UIColor.gray))
+                .fill(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
                 .frame(width: 16, height: 16)
             VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
