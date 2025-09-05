@@ -32,7 +32,7 @@ struct iPad_DevicesView: View {
                 Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         if cache.getLocation(for: device.DeviceID) != nil {
-                            iPhone_DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache)
                                 .tag(device.DeviceID)
                                 .tint(.primary)
                                 .draggable(device.DeviceID)
@@ -80,7 +80,7 @@ struct iPad_DevicesView: View {
                                     .tint(.blue)
                                 }
                         } else {
-                            iPhone_DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache)
                                 .tag(device.DeviceID)
                                 .tint(.primary)
                                 .contextMenu {

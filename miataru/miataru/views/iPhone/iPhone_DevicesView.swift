@@ -33,7 +33,7 @@ struct iPhone_DevicesView: View {
                 ForEach(store.devices) { device in
                     if editMode == .inactive {
                         NavigationLink(value: device.DeviceID) {
-                            iPhone_DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache)
                         }
                         .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
