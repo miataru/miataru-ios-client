@@ -139,7 +139,7 @@ struct iPad_DevicesView: View {
             }
             .environment(\.editMode, $editMode)
             .refreshable {
-                let success = await refreshAllDeviceLocations()
+                let success = await refreshAllDeviceLocations(forceGeocoding: true)
                 if success { Haptic.notifySuccess() }
             }
             .onAppear {
@@ -259,7 +259,7 @@ struct iPad_DevicesView: View {
         }
     }
 
-    private func refreshAllDeviceLocations() async -> Bool {
+    private func refreshAllDeviceLocations(forceGeocoding: Bool = false) async -> Bool {
         guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return false }
         let deviceIDs = store.devices.map { $0.DeviceID }
         do {
@@ -282,6 +282,10 @@ struct iPad_DevicesView: View {
             let missingIDs = Set(deviceIDs).subtracting(foundIDs)
             for missingID in missingIDs {
                 DeviceLocationCacheStore.shared.removeLocation(for: missingID)
+            }
+            // Force geocoding only if explicitly requested (e.g., manual refresh)
+            if forceGeocoding {
+                DeviceLocationCacheStore.shared.forceGeocodingForAllDevices()
             }
             return true
         } catch {
