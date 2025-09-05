@@ -101,7 +101,7 @@ The app is organized into several key components:
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the 2-clause BSD License. See the `LICENSE` file for details.
 
 ---
 
