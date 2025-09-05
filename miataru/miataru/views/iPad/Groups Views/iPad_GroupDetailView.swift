@@ -80,31 +80,12 @@ struct iPad_GroupDetailView: View {
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            // ToolbarItem(placement: .navigationBarTrailing) {
-            //     Button("Done") {
-            //         presentationMode.wrappedValue.dismiss()
-            //     }
-            // }
-            // ToolbarItem(placement: .navigationBarTrailing) {
-            //     NavigationLink(destination: iPhone_GroupMapView(group: group)) {
-            //         Text("show")
-            //     }
-            // }
-        }
-        .overlay(
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(NSLocalizedString("Done", comment: "Done button to dismiss the current view")) {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(NSLocalizedString("Done", comment: "Done button to dismiss the current view")) {
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
-        )
+        }
         .sheet(item: $editingDevice) { device in
             if let index = deviceStore.devices.firstIndex(where: { $0.id == device.id }) {
                 iPhone_EditDeviceView(
