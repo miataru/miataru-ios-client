@@ -88,7 +88,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "D8B962FA-459E-4D10-94CB-5E46732CB68A"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
@@ -98,50 +98,6 @@
             endingLineNumber = "178"
             landmarkName = "body"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "D8B962FA-459E-4D10-94CB-5E46732CB68A - c986634976333871"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; _MapKit_SwiftUI.TupleMapContent&lt;(Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;, _MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI.TupleMapContent&lt;(&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.foregroundStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, _MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, SwiftUI.VStack&lt;SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.shadow(color: SwiftUI.Color, radius: CoreGraphics.CGFloat, x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, SwiftUI.ZStack&lt;SwiftUI.TupleView&lt;(SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, Swift.Optional&lt;&lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;&gt;, SwiftUI.Text)&gt;&gt;)&gt;&gt;&gt;)&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;)&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.overlay&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: () -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0 in miataru.iPhone_DeviceNavigationView.body.getter : some"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices%20Views/iPhone_DeviceNavigationView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "178"
-                  endingLineNumber = "178">
-               </Location>
-               <Location
-                  uuid = "D8B962FA-459E-4D10-94CB-5E46732CB68A - c986634976333871"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; _MapKit_SwiftUI.TupleMapContent&lt;(Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;, _MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI.TupleMapContent&lt;(&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.foregroundStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, _MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, SwiftUI.VStack&lt;SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.shadow(color: SwiftUI.Color, radius: CoreGraphics.CGFloat, x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, SwiftUI.ZStack&lt;SwiftUI.TupleView&lt;(SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, Swift.Optional&lt;&lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;&gt;, SwiftUI.Text)&gt;&gt;)&gt;&gt;&gt;)&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;)&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.overlay&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: () -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0 in miataru.iPhone_DeviceNavigationView.body.getter : some"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices%20Views/iPhone_DeviceNavigationView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "178"
-                  endingLineNumber = "178">
-               </Location>
-               <Location
-                  uuid = "D8B962FA-459E-4D10-94CB-5E46732CB68A - c986634976333871"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; _MapKit_SwiftUI.TupleMapContent&lt;(Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, &lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, Swift.Optional&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI._ConditionalMapContent&lt;&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;, _MapKit_SwiftUI._ConditionalMapContent&lt;_MapKit_SwiftUI.TupleMapContent&lt;(&lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.foregroundStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, _MapKit_SwiftUI.Annotation&lt;SwiftUI.Text, SwiftUI.VStack&lt;SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.shadow(color: SwiftUI.Color, radius: CoreGraphics.CGFloat, x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0, SwiftUI.ZStack&lt;SwiftUI.TupleView&lt;(SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, SwiftUI.ForEach&lt;Swift.Array&lt;Swift.Int&gt;, Swift.Int, Swift.Optional&lt;&lt;&lt;opaque return type of SwiftUI.View.offset(x: CoreGraphics.CGFloat, y: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;&gt;, SwiftUI.Text)&gt;&gt;)&gt;&gt;&gt;)&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;, &lt;&lt;opaque return type of _MapKit_SwiftUI.MapContent.stroke&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ShapeStyle&gt;(_: &#x3c4;_1_0, lineWidth: CoreGraphics.CGFloat) -&gt; some&gt;&gt;.0&gt;&gt;)&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.overlay&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.View&gt;(alignment: SwiftUI.Alignment, content: () -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0 in miataru.iPhone_DeviceNavigationView.body.getter : some"
-                  moduleName = "miataru.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices%20Views/iPhone_DeviceNavigationView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "178"
-                  endingLineNumber = "178">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

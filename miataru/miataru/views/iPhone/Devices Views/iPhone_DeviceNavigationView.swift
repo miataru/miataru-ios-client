@@ -166,23 +166,16 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 // Draw the route if available; optionally show a progress/ghost segment
                 if let route = route {
-                    if settings.showRouteProgress, let ts = deviceTimestamp {
-                        let elapsed = now.timeIntervalSince(ts)
-                        let expected = route.expectedTravelTime
-                        let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
-
-                        // Only show the ghost/progress segmentation after threshold to reduce visual noise
-                        if progress <= minimumProgressToShowGhost {
-                            MapPolyline(route.polyline)
-                                .stroke(RouteStyle.remaining, lineWidth: 4)
-                        } else if progress >= 1 {
-                            MapPolyline(route.polyline)
-                                .stroke(RouteStyle.completed, lineWidth: 4)
-                        } else {
-                            // Split the route into done/todo and show a small marker advancing from device
-                            let distanceFromDevice = route.distance * progress
-                            let splitDistance = max(route.distance - distanceFromDevice, 0)
-                            if let (todo, done, ghost) = route.polyline.split(at: splitDistance) {
+                    if settings.showRouteProgress {
+                        let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
+                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(for: route, deviceTimestamp: deviceTimestamp, knownDeviceSpeed: knownSpeed, now: now) {
+                            if progress <= minimumProgressToShowGhost {
+                                MapPolyline(route.polyline)
+                                    .stroke(RouteStyle.remaining, lineWidth: 4)
+                            } else if progress >= 1 {
+                                MapPolyline(route.polyline)
+                                    .stroke(RouteStyle.completed, lineWidth: 4)
+                            } else {
                                 MapPolyline(done)
                                     .stroke(RouteStyle.completed, lineWidth: 4)
                                 MapPolyline(todo)
@@ -212,10 +205,10 @@ struct iPhone_DeviceNavigationView: View {
                                         }
                                     }
                                 }
-                            } else {
-                                MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                             }
+                        } else {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                         }
                     } else {
                         MapPolyline(route.polyline)
@@ -852,4 +845,5 @@ extension iPhone_DeviceNavigationView {
         }
     }
 }
+
 
