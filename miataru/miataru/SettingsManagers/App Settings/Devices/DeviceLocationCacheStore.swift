@@ -23,10 +23,11 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
     @objc var locality: String?
     var batteryLevel: Double?
     var altitude: Double?
+    var speed: Double?
     
     var id: String { deviceID }
     
-    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil, batteryLevel: Double? = nil, altitude: Double? = nil) {
+    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
         self.deviceID = deviceID
         self.latitude = latitude
         self.longitude = longitude
@@ -36,6 +37,7 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.locality = locality
         self.batteryLevel = batteryLevel
         self.altitude = altitude
+        self.speed = speed
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -48,6 +50,7 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.locality = aDecoder.decodeObject(forKey: "locality") as? String
         self.batteryLevel = aDecoder.decodeObject(forKey: "batteryLevel") as? Double
         self.altitude = aDecoder.decodeObject(forKey: "altitude") as? Double
+        self.speed = aDecoder.decodeObject(forKey: "speed") as? Double
     }
     
     func encode(with aCoder: NSCoder) {
@@ -60,6 +63,7 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         aCoder.encode(locality, forKey: "locality")
         aCoder.encode(batteryLevel, forKey: "batteryLevel")
         aCoder.encode(altitude, forKey: "altitude")
+        aCoder.encode(speed, forKey: "speed")
     }
     
     static var supportsSecureCoding: Bool {
@@ -126,7 +130,7 @@ class DeviceLocationCacheStore: ObservableObject {
         return []
     }
 
-    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil) {
+    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
         if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {
             let existing = locations[idx]
             let moved = existing.latitude != latitude || existing.longitude != longitude
@@ -140,7 +144,8 @@ class DeviceLocationCacheStore: ObservableObject {
                 country: existing.country,
                 locality: existing.locality,
                 batteryLevel: batteryLevel,
-                altitude: altitude
+                altitude: altitude,
+                speed: speed ?? existing.speed
             )
             locations[idx] = updated
             if moved {
@@ -154,7 +159,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 }
             }
         } else {
-            locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude))
+            locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed))
             // New entry: if no placemark present, enqueue
             enqueueGeocodingIfNeeded(for: deviceID)
         }

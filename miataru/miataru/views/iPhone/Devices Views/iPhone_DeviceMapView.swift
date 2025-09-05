@@ -614,8 +614,17 @@ struct iPhone_DeviceMapView: View {
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 now = Date() // Update time immediately
-                // Cache the new location
-                DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate, batteryLevel: loc.BatteryLevel, altitude: loc.Altitude)
+                // Cache the new location including optional speed
+                DeviceLocationCacheStore.shared.setLocation(
+                    for: deviceID,
+                    latitude: loc.Latitude,
+                    longitude: loc.Longitude,
+                    accuracy: loc.HorizontalAccuracy,
+                    timestamp: loc.TimestampDate,
+                    batteryLevel: loc.BatteryLevel,
+                    altitude: loc.Altitude,
+                    speed: loc.Speed
+                )
                 if coordinateChanged {
                     withAnimation {
                         if #available(iOS 17.0, *) {

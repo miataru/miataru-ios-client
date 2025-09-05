@@ -631,8 +631,17 @@ struct iPad_DeviceMapView: View {
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 now = Date() // Update time immediately
-                // Cache the new location
-                DeviceLocationCacheStore.shared.setLocation(for: deviceID, latitude: loc.Latitude, longitude: loc.Longitude, accuracy: loc.HorizontalAccuracy, timestamp: loc.TimestampDate, batteryLevel: loc.BatteryLevel, altitude: loc.Altitude)
+                // Cache the new location including optional speed
+                DeviceLocationCacheStore.shared.setLocation(
+                    for: deviceID,
+                    latitude: loc.Latitude,
+                    longitude: loc.Longitude,
+                    accuracy: loc.HorizontalAccuracy,
+                    timestamp: loc.TimestampDate,
+                    batteryLevel: loc.BatteryLevel,
+                    altitude: loc.Altitude,
+                    speed: loc.Speed
+                )
                 if coordinateChanged {
                     // iPad-specific: Enhanced location change animations with explicit map movement
                     withAnimation(.easeInOut(duration: 1.2)) {

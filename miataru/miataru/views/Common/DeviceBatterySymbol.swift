@@ -22,7 +22,9 @@ struct DeviceBatterySymbol: View {
     
     var body: some View {
         Image(systemName: batterySymbolName)
-            .font(.system(size: size))
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
             .foregroundColor(deviceColor)
             .shadow(radius: 4)
     }

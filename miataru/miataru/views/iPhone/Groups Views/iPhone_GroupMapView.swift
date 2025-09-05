@@ -529,8 +529,17 @@ struct iPhone_GroupMapView: View {
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
                 now = Date() // Update time immediately for each hit
-                // Caching: Save new location
-                DeviceLocationCacheStore.shared.setLocation(for: location.Device, latitude: location.Latitude, longitude: location.Longitude, accuracy: location.HorizontalAccuracy, timestamp: location.TimestampDate)
+                // Caching: Save new location (including optional speed)
+                DeviceLocationCacheStore.shared.setLocation(
+                    for: location.Device,
+                    latitude: location.Latitude,
+                    longitude: location.Longitude,
+                    accuracy: location.HorizontalAccuracy,
+                    timestamp: location.TimestampDate,
+                    batteryLevel: location.BatteryLevel,
+                    altitude: location.Altitude,
+                    speed: location.Speed
+                )
             }
             // Update map region to fit all devices
             updateMapRegionToFitDevices()
