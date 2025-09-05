@@ -218,7 +218,11 @@ struct iPhone_DeviceRowView: View {
                 lhs?.latitude == rhs?.latitude &&
                 lhs?.longitude == rhs?.longitude &&
                 lhs?.accuracy == rhs?.accuracy &&
-                lhs?.timestamp == rhs?.timestamp
+                lhs?.timestamp == rhs?.timestamp &&
+                lhs?.batteryLevel == rhs?.batteryLevel &&
+                lhs?.altitude == rhs?.altitude &&
+                lhs?.country == rhs?.country &&
+                lhs?.locality == rhs?.locality
             }
             .throttle(for: .seconds(interval), scheduler: RunLoop.main, latest: true)
             .sink { newValue in
