@@ -274,7 +274,9 @@ struct iPad_DevicesView: View {
                     latitude: location.Latitude,
                     longitude: location.Longitude,
                     accuracy: location.HorizontalAccuracy,
-                    timestamp: location.TimestampDate
+                    timestamp: location.TimestampDate,
+                    batteryLevel: location.BatteryLevel,
+                    altitude: location.Altitude
                 )
             }
             // Remove cache entry for devices without location

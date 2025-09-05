@@ -21,10 +21,12 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
     @objc var timestamp: Date
     @objc var country: String?
     @objc var locality: String?
+    var batteryLevel: Double?
+    var altitude: Double?
     
     var id: String { deviceID }
     
-    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil) {
+    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil, batteryLevel: Double? = nil, altitude: Double? = nil) {
         self.deviceID = deviceID
         self.latitude = latitude
         self.longitude = longitude
@@ -32,6 +34,8 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.timestamp = timestamp
         self.country = country
         self.locality = locality
+        self.batteryLevel = batteryLevel
+        self.altitude = altitude
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -42,6 +46,8 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.timestamp = aDecoder.decodeObject(forKey: "timestamp") as? Date ?? Date()
         self.country = aDecoder.decodeObject(forKey: "country") as? String
         self.locality = aDecoder.decodeObject(forKey: "locality") as? String
+        self.batteryLevel = aDecoder.decodeObject(forKey: "batteryLevel") as? Double
+        self.altitude = aDecoder.decodeObject(forKey: "altitude") as? Double
     }
     
     func encode(with aCoder: NSCoder) {
@@ -52,6 +58,8 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         aCoder.encode(timestamp, forKey: "timestamp")
         aCoder.encode(country, forKey: "country")
         aCoder.encode(locality, forKey: "locality")
+        aCoder.encode(batteryLevel, forKey: "batteryLevel")
+        aCoder.encode(altitude, forKey: "altitude")
     }
     
     static var supportsSecureCoding: Bool {
@@ -118,7 +126,7 @@ class DeviceLocationCacheStore: ObservableObject {
         return []
     }
 
-    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date) {
+    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil) {
         if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {
             let existing = locations[idx]
             let moved = existing.latitude != latitude || existing.longitude != longitude
@@ -130,7 +138,9 @@ class DeviceLocationCacheStore: ObservableObject {
                 timestamp: timestamp,
                 // Preserve previous placemark to avoid UI flicker; will be updated by geocoding
                 country: existing.country,
-                locality: existing.locality
+                locality: existing.locality,
+                batteryLevel: batteryLevel,
+                altitude: altitude
             )
             locations[idx] = updated
             if moved {
@@ -144,7 +154,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 }
             }
         } else {
-            locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp))
+            locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude))
             // New entry: if no placemark present, enqueue
             enqueueGeocodingIfNeeded(for: deviceID)
         }
@@ -169,7 +179,9 @@ class DeviceLocationCacheStore: ObservableObject {
                 accuracy: loc.accuracy,
                 timestamp: loc.timestamp,
                 country: country,
-                locality: locality
+                locality: locality,
+                batteryLevel: loc.batteryLevel,
+                altitude: loc.altitude
             )
             locations[idx] = updated
         }
