@@ -419,25 +419,7 @@ struct iPhone_GroupMapView: View {
                                 )
                                     .shadow(radius: 2)
                                     .accessibilityHidden(true)
-                                ZStack {
-                                    // Draw device name/ID with shadow for better readability
-                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                            if x != 0 || y != 0 {
-                                                Text(annotationID)
-                                                    .font(.callout)
-                                                    .foregroundColor(Color(UIColor.systemBackground))
-                                                    .padding(.top, 2)
-                                                    .offset(x: CGFloat(x), y: CGFloat(y))
-                                            }
-                                        }
-                                    }
-                                    Text(annotationID)
-                                        .font(.callout)
-                                        .foregroundColor(Color(UIColor.label))
-                                        .padding(.top, 2)
-                                        .accessibilityHidden(true)
-                                }
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)

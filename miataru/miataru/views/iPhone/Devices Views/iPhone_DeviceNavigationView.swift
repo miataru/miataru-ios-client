@@ -90,23 +90,10 @@ struct iPhone_DeviceNavigationView: View {
                                 let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
                                 MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
                                     .shadow(radius: 2)
-                                ZStack {
-                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                            if x != 0 || y != 0 {
-                                                Text(myDevice?.DeviceName.isEmpty == false ? (myDevice?.DeviceName ?? "") : thisDeviceIDManager.shared.deviceID)
-                                                    .font(.callout)
-                                                    .foregroundColor(Color(UIColor.systemBackground))
-                                                    .padding(.top, 2)
-                                                    .offset(x: CGFloat(x), y: CGFloat(y))
-                                            }
-                                        }
-                                    }
-                                    Text(myDevice?.DeviceName.isEmpty == false ? (myDevice?.DeviceName ?? "") : thisDeviceIDManager.shared.deviceID)
-                                        .font(.callout)
-                                        .foregroundColor(Color(UIColor.label))
-                                        .padding(.top, 2)
-                                }
+                                DeviceNameLabel(
+                                    deviceName: myDevice?.DeviceName ?? "",
+                                    deviceID: thisDeviceIDManager.shared.deviceID
+                                )
                             }
                             Rectangle()
                                 .foregroundColor(.clear)
@@ -137,23 +124,7 @@ struct iPhone_DeviceNavigationView: View {
                                 }
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
                                     .shadow(radius: 2)
-                                ZStack {
-                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                            if x != 0 || y != 0 {
-                                                Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
-                                                    .font(.callout)
-                                                    .foregroundColor(Color(UIColor.systemBackground))
-                                                    .padding(.top, 2)
-                                                    .offset(x: CGFloat(x), y: CGFloat(y))
-                                            }
-                                        }
-                                    }
-                                    Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
-                                        .font(.callout)
-                                        .foregroundColor(Color(UIColor.label))
-                                        .padding(.top, 2)
-                                }
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)
@@ -188,21 +159,12 @@ struct iPhone_DeviceNavigationView: View {
                                             .font(.system(size: 16))
                                             .foregroundColor(Color.primary.opacity(0.9))
                                             .shadow(radius: 4)
-                                        ZStack {
-                                            ForEach([-1, 0, 1], id: \.self) { x in
-                                                ForEach([-1, 0, 1], id: \.self) { y in
-                                                    if x != 0 || y != 0 {
-                                                        Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
-                                                            .font(.caption2)
-                                                            .foregroundColor(Color(UIColor.systemBackground).opacity(0.8))
-                                                            .offset(x: CGFloat(x), y: CGFloat(y))
-                                                    }
-                                                }
-                                            }
-                                            Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
-                                                .font(.caption2)
-                                                .foregroundColor(Color(UIColor.label).opacity(0.8))
-                                        }
+                                        DeviceNameLabel(
+                                            deviceName: device.DeviceName,
+                                            deviceID: device.DeviceID,
+                                            font: .caption2,
+                                            opacity: 0.8
+                                        )
                                     }
                                 }
                             }
