@@ -231,6 +231,17 @@ withAnimation(.easeInOut(duration: 0.5)) {
 - [ ] Performance considerations addressed
 - [ ] Accessibility features implemented
 
+## Memories
+
+### Copyright Header Requirements
+- When new .swift files are created in the project, the cursor rules should automatically insert the standard copyright header. The date field in the header should always be set to the current date.
+
+### Commit Message Language
+- The user prefers commit messages to be written in English.
+
+### String Localization
+- The user prefers that all strings be implemented as NSLocalizedString with correct English descriptions.
+
 ## Resources
 
 - [Apple Localization Guide](https://developer.apple.com/documentation/xcode/localization)
