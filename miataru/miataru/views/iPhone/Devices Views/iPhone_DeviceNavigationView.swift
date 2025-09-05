@@ -534,7 +534,7 @@ struct iPhone_DeviceNavigationView: View {
                     lastRouteTransportType = settings.navigationTransportType
                     // Store in cache for reuse
                     routeCache.set(
-                        for: device.DeviceID,
+                        for: self.device.DeviceID,
                         transportType: settings.navigationTransportType,
                         route: first,
                         userCoordinate: user,

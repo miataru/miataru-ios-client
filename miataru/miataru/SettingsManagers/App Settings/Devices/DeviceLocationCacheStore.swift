@@ -194,6 +194,12 @@ class DeviceLocationCacheStore: ObservableObject {
         }
         processNextGeocode()
     }
+    
+    func forceGeocodingForAllDevices() {
+        for location in locations {
+            enqueueGeocodingIfNeeded(for: location.deviceID, force: true)
+        }
+    }
 
     private func processNextGeocode() {
         guard !isProcessingGeocode else { return }
