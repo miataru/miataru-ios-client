@@ -527,23 +527,7 @@ struct iPad_DeviceMapView: View {
                                                 MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
                                                     .shadow(radius: 2)
                                                 // Device name label below the marker with outline for readability
-                                                ZStack {
-                                                    ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
-                                                        ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
-                                                            if x != 0 || y != 0 {
-                                                                Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName)
-                                                                    .font(.callout)
-                                                                    .foregroundColor(Color(UIColor.systemBackground))
-                                                                    .padding(.top, 2)
-                                                                    .offset(x: CGFloat(x), y: CGFloat(y))
-                                                            }
-                                                        }
-                                                    }
-                                                    Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName)
-                                                        .font(.callout)
-                                                        .foregroundColor(Color(UIColor.label))
-                                                        .padding(.top, 2)
-                                                }
+                                                DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
                                             }
                                             // Larger transparent rectangle to match main device hit area and avoid clipping
                                             Rectangle()
