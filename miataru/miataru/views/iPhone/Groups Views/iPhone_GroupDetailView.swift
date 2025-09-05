@@ -208,20 +208,23 @@ struct iPhone_GroupDeviceRowView: View {
     private func placemarkText() -> String? {
         var placemarkText = ""
         
-        if let placemark = cache.getPlacemark(for: device.DeviceID) {
-            let parts = [placemark.locality, placemark.country].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
-            if !parts.isEmpty { 
-                placemarkText = parts.joined(separator: ", ")
-            }
+        // Prefer cached location's placemark data if available (prevents flicker)
+        if let cached = cache.getLocation(for: device.DeviceID),
+           let country = cached.country, let locality = cached.locality {
+            placemarkText = "\(locality), \(country)"
+        } else if let placemark = cache.getPlacemark(for: device.DeviceID),
+                  let country = placemark.country, let locality = placemark.locality {
+            placemarkText = "\(locality), \(country)"
         }
         
-        // Add altitude if available
-        if let cached = cache.getLocation(for: device.DeviceID), let altitude = cached.altitude {
+        // Add altitude if available, matching iPhone_DeviceRowView formatting
+        if let altitude = cache.getLocation(for: device.DeviceID)?.altitude {
             let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
+            let altitudeLabel = NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")
             if !placemarkText.isEmpty {
-                placemarkText += " (\(altitudeValue) \(altitudeUnit))"
+                placemarkText += " (\(altitudeLabel): \(altitudeValue) \(altitudeUnit))"
             } else {
-                placemarkText = "\(altitudeValue) \(altitudeUnit)"
+                placemarkText = "\(altitudeLabel): \(altitudeValue) \(altitudeUnit)"
             }
         }
         
