@@ -206,11 +206,47 @@ struct iPhone_GroupDeviceRowView: View {
 
     /// Returns the cached placemark text if available. Does not trigger geocoding.
     private func placemarkText() -> String? {
+        var placemarkText = ""
+        
         if let placemark = cache.getPlacemark(for: device.DeviceID) {
             let parts = [placemark.locality, placemark.country].compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
-            if !parts.isEmpty { return parts.joined(separator: ", ") }
+            if !parts.isEmpty { 
+                placemarkText = parts.joined(separator: ", ")
+            }
         }
-        return nil
+        
+        // Add altitude if available
+        if let cached = cache.getLocation(for: device.DeviceID), let altitude = cached.altitude {
+            let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
+            if !placemarkText.isEmpty {
+                placemarkText += " (\(altitudeValue) \(altitudeUnit))"
+            } else {
+                placemarkText = "\(altitudeValue) \(altitudeUnit)"
+            }
+        }
+        
+        return placemarkText.isEmpty ? nil : placemarkText
+    }
+    
+    private func formatAltitude(_ altitudeInMeters: Double) -> (String, String) {
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        
+        if usesMetric {
+            let altitudeValue = String(format: "%.0f", altitudeInMeters)
+            let altitudeUnit = NSLocalizedString("altitude_meters", comment: "Altitude in meters")
+            return (altitudeValue, altitudeUnit)
+        } else {
+            // Convert meters to feet (1 meter = 3.28084 feet)
+            let altitudeInFeet = altitudeInMeters * 3.28084
+            let altitudeValue = String(format: "%.0f", altitudeInFeet)
+            let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+            return (altitudeValue, altitudeUnit)
+        }
     }
 }
 

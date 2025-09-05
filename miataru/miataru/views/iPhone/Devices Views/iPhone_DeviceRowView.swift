@@ -27,10 +27,21 @@ struct iPhone_DeviceRowView: View {
     
     var body: some View {
         HStack {
-            Circle()
-                .fill(Color(device.DeviceColor ?? UIColor.gray))
+            if let batteryLevel = displayedCachedLocation?.batteryLevel {
+                DeviceBatterySymbol(
+                    batteryLevel: batteryLevel,
+                    deviceColor: Color(device.DeviceColor ?? UIColor.gray),
+                    size: 16
+                )
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(Color(device.DeviceColor ?? UIColor.gray))
+                        .frame(width: 16, height: 16)
+                        .shadow(radius: 4)
+                }
                 .frame(width: 16, height: 16)
-                .shadow(radius: 4)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
                     .font(.headline)
@@ -135,14 +146,48 @@ struct iPhone_DeviceRowView: View {
     }
 
     private func placemarkText(from cached: CachedDeviceLocation?) -> String {
+        var placemarkText = ""
+        
         // Prefer snapshot's existing placemark (prevents flicker when location changes but geocode not finished)
         if let country = cached?.country, let locality = cached?.locality {
-            return "\(locality), \(country)"
+            placemarkText = "\(locality), \(country)"
+        } else if let placemark = cache.getPlacemark(for: device.DeviceID), let country = placemark.country, let locality = placemark.locality {
+            placemarkText = "\(locality), \(country)"
         }
-        if let placemark = cache.getPlacemark(for: device.DeviceID), let country = placemark.country, let locality = placemark.locality {
-            return "\(locality), \(country)"
+        
+        // Add altitude if available
+        if let altitude = cached?.altitude {
+            let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
+            let altitudeLabel = NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")
+            if !placemarkText.isEmpty {
+                placemarkText += " (\(altitudeLabel): \(altitudeValue) \(altitudeUnit))"
+            } else {
+                placemarkText = "\(altitudeLabel): \(altitudeValue) \(altitudeUnit)"
+            }
         }
-        return ""
+        
+        return placemarkText
+    }
+    
+    private func formatAltitude(_ altitudeInMeters: Double) -> (String, String) {
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        
+        if usesMetric {
+            let altitudeValue = String(format: "%.0f", altitudeInMeters)
+            let altitudeUnit = NSLocalizedString("altitude_meters", comment: "Altitude in meters")
+            return (altitudeValue, altitudeUnit)
+        } else {
+            // Convert meters to feet (1 meter = 3.28084 feet)
+            let altitudeInFeet = altitudeInMeters * 3.28084
+            let altitudeValue = String(format: "%.0f", altitudeInFeet)
+            let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+            return (altitudeValue, altitudeUnit)
+        }
     }
 
     private func startGeocodingIfNeeded() {

@@ -617,7 +617,9 @@ struct iPhone_DeviceNavigationView: View {
                     latitude: loc.Latitude,
                     longitude: loc.Longitude,
                     accuracy: loc.HorizontalAccuracy,
-                    timestamp: loc.TimestampDate
+                    timestamp: loc.TimestampDate,
+                    batteryLevel: loc.BatteryLevel,
+                    altitude: loc.Altitude
                 )
                 deviceCoordinate = coordinate
                 deviceTimestamp = loc.TimestampDate
