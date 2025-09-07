@@ -18,6 +18,8 @@ struct iPad_GroupDetailView: View {
     @State private var editingDevice: KnownDevice? = nil
     @State private var previousGroupName: String = ""
     @State private var groupNameField: String = ""
+    @State private var originalGroupName: String = ""
+    @State private var originalDeviceIds: Set<String> = []
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -87,10 +89,18 @@ struct iPad_GroupDetailView: View {
         .navigationTitle(group.groupName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(NSLocalizedString("Done", comment: "Done button to dismiss the current view")) {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(NSLocalizedString("cancel", comment: "Cancel button to discard changes and dismiss the view")) {
+                    cancelChanges()
                     presentationMode.wrappedValue.dismiss()
                 }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(NSLocalizedString("save", comment: "Save button to save changes and dismiss the view")) {
+                    saveChanges()
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .disabled(!hasChanges())
             }
         }
         .sheet(item: $editingDevice) { device in
@@ -107,7 +117,34 @@ struct iPad_GroupDetailView: View {
         .onAppear {
             previousGroupName = group.groupName
             groupNameField = group.groupName
+            originalGroupName = group.groupName
+            originalDeviceIds = Set(group.deviceIDs)
         }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func hasChanges() -> Bool {
+        let nameChanged = groupNameField.trimmingCharacters(in: .whitespacesAndNewlines) != originalGroupName
+        let devicesChanged = Set(group.deviceIDs) != originalDeviceIds
+        return nameChanged || devicesChanged
+    }
+    
+    private func saveChanges() {
+        let trimmedName = groupNameField.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedName.isEmpty {
+            group.groupName = trimmedName
+        }
+        // Device changes are already applied through the UI interactions
+    }
+    
+    private func cancelChanges() {
+        // Revert group name
+        group.groupName = originalGroupName
+        groupNameField = originalGroupName
+        
+        // Revert device selections
+        group.deviceIDs = Array(originalDeviceIds)
     }
 }
 
