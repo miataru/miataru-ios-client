@@ -72,6 +72,8 @@ struct MiataruMapMarker: View {
     var height: CGFloat = 40
     var pulsing: Bool = true // <-- Option für Pulsing
     var cacheEnabled: Bool = true
+    /// Extra padding used only for prerendering to avoid clipping shadows
+    var renderPadding: CGFloat = 8
 
     @State private var cachedImage: PlatformImage?
 
@@ -81,7 +83,8 @@ struct MiataruMapMarker: View {
             iconName,
             String(format: "h%.2f", height),
             String(describing: colorScheme),
-            String(format: "s%.2f", displayScale)
+            String(format: "s%.2f", displayScale),
+            String(format: "p%.1f", renderPadding)
         ].joined(separator: "|")
     }
 
@@ -193,10 +196,12 @@ struct MiataruMapMarker: View {
                         Image(uiImage: image)
                     } else {
                         staticMarker
+                            .padding(renderPadding)
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker)
+                                let renderer = ImageRenderer(content: staticMarker.padding(renderPadding))
                                 renderer.scale = displayScale
+                                renderer.isOpaque = false
                                 if let uiImage = renderer.uiImage {
                                     let cost = (uiImage.pngData()?.count) ?? 0
                                     MiataruMapMarkerImageCache.shared.set(uiImage, for: cacheKey, cost: cost)
@@ -209,10 +214,12 @@ struct MiataruMapMarker: View {
                         Image(nsImage: image)
                     } else {
                         staticMarker
+                            .padding(renderPadding)
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker)
+                                let renderer = ImageRenderer(content: staticMarker.padding(renderPadding))
                                 renderer.scale = displayScale
+                                renderer.isOpaque = false
                                 if let nsImage = renderer.nsImage {
                                     MiataruMapMarkerImageCache.shared.set(nsImage, for: cacheKey)
                                     cachedImage = nsImage
@@ -222,6 +229,7 @@ struct MiataruMapMarker: View {
 #endif
                 } else {
                     staticMarker
+                        .padding(renderPadding)
                 }
             }
         }
