@@ -144,7 +144,7 @@ struct iPad_GroupDetailView: View {
         groupNameField = originalGroupName
         
         // Revert device selections
-        group.deviceIDs = Array(originalDeviceIds)
+        group.deviceIDs = originalDeviceIds
     }
 }
 
