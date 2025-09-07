@@ -8,11 +8,10 @@ ehthumbs.db
 Thumbs.db
 
 # Xcode
-miataru/miataru.xcodeproj/project.xcworkspace/xcuserdata/bietiekay.xcuserdatad/UserInterfaceState.xcuserstate
-miataru/miataru.xcodeproj/xcuserdata/*
 *.xcuserstate
 *.xcuserdatad/
-*.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/*
+miataru.xcodeproj/xcuserdata/
 *.xcscmblueprint
 *.xccheckout
 DerivedData/
@@ -45,15 +44,3 @@ DerivedData/
 *.lock
 Pods/
 Carthage/
-miataru/miataru.xcodeproj/project.xcworkspace/xcuserdata/
-miataru/miataru.xcodeproj/xcuserdata/bietiekay.xcuserdatad/
-
-miataru/Libraries/MiataruClientSwift/.swiftpm/xcode/
-miataru/miataru.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
-
-# Android
-android/.gradle/
-android/build/
-android/app/build/
-
-android/gradle/wrapper/gradle-wrapper.jar
