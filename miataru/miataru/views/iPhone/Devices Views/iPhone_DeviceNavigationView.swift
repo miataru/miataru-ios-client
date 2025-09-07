@@ -47,6 +47,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
     @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
     // Tracks the day the counter applies to so we can reset every 24h
     @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
@@ -184,7 +185,7 @@ struct iPhone_DeviceNavigationView: View {
                     .mapControlVisibility(.hidden)
             }
             .ignoresSafeArea()
-            .gesture(
+            .simultaneousGesture(
                 DragGesture(minimumDistance: 2)
                     .onChanged { _ in markUserInteraction() }
             )

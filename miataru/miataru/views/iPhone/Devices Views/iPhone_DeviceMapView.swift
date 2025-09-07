@@ -57,6 +57,8 @@ struct iPhone_DeviceMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
+    @State private var isProgrammaticCameraChange = false // Track programmatic camera updates
+    @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace window for programmatic animations
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     
     // MARK: - Offscreen arrows support types/helpers
@@ -283,6 +285,8 @@ struct iPhone_DeviceMapView: View {
             
             // Use the best available location for map initialization
             let coordinate = bestAvailableLocation
+            // Initial region set is programmatic; suppress user detection for the animation
+            isProgrammaticCameraChange = true
             withAnimation(.easeInOut(duration: 0.5)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
@@ -303,6 +307,8 @@ struct iPhone_DeviceMapView: View {
         }
         .onChange(of: settings.mapZoomLevel) {
             let span = spanForZoomLevel(settings.mapZoomLevel)
+            // Programmatic zoom change; suppress user detection during animation
+            isProgrammaticCameraChange = true
             withAnimation(.easeInOut(duration: 0.5)) {
                 region.span = span
                 if #available(iOS 17.0, *) {
@@ -312,6 +318,7 @@ struct iPhone_DeviceMapView: View {
         }
         // Track map camera and region changes for heading/zoom/region state
         .onMapCameraChange(frequency: .continuous) { context in
+            // Ignore camera changes during programmatic animations (suppression window optional if needed)
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
@@ -327,6 +334,9 @@ struct iPhone_DeviceMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            if isProgrammaticCameraChange {
+                isProgrammaticCameraChange = false
+            }
         }
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
@@ -396,6 +406,7 @@ struct iPhone_DeviceMapView: View {
                 let heading = currentMapCamera?.heading ?? 0
                 if userHasRotatedMap {
                     Button(action: {
+                        isAutoCenteringEnabled = true
                         alignMapToNorth()
                     }) {
                         MapCompass(heading: heading, size: 40)

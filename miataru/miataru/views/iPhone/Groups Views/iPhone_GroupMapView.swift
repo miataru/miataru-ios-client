@@ -49,6 +49,7 @@ struct iPhone_GroupMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
+    @State private var isProgrammaticCameraChange = false // Track programmatic camera updates
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
@@ -230,6 +231,7 @@ struct iPhone_GroupMapView: View {
                         let heading = currentMapCamera?.heading ?? 0
                         if userHasRotatedMap {
                             Button(action: {
+                                isAutoCenteringEnabled = true
                                 alignMapToNorth()
                             }) {
                                 MapCompass(heading: heading, size: 40)
@@ -364,6 +366,9 @@ struct iPhone_GroupMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            if isProgrammaticCameraChange {
+                isProgrammaticCameraChange = false
+            }
         }
         .onReceive(timeUpdateTimer) { input in
             now = input
@@ -457,7 +462,7 @@ struct iPhone_GroupMapView: View {
                 .mapControlVisibility(.hidden)
         }
         .ignoresSafeArea()
-        .gesture(
+        .simultaneousGesture(
             DragGesture(minimumDistance: 2)
                 .onChanged { _ in isAutoCenteringEnabled = false }
         )
@@ -536,8 +541,8 @@ struct iPhone_GroupMapView: View {
                     speed: location.Speed
                 )
             }
-            // Update map region to fit all devices
-            updateMapRegionToFitDevices()
+            // Update map region to fit all devices only when auto-centering is enabled
+            if isAutoCenteringEnabled { updateMapRegionToFitDevices() }
             // Missing devices: Show error overlay
             let foundIDs = Set(locations.map { $0.Device })
             let missingIDs = Set(groupDeviceIDs).subtracting(foundIDs)
@@ -590,7 +595,7 @@ struct iPhone_GroupMapView: View {
                 }
             }
             if anySuccess {
-                updateMapRegionToFitDevices()
+                if isAutoCenteringEnabled { updateMapRegionToFitDevices() }
             }
         }
     }
