@@ -185,7 +185,7 @@ private struct ShimmerGate: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onReceive(NotificationCenter.default.publisher(for: ProcessInfo.powerStateDidChangeNotification)) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
                 isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
             }
             .environment(\.shimmeringAllowed, active && scenePhase == .active && !isLowPowerMode)
