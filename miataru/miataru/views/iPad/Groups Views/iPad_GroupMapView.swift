@@ -49,6 +49,7 @@ struct iPad_GroupMapView: View {
     @State private var showNavigationSheet: Bool = false // Navigation sheet trigger
     @State private var showNetworkErrorIcon = false // Show network error icon
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
+    @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
@@ -457,6 +458,18 @@ struct iPad_GroupMapView: View {
                 .mapControlVisibility(.hidden)
         }
         .ignoresSafeArea()
+        .gesture(
+            DragGesture(minimumDistance: 2)
+                .onChanged { _ in isAutoCenteringEnabled = false }
+        )
+        .simultaneousGesture(
+            MagnificationGesture()
+                .onChanged { _ in isAutoCenteringEnabled = false }
+        )
+        .simultaneousGesture(
+            RotationGesture()
+                .onChanged { _ in isAutoCenteringEnabled = false }
+        )
         .mapStyle(mapStyleFromSettings(settings.mapType))
 
     }
@@ -595,7 +608,7 @@ struct iPad_GroupMapView: View {
             }
             return
         }
-        if settings.groupsZoomToFit {
+        if settings.groupsZoomToFit && isAutoCenteringEnabled {
             let minDelta: CLLocationDegrees = 0.01 // Minimum span for zoom
             let verticalPaddingFactorTop = Self.verticalPaddingFactorTop
             let verticalPaddingFactorBottom = Self.verticalPaddingFactorBottom
@@ -706,6 +719,7 @@ struct iPad_GroupMapView: View {
     }
     
     private func resetZoomToFit() {
+        isAutoCenteringEnabled = true
         userHasRotatedMap = false
         let validCoordinates = deviceLocations.values.filter { coordinate in
             coordinate.latitude != 0 && coordinate.longitude != 0
