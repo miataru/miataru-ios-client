@@ -196,10 +196,10 @@ struct MiataruMapMarker: View {
                         Image(uiImage: image)
                     } else {
                         staticMarker
-                            .padding(renderPadding)
+                            .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker.padding(renderPadding))
+                                let renderer = ImageRenderer(content: staticMarker.padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding)))
                                 renderer.scale = displayScale
                                 renderer.isOpaque = false
                                 if let uiImage = renderer.uiImage {
@@ -214,10 +214,10 @@ struct MiataruMapMarker: View {
                         Image(nsImage: image)
                     } else {
                         staticMarker
-                            .padding(renderPadding)
+                            .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker.padding(renderPadding))
+                                let renderer = ImageRenderer(content: staticMarker.padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding)))
                                 renderer.scale = displayScale
                                 renderer.isOpaque = false
                                 if let nsImage = renderer.nsImage {
@@ -229,7 +229,7 @@ struct MiataruMapMarker: View {
 #endif
                 } else {
                     staticMarker
-                        .padding(renderPadding)
+                        .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                 }
             }
         }
