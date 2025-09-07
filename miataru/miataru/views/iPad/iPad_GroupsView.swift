@@ -94,7 +94,9 @@ struct iPad_GroupsView: View {
                             }
                         }
                         .sheet(item: $editingGroup) { group in
-                            iPad_GroupDetailView(group: group)
+                            NavigationStack {
+                                iPad_GroupDetailView(group: group)
+                            }
                         }
                         .onChange(of: editingGroup) { _, newValue in
                             // When the editingGroup becomes nil (sheet is dismissed), 
