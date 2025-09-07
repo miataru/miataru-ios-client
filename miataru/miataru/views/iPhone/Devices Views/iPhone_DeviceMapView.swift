@@ -286,7 +286,7 @@ struct iPhone_DeviceMapView: View {
             // Use the best available location for map initialization
             let coordinate = bestAvailableLocation
             // Initial region set is programmatic; suppress user detection for the animation
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraAnimation(duration: 0.5)
             withAnimation(.easeInOut(duration: 0.5)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
@@ -308,7 +308,7 @@ struct iPhone_DeviceMapView: View {
         .onChange(of: settings.mapZoomLevel) {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             // Programmatic zoom change; suppress user detection during animation
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraAnimation(duration: 0.5)
             withAnimation(.easeInOut(duration: 0.5)) {
                 region.span = span
                 if #available(iOS 17.0, *) {
@@ -318,7 +318,14 @@ struct iPhone_DeviceMapView: View {
         }
         // Track map camera and region changes for heading/zoom/region state
         .onMapCameraChange(frequency: .continuous) { context in
-            // Ignore camera changes during programmatic animations (suppression window optional if needed)
+            // If within suppression window, treat as programmatic and ignore interaction disabling
+            if let until = suppressUserCameraChangeDetectionUntil, Date() < until {
+                currentMapCamera = context.camera
+                currentRegion = context.region
+                currentMapSpan = context.region.span
+                return
+            }
+            // Compare against previous values to track compass state
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
@@ -336,6 +343,7 @@ struct iPhone_DeviceMapView: View {
             currentRegion = context.region
             if isProgrammaticCameraChange {
                 isProgrammaticCameraChange = false
+                suppressUserCameraChangeDetectionUntil = nil
             }
         }
         // Update 'now' every second for relative time display
@@ -526,7 +534,7 @@ struct iPhone_DeviceMapView: View {
                     .mapControlVisibility(.hidden)
             }
             .ignoresSafeArea()
-            .gesture(
+            .simultaneousGesture(
                 DragGesture(minimumDistance: 2)
                     .onChanged { _ in isAutoCenteringEnabled = false }
             )
@@ -544,7 +552,7 @@ struct iPhone_DeviceMapView: View {
             if let currentDevice = device {
                 iPhone_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                     .ignoresSafeArea()
-                    .gesture(
+                    .simultaneousGesture(
                         DragGesture(minimumDistance: 2)
                             .onChanged { _ in isAutoCenteringEnabled = false }
                     )
@@ -558,6 +566,13 @@ struct iPhone_DeviceMapView: View {
                     )
             }
         }
+    }
+
+    // MARK: - Programmatic animation helper
+    private func beginProgrammaticCameraAnimation(duration: Double) {
+        isProgrammaticCameraChange = true
+        // Add grace period to cover chained animations and map settling
+        suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(max(0.2, duration + 1.0))
     }
 
     @ViewBuilder
@@ -627,6 +642,7 @@ struct iPhone_DeviceMapView: View {
                     speed: loc.Speed
                 )
                 if coordinateChanged {
+                    beginProgrammaticCameraAnimation(duration: 0.8)
                     withAnimation {
                         if #available(iOS 17.0, *) {
                             if resetZoomToSettings {
@@ -732,7 +748,8 @@ struct iPhone_DeviceMapView: View {
             heading: 0, // North
             pitch: currentCamera.pitch
         )
-        withAnimation {
+        beginProgrammaticCameraAnimation(duration: 0.5)
+        withAnimation(.easeInOut(duration: 0.5)) {
             cameraPosition = .camera(newCamera)
             userHasRotatedMap = false // Hide compass when aligned to north
         }
@@ -745,11 +762,13 @@ struct iPhone_DeviceMapView: View {
         let coordinate = bestAvailableLocation
         if #available(iOS 17.0, *) {
             let newRegion = MKCoordinateRegion(center: coordinate, span: span)
+            beginProgrammaticCameraAnimation(duration: 0.5)
             withAnimation(.easeInOut(duration: 0.5)) {
                 cameraPosition = .region(newRegion)
                 currentMapSpan = span
             }
         } else {
+            beginProgrammaticCameraAnimation(duration: 0.5)
             withAnimation(.easeInOut(duration: 0.5)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
