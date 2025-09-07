@@ -1,52 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "debug_marker_device_alt_name" : {
-      "comment" : "Alternate sample device name used in the marker debug view.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beispielgerät B"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sample Device B"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルデバイスB"
-          }
-        }
-      }
-    },
-    "debug_marker_device_name" : {
-      "comment" : "Sample device name used in the marker debug view.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beispielgerät A"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sample Device A"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルデバイスA"
-          }
-        }
-      }
-    },
     "" : {
       "shouldTranslate" : false
     },
@@ -1123,7 +1077,7 @@
       }
     },
     "cancel" : {
-      "comment" : "Cancel editing the group",
+      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1506,6 +1460,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイスロックを無効化"
+          }
+        }
+      }
+    },
+    "debug_marker_device_alt_name" : {
+      "comment" : "Alternate sample device name used in the marker debug view.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispielgerät B"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Device B"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデバイスB"
+          }
+        }
+      }
+    },
+    "debug_marker_device_name" : {
+      "comment" : "Sample device name used in the marker debug view.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispielgerät A"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Device A"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデバイスA"
           }
         }
       }
@@ -2145,7 +2145,7 @@
       }
     },
     "Done" : {
-      "comment" : "Button to close color picker sheet\nClose group details\nDone button to dismiss the current view",
+      "comment" : "Button to close color picker sheet\nClose group details",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4905,7 +4905,7 @@
       }
     },
     "save" : {
-      "comment" : "Save changes to the group",
+      "comment" : "Save button to save changes and dismiss the view\nSave changes to the group",
       "localizations" : {
         "de" : {
           "stringUnit" : {
