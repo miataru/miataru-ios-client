@@ -419,12 +419,20 @@ extension LocationManager: CLLocationManagerDelegate {
             self.currentLocation = location
             self.lastUpdateTime = Date()
             // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
+            let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : nil
+            let speedValue: Double? = (location.speed >= 0) ? location.speed : nil
+            let batteryLevelRaw = UIDevice.current.batteryLevel
+            let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : nil
+
             DeviceLocationCacheStore.shared.setLocation(
                 for: thisDeviceIDManager.shared.deviceID,
                 latitude: location.coordinate.latitude,
                 longitude: location.coordinate.longitude,
                 accuracy: location.horizontalAccuracy,
-                timestamp: location.timestamp
+                timestamp: location.timestamp,
+                batteryLevel: batteryPercent,
+                altitude: altitudeValue,
+                speed: speedValue
             )
             self.sendLocationToServer(location)
             self.addUpdateLogEntry(mode: mode)
