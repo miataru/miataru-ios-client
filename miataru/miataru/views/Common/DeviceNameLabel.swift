@@ -8,29 +8,78 @@
  */
 
 import SwiftUI
+@preconcurrency import SwiftUI
+#if canImport(UIKit)
+import UIKit
+typealias PlatformImage = UIImage
+#elseif canImport(AppKit)
+import AppKit
+typealias PlatformImage = NSImage
+#endif
+
+/// Shared in-memory cache for rasterized device name labels
+final class DeviceNameLabelImageCache {
+    static let shared = DeviceNameLabelImageCache()
+    private let cache = NSCache<NSString, PlatformImage>()
+    private init() {
+        cache.countLimit = 256
+    }
+    func image(for key: String) -> PlatformImage? {
+        let image = cache.object(forKey: key as NSString)
+        if image != nil {
+            debugLog("DeviceNameLabel cache HIT for key: \(key)")
+        } else {
+            debugLog("DeviceNameLabel cache MISS for key: \(key)")
+        }
+        return image
+    }
+    func set(_ image: PlatformImage, for key: String, cost: Int = 0) {
+        debugLog("DeviceNameLabel cache STORE for key: \(key), cost: \(cost)")
+        cache.setObject(image, forKey: key as NSString, cost: cost)
+    }
+}
 
 struct DeviceNameLabel: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.displayScale) private var displayScale
+    @Environment(\.sizeCategory) private var sizeCategory
+
     let deviceName: String
     let deviceID: String
     let font: Font
     let topPadding: CGFloat
     let opacity: Double
+    let cacheEnabled: Bool
     
-    init(deviceName: String, deviceID: String, font: Font = .callout, topPadding: CGFloat = 2, opacity: Double = 1.0) {
+    @State private var cachedImage: PlatformImage?
+    
+    init(deviceName: String, deviceID: String, font: Font = .callout, topPadding: CGFloat = 2, opacity: Double = 1.0, cacheEnabled: Bool = true) {
         self.deviceName = deviceName
         self.deviceID = deviceID
         self.font = font
         self.topPadding = topPadding
         self.opacity = opacity
+        self.cacheEnabled = cacheEnabled
     }
     
     private var displayText: String {
         deviceName.isEmpty ? deviceID : deviceName
     }
     
-    var body: some View {
+    private var cacheKey: String {
+        [
+            displayText,
+            String(describing: font),
+            String(format: "%.2f", topPadding),
+            String(format: "%.3f", opacity),
+            String(describing: colorScheme),
+            String(describing: sizeCategory),
+            String(format: "%.2f", displayScale)
+        ].joined(separator: "|")
+    }
+
+    private var rawLabel: some View {
         ZStack {
-            // Outline/shadow effect for better readability
             ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
                 ForEach([-2, -1, 0, 1, 2], id: \.self) { y in
                     if x != 0 || y != 0 {
@@ -42,11 +91,59 @@ struct DeviceNameLabel: View {
                     }
                 }
             }
-            // Main text
             Text(displayText)
                 .font(font)
                 .foregroundColor(Color(UIColor.label).opacity(opacity))
                 .padding(.top, topPadding)
+        }
+    }
+
+    var body: some View {
+        Group {
+            if cacheEnabled {
+                #if canImport(UIKit)
+                if let image = cachedImage ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
+                    Image(uiImage: image)
+                } else {
+                    rawLabel
+                        .task(id: cacheKey) {
+                            guard DeviceNameLabelImageCache.shared.image(for: cacheKey) == nil else { 
+                                debugLog("DeviceNameLabel task skipped - image already cached for key: \(cacheKey)")
+                                return 
+                            }
+                            debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")
+                            let renderer = ImageRenderer(content: rawLabel)
+                            renderer.scale = displayScale
+                            if let uiImage = renderer.uiImage {
+                                let cost = (uiImage.pngData()?.count) ?? 0
+                                DeviceNameLabelImageCache.shared.set(uiImage, for: cacheKey, cost: cost)
+                                cachedImage = uiImage
+                            }
+                        }
+                }
+                #elseif canImport(AppKit)
+                if let image = cachedImage ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
+                    Image(nsImage: image)
+                } else {
+                    rawLabel
+                        .task(id: cacheKey) {
+                            guard DeviceNameLabelImageCache.shared.image(for: cacheKey) == nil else { 
+                                debugLog("DeviceNameLabel task skipped - image already cached for key: \(cacheKey)")
+                                return 
+                            }
+                            debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")
+                            let renderer = ImageRenderer(content: rawLabel)
+                            renderer.scale = displayScale
+                            if let nsImage = renderer.nsImage {
+                                DeviceNameLabelImageCache.shared.set(nsImage, for: cacheKey)
+                                cachedImage = nsImage
+                            }
+                        }
+                }
+                #endif
+            } else {
+                rawLabel
+            }
         }
     }
 }
