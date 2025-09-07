@@ -23,7 +23,7 @@ struct iPad_GroupsView: View {
             List(selection: $selection) {
                 Section(header: Text(NSLocalizedString("groups", comment: "Groups list header on iPad"))) {
                     ForEach(groupStore.groups) { group in
-                        iPhone_GroupRowView(group: group)
+                        GroupRowView(group: group)
                             .tag(group.id)
                             .tint(.primary)
                             .contextMenu {

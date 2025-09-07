@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
  *
- * iPhone_GroupRowView.swift
+ * GroupRowView.swift
  * miataru
  *
- * Created by Daniel Kirstenpfad on 20.06.25.
+ * Created by Daniel Kirstenpfad on 2025-01-25.
  */
 
 import SwiftUI
 
-struct iPhone_GroupRowView: View {
+struct GroupRowView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -37,5 +37,5 @@ struct iPhone_GroupRowView: View {
     let group = DeviceGroup(name: "Test Group")
     group.addDevice("device1")
     group.addDevice("device2")
-    return iPhone_GroupRowView(group: group)
-} 
+    return GroupRowView(group: group)
+}

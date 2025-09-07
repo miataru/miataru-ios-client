@@ -64,7 +64,7 @@ struct iPhone_GroupsView: View {
                 List {
                     ForEach(groupStore.groups) { group in
                         NavigationLink(value: group.id) {
-                            iPhone_GroupRowView(group: group)
+                            GroupRowView(group: group)
                         }
                         .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
