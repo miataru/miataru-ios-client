@@ -422,7 +422,6 @@ struct iPhone_DeviceMapView: View {
                             .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
                     }
                     // Marker annotation for the device
-                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
                             VStack(spacing: 0) {

@@ -209,25 +209,39 @@ struct DeviceRowView: View {
         }
     }
 
+    private func areLocationsEqual(_ lhs: CachedDeviceLocation?, _ rhs: CachedDeviceLocation?) -> Bool {
+        switch (lhs, rhs) {
+        case (nil, nil):
+            return true
+        case let (l?, r?):
+            return l.latitude == r.latitude &&
+                l.longitude == r.longitude &&
+                l.accuracy == r.accuracy &&
+                l.timestamp == r.timestamp &&
+                l.batteryLevel == r.batteryLevel &&
+                l.altitude == r.altitude &&
+                l.country == r.country &&
+                l.locality == r.locality
+        default:
+            return false
+        }
+    }
+
     private func setupThrottledLocationSubscription() {
         locationUpdateCancellable?.cancel()
-        let interval = max(1.0, Double(settings.mapUpdateInterval))
-        locationUpdateCancellable = cache.$locations
-            .map { _ in cache.getLocation(for: device.DeviceID) }
-            .removeDuplicates { lhs, rhs in
-                lhs?.latitude == rhs?.latitude &&
-                lhs?.longitude == rhs?.longitude &&
-                lhs?.accuracy == rhs?.accuracy &&
-                lhs?.timestamp == rhs?.timestamp &&
-                lhs?.batteryLevel == rhs?.batteryLevel &&
-                lhs?.altitude == rhs?.altitude &&
-                lhs?.country == rhs?.country &&
-                lhs?.locality == rhs?.locality
+        let intervalSeconds: Double = max(1.0, Double(settings.mapUpdateInterval))
+        let throttleStride: RunLoop.SchedulerTimeType.Stride = .seconds(intervalSeconds)
+        let publisher = cache.$locations
+            .map { (_: [CachedDeviceLocation]) -> CachedDeviceLocation? in
+                cache.getLocation(for: device.DeviceID)
             }
-            .throttle(for: .seconds(interval), scheduler: RunLoop.main, latest: true)
-            .sink { newValue in
-                displayedCachedLocation = newValue
+            .removeDuplicates(by: areLocationsEqual)
+            .throttle(for: throttleStride, scheduler: RunLoop.main, latest: true)
+            .receive(on: RunLoop.main)
+            .sink { (newValue: CachedDeviceLocation?) in
+                self.displayedCachedLocation = newValue
             }
+        locationUpdateCancellable = publisher
     }
 }
 

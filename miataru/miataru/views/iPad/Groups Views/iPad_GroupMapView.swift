@@ -401,7 +401,6 @@ struct iPad_GroupMapView: View {
                             .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
                     }
                     // Device marker
-                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
                             VStack(spacing: 0) {
