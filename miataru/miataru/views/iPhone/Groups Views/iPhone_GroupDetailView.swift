@@ -42,11 +42,18 @@ struct iPhone_GroupDetailView: View {
             }
             Section(header: Text("group_member_devices")) {
                 ForEach(deviceStore.devices) { device in
-                    iPhone_GroupDeviceRowView(
-                        device: device,
-                        cache: cache,
-                        isInGroup: group.containsDevice(device.DeviceID)
-                    ) {
+                    HStack {
+                        DeviceRowView(
+                            device: device,
+                            cache: cache
+                        )
+                        Spacer()
+                        Image(systemName: group.containsDevice(device.DeviceID) ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(group.containsDevice(device.DeviceID) ? .green : .gray)
+                            .font(.title2)
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
                         group.toggleDevice(device.DeviceID)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -63,10 +70,6 @@ struct iPhone_GroupDetailView: View {
                             Label("edit_device", systemImage: "pencil")
                         }
                         .tint(.blue)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        editingDevice = device
                     }
                 }
                 .onDelete { indices in
@@ -108,148 +111,6 @@ struct iPhone_GroupDetailView: View {
         .onAppear {
             previousGroupName = group.groupName
             groupNameField = group.groupName
-        }
-    }
-}
-
-struct iPhone_GroupDeviceRowView: View {
-    @ObservedObject var device: KnownDevice
-    @ObservedObject var cache: DeviceLocationCacheStore
-    let isInGroup: Bool
-    let onToggle: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        HStack {
-            Circle()
-                .fill(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
-                .frame(width: 16, height: 16)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(device.DeviceName)
-                    .font(.headline)
-                if let subtitle = subtitleText() {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-                if let place = placemarkText() {
-                    Text(place)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
-            }
-            Spacer()
-            Image(systemName: isInGroup ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(isInGroup ? .green : .gray)
-                .font(.title2)
-        }
-        .padding(.vertical, 4)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onToggle()
-        }
-    }
-
-    /// Returns the subtitle string for the device row: last seen + distance
-    private func subtitleText() -> String? {
-        guard let cached = cache.getLocation(for: device.DeviceID) else {
-            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-            let never = NSLocalizedString("device_row_never", comment: "Default value for never seen device")
-            let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
-            let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
-            let unknown = NSLocalizedString("device_row_unknown", comment: "Default value for unknown distance")
-            return "\(lastSeen): \(never) \(separator) \(distanceLabel): \(unknown)"
-        }
-        let now = Date()
-        let relativeTime = relativeTimeString(from: cached.timestamp, to: now, unitsStyle: .abbreviated)
-        guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
-            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-            return "\(lastSeen): \(relativeTime)"
-        }
-        let deviceLoc = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
-        let myLoc = CLLocation(latitude: myCached.latitude, longitude: myCached.longitude)
-        let distance = deviceLoc.distance(from: myLoc) // in meters
-        let usesMetric: Bool
-        if #available(iOS 16.0, *) {
-            usesMetric = Locale.current.measurementSystem == .metric
-        } else {
-            usesMetric = Locale.current.usesMetricSystem
-        }
-        let formattedDistance: String
-        if usesMetric {
-            let meterUnit = NSLocalizedString("device_row_meter_unit", comment: "Unit for meters in device row distance display")
-            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", comment: "Unit for kilometers in device row distance display")
-            if distance < 1000 {
-                formattedDistance = String(format: "%.0f %@", distance, meterUnit)
-            } else {
-                formattedDistance = String(format: "%d %@", Int(round(distance / 1000)), kilometerUnit)
-            }
-        } else {
-            let feetUnit = NSLocalizedString("device_row_feet_unit", comment: "Unit for feet in device row distance display (imperial)")
-            let milesUnit = NSLocalizedString("device_row_miles_unit", comment: "Unit for miles in device row distance display (imperial)")
-            let distanceInFeet = distance / 0.3048
-            let distanceInMiles = distance / 1609.34
-            if distanceInFeet > 528 {
-                formattedDistance = String(format: "%.2f %@", distanceInMiles, milesUnit)
-            } else {
-                formattedDistance = String(format: "%.0f %@", distanceInFeet, feetUnit)
-            }
-        }
-        let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
-        let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-        let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
-        return "\(lastSeen): \(relativeTime) \(separator) \(distanceLabel): \(formattedDistance)"
-    }
-
-    /// Returns the cached placemark text if available. Does not trigger geocoding.
-    private func placemarkText() -> String? {
-        var placemarkText = ""
-        
-        // Prefer cached location's placemark data if available (prevents flicker)
-        if let cached = cache.getLocation(for: device.DeviceID),
-           let country = cached.country, let locality = cached.locality {
-            placemarkText = "\(locality), \(country)"
-        } else if let placemark = cache.getPlacemark(for: device.DeviceID),
-                  let country = placemark.country, let locality = placemark.locality {
-            placemarkText = "\(locality), \(country)"
-        }
-        
-        // Add altitude if available, matching iPhone_DeviceRowView formatting
-        if let altitude = cache.getLocation(for: device.DeviceID)?.altitude {
-            let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
-            let altitudeLabel = NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")
-            if !placemarkText.isEmpty {
-                placemarkText += " (\(altitudeLabel): \(altitudeValue) \(altitudeUnit))"
-            } else {
-                placemarkText = "\(altitudeLabel): \(altitudeValue) \(altitudeUnit)"
-            }
-        }
-        
-        return placemarkText.isEmpty ? nil : placemarkText
-    }
-    
-    private func formatAltitude(_ altitudeInMeters: Double) -> (String, String) {
-        let usesMetric: Bool
-        if #available(iOS 16.0, *) {
-            usesMetric = Locale.current.measurementSystem == .metric
-        } else {
-            usesMetric = Locale.current.usesMetricSystem
-        }
-        
-        if usesMetric {
-            let altitudeValue = String(format: "%.0f", altitudeInMeters)
-            let altitudeUnit = NSLocalizedString("altitude_meters", comment: "Altitude in meters")
-            return (altitudeValue, altitudeUnit)
-        } else {
-            // Convert meters to feet (1 meter = 3.28084 feet)
-            let altitudeInFeet = altitudeInMeters * 3.28084
-            let altitudeValue = String(format: "%.0f", altitudeInFeet)
-            let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
-            return (altitudeValue, altitudeUnit)
         }
     }
 }
