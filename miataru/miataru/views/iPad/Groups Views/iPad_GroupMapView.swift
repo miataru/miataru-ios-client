@@ -50,6 +50,7 @@ struct iPad_GroupMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
+    @State private var isProgrammaticCameraChange = false // Track programmatic camera updates
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
@@ -231,6 +232,7 @@ struct iPad_GroupMapView: View {
                         let heading = currentMapCamera?.heading ?? 0
                         if userHasRotatedMap {
                             Button(action: {
+                                isAutoCenteringEnabled = true
                                 alignMapToNorth()
                             }) {
                                 MapCompass(heading: heading, size: 40)
@@ -250,6 +252,8 @@ struct iPad_GroupMapView: View {
         .adaptiveToolbarBackground()
         .onAppear {
             if !groupDeviceIDs.isEmpty {
+                // Ensure auto-centering is enabled when opening a group on iPad
+                isAutoCenteringEnabled = true
                 // Caching: Immediately show cached locations
                 for deviceID in groupDeviceIDs {
                     if let cached = DeviceLocationCacheStore.shared.getLocation(for: deviceID) {
@@ -294,6 +298,8 @@ struct iPad_GroupMapView: View {
         }
         .onChange(of: group.id) { _, _ in
             // Reset state when switching to a different group
+            // Re-enable auto-centering on group switch
+            isAutoCenteringEnabled = true
             deviceLocations.removeAll()
             deviceAccuracies.removeAll()
             deviceTimestamps.removeAll()
@@ -368,6 +374,9 @@ struct iPad_GroupMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            if isProgrammaticCameraChange {
+                isProgrammaticCameraChange = false
+            }
         }
         .onReceive(timeUpdateTimer) { input in
             now = input
@@ -458,7 +467,7 @@ struct iPad_GroupMapView: View {
                 .mapControlVisibility(.hidden)
         }
         .ignoresSafeArea()
-        .gesture(
+        .simultaneousGesture(
             DragGesture(minimumDistance: 2)
                 .onChanged { _ in isAutoCenteringEnabled = false }
         )
@@ -536,8 +545,8 @@ struct iPad_GroupMapView: View {
                     speed: location.Speed
                 )
             }
-            // Update map region to fit all devices
-            updateMapRegionToFitDevices()
+            // Update map region to fit all devices only when auto-centering is enabled
+            if isAutoCenteringEnabled { updateMapRegionToFitDevices() }
             // Missing devices: Show error overlay
             let foundIDs = Set(locations.map { $0.Device })
             let missingIDs = Set(groupDeviceIDs).subtracting(foundIDs)
@@ -590,7 +599,7 @@ struct iPad_GroupMapView: View {
                 }
             }
             if anySuccess {
-                updateMapRegionToFitDevices()
+                if isAutoCenteringEnabled { updateMapRegionToFitDevices() }
             }
         }
     }

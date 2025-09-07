@@ -433,6 +433,7 @@ struct iPad_DeviceMapView: View {
                 let heading = currentMapCamera?.heading ?? 0
                 if userHasRotatedMap {
                     Button(action: {
+                        isAutoCenteringEnabled = true
                         alignMapToNorth()
                     }) {
                         MapCompass(heading: heading, size: 40)
