@@ -57,6 +57,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
+    @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -514,12 +515,36 @@ struct iPhone_DeviceMapView: View {
                     .mapControlVisibility(.hidden)
             }
             .ignoresSafeArea()
+            .gesture(
+                DragGesture(minimumDistance: 2)
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
+            .simultaneousGesture(
+                MagnificationGesture()
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
+            .simultaneousGesture(
+                RotationGesture()
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
             .mapStyle(mapStyleFromSettings(settings.mapType))
         } else {
             // For iOS versions below 17, use a legacy map view implementation
             if let currentDevice = device {
                 iPhone_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                     .ignoresSafeArea()
+                    .gesture(
+                        DragGesture(minimumDistance: 2)
+                            .onChanged { _ in isAutoCenteringEnabled = false }
+                    )
+                    .simultaneousGesture(
+                        MagnificationGesture()
+                            .onChanged { _ in isAutoCenteringEnabled = false }
+                    )
+                    .simultaneousGesture(
+                        RotationGesture()
+                            .onChanged { _ in isAutoCenteringEnabled = false }
+                    )
             }
         }
     }
@@ -599,7 +624,7 @@ struct iPhone_DeviceMapView: View {
                                 let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
                                 cameraPosition = .camera(northCamera)
                                 currentMapSpan = settingsSpan // Also update currentMapSpan
-                            } else {
+                            } else if isAutoCenteringEnabled {
                                 // On automatic update: keep current orientation (heading)
                                 if let currentCamera = currentMapCamera {
                                     let newCamera = MapCamera(
@@ -618,7 +643,7 @@ struct iPhone_DeviceMapView: View {
                                 // On manual update: use zoom level from settings
                                 let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
-                            } else {
+                            } else if isAutoCenteringEnabled {
                                 // On automatic update: keep current zoom level
                                 let currentZoomLevel = currentZoomLevelFromSpan(region.span)
                                 let currentSpan = spanForZoomLevel(currentZoomLevel)
@@ -704,6 +729,7 @@ struct iPhone_DeviceMapView: View {
 
     // Resets the map zoom to the value from settings
     private func resetZoomToSettings() {
+        isAutoCenteringEnabled = true
         let span = spanForZoomLevel(settings.mapZoomLevel)
         let coordinate = bestAvailableLocation
         if #available(iOS 17.0, *) {

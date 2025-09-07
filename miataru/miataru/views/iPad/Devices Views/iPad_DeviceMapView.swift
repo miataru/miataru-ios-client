@@ -58,6 +58,9 @@ struct iPad_DeviceMapView: View {
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
     @Environment(\.scenePhase) private var scenePhase
+    @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
+    @State private var isProgrammaticCameraChange = false // Track programmatic camera updates to avoid false interaction detection
+    @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -254,6 +257,8 @@ struct iPad_DeviceMapView: View {
         }
         .adaptiveToolbarBackground()
         .onAppear {
+            // Ensure auto-centering is enabled on fresh start
+            isAutoCenteringEnabled = true
             settings.lastOpenedDeviceID = deviceID
             // Force map re-instantiation to avoid black screen on restore
             mapInteractionID = UUID()
@@ -288,6 +293,7 @@ struct iPad_DeviceMapView: View {
             // Use the best available location for map initialization
             let coordinate = bestAvailableLocation
             // iPad-specific: Force animations with longer duration for better visual feedback
+            beginProgrammaticCameraAnimation(duration: 1.0)
             withAnimation(.easeInOut(duration: 1.0)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
@@ -316,6 +322,7 @@ struct iPad_DeviceMapView: View {
         .onChange(of: settings.mapZoomLevel) {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             // iPad-specific: Enhanced zoom animations
+            beginProgrammaticCameraAnimation(duration: 0.8)
             withAnimation(.easeInOut(duration: 0.8)) {
                 region.span = span
                 if #available(iOS 17.0, *) {
@@ -325,9 +332,20 @@ struct iPad_DeviceMapView: View {
         }
         // Track map camera and region changes for heading/zoom/region state
         .onMapCameraChange(frequency: .continuous) { context in
-            let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
-            let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
-                              abs((currentRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
+            // If we are within the suppression window, treat as programmatic and ignore interaction disabling
+            if let until = suppressUserCameraChangeDetectionUntil, Date() < until {
+                currentMapCamera = context.camera
+                currentRegion = context.region
+                currentMapSpan = context.region.span
+                // One of the callbacks will end the animation; keep auto-centering enabled
+                return
+            }
+            // Compare against previous values to detect user changes reliably (including pure pan)
+            let previousRegion = currentRegion
+            let previousCamera = currentMapCamera
+            let headingChanged = abs((previousCamera?.heading ?? 0) - context.camera.heading) > 0.1
+            let zoomChanged = abs((previousRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
+                              abs((previousRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
             if abs(context.camera.heading) < 0.1 {
                 userHasRotatedMap = false
             } else if headingChanged {
@@ -340,6 +358,12 @@ struct iPad_DeviceMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            if isProgrammaticCameraChange {
+                // Reset the flag and do not disable auto-centering
+                isProgrammaticCameraChange = false
+                // Also end suppression window early
+                suppressUserCameraChangeDetectionUntil = nil
+            }
         }
         // Update 'now' every second for relative time display
         .onReceive(timeUpdateTimer) { input in
@@ -548,6 +572,18 @@ struct iPad_DeviceMapView: View {
                         .mapControlVisibility(.hidden)
                 }
                 .ignoresSafeArea()
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 2)
+                        .onChanged { _ in isAutoCenteringEnabled = false }
+                )
+                .simultaneousGesture(
+                    MagnificationGesture()
+                        .onChanged { _ in isAutoCenteringEnabled = false }
+                )
+                .simultaneousGesture(
+                    RotationGesture()
+                        .onChanged { _ in isAutoCenteringEnabled = false }
+                )
                 .mapStyle(mapStyleFromSettings(settings.mapType))
             } else {
                 // For iOS versions below 17, use a legacy map view implementation
@@ -557,6 +593,13 @@ struct iPad_DeviceMapView: View {
                 }
             }
 
+    }
+
+    // MARK: - Programmatic animation helper
+    private func beginProgrammaticCameraAnimation(duration: Double) {
+        isProgrammaticCameraChange = true
+        // Add generous grace period to cover chained animations and MapKit internal settling
+        suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(max(0.2, duration + 1.35))
     }
 
     @ViewBuilder
@@ -628,6 +671,7 @@ struct iPad_DeviceMapView: View {
                 )
                 if coordinateChanged {
                     // iPad-specific: Enhanced location change animations with explicit map movement
+                    isProgrammaticCameraChange = true
                     withAnimation(.easeInOut(duration: 1.2)) {
                         if #available(iOS 17.0, *) {
                             if resetZoomToSettings {
@@ -636,7 +680,7 @@ struct iPad_DeviceMapView: View {
                                 let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
                                 cameraPosition = .camera(northCamera)
                                 currentMapSpan = settingsSpan // Also update currentMapSpan
-                            } else {
+                            } else if isAutoCenteringEnabled {
                                 // On automatic update: keep current orientation (heading) but animate map movement
                                 if let currentCamera = currentMapCamera {
                                     let newCamera = MapCamera(
@@ -655,7 +699,7 @@ struct iPad_DeviceMapView: View {
                                 // On manual update: use zoom level from settings
                                 let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
-                            } else {
+                            } else if isAutoCenteringEnabled {
                                 // On automatic update: keep current zoom level but animate map movement
                                 let currentZoomLevel = currentZoomLevelFromSpan(region.span)
                                 let currentSpan = spanForZoomLevel(currentZoomLevel)
@@ -734,6 +778,7 @@ struct iPad_DeviceMapView: View {
             pitch: currentCamera.pitch
         )
         // iPad-specific: Enhanced compass alignment animation
+        beginProgrammaticCameraAnimation(duration: 1.0)
         withAnimation(.easeInOut(duration: 1.0)) {
             cameraPosition = .camera(newCamera)
             userHasRotatedMap = false // Hide compass when aligned to north
@@ -742,17 +787,20 @@ struct iPad_DeviceMapView: View {
 
     // Resets the map zoom to the value from settings
     private func resetZoomToSettings() {
+        isAutoCenteringEnabled = true
         let span = spanForZoomLevel(settings.mapZoomLevel)
         let coordinate = bestAvailableLocation
         if #available(iOS 17.0, *) {
             let newRegion = MKCoordinateRegion(center: coordinate, span: span)
             // iPad-specific: Enhanced zoom reset animation
+            beginProgrammaticCameraAnimation(duration: 1.0)
             withAnimation(.easeInOut(duration: 1.0)) {
                 cameraPosition = .region(newRegion)
                 currentMapSpan = span
             }
         } else {
             // iPad-specific: Enhanced zoom reset animation
+            beginProgrammaticCameraAnimation(duration: 1.0)
             withAnimation(.easeInOut(duration: 1.0)) {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
