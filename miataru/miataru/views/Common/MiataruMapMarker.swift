@@ -62,6 +62,8 @@ final class MiataruMapMarkerImageCache {
 }
 
 struct MiataruMapMarker: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
 
@@ -178,7 +180,10 @@ struct MiataruMapMarker: View {
 
         ZStack {
             if pulsing {
-                PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
+                let animationsAllowed = scenePhase == .active && !isLowPowerMode
+                if animationsAllowed {
+                    PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
+                }
             }
 
             Group {
@@ -219,6 +224,9 @@ struct MiataruMapMarker: View {
                     staticMarker
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: ProcessInfo.powerStateDidChangeNotification)) { _ in
+            isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
         }
     }
 }
