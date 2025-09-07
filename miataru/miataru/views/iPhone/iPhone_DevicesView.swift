@@ -60,7 +60,7 @@ struct iPhone_DevicesView: View {
                             .tint(.blue)
                         }
                     } else {
-                        iPhone_DeviceRowView(device: device, cache: cache)
+                        DeviceRowView(device: device, cache: cache)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingDevice = device
