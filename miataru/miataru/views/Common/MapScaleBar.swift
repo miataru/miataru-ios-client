@@ -14,12 +14,11 @@ struct MapScaleBar: View {
     let region: MKCoordinateRegion
     let width: CGFloat
 
+    @StateObject private var viewModel = MapScaleBarViewModel()
+
     var body: some View {
-        let distance = distanceForWidth(region: region, width: width)
-        let label = distanceLabel(for: distance)
-        // Stack label above the bar while keeping a fixed component width
         VStack(spacing: 2) {
-            Text(label)
+            Text(viewModel.label.isEmpty ? defaultLabel : viewModel.label)
                 .font(.caption2)
                 .foregroundColor(.primary)
                 .lineLimit(1)
@@ -33,49 +32,35 @@ struct MapScaleBar: View {
         .padding(4)
         .background(.ultraThinMaterial)
         .cornerRadius(8)
+        .onAppear {
+            viewModel.schedule(region: region, width: width)
+        }
+        .onChange(of: regionToken) { _, _ in
+            viewModel.schedule(region: region, width: width)
+        }
+        .onChange(of: width) { _, newValue in
+            viewModel.schedule(region: region, width: newValue)
+        }
     }
 
-    func distanceForWidth(region: MKCoordinateRegion, width: CGFloat) -> CLLocationDistance {
-        // Calculate the distance that 'width' points cover on the map
-        let mapViewWidth = UIScreen.main.bounds.width
-        let span = region.span
-        let center = region.center
-        let loc1 = CLLocation(latitude: center.latitude, longitude: center.longitude - span.longitudeDelta / 2 * Double(width / mapViewWidth))
-        let loc2 = CLLocation(latitude: center.latitude, longitude: center.longitude + span.longitudeDelta / 2 * Double(width / mapViewWidth))
-        return loc1.distance(from: loc2)
+    private var defaultLabel: String {
+        // Localized: Placeholder text while computing scale
+        NSLocalizedString("scalebar_computing", comment: "Scale bar: computing distance placeholder")
     }
 
-    func distanceLabel(for distance: CLLocationDistance) -> String {
-        let usesMetric: Bool
-        if #available(iOS 16.0, *) {
-            usesMetric = Locale.current.measurementSystem == .metric
-        } else {
-            usesMetric = Locale.current.usesMetricSystem
-        }
-        if usesMetric {
-            if distance > 1000 {
-                // Localized: Kilometer unit for scale bar
-                let format = NSLocalizedString("scalebar_kilometers", comment: "Scale bar: display distance in kilometers")
-                return String(format: format, distance / 1000)
-            } else {
-                // Localized: Meter unit for scale bar
-                let format = NSLocalizedString("scalebar_meters", comment: "Scale bar: display distance in meters")
-                return String(format: format, distance)
-            }
-        } else {
-            // Imperial: miles and feet
-            let distanceInFeet = distance / 0.3048
-            let distanceInMiles = distance / 1609.34
-            if distanceInFeet > 528 { // More than 1/10 mile
-                // Localized: Miles unit for scale bar
-                let format = NSLocalizedString("scalebar_miles", comment: "Scale bar: display distance in miles")
-                return String(format: format, distanceInMiles)
-            } else {
-                // Localized: Feet unit for scale bar
-                let format = NSLocalizedString("scalebar_feet", comment: "Scale bar: display distance in feet")
-                return String(format: format, distanceInFeet)
-            }
-        }
+    private struct RegionToken: Equatable {
+        let latBucket: Int
+        let lonBucket: Int
+        let latDeltaBucket: Int
+        let lonDeltaBucket: Int
+    }
+
+    private var regionToken: RegionToken {
+        let latBucket = Int((region.center.latitude * 1000.0).rounded())
+        let lonBucket = Int((region.center.longitude * 1000.0).rounded())
+        let latDeltaBucket = Int((region.span.latitudeDelta * 1000.0).rounded())
+        let lonDeltaBucket = Int((region.span.longitudeDelta * 1000.0).rounded())
+        return RegionToken(latBucket: latBucket, lonBucket: lonBucket, latDeltaBucket: latDeltaBucket, lonDeltaBucket: lonDeltaBucket)
     }
 }
 
