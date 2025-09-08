@@ -181,12 +181,15 @@ struct MiataruMapMarker: View {
     var body: some View {
         let circleDiameter = height * 0.65
         let pulsatingDiameter = circleDiameter * 1.5
+        let pulseYOffset = circleDiameter / 2 + 6
+        let markerFineTuneYOffset: CGFloat = 4
 
         ZStack {
             if pulsing {
                 let animationsAllowed = scenePhase == .active && !isLowPowerMode
                 if animationsAllowed {
                     PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
+                        .offset(y: pulseYOffset)
                 }
             }
 
@@ -242,6 +245,7 @@ struct MiataruMapMarker: View {
                 }
             }
         }
+        .offset(y: markerFineTuneYOffset)
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
             isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
         }
