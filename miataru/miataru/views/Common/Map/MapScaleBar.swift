@@ -15,6 +15,7 @@ struct MapScaleBar: View {
     let width: CGFloat
 
     @StateObject private var viewModel = MapScaleBarViewModel()
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 2) {
@@ -40,6 +41,10 @@ struct MapScaleBar: View {
         }
         .onChange(of: width) { _, newValue in
             viewModel.schedule(region: region, width: newValue)
+        }
+        .onChange(of: colorScheme) { _, _ in
+            // Force recalculation to ensure colors and label adapt on theme changes
+            viewModel.schedule(region: region, width: width)
         }
     }
 
