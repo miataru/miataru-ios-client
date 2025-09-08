@@ -3,9 +3,9 @@
 ## Quick Start for Developers
 
 ### Prerequisites
-- Xcode 15.0+ (iOS 17.0+ deployment target)
-- iOS 17.0+ device or simulator
-- Swift 5.9+
+- Xcode 16.0+ (iOS 18.0+ deployment target)
+- iOS 18.0+ device or simulator
+- Swift 5+
 - macOS 14.0+ (for development)
 
 ### Setup
@@ -19,20 +19,37 @@
 ### Core Architecture
 ```
 miataru/
-├── miataruApp.swift          # App entry point & global state
+├── miataruApp.swift          # App entry, global state, onboarding & deep links
 ├── views/                    # UI components
-│   ├── Common/              # Shared UI elements
-│   ├── iPhone/              # iPhone-specific views
-│   ├── iPad/                # iPad-specific views
-│   └── Mac/                 # Mac-specific views
-├── LocationManagers/         # Location handling
-├── SettingsManagers/         # User preferences
-└── Assets/                   # Resources & localization
+│   ├── Common/               # Shared UI elements
+│   ├── iPhone/               # Root, devices, groups, settings, QR
+│   ├── iPad/                 # Root, devices, groups, settings
+│   └── Mac/                  # Onboarding previews (no Mac target)
+├── LocationManagers/         # Location handling (fg/bg, significant-change)
+├── SettingsManagers/         # User preferences & data stores
+│   ├── App Settings/         # SettingsManager, Settings.bundle
+│   ├── Devices/              # KnownDevice, KnownDeviceStore
+│   └── Groups/               # DeviceGroup, DeviceGroupStore
+└── Assets/                   # Resources & localization (xcstrings, icons)
 ```
+
+### Common Components Overview
+
+- Shared UI (`views/Common/`):
+  - `ErrorOverlay` (transient errors), `ViewModifiers` (`adaptiveToolbarBackground`, `adaptiveNavigationBackground`)
+  - `DeviceRowView`, `GroupRowView`, `DeviceNameLabel` (label caching), `DeviceBatterySymbol`
+  - Map helpers (`views/Common/Map/`): `MiataruMapMarker`, `PulsingAccuracyCircle`, `MapScaleBar` + `MapScaleBarViewModel`, `MapCompass`, `OffScreenDeviceArrow`, `OffscreenDeviceEdgeHelper`, `RouteGhostCalculator`, `RouteStyle`, `Shimmer`
+- Stores & caches:
+  - `KnownDeviceStore`, `DeviceGroupStore` (secure archiving to Application Support)
+  - `DeviceLocationCacheStore` (last locations + reverse geocode queue)
+  - `RouteCacheStore` (cached `MKRoute` by device & transport; distance-based validity)
+- Utilities:
+  - `thisDeviceIDManager` (device ID generation + legacy migration)
+  - `Haptic` (success/warning/error feedback)
 
 ### Key Dependencies
 - **CodeScanner**: QR code scanning functionality
-- **MiataruClientSwift**: API client for Miataru protocol
+- **MiataruAPIClient** (via local `Libraries/MiataruClientSwift`): Miataru protocol client
 - **QRCode**: QR code generation
 - **SwiftImageReadWrite**: Image handling utilities
 
@@ -47,7 +64,7 @@ miataru/
 ### Testing Strategy
 - Unit tests for managers and business logic
 - UI tests for critical user flows
-- Test on multiple device types (iPhone, iPad, Mac)
+- Test on multiple device types (iPhone, iPad)
 - Verify location permission flows
 
 ### Debugging Tips
@@ -55,6 +72,7 @@ miataru/
 - Monitor battery usage during development
 - Test background/foreground transitions
 - Verify privacy compliance
+ - Test deep links: `miataru://<DEVICE_ID>` (Simulator: `xcrun simctl openurl booted miataru://ABCDEF...`)
 
 ## Common Development Tasks
 
@@ -76,6 +94,7 @@ miataru/
 - Observe changes and update UI accordingly
 - Provide sensible defaults
 - Validate user input
+ - Register defaults from `Settings.bundle/Root.plist` via `SettingsManager.registerDefaultsFromSettingsBundle()`
 
 ## Performance Considerations
 

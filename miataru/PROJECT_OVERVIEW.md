@@ -6,12 +6,12 @@ miataru is a privacy-focused iOS application that enables users to track their d
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
-- **Frontend**: SwiftUI (iOS 17.0+)
+- **Frontend**: SwiftUI (iOS 18.0+)
 - **State Management**: ObservableObject pattern with @Published properties
-- **Data Persistence**: UserDefaults via SettingsManager
-- **Location Services**: CoreLocation framework
-- **QR Code**: Custom QR scanning and generation
-- **Platforms**: iPhone, iPad, Mac (universal app)
+- **Data Persistence**: UserDefaults via SettingsManager; Application Support files for devices/groups
+- **Location Services**: CoreLocation framework (foreground and significant-change background)
+- **QR Code**: CodeScanner (scan), QRCode (generate)
+- **Platforms**: iPhone and iPad
 
 ### Core Components
 ```
@@ -21,41 +21,57 @@ miataruApp.swift (Entry Point)
 ├── LocationManagers/
 │   └── LocationManager.swift
 ├── SettingsManagers/
-│   └── App Settings/
+│   └── App Settings/ (SettingsManager, thisDeviceIDManager, Settings.bundle)
+│   └── Devices/ (KnownDevice, KnownDeviceStore)
+│   └── Groups/ (DeviceGroup, DeviceGroupStore)
 ├── views/
 │   ├── Common/ (Shared UI)
 │   ├── iPhone/ (iPhone-specific)
 │   ├── iPad/ (iPad-specific)
-│   └── Mac/ (Mac-specific)
+│   └── Mac/ (onboarding previews only)
 └── Assets/ (Resources & Localization)
 ```
+
+### Common Components Overview
+
+- Shared UI (`views/Common/`):
+  - `ErrorOverlay`, `ViewModifiers` (adaptive toolbars/navigation)
+  - Device & group UI: `DeviceRowView`, `GroupRowView`, `DeviceNameLabel`, `DeviceBatterySymbol`
+  - Map UI & helpers (`views/Common/Map/`): `MiataruMapMarker`, `PulsingAccuracyCircle`, `MapScaleBar` (+ `MapScaleBarViewModel`), `MapCompass`, `OffScreenDeviceArrow`, `OffscreenDeviceEdgeHelper`, `RouteGhostCalculator`, `RouteStyle`, `Shimmer`
+- Data & Caching:
+  - `KnownDeviceStore`, `DeviceGroupStore` (secure archiving under Application Support)
+  - `DeviceLocationCacheStore` (latest device locations + reverse geocoded placemarks)
+  - `RouteCacheStore` (cached routes keyed by device/transport; distance threshold validation)
+- Utilities:
+  - `thisDeviceIDManager` (device ID generation + legacy migration)
+  - `Haptic` (feedback utilities)
 
 ## 🔑 Key Features
 
 ### Location Management
 - **Privacy-First**: User controls all location sharing
-- **Battery Optimized**: Smart location updates
-- **Permission Handling**: Graceful permission management
-- **Background Support**: Configurable background location
+- **Battery Optimized**: High-accuracy foreground; significant-change background
+- **Permission Handling**: Staged requests (WhenInUse → Always when opted-in)
+- **Background Support**: Significant-change updates
 
 ### Device Management
 - **Multi-Device**: Track multiple devices
 - **Group Support**: Organize devices into groups
-- **QR Code Sharing**: Easy device onboarding
-- **Cross-Platform**: iPhone, iPad, and Mac support
+- **QR Code Sharing**: Share own device, scan to add others
+- **Deep Link**: `miataru://<DEVICE_ID>` adds devices via sheet
 
 ### User Experience
-- **Onboarding Flow**: Guided setup process
-- **Settings Control**: Comprehensive user preferences
-- **Error Handling**: User-friendly error messages
-- **Localization**: German, English, and Japanese support
+- **Onboarding Flow**: Guided setup (iPhone/iPad-optimized)
+- **Settings Control**: Comprehensive preferences via SettingsManager
+- **Error Handling**: Transient overlays
+- **Localization**: German, English, and Japanese
 
 ## 📱 Platform-Specific Considerations
 
 ### iPhone
 - Touch-optimized interface
 - Location permission workflows
-- Background app refresh handling
+- Deep-link and QR onboarding
 - Battery optimization features
 
 ### iPad
@@ -65,10 +81,7 @@ miataruApp.swift (Entry Point)
 - Optimized for productivity
 
 ### Mac
-- Desktop-appropriate controls
-- Keyboard and mouse support
-- Menu bar integration
-- Native macOS appearance
+- Not currently targeted (Mac directory hosts onboarding previews only)
 
 ## 🛠️ Development Guidelines
 
@@ -121,9 +134,9 @@ miataruApp.swift (Entry Point)
 ## 🚀 Deployment & Distribution
 
 ### Build Requirements
-- Xcode 15.0+
-- iOS 17.0+ deployment target
-- Swift 5.9+
+- Xcode 16.0+
+- iOS 18.0+ deployment target
+- Swift 5+
 - macOS 14.0+ (development)
 
 ### Distribution
@@ -162,7 +175,7 @@ miataruApp.swift (Entry Point)
 
 ### Dependencies
 - **CodeScanner**: QR code scanning
-- **MiataruClientSwift**: API client
+- **MiataruAPIClient** (via local `Libraries/MiataruClientSwift`): API client
 - **QRCode**: QR generation
 - **SwiftImageReadWrite**: Image handling
 
