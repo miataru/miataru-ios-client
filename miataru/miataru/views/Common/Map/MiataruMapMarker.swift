@@ -76,6 +76,7 @@ struct MiataruMapMarker: View {
     var renderPadding: CGFloat = 8
 
     @State private var cachedImage: PlatformImage?
+    @State private var cachedImageKey: String?
 
     private var cacheKey: String {
         [
@@ -192,37 +193,45 @@ struct MiataruMapMarker: View {
             Group {
                 if cacheEnabled {
 #if canImport(UIKit)
-                    if let image = cachedImage ?? MiataruMapMarkerImageCache.shared.image(for: cacheKey) {
+                    if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? MiataruMapMarkerImageCache.shared.image(for: cacheKey) {
                         Image(uiImage: image)
                     } else {
                         staticMarker
                             .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker.padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding)))
+                                let content = staticMarker
+                                    .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
+                                    .environment(\.colorScheme, colorScheme)
+                                let renderer = ImageRenderer(content: content)
                                 renderer.scale = displayScale
                                 renderer.isOpaque = false
                                 if let uiImage = renderer.uiImage {
                                     let cost = (uiImage.pngData()?.count) ?? 0
                                     MiataruMapMarkerImageCache.shared.set(uiImage, for: cacheKey, cost: cost)
                                     cachedImage = uiImage
+                                    cachedImageKey = cacheKey
                                 }
                             }
                     }
 #elseif canImport(AppKit)
-                    if let image = cachedImage ?? MiataruMapMarkerImageCache.shared.image(for: cacheKey) {
+                    if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? MiataruMapMarkerImageCache.shared.image(for: cacheKey) {
                         Image(nsImage: image)
                     } else {
                         staticMarker
                             .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
-                                let renderer = ImageRenderer(content: staticMarker.padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding)))
+                                let content = staticMarker
+                                    .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
+                                    .environment(\.colorScheme, colorScheme)
+                                let renderer = ImageRenderer(content: content)
                                 renderer.scale = displayScale
                                 renderer.isOpaque = false
                                 if let nsImage = renderer.nsImage {
                                     MiataruMapMarkerImageCache.shared.set(nsImage, for: cacheKey)
                                     cachedImage = nsImage
+                                    cachedImageKey = cacheKey
                                 }
                             }
                     }
@@ -235,6 +244,11 @@ struct MiataruMapMarker: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
             isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
+        }
+        .onChange(of: colorScheme) { _, _ in
+            // Invalidate local cached image when the appearance changes
+            cachedImage = nil
+            cachedImageKey = nil
         }
     }
 }

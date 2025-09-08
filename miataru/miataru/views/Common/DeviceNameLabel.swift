@@ -43,6 +43,7 @@ struct DeviceNameLabel: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
     @Environment(\.sizeCategory) private var sizeCategory
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let deviceName: String
     let deviceID: String
@@ -52,6 +53,7 @@ struct DeviceNameLabel: View {
     let cacheEnabled: Bool
     
     @State private var cachedImage: PlatformImage?
+    @State private var cachedImageKey: String?
     
     init(deviceName: String, deviceID: String, font: Font = .callout, topPadding: CGFloat = 2, opacity: Double = 1.0, cacheEnabled: Bool = true) {
         self.deviceName = deviceName
@@ -74,6 +76,7 @@ struct DeviceNameLabel: View {
             String(format: "%.3f", opacity),
             String(describing: colorScheme),
             String(describing: sizeCategory),
+            String(describing: dynamicTypeSize),
             String(format: "%.2f", displayScale)
         ].joined(separator: "|")
     }
@@ -102,7 +105,7 @@ struct DeviceNameLabel: View {
         Group {
             if cacheEnabled {
                 #if canImport(UIKit)
-                if let image = cachedImage ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
+                if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
                     Image(uiImage: image)
                 } else {
                     rawLabel
@@ -112,17 +115,22 @@ struct DeviceNameLabel: View {
                                 return 
                             }
                             debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")
-                            let renderer = ImageRenderer(content: rawLabel)
+                            let content = rawLabel
+                                .environment(\.colorScheme, colorScheme)
+                                .environment(\.sizeCategory, sizeCategory)
+                                .environment(\.dynamicTypeSize, dynamicTypeSize)
+                            let renderer = ImageRenderer(content: content)
                             renderer.scale = displayScale
                             if let uiImage = renderer.uiImage {
                                 let cost = (uiImage.pngData()?.count) ?? 0
                                 DeviceNameLabelImageCache.shared.set(uiImage, for: cacheKey, cost: cost)
                                 cachedImage = uiImage
+                                cachedImageKey = cacheKey
                             }
                         }
                 }
                 #elseif canImport(AppKit)
-                if let image = cachedImage ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
+                if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
                     Image(nsImage: image)
                 } else {
                     rawLabel
@@ -132,11 +140,16 @@ struct DeviceNameLabel: View {
                                 return 
                             }
                             debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")
-                            let renderer = ImageRenderer(content: rawLabel)
+                            let content = rawLabel
+                                .environment(\.colorScheme, colorScheme)
+                                .environment(\.sizeCategory, sizeCategory)
+                                .environment(\.dynamicTypeSize, dynamicTypeSize)
+                            let renderer = ImageRenderer(content: content)
                             renderer.scale = displayScale
                             if let nsImage = renderer.nsImage {
                                 DeviceNameLabelImageCache.shared.set(nsImage, for: cacheKey)
                                 cachedImage = nsImage
+                                cachedImageKey = cacheKey
                             }
                         }
                 }
@@ -144,6 +157,16 @@ struct DeviceNameLabel: View {
             } else {
                 rawLabel
             }
+        }
+        .onChange(of: colorScheme) { _, _ in
+            // Invalidate local cached image when the appearance changes
+            cachedImage = nil
+            cachedImageKey = nil
+        }
+        .onChange(of: dynamicTypeSize) { _, _ in
+            // Invalidate local cached image when dynamic type changes
+            cachedImage = nil
+            cachedImageKey = nil
         }
     }
 }
