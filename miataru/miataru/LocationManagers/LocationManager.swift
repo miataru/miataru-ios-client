@@ -28,21 +28,18 @@ final class LocationManager: NSObject, ObservableObject {
     @Published var updateLog: [UpdateLogEntry] = []
     @Published var lastBackgroundUpdate: Date?
     @Published var backgroundUpdateCount: Int = 0
-    
+
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
-    private let userDefaults = UserDefaults.standard
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
-    private var foregroundLocationTimer: Timer?
-    private var foregroundLocationUpdateTimerTimeframe: Double = 30
     private let networkMonitor = NWPathMonitor()
-    private var isNetworkAvailable: Bool = true
-    private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
-    private var hasRequestedAlwaysAuthorization: Bool {
-        get { userDefaults.bool(forKey: alwaysAuthorizationRequestedKey) }
-        set { userDefaults.set(newValue, forKey: alwaysAuthorizationRequestedKey) }
-    }
+    var isNetworkAvailable: Bool = true
+
+    // MARK: - Controllers
+    var permissionController: PermissionController!
+    var trackingController: TrackingController!
+    var locationUploader: LocationUploader!
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -78,8 +75,11 @@ final class LocationManager: NSObject, ObservableObject {
         }
         let queue = DispatchQueue(label: "NetworkMonitor")
         networkMonitor.start(queue: queue)
+        permissionController = PermissionController(locationManager: locationManager, settings: settings)
+        trackingController = TrackingController(manager: self, locationManager: locationManager, settings: settings)
+        locationUploader = LocationUploader(manager: self, settings: settings)
         // Ensure permission state is handled on startup
-        ensureAuthorizationIfNeeded()
+        permissionController.ensureAuthorizationIfNeeded()
     }
     
     deinit {
@@ -89,9 +89,9 @@ final class LocationManager: NSObject, ObservableObject {
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
         // Re-check permission escalation / first-time prompt if needed
-        ensureAuthorizationIfNeeded()
+        permissionController.ensureAuthorizationIfNeeded()
         if isTracking {
-            startHighAccuracyUpdates()
+            trackingController.updateTrackingMode()
         }
     }
     
@@ -102,9 +102,9 @@ final class LocationManager: NSObject, ObservableObject {
             .sink { [weak self] shouldTrack in
                 guard let self else { return }
                 if shouldTrack {
-                    self.startTracking()
+                    self.trackingController.startTracking()
                 } else {
-                    self.stopTracking()
+                    self.trackingController.stopTracking()
                 }
             }
             .store(in: &cancellables)
@@ -118,7 +118,7 @@ final class LocationManager: NSObject, ObservableObject {
                 self.locationManager.activityType = Self.activityTypeFrom(newValue)
                 if self.isTracking {
                     // Restart location updates to apply new activityType immediately
-                    self.updateTrackingMode()
+                    self.trackingController.updateTrackingMode()
                 }
             }
             .store(in: &cancellables)
@@ -145,155 +145,42 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Permissions
     func requestLocationPermission() {
-        switch locationManager.authorizationStatus {
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            locationManager.requestAlwaysAuthorization()
-        default:
-            break
-        }
+        permissionController.requestLocationPermission()
     }
 
-    private func ensureAuthorizationIfNeeded() {
-        let status = locationManager.authorizationStatus
-        if settings.trackAndReportLocation {
-            switch status {
-            case .notDetermined:
-                // Trigger first-time prompt
-                locationManager.requestWhenInUseAuthorization()
-            case .authorizedWhenInUse:
-                // Escalate to Always once if user opted-in to tracking
-                if !hasRequestedAlwaysAuthorization {
-                    debugLog("Ensuring Always authorization after WhenInUse…")
-                    hasRequestedAlwaysAuthorization = true
-                    locationManager.requestAlwaysAuthorization()
-                }
-            default:
-                break
-            }
-        }
-    }
-    
     // MARK: - Tracking Control
     func startTracking() {
-        debugLog("startTracking called")
-        isTracking = true
-        updateTrackingMode()
+        trackingController.startTracking()
     }
-    
-    func stopTracking() {
-        debugLog("stopTracking called")
-        isTracking = false
-        locationManager.stopUpdatingLocation()
-        locationManager.stopMonitoringSignificantLocationChanges()
-        stopForegroundLocationTimer()
-    }
-    
-    private func updateTrackingMode() {
-        let state = UIApplication.shared.applicationState
-        let status = locationManager.authorizationStatus
-        debugLog("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
-        switch status {
-        case .authorizedAlways, .authorizedWhenInUse:
-            if isTracking {
-                if state == .active {
-                    startHighAccuracyUpdates()
-                } else {
-                    startSignificantChangeUpdates()
-                }
-            } else {
-                // Ensure updates are stopped but preserve user's tracking preference flag
-                stopHighAccuracyUpdates()
-                stopSignificantChangeUpdates()
-            }
-        case .notDetermined:
-            // Do not reset isTracking while the user has not decided yet
-            break
-        case .denied, .restricted:
-            // Explicitly stop tracking if permission is denied/restricted
-            stopTracking()
-        @unknown default:
-            stopHighAccuracyUpdates()
-            stopSignificantChangeUpdates()
-        }
-    }
-    
-    private func startHighAccuracyUpdates() {
-        debugLog("Calling startHighAccuracyUpdates")
-        locationManager.allowsBackgroundLocationUpdates = false
-        debugLog("allowsBackgroundLocationUpdates set to false (foreground)")
-        locationManager.stopMonitoringSignificantLocationChanges()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.distanceFilter = kCLDistanceFilterNone
-        locationManager.startUpdatingLocation()
-        if foregroundLocationTimer == nil {
-            debugLog("App is active, will start foreground location timer")
-            startForegroundLocationTimer()
-        } else {
-            debugLog("Foreground location timer already running")
-        }
-    }
-    
-    func startSignificantChangeUpdates() {
-        debugLog("startSignificantChangeUpdates called")
-        locationManager.allowsBackgroundLocationUpdates = true
-        debugLog("allowsBackgroundLocationUpdates set to true (background)")
-        locationManager.stopUpdatingLocation()
-        locationManager.startMonitoringSignificantLocationChanges()
-        stopForegroundLocationTimer()
-    }
-    
-    // MARK: - Server Communication
-    @MainActor
-    private func sendLocationToServer(_ location: CLLocation) {
-        guard isNetworkAvailable else {
-            debugLog("No network available, skipping server update.")
-            self.serverUpdateStatus = .failed("No network connection")
-            return
-        }
-        guard !settings.miataruServerURL.isEmpty,
-              let serverURL = URL(string: settings.miataruServerURL) else {
-            self.serverUpdateStatus = .failed("Invalid server configuration")
-            return
-        }
-        self.serverUpdateStatus = .updating
-        let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : -1
-        let speedValue: Double? = (location.speed >= 0) ? location.speed : -1
-        let batteryLevelRaw = UIDevice.current.batteryLevel
-        let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : -1
 
-        let locationData = UpdateLocationPayload(
-            Device: thisDeviceIDManager.shared.deviceID,
-            Timestamp: String(Int64(location.timestamp.timeIntervalSince1970)),
-            Longitude: location.coordinate.longitude,
-            Latitude: location.coordinate.latitude,
-            HorizontalAccuracy: location.horizontalAccuracy,
-            Speed: speedValue,
-            BatteryLevel: batteryPercent,
-            Altitude: altitudeValue
-        )
-        Task {
-            do {
-                let success = try await MiataruAPIClient.updateLocation(
-                    serverURL: serverURL,
-                    locationData: locationData,
-                    enableHistory: settings.saveLocationHistoryOnServer,
-                    retentionTime: settings.locationDataRetentionTime
-                )
-                if success {
-                    self.serverUpdateStatus = .success
-                    self.lastServerUpdate = Date()
-                    NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
-                } else {
-                    self.serverUpdateStatus = .failed("Server response was not successful")
-                }
-            } catch {
-                self.serverUpdateStatus = .failed(error.localizedDescription)
-            }
-        }
+    func stopTracking() {
+        trackingController.stopTracking()
     }
-    
+
+    private func updateTrackingMode() {
+        trackingController.updateTrackingMode()
+    }
+
+    func startSignificantChangeUpdates() {
+        trackingController.startSignificantChangeUpdates()
+    }
+
+    func startBackgroundTracking() {
+        trackingController.startBackgroundTracking()
+    }
+
+    func stopBackgroundTracking() {
+        trackingController.stopBackgroundTracking()
+    }
+
+    func appDidEnterForeground() {
+        trackingController.appDidEnterForeground()
+    }
+
+    func appDidEnterBackground() {
+        trackingController.appDidEnterBackground()
+    }
+
     // MARK: - Logging
     private func addUpdateLogEntry(mode: String) {
         let entry = UpdateLogEntry(timestamp: Date(), mode: mode)
@@ -304,78 +191,30 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     // MARK: - Foreground Location Timer
-    private func startForegroundLocationTimer() {
-        debugLog("Starting foreground location timer")
-        stopForegroundLocationTimer()
-        foregroundLocationTimer = Timer.scheduledTimer(withTimeInterval: foregroundLocationUpdateTimerTimeframe, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            if UIApplication.shared.applicationState == .active && self.isTracking {
-                debugLog("[Timer] Requesting location...")
-                self.locationManager.requestLocation()
-            } else {
-                debugLog("[Timer] Not active or not tracking, skipping requestLocation")
-            }
-        }
-        RunLoop.main.add(foregroundLocationTimer!, forMode: .common)
-        debugLog("ForegroundLocationTimer created at: \(Unmanaged.passUnretained(foregroundLocationTimer!).toOpaque())")
-    }
-    
-    private func stopForegroundLocationTimer() {
-        if let timer = foregroundLocationTimer {
-            debugLog("Stopping foreground location timer at: \(Unmanaged.passUnretained(timer).toOpaque())")
-        } else {
-            debugLog("stopForegroundLocationTimer called, but timer was already nil")
-        }
-        foregroundLocationTimer?.invalidate()
-        foregroundLocationTimer = nil
-    }
-    
+    // Moved to TrackingController
+
     // MARK: - Background Tracking API
-    func startBackgroundTracking() {
-        guard settings.trackAndReportLocation else { return }
-        startSignificantChangeUpdates()
-        lastBackgroundUpdate = Date()
-        backgroundUpdateCount += 1
-    }
-    
-    func stopBackgroundTracking() {
-        stopTracking()
-    }
-    
+    // Implemented in TrackingController
+
     // MARK: - App Delegate Extension
     func applicationDidEnterBackground(_ application: UIApplication) {
-        startBackgroundTracking()
+        trackingController.startBackgroundTracking()
     }
-    
+
     func applicationWillEnterForeground(_ application: UIApplication) {
-        stopBackgroundTracking()
+        trackingController.stopBackgroundTracking()
     }
-    
+
     // MARK: - App Lifecycle Hooks
     func appDidEnterForeground() {
-        debugLog("[LocationManager] App did enter foreground")
-        guard isTracking else { return }
-        stopSignificantChangeUpdates()
-        startHighAccuracyUpdates()
+        trackingController.appDidEnterForeground()
     }
 
     func appDidEnterBackground() {
-        debugLog("[LocationManager] App did enter background")
-        guard isTracking else { return }
-        stopHighAccuracyUpdates()
-        startSignificantChangeUpdates()
+        trackingController.appDidEnterBackground()
     }
 
-    private func stopHighAccuracyUpdates() {
-        debugLog("[LocationManager] Stopping high accuracy updates")
-        locationManager.stopUpdatingLocation()
-        stopForegroundLocationTimer()
-    }
-
-    private func stopSignificantChangeUpdates() {
-        debugLog("[LocationManager] Stopping significant change updates")
-        locationManager.stopMonitoringSignificantLocationChanges()
-    }
+    // Additional tracking helpers moved to TrackingController
     
     private func mappedSensitivityValues(for level: Int) -> (distance: CLLocationDistance, accuracy: CLLocationAccuracy) {
         switch level {
@@ -434,22 +273,15 @@ extension LocationManager: CLLocationManagerDelegate {
                 altitude: altitudeValue,
                 speed: speedValue
             )
-            self.sendLocationToServer(location)
+            self.locationUploader.sendLocationToServer(location)
             self.addUpdateLogEntry(mode: mode)
         }
     }
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         Task { @MainActor in
-            self.authorizationStatus = status
-            if status == .authorizedWhenInUse,
-               settings.trackAndReportLocation,
-               !hasRequestedAlwaysAuthorization {
-                // Escalate to Always once, if user opted-in to tracking
-                debugLog("Authorized WhenInUse. Requesting Always authorization…")
-                hasRequestedAlwaysAuthorization = true
-                self.locationManager.requestAlwaysAuthorization()
-            }
-            self.updateTrackingMode()
+        self.authorizationStatus = status
+        permissionController.handleAuthorizationChange(status)
+        self.updateTrackingMode()
         }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
