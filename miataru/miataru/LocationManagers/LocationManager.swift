@@ -15,6 +15,7 @@ import UIKit
 import Network
 
 /// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
+@MainActor // Confine all access to the main thread for UI-safe, thread-safe updates without extra DispatchQueue.main hops.
 final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
     
@@ -98,7 +99,6 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Settings Observer
     private func observeSettings() {
         settings.$trackAndReportLocation
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] shouldTrack in
                 guard let self else { return }
                 if shouldTrack {
@@ -112,7 +112,6 @@ final class LocationManager: NSObject, ObservableObject {
     
     private func observeActivityType() {
         settings.$locationActivityType
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 self.locationManager.activityType = Self.activityTypeFrom(newValue)
