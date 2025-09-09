@@ -496,7 +496,8 @@ struct iPhone_DeviceNavigationView: View {
                 let response = try await MKDirections(request: request).calculate()
                 if let first = response.routes.first {
                     route = first
-                    let formatter = Formatters.duration
+                    let formatter = DateComponentsFormatter()
+                    formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
                     distanceText = formattedDistance(first.distance)
                     // Remember inputs used for this route calculation
@@ -773,7 +774,8 @@ extension iPhone_DeviceNavigationView {
             ) {
                 // Apply cached route and keep display fields in sync
                 route = cached.route
-                let formatter = Formatters.duration
+                let formatter = DateComponentsFormatter()
+                formatter.unitsStyle = .short
                 travelTime = formatter.string(from: cached.route.expectedTravelTime)
                 distanceText = formattedDistance(cached.route.distance)
                 // Align last-route inputs so existing change detection logic works
@@ -804,7 +806,14 @@ extension iPhone_DeviceNavigationView {
             unit = .miles
         }
         let measurement = Measurement(value: value, unit: unit)
-        let formatter = Formatters.measurement
+        let formatter = MeasurementFormatter()
+        formatter.locale = .current
+        formatter.unitStyle = .short
+        formatter.unitOptions = .providedUnit
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 0
+        numberFormatter.minimumFractionDigits = 0
+        formatter.numberFormatter = numberFormatter
         return formatter.string(from: measurement)
     }
 
