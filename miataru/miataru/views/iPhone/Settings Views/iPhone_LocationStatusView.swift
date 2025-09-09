@@ -220,10 +220,7 @@ struct iPhone_LocationStatusView: View {
     }
     
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .medium
-        return formatter.string(from: date)
+        Formatters.time.string(from: date)
     }
     
     // Tracking-Modus-Text
@@ -490,10 +487,7 @@ struct BackgroundStatusCard: View {
     }
     
     private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .medium
-        return formatter.string(from: date)
+        Formatters.time.string(from: date)
     }
 }
 #Preview {
