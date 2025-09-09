@@ -27,16 +27,7 @@ class KnownDeviceStore: ObservableObject {
     private var cancellables: [AnyCancellable] = []
 
     private var fileURL: URL {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupportURL = urls[0]
-        let bundleID = Bundle.main.bundleIdentifier ?? "DefaultApp"
-        let appDirectory = appSupportURL.appendingPathComponent(bundleID)
-        // Verzeichnis anlegen, falls nicht vorhanden
-        if !fileManager.fileExists(atPath: appDirectory.path) {
-            try? fileManager.createDirectory(at: appDirectory, withIntermediateDirectories: true, attributes: nil)
-        }
-        return appDirectory.appendingPathComponent(fileName)
+        AppDirectories.applicationSupportFile(named: fileName)
     }
 
     // Make init private for singleton
