@@ -453,11 +453,11 @@ struct iPhone_DeviceNavigationView: View {
             if !shouldRecalculate { return }
         }
 
-        // Reset or check the daily request counter only when we actually perform a new request
-        let today = Calendar.current.startOfDay(for: Date())
-        let storedDate = Date(timeIntervalSince1970: routeRequestDate)
-        if Calendar.current.startOfDay(for: storedDate) != today {
-            routeRequestDate = today.timeIntervalSince1970
+        // Reset or check the request counter on a rolling 24h basis
+        let now = Date()
+        let lastReset = Date(timeIntervalSince1970: routeRequestDate)
+        if now.timeIntervalSince(lastReset) >= 24 * 60 * 60 {
+            routeRequestDate = now.timeIntervalSince1970
             routeRequestCount = 0
         }
         guard routeRequestCount < routeRequestDailyLimit else {
