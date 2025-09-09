@@ -14,31 +14,12 @@ import MapKit
 
 @objc(KnownDevice)
 class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identifiable {
-    @Published @objc var DeviceName: String {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var DeviceID: String {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var DeviceIsInGroup: Bool = false {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var KnownDevicesTablePosition: Int = 0 {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var DeviceColor: UIColor? {
-        didSet {
-            objectWillChange.send()
-        }
-    }
+    // @Published properties automatically notify observers when mutated
+    @Published @objc var DeviceName: String
+    @Published @objc var DeviceID: String
+    @Published @objc var DeviceIsInGroup: Bool = false
+    @Published @objc var KnownDevicesTablePosition: Int = 0
+    @Published @objc var DeviceColor: UIColor?
     
     var id: String { DeviceID }
     

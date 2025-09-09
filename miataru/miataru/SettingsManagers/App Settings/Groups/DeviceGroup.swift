@@ -13,21 +13,10 @@ import Combine
 
 @objc(DeviceGroup)
 class DeviceGroup: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identifiable {
-    @Published @objc var groupName: String {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var deviceIDs: Set<String> = [] {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published @objc var groupPosition: Int = 0 {
-        didSet {
-            objectWillChange.send()
-        }
-    }
+    // Using @Published ensures observers get change notifications without manual didSet
+    @Published @objc var groupName: String
+    @Published @objc var deviceIDs: Set<String> = []
+    @Published @objc var groupPosition: Int = 0
     
     var id: String { groupName }
     
