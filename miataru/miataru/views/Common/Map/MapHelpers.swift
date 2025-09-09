@@ -55,7 +55,7 @@ func relativeTimeString(
     } else if diff < timeConsideredNow {
         return NSLocalizedString("relative_time_now", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
     }
-    let formatter = RelativeDateTimeFormatter()
+    let formatter = Formatters.relativeDateTime
     formatter.unitsStyle = unitsStyle
     return formatter.localizedString(for: date, relativeTo: now)
 }
