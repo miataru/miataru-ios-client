@@ -413,6 +413,15 @@ struct iPad_GroupMapView: View {
                     // Device marker
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind
+                            if settings.pulsingMapMarkers {
+                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? UIColor.blue), size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
                                 // Show timestamp if available
                                 if let timestamp = deviceTimestamps[deviceID] {
@@ -430,8 +439,7 @@ struct iPad_GroupMapView: View {
                                         .zIndex(2)
                                 }
                                 MiataruMapMarker(
-                                    color: Color(device.DeviceColor ?? UIColor.blue),
-                                    pulsing: settings.pulsingMapMarkers
+                                    color: Color(device.DeviceColor ?? UIColor.blue)
                                 )
                                     .shadow(radius: 2)
                                 DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
