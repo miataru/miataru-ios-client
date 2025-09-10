@@ -42,7 +42,6 @@ struct iPad_GroupMapView: View {
     @State private var timerCancellable: AnyCancellable? = nil
     @State private var userHasRotatedMap = false // Track if user manually rotated the map
     @State private var now = Date() // Timer für relative Zeit
-    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var editingDeviceID: String? = nil // State for the device being edited
     @State private var showEditDeviceSheet: Bool = false // Sheet trigger for editing device
     @State private var navigationDeviceID: String? = nil // Device for navigation
@@ -380,7 +379,7 @@ struct iPad_GroupMapView: View {
                 isProgrammaticCameraChange = false
             }
         }
-        .onReceive(timeUpdateTimer) { input in
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
             now = input
         }
         .onReceive(groupStore.$groups) { _ in
@@ -425,20 +424,22 @@ struct iPad_GroupMapView: View {
                                     .accessibilityHidden(true)
                             }
                             VStack(spacing: 0) {
-                                // Show timestamp if available
+                                // Show timestamp if available (force per-second updates)
                                 if let timestamp = deviceTimestamps[deviceID] {
-                                    Text(relativeTimeString(from: timestamp, to: now, unitsStyle: .abbreviated))
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                        )
-                                        .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
-                                        .shadow(radius: 2)
-                                        .zIndex(2)
+                                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                                        Text(relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                            )
+                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+                                            .shadow(radius: 2)
+                                            .zIndex(2)
+                                    }
                                 }
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue)

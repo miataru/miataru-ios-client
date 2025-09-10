@@ -53,7 +53,6 @@ struct iPad_DeviceMapView: View {
     @State private var showEditDeviceSheet = false // Controls device edit sheet
     @State private var showNavigationSheet = false // Controls navigation view
     @State private var now = Date() // Timer for relative time display
-    private let timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect() // Timer for updating 'now'
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isUpdating = false // Controls update button animation state
@@ -371,7 +370,7 @@ struct iPad_DeviceMapView: View {
             }
         }
         // Update 'now' every second for relative time display
-        .onReceive(timeUpdateTimer) { input in
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
             now = input
         }
         // Show edit device sheet when requested
@@ -479,20 +478,22 @@ struct iPad_DeviceMapView: View {
                                         .accessibilityHidden(true)
                                 }
                                 VStack(spacing: 0) {
-                                    // Show relative timestamp above marker
+                                    // Show relative timestamp above marker (force per-second updates within Map annotation)
                                     if let timestamp = deviceTimestamp {
-                                        Text(relativeTimeString(from: timestamp, to: now))
-                                            .font(.caption)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(.ultraThinMaterial)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                            )
-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
-                                            .shadow(radius: 2)
-                                            .zIndex(2)
+                                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                                            Text(relativeTimeString(from: timestamp, to: context.date))
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(.ultraThinMaterial)
+                                                .clipShape(Capsule())
+                                                .overlay(
+                                                    Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                                )
+                                                .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+                                                .shadow(radius: 2)
+                                                .zIndex(2)
+                                        }
                                     }
                                     MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                         .shadow(radius: 2)
@@ -559,19 +560,21 @@ struct iPad_DeviceMapView: View {
                                                     .accessibilityHidden(true)
                                             }
                                             VStack(spacing: 0) {
-                                                // Timestamp above marker
-                                                Text(relativeTimeString(from: cached.timestamp, to: now))
-                                                    .font(.caption)
-                                                    .padding(.horizontal, 8)
-                                                    .padding(.vertical, 4)
-                                                    .background(.ultraThinMaterial)
-                                                    .clipShape(Capsule())
-                                                    .overlay(
-                                                        Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                                    )
-                                                    .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
-                                                    .shadow(radius: 2)
-                                                    .zIndex(2)
+                                                // Timestamp above marker (force per-second updates within Map annotation)
+                                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                                    Text(relativeTimeString(from: cached.timestamp, to: context.date))
+                                                        .font(.caption)
+                                                        .padding(.horizontal, 8)
+                                                        .padding(.vertical, 4)
+                                                        .background(.ultraThinMaterial)
+                                                        .clipShape(Capsule())
+                                                        .overlay(
+                                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                                        )
+                                                        .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+                                                        .shadow(radius: 2)
+                                                        .zIndex(2)
+                                                }
                                                 MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
                                                     .shadow(radius: 2)
                                                 // Device name label below the marker with outline for readability

@@ -44,7 +44,6 @@ struct iPhone_DeviceNavigationView: View {
     @State private var userTimestamp: Date? = nil
     @State private var isLoading: Bool = false
     @State private var now = Date()
-    @State private var timeUpdateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
@@ -85,18 +84,20 @@ struct iPhone_DeviceNavigationView: View {
                             }
                             VStack(spacing: 0) {
                                 if let ts = userTimestamp {
-                                    Text(relativeTimeString(from: ts, to: now))
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                        )
-                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
-                                        .shadow(radius: 2)
-                                        .zIndex(2)
+                                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                                        Text(relativeTimeString(from: ts, to: context.date))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                            )
+                                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                            .shadow(radius: 2)
+                                            .zIndex(2)
+                                    }
                                 }
                                 MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
                                     .shadow(radius: 2)
@@ -128,18 +129,20 @@ struct iPhone_DeviceNavigationView: View {
                             }
                             VStack(spacing: 0) {
                                 if let timestamp = deviceTimestamp {
-                                    Text(relativeTimeString(from: timestamp, to: now))
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                        )
-                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
-                                        .shadow(radius: 2)
-                                        .zIndex(2)
+                                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                                        Text(relativeTimeString(from: timestamp, to: context.date))
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                            )
+                                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                            .shadow(radius: 2)
+                                            .zIndex(2)
+                                    }
                                 }
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
@@ -226,7 +229,6 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
-                restartTimeUpdateTimer()
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -234,7 +236,7 @@ struct iPhone_DeviceNavigationView: View {
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
             }
-            .onReceive(timeUpdateTimer) { input in
+            .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
             }
             .onDisappear {
@@ -242,7 +244,6 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
-                restartTimeUpdateTimer()
             }
             .onChange(of: settings.automaticRouteUpdateDuringNavigation) { _, newValue in
                 // Keep UI and behavior in sync with the global setting
@@ -253,7 +254,6 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
-                restartTimeUpdateTimer()
             }
             .onMapCameraChange(frequency: .continuous) { context in
                 // Track camera state changes to detect user rotation and keep a compass affordance
@@ -672,11 +672,7 @@ struct iPhone_DeviceNavigationView: View {
         startAutoUpdate()
     }
 
-    private func restartTimeUpdateTimer() {
-        // Update the UI time labels with the same cadence as location refresh (min 1s)
-        let interval = max(1.0, Double(settings.mapUpdateInterval))
-        timeUpdateTimer = Timer.publish(every: interval, on: .main, in: .common).autoconnect()
-    }
+    // Removed: restartTimeUpdateTimer(). We now use an inline Timer publisher directly in .onReceive for per-second updates.
 
     // MARK: - Map UI Helpers (Scale bar and Compass)
 
