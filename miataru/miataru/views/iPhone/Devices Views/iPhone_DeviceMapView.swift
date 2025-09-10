@@ -444,6 +444,15 @@ struct iPhone_DeviceMapView: View {
                     // Marker annotation for the device
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind everything
+                            if settings.pulsingMapMarkers {
+                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
                                 // Show relative timestamp above marker
                                 if let timestamp = deviceTimestamp {
@@ -460,7 +469,7 @@ struct iPhone_DeviceMapView: View {
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
                                 // Device name label below the marker with outline for readability
                                 DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
@@ -496,6 +505,15 @@ struct iPhone_DeviceMapView: View {
                             if isCoordinate(coord, inside: visibleRegion) {
                                 Annotation("", coordinate: coord, anchor: .bottom) {
                                     ZStack {
+                                        // Pulsing behind everything
+                                        if settings.pulsingMapMarkers {
+                                            let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                            let pulsingSize = circleDiameter * 1.5
+                                            PulsingAccuracyCircle(pulsingColor: Color(other.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
+                                                .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                                .allowsHitTesting(false)
+                                                .accessibilityHidden(true)
+                                        }
                                         VStack(spacing: 0) {
                                             // Timestamp above marker
                                             Text(relativeTimeString(from: cached.timestamp, to: now))
@@ -510,7 +528,7 @@ struct iPhone_DeviceMapView: View {
                                                 .shimmering(active: settings.pulsingMapMarkers && isLoading)
                                                 .shadow(radius: 2)
                                                 .zIndex(2)
-                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
+                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
                                                 .shadow(radius: 2)
                                             // Device name label below the marker with outline for readability
                                             DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
