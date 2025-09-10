@@ -51,6 +51,7 @@ struct iPad_GroupMapView: View {
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     @State private var isProgrammaticCameraChange = false // Track programmatic camera updates
+    @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
     
     private static let verticalPaddingFactorTop: CLLocationDegrees = 1.7
     private static let verticalPaddingFactorBottom: CLLocationDegrees = 1.4
@@ -374,6 +375,7 @@ struct iPad_GroupMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            updateVisibleDeviceCount(with: context.region)
             if isProgrammaticCameraChange {
                 isProgrammaticCameraChange = false
             }
@@ -413,6 +415,15 @@ struct iPad_GroupMapView: View {
                     // Device marker
                     Annotation("", coordinate: coordinate, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind
+                            if settings.pulsingMapMarkers && visibleDeviceCount < 5 {
+                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? UIColor.blue), size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
                                 // Show timestamp if available
                                 if let timestamp = deviceTimestamps[deviceID] {
@@ -425,13 +436,12 @@ struct iPad_GroupMapView: View {
                                         .overlay(
                                             Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                         )
-                                        .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                        .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
                                 MiataruMapMarker(
-                                    color: Color(device.DeviceColor ?? UIColor.blue),
-                                    pulsing: settings.pulsingMapMarkers
+                                    color: Color(device.DeviceColor ?? UIColor.blue)
                                 )
                                     .shadow(radius: 2)
                                 DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
@@ -481,6 +491,38 @@ struct iPad_GroupMapView: View {
         )
         .mapStyle(mapStyleFromSettings(settings.mapType))
 
+    }
+
+    // MARK: - Visible devices calculation (iOS 17+)
+    private func updateVisibleDeviceCount(with region: MKCoordinateRegion?) {
+        guard let region = region else {
+            visibleDeviceCount = 0
+            return
+        }
+        var count = 0
+        for deviceID in groupDeviceIDs {
+            if let coord = animatedDeviceLocations[deviceID] {
+                let inside = isCoordinate(coord, inside: region)
+                if inside { count += 1 }
+            }
+        }
+        visibleDeviceCount = count
+    }
+
+    // Reuse coordinate-in-region helper from device map views
+    private func isCoordinate(_ coordinate: CLLocationCoordinate2D, inside region: MKCoordinateRegion) -> Bool {
+        let halfLat = region.span.latitudeDelta / 2.0
+        let halfLon = region.span.longitudeDelta / 2.0
+        let latOk = abs(coordinate.latitude - region.center.latitude) <= halfLat
+        func shortestLongitudeDelta(_ lon1: Double, _ lon2: Double) -> Double {
+            var delta = lon1 - lon2
+            while delta > 180 { delta -= 360 }
+            while delta < -180 { delta += 360 }
+            return delta
+        }
+        let lonDelta = abs(shortestLongitudeDelta(coordinate.longitude, region.center.longitude))
+        let lonOk = lonDelta <= halfLon || region.span.longitudeDelta >= 360
+        return latOk && lonOk
     }
     /*
     @ViewBuilder

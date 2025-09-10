@@ -61,6 +61,7 @@ struct iPad_DeviceMapView: View {
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     @State private var isProgrammaticCameraChange = false // Track programmatic camera updates to avoid false interaction detection
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
+    @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -300,6 +301,9 @@ struct iPad_DeviceMapView: View {
                     cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
                 }
             }
+            if #available(iOS 17.0, *) {
+                updateVisibleDeviceCount(with: cameraPosition.region)
+            }
             Task { await fetchLocation(resetZoomToSettings: true) }
             startAutoUpdate()
         }
@@ -358,6 +362,7 @@ struct iPad_DeviceMapView: View {
             }
             // Always update region for off-screen arrows
             currentRegion = context.region
+            updateVisibleDeviceCount(with: context.region)
             if isProgrammaticCameraChange {
                 // Reset the flag and do not disable auto-centering
                 isProgrammaticCameraChange = false
@@ -464,6 +469,15 @@ struct iPad_DeviceMapView: View {
                         let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
                         Annotation("", coordinate: coordinate, anchor: .bottom) {
                             ZStack {
+                                // Pulsing behind
+                                if settings.pulsingMapMarkers && visibleDeviceCount < 5 {
+                                    let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                    let pulsingSize = circleDiameter * 1.5
+                                    PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
+                                        .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                        .allowsHitTesting(false)
+                                        .accessibilityHidden(true)
+                                }
                                 VStack(spacing: 0) {
                                     // Show relative timestamp above marker
                                     if let timestamp = deviceTimestamp {
@@ -476,11 +490,11 @@ struct iPad_DeviceMapView: View {
                                             .overlay(
                                                 Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                             )
-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
                                             .shadow(radius: 2)
                                             .zIndex(2)
                                     }
-                                    MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
+                                    MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                         .shadow(radius: 2)
                                     // Device name label below the marker with outline for readability
                                     ZStack {
@@ -535,6 +549,15 @@ struct iPad_DeviceMapView: View {
                                 if isCoordinate(coord, inside: visibleRegion) {
                                     Annotation("", coordinate: coord, anchor: .bottom) {
                                         ZStack {
+                                            // Pulsing behind
+                                            if settings.pulsingMapMarkers && visibleDeviceCount < 5 {
+                                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                                let pulsingSize = circleDiameter * 1.5
+                                                PulsingAccuracyCircle(pulsingColor: Color(other.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
+                                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                                    .allowsHitTesting(false)
+                                                    .accessibilityHidden(true)
+                                            }
                                             VStack(spacing: 0) {
                                                 // Timestamp above marker
                                                 Text(relativeTimeString(from: cached.timestamp, to: now))
@@ -546,10 +569,10 @@ struct iPad_DeviceMapView: View {
                                                     .overlay(
                                                         Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
                                                     )
-                                                    .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                                    .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
                                                     .shadow(radius: 2)
                                                     .zIndex(2)
-                                                MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
+                                                MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
                                                     .shadow(radius: 2)
                                                 // Device name label below the marker with outline for readability
                                                 DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
@@ -807,6 +830,32 @@ struct iPad_DeviceMapView: View {
             }
         }
 
+    }
+}
+
+// MARK: - Visible devices calculation (iOS 17+)
+extension iPad_DeviceMapView {
+    private func updateVisibleDeviceCount(with region: MKCoordinateRegion?) {
+        guard let region = region else {
+            visibleDeviceCount = 0
+            return
+        }
+        var count = 0
+        // Main device
+        if let coord = animatedDeviceLocation, isCoordinate(coord, inside: region) {
+            count += 1
+        }
+        // Other devices shown on the map (when inside the viewport)
+        let others = deviceStore.devices.filter { $0.DeviceID != deviceID }
+        for other in others {
+            if let cached = cache.getLocation(for: other.DeviceID) {
+                let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                if isCoordinate(coord, inside: region) {
+                    count += 1
+                }
+            }
+        }
+        visibleDeviceCount = count
     }
 }
 

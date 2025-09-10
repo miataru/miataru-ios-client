@@ -62,15 +62,12 @@ final class MiataruMapMarkerImageCache {
 }
 
 struct MiataruMapMarker: View {
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
 
     var color: Color = .red
     var iconName: String = "mappin"
     var height: CGFloat = 40
-    var pulsing: Bool = true // <-- Option für Pulsing
     var cacheEnabled: Bool = true
     /// Extra padding used only for prerendering to avoid clipping shadows
     var renderPadding: CGFloat = 8
@@ -179,20 +176,9 @@ struct MiataruMapMarker: View {
     }
 
     var body: some View {
-        let circleDiameter = height * 0.65
-        let pulsatingDiameter = circleDiameter * 1.5
-        let pulseYOffset = circleDiameter / 2 + 6
-        let markerFineTuneYOffset: CGFloat = 4
+        let markerFineTuneYOffset: CGFloat = 0
 
         ZStack {
-            if pulsing {
-                let animationsAllowed = scenePhase == .active && !isLowPowerMode
-                if animationsAllowed {
-                    PulsingAccuracyCircle(pulsingColor: color, size: pulsatingDiameter)
-                        .offset(y: pulseYOffset)
-                }
-            }
-
             Group {
                 if cacheEnabled {
 #if canImport(UIKit)
@@ -200,11 +186,9 @@ struct MiataruMapMarker: View {
                         Image(uiImage: image)
                     } else {
                         staticMarker
-                            .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
                                 let content = staticMarker
-                                    .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                                     .environment(\.colorScheme, colorScheme)
                                 let renderer = ImageRenderer(content: content)
                                 renderer.scale = displayScale
@@ -222,11 +206,9 @@ struct MiataruMapMarker: View {
                         Image(nsImage: image)
                     } else {
                         staticMarker
-                            .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                             .task(id: cacheKey) {
                                 guard MiataruMapMarkerImageCache.shared.image(for: cacheKey) == nil else { return }
                                 let content = staticMarker
-                                    .padding(EdgeInsets(top: renderPadding, leading: renderPadding, bottom: 0, trailing: renderPadding))
                                     .environment(\.colorScheme, colorScheme)
                                 let renderer = ImageRenderer(content: content)
                                 renderer.scale = displayScale
@@ -246,9 +228,6 @@ struct MiataruMapMarker: View {
             }
         }
         .offset(y: markerFineTuneYOffset)
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
-            isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
-        }
         .onChange(of: colorScheme) { _, _ in
             // Invalidate local cached image when the appearance changes
             cachedImage = nil
@@ -270,10 +249,10 @@ struct Triangle: Shape {
 
 #Preview {
     VStack(spacing: 20) {
-        MiataruMapMarker(color: .red, height: 40, pulsing: true)
-        MiataruMapMarker(color: .blue, iconName: "car", height: 60, pulsing: false)
-        MiataruMapMarker(color: .green, iconName: "bicycle", height: 30, pulsing: true)
-        MiataruMapMarker(color: .orange, iconName: "star", height: 80, pulsing: false)
+        MiataruMapMarker(color: .red, height: 40)
+        MiataruMapMarker(color: .blue, iconName: "car", height: 60)
+        MiataruMapMarker(color: .green, iconName: "bicycle", height: 30)
+        MiataruMapMarker(color: .orange, iconName: "star", height: 80)
     }
     .padding()
     .background(
