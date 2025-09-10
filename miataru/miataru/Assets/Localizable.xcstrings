@@ -987,6 +987,7 @@
       }
     },
     "Background Updates:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1008,7 +1009,54 @@
         }
       }
     },
+    "background_status_header" : {
+      "comment" : "Header for background location status card",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund-Status"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background Status"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドステータス"
+          }
+        }
+      }
+    },
+    "background_updates_label" : {
+      "comment" : "Label for number of background updates",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund-Updates:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background updates:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンド更新:"
+          }
+        }
+      }
+    },
     "Background-Status" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3232,6 +3280,7 @@
       }
     },
     "Last Background Update:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3295,6 +3344,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最終サーバー更新"
+          }
+        }
+      }
+    },
+    "last_background_update_label" : {
+      "comment" : "Label for timestamp of the last background update",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letztes Hintergrund-Update:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last background update:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新のバックグラウンド更新:"
           }
         }
       }

@@ -32,6 +32,9 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
+    private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
+    private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
+    private let backgroundMetricsLastResetKey = "miataru_backgroundMetricsLastReset"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
@@ -80,6 +83,15 @@ final class LocationManager: NSObject, ObservableObject {
         networkMonitor.start(queue: queue)
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
+        // Load persisted background update metrics
+        if userDefaults.object(forKey: backgroundUpdateCountKey) != nil {
+            backgroundUpdateCount = userDefaults.integer(forKey: backgroundUpdateCountKey)
+        }
+        if let savedDate = userDefaults.object(forKey: lastBackgroundUpdateKey) as? Date {
+            lastBackgroundUpdate = savedDate
+        }
+        // Perform initial daily reset check
+        maybeResetBackgroundMetricsIfNeeded()
     }
     
     deinit {
@@ -334,8 +346,6 @@ final class LocationManager: NSObject, ObservableObject {
     func startBackgroundTracking() {
         guard settings.trackAndReportLocation else { return }
         startSignificantChangeUpdates()
-        lastBackgroundUpdate = Date()
-        backgroundUpdateCount += 1
     }
     
     func stopBackgroundTracking() {
@@ -355,6 +365,8 @@ final class LocationManager: NSObject, ObservableObject {
     func appDidEnterForeground() {
         debugLog("[LocationManager] App did enter foreground")
         guard isTracking else { return }
+        // Check daily reset on foreground entry so UI reflects a new day immediately
+        maybeResetBackgroundMetricsIfNeeded()
         stopSignificantChangeUpdates()
         startHighAccuracyUpdates()
     }
@@ -387,6 +399,21 @@ final class LocationManager: NSObject, ObservableObject {
         default: return (5, 5)
         }
     }
+
+    // MARK: - Daily reset at midnight boundary
+    private func maybeResetBackgroundMetricsIfNeeded() {
+        let calendar = Calendar.current
+        let todayStart = calendar.startOfDay(for: Date())
+        let lastReset = (userDefaults.object(forKey: backgroundMetricsLastResetKey) as? Date) ?? todayStart
+        if lastReset < todayStart {
+            backgroundUpdateCount = 0
+            userDefaults.set(0, forKey: backgroundUpdateCountKey)
+            userDefaults.set(todayStart, forKey: backgroundMetricsLastResetKey)
+        } else if userDefaults.object(forKey: backgroundMetricsLastResetKey) == nil {
+            // Initialize baseline on first run
+            userDefaults.set(todayStart, forKey: backgroundMetricsLastResetKey)
+        }
+    }
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -395,6 +422,17 @@ extension LocationManager: CLLocationManagerDelegate {
         Task { @MainActor in
             guard let location = locations.last else { return }
             let mode = UIApplication.shared.applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
+            // Record update arrival whenever app is not active (background or inactive)
+            if UIApplication.shared.applicationState != .active {
+                // Reset counter if a new day window started
+                self.maybeResetBackgroundMetricsIfNeeded()
+                self.lastBackgroundUpdate = Date()
+                self.backgroundUpdateCount += 1
+                self.userDefaults.set(self.backgroundUpdateCount, forKey: self.backgroundUpdateCountKey)
+                if let lastDate = self.lastBackgroundUpdate {
+                    self.userDefaults.set(lastDate, forKey: self.lastBackgroundUpdateKey)
+                }
+            }
             // Only accept updates if distance or accuracy criteria are met
             let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
             var shouldAcceptUpdate = false
