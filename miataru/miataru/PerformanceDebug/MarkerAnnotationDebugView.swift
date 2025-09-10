@@ -105,8 +105,17 @@ struct MarkerAnnotationDebugView: View {
                     let idA = deviceName
                     Annotation("", coordinate: coordA, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind
+                            if pulsing {
+                                let circleDiameter = markerHeight * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
-                                MiataruMapMarker(color: deviceColor, iconName: currentTransportSymbol(), height: markerHeight, pulsing: pulsing)
+                                MiataruMapMarker(color: deviceColor, iconName: currentTransportSymbol(), height: markerHeight)
                                     .shadow(radius: 2)
                                 // Label with outlined readability
                                 ZStack {
@@ -140,8 +149,17 @@ struct MarkerAnnotationDebugView: View {
                     let idB = NSLocalizedString("debug_marker_device_alt_name", comment: "Alternate sample device name used in the marker debug view.")
                     Annotation("", coordinate: coordB, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind
+                            if pulsing {
+                                let circleDiameter = markerHeight * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: .blue, size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
-                                MiataruMapMarker(color: .blue, iconName: currentTransportSymbol(), height: markerHeight, pulsing: pulsing)
+                                MiataruMapMarker(color: .blue, iconName: currentTransportSymbol(), height: markerHeight)
                                     .shadow(radius: 2)
                                 ZStack {
                                     ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
@@ -203,7 +221,15 @@ struct MarkerAnnotationDebugView: View {
 
             // MARK: - Standalone markers (without map) for quick tweaking
             GhostAnnotationView(name: deviceName, iconName: transportIconName)
-            MiataruMapMarker(color: deviceColor, iconName: transportIconName, height: markerHeight, pulsing: pulsing)
+            if pulsing {
+                let circleDiameter = markerHeight * 0.65
+                let pulsingSize = circleDiameter * 1.5
+                PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
+                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+            MiataruMapMarker(color: deviceColor, iconName: transportIconName, height: markerHeight)
         }
         .padding(24)
         .background(

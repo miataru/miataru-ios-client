@@ -72,7 +72,17 @@ struct iPhone_DeviceNavigationView: View {
             Map(position: $mapPosition, scope: mapScope) {
                 if let coord = animatedUserCoordinate {
                     Annotation("", coordinate: coord, anchor: .bottom) {
+                        let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
                         ZStack {
+                            // Pulsing behind everything for user marker
+                            if settings.pulsingMapMarkers {
+                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
                                 if let ts = userTimestamp {
                                     Text(relativeTimeString(from: ts, to: now))
@@ -88,8 +98,7 @@ struct iPhone_DeviceNavigationView: View {
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
-                                let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
-                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), pulsing: settings.pulsingMapMarkers)
+                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
                                     .shadow(radius: 2)
                                 DeviceNameLabel(
                                     deviceName: myDevice?.DeviceName ?? "",
@@ -108,6 +117,15 @@ struct iPhone_DeviceNavigationView: View {
                 if let coord = animatedDeviceCoordinate {
                     Annotation("", coordinate: coord, anchor: .bottom) {
                         ZStack {
+                            // Pulsing behind everything for target device marker
+                            if settings.pulsingMapMarkers {
+                                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                let pulsingSize = circleDiameter * 1.5
+                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
+                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .allowsHitTesting(false)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(spacing: 0) {
                                 if let timestamp = deviceTimestamp {
                                     Text(relativeTimeString(from: timestamp, to: now))
@@ -123,7 +141,7 @@ struct iPhone_DeviceNavigationView: View {
                                         .shadow(radius: 2)
                                         .zIndex(2)
                                 }
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red), pulsing: settings.pulsingMapMarkers)
+                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
                                 DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
@@ -453,11 +471,11 @@ struct iPhone_DeviceNavigationView: View {
             if !shouldRecalculate { return }
         }
 
-        // Reset or check the daily request counter only when we actually perform a new request
-        let today = Calendar.current.startOfDay(for: Date())
-        let storedDate = Date(timeIntervalSince1970: routeRequestDate)
-        if Calendar.current.startOfDay(for: storedDate) != today {
-            routeRequestDate = today.timeIntervalSince1970
+        // Reset or check the request counter on a rolling 24h basis
+        let now = Date()
+        let lastReset = Date(timeIntervalSince1970: routeRequestDate)
+        if now.timeIntervalSince(lastReset) >= 24 * 60 * 60 {
+            routeRequestDate = now.timeIntervalSince1970
             routeRequestCount = 0
         }
         guard routeRequestCount < routeRequestDailyLimit else {

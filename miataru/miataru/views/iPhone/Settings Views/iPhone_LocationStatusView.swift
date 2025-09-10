@@ -278,10 +278,11 @@ struct iPhone_LocationStatusView: View {
 // MARK: - Daily reset helpers
 extension iPhone_LocationStatusView {
     private func resetRouteRequestsIfNewDay() {
-        let today = Calendar.current.startOfDay(for: Date())
-        let storedDate = Date(timeIntervalSince1970: routeRequestDate)
-        if Calendar.current.startOfDay(for: storedDate) != today {
-            routeRequestDate = today.timeIntervalSince1970
+        // Rolling 24h reset instead of calendar day switch
+        let now = Date()
+        let lastReset = Date(timeIntervalSince1970: routeRequestDate)
+        if now.timeIntervalSince(lastReset) >= 24 * 60 * 60 {
+            routeRequestDate = now.timeIntervalSince1970
             routeRequestCount = 0
         }
     }

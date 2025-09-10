@@ -107,6 +107,8 @@ struct DeviceNameLabel: View {
                 #if canImport(UIKit)
                 if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
                     Image(uiImage: image)
+                        .renderingMode(.original)
+                        .interpolation(.high)
                 } else {
                     rawLabel
                         .task(id: cacheKey) {
@@ -121,10 +123,12 @@ struct DeviceNameLabel: View {
                                 .environment(\.dynamicTypeSize, dynamicTypeSize)
                             let renderer = ImageRenderer(content: content)
                             renderer.scale = displayScale
+                            renderer.isOpaque = false
                             if let uiImage = renderer.uiImage {
+                                let outputImage = uiImage.withRenderingMode(.alwaysOriginal)
                                 let cost = (uiImage.pngData()?.count) ?? 0
-                                DeviceNameLabelImageCache.shared.set(uiImage, for: cacheKey, cost: cost)
-                                cachedImage = uiImage
+                                DeviceNameLabelImageCache.shared.set(outputImage, for: cacheKey, cost: cost)
+                                cachedImage = outputImage
                                 cachedImageKey = cacheKey
                             }
                         }
@@ -132,6 +136,8 @@ struct DeviceNameLabel: View {
                 #elseif canImport(AppKit)
                 if let image = (cachedImageKey == cacheKey ? cachedImage : nil) ?? DeviceNameLabelImageCache.shared.image(for: cacheKey) {
                     Image(nsImage: image)
+                        .renderingMode(.original)
+                        .interpolation(.high)
                 } else {
                     rawLabel
                         .task(id: cacheKey) {
@@ -146,7 +152,9 @@ struct DeviceNameLabel: View {
                                 .environment(\.dynamicTypeSize, dynamicTypeSize)
                             let renderer = ImageRenderer(content: content)
                             renderer.scale = displayScale
+                            renderer.isOpaque = false
                             if let nsImage = renderer.nsImage {
+                                nsImage.isTemplate = false
                                 DeviceNameLabelImageCache.shared.set(nsImage, for: cacheKey)
                                 cachedImage = nsImage
                                 cachedImageKey = cacheKey
