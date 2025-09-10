@@ -464,13 +464,13 @@ struct BackgroundStatusCard: View {
             HStack {
                 Image(systemName: "clock.fill")
                     .foregroundColor(.purple)
-                Text("Background-Status")
+                Text(NSLocalizedString("background_status_header", comment: "Header for background location status card"))
                     .font(.headline)
                 Spacer()
             }
             
             HStack {
-                Text("Background Updates:")
+                Text(NSLocalizedString("background_updates_label", comment: "Label for number of background updates"))
                 Spacer()
                 Text("\(backgroundManager.backgroundUpdateCount)", comment: "Number of background updates")
                     .foregroundColor(.secondary)
@@ -478,7 +478,7 @@ struct BackgroundStatusCard: View {
             
             if let lastUpdate = backgroundManager.lastBackgroundUpdate {
                 HStack {
-                    Text("Last Background Update:")
+                    Text(NSLocalizedString("last_background_update_label", comment: "Label for timestamp of the last background update"))
                     Spacer()
                     Text(formatTime(lastUpdate))
                         .foregroundColor(.secondary)
