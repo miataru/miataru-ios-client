@@ -8,6 +8,7 @@
  */
 
 import SwiftUI
+import Combine
 
 struct iPhone_3_OnboardingServerView: View {
     @ObservedObject private var settings = SettingsManager.shared
@@ -15,6 +16,7 @@ struct iPhone_3_OnboardingServerView: View {
     @State private var customServerURL: String = ""
     @State private var showURLError: Bool = false
     @FocusState private var customServerFieldIsFocused: Bool
+    @State private var keyboardHeight: CGFloat = 0
     
     private let defaultServer = "https://service.miataru.com"
     
@@ -24,19 +26,21 @@ struct iPhone_3_OnboardingServerView: View {
             Text("Choose the server you trust.")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            Image("selectserver")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 300)
-                .padding(.horizontal)
+            if keyboardHeight == 0 {
+                Image("selectserver")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 300)
+                    .padding(.horizontal)
+            }
             Text("Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             Link("Documentation to setup your own server (GitHub)", destination: URL(string: "https://github.com/miataru/miataru-server")!)
-            .font(.footnote)
-            .foregroundStyle(.link)
-            .padding(.bottom, 8)
+                .font(.footnote)
+                .foregroundStyle(.link)
+                .padding(.bottom, 8)
 
             Picker("Server", selection: $useDefaultServer) {
                 Text("Use Default Server").tag(true)
@@ -100,6 +104,14 @@ struct iPhone_3_OnboardingServerView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
+            if let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardHeight = frame.height
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardHeight = 0
+        }
         .onAppear {
             if settings.miataruServerURL != defaultServer {
                 useDefaultServer = false
