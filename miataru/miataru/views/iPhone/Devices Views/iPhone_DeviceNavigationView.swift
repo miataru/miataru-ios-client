@@ -46,10 +46,9 @@ struct iPhone_DeviceNavigationView: View {
     @State private var now = Date()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
-    @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
-    // Tracks the day the counter applies to so we can reset every 24h
-    @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
+    // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
@@ -471,21 +470,16 @@ struct iPhone_DeviceNavigationView: View {
             if !shouldRecalculate { return }
         }
 
-        // Reset or check the request counter on a rolling 24h basis
-        let now = Date()
-        let lastReset = Date(timeIntervalSince1970: routeRequestDate)
-        if now.timeIntervalSince(lastReset) >= 24 * 60 * 60 {
-            routeRequestDate = now.timeIntervalSince1970
-            routeRequestCount = 0
-        }
-        guard routeRequestCount < routeRequestDailyLimit else {
+        // Enforce daily limit through centralized counter with calendar-day reset
+        routeCounter.checkAndResetIfNeeded()
+        guard routeCounter.count < routeRequestDailyLimit else {
             showErrorOverlay(
                 "Daily route request limit reached",
                 NSLocalizedString("route_request_limit_reached", comment: "Daily route request limit reached. Try again tomorrow.")
             )
             return
         }
-        routeRequestCount += 1
+        _ = routeCounter.canRequestAndIncrement(limit: routeRequestDailyLimit)
         let request = MKDirections.Request()
         // Draw the route from the current user towards the other device
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
