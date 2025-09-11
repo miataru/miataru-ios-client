@@ -182,7 +182,8 @@ struct iPhone_DevicesView: View {
                     _ = await refreshAllDeviceLocations()
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
                 let interval = Double(SettingsManager.shared.mapUpdateInterval)
                 let now = Date()
