@@ -14,9 +14,9 @@ import UIKit
 struct iPhone_LocationStatusView: View {
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var backgroundManager = LocationManager.shared
+    @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @ObservedObject private var settings = SettingsManager.shared
-    @AppStorage("routeRequestCount") private var routeRequestCount: Int = 0
-    @AppStorage("routeRequestDate") private var routeRequestDate: Double = Date().timeIntervalSince1970
+    // Legacy @AppStorage fields removed in favor of RouteRequestCounter
     
     var body: some View {
         ScrollView {
@@ -83,7 +83,7 @@ struct iPhone_LocationStatusView: View {
 
                         LocationInfoRow(
                             title: NSLocalizedString("Route requests", comment: "Number of route requests counter in Location Tracking Details"),
-                            value: String(routeRequestCount),
+                            value: String(routeCounter.count),
                             icon: "map"
                         )
 
@@ -156,7 +156,7 @@ struct iPhone_LocationStatusView: View {
         .safeAreaInset(edge: .top) {
             Color.clear.frame(height: 10)
         }
-        .onAppear(perform: resetRouteRequestsIfNewDay)
+        .onAppear { routeCounter.checkAndResetIfNeeded() }
     }
     
     // MARK: - Computed Properties
@@ -279,17 +279,7 @@ struct iPhone_LocationStatusView: View {
 }
 
 // MARK: - Daily reset helpers
-extension iPhone_LocationStatusView {
-    private func resetRouteRequestsIfNewDay() {
-        // Rolling 24h reset instead of calendar day switch
-        let now = Date()
-        let lastReset = Date(timeIntervalSince1970: routeRequestDate)
-        if now.timeIntervalSince(lastReset) >= 24 * 60 * 60 {
-            routeRequestDate = now.timeIntervalSince1970
-            routeRequestCount = 0
-        }
-    }
-}
+extension iPhone_LocationStatusView {}
 
 // MARK: - Supporting Views
 struct LocationInfoRow: View {
