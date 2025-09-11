@@ -77,8 +77,11 @@ struct iPhone_DeviceNavigationView: View {
                             if settings.pulsingMapMarkers {
                                 let circleDiameter = (/* marker height */ 40.0) * 0.65
                                 let pulsingSize = circleDiameter * 1.5
+                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
-                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .padding(.top, pulsingOffset)
+                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
+                                    .offset(y: -pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -122,8 +125,11 @@ struct iPhone_DeviceNavigationView: View {
                             if settings.pulsingMapMarkers {
                                 let circleDiameter = (/* marker height */ 40.0) * 0.65
                                 let pulsingSize = circleDiameter * 1.5
+                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
-                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .padding(.top, pulsingOffset)
+                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
+                                    .offset(y: -pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }

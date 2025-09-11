@@ -109,8 +109,11 @@ struct MarkerAnnotationDebugView: View {
                             if pulsing {
                                 let circleDiameter = markerHeight * 0.65
                                 let pulsingSize = circleDiameter * 1.5
+                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
-                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .padding(.top, pulsingOffset)
+                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
+                                    .offset(y: -pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -153,8 +156,11 @@ struct MarkerAnnotationDebugView: View {
                             if pulsing {
                                 let circleDiameter = markerHeight * 0.65
                                 let pulsingSize = circleDiameter * 1.5
+                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: .blue, size: pulsingSize)
-                                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                                    .padding(.top, pulsingOffset)
+                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
+                                    .offset(y: -pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -224,8 +230,11 @@ struct MarkerAnnotationDebugView: View {
             if pulsing {
                 let circleDiameter = markerHeight * 0.65
                 let pulsingSize = circleDiameter * 1.5
+                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                 PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
-                    .offset(y: (pulsingSize * 1.6) / 2 + 2)
+                    .padding(.top, pulsingOffset)
+                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
+                    .offset(y: -pulsingOffset)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             }
