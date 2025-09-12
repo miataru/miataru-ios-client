@@ -4799,19 +4799,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Routenanfragen"
+            "value" : "Routenanfragen heute"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route requests"
+            "value" : "Route requests today"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ルートリクエスト数"
+            "value" : "本日のルートリクエスト"
           }
         }
       }
