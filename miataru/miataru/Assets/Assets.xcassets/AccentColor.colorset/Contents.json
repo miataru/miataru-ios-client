@@ -6,6 +6,134 @@
         "reference" : "systemBlueColor"
       },
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
+      "color" : {
+        "platform" : "universal",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "platform" : "universal",
+        "reference" : "labelColor"
+      },
+      "idiom" : "universal"
+    },
+    {
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "iphone"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "iphone"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "labelColor"
+      },
+      "idiom" : "iphone"
+    },
+    {
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "ipad"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "ipad"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "labelColor"
+      },
+      "idiom" : "ipad"
+    },
+    {
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "ipad",
+      "subtype" : "mac-catalyst"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "light"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "systemBlueColor"
+      },
+      "idiom" : "ipad",
+      "subtype" : "mac-catalyst"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "color" : {
+        "platform" : "ios",
+        "reference" : "labelColor"
+      },
+      "idiom" : "ipad",
+      "subtype" : "mac-catalyst"
     }
   ],
   "info" : {
