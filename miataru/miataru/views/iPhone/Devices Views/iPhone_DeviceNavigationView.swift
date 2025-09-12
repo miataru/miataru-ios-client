@@ -78,9 +78,7 @@ struct iPhone_DeviceNavigationView: View {
                                 let pulsingSize = circleDiameter * 1.5
                                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
-                                    .padding(.top, pulsingOffset)
-                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                                    .offset(y: -pulsingOffset)
+                                    .offset(y: pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -126,9 +124,7 @@ struct iPhone_DeviceNavigationView: View {
                                 let pulsingSize = circleDiameter * 1.5
                                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
-                                    .padding(.top, pulsingOffset)
-                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                                    .offset(y: -pulsingOffset)
+                                    .offset(y: pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }

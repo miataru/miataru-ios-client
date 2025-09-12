@@ -111,9 +111,7 @@ struct MarkerAnnotationDebugView: View {
                                 let pulsingSize = circleDiameter * 1.5
                                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
-                                    .padding(.top, pulsingOffset)
-                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                                    .offset(y: -pulsingOffset)
+                                    .offset(y: pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -158,9 +156,7 @@ struct MarkerAnnotationDebugView: View {
                                 let pulsingSize = circleDiameter * 1.5
                                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: .blue, size: pulsingSize)
-                                    .padding(.top, pulsingOffset)
-                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                                    .offset(y: -pulsingOffset)
+                                    .offset(y: pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
@@ -232,9 +228,7 @@ struct MarkerAnnotationDebugView: View {
                 let pulsingSize = circleDiameter * 1.5
                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                 PulsingAccuracyCircle(pulsingColor: deviceColor, size: pulsingSize)
-                    .padding(.top, pulsingOffset)
-                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                    .offset(y: -pulsingOffset)
+                    .offset(y: pulsingOffset)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             }
