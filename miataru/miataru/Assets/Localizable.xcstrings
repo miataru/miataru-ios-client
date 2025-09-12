@@ -986,29 +986,6 @@
         }
       }
     },
-    "Background Updates:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anzahl der Hintergrundaktualisierungen:"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Number of background updates:"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックグラウンド更新数："
-          }
-        }
-      }
-    },
     "background_status_header" : {
       "comment" : "Header for background location status card",
       "localizations" : {
@@ -1038,42 +1015,19 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hintergrund-Updates:"
+            "value" : "Hintergrund-Updates heute:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Background updates:"
+            "value" : "Background updates today:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックグラウンド更新:"
-          }
-        }
-      }
-    },
-    "Background-Status" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hintergrund-Status"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background-Status"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックグラウンドステータス"
+            "value" : "本日のバックグラウンド更新"
           }
         }
       }
@@ -3275,29 +3229,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "QRコードは「miataru://」で始まる必要があります。"
-          }
-        }
-      }
-    },
-    "Last Background Update:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letztes Hintergrund-Update:"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last Background Update:"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最終バックグラウンド更新:"
           }
         }
       }
