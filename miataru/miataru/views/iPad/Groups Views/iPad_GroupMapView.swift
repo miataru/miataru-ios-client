@@ -420,9 +420,7 @@ struct iPad_GroupMapView: View {
                                 let pulsingSize = circleDiameter * 1.5
                                 let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
                                 PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? UIColor.blue), size: pulsingSize)
-                                    .padding(.top, pulsingOffset)
-                                    .frame(height: pulsingSize * 1.6 + pulsingOffset)
-                                    .offset(y: -pulsingOffset)
+                                    .offset(y: pulsingOffset)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
                             }
