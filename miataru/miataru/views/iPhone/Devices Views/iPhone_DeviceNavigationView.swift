@@ -16,6 +16,8 @@ import MiataruAPIClient
 struct iPhone_DeviceNavigationView: View {
     var device: KnownDevice
 
+    @EnvironmentObject private var routeInfoState: RouteInfoState
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var routeCache = RouteCacheStore.shared
     @ObservedObject private var locationManager = LocationManager.shared
@@ -224,12 +226,15 @@ struct iPhone_DeviceNavigationView: View {
                 isAutoCenteringEnabled = true
                 // Sync auto-update lock state with global setting on appear
                 isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
+                // Provide cancel handler for bottom accessory (iOS 26)
+                routeInfoState.onCancel = { dismiss() }
                 updateCoordinates(recenter: true)
                 if !useCachedRouteIfValid() { // prefer cached route on appear
                     calculateRoute()
                 }
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
+                updateBottomAccessory()
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -242,6 +247,9 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onDisappear {
                 stopAutoUpdate()
+                // Hide accessory and remove cancel handler when leaving
+                routeInfoState.hide()
+                routeInfoState.onCancel = nil
             }
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
@@ -255,6 +263,10 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
+                updateBottomAccessory()
+            }
+            .onChange(of: distanceText) { _, _ in
+                updateBottomAccessory()
             }
             .onMapCameraChange(frequency: .continuous) { context in
                 // Track camera state changes to detect user rotation and keep a compass affordance
@@ -276,24 +288,8 @@ struct iPhone_DeviceNavigationView: View {
             .overlay(alignment: .top) {
                 if travelTime != nil || distanceText != nil {
                     if #available(iOS 26.0, *) {
-                        HStack(spacing: 8) {
-                            if let travelTime {
-                                Image(systemName: "clock")
-                                    .imageScale(.small)
-                                    .accessibilityHidden(true)
-                                Text(travelTime)
-                            }
-                            if travelTime != nil && distanceText != nil {
-                                Image(systemName: transportSymbolName())
-                                    .imageScale(.small)
-                                    .accessibilityHidden(true)
-                            }
-                            if let distanceText { Text(distanceText) }
-                        }
-                        .font(.callout.monospacedDigit())
-                        .padding(8)
-                        .glassEffect(in: .rect(cornerRadius: 8))
-                        .padding()
+                        // Use bottom accessory on iOS 26; no top overlay
+                        EmptyView()
                     } else {
                         HStack(spacing: 8) {
                             if let travelTime {
@@ -815,6 +811,18 @@ extension iPhone_DeviceNavigationView {
         case 2: return "car"
         case 3: return "tram"
         default: return "car"
+        }
+    }
+
+    private func updateBottomAccessory() {
+        if #available(iOS 26.0, *) {
+            let visible = (travelTime != nil || distanceText != nil)
+            routeInfoState.update(
+                etaText: travelTime,
+                distanceText: distanceText,
+                transportSymbolName: transportSymbolName(),
+                visible: visible
+            )
         }
     }
 }
