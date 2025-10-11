@@ -101,12 +101,13 @@ struct iPhone_DeviceNavigationView: View {
                                             .zIndex(2)
                                     }
                                 }
-                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
-                                    .shadow(radius: 2)
+                                // Device name label above the marker for clarity
                                 DeviceNameLabel(
                                     deviceName: myDevice?.DeviceName ?? "",
                                     deviceID: thisDeviceIDManager.shared.deviceID
                                 )
+                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+                                    .shadow(radius: 2)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)
@@ -147,9 +148,10 @@ struct iPhone_DeviceNavigationView: View {
                                             .zIndex(2)
                                     }
                                 }
+                                // Device name label above the marker for clarity
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)
