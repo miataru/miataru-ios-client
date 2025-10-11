@@ -71,6 +71,8 @@ struct miataruApp: App {
         WindowGroup(id: "main") {
             MiataruRootView()
                 .environmentObject(appState)
+                .environmentObject(RouteInfoState.shared)
+                .environmentObject(SettingsManager.shared)
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
                     OnboardingContainerView(isPresented: $appState.showOnboarding)
                         .background(Color(.systemBackground))
@@ -113,6 +115,8 @@ struct miataruApp: App {
         }
         WindowGroup(for: String.self) { deviceID in
             DeviceWindowEntrypoint(deviceID: deviceID)
+                .environmentObject(RouteInfoState.shared)
+                .environmentObject(SettingsManager.shared)
         }
     }
 }

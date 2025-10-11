@@ -26,6 +26,16 @@
         }
       }
     },
+    "%@ • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ • %2$@"
+          }
+        }
+      }
+    },
     "%lld" : {
       "comment" : "Number of background updates",
       "localizations" : {
@@ -1100,6 +1110,9 @@
           }
         }
       }
+    },
+    "cancel_navigation" : {
+      "comment" : "Cancel navigation"
     },
     "Choose the server you trust." : {
       "localizations" : {
