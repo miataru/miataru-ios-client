@@ -34,7 +34,8 @@
             "value" : "%1$@ • %2$@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "%lld" : {
       "comment" : "Number of background updates",
@@ -1089,7 +1090,7 @@
       }
     },
     "cancel" : {
-      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group",
+      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1110,9 +1111,6 @@
           }
         }
       }
-    },
-    "cancel_navigation" : {
-      "comment" : "Cancel navigation"
     },
     "Choose the server you trust." : {
       "localizations" : {

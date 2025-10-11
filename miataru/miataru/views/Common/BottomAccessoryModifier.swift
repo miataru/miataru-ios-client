@@ -26,7 +26,7 @@ struct BottomAccessoryModifier: ViewModifier {
                                 HStack {
                                     Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
                                     Text("\(routeInfoState.distanceText) • \(routeInfoState.etaText)")
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(.system(size: 14, weight: .regular))
                                     Spacer()
                                 }
                                 .contentShape(Rectangle())
