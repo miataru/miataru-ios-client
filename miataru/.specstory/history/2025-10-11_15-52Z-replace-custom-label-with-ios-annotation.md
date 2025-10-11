@@ -6,68 +6,136 @@
 
 _**User (2025-10-11 15:08Z)**_
 
-lets try to replace the use of the custom devicenamelabel with the standard iOS Map Annotation Label
+move the devicenamelabel from below the annoation to be displayed above the annotation
 
 ---
 
 _**Assistant (gpt-5-high)**_
 
-<think><details><summary>Thought Process</summary>**Evaluating annotation changes**
+<think><details><summary>Thought Process</summary>**Planning code changes**
 
-I need to implement a change by replacing the custom `DeviceNameLabel` with a standard iOS Map Annotation Label in my SwiftUI app. The `DeviceNameLabel.swift` file is 193 lines long and I have to find where it’s used, particularly within map annotations. In iOS 17/18, I’ll look into MapKit’s `Annotation`, `Marker`, and `Map`, which might be what I'm referring to. Scanning the codebase for `DeviceNameLabel` usages and map annotation code is my next step.
-**Planning search strategy**
+I need to respond to the user's request about moving the device name label in the iOS app from below the annotation to above it. It sounds like we’re dealing with SwiftUI map annotations. I have the workspace path and opened the relevant files: iPhone_DeviceMapView.swift and DeviceNameLabel.swift. This change seems small, but I should explore the code carefully. It might only take a couple of steps to adjust the overlay position without needing a todo list this time.
+**Exploring code implementation**
 
-I should start with `codebase_search` to follow the guidelines, but when it comes to the exact symbol name like `DeviceNameLabel`, using `grep` is recommended. I have access to the grep tool, but it seems like the main focus should be on searching the codebase first. I can run parallel calls with both grep for `DeviceNameLabel` usages and search for Map annotations. I'll also need to read the `DeviceNameLabel.swift` file. Plus, I should provide a status update before making these tool calls since this edit touches multiple files and isn’t trivial.
-**Creating a task list**
+I should start by using codebase search to find out where "DeviceNameLabel" is used in map annotations. I'll focus my query on the iPhone_DeviceMapView contents as well. It's important to follow citation rules when showing code, so I’ll aim for minimal citations. For the edits, I’ll use apply_patch or edit_file without displaying code to the user since we’re just repositioning a view, meaning no localization strings will be involved. After making the edits, I’ll run the linter tool, read_lints, for any errors. I'll also provide status updates before making tool calls and use multi_tool_use.parallel for searching and opening files simultaneously.
+**Initiating code exploration**
 
-I want to outline a todo list focused on replacing `DeviceNameLabel` with the standard iOS Map Annotation Label. First, I should audit all instances of `DeviceNameLabel`. Next, I’ll replace those occurrences in map annotations, particularly updating the Map views in the Common/Map directory. If it's no longer needed, I'll remove or deprecate `DeviceNameLabel` and update any localized strings as necessary. Finally, I’ll test the changes on iPhone, iPad, and Mac views. This task requires careful consideration of code style, particularly how we handle dynamic device names.
-**Planning parallel tool calls**
+I’m planning to start with codebase_search and then read_file. It sounds like using both search and grep simultaneously will be most efficient. I’ll run a search for questions like "Where is DeviceNameLabel placed relative to map annotations?" and "How are map annotations arranged in iPhone_DeviceMapView?" It’s important to also find exact usages of "DeviceNameLabel(" to identify call sites. 
 
-I need to start by listing the relevant items using `list_dir` and then search through the Map views for `DeviceNameLabel`. I’ve noted that it’s also in `DeviceRowView`, but that’s a list, not a map. To streamline this, I’ll perform parallel tool calls: I’ll grep for `DeviceNameLabel` across the project, read the `DeviceNameLabel.swift` file, and look for Map items referencing `DeviceNameLabel`. I’ll list the common map files too. Before I call any tools, I’ll include a status update for clarity. Then I'll proceed with the parallel calls.</details></think>
+For my status update, I’ll note, “I’m finding where the map annotation lays out DeviceNameLabel and updating its alignment.” After that, I’ll execute the multi_tool_use.parallel command with those searches!
+**Searching annotation definitions**
+
+I’ll also search for "annotation" in iPhone_DeviceMapView.swift to locate where the content view for the annotation is defined. It makes sense to use read_file after the search to focus on specific lines. First, I’ll run the search to gather relevant information before diving into the file to read those lines directly. This should help me understand how to proceed with the adjustments more effectively. Let's go ahead and do that!</details></think>
 
 ---
 
-I'll first find where `DeviceNameLabel` is used in map annotations and review its implementation to plan replacements with the standard MapKit label. Then I'll scan the map-related views to identify the exact components to change.
+I'll search for where `DeviceNameLabel` is used within the map annotation and inspect `iPhone_DeviceMapView.swift` to adjust the layout so the label appears above the annotation.
+
+---
+
+Tool use: **codebase_search**
+
+<details>
+                <summary>Searched codebase "Where is the map annotation content for devices defined, and how is DeviceNameLabel placed relative to the annotation view?" • **11** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L67-87 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L114-130 |
+| `miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift` | L479-502 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L433-451 |
+| `miataru/views/Common/DeviceRowView.swift` | L25-70 |
+| `miataru/views/Common/DeviceNameLabel.swift` | L37-84 |
+| `miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift` | L542-566 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L392-416 |
+| `miataru/views/Common/DeviceNameLabel.swift` | L81-108 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L440-476 |
+| `miataru/PerformanceDebug/MarkerAnnotationDebugView.swift` | L116-151 |
+
+</details>
 
 ---
 
 Tool use: **grep**
 
 <details>
-<summary>Grep for "\bDeviceNameLabel\b" in "/Users/bietiekay/code/miataru-ios-app/miataru" • 24 matches</summary>
+<summary>Grep for "DeviceNameLabel\(" in "/Users/bietiekay/code/miataru-ios-app/miataru" • 11 matches</summary>
 
 Output mode: content
 
 
 | Content | Line |
 |------|------|
+| `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L449 |
+| `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L440 |
 | `DeviceNameLabel(` | L106 |
 | `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L152 |
 | `DeviceNameLabel(` | L187 |
+| `DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)` | L583 |
 | `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L482 |
 | `DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)` | L544 |
-| `DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)` | L583 |
-| `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L440 |
-| `DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)` | L449 |
-| `* DeviceNameLabel.swift` | L4 |
-| `debugLog("DeviceNameLabel cache HIT for key: \(key)")` | L30 |
-| `debugLog("DeviceNameLabel cache MISS for key: \(key)")` | L32 |
-| `debugLog("DeviceNameLabel cache STORE for key: \(key), cost: \(cost)")` | L37 |
-| `struct DeviceNameLabel: View \{` | L42 |
-| `debugLog("DeviceNameLabel task skipped - image already cached for key: \(cacheKey)")` | L116 |
-| `debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")` | L119 |
-| `debugLog("DeviceNameLabel task skipped - image already cached for key: \(cacheKey)")` | L145 |
-| `debugLog("DeviceNameLabel RENDERING new image for key: \(cacheKey)")` | L148 |
 | `DeviceNameLabel(deviceName: "iPhone 15 Pro", deviceID: "device123")` | L184 |
 | `DeviceNameLabel(deviceName: "", deviceID: "device456")` | L186 |
 | `DeviceNameLabel(deviceName: "iPad Air", deviceID: "device789", font: .caption2, topPadding: 1, opacity: 0.8)` | L188 |
-| `- Device & group UI: `DeviceRowView`, `GroupRowView`, `DeviceNameLabel`, `DeviceBatterySymbol`` | L39 |
-| `- `DeviceRowView`, `GroupRowView`, `DeviceNameLabel` (label caching), `DeviceBatterySymbol`` | L40 |
-| `- `DeviceNameLabel` and static parts of markers are rasterized and cached to improve scrolling/rendering performance.` | L46 |
-| `- Static map elements such as `MiataruMapMarker` and `DeviceNameLabel` are rasterized and cached with keys that include color scheme and display scale; renderers respect Dynamic Type and set `isOpaque=false` where appropriate.` | L137 |
 
 
 </details>
+
+---
+
+Tool use: **codebase_search**
+
+<details>
+                <summary>Searched codebase "How are Map annotations composed in iPhone_DeviceMapView? Where is the call to Annotation or MapAnnotation?" • **15** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L433-451 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L67-87 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L392-416 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L440-476 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L114-130 |
+| `miataru/views/iPhone/Devices Views/iPhone_LegacyMapViewRepresentable.swift` | L57 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L520-549 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L504-523 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L157-186 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L414-442 |
+| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L45 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L43 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L448-463 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L547-599 |
+| `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift` | L212-250 |
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>**Reorganizing Label Position**
+
+I’m thinking about how to move the `DeviceNameLabel` above the marker. It seems like I should reorder it, placing `DeviceNameLabel` first, perhaps followed by a `Timestamp`. Notably, in the iPad version, the timestamp appears above the marker.
+
+I’ll check `iPhone_DeviceMapView.swift` for the structure, focusing on the annotation composition. I should also look at `DeviceNameLabel.swift` for size and `iPhone_DeviceNavigationView.swift`, since the user requested the label be moved above the annotation for both. It might be wise to implement this change in both files.
+**Reading Relevant Files**
+
+I need to read both `iPhone_DeviceMapView.swift` and `DeviceNameLabel.swift` to gather the sections that will help me understand annotation composition. The `iPhone_DeviceMapView` file is lengthy at 864 lines, so I'll use `functions.read_file` without an offset to read the whole thing, even if it’s large.
+
+I should be careful about memory usage, but reading it in full will allow me to find multiple instances more easily. I’ll also check `iPhone_DeviceNavigationView.swift` and run these reads in parallel using `multi_tool_use.parallel`. If the user asks about groups, I’ll consider the grouped view later!</details></think>
+
+---
+
+I'll open the relevant Swift files to update the annotation layout so `DeviceNameLabel` appears above the marker, starting with `iPhone_DeviceMapView.swift` and `iPhone_DeviceNavigationView.swift`, and review `DeviceNameLabel.swift` for sizing.
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
 
 ---
 
@@ -77,35 +145,441 @@ Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/Common/De
 
 ---
 
-Tool use: **list_dir**
+<think><details><summary>Thought Process</summary>**Adjusting annotations in iPhone views**
+
+The request seems to focus on updating the main marker annotation labels. To be thorough, I should adjust the main annotations for both the iPhone_DeviceMapView and iPhone_DeviceNavigationView. The grep results indicate that DeviceNameLabel is also present in iPhone_GroupMapView. Since the user wants it moved above the annotation, I'll make consistent updates across the related iPhone views. As for the iPad view, the DeviceNameLabel appears below the marker, so maybe I'll align that too for consistency, even if it's not requested. For now, I’ll prioritize the iPhone views.
+**Reorganizing hit-testing rectangles**
+
+I'm considering whether to ask if cross-platform work is needed, although the instruction says not to. I also need to update the hit-testing rectangles and offsets, especially since moving the DeviceNameLabel could require some adjustments. In the code, the current order is VStack with the timestamp, marker, and then DeviceNameLabel. To display the label above the marker, I might reorder it to DeviceNameLabel, then marker, keeping the timestamp above everything. So, it looks like I want timestamp, DeviceNameLabel, and then the marker, which seems correct!
+**Updating annotation orders**
+
+The current order for annotations is [timestamp], [marker], [label], and I'm planning to change it to [timestamp], [label], [marker]. I'll make these adjustments in the iPhone_DeviceMapView and iPhone_DeviceNavigationView, keeping the same structure for user annotations. The ghost annotation, which displays an image first followed by the DeviceNameLabel below, isn’t a map marker, so I’ll leave that as is. In iPhone_GroupMapView, I want to reorder to have the label above the marker. There's also an invisible rectangle for hit area adjustments, but the height doesn't need to be adjusted for now.
+**Implementing updates for iPhone**
+
+I found the iPad_DeviceMapView info near line 581, and while I could update it, the user is focused on the iPhone, which makes sense to stick to. The project supports multiple platforms, but for this request, concentrating on iPhone is fine. I'll make the edits in the iPhone_DeviceMapView by reordering lines 479-483 to place DeviceNameLabel above MiataruMapMarker. In the “Other devices” section, I’ll adjust it to have the order of timestamp, DeviceNameLabel, and then MiataruMapMarker. Lastly, I'll do the same for both annotation VStacks in the iPhone_DeviceNavigationView.
+**Updating spacing for annotations**
+
+The ghost annotation content is currently set up as a VStack containing an Image and DeviceNameLabel, which I can leave unchanged for now. In the iPhone_GroupMapView, I plan to reorder to improve space between the timestamp and marker. I need to be mindful of how top and bottom padding impacts label positioning. By removing the unnecessary top padding when the label is above the marker, I can add bottom padding externally to create space. I'll update call sites to set `topPadding` to 0 for the DeviceNameLabel and include `.padding(.bottom, 2)` where needed. I'll make sure to check the zIndex for layering, so the label stays above the marker. For now, I’ll focus on iPhone views while skipping adjustments for iPad views.
+**Reading iPhone_GroupMapView**
+
+I'm going to check the iPhone_GroupMapView for the necessary updates. I need to pay attention to the indentation style, which uses 4 spaces — and I'll make sure to preserve that as the system requires. My plan is to make all necessary edits in one patch for each file using the apply_patch tool. It’s essential that the context lines match exactly as I read them, so I’ll be careful while reviewing. Let’s start with that!</details></think>
+
+---
+
+I'll update the map annotation VStacks so that `DeviceNameLabel` appears above the marker for the iPhone device and navigation views, and also adjust the group map to keep the UI consistent. Then I'll run linter checks on the modified files.
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+
+---
+
+<think><details><summary>Thought Process</summary>**Implementing display changes**
+
+I need to move the DeviceNameLabel from below the annotation to above the annotation for better visibility. I found where the DeviceNameLabel is currently displayed below the marker in MiataruMapMarker within iPhone_DeviceMapView.swift. I'll adjust its position to be above the marker, likely within a VStack, while paying attention to spacing and zIndex for readability. It seems there might already be a TimelineView above the marker, so consistency across all views is important, especially for the iPhone.
+**Addressing iPhone display changes**
+
+The user is focused on iPhone_DeviceMapView.swift, and they want to move the DeviceNameLabel above the annotation. To ensure consistency, I plan to apply changes across iPhone_DeviceMapView, iPhone_DeviceNavigationView, and iPhone_GroupMapView. I’ll reorder elements within the VStack so the DeviceNameLabel appears above the MiataruMapMarker. In NavigationView, where there are two annotations, I’ll also position the DeviceNameLabel above the marker. It seems like the order might be: timestamp, DeviceNameLabel, then the marker, allowing for proper spacing as needed.
+**Adjusting DeviceNameLabel positioning**
+
+When moving the DeviceNameLabel above the marker, I need to consider padding. Currently, it uses a topPadding of 2, which might create unnecessary space if placed above the marker, especially from the timestamp. Instead, I might want to apply some minimal bottom padding below the DeviceNameLabel. The request to "move the devicenamelabel" should be straightforward, but I want to avoid altering the label itself. I’ll also reorder the internal VStack to keep the timestamp, DeviceNameLabel, and marker, ensuring that the transparent Rectangle for the hit area remains functional.
+**Implementing changes for annotation layout**
+
+To simplify, I’ll implement the following changes:
+
+In iPhone_DeviceMapView.swift, I'll reorder lines 461-483 to insert the DeviceNameLabel above the MiataruMapMarker within the same VStack, arranged as: timeline, DeviceNameLabel, and marker. I'll also do the same for the "Other device markers visible" section between lines 525-545.
+
+In iPhone_DeviceNavigationView.swift, I'll adjust both annotations to place the DeviceNameLabel above the MiataruMapMarker after the TimelineView.
+
+Finally, in iPhone_GroupMapView.swift, I’ll reorder lines 435-441 to have the label above the marker, though I'll leave the ghost annotation details unchanged.
+**Planning updates and changes**
+
+The user is focused on the iPhone, so I won't change the iPad views unless requested. I need to ensure we also follow the process for making code changes using apply_patch. After editing, I’ll run the linter on the modified files to check for any issues. Since this task involves multiple steps across three files, I'll create 2-3 todo items: moving labels in the device map view, navigation view, and group map view, plus running the linter. I'll set the first task to in progress and remember to maintain proper indentation while editing.</details></think>
+
+---
+
+I'll start by tracking the work as tasks and begin moving the `DeviceNameLabel` above the marker in the iPhone map views. Then I'll lint the modified files.
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [-] Move DeviceNameLabel above marker in iPhone_DeviceMapView annotation
+- [ ] Move DeviceNameLabel above marker in iPhone_DeviceNavigationView annotations
+- [ ] Move DeviceNameLabel above marker in iPhone_GroupMapView annotations
+- [ ] Run linter on modified Swift files and fix obvious issues
+
+---
+
+<think><details><summary>Thought Process</summary>**Implementing UI changes**
+
+I need to make a specific change: moving the DeviceNameLabel above the annotation instead of below. Currently, in the map annotation stacks, the code arranges the timestamp at the top, the marker in the middle, and the DeviceNameLabel at the bottom. I’ll need to update the relevant files: iPhone_DeviceMapView.swift, iPhone_DeviceNavigationView.swift, and possibly iPhone_GroupMapView.swift to keep everything consistent. The user specifically requested this in the iPhone context, so I'll proceed with that.
+**Clarifying label placement**
+
+The user specifically requested that the DeviceNameLabel be moved from below the annotation to above it. While they didn't mention groups, it’s clear that this change should focus on the iPhone context. I’ll primarily implement changes in the iPhone_DeviceMapView.swift file. As I look at the relevant code, I see that there’s already a timestamp above the marker, so moving the DeviceNameLabel to the top could imply placing it above the marker but beneath the timestamp. I need to decide if that’s the right approach!
+**Determining label placement**
+
+When the user mentioned moving the DeviceNameLabel "above the annotation," I think it really means placing it above the marker, not necessarily above the timestamp. Currently, the timestamp is above the marker in the design. So, I must decide whether to put DeviceNameLabel below the timestamp or above it, which is a bit ambiguous. One option is to arrange them as [Timestamp], [DeviceNameLabel], [Marker]. Alternatively, I could place it as [DeviceNameLabel], [Timestamp], [Marker]. I'll compare existing structures in the relevant files.
+**Adjusting DeviceNameLabel placement**
+
+I need to ensure the hit area rectangles are adjusted if they overlap, but that seems fine for now. There are also other instances of DeviceNameLabel in the ghost annotation within the navigation view, which is different since it includes an Image symbol instead of a marker. The request to move the DeviceNameLabel "above the annotation" primarily applies to map markers. For consistency, I should focus on the relevant code in iPhone_DeviceMapView and iPhone_DeviceNavigationView to make those specific changes.
+**Implementing changes across files**
+
+I need to move the DeviceNameLabel above the marker in both relevant files. Within the route ghost annotation, the DeviceNameLabel is under an Image, which they didn't ask me to change, so I'll leave it as is. For iPhone_GroupMapView, I'll move the label above the marker and ensure the timeline remains above, following the order of [timestamp], [DeviceNameLabel], [Marker]. We should keep consistent across iPhone devices since the user didn't specify a platform. After making these edits, I'll apply the changes with the apply_patch tool and ensure everything is updated correctly.
+**Updating DeviceNameLabel positions**
+
+In iPhone_DeviceMapView.swift, I'm looking at lines 461-483 where I need to rearrange the DeviceNameLabel and the MiataruMapMarker. I’ll move the DeviceNameLabel above the marker and update its comment accordingly. For other devices, I'll do the same at lines 541-545. 
+
+In iPhone_DeviceNavigationView.swift, I’ll swap the order for both user and target annotations to place the DeviceNameLabel above the markers. Lastly, in iPhone_GroupMapView.swift, I will ensure the accessibility settings stay intact while making the same swaps. Now I’m ready to implement the patches with the apply_patch tool!</details></think>
+
+---
+
+I'll reorder the `VStack` contents in the three iPhone map views so `DeviceNameLabel` appears above `MiataruMapMarker`, updating comments accordingly. Then I'll mark the first task done and begin the next.
+
+---
+
+Tool use: **apply_patch**
 
 <details>
-            <summary>Listed directory undefined • **0** results</summary>
-        
-No results found
+        <summary>Apply patch for /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+@@
+-                            VStack(spacing: 0) {
+-                                // Show relative timestamp above marker (force per-second updates within Map annotation)
+-                                if let timestamp = deviceTimestamp {
+-                                    TimelineView(.periodic(from: .now, by: 1)) { context in
+-                                        Text(relativeTimeString(from: timestamp, to: context.date))
+-                                            .font(.caption)
+-                                            .padding(.horizontal, 8)
+-                                            .padding(.vertical, 4)
+-                                            .background(.ultraThinMaterial)
+-                                            .clipShape(Capsule())
+-                                            .overlay(
+-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+-                                            )
+-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+-                                            .shadow(radius: 2)
+-                                            .zIndex(2)
+-                                    }
+-                                }
+-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+-                                    .shadow(radius: 2)
+-                                // Device name label below the marker with outline for readability
+-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+-                            }
++                            VStack(spacing: 0) {
++                                // Show relative timestamp above marker (force per-second updates within Map annotation)
++                                if let timestamp = deviceTimestamp {
++                                    TimelineView(.periodic(from: .now, by: 1)) { context in
++                                        Text(relativeTimeString(from: timestamp, to: context.date))
++                                            .font(.caption)
++                                            .padding(.horizontal, 8)
++                                            .padding(.vertical, 4)
++                                            .background(.ultraThinMaterial)
++                                            .clipShape(Capsule())
++                                            .overlay(
++                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
++                                            )
++                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
++                                            .shadow(radius: 2)
++                                            .zIndex(2)
++                                    }
++                                }
++                                // Device name label above the marker with outline for readability
++                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
++                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
++                                    .shadow(radius: 2)
++                            }
+@@
+-                                        VStack(spacing: 0) {
+-                                            // Timestamp above marker (force per-second updates within Map annotation)
+-                                            TimelineView(.periodic(from: .now, by: 1)) { context in
+-                                                Text(relativeTimeString(from: cached.timestamp, to: context.date))
+-                                                    .font(.caption)
+-                                                    .padding(.horizontal, 8)
+-                                                    .padding(.vertical, 4)
+-                                                    .background(.ultraThinMaterial)
+-                                                    .clipShape(Capsule())
+-                                                    .overlay(
+-                                                        Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+-                                                    )
+-                                                    .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+-                                                    .shadow(radius: 2)
+-                                                    .zIndex(2)
+-                                            }
+-                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
+-                                                .shadow(radius: 2)
+-                                            // Device name label below the marker with outline for readability
+-                                            DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
+-                                        }
++                                        VStack(spacing: 0) {
++                                            // Timestamp above marker (force per-second updates within Map annotation)
++                                            TimelineView(.periodic(from: .now, by: 1)) { context in
++                                                Text(relativeTimeString(from: cached.timestamp, to: context.date))
++                                                    .font(.caption)
++                                                    .padding(.horizontal, 8)
++                                                    .padding(.vertical, 4)
++                                                    .background(.ultraThinMaterial)
++                                                    .clipShape(Capsule())
++                                                    .overlay(
++                                                        Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
++                                                    )
++                                                    .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
++                                                    .shadow(radius: 2)
++                                                    .zIndex(2)
++                                            }
++                                            // Device name label above the marker with outline for readability
++                                            DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
++                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
++                                                .shadow(radius: 2)
++                                        }
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceMapView annotation
+- [-] Move DeviceNameLabel above marker in iPhone_DeviceNavigationView annotations
+- [ ] Move DeviceNameLabel above marker in iPhone_GroupMapView annotations
+- [ ] Run linter on modified Swift files and fix obvious issues
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+@@
+-                            VStack(spacing: 0) {
++                            VStack(spacing: 0) {
+                                 if let ts = userTimestamp {
+                                     TimelineView(.periodic(from: .now, by: 1)) { context in
+                                         Text(relativeTimeString(from: ts, to: context.date))
+                                             .font(.caption)
+                                             .padding(.horizontal, 8)
+@@
+-                                }
+-                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+-                                    .shadow(radius: 2)
+-                                DeviceNameLabel(
+-                                    deviceName: myDevice?.DeviceName ?? "",
+-                                    deviceID: thisDeviceIDManager.shared.deviceID
+-                                )
++                                }
++                                // Device name label above the marker for clarity
++                                DeviceNameLabel(
++                                    deviceName: myDevice?.DeviceName ?? "",
++                                    deviceID: thisDeviceIDManager.shared.deviceID
++                                )
++                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
++                                    .shadow(radius: 2)
+                             }
+@@
+-                            VStack(spacing: 0) {
++                            VStack(spacing: 0) {
+                                 if let timestamp = deviceTimestamp {
+                                     TimelineView(.periodic(from: .now, by: 1)) { context in
+                                         Text(relativeTimeString(from: timestamp, to: context.date))
+                                             .font(.caption)
+                                             .padding(.horizontal, 8)
+@@
+-                                }
+-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+-                                    .shadow(radius: 2)
+-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
++                                }
++                                // Device name label above the marker for clarity
++                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
++                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
++                                    .shadow(radius: 2)
+                             }
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceMapView annotation
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceNavigationView annotations
+- [-] Move DeviceNameLabel above marker in iPhone_GroupMapView annotations
+- [ ] Run linter on modified Swift files and fix obvious issues
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+@@
+-                            VStack(spacing: 0) {
++                            VStack(spacing: 0) {
+                                 // Show timestamp if available (force per-second updates)
+                                 if let timestamp = deviceTimestamps[deviceID] {
+                                     TimelineView(.periodic(from: .now, by: 1)) { context in
+                                         Text(relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated))
+                                             .font(.caption)
+@@
+-                                }
+-                                MiataruMapMarker(
+-                                    color: Color(device.DeviceColor ?? UIColor.blue)
+-                                )
+-                                    .shadow(radius: 2)
+-                                    .accessibilityHidden(true)
+-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
++                                }
++                                // Device name label above the marker for clarity
++                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
++                                MiataruMapMarker(
++                                    color: Color(device.DeviceColor ?? UIColor.blue)
++                                )
++                                    .shadow(radius: 2)
++                                    .accessibilityHidden(true)
+                             }
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceMapView annotation
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceNavigationView annotations
+- [x] Move DeviceNameLabel above marker in iPhone_GroupMapView annotations
+- [-] Run linter on modified Swift files and fix obvious issues
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 3 files</summary>
+      
+Lint paths:
+
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift`
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift`
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift`
+
+Lint results
+
+
+**No lint errors found**
 </details>
 
 ---
 
-<think><details><summary>Thought Process</summary>**Evaluating Map Annotation Changes**
+Tool use: **todo_write**
 
-I need to replace the custom DeviceNameLabel with the standard iOS Map Annotation Label in SwiftUI with MapKit. The user mentioned this change, so I want to understand what it means, especially with the new iOS 17/18 features. The standard Map Annotation Label likely involves the default annotation callout or possibly MarkerAnnotation. In SwiftUI, I see options like MapAnnotation and Marker. Perhaps the standard label refers to the tinted label that appears below the markers in Apple Maps. Let's clarify how to implement this correctly.
-**Analyzing MapKit Annotations**
+## Todo List
 
-I’m considering how to use MapKit’s `MKAnnotation`, which features `title` and `subtitle` through `MKMarkerAnnotationView`. In SwiftUI's `Map` for iOS 17, there’s a new `Annotation` view with `Annotation("Title", coordinate:)`, which generates default iOS markers. The user wants to replace the custom overlay of DeviceNameLabel with a standard Map Annotation Label. This implies utilizing the `Marker` with a `tag` or the default callout label. I’ll need to examine where `Map` and markers are used, specifically checking `MiataruMapMarker.swift` and device map views that reference DeviceNameLabel for exact usage. Also, I’ll create a to-do list for medium tasks.
-**Creating a Multi-File Update Plan**
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceMapView annotation
+- [x] Move DeviceNameLabel above marker in iPhone_DeviceNavigationView annotations
+- [x] Move DeviceNameLabel above marker in iPhone_GroupMapView annotations
+- [x] Run linter on modified Swift files and fix obvious issues
 
-I need to handle a multi-file update, and my first step will be to create TODOs using the `todo_write` tool. Here’s the plan:
+---
 
-- I'll audit where DeviceNameLabel is used.
-- I’ll update the map annotation code to utilize the standard `Marker` or `Annotation` with the title, replacing the overlay of DeviceNameLabel in various map view files: `iPhone_DeviceMapView.swift`, `iPad_DeviceMapView.swift`, `iPhone_GroupMapView.swift`, `iPad_GroupMapView.swift`, and possibly `iPhone_DeviceNavigationView.swift`.
+- I’m moving the device name above the annotation marker in the iPhone map views now.
 
-- I should check if any localized strings are needed. Since the device name is dynamic and not a user-facing static string, I probably don't need localization, but the rules state to use `NSLocalizedString` for all user-facing strings. 
+Changes made:
+- iPhone device map: Reordered the `VStack` so `DeviceNameLabel` is above `MiataruMapMarker`.
+- iPhone device navigation: Moved `DeviceNameLabel` above the marker for both user and target device annotations.
+- iPhone group map: Moved `DeviceNameLabel` above the marker for each device annotation.
+- Ran linter on edited files; no issues reported.
 
-- Finally, I’ll remove the DeviceNameLabel overlay and consider marking or deprecating the component without deleting the file. I'll also explore how markers are created in the map view code.
-**Preparing to Read Relevant Files**
+Key edits
+```480:488:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+    .shadow(radius: 2)
+// Device name label below the marker with outline for readability
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+```
+now becomes:
+```479:485:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+// Device name label above the marker with outline for readability
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+    .shadow(radius: 2)
+```
 
-I need to open various files to review where DeviceName</details></think>
+```150:153:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+    .shadow(radius: 2)
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+```
+now:
+```150:154:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+// Device name label above the marker for clarity
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+    .shadow(radius: 2)
+```
+
+```435:441:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+MiataruMapMarker(
+    color: Color(device.DeviceColor ?? UIColor.blue)
+)
+    .shadow(radius: 2)
+    .accessibilityHidden(true)
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+```
+now:
+```439:446:/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+// Device name label above the marker for clarity
+DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+MiataruMapMarker(
+    color: Color(device.DeviceColor ?? UIColor.blue)
+)
+    .shadow(radius: 2)
+    .accessibilityHidden(true)
+```
+
+- All tasks are complete; label now displays above the annotation across iPhone map views.
+
+---
+
+_**User (2025-10-11 15:08Z)**_
+
+commit
+
+---
+
+_**Assistant (gpt-5-high)**_
+
+
 
 ---
 
