@@ -476,10 +476,10 @@ struct iPhone_DeviceMapView: View {
                                             .zIndex(2)
                                     }
                                 }
+                                // Device name label above the marker with outline for readability
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                                 MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
                                     .shadow(radius: 2)
-                                // Device name label below the marker with outline for readability
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             // Add a transparent rectangle to increase the tap area for the context menu
                             Rectangle()
@@ -538,10 +538,10 @@ struct iPhone_DeviceMapView: View {
                                                     .shadow(radius: 2)
                                                     .zIndex(2)
                                             }
+                                            // Device name label above the marker with outline for readability
+                                            DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
                                             MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
                                                 .shadow(radius: 2)
-                                            // Device name label below the marker with outline for readability
-                                            DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
                                         }
                                         // Larger transparent rectangle to match main device hit area and avoid clipping
                                         Rectangle()
