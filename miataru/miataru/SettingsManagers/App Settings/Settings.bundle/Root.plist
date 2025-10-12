@@ -17,8 +17,8 @@
 			<string>location_track</string>
 			<key>Key</key>
 			<string>track_and_report_location</string>
-			<key>DefaultValue</key>
-			<false/>
+            <key>DefaultValue</key>
+            <true/>
 		</dict>
 		<dict>
 			<key>Type</key>

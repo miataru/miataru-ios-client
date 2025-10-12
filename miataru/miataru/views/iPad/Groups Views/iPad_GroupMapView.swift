@@ -442,11 +442,12 @@ struct iPad_GroupMapView: View {
                                             .zIndex(2)
                                     }
                                 }
+                                // Device name label above the marker for clarity
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue)
                                 )
                                     .shadow(radius: 2)
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)

@@ -496,9 +496,7 @@ struct iPad_DeviceMapView: View {
                                                 .zIndex(2)
                                         }
                                     }
-                                    MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
-                                        .shadow(radius: 2)
-                                    // Device name label below the marker with outline for readability
+                                    // Device name label above the marker with outline for readability
                                     ZStack {
                                         // Draw thicker outline (stroke) in all directions
                                         ForEach([-2, -1, 0, 1, 2], id: \.self) { x in
@@ -518,6 +516,8 @@ struct iPad_DeviceMapView: View {
                                             .foregroundColor(Color(UIColor.label))
                                             .padding(.top, 2)
                                     }
+                                    MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                                        .shadow(radius: 2)
                                 }
                                     // Add a transparent rectangle to increase the tap area for the context menu
                                     Rectangle()
@@ -577,10 +577,10 @@ struct iPad_DeviceMapView: View {
                                                         .shadow(radius: 2)
                                                         .zIndex(2)
                                                 }
+                                                // Device name label above the marker with outline for readability
+                                                DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
                                                 MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))
                                                     .shadow(radius: 2)
-                                                // Device name label below the marker with outline for readability
-                                                DeviceNameLabel(deviceName: other.DeviceName, deviceID: other.DeviceID)
                                             }
                                             // Larger transparent rectangle to match main device hit area and avoid clipping
                                             Rectangle()
