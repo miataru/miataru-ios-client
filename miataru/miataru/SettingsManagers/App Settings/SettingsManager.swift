@@ -151,7 +151,7 @@ class SettingsManager: ObservableObject {
         // Default: 1000m, Off=0, 100m=100, 10km=10000
         self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
         self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
-        self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? false
+        self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? true
         self.automaticRouteUpdateDuringNavigation = d.object(forKey: Keys.automaticRouteUpdateDuringNavigation) as? Bool ?? true
     }
     
