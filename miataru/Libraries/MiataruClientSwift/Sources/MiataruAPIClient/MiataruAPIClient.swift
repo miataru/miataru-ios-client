@@ -18,35 +18,15 @@ private func debugLog(_ message: @autoclosure () -> String) {
 #endif
 }
 
-/// Defines the structure for a Miataru server request.
-public struct MiataruRequest<T: Codable>: Codable {
-    let MiataruConfig: MiataruConfig
-    let payload: T
-    
-    // Custom coding keys to match the expected JSON structure.
-    enum CodingKeys: String, CodingKey {
-        case MiataruConfig
-        // The payload key is dynamic based on the type of request.
-        // This will be handled by the specific payload type's CodingKeys.
-        // We will merge the payload directly into the top-level object during encoding.
-        case payload
-    }
-    
-    // Since the payload's key is dynamic, we need custom encoding.
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(MiataruConfig, forKey: .MiataruConfig)
-        
-        // This is a simplified assumption. The actual key for the payload
-        // (e.g., "MiataruGetLocationHistory") needs to be part of the payload's encoding itself.
-        // A more robust implementation is needed here.
-        try payload.encode(to: encoder)
-    }
-}
-
 /// Configuration part of the Miataru request.
 public struct MiataruConfig: Codable {
     let RequestMiataruDeviceID: String
+}
+
+/// Strongly typed request body for the GetLocationHistory endpoint.
+private struct GetLocationHistoryRequestBody: Encodable {
+    var MiataruConfig: MiataruConfig?
+    var MiataruGetLocationHistory: GetLocationHistoryPayload
 }
 
 /// Payload for GetLocation request.
@@ -265,9 +245,17 @@ public struct MiataruUpdateLocationResponse: Codable {
 }
 
 public enum MiataruAPIClient {
-    
+
     private static let session = URLSession.shared
     private static let jsonDecoder = JSONDecoder()
+
+    private static func makeJSONEncoder() -> JSONEncoder {
+        let encoder = JSONEncoder()
+        if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
+            encoder.outputFormatting = [.sortedKeys]
+        }
+        return encoder
+    }
     
     // MARK: - Public API Methods
     
@@ -324,25 +312,14 @@ public enum MiataruAPIClient {
         
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
         
-        var jsonPayload: [String: Any] = [
-            "MiataruGetLocationHistory": [
-                "Device": deviceID,
-                "Amount": String(amount)
-            ]
-        ]
+        let requestBody = GetLocationHistoryRequestBody(
+            MiataruConfig: requestingDeviceID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
+            MiataruGetLocationHistory: GetLocationHistoryPayload(Device: deviceID, Amount: String(amount))
+        )
 
-        if let reqDeviceID = requestingDeviceID {
-            jsonPayload["MiataruConfig"] = ["RequestMiataruDeviceID": reqDeviceID]
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\($0)"
         }
-
-        if let payloadData = try? JSONSerialization.data(withJSONObject: jsonPayload, options: [.sortedKeys]),
-           let payloadString = String(data: payloadData, encoding: .utf8) {
-            debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\(payloadString)")
-        } else {
-            debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) (payload serialization failed)")
-        }
-
-        let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
 
         do {
             let response = try jsonDecoder.decode(MiataruGetLocationHistoryResponse.self, from: data)
@@ -404,23 +381,56 @@ public enum MiataruAPIClient {
     // MARK: - Private Helper
     
     private static func performPostRequest(url: URL,
-                                          jsonPayload: [String: Any]) async throws -> Data {
-        var request: URLRequest
+                                          jsonPayload: [String: Any],
+                                          logMessage: ((String) -> String)? = nil) async throws -> Data {
         do {
             let data = try JSONSerialization.data(withJSONObject: jsonPayload)
-            request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.httpBody = data
-            if let bodyString = String(data: data, encoding: .utf8) {
-                debugLog("[MiataruAPIClient] POST \(url.absoluteString) body=\(bodyString)")
-            }
+            let bodyString = String(data: data, encoding: .utf8)
+            return try await performPostRequest(url: url,
+                                                httpBody: data,
+                                                bodyString: bodyString,
+                                                customLog: logMessage)
         } catch {
             debugLog("[MiataruAPIClient] Failed to encode request for URL \(url.absoluteString): \(error.localizedDescription)")
             throw APIError.encodingError(error)
         }
-        
+    }
+
+    private static func performPostRequest<T: Encodable>(url: URL,
+                                                         encodablePayload: T,
+                                                         logMessage: ((String) -> String)? = nil) async throws -> Data {
+        do {
+            let encoder = makeJSONEncoder()
+            let data = try encoder.encode(encodablePayload)
+            let bodyString = String(data: data, encoding: .utf8)
+            return try await performPostRequest(url: url,
+                                                httpBody: data,
+                                                bodyString: bodyString,
+                                                customLog: logMessage)
+        } catch {
+            debugLog("[MiataruAPIClient] Failed to encode request for URL \(url.absoluteString): \(error.localizedDescription)")
+            throw APIError.encodingError(error)
+        }
+    }
+
+    private static func performPostRequest(url: URL,
+                                          httpBody: Data,
+                                          bodyString: String?,
+                                          customLog: ((String) -> String)?) async throws -> Data {
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpBody = httpBody
+
+        if let bodyString = bodyString {
+            if let customLog = customLog {
+                debugLog(customLog(bodyString))
+            } else {
+                debugLog("[MiataruAPIClient] POST \(url.absoluteString) body=\(bodyString)")
+            }
+        }
+
         // Eigene async-Bridge für URLSession
         let (data, response): (Data, URLResponse)
         do {
