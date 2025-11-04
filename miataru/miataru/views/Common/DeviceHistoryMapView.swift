@@ -26,7 +26,7 @@ struct DeviceHistoryMapView: View {
 
     var body: some View {
         Map(position: $cameraPosition) {
-            ForEach(history, id: \.Timestamp) { entry in
+            ForEach(Array(history.enumerated()), id: \.offset) { _, entry in
                 let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
                 Annotation("", coordinate: coord) {
                     Circle()
@@ -103,7 +103,8 @@ struct DeviceHistoryMapView: View {
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
                 amount: 1000
             )
-            let sorted = data.sorted { $0.TimestampDate < $1.TimestampDate }
+            let normalized = normalizeHistoryEntries(from: data)
+            let sorted = normalized.sorted { $0.TimestampDate < $1.TimestampDate }
             await MainActor.run {
                 history = sorted
                 cache.setHistory(sorted, for: device.DeviceID)
@@ -150,5 +151,34 @@ struct DeviceHistoryMapView: View {
         let ratio = total > 0 ? diff / total : 0
         // Older points blue, newer red
         return Color(hue: 0.6 - 0.6 * ratio, saturation: 0.9, brightness: 0.9)
+    }
+
+    private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -> [MiataruLocationData] {
+        var uniqueEntries: [MiataruLocationData] = []
+        uniqueEntries.reserveCapacity(entries.count)
+
+        var seenKeys = Set<String>()
+        var droppedDuplicates = 0
+        var droppedInvalid = 0
+
+        for entry in entries {
+            guard entry.Latitude.isFinite, entry.Longitude.isFinite else {
+                droppedInvalid += 1
+                continue
+            }
+
+            let key = "\(entry.Timestamp)|\(entry.Latitude)|\(entry.Longitude)"
+            if seenKeys.insert(key).inserted {
+                uniqueEntries.append(entry)
+            } else {
+                droppedDuplicates += 1
+            }
+        }
+
+        if droppedDuplicates > 0 || droppedInvalid > 0 {
+            debugLog("[DeviceHistoryMapView] Normalized history for device \(device.DeviceID) dropped duplicates=\(droppedDuplicates) invalid=\(droppedInvalid)")
+        }
+
+        return uniqueEntries
     }
 }
