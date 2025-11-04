@@ -251,9 +251,10 @@ public enum MiataruAPIClient {
 
     private static func makeJSONEncoder() -> JSONEncoder {
         let encoder = JSONEncoder()
-        if #available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *) {
-            encoder.outputFormatting = [.sortedKeys]
-        }
+        // Keep the original property declaration order so the Miataru history
+        // payload encodes as `{ "Device": ..., "Amount": ... }` instead of
+        // being alphabetically sorted. The backend (and accompanying debug
+        // tooling) expects the keys in this order.
         return encoder
     }
     
