@@ -3,6 +3,21 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - Local Logging Helper
+
+/// Lightweight logging helper for the Miataru client library.
+///
+/// The main application target defines its own `debugLog` function, but it
+/// isn't visible inside this Swift package module. To keep the recent history
+/// logging changes compiling while still emitting useful diagnostics during
+/// development, we provide a local implementation that simply prints the
+/// message in debug builds.
+private func debugLog(_ message: @autoclosure () -> String) {
+#if DEBUG
+    print(message())
+#endif
+}
+
 /// Defines the structure for a Miataru server request.
 public struct MiataruRequest<T: Codable>: Codable {
     let MiataruConfig: MiataruConfig
