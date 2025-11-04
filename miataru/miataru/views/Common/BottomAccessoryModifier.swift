@@ -27,7 +27,7 @@ struct BottomAccessoryModifier: ViewModifier {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 16)
-                    .padding(.bottom, safeAreaBottomInset + 110)
+                    .padding(.bottom, safeAreaBottomInset + 50)
                     .allowsHitTesting(false)
                 }
             }
