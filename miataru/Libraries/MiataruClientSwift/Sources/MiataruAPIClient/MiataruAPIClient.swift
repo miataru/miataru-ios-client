@@ -310,22 +310,31 @@ public enum MiataruAPIClient {
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
         
         var jsonPayload: [String: Any] = [
+            // API expects an array to stay in line with the GetLocation request format.
             "MiataruGetLocationHistory": [
-                "Device": deviceID,
-                "Amount": String(amount)
+                [
+                    "Device": deviceID,
+                    "Amount": String(amount)
+                ]
             ]
         ]
 
         if let reqDeviceID = requestingDeviceID {
             jsonPayload["MiataruConfig"] = ["RequestMiataruDeviceID": reqDeviceID]
         }
-        
+
+        debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount)")
+
         let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
-        
+
         do {
             let response = try jsonDecoder.decode(MiataruGetLocationHistoryResponse.self, from: data)
+            debugLog("[MiataruAPIClient] Received history entries=\(response.MiataruLocation.count) for device \(deviceID)")
             return response.MiataruLocation
         } catch {
+            if let jsonString = String(data: data, encoding: .utf8) {
+                debugLog("[MiataruAPIClient] History decode failed for device \(deviceID). Payload=\(jsonString)")
+            }
             throw APIError.decodingError(error)
         }
     }

@@ -52,6 +52,7 @@ struct iPad_DeviceMapView: View {
     @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay
     @State private var showEditDeviceSheet = false // Controls device edit sheet
     @State private var showNavigationSheet = false // Controls navigation view
+    @State private var showHistoryView = false // Controls history view
     @State private var now = Date() // Timer for relative time display
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
@@ -384,6 +385,11 @@ struct iPad_DeviceMapView: View {
                 iPhone_DeviceNavigationView(device: device)
             }
         }
+        .navigationDestination(isPresented: $showHistoryView) {
+            if let device = device {
+                DeviceHistoryMapView(device: device)
+            }
+        }
     }
     
     // MARK: - View Components
@@ -537,6 +543,11 @@ struct iPad_DeviceMapView: View {
                                                 } label: {
                                                     Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                                 }
+                                            }
+                                            Button {
+                                                showHistoryView = true
+                                            } label: {
+                                                Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                             }
                                         }
                             }
