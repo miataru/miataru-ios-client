@@ -26,6 +26,17 @@
         }
       }
     },
+    "%@ • %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ • %2$@"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
     "%lld" : {
       "comment" : "Number of background updates",
       "localizations" : {
@@ -1079,7 +1090,7 @@
       }
     },
     "cancel" : {
-      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group",
+      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
       "localizations" : {
         "de" : {
           "stringUnit" : {
