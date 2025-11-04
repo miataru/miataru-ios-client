@@ -2144,6 +2144,39 @@
           }
         }
       }
+    },
+    "history_load_failed" : {
+      "comment" : "Title message when history loading fails",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not load history."
+          }
+        }
+      }
+    },
+    "history_no_data" : {
+      "comment" : "Placeholder shown when no history is available",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No location history available yet."
+          }
+        }
+      }
+    },
+    "show_history" : {
+      "comment" : "Context menu entry to show device history",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show History"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

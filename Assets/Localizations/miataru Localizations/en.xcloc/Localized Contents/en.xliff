@@ -1072,6 +1072,21 @@ Compass North abbreviation (repeat for wraparound)</note>
         <target state="translated">Days of history shown</target>
         <note/>
       </trans-unit>
+      <trans-unit id="show_history" xml:space="preserve">
+        <source>Show History</source>
+        <target state="translated">Show History</target>
+        <note>Context menu entry to show device history</note>
+      </trans-unit>
+      <trans-unit id="history_no_data" xml:space="preserve">
+        <source>No location history available yet.</source>
+        <target state="translated">No location history available yet.</target>
+        <note>Placeholder shown when no history is available</note>
+      </trans-unit>
+      <trans-unit id="history_load_failed" xml:space="preserve">
+        <source>Could not load history.</source>
+        <target state="translated">Could not load history.</target>
+        <note>Title message when history loading fails</note>
+      </trans-unit>
       <trans-unit id="store location history" xml:space="preserve">
         <source>store location history</source>
         <target state="translated">store location history</target>
