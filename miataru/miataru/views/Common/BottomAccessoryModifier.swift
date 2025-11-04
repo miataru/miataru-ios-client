@@ -17,45 +17,41 @@ struct BottomAccessoryModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         Group {
-            if #available(iOS 26.0, *) {
+            if #available(iOS 26.0, *), routeInfoState.isVisible {
                 content
                     .tabViewBottomAccessory {
-                        if routeInfoState.isVisible {
+                        HStack {
+                            // Left tappable region (excludes the cancel button)
                             HStack {
-                                // Left tappable region (excludes the cancel button)
-                                HStack {
-                                    Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
-                                    Text("\(routeInfoState.distanceText) • \(routeInfoState.etaText)")
-                                        .font(.system(size: 14, weight: .regular))
-                                    Spacer()
-                                }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    onAccessoryTap?()
-                                }
-
-                                // Cancel button (non-propagating)
-                                Button(role: .destructive) {
-                                    routeInfoState.onCancel?()
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundStyle(.red)
-                                        .accessibilityLabel(Text(NSLocalizedString("cancel", comment: "Cancel navigation")))
-                                }
-                                // Expand hit area to ~44x44 without changing layout
-                                .padding(10)
-                                .contentShape(Rectangle())
-                                .padding(-10)
+                                Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
+                                Text("\(routeInfoState.distanceText) • \(routeInfoState.etaText)")
+                                    .font(.system(size: 14, weight: .regular))
+                                Spacer()
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .foregroundColor(.primary)
-                            .id(colorScheme)
-                        } else {
-                            EmptyView()
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                onAccessoryTap?()
+                            }
+
+                            // Cancel button (non-propagating)
+                            Button(role: .destructive) {
+                                routeInfoState.onCancel?()
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundStyle(.red)
+                                    .accessibilityLabel(Text(NSLocalizedString("cancel", comment: "Cancel navigation")))
+                            }
+                            // Expand hit area to ~44x44 without changing layout
+                            .padding(10)
+                            .contentShape(Rectangle())
+                            .padding(-10)
                         }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .foregroundColor(.primary)
+                        .id(colorScheme)
                     }
             } else {
                 content
