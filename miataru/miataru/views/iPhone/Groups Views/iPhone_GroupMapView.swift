@@ -45,6 +45,8 @@ struct iPhone_GroupMapView: View {
     @State private var showEditDeviceSheet: Bool = false // Sheet trigger for editing device
     @State private var navigationDeviceID: String? = nil // Device ID for navigation
     @State private var showNavigationSheet: Bool = false // Sheet trigger for navigation
+    @State private var historyDeviceID: String? = nil // Device ID for history
+    @State private var showHistoryView: Bool = false // Sheet trigger for history
     @State private var showNetworkErrorIcon = false // Show network error icon
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
@@ -385,6 +387,11 @@ struct iPhone_GroupMapView: View {
                 iPhone_DeviceNavigationView(device: device)
             }
         }
+        .navigationDestination(isPresented: $showHistoryView) {
+            if let id = historyDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == id }) {
+                DeviceHistoryMapView(device: device)
+            }
+        }
     }
     
     @ViewBuilder
@@ -459,6 +466,12 @@ struct iPhone_GroupMapView: View {
                                         } label: {
                                             Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                         }
+                                    }
+                                    Button {
+                                        historyDeviceID = deviceID
+                                        showHistoryView = true
+                                    } label: {
+                                        Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                     }
                                 }
                                 .accessibilityLabel(Text(annotationID))

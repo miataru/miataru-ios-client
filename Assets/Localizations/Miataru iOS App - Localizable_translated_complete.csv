@@ -210,3 +210,6 @@ Your data is only sent when you specifically activate it,Your data is only sent 
 Your data stays on the server you choose for the time you choose,Your data stays on the server you choose for the time you choose,"Deine Daten bleiben so lange auf dem Server, wie du es festlegst.",データは、選択したサーバーに選択した期間だけ保存されます。
 "Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.","Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.","Deine Standortdaten werden auf einem Server gespeichert, dem du vertraust. Du kannst den Standard-Miataru-Server verwenden oder deine eigene Serveradresse eingeben.",あなたの位置情報は、信頼できるサーバーに保存されます。デフォルトのMiataruサーバーを使用するか、自分のサーバーアドレスを入力してください。
 zoom_to_fit_for_groups,zoom to fit groups,Zoom für Gruppen anpassen,グループに合わせてズーム
+show_history,Show History,Verlauf anzeigen,履歴を表示
+history_no_data,No location history available yet.,Kein Standortverlauf vorhanden.,位置履歴はまだありません。
+history_load_failed,Could not load history.,Verlauf konnte nicht geladen werden.,履歴を読み込めませんでした。
