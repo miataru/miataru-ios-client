@@ -21,14 +21,9 @@ struct BottomAccessoryModifier: ViewModifier {
         content
             .overlay(alignment: .bottom) {
                 if routeInfoState.isVisible {
-                    VStack {
-                        routeInfoAccessory
-                            .allowsHitTesting(true)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, safeAreaBottomInset + 50)
-                    .allowsHitTesting(false)
+                    routeInfoAccessory
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, safeAreaBottomInset + 60)
                 }
             }
     }
