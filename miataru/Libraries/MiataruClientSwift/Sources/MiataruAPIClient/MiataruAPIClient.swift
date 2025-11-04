@@ -325,12 +325,9 @@ public enum MiataruAPIClient {
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
         
         var jsonPayload: [String: Any] = [
-            // API expects an array to stay in line with the GetLocation request format.
             "MiataruGetLocationHistory": [
-                [
-                    "Device": deviceID,
-                    "Amount": String(amount)
-                ]
+                "Device": deviceID,
+                "Amount": String(amount)
             ]
         ]
 
@@ -338,7 +335,12 @@ public enum MiataruAPIClient {
             jsonPayload["MiataruConfig"] = ["RequestMiataruDeviceID": reqDeviceID]
         }
 
-        debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount)")
+        if let payloadData = try? JSONSerialization.data(withJSONObject: jsonPayload, options: [.sortedKeys]),
+           let payloadString = String(data: payloadData, encoding: .utf8) {
+            debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\(payloadString)")
+        } else {
+            debugLog("[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) (payload serialization failed)")
+        }
 
         let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
 
@@ -411,7 +413,11 @@ public enum MiataruAPIClient {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             request.httpBody = data
+            if let bodyString = String(data: data, encoding: .utf8) {
+                debugLog("[MiataruAPIClient] POST \(url.absoluteString) body=\(bodyString)")
+            }
         } catch {
+            debugLog("[MiataruAPIClient] Failed to encode request for URL \(url.absoluteString): \(error.localizedDescription)")
             throw APIError.encodingError(error)
         }
         
@@ -421,10 +427,12 @@ public enum MiataruAPIClient {
             (data, response) = try await withCheckedThrowingContinuation { continuation in
                 let task = session.dataTask(with: request) { data, response, error in
                     if let error = error {
+                        debugLog("[MiataruAPIClient] Request failed for URL \(url.absoluteString): \(error.localizedDescription)")
                         continuation.resume(throwing: APIError.requestFailed(error))
                         return
                     }
                     guard let data = data, let response = response else {
+                        debugLog("[MiataruAPIClient] Request returned without data for URL \(url.absoluteString)")
                         continuation.resume(throwing: APIError.invalidResponse(nil))
                         return
                     }
@@ -437,8 +445,18 @@ public enum MiataruAPIClient {
         } catch {
             throw APIError.requestFailed(error)
         }
-        
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            debugLog("[MiataruAPIClient] Non-HTTP response for URL \(url.absoluteString)")
+            throw APIError.invalidResponse(response)
+        }
+
+        debugLog("[MiataruAPIClient] Response status \(httpResponse.statusCode) for URL \(url.absoluteString)")
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if let responseString = String(data: data, encoding: .utf8) {
+                debugLog("[MiataruAPIClient] Error response body=\(responseString)")
+            }
             throw APIError.invalidResponse(response)
         }
         return data
