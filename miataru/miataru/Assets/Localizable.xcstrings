@@ -5458,6 +5458,9 @@
         }
       }
     },
+    "show_history" : {
+      "comment" : "Show device history"
+    },
     "show_offscreen_arrows_for_other_devices" : {
       "localizations" : {
         "de" : {
