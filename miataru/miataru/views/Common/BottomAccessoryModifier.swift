@@ -8,12 +8,12 @@
  */
 
 import SwiftUI
+import UIKit
 
 struct BottomAccessoryModifier: ViewModifier {
     @EnvironmentObject private var routeInfoState: RouteInfoState
     @EnvironmentObject private var settings: SettingsManager
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.safeAreaInsets) private var safeAreaInsets
 
     let onAccessoryTap: (() -> Void)?
 
@@ -27,7 +27,7 @@ struct BottomAccessoryModifier: ViewModifier {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 16)
-                    .padding(.bottom, safeAreaInsets.bottom + 110)
+                    .padding(.bottom, safeAreaBottomInset + 110)
                     .allowsHitTesting(false)
                 }
             }
@@ -98,6 +98,21 @@ struct BottomAccessoryModifier: ViewModifier {
         colorScheme == .dark
             ? Color.white.opacity(0.25)
             : Color.white.opacity(0.4)
+    }
+}
+
+private extension BottomAccessoryModifier {
+    var safeAreaBottomInset: CGFloat {
+        guard
+            let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow })
+        else {
+            return 0
+        }
+
+        return window.safeAreaInsets.bottom
     }
 }
 
