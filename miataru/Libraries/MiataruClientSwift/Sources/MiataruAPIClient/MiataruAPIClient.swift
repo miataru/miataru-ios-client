@@ -27,6 +27,19 @@ public struct MiataruConfig: Codable {
 private struct GetLocationHistoryRequestBody: Encodable {
     var MiataruConfig: MiataruConfig?
     var MiataruGetLocationHistory: GetLocationHistoryPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruConfig
+        case MiataruGetLocationHistory
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let config = MiataruConfig {
+            try container.encode(config, forKey: .MiataruConfig)
+        }
+        try container.encode(MiataruGetLocationHistory, forKey: .MiataruGetLocationHistory)
+    }
 }
 
 /// Payload for GetLocation request.
@@ -312,14 +325,25 @@ public enum MiataruAPIClient {
                                   amount: Int) async throws -> [MiataruLocationData] {
         
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
-        
+
+        let sanitizedRequestID: String? = {
+            guard let value = requestingDeviceID, !value.isEmpty else { return nil }
+            return value
+        }()
+
         let requestBody = GetLocationHistoryRequestBody(
-            MiataruConfig: requestingDeviceID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
+            MiataruConfig: sanitizedRequestID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
             MiataruGetLocationHistory: GetLocationHistoryPayload(Device: deviceID, Amount: String(amount))
         )
 
-        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
-            "[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\($0)"
+        let data: Data
+        do {
+            data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+                "[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\($0)"
+            }
+        } catch APIError.encodingError(let err) {
+            debugLog("[MiataruAPIClient] Encoding history request failed for device \(deviceID): \(err.localizedDescription)")
+            throw APIError.encodingError(err)
         }
 
         do {
