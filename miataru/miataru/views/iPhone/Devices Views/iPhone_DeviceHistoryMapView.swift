@@ -55,6 +55,11 @@ struct iPhone_DeviceHistoryMapView: View {
         return values
     }
 
+    private var selectedTimelineEntry: MiataruLocationData? {
+        guard let scrubTimestamp else { return nil }
+        return entryClosest(to: scrubTimestamp, in: visibleHistory)
+    }
+
     fileprivate static let timelineDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -75,10 +80,34 @@ struct iPhone_DeviceHistoryMapView: View {
         Map(position: $cameraPosition) {
             ForEach(Array(displayedHistory.enumerated()), id: \.offset) { _, entry in
                 let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
-                Annotation("", coordinate: coord) {
-                    Circle()
-                        .fill(color(for: entry, within: displayedHistory))
-                        .frame(width: 10, height: 10)
+                let isSelected = isSelectedEntry(entry)
+                Annotation("", coordinate: coord, anchor: isSelected ? .bottom : .center) {
+                    if isSelected {
+                        VStack(spacing: 6) {
+                            Text(formattedDateTimeLabel(for: entry))
+                                .font(.caption2)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.ultraThinMaterial, in: Capsule())
+                                .overlay(
+                                    Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                                )
+                            MiataruMapMarker(color: color(for: entry, within: displayedHistory))
+                                .shadow(radius: 2)
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectEntryFromMap(entry)
+                        }
+                    } else {
+                        Circle()
+                            .fill(color(for: entry, within: displayedHistory))
+                            .frame(width: 10, height: 10)
+                            .contentShape(Circle())
+                            .onTapGesture {
+                                selectEntryFromMap(entry)
+                            }
+                    }
                 }
             }
         }
@@ -335,6 +364,23 @@ struct iPhone_DeviceHistoryMapView: View {
         return Color(hue: 0.6 - 0.6 * ratio, saturation: 0.9, brightness: 0.9)
     }
 
+    private func formattedDateTimeLabel(for entry: MiataruLocationData) -> String {
+        Self.timelineDateFormatter.string(from: entry.TimestampDate)
+    }
+
+    private func isSelectedEntry(_ entry: MiataruLocationData) -> Bool {
+        guard let selectedTimelineEntry else { return false }
+        return selectedTimelineEntry.Timestamp == entry.Timestamp &&
+            selectedTimelineEntry.Latitude == entry.Latitude &&
+            selectedTimelineEntry.Longitude == entry.Longitude
+    }
+
+    private func selectEntryFromMap(_ entry: MiataruLocationData) {
+        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
+        hasUserScrubbed = true
+        // onChange(of: scrubTimestamp) handles focusing or playback restart
+    }
+
     private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -> [MiataruLocationData] {
         var uniqueEntries: [MiataruLocationData] = []
         uniqueEntries.reserveCapacity(entries.count)
@@ -418,21 +464,24 @@ struct iPhone_DeviceHistoryMapView: View {
         let startIndex = entries.firstIndex { $0.TimestampDate.timeIntervalSince1970 >= startTimestamp } ?? entries.count - 1
         isPlaying = true
         playbackTask = Task {
-            for entry in entries[startIndex...] {
-                if Task.isCancelled { break }
-                await MainActor.run {
-                    isPlaybackStepping = true
-                    scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
-                    focusOnEntry(entry)
+            var currentStartIndex = startIndex
+            playbackLoop: while !Task.isCancelled && isPlaying {
+                for entry in entries[currentStartIndex...] {
+                    if Task.isCancelled || !isPlaying { break playbackLoop }
+                    await MainActor.run {
+                        isPlaybackStepping = true
+                        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
+                        focusOnEntry(entry, within: entries)
+                    }
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    await MainActor.run {
+                        isPlaybackStepping = false
+                    }
+                    if !isPlaying { break playbackLoop }
                 }
-                try? await Task.sleep(nanoseconds: 2_000_000_000)
-                await MainActor.run {
-                    isPlaybackStepping = false
-                }
-                if !isPlaying { break }
+                currentStartIndex = 0
             }
             await MainActor.run {
-                isPlaying = false
                 playbackTask = nil
                 isPlaybackStepping = false
             }
@@ -447,8 +496,15 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     @MainActor
-    private func focusOnEntry(_ entry: MiataruLocationData) {
-        updateRegion(animated: true, using: [entry], useDefaultZoom: true)
+    private func focusOnEntry(_ entry: MiataruLocationData, within entries: [MiataruLocationData]) {
+        guard let index = entries.firstIndex(where: { $0.Timestamp == entry.Timestamp && $0.Latitude == entry.Latitude && $0.Longitude == entry.Longitude }) else {
+            updateRegion(animated: true, using: [entry], useDefaultZoom: true)
+            return
+        }
+        let lowerBound = max(0, index - 1)
+        let upperBound = min(entries.count - 1, index + 1)
+        let contextEntries = Array(entries[lowerBound...upperBound])
+        updateRegion(animated: true, using: contextEntries, useDefaultZoom: false)
     }
 }
 

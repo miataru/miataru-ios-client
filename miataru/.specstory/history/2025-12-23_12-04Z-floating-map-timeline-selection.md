@@ -1530,7 +1530,13 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "95009da6-dd4d-4958-bd2f-8767990db32b"
+  "codeblockId": "95009da6-dd4d-4958-bd2f-8767990db32b",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
 }
 ```
 Result:
@@ -1588,7 +1594,13 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "5c2f25bc-6097-4647-805f-e60842e85ee1"
+  "codeblockId": "5c2f25bc-6097-4647-805f-e60842e85ee1",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
 }
 ```
 Result:
@@ -7529,6 +7541,26 @@ cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short
 ```
 </details>
 </tool-use>
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
 
 ---
 
