@@ -894,7 +894,13 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "650d96a8-c199-4ad5-94bf-d666e38e8229"
+  "codeblockId": "650d96a8-c199-4ad5-94bf-d666e38e8229",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
 }
 ```
 Result:
@@ -1005,7 +1011,13 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "eb798737-be8c-4f55-8dd0-b48250940b8b"
+  "codeblockId": "eb798737-be8c-4f55-8dd0-b48250940b8b",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
 }
 ```
 Result:
@@ -1213,7 +1225,13 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "13487ae6-0a51-4452-aa62-723ba96b674c"
+  "codeblockId": "13487ae6-0a51-4452-aa62-723ba96b674c",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
 }
 ```
 Result:
@@ -1267,6 +1285,307 @@ Lint results
 ---
 
 Fixed the compile issue by changing the `.onChange` to watch `history.count` instead of the array itself, avoiding the Equatable requirement on `MiataruLocationData`. No lints remain.
+
+---
+
+_**User (2025-12-23 10:13Z)**_
+
+describe  and commit
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Checking git status**
+
+I'm running git status after navigating to the project root to inspect the current repository state before describing or committing changes.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short
+```
+
+```
+ M Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
+ M miataru.xcodeproj/project.pbxproj
+ M miataru/Assets/Localizable.xcstrings
+ M miataru/views/Common/DeviceHistoryMapView.swift
+?? .specstory/history/2025-12-11_10-21Z-devicehistorymapview-incorrect-zoom-and-data.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Limiting commit to modified Swift files**
+
+I'll focus the commit on the two Swift files changed here and exclude unrelated modifications to the project file and Localizable strings to avoid committing unknown edits.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff -- Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift miataru/views/Common/DeviceHistoryMapView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff -- Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift miataru/views/Common/DeviceHistoryMapView.swift
+```
+
+```
+diff --git a/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift b/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
+index ea909be..249fb60 100644
+--- a/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
++++ b/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
+@@ -27,6 +27,19 @@ public struct MiataruConfig: Codable {
+ private struct GetLocationHistoryRequestBody: Encodable {
+     var MiataruConfig: MiataruConfig?
+     var MiataruGetLocationHistory: GetLocationHistoryPayload
++
++    enum CodingKeys: String, CodingKey {
++        case MiataruConfig
++        case MiataruGetLocationHistory
++    }
++
++    func encode(to encoder: Encoder) throws {
++        var container = encoder.container(keyedBy: CodingKeys.self)
++        if let config = MiataruConfig {
++            try container.encode(config, forKey: .MiataruConfig)
++        }
++        try container.encode(MiataruGetLocationHistory, forKey: .MiataruGetLocationHistory)
++    }
+ }
+ 
+ /// Payload for GetLocation request.
+@@ -312,14 +325,25 @@ public enum MiataruAPIClient {
+                                   amount: Int) async throws -&gt; [MiataruLocationData] {
+         
+         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
+-        
++
++        let sanitizedRequestID: String? = {
++            guard let value = requestingDeviceID, !value.isEmpty else { return nil }
++            return value
++        }()
++
+         let requestBody = GetLocationHistoryRequestBody(
+-            MiataruConfig: requestingDeviceID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
++            MiataruConfig: sanitizedRequestID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
+             MiataruGetLocationHistory: GetLocationHistoryPayload(Device: deviceID, Amount: String(amount))
+         )
+ 
+-        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+-            "[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\($0)"
++        let data: Data
++        do {
++            data = try await performPostRequest(url: url, encodablePayload: requestBody) {
++                "[MiataruAPIClient] Requesting history for device \(deviceID) amount=\(amount) payload=\($0)"
++            }
++        } catch APIError.encodingError(let err) {
++            debugLog("[MiataruAPIClient] Encoding history request failed for device \(deviceID): \(err.localizedDescription)")
++            throw APIError.encodingError(err)
+         }
+ 
+         do {
+diff --git a/miataru/miataru/views/Common/DeviceHistoryMapView.swift b/miataru/miataru/views/Common/DeviceHistoryMapView.swift
+index 94b12ad..e4f07ee 100644
+--- a/miataru/miataru/views/Common/DeviceHistoryMapView.swift
++++ b/miataru/miataru/views/Common/DeviceHistoryMapView.swift
+@@ -79,6 +79,9 @@ struct DeviceHistoryMapView: View {
+         .task {
+             await loadHistory()
+         }
++        .onChange(of: history.count) { _, _ in
++            updateRegion()
++        }
+     }
+ 
+     private func loadHistory() async {
+@@ -86,11 +89,17 @@ struct DeviceHistoryMapView: View {
+             debugLog("[DeviceHistoryMapView] Using cached history for device \(device.DeviceID) entries=\(cached.count)")
+             await MainActor.run {
+                 history = cached
+-                updateRegion()
+             }
+             return
+         }
+-        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else { return }
++        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {
++            await MainActor.run {
++                loadError = NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
++            }
++            return
++        }
++        let requestingDeviceID = thisDeviceIDManager.shared.deviceID
++        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID
+         await MainActor.run {
+             isLoading = true
+             loadError = nil
+@@ -100,7 +109,7 @@ struct DeviceHistoryMapView: View {
+             let data = try await MiataruAPIClient.getLocationHistory(
+                 serverURL: url,
+                 forDeviceID: device.DeviceID,
+-                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
++                requestingDeviceID: requestID,
+                 amount: 1000
+             )
+             let normalized = normalizeHistoryEntries(from: data)
+@@ -108,20 +117,30 @@ struct DeviceHistoryMapView: View {
+             await MainActor.run {
+                 history = sorted
+                 cache.setHistory(sorted, for: device.DeviceID)
+-                updateRegion()
+                 isLoading = false
+                 debugLog("[DeviceHistoryMapView] Loaded history entries=\(sorted.count) for device \(device.DeviceID)")
++                if sorted.isEmpty {
++                    loadError = NSLocalizedString("history_no_data", comment: "No history available placeholder")
++                }
++            }
++        } catch let apiError as MiataruAPIClient.APIError {
++            await MainActor.run {
++                isLoading = false
++                loadError = mapAPIError(apiError)
++                history = []
+             }
+         } catch {
+             debugLog("[DeviceHistoryMapView] Failed to load history for device \(device.DeviceID): \(error.localizedDescription)")
+             await MainActor.run {
+                 loadError = error.localizedDescription
+                 isLoading = false
++                history = []
+             }
+         }
+     }
+ 
+-    private func updateRegion() {
++    @MainActor
++    private func updateRegion(animated: Bool = true) {
+         guard !history.isEmpty else { return }
+         var minLat = history.first!.Latitude
+         var maxLat = history.first!.Latitude
+@@ -133,15 +152,27 @@ struct DeviceHistoryMapView: View {
+             minLon = min(minLon, h.Longitude)
+             maxLon = max(maxLon, h.Longitude)
+         }
++        let minDelta = 0.002
++        let paddedLat = max(minDelta, (maxLat - minLat) * 1.4)
++        let paddedLon = max(minDelta, (maxLon - minLon) * 1.4)
++        let latitudeDelta = paddedLat.isFinite ? paddedLat : minDelta
++        let longitudeDelta = paddedLon.isFinite ? paddedLon : minDelta
+         let span = MKCoordinateSpan(
+-            latitudeDelta: max(0.01, (maxLat - minLat) * 1.4),
+-            longitudeDelta: max(0.01, (maxLon - minLon) * 1.4)
++            latitudeDelta: latitudeDelta,
++            longitudeDelta: longitudeDelta
+         )
+         let center = CLLocationCoordinate2D(
+             latitude: (minLat + maxLat) / 2,
+             longitude: (minLon + maxLon) / 2
+         )
+-        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
++        let region = MKCoordinateRegion(center: center, span: span)
++        if animated {
++            withAnimation(.easeInOut(duration: 0.5)) {
++                cameraPosition = .region(region)
++            }
++        } else {
++            cameraPosition = .region(region)
++        }
+     }
+ 
+     private func color(for entry: MiataruLocationData) -&gt; Color {
+@@ -181,4 +212,19 @@ struct DeviceHistoryMapView: View {
+ 
+         return uniqueEntries
+     }
++
++    private func mapAPIError(_ error: MiataruAPIClient.APIError) -&gt; String {
++        switch error {
++        case .invalidURL:
++            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
++        case .invalidResponse(_):
++            return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
++        case .encodingError(let err):
++            return "\(NSLocalizedString("encoding_error", comment: "Error encoding the request.")) \(err.localizedDescription)"
++        case .decodingError(let err):
++            return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
++        case .requestFailed(let err):
++            return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
++        }
++    }
+ }
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Committing updated Swift files only**
+
+I'm staging just the two changed Swift files for commit with a clear message about improving device history map loading and zoom, using `git add` followed by `git commit` with the needed git_write permission.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/Common/DeviceHistoryMapView.swift Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift && git commit -m "Improve device history map loading and zoom"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/Common/DeviceHistoryMapView.swift Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift && git commit -m "Improve device history map loading and zoom"
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adjusting permissions for git write**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/Common/DeviceHistoryMapView.swift Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift && git commit -m "Improve device history map loading and zoom"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/Common/DeviceHistoryMapView.swift Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift && git commit -m "Improve device history map loading and zoom"
+```
+
+```
+[codex/create-device-location-history-view-tky2zb 673ed73] Improve device history map loading and zoom
+ 2 files changed, 82 insertions(+), 12 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing final changes and commit status**
+
+The main code updates are complete with key files committed, but some related files like the project.pbxproj remain uncommitted. Tests have not been run yet. The current commit hash is included for reference.</details></think>
+
+---
+
+Implemented and committed the fixes.
+
+- DeviceHistoryMapView now safely animates map region updates, guards against empty/invalid spans, surfaces localized API errors, and validates requesting device ID when loading history.
+- MiataruAPIClient adds explicit encoding for GetLocationHistory requests, sanitizes optional requester IDs, and logs encoding failures before rethrowing.
+
+Commit: `Improve device history map loading and zoom` (673ed73)
+
+Unchanged pending files remain: `miataru.xcodeproj/project.pbxproj`, `miataru/Assets/Localizable.xcstrings`, `.specstory/...`. Tests not run (not requested).
 
 ---
 

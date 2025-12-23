@@ -387,7 +387,7 @@ struct iPad_DeviceMapView: View {
         }
         .navigationDestination(isPresented: $showHistoryView) {
             if let device = device {
-                DeviceHistoryMapView(device: device)
+                iPhone_DeviceHistoryMapView(device: device)
             }
         }
     }

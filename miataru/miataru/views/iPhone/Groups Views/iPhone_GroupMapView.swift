@@ -389,7 +389,7 @@ struct iPhone_GroupMapView: View {
         }
         .navigationDestination(isPresented: $showHistoryView) {
             if let id = historyDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == id }) {
-                DeviceHistoryMapView(device: device)
+                iPhone_DeviceHistoryMapView(device: device)
             }
         }
     }
