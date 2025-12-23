@@ -6274,52 +6274,6 @@
           }
         }
       }
-    },
-    "history_play_timeline" : {
-      "comment" : "Play button for history timeline animation",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitleiste abspielen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Play timeline"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タイムラインを再生"
-          }
-        }
-      }
-    },
-    "history_pause_timeline" : {
-      "comment" : "Pause button for history timeline animation",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitleiste pausieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pause timeline"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タイムラインを一時停止"
-          }
-        }
-      }
     }
   },
   "version" : "1.1"
