@@ -79,6 +79,9 @@ struct DeviceHistoryMapView: View {
         .task {
             await loadHistory()
         }
+        .onChange(of: history.count) { _, _ in
+            updateRegion()
+        }
     }
 
     private func loadHistory() async {
@@ -86,11 +89,17 @@ struct DeviceHistoryMapView: View {
             debugLog("[DeviceHistoryMapView] Using cached history for device \(device.DeviceID) entries=\(cached.count)")
             await MainActor.run {
                 history = cached
-                updateRegion()
             }
             return
         }
-        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else { return }
+        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {
+            await MainActor.run {
+                loadError = NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+            }
+            return
+        }
+        let requestingDeviceID = thisDeviceIDManager.shared.deviceID
+        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID
         await MainActor.run {
             isLoading = true
             loadError = nil
@@ -100,7 +109,7 @@ struct DeviceHistoryMapView: View {
             let data = try await MiataruAPIClient.getLocationHistory(
                 serverURL: url,
                 forDeviceID: device.DeviceID,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceID: requestID,
                 amount: 1000
             )
             let normalized = normalizeHistoryEntries(from: data)
@@ -108,20 +117,30 @@ struct DeviceHistoryMapView: View {
             await MainActor.run {
                 history = sorted
                 cache.setHistory(sorted, for: device.DeviceID)
-                updateRegion()
                 isLoading = false
                 debugLog("[DeviceHistoryMapView] Loaded history entries=\(sorted.count) for device \(device.DeviceID)")
+                if sorted.isEmpty {
+                    loadError = NSLocalizedString("history_no_data", comment: "No history available placeholder")
+                }
+            }
+        } catch let apiError as MiataruAPIClient.APIError {
+            await MainActor.run {
+                isLoading = false
+                loadError = mapAPIError(apiError)
+                history = []
             }
         } catch {
             debugLog("[DeviceHistoryMapView] Failed to load history for device \(device.DeviceID): \(error.localizedDescription)")
             await MainActor.run {
                 loadError = error.localizedDescription
                 isLoading = false
+                history = []
             }
         }
     }
 
-    private func updateRegion() {
+    @MainActor
+    private func updateRegion(animated: Bool = true) {
         guard !history.isEmpty else { return }
         var minLat = history.first!.Latitude
         var maxLat = history.first!.Latitude
@@ -133,15 +152,27 @@ struct DeviceHistoryMapView: View {
             minLon = min(minLon, h.Longitude)
             maxLon = max(maxLon, h.Longitude)
         }
+        let minDelta = 0.002
+        let paddedLat = max(minDelta, (maxLat - minLat) * 1.4)
+        let paddedLon = max(minDelta, (maxLon - minLon) * 1.4)
+        let latitudeDelta = paddedLat.isFinite ? paddedLat : minDelta
+        let longitudeDelta = paddedLon.isFinite ? paddedLon : minDelta
         let span = MKCoordinateSpan(
-            latitudeDelta: max(0.01, (maxLat - minLat) * 1.4),
-            longitudeDelta: max(0.01, (maxLon - minLon) * 1.4)
+            latitudeDelta: latitudeDelta,
+            longitudeDelta: longitudeDelta
         )
         let center = CLLocationCoordinate2D(
             latitude: (minLat + maxLat) / 2,
             longitude: (minLon + maxLon) / 2
         )
-        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+        let region = MKCoordinateRegion(center: center, span: span)
+        if animated {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .region(region)
+            }
+        } else {
+            cameraPosition = .region(region)
+        }
     }
 
     private func color(for entry: MiataruLocationData) -> Color {
@@ -180,5 +211,20 @@ struct DeviceHistoryMapView: View {
         }
 
         return uniqueEntries
+    }
+
+    private func mapAPIError(_ error: MiataruAPIClient.APIError) -> String {
+        switch error {
+        case .invalidURL:
+            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+        case .invalidResponse(_):
+            return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
+        case .encodingError(let err):
+            return "\(NSLocalizedString("encoding_error", comment: "Error encoding the request.")) \(err.localizedDescription)"
+        case .decodingError(let err):
+            return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
+        case .requestFailed(let err):
+            return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+        }
     }
 }
