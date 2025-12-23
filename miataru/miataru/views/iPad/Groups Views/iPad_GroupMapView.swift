@@ -459,7 +459,8 @@ struct iPad_GroupMapView: View {
                             Rectangle()
                                 .foregroundColor(.clear)
                                 .contentShape(Rectangle())
-                                .frame(width: 60, height: 80)
+                                .frame(width: 80, height: 120)
+                                .offset(y: 12)
                                 .zIndex(1)
                                 .contextMenu {
                                     Button {

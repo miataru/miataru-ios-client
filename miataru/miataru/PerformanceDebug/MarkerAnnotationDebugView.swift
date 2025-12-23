@@ -140,7 +140,8 @@ struct MarkerAnnotationDebugView: View {
                             Rectangle()
                                 .foregroundColor(.clear)
                                 .contentShape(Rectangle())
-                                .frame(width: 60, height: 80)
+                                .frame(width: 80, height: 120)
+                                .offset(y: 12)
                                 .zIndex(1)
                         }
                         .offset(y: 20)
@@ -184,7 +185,8 @@ struct MarkerAnnotationDebugView: View {
                             Rectangle()
                                 .foregroundColor(.clear)
                                 .contentShape(Rectangle())
-                                .frame(width: 60, height: 80)
+                                .frame(width: 80, height: 120)
+                                .offset(y: 12)
                                 .zIndex(1)
                         }
                         .offset(y: 20)
