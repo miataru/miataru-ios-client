@@ -30,6 +30,9 @@ struct iPhone_RootView: View {
                 }
         }
         .environmentObject(DeviceGroupStore.shared)
+        .environmentObject(RouteInfoState.shared)
+        .environmentObject(SettingsManager.shared)
+        .bottomAccessory(onTap: nil)
         .adaptiveToolbarBackground()
     }
 }

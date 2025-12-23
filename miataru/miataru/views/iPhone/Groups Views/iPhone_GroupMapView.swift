@@ -439,12 +439,13 @@ struct iPhone_GroupMapView: View {
                                             .accessibilityHidden(true)
                                     }
                                 }
+                                // Device name label above the marker for clarity
+                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                                 MiataruMapMarker(
                                     color: Color(device.DeviceColor ?? UIColor.blue)
                                 )
                                     .shadow(radius: 2)
                                     .accessibilityHidden(true)
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
                             }
                             Rectangle()
                                 .foregroundColor(.clear)
