@@ -31,6 +31,9 @@ struct iPad_RootView: View {
                 }
         }
         .environmentObject(DeviceGroupStore.shared)
+        .environmentObject(RouteInfoState.shared)
+        .environmentObject(SettingsManager.shared)
+        .bottomAccessory(onTap: nil)
         .ignoresSafeArea(.all)
         //.adaptiveToolbarBackground()
     }
