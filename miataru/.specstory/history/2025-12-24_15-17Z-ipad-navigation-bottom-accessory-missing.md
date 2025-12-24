@@ -629,7 +629,788 @@ Status: **completed**
 
 ---
 
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift</summary>
 
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Investigating bottom accessory availability**
+
+I'm checking whether the bottom accessory modifier is only applied on iPhone with iOS 26, and why it's missing on iPad—possibly due to iPad root view or device map view handling navigation differently and not using the same shared route info state. Next, I'll identify and inspect the iPad root view counterpart to confirm this.</details></think>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "*RootView.swift" • **4** results in **1** directory</summary>
+
+Directory: **/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views** (4 files)
+
+| File |
+|------|
+| `iPhone/iPhone_RootView.swift` |
+| `iPad/iPad_RootView.swift` |
+| `MiataruRootView.swift` |
+| `Mac/Mac_RootView.swift` |
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Inspecting iPad root view**
+
+I'm examining the iPad root view code to understand how the bottomAccessory is used and integrated.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/iPad_RootView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Checking environment setup in root views**
+
+Noticed the iPad root view lacks RouteInfoState environment, while MiataruApp likely sets its environment at the root with MiataruRootView; next is to inspect MiataruRootView to confirm environment propagation.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/MiataruRootView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Analyzing iPad navigation and overlay usage**
+
+I confirmed the iPad root gets the shared route info state but lacks the bottom accessory modifier that shows overlays on iPhone. The iPad navigation likely handles routing differently, so next I'll inspect the iPad map view's code to understand how it processes navigation and whether it updates the route info or shows overlays differently.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Searching for navigation flow states**
+
+I'm planning to search for "navigation" case-insensitively to locate navigation flow states and explore relevant code near the bottom of the files.</details></think>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="rg">
+<details>
+<summary>Tool use: **rg**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "navigation",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+  "outputMode": "content",
+  "context": 2,
+  "caseInsensitive": true,
+  "headLimit": 50
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "navigation",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+              "matches": [
+                {
+                  "lineNumber": 20,
+                  "content": "    var previewDeviceAccuracy: Double? = nil",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 21,
+                  "content": "    var previewDeviceTimestamp: Date? = nil",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 22,
+                  "content": "    var onNavigateToDevice: ((String) -&gt; Void)? = nil // Callback for navigation"
+                },
+                {
+                  "lineNumber": 23,
+                  "content": "    @Namespace var mapScope",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 24,
+                  "content": "    @State private var region = MKCoordinateRegion(",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 52,
+                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 53,
+                  "content": "    @State private var showEditDeviceSheet = false // Controls device edit sheet",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 54,
+                  "content": "    @State private var showNavigationSheet = false // Controls navigation view"
+                },
+                {
+                  "lineNumber": 55,
+                  "content": "    @State private var showHistoryView = false // Controls history view",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 56,
+                  "content": "    @State private var now = Date() // Timer for relative time display",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 248,
+                  "content": "            compassView()",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 249,
+                  "content": "        }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 250,
+                  "content": "        .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? \"Unknown Device\"))"
+                },
+                {
+                  "lineNumber": 251,
+                  "content": "        .background(Color(.systemBackground))",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 252,
+                  "content": "        .navigationBarTitleDisplayMode(.inline)"
+                },
+                {
+                  "lineNumber": 253,
+                  "content": "        .toolbar {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 254,
+                  "content": "            ToolbarItem(placement: .navigationBarTrailing) {"
+                },
+                {
+                  "lineNumber": 255,
+                  "content": "                // Button to manually update device location",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 256,
+                  "content": "                updateButton()",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 381,
+                  "content": "            }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 382,
+                  "content": "        }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 383,
+                  "content": "        .navigationDestination(isPresented: $showNavigationSheet) {"
+                },
+                {
+                  "lineNumber": 384,
+                  "content": "            if let device = device {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 385,
+                  "content": "                iPhone_DeviceNavigationView(device: device)"
+                },
+                {
+                  "lineNumber": 386,
+                  "content": "            }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 387,
+                  "content": "        }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 388,
+                  "content": "        .navigationDestination(isPresented: $showHistoryView) {"
+                },
+                {
+                  "lineNumber": 389,
+                  "content": "            if let device = device {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 390,
+                  "content": "                iPhone_DeviceHistoryMapView(device: device)",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 541,
+                  "content": "                                            if device.DeviceID != thisDeviceIDManager.shared.deviceID {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 542,
+                  "content": "                                                Button {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 543,
+                  "content": "                                                    showNavigationSheet = true"
+                },
+                {
+                  "lineNumber": 544,
+                  "content": "                                                } label: {",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 545,
+                  "content": "                                                    Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")"
+                },
+                {
+                  "lineNumber": 546,
+                  "content": "                                                }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 547,
+                  "content": "                                            }",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 883,
+                  "content": "    let mockAccuracy = 15.0",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 884,
+                  "content": "    let mockTimestamp = Date()",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 885,
+                  "content": "    return NavigationView {"
+                },
+                {
+                  "lineNumber": 886,
+                  "content": "        iPad_DeviceMapView(",
+                  "isContextLine": true
+                },
+                {
+                  "lineNumber": 887,
+                  "content": "            deviceID: mockDevice.DeviceID,",
+                  "isContextLine": true
+                }
+              ]
+            }
+          ],
+          "totalLines": 41,
+          "totalMatchedLines": 11
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Diagnosing missing bottom accessory on iPad**
+
+The bottom accessory overlay updates on iPhone but is missing on iPad because the iPad root view lacks the bottomAccessory modifier; although route info state is globally available, the overlay isn’t attached to the iPad view hierarchy. Adding bottomAccessory to the iPad root or TabView should fix visibility by properly layering it with the safe area.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_RootView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Noticing iPad root missing environment objects and iOS version gating**
+
+The iPad root currently lacks route info and settings environment objects that the iPhone root provides, which might cause the bottom accessory not to show; adding them for parity could fix this. Also, the bottom accessory relies on iOS 26 availability, which might prevent it from appearing on iOS 18 despite running on newer devices.**Analyzing iOS version checks and accessory visibility**
+
+Observed that the bottom accessory code is guarded by a check for iOS 26, which seems unrealistically high; since the accessory shows on iPhone, either the device runs iOS 26 or routeInfoState.isVisible is updated elsewhere outside that guard. Next, I'll search the repo for other routeInfoState updates to clarify.</details></think>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="rg">
+<details>
+<summary>Tool use: **rg**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "RouteInfoState.shared.update|routeInfoState.update",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru",
+  "outputMode": "content",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "RouteInfoState.shared.update|routeInfoState.update",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "./miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift",
+              "matches": [
+                {
+                  "lineNumber": 824,
+                  "content": "            routeInfoState.update("
+                }
+              ]
+            }
+          ],
+          "totalLines": 1,
+          "totalMatchedLines": 1
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adding bottom accessory and environment objects to iPad root**
+
+I'm updating the iPad root view to include the route info state and settings environment objects plus the bottom accessory overlay, matching the iPhone setup to fix the missing overlay issue on iPad. I'll add these modifiers after the device group environment object and before ignoring safe area to ensure the overlay displays correctly without runtime environment errors.</details></think>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="apply_patch">
+<details>
+<summary>Tool use: **apply_patch**</summary>
+
+
+Parameters:
+
+```json
+{
+  "relativeWorkspacePath": "miataru/views/iPad/iPad_RootView.swift"
+}
+```
+Additional data:
+
+```json
+{
+  "codeblockId": "62030c36-59f4-414e-a940-da2deba94827",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  }
+}
+```
+Result:
+
+```json
+{
+  "diff": {
+    "chunks": [
+      {
+        "diffString": "          }\n          .environmentObject(DeviceGroupStore.shared)\n+         .environmentObject(RouteInfoState.shared)\n+         .environmentObject(SettingsManager.shared)\n+         .bottomAccessory(onTap: nil)\n          .ignoresSafeArea(.all)\n          //.adaptiveToolbarBackground()",
+        "oldStart": 32,
+        "newStart": 32,
+        "oldLines": 4,
+        "newLines": 7,
+        "linesAdded": 3
+      }
+    ],
+    "editor": "EDITOR_AI"
+  },
+  "shouldAutoFixLints": true,
+  "resultForModel": "Success. Updated the following files:\nM miataru/views/iPad/iPad_RootView.swift",
+  "contentsAfterEdit": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * iPad_RootView.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 20.06.25.\n */\n\nimport SwiftUI\n\nstruct iPad_RootView: View {\n    var body: some View {\n        TabView {\n            iPad_DevicesView()\n                .tabItem {\n                    Label(\"devices\", systemImage: \"iphone.gen3.badge.location\")\n                }\n            iPad_GroupsView()\n                .tabItem {\n                    Label(\"groups\", systemImage: \"person.3\")\n                }\n            iPhone_MyDeviceQRCodeView()\n                .tabItem {\n                    Label(\"qr\", systemImage: \"qrcode\")\n                }\n            iPhone_SettingsView()\n                .navigationViewStyle(.stack)\n                .tabItem {\n                    Label(\"settings\", systemImage: \"gear\")\n                }\n        }\n        .environmentObject(DeviceGroupStore.shared)\n        .environmentObject(RouteInfoState.shared)\n        .environmentObject(SettingsManager.shared)\n        .bottomAccessory(onTap: nil)\n        .ignoresSafeArea(.all)\n        //.adaptiveToolbarBackground()\n    }\n}\n\n#Preview {\n    iPad_RootView()\n}\n"
+}
+```
+User decision: **accepted**
+
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Updating todo list statuses**
+
+I'm marking task1 and task3 as done, and task2 as maybe done, then merging these status updates into the todo list.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Inspect iPad navigation map view for accessory/overlay differences
+- [x] Compare iPhone navigation bottom accessory implementation
+- [x] Add missing bottom accessory UI for iPad navigation
+- [ ] Test/verify layout and localization compliance
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Marking test in progress**
+
+Decided to set the fourth todo test as in progress to align with guidelines that prefer having one in progress, reflecting outstanding testing.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Inspect iPad navigation map view for accessory/overlay differences
+- [x] Compare iPhone navigation bottom accessory implementation
+- [x] Add missing bottom accessory UI for iPad navigation
+- [-] Test/verify layout and localization compliance
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Including lint reading**
+
+I'm deciding to incorporate reading lints for the file as suggested by the instruction, even if the change is small. I'll use read_lints on the file next.</details></think>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/iPad_RootView.swift`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Setting task status to pending**
+
+I'm updating the task marker to pending since tests were not run and verification is needed, avoiding leaving it as in_progress when finishing.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Inspect iPad navigation map view for accessory/overlay differences
+- [x] Compare iPhone navigation bottom accessory implementation
+- [x] Add missing bottom accessory UI for iPad navigation
+- [ ] Test/verify layout and localization compliance
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing final response details**
+
+I need to reread the modified file to determine accurate line numbers for citing the iPad_RootView changes that add bottomAccessory and environment objects for route info overlay.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/iPad_RootView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing iPad navigation accessory addition**
+
+Added a bottomAccessory with route info injection to show navigation controls on iPad, including new environment objects in the view setup. No tests were run; verifying navigation start on iPad shows the accessory is recommended. Changes are in `miataru/views/iPad/iPad_RootView.swift` around lines 33–37.</details></think>
+
+---
+
+Added the shared `RouteInfoState`/`SettingsManager` environment and applied `bottomAccessory` to the iPad root TabView so the navigation info strip (with cancel) now overlays iPad navigation screens just like on iPhone.  
+```
+33:37:miataru/views/iPad/iPad_RootView.swift
+        .environmentObject(DeviceGroupStore.shared)
+        .environmentObject(RouteInfoState.shared)
+        .environmentObject(SettingsManager.shared)
+        .bottomAccessory(onTap: nil)
+```
+
+Tests not run (not requested). Please launch a navigation session on iPad to confirm the accessory now appears and the cancel button is visible.
+
+---
+
+_**User (2025-12-24 11:09Z)**_
+
+describe all and commit
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Confirming safe commit conditions**
+
+I'll check the git status to identify all current changes, ensure only intended modifications are included, and then prepare a clear English commit message for the iPad_RootView changes before committing as requested.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb
+```
+
+```
+## master...origin/master
+ M .specstory/history/2025-12-24_15-17Z-ipad-navigation-bottom-accessory-missing.md
+ M miataru/views/iPad/iPad_RootView.swift
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing to commit only the relevant file**
+
+I'll commit just the modified iPad_RootView.swift file to avoid including unrelated changes in .specstory, crafting a clear message about adding bottom accessory support; this requires confirming git write permission before staging and committing.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat
+```
+
+```
+ ...17Z-ipad-navigation-bottom-accessory-missing.md | 580 +++++++++++++++++++++
+ miataru/miataru/views/iPad/iPad_RootView.swift     |   3 +
+ 2 files changed, 583 insertions(+)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning selective commit with staging**
+
+I'm planning to stage only the iPad root view swift file to avoid committing unreviewed large specstory changes, then commit with a clear message, noting in the summary that specstory changes are excluded to keep the repo clean.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Testing git_write permission**
+
+I'm checking if the request needs git_write permission since the tool schema doesn't show it, so I'll rerun the command specifying required_permissions as ["git_write"].</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adjusting permission scope**
+
+Re-running with required permissions set to ['all'] to broaden access and check for relevant data.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add miataru/views/iPad/iPad_RootView.swift
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Committing bottom accessory support**
+
+Committing the code with the message "Add bottom accessory support on iPad" and specifying relevant files with full permissions.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add bottom accessory support on iPad"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add bottom accessory support on iPad"
+```
+
+```
+[master c940a23] Add bottom accessory support on iPad
+ 1 file changed, 3 insertions(+)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adding status for remaining file**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb
+```
+
+```
+## master...origin/master [ahead 1]
+ M .specstory/history/2025-12-24_15-17Z-ipad-navigation-bottom-accessory-missing.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Describing changes and commit**
+
+Updated `iPad_RootView` (lines 33-37) to include route info environment and a bottom accessory for iPad navigation. Committed with hash c940a23. Note: the `.specstory` file remains uncommitted. Tests have not been run yet. Next step is to verify changes in the app.</details></think>
+
+---
+
+Changes made
+- Injected `RouteInfoState.shared` and `SettingsManager.shared` into `iPad_RootView` and applied `bottomAccessory` so the navigation info/cancel strip now appears on iPad tabs just like on iPhone.
+
+Code reference
+```33:37:miataru/views/iPad/iPad_RootView.swift
+        .environmentObject(DeviceGroupStore.shared)
+        .environmentObject(RouteInfoState.shared)
+        .environmentObject(SettingsManager.shared)
+        .bottomAccessory(onTap: nil)
+```
+
+Commit
+- Created commit `Add bottom accessory support on iPad` (hash: c940a23), staging only `miataru/views/iPad/iPad_RootView.swift`.
+
+Notes
+- One file remains uncommitted: `.specstory/history/2025-12-24_15-17Z-ipad-navigation-bottom-accessory-missing.md`.
+- Tests not run (not requested). Consider launching iPad navigation to confirm the bottom accessory shows and cancel is accessible.
 
 ---
 
