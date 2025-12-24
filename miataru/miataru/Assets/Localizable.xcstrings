@@ -3929,6 +3929,52 @@
         }
       }
     },
+    "map_device_quick_actions_message" : {
+      "comment" : "Message showing the device name the actions will affect",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktion für %@ auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose an action for %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ の操作を選択してください"
+          }
+        }
+      }
+    },
+    "map_device_quick_actions_title" : {
+      "comment" : "Title for device actions when tapping near a marker",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräteaktionen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device quick actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのクイック操作"
+          }
+        }
+      }
+    },
     "map_marker_open_details" : {
       "comment" : "Opens the selected device details on the map",
       "localizations" : {

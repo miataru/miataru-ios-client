@@ -48,6 +48,8 @@ struct iPhone_GroupMapView: View {
     @State private var historyDeviceID: String? = nil // Device ID for history
     @State private var showHistoryView: Bool = false // Sheet trigger for history
     @State private var showNetworkErrorIcon = false // Show network error icon
+    @State private var quickActionDeviceID: String? = nil // Device selected via map tap for quick actions
+    @State private var showQuickActionsDialog = false // Show quick actions dialog when tapping on markers
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     @State private var isProgrammaticCameraChange = false // Track programmatic camera updates
@@ -396,113 +398,173 @@ struct iPhone_GroupMapView: View {
     
     @ViewBuilder
     private func mapSection() -> some View {
-        Map(position: $cameraPosition, scope: mapScope) {
-            // Show all devices in the group
-            ForEach(groupDeviceIDs, id: \.self) { deviceID in
-                if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-                   let coordinate = animatedDeviceLocations[deviceID] {
-                    // Accuracy circle
-                    if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
-                        MapCircle(center: coordinate, radius: accuracy)
-                            .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
-                    }
-                    // Device marker
-                    let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
-                    Annotation("", coordinate: coordinate, anchor: .bottom) {
-                        ZStack {
-                            // Pulsing behind
-                            if settings.pulsingMapMarkers && visibleDeviceCount < 5 {
-                                let circleDiameter = (/* marker height */ 40.0) * 0.65
-                                let pulsingSize = circleDiameter * 1.5
-                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
-                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? UIColor.blue), size: pulsingSize)
-                                    .offset(y: pulsingOffset)
-                                    .allowsHitTesting(false)
-                                    .accessibilityHidden(true)
-                            }
-                            VStack(spacing: 0) {
-                                // Show timestamp if available (force per-second updates)
-                                if let timestamp = deviceTimestamps[deviceID] {
-                                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        Text(relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated))
-                                            .font(.caption)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(.ultraThinMaterial)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                            )
-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
-                                            .shadow(radius: 2)
-                                            .zIndex(2)
-                                            .accessibilityHidden(true)
-                                    }
+        MapReader { proxy in
+            Map(position: $cameraPosition, scope: mapScope) {
+                // Show all devices in the group
+                ForEach(groupDeviceIDs, id: \.self) { deviceID in
+                    if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
+                       let coordinate = animatedDeviceLocations[deviceID] {
+                        // Accuracy circle
+                        if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracies[deviceID], accuracy > 0 {
+                            MapCircle(center: coordinate, radius: accuracy)
+                                .foregroundStyle(Color(device.DeviceColor ?? UIColor.blue).opacity(0.2))
+                        }
+                        // Device marker
+                        let annotationID = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+                        Annotation("", coordinate: coordinate, anchor: .bottom) {
+                            ZStack {
+                                // Pulsing behind
+                                if settings.pulsingMapMarkers && visibleDeviceCount < 5 {
+                                    let circleDiameter = (/* marker height */ 40.0) * 0.65
+                                    let pulsingSize = circleDiameter * 1.5
+                                    let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
+                                    PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? UIColor.blue), size: pulsingSize)
+                                        .offset(y: pulsingOffset)
+                                        .allowsHitTesting(false)
+                                        .accessibilityHidden(true)
                                 }
-                                // Device name label above the marker for clarity
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
-                                MiataruMapMarker(
-                                    color: Color(device.DeviceColor ?? UIColor.blue)
-                                )
-                                    .shadow(radius: 2)
-                                    .accessibilityHidden(true)
-                            }
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .contentShape(Rectangle())
-                                .frame(width: 80, height: 120)
-                                .offset(y: 12)
-                                .zIndex(1)
-                                .contextMenu {
-                                    Button {
-                                        editingDeviceID = deviceID
-                                        showEditDeviceSheet = true
-                                    } label: {
-                                        Label("edit_device", systemImage: "pencil")
-                                    }
-                                    if deviceID != thisDeviceIDManager.shared.deviceID {
-                                        Button {
-                                            navigationDeviceID = deviceID
-                                            showNavigationSheet = true
-                                        } label: {
-                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                VStack(spacing: 0) {
+                                    // Show timestamp if available (force per-second updates)
+                                    if let timestamp = deviceTimestamps[deviceID] {
+                                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                                            Text(relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated))
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(.ultraThinMaterial)
+                                                .clipShape(Capsule())
+                                                .overlay(
+                                                    Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                                )
+                                                .shimmering(active: settings.pulsingMapMarkers && isLoading && visibleDeviceCount < 5)
+                                                .shadow(radius: 2)
+                                                .zIndex(2)
+                                                .accessibilityHidden(true)
                                         }
                                     }
-                                    Button {
-                                        historyDeviceID = deviceID
-                                        showHistoryView = true
-                                    } label: {
-                                        Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
-                                    }
+                                    // Device name label above the marker for clarity
+                                    DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+                                    MiataruMapMarker(
+                                        color: Color(device.DeviceColor ?? UIColor.blue)
+                                    )
+                                        .shadow(radius: 2)
+                                        .accessibilityHidden(true)
                                 }
-                                .accessibilityLabel(Text(annotationID))
-                                .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))
-                                .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
-                                .accessibilityAddTraits(.isButton)
-                        }.offset(y: 20)
+                                Rectangle()
+                                    .foregroundColor(.clear)
+                                    .contentShape(Rectangle())
+                                    .frame(width: 80, height: 120)
+                                    .offset(y: 12)
+                                    .zIndex(1)
+                                    .contextMenu {
+                                        Button {
+                                            editingDeviceID = deviceID
+                                            showEditDeviceSheet = true
+                                        } label: {
+                                            Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                                        }
+                                        if deviceID != thisDeviceIDManager.shared.deviceID {
+                                            Button {
+                                                navigationDeviceID = deviceID
+                                                showNavigationSheet = true
+                                            } label: {
+                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                            }
+                                        }
+                                        Button {
+                                            historyDeviceID = deviceID
+                                            showHistoryView = true
+                                        } label: {
+                                            Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                                        }
+                                    }
+                                    .accessibilityLabel(Text(annotationID))
+                                    .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))
+                                    .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
+                                    .accessibilityAddTraits(.isButton)
+                            }.offset(y: 20)
+                        }
                     }
                 }
             }
+            .mapControls {
+                MapCompass(heading: 1, size: 10)
+                    .mapControlVisibility(.hidden)
+            }
+            .ignoresSafeArea()
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 2)
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
+            .simultaneousGesture(
+                MagnificationGesture()
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
+            .simultaneousGesture(
+                RotationGesture()
+                    .onChanged { _ in isAutoCenteringEnabled = false }
+            )
+            .mapStyle(mapStyleFromSettings(settings.mapType))
+            .gesture(
+                SpatialTapGesture()
+                    .onEnded { value in
+                        handleMapTap(at: value.location, proxy: proxy)
+                    }
+            )
         }
-        .mapControls {
-            MapCompass(heading: 1, size: 10)
-                .mapControlVisibility(.hidden)
+        .confirmationDialog(
+            Text(NSLocalizedString("map_device_quick_actions_title", comment: "Title for device actions when tapping near a marker")),
+            isPresented: $showQuickActionsDialog,
+            titleVisibility: .visible
+        ) {
+            if let deviceID = quickActionDeviceID {
+                Button {
+                    editingDeviceID = deviceID
+                    showEditDeviceSheet = true
+                } label: {
+                    Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                }
+                if deviceID != thisDeviceIDManager.shared.deviceID {
+                    Button {
+                        navigationDeviceID = deviceID
+                        showNavigationSheet = true
+                    } label: {
+                        Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                    }
+                }
+                Button {
+                    historyDeviceID = deviceID
+                    showHistoryView = true
+                } label: {
+                    Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                }
+            }
+        } message: {
+            if let deviceID = quickActionDeviceID {
+                Text(String(format: NSLocalizedString("map_device_quick_actions_message", comment: "Message showing the device name the actions will affect"), deviceDisplayName(for: deviceID)))
+            }
         }
-        .ignoresSafeArea()
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 2)
-                .onChanged { _ in isAutoCenteringEnabled = false }
-        )
-        .simultaneousGesture(
-            MagnificationGesture()
-                .onChanged { _ in isAutoCenteringEnabled = false }
-        )
-        .simultaneousGesture(
-            RotationGesture()
-                .onChanged { _ in isAutoCenteringEnabled = false }
-        )
-        .mapStyle(mapStyleFromSettings(settings.mapType))
+    }
 
+
+    @available(iOS 17.0, *)
+    private func handleMapTap(at location: CGPoint, proxy: MapProxy) {
+        let candidates = groupDeviceIDs.compactMap { deviceID -> (String, CGFloat)? in
+            guard let coordinate = animatedDeviceLocations[deviceID],
+                  let screenPoint = proxy.convert(coordinate, to: .local) else { return nil }
+            let distance = hypot(screenPoint.x - location.x, screenPoint.y - location.y)
+            return (deviceID, distance)
+        }
+        guard let nearest = candidates.min(by: { $0.1 < $1.1 }), nearest.1 <= 80 else { return }
+        quickActionDeviceID = nearest.0
+        showQuickActionsDialog = true
+    }
+
+    private func deviceDisplayName(for deviceID: String) -> String {
+        if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {
+            return device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+        }
+        return deviceID
     }
 
     // MARK: - Visible devices calculation (iOS 17+)
