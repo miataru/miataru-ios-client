@@ -3204,30 +3204,6 @@
         }
       }
     },
-    "history_timeline_color_scale_label" : {
-      "comment" : "Label describing the timeline color-to-time mapping",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farblegende (älteste bis neueste)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color scale (oldest to newest)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カラー凡例（古い → 新しい）"
-          }
-        }
-      }
-    },
     "history_timeline_scrub_handle" : {
       "comment" : "Scrub handle for history timeline",
       "localizations" : {
