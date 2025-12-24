@@ -53,6 +53,7 @@ struct iPhone_DeviceMapView: View {
     @State private var showEditDeviceSheet = false // Controls device edit sheet
     @State private var showNavigationSheet = false // Controls navigation view
     @State private var showHistoryView = false // Controls history view
+    @State private var isHistoryPreloading = false // Avoid duplicate history preloads
     @State private var now = Date() // Timer for relative time display
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
@@ -508,7 +509,7 @@ struct iPhone_DeviceMapView: View {
                                         }
                                     }
                                     Button {
-                                        showHistoryView = true
+                                        preloadHistoryAndNavigate()
                                     } label: {
                                         Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                     }
@@ -748,6 +749,123 @@ struct iPhone_DeviceMapView: View {
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
         }
+    }
+
+    // Preloads history before navigating to the dedicated history map to avoid switching views when no data exists.
+    private func preloadHistoryAndNavigate() {
+        guard !isHistoryPreloading else { return }
+        isHistoryPreloading = true
+        Task {
+            await fetchHistoryBeforeNavigation()
+            await MainActor.run {
+                isHistoryPreloading = false
+            }
+        }
+    }
+
+    // Fetches history and navigates only when entries are available. Shows an overlay on the current map if empty or failed.
+    private func fetchHistoryBeforeNavigation() async {
+        guard let device = device else { return }
+
+        // Prefer cached history; do not navigate if cache is empty.
+        if let cachedHistory = DeviceHistoryCacheStore.shared.getHistory(for: device.DeviceID) {
+            if cachedHistory.isEmpty {
+                await MainActor.run {
+                    errorOverlayManager.show(message: NSLocalizedString("history_no_data", comment: "No history available placeholder"))
+                }
+            } else {
+                await MainActor.run {
+                    showHistoryView = true
+                }
+            }
+            return
+        }
+
+        guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
+            await MainActor.run {
+                errorOverlayManager.show(message: NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+            }
+            return
+        }
+
+        let requestingDeviceID = thisDeviceIDManager.shared.deviceID
+        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID
+
+        do {
+            let data = try await MiataruAPIClient.getLocationHistory(
+                serverURL: url,
+                forDeviceID: device.DeviceID,
+                requestingDeviceID: requestID,
+                amount: 10000
+            )
+            let normalized = normalizeHistoryEntries(from: data)
+            let sorted = normalized.sorted { $0.TimestampDate < $1.TimestampDate }
+
+            guard !sorted.isEmpty else {
+                await MainActor.run {
+                    errorOverlayManager.show(message: NSLocalizedString("history_no_data", comment: "No history available placeholder"))
+                }
+                return
+            }
+
+            await MainActor.run {
+                DeviceHistoryCacheStore.shared.setHistory(sorted, for: device.DeviceID)
+                showHistoryView = true
+            }
+        } catch let apiError as MiataruAPIClient.APIError {
+            let message = mapHistoryAPIError(apiError)
+            await MainActor.run {
+                errorOverlayManager.show(message: message)
+            }
+        } catch {
+            await MainActor.run {
+                errorOverlayManager.show(message: error.localizedDescription)
+            }
+        }
+    }
+
+    private func mapHistoryAPIError(_ error: MiataruAPIClient.APIError) -> String {
+        switch error {
+        case .invalidURL:
+            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+        case .invalidResponse(_):
+            return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
+        case .encodingError(let err):
+            return "\(NSLocalizedString("encoding_error", comment: "Error encoding the request.")) \(err.localizedDescription)"
+        case .decodingError(let err):
+            return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
+        case .requestFailed(let err):
+            return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+        }
+    }
+
+    private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -> [MiataruLocationData] {
+        var uniqueEntries: [MiataruLocationData] = []
+        uniqueEntries.reserveCapacity(entries.count)
+
+        var seenKeys = Set<String>()
+        var droppedDuplicates = 0
+        var droppedInvalid = 0
+
+        for entry in entries {
+            guard entry.Latitude.isFinite, entry.Longitude.isFinite else {
+                droppedInvalid += 1
+                continue
+            }
+
+            let key = "\(entry.Timestamp)|\(entry.Latitude)|\(entry.Longitude)"
+            if seenKeys.insert(key).inserted {
+                uniqueEntries.append(entry)
+            } else {
+                droppedDuplicates += 1
+            }
+        }
+
+        if droppedDuplicates > 0 || droppedInvalid > 0 {
+            debugLog("[DeviceMapView] Normalized history for device \(deviceID) dropped duplicates=\(droppedDuplicates) invalid=\(droppedInvalid)")
+        }
+
+        return uniqueEntries
     }
 
     // Starts the auto-update timer for fetching location
