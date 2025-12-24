@@ -28,7 +28,7 @@ struct DeviceHistoryTimelineOverlay: View {
     let onSelectionDragEnded: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(formattedDateTime(selection.lowerBound)) – \(formattedDateTime(selection.upperBound))")
@@ -109,7 +109,7 @@ struct DeviceHistoryTimelineOverlay: View {
                 onSelectionDragEnded: onSelectionDragEnded
             )
             .padding(.horizontal, 8)
-            .frame(height: 52)
+            .frame(height: 46)
 
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {

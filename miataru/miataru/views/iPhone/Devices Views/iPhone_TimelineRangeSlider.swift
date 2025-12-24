@@ -245,7 +245,7 @@ struct TimelineRangeSlider: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
             .background(Color.primary.opacity(0.08), in: Capsule())
-            .position(x: x, y: trackCenterY - 16)
+            .position(x: x, y: trackCenterY - 24)
         }
         .accessibilityLabel(Text(NSLocalizedString("history_timeline_scrub_handle", comment: "Scrub handle for history timeline")))
     }
@@ -261,16 +261,22 @@ struct TimelineRangeSlider: View {
     }
 
     private func rangeHandle(x: CGFloat, systemName: String) -> some View {
-        Capsule()
+        let visualHandleSize: CGFloat = 26
+        let hitTargetSize: CGFloat = 44 // Increase touch target for easier dragging
+
+        return Capsule()
             .fill(.thinMaterial)
-            .frame(width: 26, height: 26)
+            .frame(width: visualHandleSize, height: visualHandleSize)
             .overlay(
                 Image(systemName: systemName)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(Color.primary)
             )
             .shadow(radius: 2)
-            .offset(x: x - 13)
+            .frame(width: hitTargetSize, height: hitTargetSize)
+            .contentShape(Rectangle())
+            .offset(x: x - (hitTargetSize / 2))
+            .frame(maxHeight: .infinity, alignment: .center)
     }
 
     private func clamp(_ value: Double, to range: ClosedRange<Double>) -> Double {
