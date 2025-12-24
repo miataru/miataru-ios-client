@@ -459,248 +459,16 @@ Please retry the fast scrub/region-change scenario to confirm the crash is gone.
 
 _**User (2025-12-24 11:09Z)**_
 
-the overlay "no data in the selected time range" should be re-using the infooverlay 
+when the error message is history_no_data_in_range then this  should be re-using the @miataru/views/Common/ErrorOverlay.swift  
 
 ---
 
 _**Agent (model gpt-5.1-codex-max, mode Agent)**_
 
 <think><details><summary>Thought Process</summary>
-**Planning reuse of info overlay**
+**Reviewing overlay usage for reuse**
 
-I'm considering whether the info overlay should be a shared common component and will search the codebase to confirm.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "infooverlay",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": false,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "infooverlay",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {}
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Considering InfoOverlay component**
-
-I'm exploring the InfoOverlay component to see if it relates to the current task or offers relevant functionality to integrate or modify next.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "InfoOverlay",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": false,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "InfoOverlay",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {}
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Investigating info overlay strings**
-
-I'm searching for "info overlay" strings to identify overlay components, possibly in common or search overlay manager files.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "info overlay",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": true,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "info overlay",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {}
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Searching overlay names**
-
-I'm exploring the codebase for overlay components related to "Info" or "overlay" to identify the correct class or view name for the info message overlay.</details></think>
-
----
-
-<tool-use data-tool-type="search" data-tool-name="codebase_search">
-<details>
-                <summary>Tool use: **codebase_search** • Searched codebase "Where is the info overlay component used for empty states or informational messages?" • **8** results</summary>
-            
-| File | Lines |
-|------|-------|
-| `miataru/views/iPad/Groups Views/iPad_GroupMapView.swift` | L152-202 |
-| `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift` | L151-201 |
-| `miataru/views/Common/BottomAccessoryModifier.swift` | L54 |
-| `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift` | L289-331 |
-| `miataru/views/Common/ErrorOverlay.swift` | L67 |
-| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L150-197 |
-| `miataru/miataruApp.swift` | L66-105 |
-| `miataru/views/Common/BottomAccessoryModifier.swift` | L50-99 |
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Investigating info overlay naming**
-
-I'm checking if the info overlay component exists under a different name, focusing on "InfoOverlayManager" to clarify why the info overlay isn't found.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "infoOverlay",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": true,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "infoOverlay",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {}
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Investigating overlay component reuse**
-
-I'm exploring whether the current "No data in range" overlay could reuse an existing info overlay component like "InfoBadgeOverlay" or "TimelineInfoOverlay" by searching for related overlays, info messages, and error overlay usage to identify a shared or common implementation.</details></think>
-
----
-
-<tool-use data-tool-type="generic" data-tool-name="list_dir">
-<details>
-            <summary>Tool use: **list_dir** • Listed directory, 0 results</summary>
-        
-No results found
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Investigating existing info overlay**
-
-I'm examining the current "no data" overlay in the map view to see if there's an existing info overlay component to reuse or if a new one is needed, focusing on the overlay code around line 184 and above in the same file.</details></think>
+I'm checking how the error message for history_no_data_in_range is currently displayed and exploring the ErrorOverlay component to determine if it can be reused in the iPhone_DeviceHistoryMapView overlay section without reverting recent VStack changes.</details></think>
 
 ---
 
@@ -713,572 +481,9 @@ I'm examining the current "no data" overlay in the map view to see if there's an
 ---
 
 <think><details><summary>Thought Process</summary>
-**Searching for reusable info overlay**
+**Reusing ErrorOverlay for no-data message**
 
-I'm searching usages of the "history_no_data_in_range" message to see if an InfoOverlayManager or similar reusable overlay component exists elsewhere in the code.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "history_no_data_in_range",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": false,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "history_no_data_in_range",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {
-          "matches": [
-            {
-              "file": "./miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 189,
-                  "content": "                        Text(NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"))"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/Assets/Localizable.xcstrings",
-              "matches": [
-                {
-                  "lineNumber": 3184,
-                  "content": "    \"history_no_data_in_range\" : {"
-                }
-              ]
-            }
-          ],
-          "totalLines": 2,
-          "totalMatchedLines": 2
-        }
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Searching for generic info overlay**
-
-I'm investigating whether a generic informational overlay component exists under another name or off-repo, as no direct "InfoOverlay" is found; next, I'll search for general overlay usages to find a reusable info-style overlay or fallback.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "Overlay\\(",
-  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views",
-  "outputMode": "content",
-  "caseInsensitive": false,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "Overlay\\(",
-    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {
-          "matches": [
-            {
-              "file": "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 217,
-                  "content": "                    DeviceHistoryTimelineOverlay("
-                }
-              ]
-            },
-            {
-              "file": "miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 211,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 643,
-                  "content": "            showErrorOverlay(\"Invalid server URL or DeviceID\", NSLocalizedString(\"server_or_deviceid_invalid\", comment: \"Error: Server or DeviceID invalid\"))"
-                },
-                {
-                  "lineNumber": 725,
-                  "content": "                showErrorOverlay(\"No location data found\", NSLocalizedString(\"no_location_data_found\", comment: \"No location available\"))"
-                },
-                {
-                  "lineNumber": 731,
-                  "content": "                showErrorOverlay(\"Invalid server URL\", NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\"))"
-                },
-                {
-                  "lineNumber": 733,
-                  "content": "                showErrorOverlay(\"Invalid server response\", NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\"))"
-                },
-                {
-                  "lineNumber": 735,
-                  "content": "                showErrorOverlay(\"Encoding error: \\(err.localizedDescription)\", NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\"))"
-                },
-                {
-                  "lineNumber": 737,
-                  "content": "                showErrorOverlay(\"Error processing the response: \\(err.localizedDescription)\", NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\"))"
-                },
-                {
-                  "lineNumber": 750,
-                  "content": "            showErrorOverlay(error.localizedDescription, NSLocalizedString(\"error_loading_locationdata\", comment: \"Error loading location data\"))"
-                },
-                {
-                  "lineNumber": 895,
-                  "content": "    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {"
-                }
-              ]
-            },
-            {
-              "file": "miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 186,
-                  "content": "                ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 558,
-                  "content": "            showErrorOverlay(\"Invalid server URL or no devices in group\", NSLocalizedString(\"server_or_deviceid_invalid\", comment: \"Error: Server or DeviceID invalid\"))"
-                },
-                {
-                  "lineNumber": 611,
-                  "content": "                showErrorOverlay(\"No location data for device: \\(missingID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 648,
-                  "content": "                        showErrorOverlay(\"Failed to fetch location for device: \\(deviceID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 653,
-                  "content": "                    showErrorOverlay(\"Failed to fetch location for device: \\(deviceID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 733,
-                  "content": "            showErrorOverlay(\"Invalid server URL\", NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\"))"
-                },
-                {
-                  "lineNumber": 735,
-                  "content": "            showErrorOverlay(\"Invalid server response\", NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\"))"
-                },
-                {
-                  "lineNumber": 737,
-                  "content": "            showErrorOverlay(\"Encoding error: \\(err.localizedDescription)\", NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\"))"
-                },
-                {
-                  "lineNumber": 739,
-                  "content": "            showErrorOverlay(\"Error processing the response: \\(err.localizedDescription)\", NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\"))"
-                },
-                {
-                  "lineNumber": 741,
-                  "content": "            showErrorOverlay(\"Network error: \\(err.localizedDescription)\", NSLocalizedString(\"network_error\", comment: \"Network error. Please check your internet connection.\"))"
-                },
-                {
-                  "lineNumber": 765,
-                  "content": "    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {"
-                }
-              ]
-            },
-            {
-              "file": "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift",
-              "matches": [
-                {
-                  "lineNumber": 329,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 478,
-                  "content": "            showErrorOverlay("
-                },
-                {
-                  "lineNumber": 520,
-                  "content": "                    showErrorOverlay("
-                },
-                {
-                  "lineNumber": 530,
-                  "content": "                showErrorOverlay("
-                },
-                {
-                  "lineNumber": 561,
-                  "content": "    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {"
-                }
-              ]
-            },
-            {
-              "file": "miataru/views/iPad/Groups Views/iPad_GroupMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 187,
-                  "content": "                ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 562,
-                  "content": "            showErrorOverlay(\"Invalid server URL or no devices in group\", NSLocalizedString(\"server_or_deviceid_invalid\", comment: \"Error: Server or DeviceID invalid\"))"
-                },
-                {
-                  "lineNumber": 615,
-                  "content": "                showErrorOverlay(\"No location data for device: \\(missingID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 652,
-                  "content": "                        showErrorOverlay(\"Failed to fetch location for device: \\(deviceID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 657,
-                  "content": "                    showErrorOverlay(\"Failed to fetch location for device: \\(deviceID)\", userMessage)"
-                },
-                {
-                  "lineNumber": 737,
-                  "content": "            showErrorOverlay(\"Invalid server URL\", NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\"))"
-                },
-                {
-                  "lineNumber": 739,
-                  "content": "            showErrorOverlay(\"Invalid server response\", NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\"))"
-                },
-                {
-                  "lineNumber": 741,
-                  "content": "            showErrorOverlay(\"Encoding error: \\(err.localizedDescription)\", NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\"))"
-                },
-                {
-                  "lineNumber": 743,
-                  "content": "            showErrorOverlay(\"Error processing the response: \\(err.localizedDescription)\", NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\"))"
-                },
-                {
-                  "lineNumber": 745,
-                  "content": "            showErrorOverlay(\"Network error: \\(err.localizedDescription)\", NSLocalizedString(\"network_error\", comment: \"Network error. Please check your internet connection.\"))"
-                },
-                {
-                  "lineNumber": 769,
-                  "content": "    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {"
-                }
-              ]
-            },
-            {
-              "file": "miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 212,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 671,
-                  "content": "            showErrorOverlay(\"Invalid server URL or DeviceID\", NSLocalizedString(\"server_or_deviceid_invalid\", comment: \"Error: Server or DeviceID invalid\"))"
-                },
-                {
-                  "lineNumber": 754,
-                  "content": "                showErrorOverlay(\"No location data found\", NSLocalizedString(\"no_location_data_found\", comment: \"No location available\"))"
-                },
-                {
-                  "lineNumber": 760,
-                  "content": "                showErrorOverlay(\"Invalid server URL\", NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\"))"
-                },
-                {
-                  "lineNumber": 762,
-                  "content": "                showErrorOverlay(\"Invalid server response\", NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\"))"
-                },
-                {
-                  "lineNumber": 764,
-                  "content": "                showErrorOverlay(\"Encoding error: \\(err.localizedDescription)\", NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\"))"
-                },
-                {
-                  "lineNumber": 766,
-                  "content": "                showErrorOverlay(\"Error processing the response: \\(err.localizedDescription)\", NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\"))"
-                },
-                {
-                  "lineNumber": 779,
-                  "content": "            showErrorOverlay(error.localizedDescription, NSLocalizedString(\"error_loading_locationdata\", comment: \"Error loading location data\"))"
-                },
-                {
-                  "lineNumber": 807,
-                  "content": "    private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {"
-                }
-              ]
-            }
-          ],
-          "totalLines": 46,
-          "totalMatchedLines": 46
-        }
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Searching for general overlay managers**
-
-I'm broadening the search to find any overlay-related managers or components that might include or control an info overlay, since no exact "InfoOverlay" was found and the existing ErrorOverlay might be reused or extended for info messages.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="rg">
-<details>
-<summary>Tool use: **rg**</summary>
-
-
-Parameters:
-
-```json
-{
-  "pattern": "OverlayManager",
-  "path": ".",
-  "outputMode": "content",
-  "caseInsensitive": false,
-  "headLimit": 80
-}
-```
-Result:
-
-```json
-{
-  "success": {
-    "pattern": "OverlayManager",
-    "path": ".",
-    "outputMode": "content",
-    "workspaceResults": {
-      "/Users/bietiekay/code/miataru-ios-app/miataru": {
-        "content": {
-          "matches": [
-            {
-              "file": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 52,
-                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay"
-                },
-                {
-                  "lineNumber": 211,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 774,
-                  "content": "                    errorOverlayManager.show(message: NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"))"
-                },
-                {
-                  "lineNumber": 786,
-                  "content": "                errorOverlayManager.show(message: NSLocalizedString(\"server_or_deviceid_invalid\", comment: \"Error: Server or DeviceID invalid\"))"
-                },
-                {
-                  "lineNumber": 806,
-                  "content": "                    errorOverlayManager.show(message: NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"))"
-                },
-                {
-                  "lineNumber": 818,
-                  "content": "                errorOverlayManager.show(message: message)"
-                },
-                {
-                  "lineNumber": 822,
-                  "content": "                errorOverlayManager.show(message: error.localizedDescription)"
-                },
-                {
-                  "lineNumber": 897,
-                  "content": "        errorOverlayManager.show(message: userMessage)"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 40,
-                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager()"
-                },
-                {
-                  "lineNumber": 186,
-                  "content": "                ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 767,
-                  "content": "        errorOverlayManager.show(message: userMessage)"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift",
-              "matches": [
-                {
-                  "lineNumber": 50,
-                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager()"
-                },
-                {
-                  "lineNumber": 329,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 563,
-                  "content": "        errorOverlayManager.show(message: userMessage)"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/views/iPad/Groups Views/iPad_GroupMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 41,
-                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager()"
-                },
-                {
-                  "lineNumber": 187,
-                  "content": "                ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 771,
-                  "content": "        errorOverlayManager.show(message: userMessage)"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
-              "matches": [
-                {
-                  "lineNumber": 52,
-                  "content": "    @StateObject private var errorOverlayManager = ErrorOverlayManager() // Manages error overlay"
-                },
-                {
-                  "lineNumber": 212,
-                  "content": "            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)"
-                },
-                {
-                  "lineNumber": 809,
-                  "content": "        errorOverlayManager.show(message: userMessage)"
-                }
-              ]
-            },
-            {
-              "file": "./miataru/views/Common/ErrorOverlay.swift",
-              "matches": [
-                {
-                  "lineNumber": 41,
-                  "content": "class ErrorOverlayManager: ObservableObject {"
-                }
-              ]
-            },
-            {
-              "file": "./APP_FEATURES.md",
-              "matches": [
-                {
-                  "lineNumber": 126,
-                  "content": "- &#96;LocationManager&#96; posts &#96;didSendOwnLocationUpdate&#96; notifications; &#96;ErrorOverlayManager&#96; and &#96;ErrorOverlay&#96; provide reusable alert UIs, and map views toggle a network icon via &#96;showNetworkErrorIcon&#96; flags."
-                }
-              ]
-            }
-          ],
-          "totalLines": 22,
-          "totalMatchedLines": 22
-        }
-      }
-    }
-  }
-}
-```
-Status: **completed**
-
-
-</details>
-</tool-use>
-
----
-
-<think><details><summary>Thought Process</summary>
-**Designing new InfoOverlay component**
-
-Planning to create a new InfoOverlay in Common, styled like ErrorOverlay but with neutral colors and configurable icon/message, to reuse for "no data" messages in DeviceHistoryMapView overlays instead of custom stacks, ensuring localization and animations consistent with existing overlays.</details></think>
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="apply_patch">
-<details>
-<summary>Tool use: **apply_patch**</summary>
-
-
-Parameters:
-
-```json
-{
-  "relativeWorkspacePath": "miataru/views/Common/InfoOverlay.swift"
-}
-```
-Additional data:
-
-```json
-{
-  "codeblockId": "5076cee5-a9c3-459d-a8d5-45d06da57eda"
-}
-```
-Result:
-
-```json
-{
-  "diff": {
-    "chunks": [
-      {
-        "diffString": "- \n+ /*\n+  * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n+  *\n+  * InfoOverlay.swift\n+  * miataru\n+  *\n+  * Created by Daniel Kirstenpfad on 2025-12-24.\n+  */\n+ \n+ import SwiftUI\n+ \n+ struct InfoOverlay: View {\n+     let message: String\n+     let systemImage: String\n+     let visible: Bool\n+ \n+     var body: some View {\n+         if visible {\n+             VStack(spacing: 8) {\n+                 Image(systemName: systemImage)\n+                     .font(.system(size: 32))\n+                     .foregroundStyle(.secondary)\n+                 Text(message)\n+                     .multilineTextAlignment(.center)\n+                     .foregroundStyle(.secondary)\n+                     .padding(.horizontal, 24)\n+             }\n+             .transition(.opacity.combined(with: .scale))\n+             .animation(.easeInOut(duration: 0.25), value: visible)\n+         }\n+     }\n+ }\n+ \n+ #Preview {\n+     InfoOverlay(\n+         message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n+         systemImage: \"timeline.selection\",\n+         visible: true\n+     )\n+ }\n+ ",
-        "oldStart": 1,
-        "newStart": 1,
-        "oldLines": 1,
-        "newLines": 41,
-        "linesRemoved": 1,
-        "linesAdded": 41
-      }
-    ],
-    "editor": "EDITOR_AI"
-  },
-  "shouldAutoFixLints": true,
-  "resultForModel": "Success. Updated the following files:\nM miataru/views/Common/InfoOverlay.swift",
-  "contentsAfterEdit": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * InfoOverlay.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2025-12-24.\n */\n\nimport SwiftUI\n\nstruct InfoOverlay: View {\n    let message: String\n    let systemImage: String\n    let visible: Bool\n\n    var body: some View {\n        if visible {\n            VStack(spacing: 8) {\n                Image(systemName: systemImage)\n                    .font(.system(size: 32))\n                    .foregroundStyle(.secondary)\n                Text(message)\n                    .multilineTextAlignment(.center)\n                    .foregroundStyle(.secondary)\n                    .padding(.horizontal, 24)\n            }\n            .transition(.opacity.combined(with: .scale))\n            .animation(.easeInOut(duration: 0.25), value: visible)\n        }\n    }\n}\n\n#Preview {\n    InfoOverlay(\n        message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n        systemImage: \"timeline.selection\",\n        visible: true\n    )\n}\n\n"
-}
-```
-User decision: **accepted**
-
-Status: **completed**
-
-
-</details>
-</tool-use>
+I'll replace the VStack showing "no data in range" with the ErrorOverlay component to unify error displays, placing it centered using the overlay modifier with appropriate localization and spacing, ensuring imports and existing bindings remain intact.</details></think>
 
 ---
 
@@ -1298,7 +503,7 @@ Additional data:
 
 ```json
 {
-  "codeblockId": "10beb9c7-d22b-45b6-a6e2-b12b212847c3"
+  "codeblockId": "1d79361a-c1df-4374-9ab0-662550f71d9c"
 }
 ```
 Result:
@@ -1308,20 +513,20 @@ Result:
   "diff": {
     "chunks": [
       {
-        "diffString": "              if !isLoading, loadError == nil {\n                  if viewModel.history.isEmpty {\n-                     VStack(spacing: 8) {\n-                         Image(systemName: \"clock.arrow.circlepath\")\n-                             .font(.system(size: 32))\n-                             .foregroundStyle(.secondary)\n-                         Text(NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"))\n-                             .multilineTextAlignment(.center)\n-                             .foregroundStyle(.secondary)\n-                             .padding(.horizontal, 24)\n-                     }\n-                 } else if fullVisibleHistory.isEmpty {\n-                     VStack(spacing: 8) {\n-                         Image(systemName: \"timeline.selection\")\n-                             .font(.system(size: 32))\n-                             .foregroundStyle(.secondary)\n-                         Text(NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"))\n-                             .multilineTextAlignment(.center)\n-                             .foregroundStyle(.secondary)\n-                             .padding(.horizontal, 24)\n-                     }\n+                     InfoOverlay(\n+                         message: NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"),\n+                         systemImage: \"clock.arrow.circlepath\",\n+                         visible: true\n+                     )\n+                 } else {\n+                     InfoOverlay(\n+                         message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n+                         systemImage: \"timeline.selection\",\n+                         visible: fullVisibleHistory.isEmpty\n+                     )\n                  }\n              }",
-        "oldStart": 173,
-        "newStart": 173,
-        "oldLines": 23,
-        "newLines": 15,
-        "linesRemoved": 19,
-        "linesAdded": 11
+        "diffString": "                      }\n                  } else if fullVisibleHistory.isEmpty {\n-                     VStack(spacing: 8) {\n-                         Image(systemName: \"timeline.selection\")\n-                             .font(.system(size: 32))\n-                             .foregroundStyle(.secondary)\n-                         Text(NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"))\n-                             .multilineTextAlignment(.center)\n-                             .foregroundStyle(.secondary)\n-                             .padding(.horizontal, 24)\n-                     }\n+                     ErrorOverlay(\n+                         message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n+                         visible: true\n+                     )\n                  }\n              }",
+        "oldStart": 183,
+        "newStart": 183,
+        "oldLines": 13,
+        "newLines": 8,
+        "linesRemoved": 9,
+        "linesAdded": 4
       }
     ],
     "editor": "EDITOR_AI"
   },
   "shouldAutoFixLints": true,
   "resultForModel": "Success. Updated the following files:\nM miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift",
-  "contentsAfterEdit": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * iPhone_DeviceHistoryMapView.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 20.12.25.\n */\n\nimport SwiftUI\nimport MapKit\nimport MiataruAPIClient\n\nstruct iPhone_DeviceHistoryMapView: View {\n    let device: KnownDevice\n    @StateObject private var viewModel = DeviceHistoryMapViewModel()\n    // Map state\n    @State private var cameraPosition: MapCameraPosition = .region(\n        MKCoordinateRegion(\n            center: CLLocationCoordinate2D(latitude: 0, longitude: 0),\n            span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)\n        )\n    )\n    // Loading &amp; data\n    @State private var isLoading = false\n    @State private var loadError: String? = nil\n    @ObservedObject private var cache = DeviceHistoryCacheStore.shared\n    // Timeline state\n    @State private var selectedRange: ClosedRange&lt;Double&gt;? = nil\n    @State private var scrubTimestamp: Double? = nil\n    // Playback\n    @State private var isPlaying = false\n    @State private var playbackTask: Task&lt;Void, Never&gt;?\n    @State private var hasUserScrubbed = false\n    @State private var isPlaybackStepping = false\n    // Debounced tasks to avoid excessive map updates\n    @State private var debouncedRegionTask: Task&lt;Void, Never&gt;?\n    @State private var debouncedFocusTask: Task&lt;Void, Never&gt;?\n    // Interaction flags\n    @State private var isScrubbing = false\n    @State private var pendingFocusAfterScrub = false\n    @State private var isSelectionDragging = false\n    private let playbackContextPadding = 50\n\n    private var visibleHistory: [MiataruLocationData] {\n        viewModel.visibleHistory(in: selectedRange)\n    }\n\n    private var timelineBounds: ClosedRange&lt;Double&gt;? {\n        viewModel.timelineBounds()\n    }\n\n    private var timelineTicks: [Double] {\n        guard let bounds = timelineBounds else { return [] }\n        let span = bounds.upperBound - bounds.lowerBound\n        let step = max(span / 4, 1)\n        var values: [Double] = []\n        var current = bounds.lowerBound\n        while current &lt; bounds.upperBound {\n            values.append(current)\n            current += step\n        }\n        values.append(bounds.upperBound)\n        return values\n    }\n\n    private var selectedTimelineEntry: MiataruLocationData? {\n        guard let scrubTimestamp else { return nil }\n        return viewModel.closest(to: scrubTimestamp, in: selectedRange)\n    }\n\n    static let timelineDateFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .short\n        formatter.timeStyle = .short\n        return formatter\n    }()\n\n    static let timelineTimeFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .none\n        formatter.timeStyle = .short\n        return formatter\n    }()\n\n    static let timelineDayFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .short\n        formatter.timeStyle = .none\n        return formatter\n    }()\n\n    static func historyColor(for ratio: Double) -&gt; Color {\n        let clamped = min(max(ratio, 0), 1)\n        // Older points blue, newer red\n        return Color(hue: 0.6 - 0.6 * clamped, saturation: 0.9, brightness: 0.9)\n    }\n\n    private func playbackAdjustedHistory(baseHistory: [MiataruLocationData], selectedEntry: MiataruLocationData?) -&gt; [MiataruLocationData] {\n        guard isPlaying,\n              let selectedEntry,\n              let index = baseHistory.firstIndex(where: { isSelectedEntry($0, selected: selectedEntry) }) else {\n            return baseHistory\n        }\n        let lowerBound = max(0, index - playbackContextPadding)\n        let upperBound = min(baseHistory.count - 1, index + playbackContextPadding)\n        return Array(baseHistory[lowerBound...upperBound])\n    }\n\n    var body: some View {\n        let fullVisibleHistory = visibleHistory\n        let selectedEntry = selectedTimelineEntry\n        let mapHistory = playbackAdjustedHistory(baseHistory: fullVisibleHistory, selectedEntry: selectedEntry)\n        let useDownsampling = !isPlaying &amp;&amp; mapHistory.count &gt; 300\n        let annotations = useDownsampling\n            ? viewModel.downsample(mapHistory, selected: selectedEntry)\n            : mapHistory\n        let polylineSource = useDownsampling ? annotations : mapHistory\n        let polylineSegments = viewModel.polylineSegments(from: polylineSource)\n\n        Map(position: $cameraPosition) {\n            ForEach(Array(polylineSegments.enumerated()), id: \\.offset) { _, segment in\n                if segment.count &gt; 1 {\n                    MapPolyline(coordinates: segment)\n                        .stroke(\n                            Color.accentColor.opacity(0.55),\n                            style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round)\n                        )\n                }\n            }\n\n            ForEach(Array(annotations.enumerated()), id: \\.offset) { _, entry in\n                let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)\n                let isSelected = selectedEntry.map { isSelectedEntry(entry, selected: $0) } ?? false\n                Annotation(\"\", coordinate: coord, anchor: isSelected ? .bottom : .center) {\n                    if isSelected {\n                        VStack(spacing: 6) {\n                            Text(formattedDateTimeLabel(for: entry))\n                                .font(.caption2)\n                                .padding(.horizontal, 8)\n                                .padding(.vertical, 4)\n                                .background(.ultraThinMaterial, in: Capsule())\n                                .overlay(\n                                    Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)\n                                )\n                            MiataruMapMarker(color: color(for: entry, within: mapHistory))\n                                .shadow(radius: 2)\n                        }\n                        .contentShape(Rectangle())\n                        .onTapGesture {\n                            selectEntryFromMap(entry)\n                        }\n                    } else {\n                        Circle()\n                            .fill(color(for: entry, within: mapHistory))\n                            .frame(width: 10, height: 10)\n                            .contentShape(Circle())\n                            .onTapGesture {\n                                selectEntryFromMap(entry)\n                            }\n                    }\n                }\n            }\n        }\n        .ignoresSafeArea()\n        .overlay(alignment: .top) {\n            if isLoading {\n                ProgressView()\n                    .padding()\n            }\n        }\n        .overlay {\n            if !isLoading, loadError == nil {\n                if viewModel.history.isEmpty {\n                    InfoOverlay(\n                        message: NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"),\n                        systemImage: \"clock.arrow.circlepath\",\n                        visible: true\n                    )\n                } else {\n                    InfoOverlay(\n                        message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n                        systemImage: \"timeline.selection\",\n                        visible: fullVisibleHistory.isEmpty\n                    )\n                }\n            }\n        }\n        .overlay(alignment: .bottom) {\n            VStack(spacing: 10) {\n                if let loadError {\n                    VStack(spacing: 6) {\n                        Text(NSLocalizedString(\"history_load_failed\", comment: \"History load failed message\"))\n                            .font(.footnote)\n                            .bold()\n                            .multilineTextAlignment(.center)\n                        Text(loadError)\n                            .font(.caption)\n                            .multilineTextAlignment(.center)\n                    }\n                    .foregroundColor(.white)\n                    .padding(.horizontal, 16)\n                    .padding(.vertical, 12)\n                    .background(Color.red.opacity(0.85), in: Capsule())\n                    .padding(.horizontal, 24)\n                }\n\n                if let bounds = timelineBounds, !viewModel.history.isEmpty {\n                    DeviceHistoryTimelineOverlay(\n                        fullRange: bounds,\n                        selection: Binding(\n                            get: { selectedRange ?? bounds },\n                            set: { newValue in\n                                selectedRange = normalizeRange(newValue)\n                            }\n                        ),\n                        scrubValue: Binding(\n                            get: { scrubTimestamp ?? bounds.upperBound },\n                            set: { newValue in\n                                scrubTimestamp = newValue\n                            }\n                        ),\n                        ticks: timelineTicks,\n                        selectedCount: fullVisibleHistory.count,\n                        totalCount: viewModel.history.count,\n                        isPlaying: isPlaying,\n                        onPlayPause: togglePlayback,\n                        onScrubShown: { hasUserScrubbed = true },\n                        stopPlayback: stopPlayback,\n                        startPlayback: startPlayback,\n                        isPlaybackStepping: isPlaybackStepping,\n                        onScrubBegan: handleScrubBegan,\n                        onScrubEnded: handleScrubEnded,\n                        onSelectionDragBegan: handleSelectionDragBegan,\n                        onSelectionDragEnded: handleSelectionDragEnded\n                    )\n                    .padding(.horizontal, 16)\n                }\n            }\n            .padding(.bottom, 16)\n        }\n        .navigationTitle(device.DeviceName)\n        .toolbar(.hidden, for: .tabBar)\n        .task {\n            await loadHistory()\n        }\n        .onDisappear {\n            stopPlayback()\n            debouncedRegionTask?.cancel()\n            debouncedFocusTask?.cancel()\n        }\n        .onReceive(viewModel.$history) { _ in\n            initializeTimelineIfNeeded()\n            updateRegion(animated: false)\n            stopPlayback()\n        }\n        .onChange(of: selectedRange) { _, _ in\n            clampScrubToRange()\n            if isSelectionDragging { return }\n            scheduleRegionUpdate(animated: false)\n            if isPlaying {\n                startPlayback()\n            }\n        }\n        .onChange(of: scrubTimestamp) { _, _ in\n            if isPlaybackStepping { return }\n            if isPlaying {\n                startPlayback()\n            } else {\n                if isScrubbing {\n                    pendingFocusAfterScrub = true\n                } else {\n                    scheduleFocusOnScrubbedEntry(animated: false)\n                }\n            }\n        }\n    }\n\n    private func normalizeRange(_ range: ClosedRange&lt;Double&gt;) -&gt; ClosedRange&lt;Double&gt; {\n        if range.lowerBound &lt;= range.upperBound {\n            return range\n        } else {\n            return range.upperBound...range.lowerBound\n        }\n    }\n\n    private func loadHistory() async {\n        // Prefer cached history for snappy resume\n        if let cached = cache.getHistory(for: device.DeviceID) {\n            debugLog(\"[DeviceHistoryMapView] Using cached history for device \\(device.DeviceID) entries=\\(cached.count)\")\n            await MainActor.run {\n                viewModel.setHistory(cached)\n                initializeTimelineIfNeeded()\n            }\n            return\n        }\n        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {\n            await MainActor.run {\n                loadError = NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\")\n            }\n            return\n        }\n        let requestingDeviceID = thisDeviceIDManager.shared.deviceID\n        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID\n        await MainActor.run {\n            isLoading = true\n            loadError = nil\n        }\n        do {\n            debugLog(\"[DeviceHistoryMapView] Fetching history for device \\(device.DeviceID)\")\n            let data = try await MiataruAPIClient.getLocationHistory(\n                serverURL: url,\n                forDeviceID: device.DeviceID,\n                requestingDeviceID: requestID,\n                amount: 10000 // because we do not make it configurable by the user we just get 10k entries, which should be good for \"all\"\n            )\n            let normalized = normalizeHistoryEntries(from: data)\n            let sorted = normalized.sorted { $0.TimestampDate &lt; $1.TimestampDate }\n            await MainActor.run {\n                viewModel.setHistory(sorted)\n                cache.setHistory(sorted, for: device.DeviceID)\n                isLoading = false\n                debugLog(\"[DeviceHistoryMapView] Loaded history entries=\\(sorted.count) for device \\(device.DeviceID)\")\n                if sorted.isEmpty {\n                    loadError = NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\")\n                }\n                initializeTimelineIfNeeded()\n                updateRegion(animated: false)\n            }\n        } catch let apiError as MiataruAPIClient.APIError {\n            await MainActor.run {\n                isLoading = false\n                loadError = mapAPIError(apiError)\n                viewModel.setHistory([])\n            }\n        } catch {\n            debugLog(\"[DeviceHistoryMapView] Failed to load history for device \\(device.DeviceID): \\(error.localizedDescription)\")\n            await MainActor.run {\n                loadError = error.localizedDescription\n                isLoading = false\n                viewModel.setHistory([])\n            }\n        }\n    }\n\n    @MainActor\n    private func initializeTimelineIfNeeded() {\n        guard let bounds = timelineBounds else { return }\n        if selectedRange == nil {\n            selectedRange = bounds\n        }\n        if scrubTimestamp == nil {\n            scrubTimestamp = bounds.upperBound\n        } else if let scrubValue = scrubTimestamp, !bounds.contains(scrubValue) {\n            scrubTimestamp = bounds.upperBound\n        }\n    }\n\n    @MainActor\n    private func updateRegion(animated: Bool = true, using entries: [MiataruLocationData]? = nil, useDefaultZoom: Bool = false) {\n        let points = entries ?? visibleHistory\n        guard let firstPoint = points.first else { return }\n\n        let region: MKCoordinateRegion\n        if useDefaultZoom {\n            // Use a preset zoom if requested (e.g. when focusing a single point)\n            let span = spanForZoomLevel(SettingsManager.shared.mapZoomLevel)\n            region = MKCoordinateRegion(\n                center: CLLocationCoordinate2D(latitude: firstPoint.Latitude, longitude: firstPoint.Longitude),\n                span: span\n            )\n        } else {\n            // Fit all visible points with padding\n            var minLat = firstPoint.Latitude\n            var maxLat = firstPoint.Latitude\n            var minLon = firstPoint.Longitude\n            var maxLon = firstPoint.Longitude\n            for h in points {\n                minLat = min(minLat, h.Latitude)\n                maxLat = max(maxLat, h.Latitude)\n                minLon = min(minLon, h.Longitude)\n                maxLon = max(maxLon, h.Longitude)\n            }\n            let minDelta = 0.002\n            let paddedLat = max(minDelta, (maxLat - minLat) * 1.4)\n            let paddedLon = max(minDelta, (maxLon - minLon) * 1.4)\n            let latitudeDelta = paddedLat.isFinite ? paddedLat : minDelta\n            let longitudeDelta = paddedLon.isFinite ? paddedLon : minDelta\n            let span = MKCoordinateSpan(\n                latitudeDelta: latitudeDelta,\n                longitudeDelta: longitudeDelta\n            )\n            let center = CLLocationCoordinate2D(\n                latitude: (minLat + maxLat) / 2,\n                longitude: (minLon + maxLon) / 2\n            )\n            region = MKCoordinateRegion(center: center, span: span)\n        }\n\n        if animated {\n            withAnimation(.easeInOut(duration: 0.5)) {\n                cameraPosition = .region(region)\n            }\n        } else {\n            cameraPosition = .region(region)\n        }\n    }\n\n    private func focusOnScrubbedEntry(animated: Bool = true) {\n        guard let scrubTimestamp else { return }\n        guard let target = viewModel.closest(to: scrubTimestamp, in: selectedRange) else { return }\n        Task { @MainActor in\n            updateRegion(animated: animated, using: [target], useDefaultZoom: true)\n        }\n    }\n\n    private func color(for entry: MiataruLocationData, within entries: [MiataruLocationData]) -&gt; Color {\n        guard let first = entries.first?.TimestampDate, let last = entries.last?.TimestampDate else { return .blue }\n        let start = first.timeIntervalSince1970\n        let end = last.timeIntervalSince1970\n        let total = end - start\n        let diff = entry.TimestampDate.timeIntervalSince1970 - start\n        let ratio = total &gt; 0 ? diff / total : 0\n        return Self.historyColor(for: ratio)\n    }\n\n    private func formattedDateTimeLabel(for entry: MiataruLocationData) -&gt; String {\n        Self.timelineDateFormatter.string(from: entry.TimestampDate)\n    }\n\n    private func isSelectedEntry(_ entry: MiataruLocationData, selected: MiataruLocationData) -&gt; Bool {\n        return selected.Timestamp == entry.Timestamp &amp;&amp;\n            selected.Latitude == entry.Latitude &amp;&amp;\n            selected.Longitude == entry.Longitude\n    }\n\n    private func selectEntryFromMap(_ entry: MiataruLocationData) {\n        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970\n        hasUserScrubbed = true\n        // onChange(of: scrubTimestamp) handles focusing or playback restart\n    }\n\n    private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -&gt; [MiataruLocationData] {\n        var uniqueEntries: [MiataruLocationData] = []\n        uniqueEntries.reserveCapacity(entries.count)\n\n        var seenKeys = Set&lt;String&gt;()\n        var droppedDuplicates = 0\n        var droppedInvalid = 0\n\n        for entry in entries {\n            guard entry.Latitude.isFinite, entry.Longitude.isFinite else {\n                droppedInvalid += 1\n                continue\n            }\n\n            let key = \"\\(entry.Timestamp)|\\(entry.Latitude)|\\(entry.Longitude)\"\n            if seenKeys.insert(key).inserted {\n                uniqueEntries.append(entry)\n            } else {\n                droppedDuplicates += 1\n            }\n        }\n\n        if droppedDuplicates &gt; 0 || droppedInvalid &gt; 0 {\n            debugLog(\"[DeviceHistoryMapView] Normalized history for device \\(device.DeviceID) dropped duplicates=\\(droppedDuplicates) invalid=\\(droppedInvalid)\")\n        }\n\n        return uniqueEntries\n    }\n\n    private func mapAPIError(_ error: MiataruAPIClient.APIError) -&gt; String {\n        switch error {\n        case .invalidURL:\n            return NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\")\n        case .invalidResponse(_):\n            return NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\")\n        case .encodingError(let err):\n            return \"\\(NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\")) \\(err.localizedDescription)\"\n        case .decodingError(let err):\n            return \"\\(NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\")) \\(err.localizedDescription)\"\n        case .requestFailed(let err):\n            return \"\\(NSLocalizedString(\"network_error\", comment: \"Network error. Please check your internet connection.\")) \\(err.localizedDescription)\"\n        }\n    }\n\n    private func clampScrubToRange() {\n        guard let bounds = selectedRange else { return }\n        if let scrubTimestamp {\n            if !bounds.contains(scrubTimestamp) {\n                self.scrubTimestamp = clamp(scrubTimestamp, to: bounds)\n                hasUserScrubbed = false\n            }\n        } else {\n            scrubTimestamp = bounds.upperBound\n        }\n    }\n\n    private func clamp(_ value: Double, to range: ClosedRange&lt;Double&gt;) -&gt; Double {\n        min(max(value, range.lowerBound), range.upperBound)\n    }\n\n    private func scheduleRegionUpdate(animated: Bool, useDefaultZoom: Bool = false, delayMs: UInt64 = 80) {\n        debouncedRegionTask?.cancel()\n        debouncedRegionTask = Task { @MainActor in\n            try? await Task.sleep(nanoseconds: delayMs * 1_000_000)\n            updateRegion(animated: animated, using: nil, useDefaultZoom: useDefaultZoom)\n        }\n    }\n\n    private func scheduleFocusOnScrubbedEntry(animated: Bool, delayMs: UInt64 = 90) {\n        debouncedFocusTask?.cancel()\n        debouncedFocusTask = Task { @MainActor in\n            try? await Task.sleep(nanoseconds: delayMs * 1_000_000)\n            focusOnScrubbedEntry(animated: animated)\n        }\n    }\n\n    private func handleScrubBegan() {\n        isScrubbing = true\n        pendingFocusAfterScrub = false\n        debouncedFocusTask?.cancel()\n    }\n\n    private func handleScrubEnded() {\n        isScrubbing = false\n        if pendingFocusAfterScrub {\n            pendingFocusAfterScrub = false\n            scheduleFocusOnScrubbedEntry(animated: true, delayMs: 50)\n        }\n    }\n\n    private func handleSelectionDragBegan() {\n        isSelectionDragging = true\n        debouncedRegionTask?.cancel()\n    }\n\n    private func handleSelectionDragEnded() {\n        isSelectionDragging = false\n        scheduleRegionUpdate(animated: false, useDefaultZoom: false, delayMs: 60)\n    }\n\n    private func togglePlayback() {\n        if isPlaying {\n            stopPlayback()\n        } else {\n            startPlayback()\n        }\n    }\n\n    private func startPlayback() {\n        stopPlayback()\n        let entries = visibleHistory\n        guard !entries.isEmpty else { return }\n        let startTimestamp: Double\n        if hasUserScrubbed, let scrubTimestamp {\n            startTimestamp = scrubTimestamp\n        } else if let selectedRange {\n            startTimestamp = selectedRange.lowerBound\n        } else {\n            startTimestamp = entries.first!.TimestampDate.timeIntervalSince1970\n        }\n        let startIndex = entries.firstIndex { $0.TimestampDate.timeIntervalSince1970 &gt;= startTimestamp } ?? entries.count - 1\n        isPlaying = true\n        playbackTask = Task {\n            var currentStartIndex = startIndex\n            playbackLoop: while !Task.isCancelled &amp;&amp; isPlaying {\n                for entry in entries[currentStartIndex...] {\n                    if Task.isCancelled || !isPlaying { break playbackLoop }\n                    await MainActor.run {\n                        isPlaybackStepping = true\n                        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970\n                        focusOnEntry(entry, within: entries)\n                    }\n                    try? await Task.sleep(nanoseconds: 2_000_000_000)\n                    await MainActor.run {\n                        isPlaybackStepping = false\n                    }\n                    if !isPlaying { break playbackLoop }\n                }\n                currentStartIndex = 0\n            }\n            await MainActor.run {\n                playbackTask = nil\n                isPlaybackStepping = false\n            }\n        }\n    }\n\n    private func stopPlayback() {\n        playbackTask?.cancel()\n        playbackTask = nil\n        isPlaying = false\n        isPlaybackStepping = false\n    }\n\n    @MainActor\n    private func focusOnEntry(_ entry: MiataruLocationData, within entries: [MiataruLocationData]) {\n        guard let index = entries.firstIndex(where: { $0.Timestamp == entry.Timestamp &amp;&amp; $0.Latitude == entry.Latitude &amp;&amp; $0.Longitude == entry.Longitude }) else {\n            updateRegion(animated: true, using: [entry], useDefaultZoom: true)\n            return\n        }\n        let lowerBound = max(0, index - 1)\n        let upperBound = min(entries.count - 1, index + 1)\n        let contextEntries = Array(entries[lowerBound...upperBound])\n        updateRegion(animated: true, using: contextEntries, useDefaultZoom: false)\n    }\n}\n"
+  "contentsAfterEdit": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * iPhone_DeviceHistoryMapView.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 20.12.25.\n */\n\nimport SwiftUI\nimport MapKit\nimport MiataruAPIClient\n\nstruct iPhone_DeviceHistoryMapView: View {\n    let device: KnownDevice\n    @StateObject private var viewModel = DeviceHistoryMapViewModel()\n    // Map state\n    @State private var cameraPosition: MapCameraPosition = .region(\n        MKCoordinateRegion(\n            center: CLLocationCoordinate2D(latitude: 0, longitude: 0),\n            span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)\n        )\n    )\n    // Loading &amp; data\n    @State private var isLoading = false\n    @State private var loadError: String? = nil\n    @ObservedObject private var cache = DeviceHistoryCacheStore.shared\n    // Timeline state\n    @State private var selectedRange: ClosedRange&lt;Double&gt;? = nil\n    @State private var scrubTimestamp: Double? = nil\n    // Playback\n    @State private var isPlaying = false\n    @State private var playbackTask: Task&lt;Void, Never&gt;?\n    @State private var hasUserScrubbed = false\n    @State private var isPlaybackStepping = false\n    // Debounced tasks to avoid excessive map updates\n    @State private var debouncedRegionTask: Task&lt;Void, Never&gt;?\n    @State private var debouncedFocusTask: Task&lt;Void, Never&gt;?\n    // Interaction flags\n    @State private var isScrubbing = false\n    @State private var pendingFocusAfterScrub = false\n    @State private var isSelectionDragging = false\n    private let playbackContextPadding = 50\n\n    private var visibleHistory: [MiataruLocationData] {\n        viewModel.visibleHistory(in: selectedRange)\n    }\n\n    private var timelineBounds: ClosedRange&lt;Double&gt;? {\n        viewModel.timelineBounds()\n    }\n\n    private var timelineTicks: [Double] {\n        guard let bounds = timelineBounds else { return [] }\n        let span = bounds.upperBound - bounds.lowerBound\n        let step = max(span / 4, 1)\n        var values: [Double] = []\n        var current = bounds.lowerBound\n        while current &lt; bounds.upperBound {\n            values.append(current)\n            current += step\n        }\n        values.append(bounds.upperBound)\n        return values\n    }\n\n    private var selectedTimelineEntry: MiataruLocationData? {\n        guard let scrubTimestamp else { return nil }\n        return viewModel.closest(to: scrubTimestamp, in: selectedRange)\n    }\n\n    static let timelineDateFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .short\n        formatter.timeStyle = .short\n        return formatter\n    }()\n\n    static let timelineTimeFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .none\n        formatter.timeStyle = .short\n        return formatter\n    }()\n\n    static let timelineDayFormatter: DateFormatter = {\n        let formatter = DateFormatter()\n        formatter.dateStyle = .short\n        formatter.timeStyle = .none\n        return formatter\n    }()\n\n    static func historyColor(for ratio: Double) -&gt; Color {\n        let clamped = min(max(ratio, 0), 1)\n        // Older points blue, newer red\n        return Color(hue: 0.6 - 0.6 * clamped, saturation: 0.9, brightness: 0.9)\n    }\n\n    private func playbackAdjustedHistory(baseHistory: [MiataruLocationData], selectedEntry: MiataruLocationData?) -&gt; [MiataruLocationData] {\n        guard isPlaying,\n              let selectedEntry,\n              let index = baseHistory.firstIndex(where: { isSelectedEntry($0, selected: selectedEntry) }) else {\n            return baseHistory\n        }\n        let lowerBound = max(0, index - playbackContextPadding)\n        let upperBound = min(baseHistory.count - 1, index + playbackContextPadding)\n        return Array(baseHistory[lowerBound...upperBound])\n    }\n\n    var body: some View {\n        let fullVisibleHistory = visibleHistory\n        let selectedEntry = selectedTimelineEntry\n        let mapHistory = playbackAdjustedHistory(baseHistory: fullVisibleHistory, selectedEntry: selectedEntry)\n        let useDownsampling = !isPlaying &amp;&amp; mapHistory.count &gt; 300\n        let annotations = useDownsampling\n            ? viewModel.downsample(mapHistory, selected: selectedEntry)\n            : mapHistory\n        let polylineSource = useDownsampling ? annotations : mapHistory\n        let polylineSegments = viewModel.polylineSegments(from: polylineSource)\n\n        Map(position: $cameraPosition) {\n            ForEach(Array(polylineSegments.enumerated()), id: \\.offset) { _, segment in\n                if segment.count &gt; 1 {\n                    MapPolyline(coordinates: segment)\n                        .stroke(\n                            Color.accentColor.opacity(0.55),\n                            style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round)\n                        )\n                }\n            }\n\n            ForEach(Array(annotations.enumerated()), id: \\.offset) { _, entry in\n                let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)\n                let isSelected = selectedEntry.map { isSelectedEntry(entry, selected: $0) } ?? false\n                Annotation(\"\", coordinate: coord, anchor: isSelected ? .bottom : .center) {\n                    if isSelected {\n                        VStack(spacing: 6) {\n                            Text(formattedDateTimeLabel(for: entry))\n                                .font(.caption2)\n                                .padding(.horizontal, 8)\n                                .padding(.vertical, 4)\n                                .background(.ultraThinMaterial, in: Capsule())\n                                .overlay(\n                                    Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)\n                                )\n                            MiataruMapMarker(color: color(for: entry, within: mapHistory))\n                                .shadow(radius: 2)\n                        }\n                        .contentShape(Rectangle())\n                        .onTapGesture {\n                            selectEntryFromMap(entry)\n                        }\n                    } else {\n                        Circle()\n                            .fill(color(for: entry, within: mapHistory))\n                            .frame(width: 10, height: 10)\n                            .contentShape(Circle())\n                            .onTapGesture {\n                                selectEntryFromMap(entry)\n                            }\n                    }\n                }\n            }\n        }\n        .ignoresSafeArea()\n        .overlay(alignment: .top) {\n            if isLoading {\n                ProgressView()\n                    .padding()\n            }\n        }\n        .overlay {\n            if !isLoading, loadError == nil {\n                if viewModel.history.isEmpty {\n                    VStack(spacing: 8) {\n                        Image(systemName: \"clock.arrow.circlepath\")\n                            .font(.system(size: 32))\n                            .foregroundStyle(.secondary)\n                        Text(NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\"))\n                            .multilineTextAlignment(.center)\n                            .foregroundStyle(.secondary)\n                            .padding(.horizontal, 24)\n                    }\n                } else if fullVisibleHistory.isEmpty {\n                    ErrorOverlay(\n                        message: NSLocalizedString(\"history_no_data_in_range\", comment: \"No history entries inside selected time range\"),\n                        visible: true\n                    )\n                }\n            }\n        }\n        .overlay(alignment: .bottom) {\n            VStack(spacing: 10) {\n                if let loadError {\n                    VStack(spacing: 6) {\n                        Text(NSLocalizedString(\"history_load_failed\", comment: \"History load failed message\"))\n                            .font(.footnote)\n                            .bold()\n                            .multilineTextAlignment(.center)\n                        Text(loadError)\n                            .font(.caption)\n                            .multilineTextAlignment(.center)\n                    }\n                    .foregroundColor(.white)\n                    .padding(.horizontal, 16)\n                    .padding(.vertical, 12)\n                    .background(Color.red.opacity(0.85), in: Capsule())\n                    .padding(.horizontal, 24)\n                }\n\n                if let bounds = timelineBounds, !viewModel.history.isEmpty {\n                    DeviceHistoryTimelineOverlay(\n                        fullRange: bounds,\n                        selection: Binding(\n                            get: { selectedRange ?? bounds },\n                            set: { newValue in\n                                selectedRange = normalizeRange(newValue)\n                            }\n                        ),\n                        scrubValue: Binding(\n                            get: { scrubTimestamp ?? bounds.upperBound },\n                            set: { newValue in\n                                scrubTimestamp = newValue\n                            }\n                        ),\n                        ticks: timelineTicks,\n                        selectedCount: fullVisibleHistory.count,\n                        totalCount: viewModel.history.count,\n                        isPlaying: isPlaying,\n                        onPlayPause: togglePlayback,\n                        onScrubShown: { hasUserScrubbed = true },\n                        stopPlayback: stopPlayback,\n                        startPlayback: startPlayback,\n                        isPlaybackStepping: isPlaybackStepping,\n                        onScrubBegan: handleScrubBegan,\n                        onScrubEnded: handleScrubEnded,\n                        onSelectionDragBegan: handleSelectionDragBegan,\n                        onSelectionDragEnded: handleSelectionDragEnded\n                    )\n                    .padding(.horizontal, 16)\n                }\n            }\n            .padding(.bottom, 16)\n        }\n        .navigationTitle(device.DeviceName)\n        .toolbar(.hidden, for: .tabBar)\n        .task {\n            await loadHistory()\n        }\n        .onDisappear {\n            stopPlayback()\n            debouncedRegionTask?.cancel()\n            debouncedFocusTask?.cancel()\n        }\n        .onReceive(viewModel.$history) { _ in\n            initializeTimelineIfNeeded()\n            updateRegion(animated: false)\n            stopPlayback()\n        }\n        .onChange(of: selectedRange) { _, _ in\n            clampScrubToRange()\n            if isSelectionDragging { return }\n            scheduleRegionUpdate(animated: false)\n            if isPlaying {\n                startPlayback()\n            }\n        }\n        .onChange(of: scrubTimestamp) { _, _ in\n            if isPlaybackStepping { return }\n            if isPlaying {\n                startPlayback()\n            } else {\n                if isScrubbing {\n                    pendingFocusAfterScrub = true\n                } else {\n                    scheduleFocusOnScrubbedEntry(animated: false)\n                }\n            }\n        }\n    }\n\n    private func normalizeRange(_ range: ClosedRange&lt;Double&gt;) -&gt; ClosedRange&lt;Double&gt; {\n        if range.lowerBound &lt;= range.upperBound {\n            return range\n        } else {\n            return range.upperBound...range.lowerBound\n        }\n    }\n\n    private func loadHistory() async {\n        // Prefer cached history for snappy resume\n        if let cached = cache.getHistory(for: device.DeviceID) {\n            debugLog(\"[DeviceHistoryMapView] Using cached history for device \\(device.DeviceID) entries=\\(cached.count)\")\n            await MainActor.run {\n                viewModel.setHistory(cached)\n                initializeTimelineIfNeeded()\n            }\n            return\n        }\n        guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {\n            await MainActor.run {\n                loadError = NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\")\n            }\n            return\n        }\n        let requestingDeviceID = thisDeviceIDManager.shared.deviceID\n        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID\n        await MainActor.run {\n            isLoading = true\n            loadError = nil\n        }\n        do {\n            debugLog(\"[DeviceHistoryMapView] Fetching history for device \\(device.DeviceID)\")\n            let data = try await MiataruAPIClient.getLocationHistory(\n                serverURL: url,\n                forDeviceID: device.DeviceID,\n                requestingDeviceID: requestID,\n                amount: 10000 // because we do not make it configurable by the user we just get 10k entries, which should be good for \"all\"\n            )\n            let normalized = normalizeHistoryEntries(from: data)\n            let sorted = normalized.sorted { $0.TimestampDate &lt; $1.TimestampDate }\n            await MainActor.run {\n                viewModel.setHistory(sorted)\n                cache.setHistory(sorted, for: device.DeviceID)\n                isLoading = false\n                debugLog(\"[DeviceHistoryMapView] Loaded history entries=\\(sorted.count) for device \\(device.DeviceID)\")\n                if sorted.isEmpty {\n                    loadError = NSLocalizedString(\"history_no_data\", comment: \"No history available placeholder\")\n                }\n                initializeTimelineIfNeeded()\n                updateRegion(animated: false)\n            }\n        } catch let apiError as MiataruAPIClient.APIError {\n            await MainActor.run {\n                isLoading = false\n                loadError = mapAPIError(apiError)\n                viewModel.setHistory([])\n            }\n        } catch {\n            debugLog(\"[DeviceHistoryMapView] Failed to load history for device \\(device.DeviceID): \\(error.localizedDescription)\")\n            await MainActor.run {\n                loadError = error.localizedDescription\n                isLoading = false\n                viewModel.setHistory([])\n            }\n        }\n    }\n\n    @MainActor\n    private func initializeTimelineIfNeeded() {\n        guard let bounds = timelineBounds else { return }\n        if selectedRange == nil {\n            selectedRange = bounds\n        }\n        if scrubTimestamp == nil {\n            scrubTimestamp = bounds.upperBound\n        } else if let scrubValue = scrubTimestamp, !bounds.contains(scrubValue) {\n            scrubTimestamp = bounds.upperBound\n        }\n    }\n\n    @MainActor\n    private func updateRegion(animated: Bool = true, using entries: [MiataruLocationData]? = nil, useDefaultZoom: Bool = false) {\n        let points = entries ?? visibleHistory\n        guard let firstPoint = points.first else { return }\n\n        let region: MKCoordinateRegion\n        if useDefaultZoom {\n            // Use a preset zoom if requested (e.g. when focusing a single point)\n            let span = spanForZoomLevel(SettingsManager.shared.mapZoomLevel)\n            region = MKCoordinateRegion(\n                center: CLLocationCoordinate2D(latitude: firstPoint.Latitude, longitude: firstPoint.Longitude),\n                span: span\n            )\n        } else {\n            // Fit all visible points with padding\n            var minLat = firstPoint.Latitude\n            var maxLat = firstPoint.Latitude\n            var minLon = firstPoint.Longitude\n            var maxLon = firstPoint.Longitude\n            for h in points {\n                minLat = min(minLat, h.Latitude)\n                maxLat = max(maxLat, h.Latitude)\n                minLon = min(minLon, h.Longitude)\n                maxLon = max(maxLon, h.Longitude)\n            }\n            let minDelta = 0.002\n            let paddedLat = max(minDelta, (maxLat - minLat) * 1.4)\n            let paddedLon = max(minDelta, (maxLon - minLon) * 1.4)\n            let latitudeDelta = paddedLat.isFinite ? paddedLat : minDelta\n            let longitudeDelta = paddedLon.isFinite ? paddedLon : minDelta\n            let span = MKCoordinateSpan(\n                latitudeDelta: latitudeDelta,\n                longitudeDelta: longitudeDelta\n            )\n            let center = CLLocationCoordinate2D(\n                latitude: (minLat + maxLat) / 2,\n                longitude: (minLon + maxLon) / 2\n            )\n            region = MKCoordinateRegion(center: center, span: span)\n        }\n\n        if animated {\n            withAnimation(.easeInOut(duration: 0.5)) {\n                cameraPosition = .region(region)\n            }\n        } else {\n            cameraPosition = .region(region)\n        }\n    }\n\n    private func focusOnScrubbedEntry(animated: Bool = true) {\n        guard let scrubTimestamp else { return }\n        guard let target = viewModel.closest(to: scrubTimestamp, in: selectedRange) else { return }\n        Task { @MainActor in\n            updateRegion(animated: animated, using: [target], useDefaultZoom: true)\n        }\n    }\n\n    private func color(for entry: MiataruLocationData, within entries: [MiataruLocationData]) -&gt; Color {\n        guard let first = entries.first?.TimestampDate, let last = entries.last?.TimestampDate else { return .blue }\n        let start = first.timeIntervalSince1970\n        let end = last.timeIntervalSince1970\n        let total = end - start\n        let diff = entry.TimestampDate.timeIntervalSince1970 - start\n        let ratio = total &gt; 0 ? diff / total : 0\n        return Self.historyColor(for: ratio)\n    }\n\n    private func formattedDateTimeLabel(for entry: MiataruLocationData) -&gt; String {\n        Self.timelineDateFormatter.string(from: entry.TimestampDate)\n    }\n\n    private func isSelectedEntry(_ entry: MiataruLocationData, selected: MiataruLocationData) -&gt; Bool {\n        return selected.Timestamp == entry.Timestamp &amp;&amp;\n            selected.Latitude == entry.Latitude &amp;&amp;\n            selected.Longitude == entry.Longitude\n    }\n\n    private func selectEntryFromMap(_ entry: MiataruLocationData) {\n        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970\n        hasUserScrubbed = true\n        // onChange(of: scrubTimestamp) handles focusing or playback restart\n    }\n\n    private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -&gt; [MiataruLocationData] {\n        var uniqueEntries: [MiataruLocationData] = []\n        uniqueEntries.reserveCapacity(entries.count)\n\n        var seenKeys = Set&lt;String&gt;()\n        var droppedDuplicates = 0\n        var droppedInvalid = 0\n\n        for entry in entries {\n            guard entry.Latitude.isFinite, entry.Longitude.isFinite else {\n                droppedInvalid += 1\n                continue\n            }\n\n            let key = \"\\(entry.Timestamp)|\\(entry.Latitude)|\\(entry.Longitude)\"\n            if seenKeys.insert(key).inserted {\n                uniqueEntries.append(entry)\n            } else {\n                droppedDuplicates += 1\n            }\n        }\n\n        if droppedDuplicates &gt; 0 || droppedInvalid &gt; 0 {\n            debugLog(\"[DeviceHistoryMapView] Normalized history for device \\(device.DeviceID) dropped duplicates=\\(droppedDuplicates) invalid=\\(droppedInvalid)\")\n        }\n\n        return uniqueEntries\n    }\n\n    private func mapAPIError(_ error: MiataruAPIClient.APIError) -&gt; String {\n        switch error {\n        case .invalidURL:\n            return NSLocalizedString(\"server_url_invalid\", comment: \"The server URL is invalid.\")\n        case .invalidResponse(_):\n            return NSLocalizedString(\"server_response_invalid\", comment: \"The server response was invalid.\")\n        case .encodingError(let err):\n            return \"\\(NSLocalizedString(\"encoding_error\", comment: \"Error encoding the request.\")) \\(err.localizedDescription)\"\n        case .decodingError(let err):\n            return \"\\(NSLocalizedString(\"decoding_error\", comment: \"Error processing the server response.\")) \\(err.localizedDescription)\"\n        case .requestFailed(let err):\n            return \"\\(NSLocalizedString(\"network_error\", comment: \"Network error. Please check your internet connection.\")) \\(err.localizedDescription)\"\n        }\n    }\n\n    private func clampScrubToRange() {\n        guard let bounds = selectedRange else { return }\n        if let scrubTimestamp {\n            if !bounds.contains(scrubTimestamp) {\n                self.scrubTimestamp = clamp(scrubTimestamp, to: bounds)\n                hasUserScrubbed = false\n            }\n        } else {\n            scrubTimestamp = bounds.upperBound\n        }\n    }\n\n    private func clamp(_ value: Double, to range: ClosedRange&lt;Double&gt;) -&gt; Double {\n        min(max(value, range.lowerBound), range.upperBound)\n    }\n\n    private func scheduleRegionUpdate(animated: Bool, useDefaultZoom: Bool = false, delayMs: UInt64 = 80) {\n        debouncedRegionTask?.cancel()\n        debouncedRegionTask = Task { @MainActor in\n            try? await Task.sleep(nanoseconds: delayMs * 1_000_000)\n            updateRegion(animated: animated, using: nil, useDefaultZoom: useDefaultZoom)\n        }\n    }\n\n    private func scheduleFocusOnScrubbedEntry(animated: Bool, delayMs: UInt64 = 90) {\n        debouncedFocusTask?.cancel()\n        debouncedFocusTask = Task { @MainActor in\n            try? await Task.sleep(nanoseconds: delayMs * 1_000_000)\n            focusOnScrubbedEntry(animated: animated)\n        }\n    }\n\n    private func handleScrubBegan() {\n        isScrubbing = true\n        pendingFocusAfterScrub = false\n        debouncedFocusTask?.cancel()\n    }\n\n    private func handleScrubEnded() {\n        isScrubbing = false\n        if pendingFocusAfterScrub {\n            pendingFocusAfterScrub = false\n            scheduleFocusOnScrubbedEntry(animated: true, delayMs: 50)\n        }\n    }\n\n    private func handleSelectionDragBegan() {\n        isSelectionDragging = true\n        debouncedRegionTask?.cancel()\n    }\n\n    private func handleSelectionDragEnded() {\n        isSelectionDragging = false\n        scheduleRegionUpdate(animated: false, useDefaultZoom: false, delayMs: 60)\n    }\n\n    private func togglePlayback() {\n        if isPlaying {\n            stopPlayback()\n        } else {\n            startPlayback()\n        }\n    }\n\n    private func startPlayback() {\n        stopPlayback()\n        let entries = visibleHistory\n        guard !entries.isEmpty else { return }\n        let startTimestamp: Double\n        if hasUserScrubbed, let scrubTimestamp {\n            startTimestamp = scrubTimestamp\n        } else if let selectedRange {\n            startTimestamp = selectedRange.lowerBound\n        } else {\n            startTimestamp = entries.first!.TimestampDate.timeIntervalSince1970\n        }\n        let startIndex = entries.firstIndex { $0.TimestampDate.timeIntervalSince1970 &gt;= startTimestamp } ?? entries.count - 1\n        isPlaying = true\n        playbackTask = Task {\n            var currentStartIndex = startIndex\n            playbackLoop: while !Task.isCancelled &amp;&amp; isPlaying {\n                for entry in entries[currentStartIndex...] {\n                    if Task.isCancelled || !isPlaying { break playbackLoop }\n                    await MainActor.run {\n                        isPlaybackStepping = true\n                        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970\n                        focusOnEntry(entry, within: entries)\n                    }\n                    try? await Task.sleep(nanoseconds: 2_000_000_000)\n                    await MainActor.run {\n                        isPlaybackStepping = false\n                    }\n                    if !isPlaying { break playbackLoop }\n                }\n                currentStartIndex = 0\n            }\n            await MainActor.run {\n                playbackTask = nil\n                isPlaybackStepping = false\n            }\n        }\n    }\n\n    private func stopPlayback() {\n        playbackTask?.cancel()\n        playbackTask = nil\n        isPlaying = false\n        isPlaybackStepping = false\n    }\n\n    @MainActor\n    private func focusOnEntry(_ entry: MiataruLocationData, within entries: [MiataruLocationData]) {\n        guard let index = entries.firstIndex(where: { $0.Timestamp == entry.Timestamp &amp;&amp; $0.Latitude == entry.Latitude &amp;&amp; $0.Longitude == entry.Longitude }) else {\n            updateRegion(animated: true, using: [entry], useDefaultZoom: true)\n            return\n        }\n        let lowerBound = max(0, index - 1)\n        let upperBound = min(entries.count - 1, index + 1)\n        let contextEntries = Array(entries[lowerBound...upperBound])\n        updateRegion(animated: true, using: contextEntries, useDefaultZoom: false)\n    }\n}\n"
 }
 ```
 User decision: **accepted**
@@ -1336,11 +541,10 @@ Status: **completed**
 
 <tool-use data-tool-type="generic" data-tool-name="read_lints">
 <details>
-          <summary>Tool use: **read_lints** • Read lints for 2 files</summary>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
       
 Lint paths:
 
-- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/Common/InfoOverlay.swift`
 - `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift`
 
 Lint results
@@ -1352,11 +556,62 @@ Lint results
 
 ---
 
-Added a reusable `InfoOverlay` and wired the “no data” states to use it instead of custom stacks. The overlay now matches the shared info style while keeping the same localized strings and icons.
+Reused the shared `ErrorOverlay` when the visible range is empty:
+- `iPhone_DeviceHistoryMapView` now shows `ErrorOverlay` with `history_no_data_in_range` instead of a custom VStack.
 
-Files touched
-- `views/Common/InfoOverlay.swift`: new reusable info overlay component.
-- `views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift`: switched empty-state overlays to `InfoOverlay`.
+No linter issues detected.
+
+---
+
+_**User (2025-12-24 11:09Z)**_
+
+describe all and use description for commit message, commit all
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing commit with all changes**
+
+I'm checking the git status in the repo root to identify all changed files, ensuring all user modifications are included in the commit with a clear English message listing those changes.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short
+```
+
+```
+ M "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift"
+ M "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapViewModel.swift"
+?? .specstory/history/2025-12-24_14-59Z-iphone-device-history-map-range-crash.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Reviewing .specstory file before commit**
+
+I plan to read the .specstory file briefly to confirm its content and ensure it doesn't contain special instructions before including it in the commit. This will help decide what metadata or description to add.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/.specstory/history/2025-12-24_14-59Z-iphone-device-history-map-range-crash.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+
 
 ---
 
