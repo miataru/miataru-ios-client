@@ -21,8 +21,10 @@ final class DeviceHistoryMapViewModel: ObservableObject {
 
     // Cache history and derived timestamp array; clear caches when new data arrives
     func setHistory(_ entries: [MiataruLocationData]) {
-        history = entries
-        timestamps = entries.map { $0.TimestampDate.timeIntervalSince1970 }
+        // Keep history chronologically sorted so range/timeline math stays valid
+        let sorted = entries.sorted { $0.TimestampDate.timeIntervalSince1970 < $1.TimestampDate.timeIntervalSince1970 }
+        history = sorted
+        timestamps = sorted.map { $0.TimestampDate.timeIntervalSince1970 }
         cachedRange = nil
         cachedVisible = []
     }
@@ -41,6 +43,14 @@ final class DeviceHistoryMapViewModel: ObservableObject {
 
         guard let startIndex = lowerBound(for: range.lowerBound),
               let endIndex = upperBound(for: range.upperBound) else {
+            cachedRange = range
+            cachedVisible = []
+            return []
+        }
+
+        // If the requested range is inverted or empty, return an empty result
+        // to avoid constructing an invalid slice.
+        if startIndex > endIndex {
             cachedRange = range
             cachedVisible = []
             return []

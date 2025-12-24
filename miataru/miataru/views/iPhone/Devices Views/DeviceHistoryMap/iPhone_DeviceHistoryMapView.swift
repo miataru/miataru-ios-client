@@ -182,15 +182,10 @@ struct iPhone_DeviceHistoryMapView: View {
                             .padding(.horizontal, 24)
                     }
                 } else if fullVisibleHistory.isEmpty {
-                    VStack(spacing: 8) {
-                        Image(systemName: "timeline.selection")
-                            .font(.system(size: 32))
-                            .foregroundStyle(.secondary)
-                        Text(NSLocalizedString("history_no_data_in_range", comment: "No history entries inside selected time range"))
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 24)
-                    }
+                    ErrorOverlay(
+                        message: NSLocalizedString("history_no_data_in_range", comment: "No history entries inside selected time range"),
+                        visible: true
+                    )
                 }
             }
         }
@@ -219,7 +214,7 @@ struct iPhone_DeviceHistoryMapView: View {
                         selection: Binding(
                             get: { selectedRange ?? bounds },
                             set: { newValue in
-                                selectedRange = newValue
+                                selectedRange = normalizeRange(newValue)
                             }
                         ),
                         scrubValue: Binding(
@@ -281,6 +276,14 @@ struct iPhone_DeviceHistoryMapView: View {
                     scheduleFocusOnScrubbedEntry(animated: false)
                 }
             }
+        }
+    }
+
+    private func normalizeRange(_ range: ClosedRange<Double>) -> ClosedRange<Double> {
+        if range.lowerBound <= range.upperBound {
+            return range
+        } else {
+            return range.upperBound...range.lowerBound
         }
     }
 
