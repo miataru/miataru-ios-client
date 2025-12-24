@@ -139,11 +139,15 @@ public struct UpdateLocationPayload: Codable {
     private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
         if let doubleVal = try? container.decode(Double.self, forKey: key) {
             return doubleVal
-        } else if let stringVal = try? container.decode(String.self, forKey: key), let doubleVal = Double(stringVal) {
-            return doubleVal
-        } else {
-            throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
+        } else if let stringVal = try? container.decode(String.self, forKey: key) {
+            let normalized = stringVal
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: ",", with: ".")
+            if let doubleVal = Double(normalized) {
+                return doubleVal
+            }
         }
+        throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
     }
 }
 
@@ -209,11 +213,15 @@ public struct MiataruLocationData: Codable {
     private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
         if let doubleVal = try? container.decode(Double.self, forKey: key) {
             return doubleVal
-        } else if let stringVal = try? container.decode(String.self, forKey: key), let doubleVal = Double(stringVal) {
-            return doubleVal
-        } else {
-            throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
+        } else if let stringVal = try? container.decode(String.self, forKey: key) {
+            let normalized = stringVal
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .replacingOccurrences(of: ",", with: ".")
+            if let doubleVal = Double(normalized) {
+                return doubleVal
+            }
         }
+        throw DecodingError.dataCorruptedError(forKey: key, in: container, debugDescription: "Konnte Wert nicht als Double dekodieren.")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -250,6 +258,73 @@ public struct MiataruGetLocationResponse: Codable {
 public struct MiataruGetLocationHistoryResponse: Codable {
     let MiataruLocation: [MiataruLocationData]
     // We can add MiataruServerConfig here if needed in the future.
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruLocation
+    }
+
+    public init(MiataruLocation: [MiataruLocationData]) {
+        self.MiataruLocation = MiataruLocation
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        guard var locationsContainer = try? container.nestedUnkeyedContainer(forKey: .MiataruLocation) else {
+            self.MiataruLocation = []
+            return
+        }
+
+        var parsedLocations: [MiataruLocationData] = []
+        var index = 0
+
+        while !locationsContainer.isAtEnd {
+            do {
+                let entry = try locationsContainer.decode(MiataruLocationData.self)
+                parsedLocations.append(entry)
+            } catch {
+                debugLog("[MiataruAPIClient] Skipping malformed history entry at index \(index): \(error)")
+                _ = try? locationsContainer.decode(SkipDecodable.self)
+            }
+            index += 1
+        }
+
+        self.MiataruLocation = parsedLocations
+    }
+}
+
+private struct SkipDecodable: Decodable {
+    init(from decoder: Decoder) throws {
+        if var unkeyed = try? decoder.unkeyedContainer() {
+            while !unkeyed.isAtEnd {
+                _ = try? unkeyed.decode(SkipDecodable.self)
+            }
+        } else if var keyed = try? decoder.container(keyedBy: AnyCodingKey.self) {
+            for key in keyed.allKeys {
+                _ = try? keyed.decode(SkipDecodable.self, forKey: key)
+            }
+        } else {
+            let container = try decoder.singleValueContainer()
+            if container.decodeNil() { return }
+            _ = try? container.decode(Bool.self)
+            _ = try? container.decode(Double.self)
+            _ = try? container.decode(String.self)
+        }
+    }
+}
+
+private struct AnyCodingKey: CodingKey {
+    var stringValue: String
+    var intValue: Int?
+
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+
+    init?(intValue: Int) {
+        self.stringValue = "\(intValue)"
+        self.intValue = intValue
+    }
 }
 
 /// The structure of the response for an UpdateLocation request.
