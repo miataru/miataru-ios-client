@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
  *
- * iPhone_TimelineRangeSlider.swift
+ * TimelineRangeSlider.swift
  * miataru
  *
  * Created by Daniel Kirstenpfad on 2025-12-24.
