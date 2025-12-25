@@ -53,6 +53,12 @@ struct iPad_DeviceMapView: View {
     @State private var showEditDeviceSheet = false // Controls device edit sheet
     @State private var showNavigationSheet = false // Controls navigation view
     @State private var showHistoryView = false // Controls history view
+    @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
+    @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
+    @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
+    @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
+    @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
+    @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
     @State private var now = Date() // Timer for relative time display
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
@@ -154,6 +160,10 @@ struct iPad_DeviceMapView: View {
     // Computed property to get the current device from the store
     private var device: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == deviceID }
+    }
+    
+    private var selectedActionDevice: KnownDevice? {
+        deviceStore.devices.first { $0.DeviceID == (selectedActionDeviceID ?? deviceID) }
     }
     
     // Computed property to get the best available location for map initialization
@@ -261,6 +271,7 @@ struct iPad_DeviceMapView: View {
             // Ensure auto-centering is enabled on fresh start
             isAutoCenteringEnabled = true
             settings.lastOpenedDeviceID = deviceID
+            selectedActionDeviceID = deviceID
             // Force map re-instantiation to avoid black screen on restore
             mapInteractionID = UUID()
             // Use preview parameters if set (for SwiftUI preview)
@@ -283,6 +294,7 @@ struct iPad_DeviceMapView: View {
                 now = Date() // Update time immediately
                 // Initialize animated marker position with cached location
                 animatedDeviceLocation = deviceLocation
+                refreshCachedDeviceCoordinates()
             } else {
                 // Initialize animated marker position with preview or default
                 animatedDeviceLocation = deviceLocation
@@ -363,6 +375,7 @@ struct iPad_DeviceMapView: View {
             // Always update region for off-screen arrows
             currentRegion = context.region
             updateVisibleDeviceCount(with: context.region)
+            refreshCachedDeviceCoordinates()
             if isProgrammaticCameraChange {
                 // Reset the flag and do not disable auto-centering
                 isProgrammaticCameraChange = false
@@ -376,19 +389,70 @@ struct iPad_DeviceMapView: View {
         }
         // Show edit device sheet when requested
         .sheet(isPresented: $showEditDeviceSheet) {
-            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
+            let targetID = selectedActionDeviceID ?? deviceID
+            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == targetID }) {
                 iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)
             }
         }
         .navigationDestination(isPresented: $showNavigationSheet) {
-            if let device = device {
+            if let device = selectedActionDevice ?? device {
                 iPhone_DeviceNavigationView(device: device)
             }
         }
         .navigationDestination(isPresented: $showHistoryView) {
-            if let device = device {
+            if let device = selectedActionDevice ?? device {
                 iPhone_DeviceHistoryMapView(device: device)
             }
+        }
+        .confirmationDialog(
+            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? "") : NSLocalizedString("device_actions", comment: "Actions for the selected device"),
+            isPresented: $showDeviceActionDialog,
+            titleVisibility: .visible
+        ) {
+            if let actionDevice = selectedActionDevice {
+                Button(NSLocalizedString("edit_device", comment: "Edit this device")) {
+                    triggerEdit(for: actionDevice.DeviceID)
+                }
+                if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {
+                    Button(NSLocalizedString("navigation", comment: "Navigate to this device")) {
+                        triggerNavigation(for: actionDevice.DeviceID)
+                    }
+                }
+                Button(NSLocalizedString("show_history", comment: "Show device history")) {
+                    triggerHistory(for: actionDevice)
+                }
+            }
+            Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
+        }
+        .sheet(isPresented: $showDevicePicker) {
+            VStack(spacing: 0) {
+                Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
+                    .font(.headline)
+                    .padding(.top, 16)
+                List {
+                    ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
+                        Button {
+                            presentActions(for: device.DeviceID)
+                        } label: {
+                            HStack {
+                                Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName)
+                                    .foregroundStyle(Color.primary)
+                                if device.DeviceID == deviceID {
+                                    Spacer()
+                                    Text(NSLocalizedString("current_device", comment: "Current device"))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                }
+                Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
+                    showDevicePicker = false
+                }
+                .padding()
+            }
+            .presentationDetents([.medium, .large])
         }
     }
     
@@ -529,24 +593,30 @@ struct iPad_DeviceMapView: View {
                                     Rectangle()
                                         .foregroundColor(.clear)
                                         .contentShape(Rectangle())
-                                        .frame(width: 80, height: 120)
+                                        .frame(width: 120, height: 160)
                                         .offset(y: 12)
                                         .zIndex(1)
+                                        .accessibilityLabel(Text(annotationID))
+                                        .accessibilityAddTraits(.isButton)
+                                        .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", comment: "Open actions for this device")))
+                                        .onTapGesture {
+                                            handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)
+                                        }
                                         .contextMenu {
                                             Button {
-                                                showEditDeviceSheet = true
+                                                triggerEdit(for: device.DeviceID)
                                             } label: {
                                                 Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
                                             }
                                             if device.DeviceID != thisDeviceIDManager.shared.deviceID {
                                                 Button {
-                                                    showNavigationSheet = true
+                                                    triggerNavigation(for: device.DeviceID)
                                                 } label: {
                                                     Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                                 }
                                             }
                                             Button {
-                                                showHistoryView = true
+                                                triggerHistory(for: device)
                                             } label: {
                                                 Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                             }
@@ -598,9 +668,34 @@ struct iPad_DeviceMapView: View {
                                             Rectangle()
                                                 .foregroundColor(.clear)
                                                 .contentShape(Rectangle())
-                                                .frame(width: 80, height: 120)
+                                                .frame(width: 120, height: 160)
                                                 .offset(y: 12)
                                                 .zIndex(1)
+                                                .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))
+                                                .accessibilityAddTraits(.isButton)
+                                                .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", comment: "Open actions for this device")))
+                                                .onTapGesture {
+                                                    handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)
+                                                }
+                                                .contextMenu {
+                                                    Button {
+                                                        triggerEdit(for: other.DeviceID)
+                                                    } label: {
+                                                        Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                                                    }
+                                                    if other.DeviceID != thisDeviceIDManager.shared.deviceID {
+                                                        Button {
+                                                            triggerNavigation(for: other.DeviceID)
+                                                        } label: {
+                                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                        }
+                                                    }
+                                                    Button {
+                                                        triggerHistory(for: other)
+                                                    } label: {
+                                                        Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                                                    }
+                                                }
                                         }
                                         .offset(y: 20)
                                     }
@@ -635,6 +730,123 @@ struct iPad_DeviceMapView: View {
                 }
             }
 
+    }
+
+    // MARK: - Device action helpers
+    
+    private func triggerEdit(for deviceID: String) {
+        selectedActionDeviceID = deviceID
+        showDeviceActionDialog = false
+        showEditDeviceSheet = true
+    }
+    
+    private func triggerNavigation(for deviceID: String) {
+        selectedActionDeviceID = deviceID
+        showDeviceActionDialog = false
+        showNavigationSheet = true
+    }
+    
+    private func triggerHistory(for device: KnownDevice) {
+        selectedActionDeviceID = device.DeviceID
+        showDeviceActionDialog = false
+        showHistoryView = true
+    }
+
+    private func refreshCachedDeviceCoordinates() {
+        var dict: [String: CLLocationCoordinate2D] = [:]
+        if let mainCoord = deviceCoordinate(for: deviceID) {
+            dict[deviceID] = mainCoord
+        }
+        for other in deviceStore.devices where other.DeviceID != deviceID {
+            if let coord = deviceCoordinate(for: other.DeviceID) {
+                dict[other.DeviceID] = coord
+            }
+        }
+        cachedDeviceCoordinates = dict
+        precomputedNearbyDevices = computeNearbyGroups(from: dict)
+    }
+    
+    private func presentActions(for deviceID: String) {
+        selectedActionDeviceID = deviceID
+        showDevicePicker = false
+        showDeviceActionDialog = true
+    }
+    
+    private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
+        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
+        if nearby.count > 1 {
+            nearbyDevicesForPicker = nearby
+            showDevicePicker = true
+        } else if let first = nearby.first {
+            presentActions(for: first.DeviceID)
+        } else {
+            presentActions(for: deviceID)
+        }
+    }
+    
+    private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -> [KnownDevice] {
+        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let devicesWithCoordinates: [(KnownDevice, CLLocationCoordinate2D)] = deviceStore.devices.compactMap { known in
+            if let cached = cachedDeviceCoordinates[known.DeviceID] {
+                return (known, cached)
+            }
+            guard let coord = deviceCoordinate(for: known.DeviceID) else { return nil }
+            return (known, coord)
+        }
+        
+        let closeDevices = devicesWithCoordinates.filter { pair in
+            let loc = CLLocation(latitude: pair.1.latitude, longitude: pair.1.longitude)
+            return targetLocation.distance(from: loc) <= thresholdMeters
+        }.map { $0.0 }
+        
+        let tapped = closeDevices.first(where: { $0.DeviceID == deviceID })
+        let others = closeDevices.filter { $0.DeviceID != deviceID }
+            .sorted { $0.DeviceName.localizedCaseInsensitiveCompare($1.DeviceName) == .orderedAscending }
+        
+        if let tapped {
+            return [tapped] + others
+        }
+        return others
+    }
+    
+    private func deviceCoordinate(for deviceID: String) -> CLLocationCoordinate2D? {
+        if deviceID == self.deviceID {
+            if let animated = animatedDeviceLocation {
+                return animated
+            }
+            if let current = deviceLocation {
+                return current
+            }
+        }
+        if let cached = cache.getLocation(for: deviceID) {
+            return CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+        }
+        return nil
+    }
+
+    private func computeNearbyGroups(from coords: [String: CLLocationCoordinate2D], thresholdMeters: Double = 35) -> [String: [KnownDevice]] {
+        var result: [String: [KnownDevice]] = [:]
+        let deviceLookup = Dictionary(uniqueKeysWithValues: deviceStore.devices.map { ($0.DeviceID, $0) })
+        
+        for (id, coord) in coords {
+            let targetLocation = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+            var nearbyIDs: [String] = []
+            for (otherID, otherCoord) in coords {
+                guard otherID != id else { continue }
+                let loc = CLLocation(latitude: otherCoord.latitude, longitude: otherCoord.longitude)
+                if targetLocation.distance(from: loc) <= thresholdMeters {
+                    nearbyIDs.append(otherID)
+                }
+            }
+            guard !nearbyIDs.isEmpty else { continue }
+            let ordered = ([id] + nearbyIDs.sorted { (deviceLookup[$0]?.DeviceName ?? $0)
+                .localizedCaseInsensitiveCompare(deviceLookup[$1]?.DeviceName ?? $1) == .orderedAscending })
+                .compactMap { deviceLookup[$0] }
+            if ordered.count > 1 {
+                result[id] = ordered
+            }
+        }
+        return result
     }
 
     // MARK: - Programmatic animation helper
@@ -711,6 +923,7 @@ struct iPad_DeviceMapView: View {
                     altitude: loc.Altitude,
                     speed: loc.Speed
                 )
+                refreshCachedDeviceCoordinates()
                 if coordinateChanged {
                     // iPad-specific: Enhanced location change animations with explicit map movement
                     isProgrammaticCameraChange = true
