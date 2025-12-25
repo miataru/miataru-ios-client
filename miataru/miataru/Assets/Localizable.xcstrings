@@ -1114,7 +1114,7 @@
       }
     },
     "cancel" : {
-      "comment" : "Cancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
+      "comment" : "Cancel\nCancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1457,6 +1457,29 @@
         }
       }
     },
+    "current_device" : {
+      "comment" : "Current device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuelles Gerät"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在のデバイス"
+          }
+        }
+      }
+    },
     "Custom server URL (must start with https://)" : {
       "localizations" : {
         "de" : {
@@ -1656,6 +1679,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイス"
+          }
+        }
+      }
+    },
+    "device_actions" : {
+      "comment" : "Actions for the selected device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräteaktionen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの操作"
           }
         }
       }
@@ -4535,6 +4581,29 @@
         }
       }
     },
+    "open_device_actions_hint" : {
+      "comment" : "Open actions for this device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktionen für dieses Gerät öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open actions for this device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスの操作を開きます"
+          }
+        }
+      }
+    },
     "open_in_new_window" : {
       "comment" : "Open device in a new window.",
       "localizations" : {
@@ -5320,6 +5389,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select a device to view details"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスを選択"
+          }
+        }
+      }
+    },
+    "select_device" : {
+      "comment" : "Select a device to show actions",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerät auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a device"
           }
         },
         "ja" : {

@@ -269,27 +269,17 @@ final class LocationManager: NSObject, ObservableObject {
             self.serverUpdateStatus = .failed("Invalid server configuration")
             return
         }
+        guard let payload = sanitizedPayload(from: location) else {
+            debugLog("[LocationManager] Skipping server update due to invalid location values")
+            self.serverUpdateStatus = .failed("Invalid location values")
+            return
+        }
         self.serverUpdateStatus = .updating
-        let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : -1
-        let speedValue: Double? = (location.speed >= 0) ? location.speed : -1
-        let batteryLevelRaw = UIDevice.current.batteryLevel
-        let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : -1
-
-        let locationData = UpdateLocationPayload(
-            Device: thisDeviceIDManager.shared.deviceID,
-            Timestamp: String(Int64(location.timestamp.timeIntervalSince1970)),
-            Longitude: location.coordinate.longitude,
-            Latitude: location.coordinate.latitude,
-            HorizontalAccuracy: location.horizontalAccuracy,
-            Speed: speedValue,
-            BatteryLevel: batteryPercent,
-            Altitude: altitudeValue
-        )
         Task {
             do {
                 let success = try await MiataruAPIClient.updateLocation(
                     serverURL: serverURL,
-                    locationData: locationData,
+                    locationData: payload,
                     enableHistory: settings.saveLocationHistoryOnServer,
                     retentionTime: settings.locationDataRetentionTime
                 )
@@ -306,6 +296,36 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
     
+
+    /// Creates a sanitized payload to avoid encoding failures from NaN/inf values.
+    private func sanitizedPayload(from location: CLLocation) -> UpdateLocationPayload? {
+        let longitude = location.coordinate.longitude
+        let latitude = location.coordinate.latitude
+        let accuracy = location.horizontalAccuracy
+        guard longitude.isFinite, latitude.isFinite, accuracy.isFinite, accuracy >= 0 else {
+            return nil
+        }
+
+        let altitudeValue: Double? = (location.verticalAccuracy >= 0 && location.altitude.isFinite) ? location.altitude : nil
+        let speedValue: Double? = (location.speed >= 0 && location.speed.isFinite) ? location.speed : nil
+        let batteryLevelRaw = UIDevice.current.batteryLevel
+        let batteryPercent: Double? = (batteryLevelRaw >= 0 && batteryLevelRaw.isFinite) ? Double(Int(batteryLevelRaw * 100)) : nil
+        let timestamp = location.timestamp.timeIntervalSince1970
+        guard timestamp.isFinite else { return nil }
+
+        return UpdateLocationPayload(
+            Device: thisDeviceIDManager.shared.deviceID,
+            Timestamp: String(Int64(timestamp)),
+            Longitude: longitude,
+            Latitude: latitude,
+            HorizontalAccuracy: accuracy,
+            Speed: speedValue,
+            BatteryLevel: batteryPercent,
+            Altitude: altitudeValue
+        )
+    }
+
+
     // MARK: - Logging
     private func addUpdateLogEntry(mode: String) {
         let entry = UpdateLogEntry(timestamp: Date(), mode: mode)
