@@ -1350,3 +1350,209 @@ The iPad version will now also show the device list immediately when the picker 
 
 ---
 
+_**User (2025-12-26 13:47Z)**_
+
+describe and commit
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   .specstory/history/2025-12-26_14-30Z-iphone-device-map-view-debug-output.md
+	modified:   miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPad/Devices\ Views/iPad_DeviceMapView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPad/Devices\ Views/iPad_DeviceMapView.swift
+```
+
+```
+diff --git a/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift b/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift
+index c4d98fe..3662850 100644
+--- a/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift	
++++ b/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift	
+@@ -54,9 +54,8 @@ struct iPad_DeviceMapView: View {
+     @State private var showNavigationSheet = false // Controls navigation view
+     @State private var showHistoryView = false // Controls history view
+     @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
+-    @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
+     @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
+-    @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
++    @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
+     @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
+     @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
+     @State private var now = Date() // Timer for relative time display
+@@ -69,6 +68,12 @@ struct iPad_DeviceMapView: View {
+     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
+     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
+     
++    // MARK: - Identifiable wrapper for device picker sheet
++    private struct DevicePickerData: Identifiable {
++        let id = UUID()
++        let devices: [KnownDevice]
++    }
++    
+     // MARK: - Offscreen arrows support types/helpers
+     private struct ArrowData {
+         let device: KnownDevice
+@@ -424,13 +429,13 @@ struct iPad_DeviceMapView: View {
+             }
+             Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
+         }
+-        .sheet(isPresented: $showDevicePicker) {
++        .sheet(item: $devicePickerData) { pickerData in
+             VStack(spacing: 0) {
+                 Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
+                     .font(.headline)
+                     .padding(.top, 16)
+                 List {
+-                    ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
++                    ForEach(pickerData.devices, id: \.DeviceID) { device in
+                         Button {
+                             presentActions(for: device.DeviceID)
+                         } label: {
+@@ -448,7 +453,7 @@ struct iPad_DeviceMapView: View {
+                     }
+                 }
+                 Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
+-                    showDevicePicker = false
++                    devicePickerData = nil
+                 }
+                 .padding()
+             }
+@@ -768,15 +773,14 @@ struct iPad_DeviceMapView: View {
+     
+     private func presentActions(for deviceID: String) {
+         selectedActionDeviceID = deviceID
+-        showDevicePicker = false
++        devicePickerData = nil
+         showDeviceActionDialog = true
+     }
+     
+     private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
+         let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
+         if nearby.count &gt; 1 {
+-            nearbyDevicesForPicker = nearby
+-            showDevicePicker = true
++            devicePickerData = DevicePickerData(devices: nearby)
+         } else if let first = nearby.first {
+             presentActions(for: first.DeviceID)
+         } else {
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Apply device picker sheet fix to iPad version
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable
+- Ensures device picker sheet shows devices immediately on iPad, matching
+  the fix previously applied to iPhone version"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Apply device picker sheet fix to iPad version
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable
+- Ensures device picker sheet shows devices immediately on iPad, matching
+  the fix previously applied to iPhone version"
+```
+
+```
+[master 975e16d] Apply device picker sheet fix to iPad version
+ 2 files changed, 515 insertions(+), 8 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Committed the changes with the message:
+
+**Apply device picker sheet fix to iPad version**
+
+**Summary of changes:**
+- **Switched from `.sheet(isPresented:)` to `.sheet(item:)`** — Fixes the SwiftUI state capture issue where the sheet content was evaluated before the state update propagated
+- **Added `DevicePickerData` identifiable wrapper struct** — Passes the device list directly to the sheet content closure
+- **Consolidated state variables** — Replaced `nearbyDevicesForPicker` and `showDevicePicker` with a single `devicePickerData: DevicePickerData?`
+- **Updated `presentActions` and `handleDeviceTap`** — Use the new state pattern
+
+The iPad version now matches the iPhone fix: the device picker sheet shows devices immediately when presented, instead of an empty list that fills later.
+
+---
+
