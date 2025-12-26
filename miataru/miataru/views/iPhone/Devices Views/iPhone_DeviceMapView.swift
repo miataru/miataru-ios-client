@@ -55,9 +55,8 @@ struct iPhone_DeviceMapView: View {
     @State private var showHistoryView = false // Controls history view
     @State private var isHistoryPreloading = false // Avoid duplicate history preloads
     @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
-    @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
     @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
-    @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
+    @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
     @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
     @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
     @State private var now = Date() // Timer for relative time display
@@ -68,6 +67,12 @@ struct iPhone_DeviceMapView: View {
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace window for programmatic animations
     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
+    
+    // MARK: - Identifiable wrapper for device picker sheet
+    private struct DevicePickerData: Identifiable {
+        let id = UUID()
+        let devices: [KnownDevice]
+    }
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -406,13 +411,14 @@ struct iPhone_DeviceMapView: View {
             }
             Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
         }
-        .sheet(isPresented: $showDevicePicker) {
+        .sheet(item: $devicePickerData) { pickerData in
+            let _ = print("Sheet content closure evaluated: pickerData.devices.count = \(pickerData.devices.count), devices: \(pickerData.devices.map { $0.DeviceName })")
             VStack(spacing: 0) {
                 Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
                     .font(.headline)
                     .padding(.top, 16)
                 List {
-                    ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
+                    ForEach(pickerData.devices, id: \.DeviceID) { device in
                         Button {
                             presentActions(for: device.DeviceID)
                         } label: {
@@ -429,10 +435,16 @@ struct iPhone_DeviceMapView: View {
                         }
                     }
                 }
+                .onAppear {
+                    print("List onAppear: pickerData.devices.count = \(pickerData.devices.count)")
+                }
                 Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
-                    showDevicePicker = false
+                    devicePickerData = nil
                 }
                 .padding()
+            }
+            .onAppear {
+                print("Sheet VStack onAppear: pickerData.devices.count = \(pickerData.devices.count)")
             }
             .presentationDetents([.medium, .large])
         }
@@ -883,19 +895,37 @@ struct iPhone_DeviceMapView: View {
     
     private func presentActions(for deviceID: String) {
         selectedActionDeviceID = deviceID
-        showDevicePicker = false
+        devicePickerData = nil
         showDeviceActionDialog = true
     }
     
     private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
-        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
+        let tapStart = Date()
+        let nearby: [KnownDevice]
+        
+        if let precomputed = precomputedNearbyDevices[deviceID] {
+            nearby = precomputed
+            let elapsed = Date().timeIntervalSince(tapStart)
+            print("Device tap handled with precomputed nearby for \(deviceID) in \(String(format: "%.3f", elapsed))s (count: \(precomputed.count))")
+        } else {
+            nearby = nearbyDevices(around: deviceID, coordinate: coordinate)
+            let elapsed = Date().timeIntervalSince(tapStart)
+            print("Device tap computed nearby for \(deviceID) in \(String(format: "%.3f", elapsed))s (count: \(nearby.count))")
+        }
+        
         if nearby.count > 1 {
-            nearbyDevicesForPicker = nearby
-            showDevicePicker = true
+            print("About to set devicePickerData with \(nearby.count) devices: \(nearby.map { $0.DeviceName })")
+            devicePickerData = DevicePickerData(devices: nearby)
+            let elapsed = Date().timeIntervalSince(tapStart)
+            print("Device tap result for \(deviceID): showing picker with \(nearby.count) devices after \(String(format: "%.3f", elapsed))s")
         } else if let first = nearby.first {
             presentActions(for: first.DeviceID)
+            let elapsed = Date().timeIntervalSince(tapStart)
+            print("Device tap result for \(deviceID): presenting actions for \(first.DeviceID) after \(String(format: "%.3f", elapsed))s (nearby count: \(nearby.count))")
         } else {
             presentActions(for: deviceID)
+            let elapsed = Date().timeIntervalSince(tapStart)
+            print("Device tap result for \(deviceID): presenting fallback actions after \(String(format: "%.3f", elapsed))s (no nearby devices)")
         }
     }
     
