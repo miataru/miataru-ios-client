@@ -4989,6 +4989,52 @@
         }
       }
     },
+    "reverse_navigation_direction" : {
+      "comment" : "Reverse navigation direction",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigationsrichtung umkehren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse navigation direction"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナビゲーション方向を反転"
+          }
+        }
+      }
+    },
+    "reverse_navigation_direction_hint" : {
+      "comment" : "Swaps the route to show navigation from the device to you, or from you to the device.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tauscht die Route, um die Navigation vom Gerät zu Ihnen oder von Ihnen zum Gerät anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swaps the route to show navigation from the device to you, or from you to the device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルートを交換して、デバイスからあなたへのナビゲーション、またはあなたからデバイスへのナビゲーションを表示します。"
+          }
+        }
+      }
+    },
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
       "localizations" : {

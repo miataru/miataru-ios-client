@@ -27,8 +27,9 @@ struct RouteGhostCalculator {
     ///   - deviceTimestamp: The last known timestamp of the device location.
     ///   - knownDeviceSpeed: Optional speed in meters per second. If provided and > 0, used to compute distance.
     ///   - now: Reference time (defaults to Date()).
+    ///   - isRouteReversed: Whether the route is reversed (device at start vs end).
     /// - Returns: (donePolyline, todoPolyline, ghostCoordinate, progress [0,1]) or nil if cannot compute.
-    static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, now: Date = Date()) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
+    static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, now: Date = Date(), isRouteReversed: Bool = false) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
         guard route.distance > 0 else { return nil }
         let elapsed = deviceTimestamp.map { now.timeIntervalSince($0) } ?? 0
         let totalDistance = route.distance
@@ -47,9 +48,37 @@ struct RouteGhostCalculator {
             distanceFromDevice = totalDistance * progress
         }
 
-        let splitDistance = max(totalDistance - distanceFromDevice, 0)
-        guard let (todo, done, ghost) = route.polyline.split(at: splitDistance) else { return nil }
+        // Ghost calculation should ALWAYS be from the device's perspective
+        // The device is always at the start of its journey, regardless of route direction
+        // When isRouteReversed = true: device at start of polyline, travels forward
+        // When isRouteReversed = false: device at end of polyline, travels forward (backward along polyline)
+        let splitDistance: CLLocationDistance
+        if isRouteReversed {
+            // Device at start, travels forward: split at distanceFromDevice from start
+            splitDistance = max(0, min(totalDistance, distanceFromDevice))
+        } else {
+            // Device at end, travels forward from its position (backward along polyline)
+            // Split at distance from start: totalDistance - distanceFromDevice
+            splitDistance = max(0, min(totalDistance, totalDistance - distanceFromDevice))
+        }
+        
+        guard let (splitStartToSplit, splitSplitToEnd, ghost) = route.polyline.split(at: splitDistance) else { return nil }
         let progressValue = max(0, min(1, distanceFromDevice / totalDistance))
-        return (done, todo, ghost, progressValue)
+        
+        // Return (done, todo, ghost, progress) from the device's perspective:
+        // - done = segment device has already traveled from its starting position
+        // - todo = segment device still needs to travel
+        if isRouteReversed {
+            // Device at start, travels forward along polyline
+            // done = start to ghost, todo = ghost to end
+            return (splitStartToSplit, splitSplitToEnd, ghost, progressValue)
+        } else {
+            // Device at end, travels forward from its position (backward along polyline)
+            // From device's perspective at end:
+            // - done = segment from end to ghost (which is splitSplitToEnd, reversed)
+            // - todo = segment from ghost to start (which is splitStartToSplit)
+            // Since device travels backward, we swap the segments
+            return (splitSplitToEnd, splitStartToSplit, ghost, progressValue)
+        }
     }
 }

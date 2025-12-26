@@ -47,6 +47,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isLoading: Bool = false
     @State private var now = Date()
     @State private var isAutoRouteUpdateLocked: Bool = false
+    @State private var isRouteReversed: Bool = true // Default: device to user
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
@@ -168,7 +169,7 @@ struct iPhone_DeviceNavigationView: View {
                 if let route = route {
                     if settings.showRouteProgress {
                         let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(for: route, deviceTimestamp: deviceTimestamp, knownDeviceSpeed: knownSpeed, now: now) {
+                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(for: route, deviceTimestamp: deviceTimestamp, knownDeviceSpeed: knownSpeed, now: now, isRouteReversed: isRouteReversed) {
                             if progress <= minimumProgressToShowGhost {
                                 MapPolyline(route.polyline)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)
@@ -265,6 +266,9 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: settings.navigationTransportType) { _, _ in
                 calculateRoute()
             }
+            .onChange(of: isRouteReversed) { _, _ in
+                // Route direction changed
+            }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
                 updateBottomAccessory()
@@ -333,6 +337,17 @@ struct iPhone_DeviceNavigationView: View {
                 reloadToolbarButton()
             }
             ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    isRouteReversed.toggle()
+                    calculateRoute(ignoreCache: true)
+                }) {
+                    directionIndicatorIcon()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(NSLocalizedString("reverse_navigation_direction", comment: "Reverse navigation direction")))
+                .accessibilityHint(Text(NSLocalizedString("reverse_navigation_direction_hint", comment: "Swaps the route to show navigation from the device to you, or from you to the device.")))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: openInAppleMaps) {
                     Image(systemName: "map")
                 }
@@ -359,6 +374,7 @@ struct iPhone_DeviceNavigationView: View {
             isAutoCenteringEnabled = true
             // Ensure auto-update lock state follows global setting for new navigation
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
+            isRouteReversed = true // Reset to default: device to user
             deviceTimestamp = nil
             isLoading = false
             lastRouteUserCoordinate = nil
@@ -371,6 +387,19 @@ struct iPhone_DeviceNavigationView: View {
         }
     }
 
+    @ViewBuilder
+    private func directionIndicatorIcon() -> some View {
+        // Two-colored arrow icon using palette rendering mode
+        // When isRouteReversed is true (device to user, default): top arrow is accent, bottom is primary
+        // When isRouteReversed is false (user to device): top arrow is primary, bottom is accent
+        Image(systemName: "arrow.up.arrow.down")
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(
+                isRouteReversed ? Color.accentColor : Color.primary,
+                isRouteReversed ? Color.primary : Color.accentColor
+            )
+    }
+    
     @ViewBuilder
     private func reloadToolbarButton() -> some View {
         // Toolbar button to reload target device location; long-press toggles auto route updates
@@ -483,9 +512,14 @@ struct iPhone_DeviceNavigationView: View {
         }
         _ = routeCounter.canRequestAndIncrement(limit: routeRequestDailyLimit)
         let request = MKDirections.Request()
-        // Draw the route from the current user towards the other device
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: device))
+        // Draw the route from the current user towards the other device, or reversed if isRouteReversed is true
+        if isRouteReversed {
+            request.source = MKMapItem(placemark: MKPlacemark(coordinate: device))
+            request.destination = MKMapItem(placemark: MKPlacemark(coordinate: user))
+        } else {
+            request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
+            request.destination = MKMapItem(placemark: MKPlacemark(coordinate: device))
+        }
         request.transportType = transportTypeFromSetting(settings.navigationTransportType)
         Task {
             do {
@@ -538,9 +572,17 @@ struct iPhone_DeviceNavigationView: View {
     private func openInAppleMaps() {
         // Open the route in the Apple Maps app using the selected transport type
         guard let dest = deviceCoordinate else { return }
-        let source = MKMapItem.forCurrentLocation()
-        let destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
-        destination.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+        let source: MKMapItem
+        let destination: MKMapItem
+        if isRouteReversed {
+            source = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+            source.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+            destination = MKMapItem.forCurrentLocation()
+        } else {
+            source = MKMapItem.forCurrentLocation()
+            destination = MKMapItem(placemark: MKPlacemark(coordinate: dest))
+            destination.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+        }
         var options: [String: Any] = [:]
         switch settings.navigationTransportType {
         case 0: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeWalking
@@ -829,6 +871,7 @@ extension iPhone_DeviceNavigationView {
             )
         }
     }
+    
 }
 
 
