@@ -54,9 +54,8 @@ struct iPad_DeviceMapView: View {
     @State private var showNavigationSheet = false // Controls navigation view
     @State private var showHistoryView = false // Controls history view
     @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
-    @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
     @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
-    @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
+    @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
     @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
     @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
     @State private var now = Date() // Timer for relative time display
@@ -68,6 +67,12 @@ struct iPad_DeviceMapView: View {
     @State private var isProgrammaticCameraChange = false // Track programmatic camera updates to avoid false interaction detection
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
+    
+    // MARK: - Identifiable wrapper for device picker sheet
+    private struct DevicePickerData: Identifiable {
+        let id = UUID()
+        let devices: [KnownDevice]
+    }
     
     // MARK: - Offscreen arrows support types/helpers
     private struct ArrowData {
@@ -424,13 +429,13 @@ struct iPad_DeviceMapView: View {
             }
             Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
         }
-        .sheet(isPresented: $showDevicePicker) {
+        .sheet(item: $devicePickerData) { pickerData in
             VStack(spacing: 0) {
                 Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
                     .font(.headline)
                     .padding(.top, 16)
                 List {
-                    ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
+                    ForEach(pickerData.devices, id: \.DeviceID) { device in
                         Button {
                             presentActions(for: device.DeviceID)
                         } label: {
@@ -448,7 +453,7 @@ struct iPad_DeviceMapView: View {
                     }
                 }
                 Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
-                    showDevicePicker = false
+                    devicePickerData = nil
                 }
                 .padding()
             }
@@ -768,15 +773,14 @@ struct iPad_DeviceMapView: View {
     
     private func presentActions(for deviceID: String) {
         selectedActionDeviceID = deviceID
-        showDevicePicker = false
+        devicePickerData = nil
         showDeviceActionDialog = true
     }
     
     private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
         let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
         if nearby.count > 1 {
-            nearbyDevicesForPicker = nearby
-            showDevicePicker = true
+            devicePickerData = DevicePickerData(devices: nearby)
         } else if let first = nearby.first {
             presentActions(for: first.DeviceID)
         } else {

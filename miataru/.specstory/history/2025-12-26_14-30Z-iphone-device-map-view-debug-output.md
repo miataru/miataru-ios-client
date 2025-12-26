@@ -51,6 +51,12 @@ Additional data:
 ```json
 {
   "codeblockId": "cfd24a80-1083-4daa-8036-0ac5f9de4c64",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -162,6 +168,12 @@ Additional data:
 ```json
 {
   "codeblockId": "5c5b8c9c-b224-4358-9f67-6a60859c7b6e",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -844,6 +856,497 @@ devicePickerData = DevicePickerData(devices: nearby)  // Single state, data is p
 ```
 
 With `.sheet(item:)`, the `pickerData` is passed as a parameter to the content closure, so it's guaranteed to have the correct data at presentation time. The debug logs are still in place - when you run it now, you should see `pickerData.devices.count = 2` immediately in the sheet content closure.
+
+---
+
+_**User (2025-12-26 13:47Z)**_
+
+describe and commit all
+
+---
+
+_**Agent (model claude-4.5-opus-high-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user wants me to commit all changes. Let me first check the git status to see what needs to be committed, then create a commit with a descriptive English message.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   miataru.xcodeproj/project.pbxproj
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2025-12-25_20-03Z-nearby-device-selection-sheet-delay.md
+	.specstory/history/2025-12-26_14-30Z-iphone-device-map-view-debug-output.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Let me check the diff to see what changes were made, then commit with a good message.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPhone/Devices\ Views/iPhone_DeviceMapView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPhone/Devices\ Views/iPhone_DeviceMapView.swift
+```
+
+```
+diff --git a/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift b/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+index 375983a..ad84f18 100644
+--- a/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift	
++++ b/miataru/miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift	
+@@ -55,9 +55,8 @@ struct iPhone_DeviceMapView: View {
+     @State private var showHistoryView = false // Controls history view
+     @State private var isHistoryPreloading = false // Avoid duplicate history preloads
+     @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
+-    @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
+     @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
+-    @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
++    @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
+     @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
+     @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
+     @State private var now = Date() // Timer for relative time display
+@@ -69,6 +68,12 @@ struct iPhone_DeviceMapView: View {
+     @State private var isAutoCenteringEnabled = true // Disable auto recenter after user interaction
+     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
+     
++    // MARK: - Identifiable wrapper for device picker sheet
++    private struct DevicePickerData: Identifiable {
++        let id = UUID()
++        let devices: [KnownDevice]
++    }
++    
+     // MARK: - Offscreen arrows support types/helpers
+     private struct ArrowData {
+         let device: KnownDevice
+@@ -406,13 +411,14 @@ struct iPhone_DeviceMapView: View {
+             }
+             Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
+         }
+-        .sheet(isPresented: $showDevicePicker) {
++        .sheet(item: $devicePickerData) { pickerData in
++            let _ = print("Sheet content closure evaluated: pickerData.devices.count = \(pickerData.devices.count), devices: \(pickerData.devices.map { $0.DeviceName })")
+             VStack(spacing: 0) {
+                 Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
+                     .font(.headline)
+                     .padding(.top, 16)
+                 List {
+-                    ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
++                    ForEach(pickerData.devices, id: \.DeviceID) { device in
+                         Button {
+                             presentActions(for: device.DeviceID)
+                         } label: {
+@@ -429,11 +435,17 @@ struct iPhone_DeviceMapView: View {
+                         }
+                     }
+                 }
++                .onAppear {
++                    print("List onAppear: pickerData.devices.count = \(pickerData.devices.count)")
++                }
+                 Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
+-                    showDevicePicker = false
++                    devicePickerData = nil
+                 }
+                 .padding()
+             }
++            .onAppear {
++                print("Sheet VStack onAppear: pickerData.devices.count = \(pickerData.devices.count)")
++            }
+             .presentationDetents([.medium, .large])
+         }
+     }
+@@ -883,19 +895,37 @@ struct iPhone_DeviceMapView: View {
+     
+     private func presentActions(for deviceID: String) {
+         selectedActionDeviceID = deviceID
+-        showDevicePicker = false
++        devicePickerData = nil
+         showDeviceActionDialog = true
+     }
+     
+     private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
+-        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
++        let tapStart = Date()
++        let nearby: [KnownDevice]
++        
++        if let precomputed = precomputedNearbyDevices[deviceID] {
++            nearby = precomputed
++            let elapsed = Date().timeIntervalSince(tapStart)
++            print("Device tap handled with precomputed nearby for \(deviceID) in \(String(format: "%.3f", elapsed))s (count: \(precomputed.count))")
++        } else {
++            nearby = nearbyDevices(around: deviceID, coordinate: coordinate)
++            let elapsed = Date().timeIntervalSince(tapStart)
++            print("Device tap computed nearby for \(deviceID) in \(String(format: "%.3f", elapsed))s (count: \(nearby.count))")
++        }
++        
+         if nearby.count &gt; 1 {
+-            nearbyDevicesForPicker = nearby
+-            showDevicePicker = true
++            print("About to set devicePickerData with \(nearby.count) devices: \(nearby.map { $0.DeviceName })")
++            devicePickerData = DevicePickerData(devices: nearby)
++            let elapsed = Date().timeIntervalSince(tapStart)
++            print("Device tap result for \(deviceID): showing picker with \(nearby.count) devices after \(String(format: "%.3f", elapsed))s")
+         } else if let first = nearby.first {
+             presentActions(for: first.DeviceID)
++            let elapsed = Date().timeIntervalSince(tapStart)
++            print("Device tap result for \(deviceID): presenting actions for \(first.DeviceID) after \(String(format: "%.3f", elapsed))s (nearby count: \(nearby.count))")
+         } else {
+             presentActions(for: deviceID)
++            let elapsed = Date().timeIntervalSince(tapStart)
++            print("Device tap result for \(deviceID): presenting fallback actions after \(String(format: "%.3f", elapsed))s (no nearby devices)")
+         }
+     }
+     
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I have a clear picture of the changes. Let me commit with an English message as the user prefers.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix device picker sheet showing empty list on first presentation
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Add debug logging for device tap timing and sheet evaluation
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix device picker sheet showing empty list on first presentation
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Add debug logging for device tap timing and sheet evaluation
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable"
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The git directory is outside the workspace, so I need to use the 'all' permission.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix device picker sheet showing empty list on first presentation
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Add debug logging for device tap timing and sheet evaluation
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix device picker sheet showing empty list on first presentation
+
+- Switch from .sheet(isPresented:) to .sheet(item:) pattern to fix
+  SwiftUI state capture issue where sheet content was evaluated before
+  state update propagated
+- Add DevicePickerData identifiable wrapper struct to pass device list
+  directly to sheet content closure
+- Add debug logging for device tap timing and sheet evaluation
+- Consolidate nearbyDevicesForPicker and showDevicePicker into single
+  devicePickerData optional state variable"
+```
+
+```
+[master 012fade] Fix device picker sheet showing empty list on first presentation
+ 4 files changed, 4095 insertions(+), 11 deletions(-)
+ create mode 100644 miataru/.specstory/history/2025-12-25_20-03Z-nearby-device-selection-sheet-delay.md
+ create mode 100644 miataru/.specstory/history/2025-12-26_14-30Z-iphone-device-map-view-debug-output.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The commit was successful. Let me summarize what was committed.</details></think>
+
+---
+
+Committed with message:
+
+**Fix device picker sheet showing empty list on first presentation**
+
+Changes:
+- **Switched from `.sheet(isPresented:)` to `.sheet(item:)`** - This passes the device list directly into the sheet content closure, fixing the SwiftUI state capture issue where the sheet was evaluated before the state update propagated
+- **Added `DevicePickerData` identifiable wrapper struct** - Bundles the devices array with a UUID for the sheet item binding
+- **Consolidated state variables** - Replaced `nearbyDevicesForPicker` and `showDevicePicker` with a single `devicePickerData: DevicePickerData?`
+- **Added debug logging** - Timing logs for device tap handling and sheet evaluation to diagnose performance
+
+---
+
+_**User (2025-12-26 13:47Z)**_
+
+this fix we did for the iphone version should also be applied to the @iPad_DeviceMapView.swift 
+
+---
+
+_**Agent (model claude-4.5-opus-high-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user wants me to apply the same fix from the iPhone version to the iPad version. The fix involved:
+
+1. Creating a `DevicePickerData` identifiable struct
+2. Replacing `nearbyDevicesForPicker: [KnownDevice]` and `showDevicePicker: Bool` with a single `devicePickerData: DevicePickerData?`
+3. Changing the sheet from `.sheet(isPresented:)` to `.sheet(item:)`
+4. Updating `handleDeviceTap` and `presentActions` to use the new state
+
+Let me apply these changes to the iPad version.</details></think>
+
+---
+
+I'll apply the same fix to the iPad version. Let me make the changes:
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 2
+
+```diff
+@@ -55,7 +55,6 @@
+      @State private var showHistoryView = false // Controls history view
+      @State private var selectedActionDeviceID: String? = nil // Currently selected device for actions
+-     @State private var nearbyDevicesForPicker: [KnownDevice] = [] // Nearby devices when markers overlap
+      @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
+-     @State private var showDevicePicker = false // Controls picker sheet when multiple devices overlap
++     @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
+      @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
+      @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to add the DevicePickerData struct.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 6, lines removed: undefined
+
+```diff
+@@ -68,4 +68,10 @@
+      @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
+      @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
++     
++     // MARK: - Identifiable wrapper for device picker sheet
++     private struct DevicePickerData: Identifiable {
++         let id = UUID()
++         let devices: [KnownDevice]
++     }
+      
+      // MARK: - Offscreen arrows support types/helpers
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update the sheet to use `.sheet(item:)` instead of `.sheet(isPresented:)`.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -430,11 +430,11 @@
+              Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
+          }
+-         .sheet(isPresented: $showDevicePicker) {
++         .sheet(item: $devicePickerData) { pickerData in
+              VStack(spacing: 0) {
+                  Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
+                      .font(.headline)
+                      .padding(.top, 16)
+                  List {
+-                     ForEach(nearbyDevicesForPicker, id: \.DeviceID) { device in
++                     ForEach(pickerData.devices, id: \.DeviceID) { device in
+                          Button {
+                              presentActions(for: device.DeviceID)
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -454,5 +454,5 @@
+                  }
+                  Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
+-                     showDevicePicker = false
++                     devicePickerData = nil
+                  }
+                  .padding()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update `presentActions` and `handleDeviceTap` to use the new state variable.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -774,5 +774,5 @@
+      private func presentActions(for deviceID: String) {
+          selectedActionDeviceID = deviceID
+-         showDevicePicker = false
++         devicePickerData = nil
+          showDeviceActionDialog = true
+      }
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: 2
+
+```diff
+@@ -781,6 +781,5 @@
+          let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
+          if nearby.count &gt; 1 {
+-             nearbyDevicesForPicker = nearby
+-             showDevicePicker = true
++             devicePickerData = DevicePickerData(devices: nearby)
+          } else if let first = nearby.first {
+              presentActions(for: first.DeviceID)
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Let me check for any linter errors and also verify there are no remaining references to the old variables.</details></think>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "showDevicePicker|nearbyDevicesForPicker" in "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift" • 0 matches</summary>
+
+Output mode: content
+
+
+_No matches found_
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+No remaining references to the old variables and no linter errors. The fix has been successfully applied to the iPad version as well.</details></think>
+
+---
+
+Done! The same fix has been applied to `iPad_DeviceMapView.swift`:
+
+1. **Added `DevicePickerData` struct** - Identifiable wrapper for the device list
+2. **Replaced state variables** - Combined `nearbyDevicesForPicker` and `showDevicePicker` into single `devicePickerData: DevicePickerData?`
+3. **Updated sheet** - Changed from `.sheet(isPresented:)` to `.sheet(item:)` with `pickerData` passed directly
+4. **Updated `presentActions`** - Now sets `devicePickerData = nil` instead of `showDevicePicker = false`
+5. **Updated `handleDeviceTap`** - Now sets `devicePickerData = DevicePickerData(devices: nearby)` instead of two separate state mutations
+
+The iPad version will now also show the device list immediately when the picker sheet appears, rather than showing an empty list initially.
 
 ---
 
