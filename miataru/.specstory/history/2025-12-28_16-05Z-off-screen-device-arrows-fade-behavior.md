@@ -2024,3 +2024,118 @@ _**Agent (model default, mode Agent)**_
 
 ---
 
+
+Summarizing changes and committing:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+	new file:   .specstory/history/2025-12-28_16-05Z-off-screen-device-arrows-fade-behavior.md
+	modified:   miataru/views/Common/Map/OffScreenDeviceArrow.swift
+	modified:   miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift
+	modified:   miataru/views/iPad/Groups Views/iPad_GroupMapView.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+	modified:   miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add fade in/out animations to off-screen device arrows based on map movement
+
+- Arrows now start fully opaque when first rendered
+- Arrows fade to 15% opacity over 3 seconds when map stops moving
+- Arrows fade back to full opacity when map starts moving again
+- Added map movement tracking state and debounce timer to all map views
+- Updated OffScreenDeviceArrow component to accept isMapMoving parameter
+- Movement detection includes pan, zoom, and rotation gestures
+- Smooth animations with 3-second fade out and 0.5-second fade in durations"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add fade in/out animations to off-screen device arrows based on map movement
+
+- Arrows now start fully opaque when first rendered
+- Arrows fade to 15% opacity over 3 seconds when map stops moving
+- Arrows fade back to full opacity when map starts moving again
+- Added map movement tracking state and debounce timer to all map views
+- Updated OffScreenDeviceArrow component to accept isMapMoving parameter
+- Movement detection includes pan, zoom, and rotation gestures
+- Smooth animations with 3-second fade out and 0.5-second fade in durations"
+```
+
+```
+[master 8d5fb86] Add fade in/out animations to off-screen device arrows based on map movement
+ 6 files changed, 2181 insertions(+), 1 deletion(-)
+ create mode 100644 miataru/.specstory/history/2025-12-28_16-05Z-off-screen-device-arrows-fade-behavior.md
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+## Summary
+
+Implemented fade in/out animations for off-screen device arrows based on map movement.
+
+### Changes
+
+1. **Map movement tracking** (all map views):
+   - Added `isMapMoving` state and a debounce timer
+   - Detects pan, zoom, and rotation
+   - 0.3-second delay before marking the map as stopped
+
+2. **OffScreenDeviceArrow component**:
+   - Added `isMapMoving` parameter
+   - Initial appearance: arrows start at full opacity (1.0)
+   - Fade out: fade to 15% opacity over 3 seconds when the map stops
+   - Fade in: fade to full opacity over 0.5 seconds when the map starts moving
+
+3. **Updated map views**:
+   - `iPhone_DeviceMapView`
+   - `iPad_DeviceMapView`
+   - `iPhone_GroupMapView`
+   - `iPad_GroupMapView`
+
+### Behavior
+- Arrows appear fully opaque when first rendered
+- Fade to 15% opacity over 3 seconds when the map stops
+- Fade back to full opacity when the map starts moving
+- Smooth transitions with appropriate animation durations
+
+Committed with message: "Add fade in/out animations to off-screen device arrows based on map movement"
+
+---
+
