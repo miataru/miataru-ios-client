@@ -67,6 +67,8 @@ struct iPad_DeviceMapView: View {
     @State private var isProgrammaticCameraChange = false // Track programmatic camera updates to avoid false interaction detection
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil // Grace period while programmatic animations run
     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
+    @State private var isMapMoving = false // Track if map is currently moving/animating
+    @State private var mapMovementTimer: Timer? = nil // Timer to detect when map movement stops
     
     // MARK: - Identifiable wrapper for device picker sheet
     private struct DevicePickerData: Identifiable {
@@ -250,6 +252,7 @@ struct iPad_DeviceMapView: View {
                                 arrowIndex: index,
                                 totalArrows: group.count,
                                 behavior: info.behavior,
+                                isMapMoving: isMapMoving,
                                 onTap: info.onTap
                             )
                         }
@@ -333,6 +336,8 @@ struct iPad_DeviceMapView: View {
         }
         .onDisappear {
             stopAutoUpdate()
+            mapMovementTimer?.invalidate()
+            mapMovementTimer = nil
             if settings.lastOpenedDeviceID == deviceID {
                 settings.lastOpenedDeviceID = nil
             }
@@ -367,6 +372,29 @@ struct iPad_DeviceMapView: View {
             let headingChanged = abs((previousCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((previousRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
                               abs((previousRegion?.span.longitudeDelta ?? 0) - context.region.span.longitudeDelta) > 0.0001
+            let centerChanged = abs((previousRegion?.center.latitude ?? 0) - context.region.center.latitude) > 0.0001 ||
+                                abs((previousRegion?.center.longitude ?? 0) - context.region.center.longitude) > 0.0001
+            
+            // Detect any map movement (pan, zoom, rotate)
+            if headingChanged || zoomChanged || centerChanged {
+                // Map is moving - set state and reset timer
+                if !isMapMoving {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isMapMoving = true
+                    }
+                }
+                
+                // Cancel existing timer
+                mapMovementTimer?.invalidate()
+                
+                // Start new timer to detect when movement stops (after 0.3 seconds of no movement)
+                mapMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        isMapMoving = false
+                    }
+                }
+            }
+            
             if abs(context.camera.heading) < 0.1 {
                 userHasRotatedMap = false
             } else if headingChanged {

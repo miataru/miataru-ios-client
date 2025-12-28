@@ -44,10 +44,12 @@ struct OffScreenDeviceArrow: View {
     let arrowIndex: Int // New parameter for positioning
     let totalArrows: Int // New parameter for positioning
     let behavior: ArrowBehavior // Determines what happens when tapped
+    let isMapMoving: Bool // Whether the map is currently moving/animating
     let onTap: () -> Void // Callback when arrow is tapped
     
     @State private var isVisible = false
     @State private var isPressed = false // Track press state for visual feedback
+    @State private var hasInitiallyAppeared = false // Track if arrow has made initial appearance
 
     // MARK: - Centralized visual/geometry constants (C)
     /// Margin used to decide if a device is considered "outside" (visibility hysteresis).
@@ -123,11 +125,13 @@ struct OffScreenDeviceArrow: View {
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
             .position(arrowPosition.position)
-            .opacity(isVisible ? 1.0 : 0.0)
+            .opacity(calculateOpacity())
             .scaleEffect(isPressed ? 0.9 : 1.0) // Visual feedback when pressed
             .animation(.easeInOut(duration: 0.3), value: isVisible)
             .animation(.easeInOut(duration: 0.1), value: isPressed)
             .animation(.easeInOut(duration: 0.2), value: mapHeading) // Animate with heading changes
+            .animation(.easeInOut(duration: 0.5), value: isMapMoving) // Fade in/out based on map movement
+            .animation(.easeInOut(duration: 3.0), value: hasInitiallyAppeared) // Slow fade out after initial appearance
             .onTapGesture {
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -145,8 +149,49 @@ struct OffScreenDeviceArrow: View {
                 withAnimation(.easeInOut(duration: 0.3).delay(0.1)) {
                     isVisible = true
                 }
+                // After initial appearance, wait a moment then fade out if map is not moving
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if !isMapMoving && isVisible {
+                        withAnimation(.easeInOut(duration: 3.0)) {
+                            hasInitiallyAppeared = true
+                        }
+                    }
+                }
+            }
+            .onChange(of: isMapMoving) { oldValue, newValue in
+                // When map starts moving, reset the initial appearance flag to show full opacity
+                if newValue && hasInitiallyAppeared {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        hasInitiallyAppeared = false
+                    }
+                }
+                // When map stops moving, trigger fade out after a delay
+                if !newValue && isVisible && !hasInitiallyAppeared {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        if !isMapMoving && isVisible {
+                            withAnimation(.easeInOut(duration: 3.0)) {
+                                hasInitiallyAppeared = true
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+    
+    /// Calculates the opacity based on visibility, map movement, and initial appearance state.
+    private func calculateOpacity() -> Double {
+        guard isVisible else { return 0.0 }
+        
+        // If map is moving, always show at full opacity
+        if isMapMoving {
+            return 1.0
+        }
+        
+        // If map is not moving:
+        // - Show at full opacity initially (before hasInitiallyAppeared is true)
+        // - Fade to 15% opacity after initial appearance
+        return hasInitiallyAppeared ? 0.15 : 1.0
     }
     
     /// Calculates the final on-screen arrow position and its rotation angle.
@@ -570,6 +615,7 @@ private extension Comparable {
             arrowIndex: 0,
             totalArrows: 3, // try >1 to see corner-cluster distribution
             behavior: .jumpToLocation,
+            isMapMoving: true,
             onTap: {
                 debugLog("Preview: Tapped on iPhone 13 arrow")
             }
