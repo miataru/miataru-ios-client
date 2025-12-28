@@ -960,14 +960,234 @@ _**Agent (model default, mode Agent)**_
 ---
 
 
+Increasing the offset from 25 to 35 (10 more points) across all map views:
+
 
 ---
 
 <tool-use data-tool-type="write" data-tool-name="search_replace">
 
-<details><summary>Tool use: **search_replace**</summary>
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift</summary>
 
-Status: **loading**
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -597,5 +597,5 @@
+                                      }
+                                  }
+-                         }.offset(y: 25)
++                         }.offset(y: 35)
+                      }
+                  }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -672,5 +672,5 @@
+                                              }
+                                      }
+-                                     .offset(y: 25)
++                                     .offset(y: 35)
+                                  }
+                              }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -483,5 +483,5 @@
+                                      .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
+                                      .accessibilityAddTraits(.isButton)
+-                             }.offset(y: 25)
++                             }.offset(y: 35)
+                          }
+                      }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -628,5 +628,5 @@
+                                          }
+                              }
+-                             .offset(y: 25)
++                             .offset(y: 35)
+                          }
+                      }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -703,5 +703,5 @@
+                                                  }
+                                          }
+-                                     .offset(y: 25)
++                                     .offset(y: 35)
+                                  }
+                              }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPad/Groups Views/iPad_GroupMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -490,5 +490,5 @@
+                                          }
+                                      }
+-                             }.offset(y: 25)
++                             }.offset(y: 35)
+                              .accessibilityElement()
+                              .accessibilityLabel(Text(annotationID))
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -118,5 +118,5 @@
+                                  .zIndex(1)
+                          }
+-                         .offset(y: 25)
++                         .offset(y: 35)
+                      }
+                  }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -163,5 +163,5 @@
+                                  .zIndex(1)
+                          }
+-                         .offset(y: 25)
++                         .offset(y: 35)
+                      }
+                  }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/PerformanceDebug/MarkerAnnotationDebugView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -145,5 +145,5 @@
+                                  .zIndex(1)
+                          }
+-                         .offset(y: 25)
++                         .offset(y: 35)
+                      }
+  
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: miataru/PerformanceDebug/MarkerAnnotationDebugView.swift</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -190,5 +190,5 @@
+                                  .zIndex(1)
+                          }
+-                         .offset(y: 25)
++                         .offset(y: 35)
+                      }
+  
+```
 
 </details>
 
@@ -980,52 +1200,28 @@ Status: **loading**
 ---
 
 
-
----
-
+Checking for linting errors:
 
 
 ---
 
-
-
----
-
-
-
----
-
-
-
----
-
-
-
----
-
-
-
----
-
-
-
----
-
-
-
----
-
-
-
----
-
-<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
 <details>
-<summary>Tool use: **read_lints**</summary>
+          <summary>Tool use: **read_lints** • Read lints for 6 files</summary>
+      
+Lint paths:
 
-Status: **loading**
+- `miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift`
+- `miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift`
+- `miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift`
+- `miataru/views/iPad/Groups Views/iPad_GroupMapView.swift`
+- `miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift`
+- `miataru/PerformanceDebug/MarkerAnnotationDebugView.swift`
+
+Lint results
 
 
+**No lint errors found**
 </details>
 </tool-use>
 
@@ -1036,6 +1232,145 @@ Status: **loading**
 ---
 
 
+Updated all marker offsets from 25 to 35 (10 more points). Markers and labels are now pushed down by 15 points from the original 20, so the pin point should align better with the coordinate where the accuracy circle is drawn.
+
+The changes apply to:
+- All iPhone and iPad device map views
+- All group map views
+- Navigation views
+- Debug view
+
+Test and let me know if further adjustment is needed.
+
+---
+
+_**User (2025-12-28 15:55Z)**_
+
+describe and commit
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Preparing a commit message describing the changes:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+	modified:   .specstory/history/2025-12-26_15-02Z-iphone-navigation-direction-reversal.md
+	new file:   .specstory/history/2025-12-28_15-26Z-map-marker-y-axis-offset.md
+	new file:   .specstory/history/2025-12-28_15-56Z-map-marker-vertical-offset.md
+	modified:   miataru/PerformanceDebug/MarkerAnnotationDebugView.swift
+	modified:   miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift
+	modified:   miataru/views/iPad/Groups Views/iPad_GroupMapView.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+	modified:   miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Committing the changes with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Fix map marker vertical alignment
+
+Adjust marker pin positioning to align with coordinate accuracy circle.
+The marker pins were drawn slightly too high, causing misalignment with
+the accuracy circle which was correctly positioned at the coordinate.
+
+Changes:
+- Increased annotation offset from 20 to 35 points across all map views
+- Applied to iPhone and iPad device map views
+- Applied to group map views
+- Applied to navigation views
+- Applied to debug view for consistency
+
+This pushes the entire marker (pin and labels) down so the pin point
+correctly aligns with the coordinate where the accuracy circle is drawn."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Fix map marker vertical alignment
+
+Adjust marker pin positioning to align with coordinate accuracy circle.
+The marker pins were drawn slightly too high, causing misalignment with
+the accuracy circle which was correctly positioned at the coordinate.
+
+Changes:
+- Increased annotation offset from 20 to 35 points across all map views
+- Applied to iPhone and iPad device map views
+- Applied to group map views
+- Applied to navigation views
+- Applied to debug view for consistency
+
+This pushes the entire marker (pin and labels) down so the pin point
+correctly aligns with the coordinate where the accuracy circle is drawn."
+```
+
+```
+[master bcb2446] Fix map marker vertical alignment
+ 9 files changed, 1599 insertions(+), 11 deletions(-)
+ create mode 100644 miataru/.specstory/history/2025-12-28_15-26Z-map-marker-y-axis-offset.md
+ create mode 100644 miataru/.specstory/history/2025-12-28_15-56Z-map-marker-vertical-offset.md
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Committed the changes.
+
+## Summary
+
+**Problem:** Map marker pins were drawn slightly too high, causing misalignment with the accuracy circle, which was correctly positioned at the coordinate.
+
+**Solution:** Increased the vertical offset on all map marker annotations from 20 to 35 points (15 points down) to push the entire marker (pin and labels) down so the pin point aligns with the coordinate.
+
+**Files Modified:**
+- `iPhone_DeviceMapView.swift` - Main device marker and other device markers
+- `iPhone_GroupMapView.swift` - Group device markers
+- `iPad_DeviceMapView.swift` - Main device marker and other device markers
+- `iPad_GroupMapView.swift` - Group device markers
+- `iPhone_DeviceNavigationView.swift` - Navigation view markers
+- `MarkerAnnotationDebugView.swift` - Debug view markers (for consistency)
+
+The commit message describes the fix and the rationale. All map views now have consistent marker positioning aligned with the accuracy circles.
 
 ---
 
