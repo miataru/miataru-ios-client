@@ -88,7 +88,10 @@ struct iPhone_DeviceNavigationView: View {
                             VStack(spacing: 0) {
                                 if let ts = userTimestamp {
                                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        Text(relativeTimeString(from: ts, to: context.date))
+                                        let timeString = relativeTimeString(from: ts, to: context.date)
+                                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
+                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                        Text(displayText)
                                             .font(.caption)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
@@ -136,7 +139,10 @@ struct iPhone_DeviceNavigationView: View {
                             VStack(spacing: 0) {
                                 if let timestamp = deviceTimestamp {
                                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        Text(relativeTimeString(from: timestamp, to: context.date))
+                                        let timeString = relativeTimeString(from: timestamp, to: context.date)
+                                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
+                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                        Text(displayText)
                                             .font(.caption)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
