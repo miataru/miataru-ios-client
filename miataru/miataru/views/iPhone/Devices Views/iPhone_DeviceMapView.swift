@@ -596,7 +596,7 @@ struct iPhone_DeviceMapView: View {
                                         Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                     }
                                 }
-                        }.offset(y:20)
+                        }.offset(y: 35)
                     }
                 }
                 // Other device markers visible in the current viewport only (iOS 17+)
@@ -671,7 +671,7 @@ struct iPhone_DeviceMapView: View {
                                                 }
                                             }
                                     }
-                                    .offset(y: 20)
+                                    .offset(y: 35)
                                 }
                             }
                         }
