@@ -117,7 +117,7 @@ struct iPhone_DeviceNavigationView: View {
                                 .offset(y: 12)
                                 .zIndex(1)
                         }
-                        .offset(y: 20)
+                        .offset(y: 35)
                     }
                 }
                 if let coord = animatedDeviceCoordinate {
@@ -162,7 +162,7 @@ struct iPhone_DeviceNavigationView: View {
                                 .offset(y: 12)
                                 .zIndex(1)
                         }
-                        .offset(y: 20)
+                        .offset(y: 35)
                     }
                 }
                 // Draw the route if available; optionally show a progress/ghost segment

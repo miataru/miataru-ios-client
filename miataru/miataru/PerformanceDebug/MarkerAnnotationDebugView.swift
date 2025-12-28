@@ -144,7 +144,7 @@ struct MarkerAnnotationDebugView: View {
                                 .offset(y: 12)
                                 .zIndex(1)
                         }
-                        .offset(y: 20)
+                        .offset(y: 35)
                     }
 
                     // Second marker (Device B)
@@ -189,7 +189,7 @@ struct MarkerAnnotationDebugView: View {
                                 .offset(y: 12)
                                 .zIndex(1)
                         }
-                        .offset(y: 20)
+                        .offset(y: 35)
                     }
 
                     // Ghost annotation near Device B to mimic progress
