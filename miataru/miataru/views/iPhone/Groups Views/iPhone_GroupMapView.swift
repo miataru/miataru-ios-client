@@ -17,6 +17,7 @@ struct iPhone_GroupMapView: View {
     @ObservedObject var group: DeviceGroup
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
     
     @Namespace var mapScope
@@ -453,7 +454,10 @@ struct iPhone_GroupMapView: View {
                                     // Show timestamp if available (force per-second updates)
                                     if let timestamp = deviceTimestamps[deviceID] {
                                         TimelineView(.periodic(from: .now, by: 1)) { context in
-                                            Text(relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated))
+                                            let timeString = relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated)
+                                            let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
+                                            let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                            Text(displayText)
                                                 .font(.caption)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 4)

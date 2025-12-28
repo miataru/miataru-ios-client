@@ -105,10 +105,13 @@ struct DeviceRowView: View {
         // Relative time
         let now = Date()
         let relativeTime = relativeTimeString(from: cached.timestamp, to: now, unitsStyle: .abbreviated)
+        // Add timezone offset if available
+        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
+        let relativeTimeWithOffset = timezoneOffset != nil ? "\(relativeTime) (\(timezoneOffset!))" : relativeTime
         // Distance calculation
         guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
             let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-            return "\(lastSeen): \(relativeTime)"
+            return "\(lastSeen): \(relativeTimeWithOffset)"
         }
         let deviceLoc = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
         let myLoc = CLLocation(latitude: myCached.latitude, longitude: myCached.longitude)
@@ -142,7 +145,7 @@ struct DeviceRowView: View {
         let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
         let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
         let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
-        return "\(lastSeen): \(relativeTime) \(separator) \(distanceLabel): \(formattedDistance)"
+        return "\(lastSeen): \(relativeTimeWithOffset) \(separator) \(distanceLabel): \(formattedDistance)"
     }
 
     private func placemarkText(from cached: CachedDeviceLocation?) -> String {
@@ -203,7 +206,8 @@ struct DeviceRowView: View {
                 if let pm = pm {
                     let country = pm.country
                     let locality = pm.locality ?? pm.subAdministrativeArea ?? pm.administrativeArea
-                    cache.setPlacemark(for: device.DeviceID, country: country, locality: locality)
+                    let timeZone = pm.timeZone
+                    cache.setPlacemark(for: device.DeviceID, country: country, locality: locality, timeZone: timeZone)
                 }
             }
         }

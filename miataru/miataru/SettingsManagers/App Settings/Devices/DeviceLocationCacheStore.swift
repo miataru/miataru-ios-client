@@ -21,13 +21,14 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
     @objc var timestamp: Date
     @objc var country: String?
     @objc var locality: String?
+    var timeZone: TimeZone?
     var batteryLevel: Double?
     var altitude: Double?
     var speed: Double?
     
     var id: String { deviceID }
     
-    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
+    init(deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, country: String? = nil, locality: String? = nil, timeZone: TimeZone? = nil, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
         self.deviceID = deviceID
         self.latitude = latitude
         self.longitude = longitude
@@ -35,6 +36,7 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.timestamp = timestamp
         self.country = country
         self.locality = locality
+        self.timeZone = timeZone
         self.batteryLevel = batteryLevel
         self.altitude = altitude
         self.speed = speed
@@ -48,6 +50,11 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         self.timestamp = aDecoder.decodeObject(forKey: "timestamp") as? Date ?? Date()
         self.country = aDecoder.decodeObject(forKey: "country") as? String
         self.locality = aDecoder.decodeObject(forKey: "locality") as? String
+        if let timeZoneIdentifier = aDecoder.decodeObject(forKey: "timeZoneIdentifier") as? String {
+            self.timeZone = TimeZone(identifier: timeZoneIdentifier)
+        } else {
+            self.timeZone = nil
+        }
         self.batteryLevel = aDecoder.decodeObject(forKey: "batteryLevel") as? Double
         self.altitude = aDecoder.decodeObject(forKey: "altitude") as? Double
         self.speed = aDecoder.decodeObject(forKey: "speed") as? Double
@@ -61,6 +68,7 @@ class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
         aCoder.encode(timestamp, forKey: "timestamp")
         aCoder.encode(country, forKey: "country")
         aCoder.encode(locality, forKey: "locality")
+        aCoder.encode(timeZone?.identifier, forKey: "timeZoneIdentifier")
         aCoder.encode(batteryLevel, forKey: "batteryLevel")
         aCoder.encode(altitude, forKey: "altitude")
         aCoder.encode(speed, forKey: "speed")
@@ -93,8 +101,8 @@ class DeviceLocationCacheStore: ObservableObject {
     
     private init() {
         self.locations = load()
-        // Enqueue reverse geocoding for any cached entries missing placemarks
-        for loc in locations where (loc.country == nil && loc.locality == nil) {
+        // Enqueue reverse geocoding for any cached entries missing placemarks or timezone
+        for loc in locations where (loc.country == nil && loc.locality == nil) || loc.timeZone == nil {
             enqueueGeocodingIfNeeded(for: loc.deviceID)
         }
     }
@@ -135,6 +143,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 // Preserve previous placemark to avoid UI flicker; will be updated by geocoding
                 country: existing.country,
                 locality: existing.locality,
+                timeZone: existing.timeZone,
                 batteryLevel: batteryLevel,
                 altitude: altitude,
                 speed: speed ?? existing.speed
@@ -166,7 +175,7 @@ class DeviceLocationCacheStore: ObservableObject {
         return (loc.country, loc.locality)
     }
 
-    func setPlacemark(for deviceID: String, country: String?, locality: String?) {
+    func setPlacemark(for deviceID: String, country: String?, locality: String?, timeZone: TimeZone? = nil) {
         if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {
             let loc = locations[idx]
             let updated = CachedDeviceLocation(
@@ -177,6 +186,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 timestamp: loc.timestamp,
                 country: country,
                 locality: locality,
+                timeZone: timeZone ?? loc.timeZone,
                 batteryLevel: loc.batteryLevel,
                 altitude: loc.altitude
             )
@@ -190,9 +200,12 @@ class DeviceLocationCacheStore: ObservableObject {
 
     // MARK: - Reverse Geocoding Queue
     func enqueueGeocodingIfNeeded(for deviceID: String, force: Bool = false) {
-        // If not forced and placemark already present, skip
+        // If not forced and placemark already present with timezone, skip
         if !force {
-            if let placemark = getPlacemark(for: deviceID), placemark.country != nil || placemark.locality != nil {
+            if let location = getLocation(for: deviceID),
+               let placemark = getPlacemark(for: deviceID),
+               (placemark.country != nil || placemark.locality != nil),
+               location.timeZone != nil {
                 return
             }
         }
@@ -202,6 +215,10 @@ class DeviceLocationCacheStore: ObservableObject {
             geocodeQueue.append(deviceID)
         }
         processNextGeocode()
+    }
+    
+    func getTimeZone(for deviceID: String) -> TimeZone? {
+        return getLocation(for: deviceID)?.timeZone
     }
     
     func forceGeocodingForAllDevices() {
@@ -230,7 +247,8 @@ class DeviceLocationCacheStore: ObservableObject {
                 if let pm = pm {
                     let country = pm.country
                     let locality = pm.locality ?? pm.subAdministrativeArea ?? pm.administrativeArea
-                    self.setPlacemark(for: nextDeviceID, country: country, locality: locality)
+                    let timeZone = pm.timeZone
+                    self.setPlacemark(for: nextDeviceID, country: country, locality: locality, timeZone: timeZone)
                 }
                 self.isProcessingGeocode = false
                 // Be polite with geocoder

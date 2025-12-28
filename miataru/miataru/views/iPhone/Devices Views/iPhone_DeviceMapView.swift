@@ -573,7 +573,10 @@ struct iPhone_DeviceMapView: View {
                                 // Show relative timestamp above marker (force per-second updates within Map annotation)
                                 if let timestamp = deviceTimestamp {
                                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        Text(relativeTimeString(from: timestamp, to: context.date))
+                                        let timeString = relativeTimeString(from: timestamp, to: context.date)
+                                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
+                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                        Text(displayText)
                                             .font(.caption)
                                             .padding(.horizontal, 8)
                                             .padding(.vertical, 4)
@@ -648,7 +651,10 @@ struct iPhone_DeviceMapView: View {
                                         VStack(spacing: 0) {
                                             // Timestamp above marker (force per-second updates within Map annotation)
                                             TimelineView(.periodic(from: .now, by: 1)) { context in
-                                                Text(relativeTimeString(from: cached.timestamp, to: context.date))
+                                                let timeString = relativeTimeString(from: cached.timestamp, to: context.date)
+                                                let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: other.DeviceID))
+                                                let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                                Text(displayText)
                                                     .font(.caption)
                                                     .padding(.horizontal, 8)
                                                     .padding(.vertical, 4)

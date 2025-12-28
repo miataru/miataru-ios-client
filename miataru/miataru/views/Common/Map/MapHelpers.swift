@@ -60,6 +60,29 @@ func relativeTimeString(
     return formatter.localizedString(for: date, relativeTo: now)
 }
 
+/// Returns a formatted timezone offset string (e.g., "+2" or "-5") comparing device timezone to local timezone
+func timezoneOffsetString(deviceTimeZone: TimeZone?) -> String? {
+    guard let deviceTimeZone = deviceTimeZone else { return nil }
+    let localTimeZone = TimeZone.current
+    
+    let now = Date()
+    let deviceOffset = deviceTimeZone.secondsFromGMT(for: now)
+    let localOffset = localTimeZone.secondsFromGMT(for: now)
+    let offsetDifference = deviceOffset - localOffset
+    
+    // Convert seconds to hours
+    let hoursDifference = offsetDifference / 3600
+    
+    // Format as "+2" or "-5" etc.
+    if hoursDifference == 0 {
+        return nil // Don't show if same timezone
+    } else if hoursDifference > 0 {
+        return "+\(hoursDifference)"
+    } else {
+        return "\(hoursDifference)" // Negative sign already included
+    }
+}
+
 /// Splits a polyline at the given distance from its start and returns the
 /// traversed and remaining segments plus the interpolated coordinate.
 extension MKPolyline {
