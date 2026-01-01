@@ -1898,3 +1898,138 @@ No linter errors. Implementation is complete.
 
 ---
 
+_**User (2025-12-28 15:55Z)**_
+
+describe and commit
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Preparing a commit message describing the changes, then committing.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+	new file:   .specstory/history/2025-12-28_16-29Z-timezone-from-map-location.md
+	modified:   miataru/SettingsManagers/App Settings/Devices/DeviceLocationCacheStore.swift
+	modified:   miataru/views/Common/DeviceRowView.swift
+	modified:   miataru/views/Common/Map/MapHelpers.swift
+	modified:   miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift
+	modified:   miataru/views/iPad/Groups Views/iPad_GroupMapView.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+	modified:   miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add timezone offset display to device locations
+
+- Add timezone property to CachedDeviceLocation class for storing device timezone
+- Update DeviceLocationCacheStore to extract and store timezone from CLPlacemark during reverse geocoding
+- Create timezoneOffsetString() helper function in MapHelpers to format timezone offset in hours (e.g., +2, -5)
+- Update all map views (iPhone/iPad device maps, group maps, navigation view) to display timezone offset in brackets next to relative time on device pin labels
+- Update DeviceRowView to show timezone offset in device list update times
+- Timezone offset is automatically fetched when reverse geocoding device locations
+- Offset only displayed when device is in different timezone than local timezone"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add timezone offset display to device locations
+
+- Add timezone property to CachedDeviceLocation class for storing device timezone
+- Update DeviceLocationCacheStore to extract and store timezone from CLPlacemark during reverse geocoding
+- Create timezoneOffsetString() helper function in MapHelpers to format timezone offset in hours (e.g., +2, -5)
+- Update all map views (iPhone/iPad device maps, group maps, navigation view) to display timezone offset in brackets next to relative time on device pin labels
+- Update DeviceRowView to show timezone offset in device list update times
+- Timezone offset is automatically fetched when reverse geocoding device locations
+- Offset only displayed when device is in different timezone than local timezone"
+```
+
+```
+[master edf36ad] Add timezone offset display to device locations
+ 9 files changed, 1989 insertions(+), 18 deletions(-)
+ create mode 100644 miataru/.specstory/history/2025-12-28_16-29Z-timezone-from-map-location.md
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Committed the changes.
+
+## Commit Summary
+
+**Commit:** `edf36ad` - "Add timezone offset display to device locations"
+
+### Changes Committed:
+
+1. **Core timezone support:**
+   - Added `timeZone` property to `CachedDeviceLocation` class
+   - Updated encoding/decoding to persist timezone data
+   - Modified `DeviceLocationCacheStore` to extract timezone from `CLPlacemark` during reverse geocoding
+
+2. **Helper function:**
+   - Created `timezoneOffsetString()` in `MapHelpers.swift` to format timezone offset in hours (e.g., "+2", "-5")
+
+3. **Map views updated:**
+   - `iPhone_DeviceMapView` - Main device and other devices
+   - `iPad_DeviceMapView` - Main device and other devices
+   - `iPhone_GroupMapView` - All devices in group
+   - `iPad_GroupMapView` - All devices in group
+   - `iPhone_DeviceNavigationView` - User's device and target device
+
+4. **Device list updated:**
+   - `DeviceRowView` - Shows timezone offset in device list update times
+
+### Features:
+- Timezone offset appears in brackets next to relative time (e.g., "2 minutes ago (+2)")
+- Only displayed when device is in a different timezone than local
+- Automatically fetched during reverse geocoding
+- Works across all map views and device lists
+
+**Files changed:** 9 files, 1989 insertions(+), 18 deletions(-)
+
+The commit is ready and all changes have been saved to the repository.
+
+---
+
