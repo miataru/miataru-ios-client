@@ -401,8 +401,8 @@ struct iPhone_DeviceNavigationView: View {
         Image(systemName: "arrow.up.arrow.down")
             .symbolRenderingMode(.palette)
             .foregroundStyle(
-                isRouteReversed ? Color.accentColor : Color.primary,
-                isRouteReversed ? Color.primary : Color.accentColor
+                isRouteReversed ? Color.green : Color.primary,
+                isRouteReversed ? Color.primary : Color.green
             )
     }
     

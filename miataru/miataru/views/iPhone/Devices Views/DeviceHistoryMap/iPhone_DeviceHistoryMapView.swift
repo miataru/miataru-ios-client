@@ -64,6 +64,14 @@ struct iPhone_DeviceHistoryMapView: View {
         return values
     }
 
+    private let quickRanges: [(key: String, duration: TimeInterval)] = [
+        ("history_quick_range_24h", 24 * 60 * 60),
+        ("history_quick_range_7d", 7 * 24 * 60 * 60),
+        ("history_quick_range_31d", 31 * 24 * 60 * 60),
+        // Use a very large duration to cover the full available range
+        ("history_quick_range_all", Double.greatestFiniteMagnitude)
+    ]
+
     private var selectedTimelineEntry: MiataruLocationData? {
         guard let scrubTimestamp else { return nil }
         return viewModel.closest(to: scrubTimestamp, in: selectedRange)
@@ -209,6 +217,9 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
 
                 if let bounds = timelineBounds, !viewModel.history.isEmpty {
+                    quickRangePicker(bounds: bounds)
+                        .padding(.horizontal, 16)
+
                     DeviceHistoryTimelineOverlay(
                         fullRange: bounds,
                         selection: Binding(
@@ -274,6 +285,29 @@ struct iPhone_DeviceHistoryMapView: View {
                     pendingFocusAfterScrub = true
                 } else {
                     scheduleFocusOnScrubbedEntry(animated: false)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func quickRangePicker(bounds: ClosedRange<Double>) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(quickRanges, id: \.key) { item in
+                    let isSelected = isQuickRangeSelected(duration: item.duration, bounds: bounds)
+                    Button {
+                        applyQuickRange(duration: item.duration, bounds: bounds)
+                    } label: {
+                        Text(NSLocalizedString(item.key, comment: "Quick picker option for a fixed time range"))
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .frame(minWidth: 70)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(isSelected ? .accentColor : .secondary)
+                    .accessibilityIdentifier(item.key)
                 }
             }
         }
@@ -418,11 +452,13 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     private func color(for entry: MiataruLocationData, within entries: [MiataruLocationData]) -> Color {
-        guard let first = entries.first?.TimestampDate, let last = entries.last?.TimestampDate else { return .blue }
-        let start = first.timeIntervalSince1970
-        let end = last.timeIntervalSince1970
-        let total = end - start
-        let diff = entry.TimestampDate.timeIntervalSince1970 - start
+        // Use the full history to keep a consistent color mapping regardless of timeline selection
+        let reference = viewModel.history.isEmpty ? entries : viewModel.history
+        guard !reference.isEmpty else { return .blue }
+        let timestamps = reference.map { $0.TimestampDate.timeIntervalSince1970 }
+        guard let minTimestamp = timestamps.min(), let maxTimestamp = timestamps.max() else { return .blue }
+        let total = maxTimestamp - minTimestamp
+        let diff = entry.TimestampDate.timeIntervalSince1970 - minTimestamp
         let ratio = total > 0 ? diff / total : 0
         return Self.historyColor(for: ratio)
     }
@@ -485,6 +521,23 @@ struct iPhone_DeviceHistoryMapView: View {
         case .requestFailed(let err):
             return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
         }
+    }
+
+    private func applyQuickRange(duration: TimeInterval, bounds: ClosedRange<Double>) {
+        let upper = bounds.upperBound
+        let lower = max(bounds.lowerBound, upper - duration)
+        selectedRange = lower...upper
+        scrubTimestamp = upper
+        hasUserScrubbed = false
+        scheduleRegionUpdate(animated: true)
+    }
+
+    private func isQuickRangeSelected(duration: TimeInterval, bounds: ClosedRange<Double>) -> Bool {
+        guard let selectedRange else { return false }
+        let upper = bounds.upperBound
+        let lower = max(bounds.lowerBound, upper - duration)
+        let epsilon: Double = 1.0
+        return abs(selectedRange.lowerBound - lower) <= epsilon && abs(selectedRange.upperBound - upper) <= epsilon
     }
 
     private func clampScrubToRange() {
