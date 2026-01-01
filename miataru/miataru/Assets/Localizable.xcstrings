@@ -3250,6 +3250,102 @@
         }
       }
     },
+    "history_quick_range_7d" : {
+      "comment" : "Quick picker option for the past seven days on the history map",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Woche"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 week"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1週間"
+          }
+        }
+      }
+    },
+    "history_quick_range_24h" : {
+      "comment" : "Quick picker option for the past 24 hours on the history map",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 day"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日"
+          }
+        }
+      }
+    },
+    "history_quick_range_31d" : {
+      "comment" : "Quick picker option for the past 31 days on the history map",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Monat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 month"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1か月"
+          }
+        }
+      }
+    },
+    "history_quick_range_all" : {
+      "comment" : "Quick picker option to show the entire available history",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "all"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて"
+          }
+        }
+      }
+    },
     "history_timeline_scrub_handle" : {
       "comment" : "Scrub handle for history timeline",
       "localizations" : {
@@ -4989,52 +5085,6 @@
         }
       }
     },
-    "reverse_navigation_direction" : {
-      "comment" : "Reverse navigation direction",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Navigationsrichtung umkehren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reverse navigation direction"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ナビゲーション方向を反転"
-          }
-        }
-      }
-    },
-    "reverse_navigation_direction_hint" : {
-      "comment" : "Swaps the route to show navigation from the device to you, or from you to the device.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tauscht die Route, um die Navigation vom Gerät zu Ihnen oder von Ihnen zum Gerät anzuzeigen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Swaps the route to show navigation from the device to you, or from you to the device."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ルートを交換して、デバイスからあなたへのナビゲーション、またはあなたからデバイスへのナビゲーションを表示します。"
-          }
-        }
-      }
-    },
     "remove_from_group" : {
       "comment" : "Action to remove a device from a group",
       "localizations" : {
@@ -5100,6 +5150,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アドレス解決"
+          }
+        }
+      }
+    },
+    "reverse_navigation_direction" : {
+      "comment" : "Reverse navigation direction",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigationsrichtung umkehren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse navigation direction"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナビゲーション方向を反転"
+          }
+        }
+      }
+    },
+    "reverse_navigation_direction_hint" : {
+      "comment" : "Swaps the route to show navigation from the device to you, or from you to the device.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tauscht die Route, um die Navigation vom Gerät zu Ihnen oder von Ihnen zum Gerät anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swaps the route to show navigation from the device to you, or from you to the device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ルートを交換して、デバイスからあなたへのナビゲーション、またはあなたからデバイスへのナビゲーションを表示します。"
           }
         }
       }
