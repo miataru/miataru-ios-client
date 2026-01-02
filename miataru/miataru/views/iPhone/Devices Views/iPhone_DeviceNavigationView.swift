@@ -175,7 +175,16 @@ struct iPhone_DeviceNavigationView: View {
                 if let route = route {
                     if settings.showRouteProgress {
                         let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(for: route, deviceTimestamp: deviceTimestamp, knownDeviceSpeed: knownSpeed, now: now, isRouteReversed: isRouteReversed) {
+                        let userSpeed = locationManager.currentLocation?.speed
+                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
+                            for: route,
+                            deviceTimestamp: deviceTimestamp,
+                            knownDeviceSpeed: knownSpeed,
+                            userTimestamp: userTimestamp,
+                            knownUserSpeed: userSpeed,
+                            now: now,
+                            isRouteReversed: isRouteReversed
+                        ) {
                             if progress <= minimumProgressToShowGhost {
                                 MapPolyline(route.polyline)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)

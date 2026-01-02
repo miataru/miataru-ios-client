@@ -24,27 +24,67 @@ struct RouteGhostCalculator {
     /// Calculates the ghost coordinate and polylines for completed/remaining segments.
     /// - Parameters:
     ///   - route: The MKRoute to traverse.
-    ///   - deviceTimestamp: The last known timestamp of the device location.
-    ///   - knownDeviceSpeed: Optional speed in meters per second. If provided and > 0, used to compute distance.
+    ///   - deviceTimestamp: The last known timestamp of the remote device location.
+    ///   - knownDeviceSpeed: Optional remote device speed in meters per second.
+    ///   - userTimestamp: The last known timestamp of the local device location.
+    ///   - knownUserSpeed: Optional local device speed in meters per second.
     ///   - now: Reference time (defaults to Date()).
     ///   - isRouteReversed: Whether the route is reversed (device at start vs end).
     /// - Returns: (donePolyline, todoPolyline, ghostCoordinate, progress [0,1]) or nil if cannot compute.
-    static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, now: Date = Date(), isRouteReversed: Bool = false) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
+    static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, userTimestamp: Date?, knownUserSpeed: Double?, now: Date = Date(), isRouteReversed: Bool = false) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
         guard route.distance > 0 else { return nil }
-        let elapsed = deviceTimestamp.map { now.timeIntervalSince($0) } ?? 0
         let totalDistance = route.distance
-
-        // Only use speed if it's above the threshold to filter out GPS noise from stationary devices
-        // GPS can show 2-4 km/h even for stationary devices due to accuracy limitations
-        let useSpeed = (knownDeviceSpeed ?? 0) >= speedThreshold ? max(0, knownDeviceSpeed ?? 0) : 0
+        
+        // Only use speeds above the threshold to filter out GPS noise from stationary devices
+        let deviceSpeed = usableSpeed(knownDeviceSpeed)
+        let userSpeed = usableSpeed(knownUserSpeed)
+        
+        // Pick the fastest available speed; choose its corresponding timestamp for elapsed time
+        let chosenSpeed: Double?
+        let chosenTimestamp: Date?
+        if let deviceSpeed, let userSpeed {
+            if deviceSpeed >= userSpeed {
+                chosenSpeed = deviceSpeed
+                chosenTimestamp = deviceTimestamp
+            } else {
+                chosenSpeed = userSpeed
+                chosenTimestamp = userTimestamp
+            }
+        } else if let deviceSpeed {
+            chosenSpeed = deviceSpeed
+            chosenTimestamp = deviceTimestamp
+        } else if let userSpeed {
+            chosenSpeed = userSpeed
+            chosenTimestamp = userTimestamp
+        } else {
+            chosenSpeed = nil
+            chosenTimestamp = nil
+        }
+        
+        let fallbackElapsed: TimeInterval
+        if let deviceTimestamp {
+            fallbackElapsed = now.timeIntervalSince(deviceTimestamp)
+        } else if let userTimestamp {
+            fallbackElapsed = now.timeIntervalSince(userTimestamp)
+        } else {
+            fallbackElapsed = 0
+        }
+        
         let distanceFromDevice: CLLocationDistance
-        if useSpeed > 0 {
-            // Distance advanced since last update using speed (device is actually moving)
-            distanceFromDevice = min(totalDistance, max(0, elapsed * useSpeed))
+        if let speed = chosenSpeed {
+            if let ts = chosenTimestamp {
+                let elapsed = max(0, now.timeIntervalSince(ts))
+                distanceFromDevice = min(totalDistance, max(0, elapsed * speed))
+            } else {
+                // Without a timestamp we cannot project using speed; fall back to travel time
+                let expected = route.expectedTravelTime
+                let progress = expected > 0 ? max(0, min(1, fallbackElapsed / expected)) : 0
+                distanceFromDevice = totalDistance * progress
+            }
         } else {
             // Fallback: use expectedTravelTime proportion if available (device appears stationary)
             let expected = route.expectedTravelTime
-            let progress = expected > 0 ? max(0, min(1, elapsed / expected)) : 0
+            let progress = expected > 0 ? max(0, min(1, fallbackElapsed / expected)) : 0
             distanceFromDevice = totalDistance * progress
         }
 
@@ -80,5 +120,10 @@ struct RouteGhostCalculator {
             // Since device travels backward, we swap the segments
             return (splitSplitToEnd, splitStartToSplit, ghost, progressValue)
         }
+    }
+
+    private static func usableSpeed(_ speed: Double?) -> Double? {
+        guard let speed, speed.isFinite else { return nil }
+        return speed >= speedThreshold ? speed : nil
     }
 }
