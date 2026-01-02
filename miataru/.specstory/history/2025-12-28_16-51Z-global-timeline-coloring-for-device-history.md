@@ -1527,3 +1527,172 @@ Tests not run (localization text change only).
 
 ---
 
+_**User (2026-01-01 19:21Z)**_
+
+describe all changes and commit
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing to commit changes**
+
+I'm verifying the current git status in the workspace to confirm all modified files before staging and committing with an English message summarizing added quick range picker, color mapping changes, and direction indicator green updates.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb
+```
+
+```
+## master...origin/master
+ M .specstory/history/2025-12-28_16-29Z-timezone-from-map-location.md
+ M miataru.xcodeproj/project.pbxproj
+ M miataru/Assets/Localizable.xcstrings
+ M "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift"
+ M "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
+?? .specstory/history/2025-12-28_16-51Z-global-timeline-coloring-for-device-history.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing selective commit**
+
+I'm ensuring only relevant files touched by us (Localizable, DeviceHistoryMapView, DeviceNavigationView) are staged, avoiding unrelated .specstory and pbxproj files; I'll compose a detailed English commit message about quick range presets and UI color updates, then stage these files and commit accordingly.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Requesting git_write permission**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Flagging permission issue**
+
+The .git directory seems locked due to permissions; setting required_permissions to ['all'] might resolve it.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/Assets/Localizable.xcstrings" "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Verifying staged changes before commit**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status -sb
+```
+
+```
+## master...origin/master
+ M .specstory/history/2025-12-28_16-29Z-timezone-from-map-location.md
+ M miataru.xcodeproj/project.pbxproj
+M  miataru/Assets/Localizable.xcstrings
+M  "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift"
+M  "miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift"
+?? .specstory/history/2025-12-28_16-51Z-global-timeline-coloring-for-device-history.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing commit with UI and history updates**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add quick history presets and color tweaks"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add quick history presets and color tweaks"
+```
+
+```
+[master 3ee90ea] Add quick history presets and color tweaks
+ 3 files changed, 181 insertions(+), 32 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing and committing changes**
+
+The commit 3ee90ea includes making the history map colors global, adding a quick picker with an 'All' option, localizing labels, and turning the direction button green. Tests were not run, and unrelated files like the pbxproj and a specstory remain uncommitted in staging.</details></think>
+
+---
+
+Changes applied
+- History map colors now stay consistent with the full timeline instead of remapping to the selection.
+- Added quick range picker (1 day, 1 week, 1 month, all) above the history timeline; selecting snaps the range and map view. Localized labels for en/de/ja.
+- Navigation direction toggle now always highlights the active arrow in green.
+
+Commit
+- Created commit `3ee90ea` with the above changes.
+
+Notes
+- Unrelated files remain unstaged: `.specstory/history/...`, `miataru.xcodeproj/project.pbxproj`.
+- Tests not run (UI/text changes only).
+
+---
+
