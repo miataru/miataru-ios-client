@@ -257,8 +257,8 @@ struct iPad_GroupMapView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .ignoresSafeArea(.container, edges: .all)
-        .navigationBarHidden(true)
-        .adaptiveToolbarBackground()
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         .onAppear {
             if !groupDeviceIDs.isEmpty {
                 // Ensure auto-centering is enabled when opening a group on iPad
