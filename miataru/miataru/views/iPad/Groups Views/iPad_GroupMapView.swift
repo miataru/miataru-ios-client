@@ -255,8 +255,9 @@ struct iPad_GroupMapView: View {
                 .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
             }
         }
-        .navigationTitle(group.groupName)
-        .navigationBarTitleDisplayMode(.inline)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .ignoresSafeArea(.container, edges: .all)
+        .navigationBarHidden(true)
         .adaptiveToolbarBackground()
         .onAppear {
             if !groupDeviceIDs.isEmpty {

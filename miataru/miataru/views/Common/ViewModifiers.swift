@@ -14,12 +14,12 @@ import SwiftUI
 struct AdaptiveToolbarBackground: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
-            // iOS 26: transparent background
+            // iOS 26: keep toolbar visible but transparent to avoid layout gaps
             content
-                .toolbarBackground(.hidden, for: .navigationBar)
-                .toolbarBackgroundVisibility(.hidden)
-                .toolbarBackground(.hidden, for: .tabBar)
-                .toolbarBackgroundVisibility(.hidden)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarBackground(.clear, for: .navigationBar)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.clear, for: .tabBar)
         } else {
             // iOS prior to 26: ultrathin material
             content

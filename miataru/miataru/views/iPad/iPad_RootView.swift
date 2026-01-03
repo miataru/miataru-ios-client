@@ -13,10 +13,12 @@ struct iPad_RootView: View {
     var body: some View {
         TabView {
             iPad_DevicesView()
+                .ignoresSafeArea(.container, edges: .top)
                 .tabItem {
                     Label("devices", systemImage: "iphone.gen3.badge.location")
                 }
             iPad_GroupsView()
+                .ignoresSafeArea(.container, edges: .top)
                 .tabItem {
                     Label("groups", systemImage: "person.3")
                 }
@@ -35,7 +37,10 @@ struct iPad_RootView: View {
         .environmentObject(SettingsManager.shared)
         .bottomAccessory(onTap: nil)
         .ignoresSafeArea(.all)
-        //.adaptiveToolbarBackground()
+        .toolbarBackground(.clear, for: .tabBar)
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarBackgroundVisibility(.visible, for: .tabBar)
+        .toolbarBackgroundVisibility(.visible, for: .navigationBar)
     }
 }
 
