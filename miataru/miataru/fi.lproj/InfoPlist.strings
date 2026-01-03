@@ -1,0 +1,5 @@
+/* Finnish InfoPlist strings */
+"NSLocationWhenInUseUsageDescription" = "Käytämme sijaintiasi näyttääksemme paikkasi ja jakaaksemme sen laitteidesi kanssa.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Tarvitsemme taustasijainnin, jotta laitteesi sijainti pysyy ajan tasalla myös silloin, kun sovellus ei ole auki.";
+
+
