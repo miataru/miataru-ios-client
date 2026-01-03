@@ -117,7 +117,9 @@ struct iPad_GroupsView: View {
                         .padding()
                 }
             }
+            .ignoresSafeArea(.container, edges: .top)
         }
+        .ignoresSafeArea(.container, edges: .top)
         .sheet(isPresented: $showingAddGroup) {
             iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
         }

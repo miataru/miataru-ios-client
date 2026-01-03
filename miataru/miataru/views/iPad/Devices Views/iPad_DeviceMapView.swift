@@ -264,16 +264,21 @@ struct iPad_DeviceMapView: View {
             scaleBarView()
             // Compass in the top right corner
             compassView()
-        }
-        .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? "Unknown Device"))
-        .background(Color(.systemBackground))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                // Button to manually update device location
-                updateButton()
+            
+            // Refresh button overlaid to avoid reserving nav bar height
+            VStack {
+                HStack {
+                    Spacer()
+                    updateButton()
+                        .padding(.trailing, 12)
+                        .padding(.top, 8)
+                }
+                Spacer()
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .ignoresSafeArea(.container, edges: .all)
+        .navigationBarHidden(true)
         .adaptiveToolbarBackground()
         .onAppear {
             // Ensure auto-centering is enabled on fresh start

@@ -225,7 +225,9 @@ struct iPad_DevicesView: View {
                         .foregroundColor(.secondary)
                 }
             }
+            .ignoresSafeArea(.container, edges: .top)
         }
+        .ignoresSafeArea(.container, edges: .top)
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
         }
