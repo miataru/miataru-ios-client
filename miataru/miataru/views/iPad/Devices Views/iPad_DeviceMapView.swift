@@ -265,21 +265,16 @@ struct iPad_DeviceMapView: View {
             // Compass in the top right corner
             compassView()
             
-            // Refresh button overlaid to avoid reserving nav bar height
-            VStack {
-                HStack {
-                    Spacer()
-                    updateButton()
-                        .padding(.trailing, 12)
-                        .padding(.top, 8)
-                }
-                Spacer()
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .ignoresSafeArea(.container, edges: .all)
-        .navigationBarHidden(true)
-        .adaptiveToolbarBackground()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                updateButton()
+            }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         .onAppear {
             // Ensure auto-centering is enabled on fresh start
             isAutoCenteringEnabled = true
