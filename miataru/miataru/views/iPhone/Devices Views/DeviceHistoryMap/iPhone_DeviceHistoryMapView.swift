@@ -120,11 +120,13 @@ struct iPhone_DeviceHistoryMapView: View {
         let selectedEntry = selectedTimelineEntry
         let mapHistory = playbackAdjustedHistory(baseHistory: fullVisibleHistory, selectedEntry: selectedEntry)
         let useDownsampling = !isPlaying && mapHistory.count > 300
+        // Only downsample annotations (markers), NOT the polyline source
+        // This preserves the actual route shape while reducing marker count
         let annotations = useDownsampling
             ? viewModel.downsample(mapHistory, selected: selectedEntry)
             : mapHistory
-        let polylineSource = useDownsampling ? annotations : mapHistory
-        let polylineSegments = viewModel.polylineSegments(from: polylineSource)
+        // Always use full history for polyline to show accurate path
+        let polylineSegments = viewModel.polylineSegments(from: mapHistory)
 
         Map(position: $cameraPosition) {
             ForEach(Array(polylineSegments.enumerated()), id: \.offset) { _, segment in
