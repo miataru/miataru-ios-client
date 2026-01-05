@@ -35,6 +35,9 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var playbackTask: Task<Void, Never>?
     @State private var hasUserScrubbed = false
     @State private var isPlaybackStepping = false
+    @State private var playbackSpeed: Double = 1.0
+    @State private var showSpeedOverlay = false
+    @State private var speedOverlayTask: Task<Void, Never>?
     // Debounced tasks to avoid excessive map updates
     @State private var debouncedRegionTask: Task<Void, Never>?
     @State private var debouncedFocusTask: Task<Void, Never>?
@@ -243,7 +246,9 @@ struct iPhone_DeviceHistoryMapView: View {
                         selectedCount: fullVisibleHistory.count,
                         totalCount: viewModel.history.count,
                         isPlaying: isPlaying,
+                        playbackSpeed: playbackSpeed,
                         onPlayPause: togglePlayback,
+                        onLongPressSpeedUp: handleLongPressSpeedUp,
                         onScrubShown: { hasUserScrubbed = true },
                         stopPlayback: stopPlayback,
                         startPlayback: startPlayback,
@@ -258,6 +263,12 @@ struct iPhone_DeviceHistoryMapView: View {
             }
             .padding(.bottom, 16)
         }
+        .overlay {
+            if showSpeedOverlay {
+                PlaybackSpeedOverlay(speed: playbackSpeed)
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
+        }
         .navigationTitle(device.DeviceName)
         .toolbar(.hidden, for: .tabBar)
         .task {
@@ -267,6 +278,7 @@ struct iPhone_DeviceHistoryMapView: View {
             stopPlayback()
             debouncedRegionTask?.cancel()
             debouncedFocusTask?.cancel()
+            speedOverlayTask?.cancel()
         }
         .onReceive(viewModel.$history) { _ in
             initializeTimelineIfNeeded()
@@ -612,9 +624,46 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func togglePlayback() {
         if isPlaying {
+            // Mark current position so resume continues from here
+            hasUserScrubbed = true
             stopPlayback()
+            // Reset speed to 1x on pause
+            if playbackSpeed != 1.0 {
+                playbackSpeed = 1.0
+                showSpeedOverlayBriefly()
+            }
         } else {
             startPlayback()
+        }
+    }
+
+    private func handleLongPressSpeedUp() {
+        guard isPlaying else { return }
+        // Cycle through 1x → 2x → 4x → 8x → 1x
+        switch playbackSpeed {
+        case 1.0:
+            playbackSpeed = 2.0
+        case 2.0:
+            playbackSpeed = 4.0
+        case 4.0:
+            playbackSpeed = 8.0
+        default:
+            playbackSpeed = 1.0
+        }
+        showSpeedOverlayBriefly()
+        // Speed is read dynamically in playback loop, no restart needed
+    }
+
+    private func showSpeedOverlayBriefly() {
+        speedOverlayTask?.cancel()
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showSpeedOverlay = true
+        }
+        speedOverlayTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            withAnimation(.easeOut(duration: 0.3)) {
+                showSpeedOverlay = false
+            }
         }
     }
 
@@ -634,6 +683,7 @@ struct iPhone_DeviceHistoryMapView: View {
         isPlaying = true
         playbackTask = Task {
             var currentStartIndex = startIndex
+            let baseDelay: UInt64 = 2_000_000_000
             playbackLoop: while !Task.isCancelled && isPlaying {
                 for entry in entries[currentStartIndex...] {
                     if Task.isCancelled || !isPlaying { break playbackLoop }
@@ -642,7 +692,10 @@ struct iPhone_DeviceHistoryMapView: View {
                         scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
                         focusOnEntry(entry, within: entries)
                     }
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    // Read speed dynamically on each step to allow real-time speed changes
+                    let currentSpeed = await MainActor.run { playbackSpeed }
+                    let adjustedDelay = UInt64(Double(baseDelay) / currentSpeed)
+                    try? await Task.sleep(nanoseconds: adjustedDelay)
                     await MainActor.run {
                         isPlaybackStepping = false
                     }
