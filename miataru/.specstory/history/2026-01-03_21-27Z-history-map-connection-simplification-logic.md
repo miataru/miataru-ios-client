@@ -515,3 +515,482 @@ Done! The changes have been committed [[memory:12857951]]. Here's what was inclu
 
 ---
 
+_**User (2026-01-05 14:12Z)**_
+
+only recalculate/redraw when the user stops dragging the history-range-region selectors
+
+---
+
+_**Agent (model claude-4.5-opus-high-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user wants to optimize the history map view so that it only recalculates/redraws when the user stops dragging the history-range-region selectors, rather than continuously while dragging. This is a performance optimization.
+
+Let me look at the current code to understand how the range selection and updates work. I need to find where the selection dragging is handled and where the map updates are triggered.
+
+From what I saw earlier, there are already some flags like `isSelectionDragging` and handlers like `handleSelectionDragBegan` and `handleSelectionDragEnded`. Let me look at the current implementation more closely.</details></think>
+
+---
+
+Let me examine the current implementation to understand how the range selection updates work:
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to look at the `DeviceHistoryTimelineOverlay` to understand how the selection dragging callbacks work. The issue is that during dragging, the `selectedRange` binding changes continuously, and even though there's an early return in `.onChange(of: selectedRange)` when `isSelectionDragging` is true (line 275), the `visibleHistory` computed property is still being recalculated on every frame because `selectedRange` changes.
+
+The problem is that `visibleHistory` is a computed property that depends on `selectedRange`, and it's used in the `body` view. So every time `selectedRange` changes (during dragging), the entire body is re-evaluated, which includes calculating `fullVisibleHistory`, `mapHistory`, `annotations`, and `polylineSegments`.
+
+To fix this, I need to:
+1. Store a "committed" or "display" version of the selected range that only updates when dragging ends
+2. Use this committed range for the map display
+3. Keep the live `selectedRange` for the timeline overlay UI so the user sees feedback while dragging
+
+Let me also check the DeviceHistoryTimelineOverlay to understand its interface better.</details></think>
+
+---
+
+Let me also check the `DeviceHistoryTimelineOverlay` to understand how the selection callbacks work:
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="codebase_search">
+<details>
+                <summary>Tool use: **codebase_search** • Searched codebase "Where is DeviceHistoryTimelineOverlay defined and how does it handle selection dragging?" • **15** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `miataru/views/Common/DeviceHistoryTimelineOverlay.swift` | L31 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L217-263 |
+| `miataru/views/Common/DeviceHistoryTimelineOverlay.swift` | L92-143 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L53 |
+| `miataru/views/Common/TimelineRangeSlider.swift` | L49-88 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L260-318 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L128-163 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L160-202 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L104-131 |
+| `miataru/views/Common/TimelineRangeSlider.swift` | L175-213 |
+| `miataru/views/Common/TimelineRangeSlider.swift` | L208-258 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L49-107 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | L572-610 |
+| `miataru/views/Common/TimelineRangeSlider.swift` | L150-177 |
+| `miataru/views/Common/TimelineRangeSlider.swift` | L255-286 |
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I understand the issue. The problem is that when the user drags the selection handles, the `selectedRange` state changes continuously. Even though there's an early return in `.onChange(of: selectedRange)` to prevent region updates during dragging, the `visibleHistory` computed property is still recalculated on every render because `selectedRange` changes.
+
+The `visibleHistory` computed property calls `viewModel.visibleHistory(in: selectedRange)`, and this is used in the body to compute `fullVisibleHistory`, `mapHistory`, `annotations`, and `polylineSegments`. So every drag event causes:
+1. `selectedRange` to change
+2. Body to re-evaluate
+3. `visibleHistory` to recalculate
+4. All map data to be recomputed
+
+The fix is to introduce a "committed" or "display" range that only updates when dragging ends, and use that for the map display. The live `selectedRange` can continue updating the timeline overlay UI during dragging.
+
+Let me implement this fix:
+1. Add a new state `displayRange` that represents the committed/stable range for map rendering
+2. During dragging, only update `selectedRange` (for the slider UI) but not `displayRange`
+3. When dragging ends, sync `displayRange` to `selectedRange`
+4. Use `displayRange` for `visibleHistory` and map rendering</details></think>
+
+---
+
+I see the issue. The `visibleHistory` computed property is called on every body re-evaluation, and since `selectedRange` changes continuously during dragging, the map is constantly recalculating and redrawing.
+
+The fix is to introduce a "display range" that only updates when dragging stops, while the live `selectedRange` continues to update the slider UI.
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: undefined
+
+```diff
+@@ -28,4 +28,6 @@
+      // Timeline state
+      @State private var selectedRange: ClosedRange&lt;Double&gt;? = nil
++     /// The committed range used for map rendering - only updates when dragging ends
++     @State private var displayRange: ClosedRange&lt;Double&gt;? = nil
+      @State private var scrubTimestamp: Double? = nil
+      // Playback
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update the `visibleHistory` computed property to use `displayRange` instead of `selectedRange` for map rendering.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 1
+
+```diff
+@@ -45,6 +45,7 @@
+      private let playbackContextPadding = 50
+  
++     /// Uses displayRange (committed range) for map rendering to avoid constant updates during dragging
+      private var visibleHistory: [MiataruLocationData] {
+-         viewModel.visibleHistory(in: selectedRange)
++         viewModel.visibleHistory(in: displayRange)
+      }
+  
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update the `initializeTimelineIfNeeded` function to also initialize `displayRange`.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: undefined
+
+```diff
+@@ -392,4 +392,7 @@
+              selectedRange = bounds
+          }
++         if displayRange == nil {
++             displayRange = selectedRange
++         }
+          if scrubTimestamp == nil {
+              scrubTimestamp = bounds.upperBound
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update the `onChange(of: selectedRange)` handler to only update `displayRange` when not dragging.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: 1
+
+```diff
+@@ -274,7 +274,9 @@
+              stopPlayback()
+          }
+-         .onChange(of: selectedRange) { _, _ in
++         .onChange(of: selectedRange) { _, newValue in
+              clampScrubToRange()
++             // Only update displayRange (and thus the map) when not dragging
+              if isSelectionDragging { return }
++             displayRange = newValue
+              scheduleRegionUpdate(animated: false)
+              if isPlaying {
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Now I need to update the `handleSelectionDragEnded` function to sync `displayRange` from `selectedRange` when dragging ends.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: undefined
+
+```diff
+@@ -604,4 +604,6 @@
+      private func handleSelectionDragEnded() {
+          isSelectionDragging = false
++         // Commit the selection to displayRange - this triggers the map update
++         displayRange = selectedRange
+          scheduleRegionUpdate(animated: false, useDefaultZoom: false, delayMs: 60)
+      }
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+I also need to update the `applyQuickRange` function to update `displayRange` when a quick range button is pressed.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: 1
+
+```diff
+@@ -537,5 +537,7 @@
+          let upper = bounds.upperBound
+          let lower = max(bounds.lowerBound, upper - duration)
+-         selectedRange = lower...upper
++         let newRange = lower...upper
++         selectedRange = newRange
++         displayRange = newRange
+          scrubTimestamp = upper
+          hasUserScrubbed = false
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Let me also check if there are other places where `selectedRange` is used that should also consider `displayRange`. Let me also update the `clampScrubToRange` function to work with `displayRange` for the scrub clamping (since scrub should be clamped to the committed range, not the live dragging range).
+
+Actually wait - for `clampScrubToRange`, we probably want to clamp to `selectedRange` since the user is actively selecting. But the scrub handle position should reflect where they're dragging. Let me think about this...
+
+Actually, the current logic is fine - `clampScrubToRange` clamps the scrub position to the selected range, which makes sense during dragging so the scrub handle stays within the selection area the user is creating.
+
+Let me check for linter errors.</details></think>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Good, no linter errors. Let me verify the changes look correct by reading the relevant parts of the file.</details></think>
+
+---
+
+Let me verify the changes are complete and correct:
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Let me also verify the other changes I made.</details></think>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "displayRange" in "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" • 10 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `@State private var displayRange: ClosedRange<Double>? = nil` | L31 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `/// Uses displayRange (committed range) for map rendering to avoid constant updates during dragging` | L47 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `viewModel.visibleHistory(in: displayRange)` | L49 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `// Only update displayRange (and thus the map) when not dragging` | L278 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `displayRange = newValue` | L280 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `if displayRange == nil \{` | L396 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `displayRange = selectedRange` | L397 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `displayRange = newRange` | L541 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `// Commit the selection to displayRange - this triggers the map update` | L608 |
+| `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` | `displayRange = selectedRange` | L609 |
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+All the changes look good. Let me also check that the Timeline overlay gets the live `selectedRange` for its UI display (so the user sees the selection handles moving during drag). Looking at the code earlier, the binding is on `selectedRange`:
+
+```swift
+selection: Binding(
+    get: { selectedRange ?? bounds },
+    set: { newValue in
+        selectedRange = normalizeRange(newValue)
+    }
+),
+```
+
+This is correct - the slider UI updates with `selectedRange`, while the map uses `displayRange`. This gives us the desired behavior:
+- During dragging: slider UI updates immediately, map stays static
+- When drag ends: map updates to show the new selection
+
+The changes are complete. Let me provide a summary for the user.</details></think>
+
+---
+
+The changes are complete. Here's a summary of what was implemented:
+
+## Summary
+
+**Problem:** During dragging of the history range selectors, the map was constantly recalculating and redrawing because `selectedRange` changes triggered `visibleHistory` recalculation on every frame.
+
+**Solution:** Introduced a separate `displayRange` state that only updates when dragging stops:
+
+| State | Purpose | Updates |
+|-------|---------|---------|
+| `selectedRange` | Timeline slider UI | Continuously during drag |
+| `displayRange` | Map rendering | Only when drag ends |
+
+**Changes made:**
+1. Added `displayRange` state variable to hold the committed range
+2. `visibleHistory` now uses `displayRange` instead of `selectedRange`
+3. `onChange(of: selectedRange)` only updates `displayRange` when not dragging
+4. `handleSelectionDragEnded()` commits `selectedRange` to `displayRange`
+5. `applyQuickRange()` updates both ranges simultaneously
+6. `initializeTimelineIfNeeded()` initializes both ranges
+
+**Result:** The timeline slider remains responsive during dragging (user sees visual feedback), but the expensive map recalculation/redraw only happens when the user releases the drag handle.
+
+---
+
+_**User (2026-01-05 14:24Z)**_
+
+describe and commit
+
+---
+
+_**Agent (model claude-4.5-opus-high-thinking, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+The user wants me to commit the changes I made. Let me check git status first to see what files were modified.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat miataru/views/iPhone/Devices\ Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat miataru/views/iPhone/Devices\ Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift
+```
+
+```
+ .../DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+Let me commit the changes with a descriptive message.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" && git commit -m "Defer map redraw until user stops dragging history range selectors
+
+Added displayRange state to separate UI responsiveness from map rendering:
+- selectedRange: Updates continuously during drag for slider UI feedback
+- displayRange: Only updates when dragging ends, used for map rendering
+
+This prevents expensive map recalculations on every drag frame while
+keeping the timeline slider responsive. The map now only redraws when
+the user releases the drag handle, significantly improving performance
+when adjusting the history time range."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add "miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" && git commit -m "Defer map redraw until user stops dragging history range selectors
+
+Added displayRange state to separate UI responsiveness from map rendering:
+- selectedRange: Updates continuously during drag for slider UI feedback
+- displayRange: Only updates when dragging ends, used for map rendering
+
+This prevents expensive map recalculations on every drag frame while
+keeping the timeline slider responsive. The map now only redraws when
+the user releases the drag handle, significantly improving performance
+when adjusting the history time range."
+```
+
+```
+[master e81c4c6] Defer map redraw until user stops dragging history range selectors
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The commit was successful. Let me summarize for the user.</details></think>
+
+---
+
+Done! Committed as `e81c4c6`:
+
+**Commit:** Defer map redraw until user stops dragging history range selectors
+
+**Changes:**
+- Added `displayRange` state to separate UI responsiveness from map rendering
+- `selectedRange` updates continuously during drag (for slider UI feedback)
+- `displayRange` only updates when dragging ends (used for map rendering)
+- Map now only redraws when user releases the drag handle
+
+---
+
