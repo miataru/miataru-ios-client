@@ -8,6 +8,9 @@
  */
 
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 struct DeviceHistoryTimelineOverlay: View {
     let fullRange: ClosedRange<Double>
@@ -17,7 +20,9 @@ struct DeviceHistoryTimelineOverlay: View {
     let selectedCount: Int
     let totalCount: Int
     let isPlaying: Bool
+    let playbackSpeed: Double
     let onPlayPause: () -> Void
+    let onLongPressSpeedUp: () -> Void
     let onScrubShown: () -> Void
     let stopPlayback: () -> Void
     let startPlayback: () -> Void
@@ -39,58 +44,7 @@ struct DeviceHistoryTimelineOverlay: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                if #available(iOS 26.0, *) {
-                    Button(action: { onPlayPause() }) {
-                        Image(systemName: isPlaying ? "pause.circle" : "play.circle")
-                            .id(isPlaying ? "pause-icon" : "play-icon")
-                            .symbolRenderingMode(.hierarchical)
-                            .font(.title)
-                            .foregroundStyle(isPlaying ? Color.accentColor : Color.primary)
-                            .padding(10)
-                            .scaleEffect(isPlaying ? 1.05 : 1.0)
-                    }
-                    .buttonStyle(.glass)
-                    .animation(
-                        isPlaying
-                            ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
-                            : .default,
-                        value: isPlaying
-                    )
-                    .accessibilityLabel(
-                        Text(
-                            NSLocalizedString(
-                                isPlaying ? "history_pause_timeline" : "history_play_timeline",
-                                comment: "Play/pause timeline playback"
-                            )
-                        )
-                    )
-                } else {
-                    Button(action: { onPlayPause() }) {
-                        Image(systemName: isPlaying ? "pause.circle" : "play.circle")
-                            .id(isPlaying ? "pause-icon" : "play-icon")
-                            .symbolRenderingMode(.hierarchical)
-                            .font(.title)
-                            .foregroundStyle(isPlaying ? Color.accentColor : Color.primary)
-                            .padding(10)
-                            .shadow(color: .black.opacity(0.10), radius: 4, x: 0, y: 2)
-                            .scaleEffect(isPlaying ? 1.05 : 1.0)
-                            .animation(
-                                isPlaying
-                                    ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
-                                    : .default,
-                                value: isPlaying
-                            )
-                    }
-                    //.buttonStyle(.plain)
-                    .accessibilityLabel(
-                        Text(
-                            NSLocalizedString(
-                                isPlaying ? "history_pause_timeline" : "history_play_timeline",
-                                comment: "Play/pause timeline playback"
-                            )
-                        )
-                    )
-                }
+                playbackButton
             }
             TimelineRangeSlider(
                 range: fullRange,
@@ -133,6 +87,83 @@ struct DeviceHistoryTimelineOverlay: View {
         .padding(12)
         .background(tintedOverlayBackground(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 6)
+    }
+
+    @ViewBuilder
+    private var playbackButton: some View {
+        ZStack {
+            // Play/Pause icon with pulse animation when playing
+            Image(systemName: isPlaying ? "pause.circle" : "play.circle")
+                .symbolRenderingMode(.hierarchical)
+                .font(.title)
+                .foregroundStyle(isPlaying ? Color.accentColor : Color.primary)
+                .contentTransition(.symbolEffect(.replace))
+                .padding(10)
+                .scaleEffect(pulseScale)
+                .animation(
+                    isPlaying
+                        ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
+                        : .default,
+                    value: pulseScale
+                )
+
+            // Speed badge shown when playing faster than 1x
+            if isPlaying && playbackSpeed > 1.0 {
+                Text(String(format: "%.0fx", playbackSpeed))
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(Color.blue, in: Capsule())
+                    .offset(x: 14, y: -14)
+                    .transition(.scale.combined(with: .opacity))
+                    .animation(.easeInOut(duration: 0.2), value: playbackSpeed)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onPlayPause()
+        }
+        .onLongPressGesture(minimumDuration: 0.4) {
+            triggerMediumHaptic()
+            onLongPressSpeedUp()
+        }
+        .background {
+            if #available(iOS 26.0, *) {
+                Color.clear.glassEffect(in: .capsule)
+            } else {
+                Color.clear
+            }
+        }
+        .shadow(color: .black.opacity(0.10), radius: 4, x: 0, y: 2)
+        .accessibilityLabel(
+            Text(
+                NSLocalizedString(
+                    isPlaying ? "history_pause_timeline" : "history_play_timeline",
+                    comment: "Play/pause timeline playback"
+                )
+            )
+        )
+        .accessibilityHint(
+            Text(
+                NSLocalizedString(
+                    "history_playback_speed_hint",
+                    comment: "Long press to change playback speed"
+                )
+            )
+        )
+    }
+
+    /// Returns the scale for the pulse animation - 1.05 when playing, 1.0 when not
+    private var pulseScale: CGFloat {
+        isPlaying ? 1.05 : 1.0
+    }
+
+    private func triggerMediumHaptic() {
+        #if canImport(UIKit)
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        #endif
     }
 
     private func formattedDate(_ timestamp: Double) -> String {
