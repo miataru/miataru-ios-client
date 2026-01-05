@@ -27,6 +27,8 @@ struct iPhone_DeviceHistoryMapView: View {
     @ObservedObject private var cache = DeviceHistoryCacheStore.shared
     // Timeline state
     @State private var selectedRange: ClosedRange<Double>? = nil
+    /// The committed range used for map rendering - only updates when dragging ends
+    @State private var displayRange: ClosedRange<Double>? = nil
     @State private var scrubTimestamp: Double? = nil
     // Playback
     @State private var isPlaying = false
@@ -42,8 +44,9 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var isSelectionDragging = false
     private let playbackContextPadding = 50
 
+    /// Uses displayRange (committed range) for map rendering to avoid constant updates during dragging
     private var visibleHistory: [MiataruLocationData] {
-        viewModel.visibleHistory(in: selectedRange)
+        viewModel.visibleHistory(in: displayRange)
     }
 
     private var timelineBounds: ClosedRange<Double>? {
@@ -270,9 +273,11 @@ struct iPhone_DeviceHistoryMapView: View {
             updateRegion(animated: false)
             stopPlayback()
         }
-        .onChange(of: selectedRange) { _, _ in
+        .onChange(of: selectedRange) { _, newValue in
             clampScrubToRange()
+            // Only update displayRange (and thus the map) when not dragging
             if isSelectionDragging { return }
+            displayRange = newValue
             scheduleRegionUpdate(animated: false)
             if isPlaying {
                 startPlayback()
@@ -387,6 +392,9 @@ struct iPhone_DeviceHistoryMapView: View {
         guard let bounds = timelineBounds else { return }
         if selectedRange == nil {
             selectedRange = bounds
+        }
+        if displayRange == nil {
+            displayRange = selectedRange
         }
         if scrubTimestamp == nil {
             scrubTimestamp = bounds.upperBound
@@ -528,7 +536,9 @@ struct iPhone_DeviceHistoryMapView: View {
     private func applyQuickRange(duration: TimeInterval, bounds: ClosedRange<Double>) {
         let upper = bounds.upperBound
         let lower = max(bounds.lowerBound, upper - duration)
-        selectedRange = lower...upper
+        let newRange = lower...upper
+        selectedRange = newRange
+        displayRange = newRange
         scrubTimestamp = upper
         hasUserScrubbed = false
         scheduleRegionUpdate(animated: true)
@@ -595,6 +605,8 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func handleSelectionDragEnded() {
         isSelectionDragging = false
+        // Commit the selection to displayRange - this triggers the map update
+        displayRange = selectedRange
         scheduleRegionUpdate(animated: false, useDefaultZoom: false, delayMs: 60)
     }
 
