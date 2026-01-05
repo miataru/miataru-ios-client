@@ -692,6 +692,12 @@ Additional data:
 ```json
 {
   "codeblockId": "6b7e5ea2-ec15-43f7-b3fa-ef9d1e31bb06",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -808,6 +814,12 @@ Additional data:
 ```json
 {
   "codeblockId": "26d97c33-1070-4294-b8f2-1dc4e26a25d4",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -881,6 +893,12 @@ Additional data:
 ```json
 {
   "codeblockId": "60759f4a-f67c-4472-a06b-c23fe916f871",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1140,6 +1158,12 @@ Additional data:
 ```json
 {
   "codeblockId": "bf5ea64f-c7cb-4c35-ae98-4821c8616689",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1214,6 +1238,12 @@ Additional data:
 ```json
 {
   "codeblockId": "63547ce1-626e-41f7-b5ba-77b1e88c37f1",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1297,6 +1327,12 @@ Additional data:
 ```json
 {
   "codeblockId": "0042a0d8-fa21-46e8-89e6-2284b8df2a97",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1415,6 +1451,12 @@ Additional data:
 ```json
 {
   "codeblockId": "d64a6d90-9c35-4d60-b0a3-064e49fb2a8f",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1482,6 +1524,12 @@ Additional data:
 ```json
 {
   "codeblockId": "1186424b-1460-4074-98d9-0d7807c1a53e",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -1601,6 +1649,12 @@ Additional data:
 ```json
 {
   "codeblockId": "43ca8095-5ce3-4b59-abd8-89ac43e9887f",
+  "reviewData": {
+    "status": "None",
+    "selectedOption": "accept",
+    "isShowingInput": false,
+    "firstTimeReviewMode": false
+  },
   "codeblock": {
     "uri": {
       "scheme": "file",
@@ -2719,7 +2773,89 @@ describe all and commit
 
 _**Agent (model claude-4.5-opus-high-thinking, mode Agent)**_
 
+<think><details><summary>Thought Process</summary>
+The user wants me to describe all the changes and commit them. Let me summarize what was changed since the last commit.
 
+Changes since last commit:
+1. iPad_DeviceMapView.swift:
+   - Removed the overlaid refresh button VStack and moved it back to a toolbar item
+   - Removed `.navigationBarHidden(true)` 
+   - Removed `.adaptiveToolbarBackground()`
+   - Added `.toolbarBackground(.hidden, for: .navigationBar)` and `.toolbarBackgroundVisibility(.hidden, for: .navigationBar)` to keep nav bar visible but transparent
+
+2. iPad_GroupMapView.swift:
+   - Removed `.navigationBarHidden(true)`
+   - Removed `.adaptiveToolbarBackground()`
+   - Added `.toolbarBackground(.hidden, for: .navigationBar)` and `.toolbarBackgroundVisibility(.hidden, for: .navigationBar)`
+
+These changes fix the sidebar toggle button being inaccessible when the sidebar was collapsed, while still keeping the map extending to the top with a transparent navigation bar.</details></think>
+
+---
+
+Here's a summary of the changes since the last commit:
+
+**`iPad_DeviceMapView.swift`**:
+- Removed the overlaid refresh button and moved it back to a proper toolbar item
+- Removed `.navigationBarHidden(true)` which was hiding the sidebar toggle button
+- Replaced `.adaptiveToolbarBackground()` with explicit `.toolbarBackground(.hidden)` and `.toolbarBackgroundVisibility(.hidden)` for the navigation bar to keep it transparent while visible
+
+**`iPad_GroupMapView.swift`**:
+- Removed `.navigationBarHidden(true)` which was hiding the sidebar toggle button  
+- Replaced `.adaptiveToolbarBackground()` with explicit transparent toolbar background settings
+
+These changes restore the sidebar toggle button functionality when the sidebar is collapsed, while maintaining the transparent navigation bar so the map extends to the top.
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix iPad sidebar toggle button accessibility after safe area changes
+
+- Remove .navigationBarHidden(true) from iPad_DeviceMapView and iPad_GroupMapView
+  which was hiding the sidebar toggle button when sidebar was collapsed
+
+- Replace with explicit transparent toolbar background using:
+  .toolbarBackground(.hidden, for: .navigationBar)
+  .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+
+- Move refresh button from overlay back to proper toolbar item in iPad_DeviceMapView
+
+This restores the sidebar toggle button while keeping the navigation bar
+transparent so the map still extends to the top of the screen."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Fix iPad sidebar toggle button accessibility after safe area changes
+
+- Remove .navigationBarHidden(true) from iPad_DeviceMapView and iPad_GroupMapView
+  which was hiding the sidebar toggle button when sidebar was collapsed
+
+- Replace with explicit transparent toolbar background using:
+  .toolbarBackground(.hidden, for: .navigationBar)
+  .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+
+- Move refresh button from overlay back to proper toolbar item in iPad_DeviceMapView
+
+This restores the sidebar toggle button while keeping the navigation bar
+transparent so the map still extends to the top of the screen."
+```
+
+```
+[master 0928832] Fix iPad sidebar toggle button accessibility after safe area changes
+ 3 files changed, 483 insertions(+), 14 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The commit was successful. Let me provide a summary to the user.</details></think>
+
+---
+
+Done! Committed with hash `0928832`. 
+
+The commit fixes the sidebar toggle button accessibility issue while maintaining the transparent navigation bar, allowing the map to extend to the top of the screen.
 
 ---
 
