@@ -219,7 +219,7 @@ struct iPhone_GroupMapView: View {
                                 MapScaleBar(region: region, width: 50)
                             }
                             .buttonStyle(.plain)
-                            .padding([.bottom, .trailing], 5)
+                            .padding([.bottom, .trailing], 16)
                             .zIndex(2)
                         }
                     } else {
@@ -228,7 +228,7 @@ struct iPhone_GroupMapView: View {
                                 .id("scalebar")
                         }
                         .buttonStyle(.plain)
-                        .padding([.bottom, .trailing], 5)
+                        .padding([.bottom, .trailing], 16)
                         .zIndex(2)
                     }
                 }

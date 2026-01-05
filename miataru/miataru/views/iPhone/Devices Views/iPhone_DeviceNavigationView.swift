@@ -745,7 +745,7 @@ struct iPhone_DeviceNavigationView: View {
                     MapScaleBar(region: region, width: 50)
                 }
                 .buttonStyle(.plain)
-                .padding([.bottom, .trailing], 5)
+                .padding([.bottom, .trailing], 16)
                 .zIndex(2)
             }
         }

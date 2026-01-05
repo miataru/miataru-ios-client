@@ -507,7 +507,7 @@ struct iPhone_DeviceMapView: View {
                         MapScaleBar(region: region, width: 50)
                     }
                     .buttonStyle(.plain)
-                    .padding([.bottom, .trailing], 5)
+                    .padding([.bottom, .trailing], 16)
                     .zIndex(2)
                 }
             } else {
@@ -516,7 +516,7 @@ struct iPhone_DeviceMapView: View {
                         .id("scalebar")
                 }
                 .buttonStyle(.plain)
-                .padding([.bottom, .trailing], 5)
+                .padding([.bottom, .trailing], 16)
                 .zIndex(2)
             }
         }
