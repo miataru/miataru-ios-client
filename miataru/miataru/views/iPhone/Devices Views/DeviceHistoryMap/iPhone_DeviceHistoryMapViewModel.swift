@@ -81,6 +81,8 @@ final class DeviceHistoryMapViewModel: ObservableObject {
         return searchEntries[index]
     }
 
+    /// Downsample entries for annotation display only (not for polyline).
+    /// Returns a subset of entries while maintaining chronological order.
     func downsample(_ entries: [MiataruLocationData], selected: MiataruLocationData?, limit: Int = 150) -> [MiataruLocationData] {
         guard !entries.isEmpty else { return [] }
         let strideValue = max(1, entries.count / max(limit, 1))
@@ -91,8 +93,15 @@ final class DeviceHistoryMapViewModel: ObservableObject {
             result.append(entry)
         }
 
+        // Insert selected entry in chronological order to maintain proper sequence
         if let selected, !result.contains(where: { $0.Timestamp == selected.Timestamp && $0.Latitude == selected.Latitude && $0.Longitude == selected.Longitude }) {
-            result.append(selected)
+            let selectedTimestamp = selected.TimestampDate.timeIntervalSince1970
+            // Find insertion point to maintain chronological order
+            if let insertionIndex = result.firstIndex(where: { $0.TimestampDate.timeIntervalSince1970 > selectedTimestamp }) {
+                result.insert(selected, at: insertionIndex)
+            } else {
+                result.append(selected)
+            }
         }
 
         return result
