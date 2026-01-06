@@ -12815,3 +12815,120 @@ Rebuild; the medium text widget should now render larger text that fills more of
 
 ---
 
+_**User (2026-01-06 10:34Z)**_
+
+how often will the location be updated/retrieved from the server?
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Summarizing location update frequency**
+
+Location retrieval from the server typically occurs every 30 seconds by default, governed by a user-configurable mapUpdateInterval and throttled refresh logic in device views; own device location sends happen on significant changes and also every 30 seconds in the foreground.</details></think>
+
+---
+
+Here’s how server fetches work in the app today:
+
+- Pull cadence for other devices: throttled by `SettingsManager.mapUpdateInterval` (default 30 seconds). That value is used in list/map screens to decide when to re-fetch; if `autoRefreshDeviceList` is on, it will auto-refresh no faster than this interval, otherwise you refresh manually.
+- Own location upload: sent on each accepted location update (foreground timer ~30s when active, and significant-change updates in background), not on a fixed server-poll loop.
+
+So, by default you’ll see server fetches for other devices about every 30 seconds when auto-refresh is enabled; the user can change that interval in settings.
+
+---
+
+_**User (2026-01-06 10:34Z)**_
+
+how often will the locations on the widgets update
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Explaining widget timeline refresh**
+
+Widgets have a baseline timeline refresh every 15 minutes set in their providers, but they also reload immediately whenever the app updates the location cache or device data. This means widgets update quickly on location changes and fallback to the 15-minute schedule, though iOS may throttle or coalesce updates since the widget extension is read-only and relies on the main app writing shared data.</details></think>
+
+---
+
+Two update paths:
+
+- Push-style reloads (main app changes): Whenever the app refreshes device locations (e.g., a poll from the server or your own location update), it writes the shared payload and calls `WidgetCenter.shared.reloadAllTimelines()`. That gives you a near-immediate widget refresh, subject to system throttling.
+- Scheduled fallback: Each widget provider schedules the next timeline entry ~15 minutes out. If no new data is pushed, the system can refresh at that cadence (or later, depending on OS heuristics).
+
+So in practice, widgets update shortly after the app fetches new locations, with a ~15-minute fallback schedule, but the OS may coalesce/limit refreshes.
+
+---
+
+_**User (2026-01-06 10:34Z)**_
+
+how is the widget scheduled fallback implemented for the widgets of the app? Will locations then be updated by the app and in the widget?
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Explaining widget timeline fallback**
+
+The widget timeline provides cached data entries with a next refresh scheduled 15 minutes later but doesn’t fetch new data in the background. It relies on the app running to update shared cache and refresh the timeline, so the fallback only re-renders cached content without server calls unless the app refreshes.</details></think>
+
+---
+
+The “fallback” is just the WidgetKit timeline cadence we set in each provider:
+
+- Both text and map providers schedule the next entry ~15 minutes after the current one:
+  ```swift
+  let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)
+  Timeline(entries: [entry], policy: .after(next))
+  ```
+- That fallback does not fetch the server. Widgets cannot pull fresh data on their own. They only re-render whatever was last written to the shared App Group JSON/snapshots by the main app.
+
+How fresh data gets into the widgets:
+- The app, when it refreshes device locations (e.g., from the server or your own location update), writes the shared payload and calls `WidgetCenter.shared.reloadAllTimelines()`. That’s what pushes updated locations into the widgets, subject to OS throttling.
+- If the app hasn’t run, the 15-minute fallback just reuses cached data; no new location is fetched from the server or the device.
+
+---
+
+_**User (2026-01-06 10:34Z)**_
+
+we need to implement a mechanism that pulls locations from the server when the widget needs to update
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Outlining widget data fetch approach**
+
+I’m mapping constraints around WidgetKit’s network limits and shared data access, noting the need to share server URL and device info via app group defaults and add MiataruAPIClient to the widget target for timeline fetches. Given complexity and potential code impact, I’ll propose this plan and ask if I should proceed with implementation.</details></think>
+
+---
+
+Short version: We should fetch fresh locations inside the widget timeline provider, but we need to add shared server settings and wire the network client into the widget target. Here’s the concrete plan:
+
+What to add
+- Share server settings to the widget: persist `miataruServerURL` (and any auth if needed) into the App Group so the widget can read it. A small `SharedWidgetConfig` (URL + device IDs to track) alongside the existing `SharedDeviceData.json` is enough.
+- Allow the widget to call the API: link `MiataruAPIClient` into the `miataruWidgets` target so the provider can fetch location(s).
+- Fetch on timeline build: In `timeline(for:)` for both text and map widgets, load shared settings, call `MiataruAPIClient.getLocation(...)` for the selected device, then update the App Group cache (`SharedWidgetDataManager.write`) and return the entry. Keep the 15-minute policy, but use the fresh fetch result when available.
+- Respect App Group paths: the widget must not touch app-only paths; always read/write via App Group URLs.
+
+Proposed flow in code (high level)
+1) Add `SharedWidgetConfig.swift` (in App Group) with server URL and device list. Main app writes it whenever server URL or device list changes.
+2) In `miataruWidgets` target:
+   - Import `MiataruAPIClient`
+   - In `timeline(for:)`, read config + payload, fetch latest location for the selected device, update `WidgetSharedPayload`, then build the entry.
+   - Handle failures gracefully (fall back to cached payload).
+3) Keep the 15-minute timeline policy; this fetch runs when WidgetKit asks for a new timeline. The OS may throttle, but this is the best-available pull point without foregrounding the app.
+
+If you want, I can implement this end-to-end now:
+- Add `SharedWidgetConfig.swift` to app + widget (App Group JSON).
+- Write config from the main app when settings/devices change.
+- Link `MiataruAPIClient` to the widget target.
+- Add the fetch logic to both widget providers.
+
+---
+

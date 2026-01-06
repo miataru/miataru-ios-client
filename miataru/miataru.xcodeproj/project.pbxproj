@@ -10,6 +10,7 @@
 		8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
 		8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
+		8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
 		8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -126,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +258,9 @@
 			productName = miataruWidgets;
 			productReference = 8C0000013E00000100000001 /* miataruWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
+			packageProductDependencies = (
+				8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */,
+			);
 		};
 /* End PBXNativeTarget section */
 
