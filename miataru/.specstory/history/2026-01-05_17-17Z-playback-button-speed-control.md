@@ -2639,7 +2639,180 @@ Changes made:
    - Added `triggerMediumHaptic()` helper function
    - Added `pulseScale` computed property for clean animation
    - Fixed animation to only pulse scale, not symbol change
-   - Speed badge with</details></think>
+   - Speed badge with blue background and white text
+
+3. `PlaybackSpeedOverlay.swift` (new file):
+   - Created new component for displaying speed changes
+   - Shows forward/play icon based on speed
+   - Glass effect background on iOS 26+
+   - Adaptive text color (`.primary`)
+
+4. `Localizable.xcstrings`:
+   - Added `history_playback_speed_hint` localization
+   - Added `playback_speed_format` localization
+
+Let me commit all these changes with a descriptive message.</details></think>
+
+---
+
+Let me describe all the changes and then commit them:
+
+## Summary of All Changes
+
+### 1. `iPhone_DeviceHistoryMapView.swift`
+- Added playback speed state management (`playbackSpeed`, `showSpeedOverlay`, `speedOverlayTask`)
+- **Long-press on play button** cycles through 1x → 2x → 4x → 8x → 1x speeds
+- **Dynamic speed reading** - speed changes take effect immediately without restarting playback
+- **Pause preserves position** - resuming continues from where it was paused
+- **Speed resets to 1x** when pausing
+- Added `PlaybackSpeedOverlay` display when speed changes
+
+### 2. `DeviceHistoryTimelineOverlay.swift`
+- Added `playbackSpeed` and `onLongPressSpeedUp` parameters
+- Refactored play/pause button with **long-press gesture** (0.4s) for speed control
+- Added **speed badge** (blue background, white text) showing current speed when > 1x
+- Fixed animation to only **pulse the scale**, not animate symbol changes
+- Added **haptic feedback** on speed change
+- Added UIKit import for haptic support
+
+### 3. `PlaybackSpeedOverlay.swift` (NEW)
+- Centered overlay showing current playback speed
+- Forward icon at faster speeds, play icon at 1x
+- **Glass effect** background on iOS 26+, material on older versions
+- **Adaptive text color** (`.primary`) for dark/light mode
+
+### 4. `Localizable.xcstrings`
+- Added `history_playback_speed_hint` - "Long press to change playback speed"
+- Added `playback_speed_format` - "%.0fx" format for speed display
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Add playback speed control with long-press gesture on timeline
+
+Features:
+- Long-press play/pause button to cycle through playback speeds (1x → 2x → 4x → 8x → 1x)
+- Speed changes take effect immediately without restarting playback
+- Visual speed badge on play button shows current speed when faster than 1x
+- Centered PlaybackSpeedOverlay appears briefly when speed changes
+- Haptic feedback on speed change
+- Pause preserves timeline position for seamless resume
+- Speed resets to 1x when pausing
+
+UI improvements:
+- Fixed play/pause button animation to only pulse scale, not animate symbol change
+- Speed badge uses consistent blue background with white text in all modes
+- PlaybackSpeedOverlay uses glass effect on iOS 26+, adaptive text color for dark/light mode
+
+Localization:
+- Added history_playback_speed_hint for accessibility
+- Added playback_speed_format for speed indicator"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Add playback speed control with long-press gesture on timeline
+
+Features:
+- Long-press play/pause button to cycle through playback speeds (1x → 2x → 4x → 8x → 1x)
+- Speed changes take effect immediately without restarting playback
+- Visual speed badge on play button shows current speed when faster than 1x
+- Centered PlaybackSpeedOverlay appears briefly when speed changes
+- Haptic feedback on speed change
+- Pause preserves timeline position for seamless resume
+- Speed resets to 1x when pausing
+
+UI improvements:
+- Fixed play/pause button animation to only pulse scale, not animate symbol change
+- Speed badge uses consistent blue background with white text in all modes
+- PlaybackSpeedOverlay uses glass effect on iOS 26+, adaptive text color for dark/light mode
+
+Localization:
+- Added history_playback_speed_hint for accessibility
+- Added playback_speed_format for speed indicator"
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The git command failed due to sandbox restrictions. I need to request 'all' permissions to access the git repository properly since it's in the parent directory of the workspace.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Add playback speed control with long-press gesture on timeline
+
+Features:
+- Long-press play/pause button to cycle through playback speeds (1x → 2x → 4x → 8x → 1x)
+- Speed changes take effect immediately without restarting playback
+- Visual speed badge on play button shows current speed when faster than 1x
+- Centered PlaybackSpeedOverlay appears briefly when speed changes
+- Haptic feedback on speed change
+- Pause preserves timeline position for seamless resume
+- Speed resets to 1x when pausing
+
+UI improvements:
+- Fixed play/pause button animation to only pulse scale, not animate symbol change
+- Speed badge uses consistent blue background with white text in all modes
+- PlaybackSpeedOverlay uses glass effect on iOS 26+, adaptive text color for dark/light mode
+
+Localization:
+- Added history_playback_speed_hint for accessibility
+- Added playback_speed_format for speed indicator"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git commit -m "Add playback speed control with long-press gesture on timeline
+
+Features:
+- Long-press play/pause button to cycle through playback speeds (1x → 2x → 4x → 8x → 1x)
+- Speed changes take effect immediately without restarting playback
+- Visual speed badge on play button shows current speed when faster than 1x
+- Centered PlaybackSpeedOverlay appears briefly when speed changes
+- Haptic feedback on speed change
+- Pause preserves timeline position for seamless resume
+- Speed resets to 1x when pausing
+
+UI improvements:
+- Fixed play/pause button animation to only pulse scale, not animate symbol change
+- Speed badge uses consistent blue background with white text in all modes
+- PlaybackSpeedOverlay uses glass effect on iOS 26+, adaptive text color for dark/light mode
+
+Localization:
+- Added history_playback_speed_hint for accessibility
+- Added playback_speed_format for speed indicator"
+```
+
+```
+[master d7cc372] Add playback speed control with long-press gesture on timeline
+ 5 files changed, 2967 insertions(+), 53 deletions(-)
+ create mode 100644 miataru/.specstory/history/2026-01-05_17-17Z-playback-button-speed-control.md
+ create mode 100644 miataru/miataru/views/Common/PlaybackSpeedOverlay.swift
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+The commit was successful. Let me summarize what was committed.</details></think>
+
+---
+
+Successfully committed! Here's the commit summary:
+
+**Commit `d7cc372`**: "Add playback speed control with long-press gesture on timeline"
+
+**5 files changed:**
+- `miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift` - Speed state & logic
+- `miataru/views/Common/DeviceHistoryTimelineOverlay.swift` - Long-press gesture & speed badge
+- `miataru/views/Common/PlaybackSpeedOverlay.swift` - **New file** for speed overlay
+- `miataru/Assets/Localizable.xcstrings` - New localized strings
 
 ---
 
