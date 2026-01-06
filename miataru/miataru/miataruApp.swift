@@ -55,6 +55,8 @@ struct miataruApp: App {
         if SettingsManager.shared.trackAndReportLocation {
             locationManager.requestLocationPermission()
         }
+        // Ensure widgets have initial data even before the first update cycle.
+        WidgetDataSyncCoordinator.syncAllDevices()
         // Do NOT call startTracking() here!
         // Tracking is now controlled by the observer in LocationManager.observeSettings().
         // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.
@@ -92,8 +94,13 @@ struct miataruApp: App {
                     if url.scheme == "miataru" {
                         let deviceID = url.host?.uppercased() ?? ""
                         if !deviceID.isEmpty {
-                            pendingDeviceID = deviceID
-                            showAddDeviceSheet = true
+                            // If the device already exists, navigate to it; otherwise fall back to add flow.
+                            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {
+                                SettingsManager.shared.lastOpenedDeviceID = deviceID
+                            } else {
+                                pendingDeviceID = deviceID
+                                showAddDeviceSheet = true
+                            }
                         }
                     }
                 }

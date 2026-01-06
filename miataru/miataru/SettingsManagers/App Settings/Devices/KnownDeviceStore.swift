@@ -19,12 +19,15 @@ class KnownDeviceStore: ObservableObject {
     
     @Published var devices: [KnownDevice] = [] {
         didSet {
+            guard !isInitializing else { return }
             setupSubscribers()
             save()
+            WidgetDataSyncCoordinator.syncAllDevices()
         }
     }
     private let fileName = "knownDevices.plist"
     private var cancellables: [AnyCancellable] = []
+    private var isInitializing = true
 
     private var fileURL: URL {
         AppDirectories.applicationSupportFile(named: fileName)
@@ -43,6 +46,7 @@ class KnownDeviceStore: ObservableObject {
             save()
         }
         setupSubscribers()
+        isInitializing = false
     }
 
     private func setupSubscribers() {
@@ -51,6 +55,7 @@ class KnownDeviceStore: ObservableObject {
             let c = device.objectWillChange
                 .sink { [weak self] _ in
                     self?.save()
+                    WidgetDataSyncCoordinator.syncAllDevices()
                 }
             cancellables.append(c)
         }

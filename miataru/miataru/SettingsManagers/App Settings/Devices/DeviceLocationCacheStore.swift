@@ -131,6 +131,8 @@ class DeviceLocationCacheStore: ObservableObject {
     }
 
     func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
+        var snapshotLocation: CachedDeviceLocation?
+
         if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {
             let existing = locations[idx]
             let moved = existing.latitude != latitude || existing.longitude != longitude
@@ -149,6 +151,7 @@ class DeviceLocationCacheStore: ObservableObject {
                 speed: speed ?? existing.speed
             )
             locations[idx] = updated
+            snapshotLocation = updated
             if moved {
                 // Re-geocode only on significant movement or if no placemark exists yet
                 let hasPlacemark = (existing.country != nil) || (existing.locality != nil)
@@ -159,10 +162,19 @@ class DeviceLocationCacheStore: ObservableObject {
                     enqueueGeocodingIfNeeded(for: deviceID, force: true)
                 }
             }
+            WidgetDataSyncCoordinator.syncAllDevices()
         } else {
-            locations.append(CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed))
+            let newLocation = CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed)
+            locations.append(newLocation)
+            snapshotLocation = newLocation
             // New entry: if no placemark present, enqueue
             enqueueGeocodingIfNeeded(for: deviceID)
+            WidgetDataSyncCoordinator.syncAllDevices()
+        }
+
+        if let location = snapshotLocation,
+           let device = KnownDeviceStore.shared.devices.first(where: { $0.DeviceID == deviceID }) {
+            WidgetMapSnapshotGenerator.generateSnapshot(for: device, location: location)
         }
     }
 
@@ -191,11 +203,13 @@ class DeviceLocationCacheStore: ObservableObject {
                 altitude: loc.altitude
             )
             locations[idx] = updated
+            WidgetDataSyncCoordinator.syncAllDevices()
         }
     }
     
     func removeLocation(for deviceID: String) {
         locations.removeAll { $0.deviceID == deviceID }
+        WidgetDataSyncCoordinator.syncAllDevices()
     }
 
     // MARK: - Reverse Geocoding Queue
