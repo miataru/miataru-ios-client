@@ -2338,11 +2338,162 @@ does this also update the apps location cache for the device?
 
 _**Agent (model gpt-5.1-codex-max, mode Agent)**_
 
+<think><details><summary>Thought Process</summary>
+**Clarifying cache update behavior**
 
+The widget fetch refreshes data only in the shared App Group storage and does not update the app's DeviceLocationCacheStore. To update the app cache, the main app must read and merge this shared data on launch or foreground, since the widget cannot write directly to the app cache.</details></think>
 
 ---
 
+No—the new widget-side fetch only updates the App Group payload (`SharedWidgetDataManager.write`) so the widgets show fresh data. It does **not** write into the app’s `DeviceLocationCacheStore` or any app-only cache path. To sync the app cache, the main app would need to ingest the App Group payload on foreground/launch or perform its own fetch and update `DeviceLocationCacheStore`.
 
+---
+
+_**User (2026-01-06 10:34Z)**_
+
+describe and commit all
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing to check git status**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status --short
+```
+
+```
+ M .specstory/history/2026-01-05_19-42Z-iphone-ipad-app-device-location-widgets.md
+ M miataru.xcodeproj/project.pbxproj
+ M "miataru/SettingsManagers/App Settings/SettingsManager.swift"
+ M miataru/SettingsManagers/WidgetDataSyncCoordinator.swift
+ M miataruWidgets/DeviceLocationMapWidget.swift
+ M miataruWidgets/DeviceLocationTextWidget.swift
+?? .specstory/history/2026-01-06_16-03Z-widget-location-fetching-implementation.md
+?? miataru/SettingsManagers/SharedWidgetConfig.swift
+?? miataruWidgets/SharedWidgetConfig.swift
+?? miataruWidgets/WidgetTimelineDataLoader.swift
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing descriptive commit with all changes**
+
+I'm crafting a clear commit message reflecting the addition of shared config and live location fetch, then staging all changes including new files before committing with git write permission.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adjusting permissions and staging changes**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Clarifying permission needs**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Committing changes**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **run_terminal_cmd** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Enable widgets to fetch live locations via shared config"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Enable widgets to fetch live locations via shared config"
+```
+
+```
+[master 63c044b] Enable widgets to fetch live locations via shared config
+ 10 files changed, 2722 insertions(+), 15 deletions(-)
+ create mode 100644 miataru/.specstory/history/2026-01-06_16-03Z-widget-location-fetching-implementation.md
+ create mode 100644 miataru/miataru/SettingsManagers/SharedWidgetConfig.swift
+ create mode 100644 miataru/miataruWidgets/SharedWidgetConfig.swift
+ create mode 100644 miataru/miataruWidgets/WidgetTimelineDataLoader.swift
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing final commit and changes**
+
+This commit introduces a new shared configuration structure, adds a timeline loader, and integrates the Miataru API for enhanced data synchronization. Testing hasn't been run yet, and the application cache remains unchanged for now, which might affect immediate data freshness. The commit is identified by its hash, with no line-specific references included to keep the summary concise. Next steps include running tests and updating the cache strategy to improve performance.</details></think>
+
+---
+
+Changes made
+- Added shared App Group config (`SharedWidgetConfig` + manager) and wired `SettingsManager`/`WidgetDataSyncCoordinator` to persist server URL and device IDs for widgets.
+- Linked the widget extension to `MiataruAPIClient` and introduced `WidgetTimelineDataLoader` to read config, fetch live locations, merge with cached payload, and write back to App Group data.
+- Updated text and map widget timeline providers to run the async fetch on `timeline(for:)`/`snapshot(for:)` while keeping the 15-minute policy.
+- Xcode project now includes `MiataruAPIClient` in the widget target; new shared files added to the project.
+
+Commit
+- `Enable widgets to fetch live locations via shared config` (hash: 63c044b)
+
+Notes
+- The widget fetch updates only the App Group payload; it does not touch the app’s `DeviceLocationCacheStore`. If you want the app cache refreshed, we can add an ingest-from-App-Group step on foreground/launch.
+
+Tests
+- Not run (not requested).
 
 ---
 
