@@ -52,16 +52,26 @@ struct DeviceLocationMapProvider: AppIntentTimelineProvider {
 
 struct DeviceLocationMapWidgetEntryView: View {
     let entry: DeviceMapEntry
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.widgetFamily) private var family
 
     var body: some View {
         Group {
             if let device = entry.device {
-                ZStack(alignment: .bottomLeading) {
-                    snapshotImage(for: device)
-                        .resizable()
-                        .scaledToFill()
-                        .clipped()
-                    overlay(for: device)
+                GeometryReader { geo in
+                    ZStack(alignment: .topLeading) {
+                        snapshotLayer(for: device)
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .clipped()
+                        if family != .accessoryRectangular {
+                            topFadeOverlay
+                            overlay(for: device, family: family)
+                                .padding(.top, overlayTopPadding)
+                                .frame(maxWidth: geo.size.width * overlayWidthFactor, alignment: .topLeading)
+                                .padding(.horizontal, overlayHorizontalPadding)
+                        }
+                    }
+                    .ignoresSafeArea() // fill widget content area
                 }
                 .widgetURL(URL(string: "miataru://\(device.id)"))
             } else {
@@ -76,36 +86,132 @@ struct DeviceLocationMapWidgetEntryView: View {
         }
     }
 
-    private func snapshotImage(for device: WidgetDeviceData) -> Image {
-        guard let url = SharedWidgetDataManager.mapSnapshotURL(for: device.id),
-              let data = try? Data(contentsOf: url),
-              let uiImage = UIImage(data: data) else {
-            return Image(systemName: "map")
+    private func snapshotLayer(for device: WidgetDeviceData) -> some View {
+        let preferredURL: URL? = {
+            switch colorScheme {
+            case .dark:
+                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)
+            default:
+                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)
+            }
+        }()
+        let fallbackURL = SharedWidgetDataManager.mapSnapshotURL(for: device.id)
+
+        if let url = preferredURL ?? fallbackURL,
+           let data = try? Data(contentsOf: url),
+           let uiImage = UIImage(data: data) {
+            return AnyView(
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+            )
         }
-        return Image(uiImage: uiImage)
+
+        // Visible fallback for missing snapshot, especially on small size
+        return AnyView(
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.gray.opacity(0.2),
+                        Color.gray.opacity(0.35)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                Image(systemName: "map")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .foregroundColor(.gray.opacity(0.6))
+            }
+        )
     }
 
-    private func overlay(for device: WidgetDeviceData) -> some View {
+    private var overlayTopPadding: CGFloat {
+        switch family {
+        case .systemMedium: return 4
+        case .systemLarge: return 6
+        default: return 4
+        }
+    }
+
+    private var overlayHorizontalPadding: CGFloat {
+        switch family {
+        case .systemMedium: return 6
+        case .systemLarge: return 8
+        default: return 6
+        }
+    }
+
+    private var overlayTopFadeHeight: CGFloat {
+        switch family {
+        case .systemMedium: return 50
+        case .systemLarge: return 72
+        default: return 60
+        }
+    }
+
+    private var topFadeOverlay: some View {
+        LinearGradient(
+            colors: [
+                Color.black.opacity(colorScheme == .dark ? 0.45 : 0.25),
+                Color.black.opacity(0.0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(height: overlayTopFadeHeight)
+        .edgesIgnoringSafeArea(.all)
+        .allowsHitTesting(false)
+    }
+
+    private func overlay(for device: WidgetDeviceData, family: WidgetFamily) -> some View {
         let locality = formattedLocality(for: device)
         let distance = formattedDistance(to: device, from: entry.ownDevice)
 
-        return VStack(alignment: .leading, spacing: 4) {
+        let (nameFont, detailFont, spacing, padding) = overlayMetrics(for: family)
+
+        return VStack(alignment: .leading, spacing: spacing) {
             Text(device.name)
-                .font(.headline)
+                .font(nameFont)
                 .lineLimit(1)
+                .minimumScaleFactor(0.75)
                 .shadow(radius: 2)
             Text(locality)
-                .font(.subheadline)
+                .font(detailFont)
                 .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Text(distance)
-                .font(.caption)
+                .font(detailFont)
                 .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
-        .foregroundColor(.white)
-        .padding(10)
-        .background(.ultraThinMaterial.opacity(0.4))
-        .cornerRadius(10)
-        .padding(8)
+        .foregroundColor(.primary)
+        .padding(.vertical, padding)
+        .padding(.horizontal, padding + 2)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.systemBackground).opacity(family == .systemMedium ? 0.7 : 0.4))
+        )
+    }
+
+    private func overlayMetrics(for family: WidgetFamily) -> (Font, Font, CGFloat, CGFloat) {
+        switch family {
+        case .systemMedium:
+            return (.subheadline.weight(.semibold), .caption2, 3, 7)
+        case .systemLarge:
+            return (.headline, .subheadline, 4, 12)
+        default:
+            return (.subheadline.weight(.semibold), .caption, 3, 8)
+        }
+    }
+
+    private var overlayWidthFactor: CGFloat {
+        switch family {
+        case .systemMedium: return 0.9
+        case .systemLarge: return 0.92
+        default: return 0.9
+        }
     }
 
     private func formattedLocality(for device: WidgetDeviceData) -> String {
@@ -143,7 +249,8 @@ struct DeviceLocationMapWidget: Widget {
         }
         .configurationDisplayName(NSLocalizedString("widget_map_display_name", comment: "Display name for the map widget"))
         .description(NSLocalizedString("widget_map_description", comment: "Description for the map widget"))
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .supportedFamilies([.systemMedium, .systemLarge])
+        .contentMarginsDisabled()
     }
 }
 

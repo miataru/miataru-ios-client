@@ -8,6 +8,9 @@
  */
 
 import Foundation
+#if canImport(UIKit)
+import UIKit
+#endif
 
 struct WidgetColor: Codable, Hashable {
     let red: Double
@@ -48,8 +51,22 @@ enum SharedWidgetDataManager {
         sharedContainerURL?.appendingPathComponent(sharedDataFileName)
     }
 
-    static func mapSnapshotURL(for deviceID: String) -> URL? {
-        sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID).\(snapshotExtension)")
+    static func mapSnapshotURL(for deviceID: String, style: UIUserInterfaceStyle? = nil) -> URL? {
+        #if canImport(UIKit)
+        let suffix: String
+        if let style {
+            switch style {
+            case .dark: suffix = "-dark"
+            case .light: suffix = "-light"
+            default: suffix = ""
+            }
+        } else {
+            suffix = ""
+        }
+        #else
+        let suffix = ""
+        #endif
+        return sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
     }
 
     static func write(_ payload: WidgetSharedPayload) {

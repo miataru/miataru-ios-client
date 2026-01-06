@@ -8,6 +8,9 @@
  */
 
 import Foundation
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Common data structures and utilities used to exchange data between the main app
 /// and the WidgetKit extension via the shared App Group container.
@@ -52,9 +55,23 @@ enum SharedWidgetDataManager {
         sharedContainerURL?.appendingPathComponent(sharedDataFileName)
     }
 
-    /// Location of the map snapshot image for a specific device.
-    static func mapSnapshotURL(for deviceID: String) -> URL? {
-        sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID).\(snapshotExtension)")
+    /// Location of the map snapshot image for a specific device and appearance.
+    static func mapSnapshotURL(for deviceID: String, style: Any? = nil) -> URL? {
+        let suffix: String
+        #if canImport(UIKit)
+        if let style = style as? UIUserInterfaceStyle {
+            switch style {
+            case .dark: suffix = "-dark"
+            case .light: suffix = "-light"
+            default: suffix = ""
+            }
+        } else {
+            suffix = ""
+        }
+        #else
+        suffix = ""
+        #endif
+        return sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
     }
 
     /// Persist a payload into the shared container.

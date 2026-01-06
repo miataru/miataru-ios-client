@@ -72,27 +72,67 @@ struct DeviceLocationTextWidgetEntryView: View {
         let locality = formattedLocality(for: device)
         let lastUpdate = formattedRelativeTimestamp(for: device.timestamp)
 
-        return VStack(alignment: .leading, spacing: 4) {
+        let (nameFont, detailFont, distanceFont, updateFont, spacing, padding) = metrics(for: family)
+
+        return VStack(alignment: .leading, spacing: spacing) {
             Text(device.name)
-                .font(.headline)
+                .font(nameFont)
                 .lineLimit(1)
+                .minimumScaleFactor(0.7)
             Text(locality)
-                .font(.subheadline)
+                .font(detailFont)
                 .lineLimit(1)
+                .minimumScaleFactor(0.7)
             if family != .accessoryRectangular {
                 Text(distanceText)
-                    .font(.caption)
+                    .font(distanceFont)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text(lastUpdate)
-                    .font(.caption2)
+                    .font(updateFont)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             } else {
                 Text(distanceText)
-                    .font(.caption)
+                    .font(distanceFont)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
         }
-        .padding()
+        .padding(padding)
+    }
+
+    private func metrics(for family: WidgetFamily) -> (Font, Font, Font, Font, CGFloat, EdgeInsets) {
+        switch family {
+        case .systemSmall:
+            return (
+                .footnote.weight(.semibold),
+                .caption2,
+                .caption2,
+                .caption2,
+                2,
+                EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+            )
+        case .systemMedium:
+            return (
+                .title3.weight(.semibold),
+                .callout,
+                .callout,
+                .caption,
+                6,
+                EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+            )
+        default:
+            return (
+                .headline,
+                .subheadline,
+                .caption,
+                .caption2,
+                4,
+                EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+            )
+        }
     }
 
     private var placeholder: some View {

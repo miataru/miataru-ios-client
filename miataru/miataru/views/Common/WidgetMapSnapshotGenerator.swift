@@ -20,28 +20,36 @@ import UIKit
 enum WidgetMapSnapshotGenerator {
     static func generateSnapshot(for device: KnownDevice, location: CachedDeviceLocation, size: CGSize = CGSize(width: 400, height: 400)) {
         Task.detached(priority: .utility) {
-            guard let url = SharedWidgetDataManager.mapSnapshotURL(for: device.DeviceID) else { return }
             let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
 
-            let options = MKMapSnapshotter.Options()
-            options.size = size
-            let scale = await MainActor.run { UIScreen.main.scale }
-            options.scale = scale
-            options.mapType = .standard
-            options.pointOfInterestFilter = .excludingAll
-            options.showsBuildings = false
-            options.region = region(for: coordinate, accuracy: location.accuracy)
+            // Render both light and dark variants so widgets can pick based on appearance.
+            await renderSnapshot(for: device, location: location, coordinate: coordinate, size: size, style: .light)
+            await renderSnapshot(for: device, location: location, coordinate: coordinate, size: size, style: .dark)
+        }
+    }
 
-            do {
-                let snapshot = try await MKMapSnapshotter(options: options).start()
-                let markerImage = await markerImage(for: device)
-                let image = render(snapshot: snapshot, coordinate: coordinate, device: device, location: location, size: size, markerImage: markerImage)
-                if let data = image.pngData() {
-                    try data.write(to: url, options: [.atomic])
-                }
-            } catch {
-                debugLog("Failed to generate widget map snapshot: \(error)")
+    @MainActor
+    private static func renderSnapshot(for device: KnownDevice, location: CachedDeviceLocation, coordinate: CLLocationCoordinate2D, size: CGSize, style: UIUserInterfaceStyle) async {
+        guard let url = SharedWidgetDataManager.mapSnapshotURL(for: device.DeviceID, style: style) else { return }
+
+        let options = MKMapSnapshotter.Options()
+        options.size = size
+        options.scale = UIScreen.main.scale
+        options.mapType = .standard
+        options.pointOfInterestFilter = .excludingAll
+        options.showsBuildings = false
+        options.region = region(for: coordinate, accuracy: location.accuracy)
+        options.traitCollection = UITraitCollection(userInterfaceStyle: style)
+
+        do {
+            let snapshot = try await MKMapSnapshotter(options: options).start()
+            let markerImage = await markerImage(for: device)
+            let image = render(snapshot: snapshot, coordinate: coordinate, device: device, location: location, size: size, markerImage: markerImage)
+            if let data = image.pngData() {
+                try data.write(to: url, options: [.atomic])
             }
+        } catch {
+            debugLog("Failed to generate widget map snapshot (\(style == .dark ? "dark" : "light")): \(error)")
         }
     }
 
