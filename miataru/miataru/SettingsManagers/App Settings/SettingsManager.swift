@@ -24,7 +24,14 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(groupsZoomToFit, forKey: Keys.groupsZoomToFit) }
     }
     @Published var miataruServerURL: String {
-        didSet { defaults.set(miataruServerURL, forKey: Keys.miataruServerURL) }
+        didSet {
+            defaults.set(miataruServerURL, forKey: Keys.miataruServerURL)
+            WidgetDataSyncCoordinator.syncWidgetConfig(
+                serverURL: miataruServerURL,
+                deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },
+                ownDeviceID: thisDeviceIDManager.shared.deviceID
+            )
+        }
     }
     @Published var trackAndReportLocation: Bool {
         didSet { 

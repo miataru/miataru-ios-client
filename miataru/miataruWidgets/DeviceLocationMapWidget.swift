@@ -14,6 +14,7 @@ import MapKit
 #if canImport(UIKit)
 import UIKit
 #endif
+import MiataruAPIClient
 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 struct DeviceMapEntry: TimelineEntry {
@@ -33,20 +34,18 @@ struct DeviceLocationMapProvider: AppIntentTimelineProvider {
     }
 
     func snapshot(for configuration: DeviceSelectionIntent, in context: Context) async -> DeviceMapEntry {
-        buildEntry(configuration: configuration)
+        await buildEntry(configuration: configuration)
     }
 
     func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -> Timeline<DeviceMapEntry> {
-        let entry = buildEntry(configuration: configuration)
+        let entry = await buildEntry(configuration: configuration)
         let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)
         return Timeline(entries: [entry], policy: .after(next))
     }
 
-    private func buildEntry(configuration: DeviceSelectionIntent) -> DeviceMapEntry {
-        let payload = SharedWidgetDataManager.read()
-        let targetID = configuration.device?.id ?? payload?.devices.first?.id
-        let device = payload?.devices.first(where: { $0.id == targetID })
-        return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload?.ownDevice)
+    private func buildEntry(configuration: DeviceSelectionIntent) async -> DeviceMapEntry {
+        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration)
+        return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload.ownDevice)
     }
 }
 

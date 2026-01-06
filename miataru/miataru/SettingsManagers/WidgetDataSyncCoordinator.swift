@@ -27,9 +27,32 @@ enum WidgetDataSyncCoordinator {
 
         let payload = buildPayload(devices: devices, locations: locations, ownDeviceID: ownDeviceID)
         SharedWidgetDataManager.write(payload)
+        syncWidgetConfig(
+            serverURL: SettingsManager.shared.miataruServerURL,
+            deviceIDs: devices.map { $0.DeviceID },
+            ownDeviceID: ownDeviceID,
+            shouldReloadTimelines: false
+        )
 
         #if canImport(WidgetKit)
         WidgetCenter.shared.reloadAllTimelines()
+        #endif
+    }
+
+    /// Sync only the widget configuration (server + device IDs) into the shared container.
+    static func syncWidgetConfig(serverURL: String, deviceIDs: [String], ownDeviceID: String, shouldReloadTimelines: Bool = true) {
+        let config = SharedWidgetConfig(
+            miataruServerURL: serverURL,
+            deviceIDs: deviceIDs,
+            ownDeviceID: ownDeviceID,
+            authorizationToken: nil
+        )
+        SharedWidgetConfigManager.write(config)
+
+        #if canImport(WidgetKit)
+        if shouldReloadTimelines {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
         #endif
     }
 
