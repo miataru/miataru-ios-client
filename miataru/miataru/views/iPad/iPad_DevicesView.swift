@@ -243,6 +243,14 @@ struct iPad_DevicesView: View {
                 settings.lastOpenedDeviceID = nil
             }
         }
+        .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
+            guard let deviceID = newDeviceID,
+                  store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
+            if selection != deviceID {
+                selection = deviceID
+                lastSelectedDeviceID = deviceID
+            }
+        }
         .onChange(of: selection) { oldSelection, newSelection in
             // Only refresh map when the selected device actually changes to a different ID
             if let newSelection = newSelection, newSelection != lastSelectedDeviceID {
