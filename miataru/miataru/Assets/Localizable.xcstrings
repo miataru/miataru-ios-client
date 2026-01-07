@@ -18759,6 +18759,7 @@
     },
     "widget_overlay_last_seen" : {
       "comment" : "Fallback overlay text when no placemark is available",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
