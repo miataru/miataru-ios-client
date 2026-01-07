@@ -201,6 +201,14 @@ struct iPhone_DevicesView: View {
                     settings.lastOpenedDeviceID = nil
                 }
             }
+            .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
+                guard let deviceID = newDeviceID,
+                      store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
+                // Replace the current path to ensure we show the requested device map.
+                if navigationPath != [deviceID] {
+                    navigationPath = [deviceID]
+                }
+            }
             // Intentionally do not reset didAutoNavigateFromSavedDevice on
             // changes to lastOpenedDeviceID to avoid unintended re-pushes
         }
