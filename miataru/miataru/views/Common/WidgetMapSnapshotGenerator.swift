@@ -15,8 +15,8 @@ import SwiftUI
 import UIKit
 #endif
 
-/// Generates pre-rendered map images (with a device marker and location text)
-/// and writes them into the shared App Group container for WidgetKit consumption.
+/// Generates pre-rendered map images (with a device marker) and writes them into
+/// the shared App Group container for WidgetKit consumption.
 enum WidgetMapSnapshotGenerator {
     static func generateSnapshot(for device: KnownDevice, location: CachedDeviceLocation, size: CGSize = CGSize(width: 400, height: 400)) {
         Task.detached(priority: .utility) {
@@ -78,50 +78,7 @@ enum WidgetMapSnapshotGenerator {
                 y: point.y - markerSize.height
             )
             markerImage.draw(in: CGRect(origin: markerOrigin, size: markerSize))
-
-            // Location text overlay (locality / country + last update)
-            let overlayText = overlayString(for: location)
-            let paragraph = NSMutableParagraphStyle()
-            paragraph.alignment = .left
-            let attrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 13, weight: .semibold),
-                .foregroundColor: UIColor.white,
-                .paragraphStyle: paragraph,
-                .shadow: textShadow()
-            ]
-            let textRect = CGRect(
-                x: 8,
-                y: size.height - 40,
-                width: size.width - 16,
-                height: 32
-            )
-            overlayText.draw(in: textRect, withAttributes: attrs)
         }
-    }
-
-    private static func overlayString(for location: CachedDeviceLocation) -> String {
-        var components: [String] = []
-        if let locality = location.locality { components.append(locality) }
-        if let country = location.country { components.append(country) }
-        let place = components.joined(separator: ", ")
-
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        let relative = formatter.localizedString(for: location.timestamp, relativeTo: Date())
-
-        if place.isEmpty {
-            return NSLocalizedString("widget_overlay_last_seen", comment: "Fallback overlay text when no placemark is available").replacingOccurrences(of: "%@", with: relative)
-        } else {
-            return "\(place) • \(relative)"
-        }
-    }
-
-    private static func textShadow() -> NSShadow {
-        let shadow = NSShadow()
-        shadow.shadowColor = UIColor.black.withAlphaComponent(0.6)
-        shadow.shadowOffset = CGSize(width: 0, height: 1)
-        shadow.shadowBlurRadius = 2
-        return shadow
     }
 
     private static func markerImage(for device: KnownDevice) async -> UIImage {
