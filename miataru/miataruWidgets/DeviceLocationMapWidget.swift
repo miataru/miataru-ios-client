@@ -167,23 +167,23 @@ struct DeviceLocationMapWidgetEntryView: View {
     private func overlay(for device: WidgetDeviceData, family: WidgetFamily) -> some View {
         let locality = formattedLocality(for: device)
         let distance = formattedDistance(to: device, from: entry.ownDevice)
+        let lastUpdate = formattedRelativeTimestamp(for: device.timestamp)
 
-        let (nameFont, detailFont, spacing, padding) = overlayMetrics(for: family)
+        let primaryComponents = [device.name, locality, distance].filter { !$0.isEmpty }
+        let primaryLine = primaryComponents.joined(separator: " • ")
+        let (primaryFont, secondaryFont, spacing, padding) = overlayMetrics(for: family)
 
         return VStack(alignment: .leading, spacing: spacing) {
-            Text(device.name)
-                .font(nameFont)
+            Text(primaryLine)
+                .font(primaryFont)
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .minimumScaleFactor(0.6)
                 .shadow(radius: 2)
-            Text(locality)
-                .font(detailFont)
+            Text(lastUpdate)
+                .font(secondaryFont)
+                .foregroundStyle(.secondary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
-            Text(distance)
-                .font(detailFont)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.6)
         }
         .foregroundColor(.primary)
         .padding(.vertical, padding)
@@ -197,11 +197,11 @@ struct DeviceLocationMapWidgetEntryView: View {
     private func overlayMetrics(for family: WidgetFamily) -> (Font, Font, CGFloat, CGFloat) {
         switch family {
         case .systemMedium:
-            return (.subheadline.weight(.semibold), .caption2, 3, 7)
+            return (.subheadline.weight(.semibold), .caption2, 2, 7)
         case .systemLarge:
-            return (.headline, .subheadline, 4, 12)
+            return (.headline, .subheadline, 3, 12)
         default:
-            return (.subheadline.weight(.semibold), .caption, 3, 8)
+            return (.subheadline.weight(.semibold), .caption, 2, 8)
         }
     }
 
@@ -238,6 +238,14 @@ struct DeviceLocationMapWidgetEntryView: View {
         formatter.units = .default
         formatter.unitStyle = .abbreviated
         return formatter
+    }
+
+    private func formattedRelativeTimestamp(for date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        let base = formatter.localizedString(for: date, relativeTo: Date())
+        let label = NSLocalizedString("widget_last_update", comment: "Prefix for last update timestamp")
+        return "\(label) \(base)"
     }
 }
 
