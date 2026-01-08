@@ -195,6 +195,19 @@ struct iPhone_DevicesView: View {
                 Task {
                     _ = await refreshAllDeviceLocations()
                 }
+
+                // Re-assert deep link navigation after activation to beat any restored navigation stack state.
+                if let requestedID = settings.lastOpenedDeviceID,
+                   store.devices.contains(where: { $0.DeviceID == requestedID }),
+                   navigationPath.last != requestedID {
+                    Task { @MainActor in
+                        navigationPath = []
+                        await Task.yield()
+                        try? await Task.sleep(nanoseconds: 180_000_000)
+                        guard settings.lastOpenedDeviceID == requestedID else { return }
+                        navigationPath = [requestedID]
+                    }
+                }
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
@@ -204,9 +217,21 @@ struct iPhone_DevicesView: View {
             .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
                 guard let deviceID = newDeviceID,
                       store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
-                // Replace the current path to ensure we show the requested device map.
-                if navigationPath != [deviceID] {
-                    navigationPath = [deviceID]
+                let requestedID = deviceID
+                Task { @MainActor in
+                    // If we’re already showing the requested device (normal in-app navigation),
+                    // do nothing to avoid a visible pop/push animation.
+                    if navigationPath.last == requestedID {
+                        return
+                    }
+
+                    // Clear first, then set after a short delay to override any restored navigation state.
+                    navigationPath = []
+                    await Task.yield()
+                    try? await Task.sleep(nanoseconds: 180_000_000)
+                    // Guard against a stale delayed task (e.g. multiple widget taps).
+                    guard settings.lastOpenedDeviceID == requestedID else { return }
+                    navigationPath = [requestedID]
                 }
             }
             // Intentionally do not reset didAutoNavigateFromSavedDevice on

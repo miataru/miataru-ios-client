@@ -1132,12 +1132,74 @@ Changes to be committed:
 ```bash
 cd /Users/bietiekay/code/miataru-ios-app/miataru && git status && git show --stat --oneline -1
 ```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-01-07_20-27Z-map-widget-pre-render-update-issue.md
+
+nothing added to commit but untracked files present (use "git add" to track)
+e18bdcf Widget map: keep snapshot image in sync with timeline updates
+ miataru/miataru.xcodeproj/project.pbxproj          |   8 +-
+ miataru/miataru/da.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/es.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/fi.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/fr.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/it.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/nl.lproj/InfoPlist.strings         |   2 +
+ miataru/miataru/zh-Hans.lproj/InfoPlist.strings    |   2 +
+ .../miataruWidgets/DeviceLocationMapWidget.swift   |   2 +-
+ .../WidgetMapSnapshotGenerator.swift               | 135 +++++++++++++++++++++
+ .../miataruWidgets/WidgetTimelineDataLoader.swift  |   8 +-
+ 11 files changed, 161 insertions(+), 6 deletions(-)
+
+```
 </details>
 </tool-use>
 
 ---
 
+<think><details><summary>Thought Process</summary>
+**Deciding on untracked files**
 
+I see we have an untracked specstory file that reappeared. The user didn't mention it, but I think it could be helpful to keep things clean. I could delete it to avoid confusion since the user only asked for gathering info. However, it might regenerate, and the user might want it later. It might be better to delete it and consider adding it to .gitignore, but the user hasn’t requested that. I'll just delete the untracked file for now.
+**Considering file deletion and commit message**
+
+I’m thinking that deleting the untracked specstory file might not be the best move; I should check with the user first since it can simply be ignored. The final response needs to be concise, but the instructions say to keep working until the query is resolved. I need to provide the commit hash and message, while also noting that the untracked file remains. I’ll ensure to reference memory when I mention the commit message since the user requested it to be descriptive. It seems I should get confirmation before deleting the file.
+**Deciding on untracked files and commits**
+
+I think it could be helpful to mention the untracked file, but the user didn't specifically ask for it. I could recommend either adding it to .gitignore or deleting it. I’ll offer a command for that and ask for the user's preference, but I need to ensure the final answer is minimal and concise. 
+
+I’ll also update them about the commit that includes all changes and the new generator along with the commit hash, e18bdcf, and provide the message lines.</details></think>
+
+---
+
+## Commit created
+
+- **Commit**: `e18bdcf` on `master` (ahead of `origin/master` by 1)
+- **Message** (descriptive, English [[memory:12857951]]):
+
+  - `Widget map: keep snapshot image in sync with timeline updates`
+  - Fix stale pre-rendered map PNG vs. updated timeline text by generating light/dark snapshots in the widget (mtime vs. device timestamp), enabled only for the map widget via a loader flag.
+  - Also bumps `CURRENT_PROJECT_VERSION` and normalizes trailing newlines in localized `InfoPlist.strings`.
+
+- **Files included** (11):
+  - `miataruWidgets/WidgetMapSnapshotGenerator.swift` (new)
+  - `miataruWidgets/WidgetTimelineDataLoader.swift`
+  - `miataruWidgets/DeviceLocationMapWidget.swift`
+  - `miataru.xcodeproj/project.pbxproj`
+  - `miataru/*/InfoPlist.strings` (da/es/fi/fr/it/nl/zh-Hans)
+
+## Remaining local state
+
+- Working tree is clean **except** one **untracked** file:
+  - `.specstory/history/2026-01-07_20-27Z-map-widget-pre-render-update-issue.md`
+
+If you want, tell me whether to **delete it** or **add it to `.gitignore`** (no commit unless you ask).
 
 ---
 
