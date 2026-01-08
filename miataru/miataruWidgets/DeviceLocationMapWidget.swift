@@ -44,7 +44,7 @@ struct DeviceLocationMapProvider: AppIntentTimelineProvider {
     }
 
     private func buildEntry(configuration: DeviceSelectionIntent) async -> DeviceMapEntry {
-        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration)
+        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration, generateMapSnapshots: true)
         return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload.ownDevice)
     }
 }

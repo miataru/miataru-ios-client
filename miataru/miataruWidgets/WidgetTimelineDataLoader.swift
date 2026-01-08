@@ -12,7 +12,7 @@ import MiataruAPIClient
 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 enum WidgetTimelineDataLoader {
-    static func loadEntryData(configuration: DeviceSelectionIntent) async -> (WidgetSharedPayload, WidgetDeviceData?) {
+    static func loadEntryData(configuration: DeviceSelectionIntent, generateMapSnapshots: Bool = false) async -> (WidgetSharedPayload, WidgetDeviceData?) {
         let cachedPayload = SharedWidgetDataManager.read()
         let cachedDeviceIDs = cachedPayload?.devices.map { $0.id } ?? []
         let config = SharedWidgetConfigManager.read()
@@ -54,6 +54,12 @@ enum WidgetTimelineDataLoader {
 
         let selectedDeviceID = targetID ?? requestIDs.first ?? cachedDeviceIDs.first
         let device = selectedDeviceID.flatMap { id in payload.devices.first(where: { $0.id == id }) }
+
+        if generateMapSnapshots, let device {
+            // Ensure the pre-rendered map image matches the freshest data we’re about to display.
+            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)
+        }
+
         return (payload, device)
     }
 
