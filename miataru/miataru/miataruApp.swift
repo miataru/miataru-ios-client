@@ -91,18 +91,7 @@ struct miataruApp: App {
 #endif
                 }
                 .onOpenURL { url in
-                    if url.scheme == "miataru" {
-                        let deviceID = url.host?.uppercased() ?? ""
-                        if !deviceID.isEmpty {
-                            // If the device already exists, navigate to it; otherwise fall back to add flow.
-                            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {
-                                SettingsManager.shared.lastOpenedDeviceID = deviceID
-                            } else {
-                                pendingDeviceID = deviceID
-                                showAddDeviceSheet = true
-                            }
-                        }
-                    }
+                    handleIncomingURL(url)
                 }
                 .sheet(isPresented: $showAddDeviceSheet, onDismiss: { pendingDeviceID = nil }) {
                     if let deviceID = pendingDeviceID {
@@ -124,6 +113,29 @@ struct miataruApp: App {
             DeviceWindowEntrypoint(deviceID: deviceID)
                 .environmentObject(RouteInfoState.shared)
                 .environmentObject(SettingsManager.shared)
+        }
+    }
+
+    private func handleIncomingURL(_ url: URL) {
+        guard url.scheme == "miataru" else { return }
+        let deviceID = (url.host ?? "").uppercased()
+        guard !deviceID.isEmpty else { return }
+
+        Task { @MainActor in
+            // When resuming from background, SwiftUI may restore navigation state after the URL
+            // event is delivered. Deferring slightly ensures the deep link wins over restoration.
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+
+            // If the device already exists, navigate to it; otherwise fall back to add flow.
+            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {
+                showAddDeviceSheet = false
+                pendingDeviceID = nil
+                SettingsManager.shared.lastOpenedDeviceID = deviceID
+            } else {
+                pendingDeviceID = deviceID
+                showAddDeviceSheet = true
+            }
         }
     }
 }

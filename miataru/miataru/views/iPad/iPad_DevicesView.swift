@@ -186,6 +186,19 @@ struct iPad_DevicesView: View {
                 Task {
                     _ = await refreshAllDeviceLocations()
                 }
+
+                // Re-assert deep link selection after activation to beat any restored split-view state.
+                if let requestedID = settings.lastOpenedDeviceID,
+                   store.devices.contains(where: { $0.DeviceID == requestedID }),
+                   selection != requestedID {
+                    Task { @MainActor in
+                        await Task.yield()
+                        try? await Task.sleep(nanoseconds: 180_000_000)
+                        guard settings.lastOpenedDeviceID == requestedID else { return }
+                        selection = requestedID
+                        lastSelectedDeviceID = requestedID
+                    }
+                }
             }
         } detail: {
             NavigationStack {
@@ -246,9 +259,17 @@ struct iPad_DevicesView: View {
         .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
             guard let deviceID = newDeviceID,
                   store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
-            if selection != deviceID {
-                selection = deviceID
-                lastSelectedDeviceID = deviceID
+            let requestedID = deviceID
+            Task { @MainActor in
+                // If we’re already showing the requested device, do nothing to avoid flicker.
+                if selection == requestedID {
+                    return
+                }
+                await Task.yield()
+                try? await Task.sleep(nanoseconds: 180_000_000)
+                guard settings.lastOpenedDeviceID == requestedID else { return }
+                selection = requestedID
+                lastSelectedDeviceID = requestedID
             }
         }
         .onChange(of: selection) { oldSelection, newSelection in
