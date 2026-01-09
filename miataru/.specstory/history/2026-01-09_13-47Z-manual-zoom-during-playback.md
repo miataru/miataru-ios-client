@@ -831,3 +831,397 @@ I'm adding new state variables for current region, playback-locked span, and sup
 
 ---
 
+<think><details><summary>Thought Process</summary>
+**Adding onMapCameraChange patch**
+
+I'm planning to insert the onMapCameraChange handler just before the overlays in the Map view chain to compute changes using the previous region before updating the current one, applying this as a patch.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adding camera region helper and integrating suppression**
+
+I'm creating a new MainActor helper to set the camera region with suppression timing and animation handling, then refactoring updateRegion and focusOnEntry to use it. I'm also ensuring playbackLockedSpan resets on playback start/stop and adjusting suppression logic to align detection with programmatic camera changes.</details></think>
+
+---
+
+Failed to find context:
+    @MainActor
+    private func focusOnScrubbedEntry(animated: Bool = true) {
+        guard let scrubTimestamp else { return }
+        guard let target = viewModel.closest(to: scrubTimestamp, in: selectedRange) else { return }
+        Task { @MainActor in
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Reassessing patch placement**
+
+I'm re-reading the relevant section around updateRegion to carefully apply the patch after a context shift caused failure.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Refining patch scope**
+
+Planning to patch the updateRegion area more precisely by adding a new helper nearby, positioning it after updateRegion but likely before focusOnScrubbedEntry, using a patch snippet.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning focusOnEntry and read updates**</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning patch to manage playback locks**
+
+I'm preparing to patch startPlayback and stopPlayback to clear locks appropriately, and to adjust focusOnEntry accordingly. This will ensure proper state management during playback control.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Finalizing state updates and task statuses**
+
+I clarified the behavior around locked spans and ensured playback controls and suppression window handling are in place. I also confirmed correct usage of current and previous region states to avoid detection issues and finalized marking all related to-dos as completed using TodoWrite.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Add region tracking + suppression window + user zoom detection via `.onMapCameraChange` in `iPhone_DeviceHistoryMapView`.
+- [x] Store `playbackLockedSpan` when user zooms during playback; clear it when playback starts/stops/pauses.
+- [x] Update `focusOnEntry` to keep animating the center while using the locked span (skip fit-to-bounds zoom) when `playbackLockedSpan` is set.
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing final changes and test instructions**
+
+The map detection now uses a suppression window to reduce false detections; this change is in the existing files without adding new ones or modifying plan files. No automated tests were run, so manual testing is needed: run the app and verify map detections respond correctly within the suppression window. Key code adjustments are documented by path and optionally with code snippets. The user should receive clear bullet-pointed instructions and a testing note, all presented in English.</details></think>
+
+---
+
+Implemented manual-zoom override during playback in `iPhone_DeviceHistoryMapView.swift`: map camera change now tracks user zooms (with suppression for programmatic moves) and locks the playback span when zooming while playing; playback clears the lock on start/stop; playback steps honor the locked span while still animating center updates. No automated tests run (manual playback/zoom check recommended).
+
+---
+
+_**User**_
+
+describe all and commit all
+
+---
+
+_**Agent (model gpt-5.1-codex-max, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing simultaneous git status, diff, log**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git status --short
+```
+
+```
+ M "miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift"
+?? miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git diff</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git diff
+```
+
+```
+diff --git a/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift b/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift
+index d8a69ac..4c6c099 100644
+--- a/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift	
++++ b/miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift	
+@@ -21,6 +21,9 @@ struct iPhone_DeviceHistoryMapView: View {
+             span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
+         )
+     )
++    @State private var currentRegion: MKCoordinateRegion? = nil
++    @State private var playbackLockedSpan: MKCoordinateSpan? = nil
++    @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
+     // Loading &amp; data
+     @State private var isLoading = false
+     @State private var loadError: String? = nil
+@@ -178,6 +181,26 @@ struct iPhone_DeviceHistoryMapView: View {
+                 }
+             }
+         }
++        .onMapCameraChange(frequency: .continuous) { context in
++            let previousRegion = currentRegion
++            let now = Date()
++            let suppressed = suppressUserCameraChangeDetectionUntil.map { now &lt; $0 } ?? false
++
++            let zoomChanged: Bool
++            if let previousSpan = previousRegion?.span {
++                let latDiff = abs(previousSpan.latitudeDelta - context.region.span.latitudeDelta)
++                let lonDiff = abs(previousSpan.longitudeDelta - context.region.span.longitudeDelta)
++                zoomChanged = latDiff &gt; 0.00005 || lonDiff &gt; 0.00005
++            } else {
++                zoomChanged = false
++            }
++
++            if isPlaying &amp;&amp; zoomChanged &amp;&amp; !suppressed {
++                playbackLockedSpan = context.region.span
++            }
++
++            currentRegion = context.region
++        }
+         .ignoresSafeArea()
+         .overlay(alignment: .top) {
+             if isLoading {
+@@ -456,6 +479,14 @@ struct iPhone_DeviceHistoryMapView: View {
+             region = MKCoordinateRegion(center: center, span: span)
+         }
+ 
++        setCameraRegion(region, animated: animated)
++    }
++
++    @MainActor
++    private func setCameraRegion(_ region: MKCoordinateRegion, animated: Bool) {
++        let suppressionWindow: TimeInterval = animated ? 0.9 : 0.35
++        suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(suppressionWindow)
++
+         if animated {
+             withAnimation(.easeInOut(duration: 0.5)) {
+                 cameraPosition = .region(region)
+@@ -669,6 +700,7 @@ struct iPhone_DeviceHistoryMapView: View {
+ 
+     private func startPlayback() {
+         stopPlayback()
++        playbackLockedSpan = nil
+         let entries = visibleHistory
+         guard !entries.isEmpty else { return }
+         let startTimestamp: Double
+@@ -715,10 +747,18 @@ struct iPhone_DeviceHistoryMapView: View {
+         playbackTask = nil
+         isPlaying = false
+         isPlaybackStepping = false
++        playbackLockedSpan = nil
+     }
+ 
+     @MainActor
+     private func focusOnEntry(_ entry: MiataruLocationData, within entries: [MiataruLocationData]) {
++        let coordinate = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
++        if let lockedSpan = playbackLockedSpan, isPlaying {
++            let region = MKCoordinateRegion(center: coordinate, span: lockedSpan)
++            setCameraRegion(region, animated: true)
++            return
++        }
++
+         guard let index = entries.firstIndex(where: { $0.Timestamp == entry.Timestamp &amp;&amp; $0.Latitude == entry.Latitude &amp;&amp; $0.Longitude == entry.Longitude }) else {
+             updateRegion(animated: true, using: [entry], useDefaultZoom: true)
+             return
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git log -5 --oneline</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git log -5 --oneline
+```
+
+```
+a244c2c Fix map widget refresh reliability
+1bebf25 version doc
+d0f1ee1 Fix app/widget versioning to inherit project settings
+b1000fc Fix widget deep-link precedence over restored device map
+4658654 doc
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Checking untracked specstory file**
+
+I'm verifying the contents of the untracked specstory file to decide if it's auto-generated and should be included in the commit.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Including specstory file in commit**
+
+Since the instructions say "commit all," I'll include both the main file and the specstory file despite usual ignoring, staging both before committing with a message reflecting the features added.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git add "miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git add "miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift" "miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md"
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Checking staged git status**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git status --short
+```
+
+```
+A  miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md
+M  "miataru/miataru/views/iPhone/Devices Views/DeviceHistoryMap/iPhone_DeviceHistoryMapView.swift"
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing concise commit message**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git commit -m "$(cat <<'EOF'
+Preserve manual zoom during history playback
+EOF
+)"</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git commit -m "$(cat <<'EOF'
+Preserve manual zoom during history playback
+EOF
+)"
+```
+
+```
+[master e3c1dc0] Preserve manual zoom during history playback
+ 2 files changed, 873 insertions(+)
+ create mode 100644 miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Confirming clean state**</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git status --short</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git status --short
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Summarizing final response**
+
+I'll include a brief summary describing the changes, mention no tests were added, reference the specstory file and its log in the commit, and note manual testing was not performed. I'll cite the relevant file path for clarity.</details></think>
+
+---
+
+Change implemented: device history playback now locks the user’s manual zoom span and keeps centering during playback while ignoring auto-zoom, using suppression to avoid treating programmatic moves as gestures; lock resets on start/stop. Commit `Preserve manual zoom during history playback` created (includes specstory log).
+
+Tests: not run (manual zoom/playback check recommended).
+
+---
+
