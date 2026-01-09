@@ -21,6 +21,9 @@ struct iPhone_DeviceHistoryMapView: View {
             span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
         )
     )
+    @State private var currentRegion: MKCoordinateRegion? = nil
+    @State private var playbackLockedSpan: MKCoordinateSpan? = nil
+    @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
     // Loading & data
     @State private var isLoading = false
     @State private var loadError: String? = nil
@@ -177,6 +180,26 @@ struct iPhone_DeviceHistoryMapView: View {
                     }
                 }
             }
+        }
+        .onMapCameraChange(frequency: .continuous) { context in
+            let previousRegion = currentRegion
+            let now = Date()
+            let suppressed = suppressUserCameraChangeDetectionUntil.map { now < $0 } ?? false
+
+            let zoomChanged: Bool
+            if let previousSpan = previousRegion?.span {
+                let latDiff = abs(previousSpan.latitudeDelta - context.region.span.latitudeDelta)
+                let lonDiff = abs(previousSpan.longitudeDelta - context.region.span.longitudeDelta)
+                zoomChanged = latDiff > 0.00005 || lonDiff > 0.00005
+            } else {
+                zoomChanged = false
+            }
+
+            if isPlaying && zoomChanged && !suppressed {
+                playbackLockedSpan = context.region.span
+            }
+
+            currentRegion = context.region
         }
         .ignoresSafeArea()
         .overlay(alignment: .top) {
@@ -456,6 +479,14 @@ struct iPhone_DeviceHistoryMapView: View {
             region = MKCoordinateRegion(center: center, span: span)
         }
 
+        setCameraRegion(region, animated: animated)
+    }
+
+    @MainActor
+    private func setCameraRegion(_ region: MKCoordinateRegion, animated: Bool) {
+        let suppressionWindow: TimeInterval = animated ? 0.9 : 0.35
+        suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(suppressionWindow)
+
         if animated {
             withAnimation(.easeInOut(duration: 0.5)) {
                 cameraPosition = .region(region)
@@ -669,6 +700,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func startPlayback() {
         stopPlayback()
+        playbackLockedSpan = nil
         let entries = visibleHistory
         guard !entries.isEmpty else { return }
         let startTimestamp: Double
@@ -715,10 +747,18 @@ struct iPhone_DeviceHistoryMapView: View {
         playbackTask = nil
         isPlaying = false
         isPlaybackStepping = false
+        playbackLockedSpan = nil
     }
 
     @MainActor
     private func focusOnEntry(_ entry: MiataruLocationData, within entries: [MiataruLocationData]) {
+        let coordinate = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
+        if let lockedSpan = playbackLockedSpan, isPlaying {
+            let region = MKCoordinateRegion(center: coordinate, span: lockedSpan)
+            setCameraRegion(region, animated: true)
+            return
+        }
+
         guard let index = entries.firstIndex(where: { $0.Timestamp == entry.Timestamp && $0.Latitude == entry.Latitude && $0.Longitude == entry.Longitude }) else {
             updateRegion(animated: true, using: [entry], useDefaultZoom: true)
             return
