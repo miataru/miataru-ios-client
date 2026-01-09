@@ -48,7 +48,9 @@ enum WidgetMapSnapshotGenerator {
             return true
         }
         // Regenerate if the snapshot predates the data we’re about to show.
-        return modDate < deviceTimestamp
+        // Clamp to "now" to avoid endless regeneration when server timestamps are in the future.
+        let referenceTimestamp = min(deviceTimestamp, Date())
+        return modDate < referenceTimestamp
     }
 
     @MainActor

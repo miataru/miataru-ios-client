@@ -9,6 +9,7 @@
 
 import WidgetKit
 import SwiftUI
+import Foundation
 import CoreLocation
 import MapKit
 #if canImport(UIKit)
@@ -39,13 +40,50 @@ struct DeviceLocationMapProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -> Timeline<DeviceMapEntry> {
         let entry = await buildEntry(configuration: configuration)
-        let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)
+        // Default refresh cadence. The system may still throttle this.
+        var next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)
+
+        // If the map snapshot file is missing or older than the data we’re displaying,
+        // ask WidgetKit to give us another chance soon. This helps the widget recover
+        // from slow snapshot rendering without "freezing" for long periods.
+        if let device = entry.device, needsSnapshotRefresh(for: device) {
+            next = Calendar.current.date(byAdding: .minute, value: 2, to: Date()) ?? Date().addingTimeInterval(120)
+        }
+
         return Timeline(entries: [entry], policy: .after(next))
     }
 
     private func buildEntry(configuration: DeviceSelectionIntent) async -> DeviceMapEntry {
         let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration, generateMapSnapshots: true)
         return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload.ownDevice)
+    }
+
+    private func needsSnapshotRefresh(for device: WidgetDeviceData) -> Bool {
+        #if canImport(UIKit)
+        let styles: [UIUserInterfaceStyle] = [.light, .dark]
+        #else
+        let styles: [Any] = []
+        #endif
+
+        // Defensive: don't treat far-future timestamps as "always stale"
+        // (clock skew can otherwise cause endless snapshot regeneration attempts).
+        let referenceTimestamp = min(device.timestamp, Date())
+
+        #if canImport(UIKit)
+        for style in styles {
+            guard let url = SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: style) else { return true }
+            guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                  let modDate = attrs[.modificationDate] as? Date else {
+                return true
+            }
+            if modDate < referenceTimestamp {
+                return true
+            }
+        }
+        #endif
+
+        // If we can't evaluate snapshots (non-UIKit platforms), don't force refresh.
+        return false
     }
 }
 
