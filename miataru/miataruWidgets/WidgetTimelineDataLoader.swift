@@ -56,8 +56,13 @@ enum WidgetTimelineDataLoader {
         let device = selectedDeviceID.flatMap { id in payload.devices.first(where: { $0.id == id }) }
 
         if generateMapSnapshots, let device {
-            // Ensure the pre-rendered map image matches the freshest data we’re about to display.
-            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)
+            // Generating MKMapSnapshotter images can be slow and may exceed WidgetKit's
+            // tight execution budget if awaited during timeline generation.
+            // Do it best-effort in the background and let the provider schedule a near-term
+            // refresh if it detects stale/missing snapshots.
+            Task.detached(priority: .utility) {
+                await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)
+            }
         }
 
         return (payload, device)
