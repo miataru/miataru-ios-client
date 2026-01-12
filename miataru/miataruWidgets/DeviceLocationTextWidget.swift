@@ -64,6 +64,9 @@ struct DeviceLocationTextWidgetEntryView: View {
                 placeholder
             }
         }
+        .containerBackground(for: .widget) {
+            Color(.systemBackground)
+        }
     }
 
     private func content(for device: WidgetDeviceData) -> some View {
@@ -196,4 +199,3 @@ struct DeviceLocationTextWidget: Widget {
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }
 }
-
