@@ -93,7 +93,7 @@ struct DeviceLocationMapWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        Group {
+        ZStack {
             if let device = entry.device {
                 GeometryReader { geo in
                     ZStack(alignment: .topLeading) {
@@ -122,7 +122,8 @@ struct DeviceLocationMapWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            ContainerRelativeShape()
+                .fill(Color(.systemBackground))
         }
     }
 

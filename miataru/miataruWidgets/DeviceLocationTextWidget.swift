@@ -56,7 +56,7 @@ struct DeviceLocationTextWidgetEntryView: View {
     let entry: DeviceLocationEntry
 
     var body: some View {
-        Group {
+        ZStack {
             if let device = entry.device {
                 content(for: device)
                     .widgetURL(URL(string: "miataru://\(device.id)"))
@@ -65,7 +65,8 @@ struct DeviceLocationTextWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) {
-            Color(.systemBackground)
+            ContainerRelativeShape()
+                .fill(Color(.systemBackground))
         }
     }
 
