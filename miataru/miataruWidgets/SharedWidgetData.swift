@@ -40,7 +40,9 @@ struct WidgetSharedPayload: Codable {
 enum SharedWidgetDataManager {
     static let appGroupIdentifier = "group.com.miataru.ios"
     private static let sharedDataFileName = "SharedDeviceData.json"
-    private static let snapshotPrefix = "MapSnapshot-"
+    // IMPORTANT: Widget snapshots must not share filenames with app-side snapshots.
+    // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.
+    private static let snapshotPrefix = "WidgetMapSnapshot-"
     private static let snapshotExtension = "png"
 
     static var sharedContainerURL: URL? {

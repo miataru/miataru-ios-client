@@ -69,7 +69,7 @@ struct DeviceLocationTextWidgetEntryView: View {
     private func content(for device: WidgetDeviceData) -> some View {
         let distanceText = formattedDistance(to: device, from: entry.ownDevice)
         let locality = formattedLocality(for: device)
-        let lastUpdate = formattedRelativeTimestamp(for: device.timestamp)
+        let lastUpdate = formattedUpdateTimestamp(for: device.timestamp)
 
         let (nameFont, detailFont, distanceFont, updateFont, spacing, padding) = metrics(for: family)
 
@@ -166,12 +166,16 @@ struct DeviceLocationTextWidgetEntryView: View {
         return distanceFormatter.string(fromDistance: meters)
     }
 
-    private func formattedRelativeTimestamp(for date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        let base = formatter.localizedString(for: date, relativeTo: Date())
+    private func formattedUpdateTimestamp(for date: Date) -> String {
         let label = NSLocalizedString("widget_last_update", comment: "Prefix for last update timestamp")
-        return "\(label) \(base)"
+        let now = Date()
+        let stamp: String
+        if Calendar.current.isDate(date, inSameDayAs: now) {
+            stamp = date.formatted(date: .omitted, time: .shortened)
+        } else {
+            stamp = date.formatted(date: .abbreviated, time: .shortened)
+        }
+        return "\(label) \(stamp)"
     }
 
     private var distanceFormatter: MKDistanceFormatter {
