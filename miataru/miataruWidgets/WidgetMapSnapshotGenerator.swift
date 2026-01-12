@@ -27,7 +27,7 @@ import WidgetKit
 enum WidgetMapSnapshotGenerator {
     #if canImport(UIKit)
     static func ensureOtherStyleBestEffort(for device: WidgetDeviceData,
-                                          size: CGSize = CGSize(width: 600, height: 600),
+                                          size: CGSize = CGSize(width: 420, height: 420),
                                           preferredStyle: UIUserInterfaceStyle) async {
         let other: UIUserInterfaceStyle = (preferredStyle == .dark ? .light : .dark)
 
@@ -38,7 +38,7 @@ enum WidgetMapSnapshotGenerator {
     }
 
     static func ensureSnapshotsUpToDate(for device: WidgetDeviceData,
-                                        size: CGSize = CGSize(width: 600, height: 600),
+                                        size: CGSize = CGSize(width: 420, height: 420),
                                         preferredStyle: UIUserInterfaceStyle? = nil) async {
         let ts = device.timestamp
         let coord = CLLocationCoordinate2D(latitude: device.latitude, longitude: device.longitude)
@@ -92,7 +92,9 @@ enum WidgetMapSnapshotGenerator {
 
         let options = MKMapSnapshotter.Options()
         options.size = size
-        options.scale = UIScreen.main.scale
+        // WidgetKit is memory/time constrained; very large pixel snapshots can cause
+        // blank/empty renders when multiple widgets are on screen. Cap the scale.
+        options.scale = min(UIScreen.main.scale, 2.0)
         options.mapType = .standard
         options.pointOfInterestFilter = .excludingAll
         options.showsBuildings = false
@@ -102,7 +104,7 @@ enum WidgetMapSnapshotGenerator {
 
         do {
             let snapshot = try await MKMapSnapshotter(options: options).start()
-            let marker = markerImage(for: device, style: style)
+            let marker = markerImage(for: device, style: style, canvasSize: size)
             let image = render(snapshot: snapshot, coordinate: coordinate, size: size, markerImage: marker)
             if let data = image.pngData() {
                 try data.write(to: url, options: [.atomic])
@@ -149,16 +151,23 @@ enum WidgetMapSnapshotGenerator {
         }
     }
 
-    private static func markerImage(for device: WidgetDeviceData, style: UIUserInterfaceStyle) -> UIImage {
+    private static func markerImage(for device: WidgetDeviceData,
+                                    style: UIUserInterfaceStyle,
+                                    canvasSize: CGSize) -> UIImage {
         let color = uiColor(from: device.color) ?? UIColor.systemBlue
         let symbol = UIImage(systemName: "mappin.circle.fill") ?? UIImage()
         let tinted = symbol.withTintColor(color, renderingMode: .alwaysOriginal)
 
-        let target = CGSize(width: 44, height: 44)
+        // Scale marker relative to snapshot canvas; keep within a reasonable range.
+        // (Smaller snapshots otherwise make the marker look oversized.)
+        let base = min(canvasSize.width, canvasSize.height)
+        let side = max(18, min(34, base * 0.05))
+        let target = CGSize(width: side, height: side)
         let renderer = UIGraphicsImageRenderer(size: target)
         return renderer.image { _ in
             let rect = CGRect(origin: .zero, size: target)
-            tinted.draw(in: rect.insetBy(dx: 2, dy: 2))
+            let inset = max(1, target.width * 0.08)
+            tinted.draw(in: rect.insetBy(dx: inset, dy: inset))
         }
     }
 
