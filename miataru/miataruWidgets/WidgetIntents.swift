@@ -52,8 +52,9 @@ struct DeviceEntity: AppEntity {
 struct DeviceQuery: EntityQuery {
     func entities(for identifiers: [DeviceEntity.ID]) async throws -> [DeviceEntity] {
         guard let payload = SharedWidgetDataManager.read() else { return [] }
+        let normalized = identifiers.map { $0.lowercased() }
         return payload.devices
-            .filter { identifiers.contains($0.id) }
+            .filter { normalized.contains($0.id.lowercased()) }
             .map { DeviceEntity(id: $0.id, displayName: $0.name) }
     }
 
