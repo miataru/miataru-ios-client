@@ -2492,11 +2492,634 @@ Directory: **/Users/bietiekay/code/miataru-ios-app/miataru** (1 file)
 
 <details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift</summary>
 
-Status: **loading**
+</details>
+
+</tool-use>
+
+---
+
+Failed to find context:
+        if let url = candidateURL,
+           let data = try? Data(contentsOf: url),
+           let uiImage = UIImage(data: data) {
+            // #region agent log
+            if let preferredURL, url != preferredURL {
+                WidgetDebugLogger.log(
+                    hypothesisId: "E",
+                    location: "DeviceLocationMapWidget.swift:snapshotLayer:fallbackStyle",
+                    message: "Using other-style snapshot (preferred not fresh yet)",
+                    data: [
+                        "deviceId": device.id,
+                        "colorScheme": (colorScheme == .dark ? "dark" : "light"),
+                        "usedFile": url.lastPathComponent,
+                        "preferredFile": preferredURL.lastPathComponent
+                    ]
+                )
+            }
+            // #endregion agent log
+            return AnyView(
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+            )
+        }
+
+        // #region agent log
+        do {
+            if let preferredURL {
+                let attrs = try? FileManager.default.attributesOfItem(atPath: preferredURL.path)
+                let modDate = attrs?[.modificationDate] as? Date
+                let modMs = modDate.map { Int64($0.timeIntervalSince1970 * 1000) }
+                WidgetDebugLogger.log(
+                    hypothesisId: "E",
+                    location: "DeviceLocationMapWidget.swift:snapshotLayer:placeholder",
+                    message: "Showing placeholder (preferred snapshot missing or stale)",
+                    data: [
+                        "deviceId": device.id,
+                        "colorScheme": (colorScheme == .dark ? "dark" : "light"),
+                        "preferredFile": preferredURL.lastPathComponent,
+                        "preferredFileExists": FileManager.default.fileExists(atPath: preferredURL.path),
+                        "preferredModMs": modMs as Any,
+                        "referenceTimestampMs": Int64(referenceTimestamp.timeIntervalSince1970 * 1000),
+                        "deviceTimestampMs": Int64(device.timestamp.timeIntervalSince1970 * 1000)
+                    ]
+                )
+            } else {
+                WidgetDebugLogger.log(
+                    hypothesisId: "A",
+                    location: "DeviceLocationMapWidget.swift:snapshotLayer:placeholderNoURL",
+                    message: "Showing placeholder (no preferred snapshot URL)",
+                    data: [
+                        "deviceId": device.id,
+                        "colorScheme": (colorScheme == .dark ? "dark" : "light")
+                    ]
+                )
+            }
+        }
+        // #endregion agent log
+
+        // Visible fallback for missing snapshot, especially on small size
+        return AnyView(
+            ZStack {
+
+---
+
+<think><details><summary>Thought Process</summary>
+I'm noticing that the patch has failed, likely due to some context drift. I need to read the relevant sections to understand the context better before I can accurately apply the patch. It seems like the next step is to read around those areas first, and then I can move forward with applying the patch with the correct context. Let's tackle this step by step!</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets/DeviceLocationMapWidget.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets/DeviceLocationMapWidget.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets/DeviceLocationMapWidget.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Patching logs and cleanup**
+
+I'm working on applying patches to remove specific log sections and functions. First, I’ll delete the timeline log lines and any logs related to onAppear. Then, I'll get rid of the snapshotLayer log sections and the sampleCenterPixel function. I also need to eliminate the WidgetDebugLogger.swift file. While I’m pondering if specstory cleanup is necessary, I think focusing on instrumentation and references is enough before compiling everything. Finally, I’ll apply the patches to the DeviceLocationMapWidget.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets/DeviceLocationMapWidget.swift</summary>
 
 </details>
 
 </tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="delete_file">
+<details><summary>Tool use: **delete_file**</summary>
+
+Explanation: undefined
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "WidgetDebugLogger\\.log|WidgetDebugLogger",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru",
+  "outputMode": "files_with_matches",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "WidgetDebugLogger\\.log|WidgetDebugLogger",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru",
+    "outputMode": "files_with_matches",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "files": {
+          "files": [
+            "./.specstory/history/2026-01-12_16-21Z-multiple-map-widget-rendering-issue.md"
+          ],
+          "totalFiles": 1
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<details>
+<summary>Tool use: **read_lints**</summary>
+
+
+Parameters:
+
+```json
+{
+  "paths": [
+    "miataruWidgets/DeviceLocationMapWidget.swift",
+    "miataruWidgets/WidgetTimelineDataLoader.swift",
+    "miataruWidgets/WidgetMapSnapshotGenerator.swift"
+  ]
+}
+```
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "miataruWidgets/DeviceLocationMapWidget.swift"
+    },
+    {
+      "relativeWorkspacePath": "miataruWidgets/WidgetTimelineDataLoader.swift"
+    },
+    {
+      "relativeWorkspacePath": "miataruWidgets/WidgetMapSnapshotGenerator.swift"
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "#region agent log|#endregion agent log|hypothesisId|runId\":\"pre-fix",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets",
+  "outputMode": "content",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "#region agent log|#endregion agent log|hypothesisId|runId\":\"pre-fix",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "sampleCenterPixelRGBA",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets",
+  "outputMode": "files_with_matches",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "sampleCenterPixelRGBA",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets",
+    "outputMode": "files_with_matches",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "files": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="delete_file">
+<details><summary>Tool use: **delete_file**</summary>
+
+Explanation: undefined
+
+
+</details>
+</tool-use>
+
+---
+
+## Instrumentation cleanup done
+
+- Removed all debug instrumentation from:
+  - `miataruWidgets/DeviceLocationMapWidget.swift`
+  - `miataruWidgets/WidgetTimelineDataLoader.swift`
+  - `miataruWidgets/WidgetMapSnapshotGenerator.swift`
+- Deleted the debug helper file: `miataruWidgets/WidgetDebugLogger.swift`
+- Deleted the generated log file: `.cursor/debug.log`
+- Verified there are **no remaining `#region agent log` blocks** or `WidgetDebugLogger` references in `miataruWidgets/`, and no lints reported.
+
+---
+
+_**User**_
+
+describe the changes and commit everything in the repo
+
+---
+
+_**Agent (model gpt-5.2, mode Agent)**_
+
+I’ll first inspect the current git state (status + diff + recent commit style), then I’ll stage all changes (including the Xcode project file) and create a single commit with a message that matches this repo’s convention.
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status --porcelain=v1</summary>
+
+```bash
+git status --porcelain=v1
+```
+
+```
+ M miataru/miataru.xcodeproj/project.pbxproj
+ M miataru/miataruWidgets/DeviceLocationMapWidget.swift
+ M miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift
+?? miataru/.specstory/history/2026-01-12_13-08Z-multiple-iphone-map-widget-rendering.md
+?? miataru/.specstory/history/2026-01-12_16-21Z-multiple-map-widget-rendering-issue.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git diff</summary>
+
+```bash
+git diff
+```
+
+```
+diff --git a/miataru/miataru.xcodeproj/project.pbxproj b/miataru/miataru.xcodeproj/project.pbxproj
+index 834becf..7e4a8e8 100644
+--- a/miataru/miataru.xcodeproj/project.pbxproj
++++ b/miataru/miataru.xcodeproj/project.pbxproj
+@@ -438,7 +438,7 @@
+ 				CLANG_WARN_UNREACHABLE_CODE = YES;
+ 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+ 				COPY_PHASE_STRIP = NO;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEBUG_INFORMATION_FORMAT = dwarf;
+ 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+ 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+@@ -508,7 +508,7 @@
+ 				CLANG_WARN_UNREACHABLE_CODE = YES;
+ 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+ 				COPY_PHASE_STRIP = NO;
+-				CURRENT_PROJECT_VERSION = 1;
++				CURRENT_PROJECT_VERSION = 2;
+ 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+ 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+ 				ENABLE_NS_ASSERTIONS = NO;
+diff --git a/miataru/miataruWidgets/DeviceLocationMapWidget.swift b/miataru/miataruWidgets/DeviceLocationMapWidget.swift
+index 4cd56e3..731616d 100644
+--- a/miataru/miataruWidgets/DeviceLocationMapWidget.swift
++++ b/miataru/miataruWidgets/DeviceLocationMapWidget.swift
+@@ -135,6 +135,15 @@ struct DeviceLocationMapWidgetEntryView: View {
+             }
+         }()
+ 
++        let fallbackURL: URL? = {
++            switch colorScheme {
++            case .dark:
++                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)
++            default:
++                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)
++            }
++        }()
++
+         func isFreshEnough(_ url: URL) -&gt; Bool {
+             guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                   let modDate = attrs[.modificationDate] as? Date else {
+@@ -146,10 +155,13 @@ struct DeviceLocationMapWidgetEntryView: View {
+         // Never show a stale snapshot for a newer text payload. If the file is stale/missing,
+         // show the placeholder until the new snapshot render finishes and WidgetCenter reloads.
+         //
+-        // Also never show the *wrong appearance style* (e.g. dark snapshot in light mode):
+-        // if the preferred appearance snapshot isn't fresh yet, show placeholder instead.
++        // Prefer showing the current appearance style, but if only the *other* style is
++        // available and still fresh for this payload, show it instead of a placeholder.
++        // This avoids “stuck placeholder” scenarios when WidgetKit budget delays the
++        // secondary snapshot generation, especially with multiple widgets on screen.
+         let candidateURL: URL? = {
+             if let preferredURL, isFreshEnough(preferredURL) { return preferredURL }
++            if let fallbackURL, isFreshEnough(fallbackURL) { return fallbackURL }
+             return nil
+         }()
+ 
+diff --git a/miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift b/miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift
+index ececd6a..909ab88 100644
+--- a/miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift
++++ b/miataru/miataruWidgets/WidgetMapSnapshotGenerator.swift
+@@ -27,7 +27,7 @@ import WidgetKit
+ enum WidgetMapSnapshotGenerator {
+     #if canImport(UIKit)
+     static func ensureOtherStyleBestEffort(for device: WidgetDeviceData,
+-                                          size: CGSize = CGSize(width: 600, height: 600),
++                                          size: CGSize = CGSize(width: 420, height: 420),
+                                           preferredStyle: UIUserInterfaceStyle) async {
+         let other: UIUserInterfaceStyle = (preferredStyle == .dark ? .light : .dark)
+ 
+@@ -38,7 +38,7 @@ enum WidgetMapSnapshotGenerator {
+     }
+ 
+     static func ensureSnapshotsUpToDate(for device: WidgetDeviceData,
+-                                        size: CGSize = CGSize(width: 600, height: 600),
++                                        size: CGSize = CGSize(width: 420, height: 420),
+                                         preferredStyle: UIUserInterfaceStyle? = nil) async {
+         let ts = device.timestamp
+         let coord = CLLocationCoordinate2D(latitude: device.latitude, longitude: device.longitude)
+@@ -92,7 +92,9 @@ enum WidgetMapSnapshotGenerator {
+ 
+         let options = MKMapSnapshotter.Options()
+         options.size = size
+-        options.scale = UIScreen.main.scale
++        // WidgetKit is memory/time constrained; very large pixel snapshots can cause
++        // blank/empty renders when multiple widgets are on screen. Cap the scale.
++        options.scale = min(UIScreen.main.scale, 2.0)
+         options.mapType = .standard
+         options.pointOfInterestFilter = .excludingAll
+         options.showsBuildings = false
+@@ -102,7 +104,7 @@ enum WidgetMapSnapshotGenerator {
+ 
+         do {
+             let snapshot = try await MKMapSnapshotter(options: options).start()
+-            let marker = markerImage(for: device, style: style)
++            let marker = markerImage(for: device, style: style, canvasSize: size)
+             let image = render(snapshot: snapshot, coordinate: coordinate, size: size, markerImage: marker)
+             if let data = image.pngData() {
+                 try data.write(to: url, options: [.atomic])
+@@ -149,16 +151,23 @@ enum WidgetMapSnapshotGenerator {
+         }
+     }
+ 
+-    private static func markerImage(for device: WidgetDeviceData, style: UIUserInterfaceStyle) -&gt; UIImage {
++    private static func markerImage(for device: WidgetDeviceData,
++                                    style: UIUserInterfaceStyle,
++                                    canvasSize: CGSize) -&gt; UIImage {
+         let color = uiColor(from: device.color) ?? UIColor.systemBlue
+         let symbol = UIImage(systemName: "mappin.circle.fill") ?? UIImage()
+         let tinted = symbol.withTintColor(color, renderingMode: .alwaysOriginal)
+ 
+-        let target = CGSize(width: 44, height: 44)
++        // Scale marker relative to snapshot canvas; keep within a reasonable range.
++        // (Smaller snapshots otherwise make the marker look oversized.)
++        let base = min(canvasSize.width, canvasSize.height)
++        let side = max(18, min(34, base * 0.05))
++        let target = CGSize(width: side, height: side)
+         let renderer = UIGraphicsImageRenderer(size: target)
+         return renderer.image { _ in
+             let rect = CGRect(origin: .zero, size: target)
+-            tinted.draw(in: rect.insetBy(dx: 2, dy: 2))
++            let inset = max(1, target.width * 0.08)
++            tinted.draw(in: rect.insetBy(dx: inset, dy: inset))
+         }
+     }
+ 
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git log -10 --oneline</summary>
+
+```bash
+git log -10 --oneline
+```
+
+```
+84aa9c9 doc
+7d24edd Fix widget map snapshot consistency
+66908dd doc
+e3c1dc0 Preserve manual zoom during history playback
+a244c2c Fix map widget refresh reliability
+1bebf25 version doc
+d0f1ee1 Fix app/widget versioning to inherit project settings
+b1000fc Fix widget deep-link precedence over restored device map
+4658654 doc
+e18bdcf Widget map: keep snapshot image in sync with timeline updates
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git add -A && git commit -m "$(cat <<'EOF'
+Fix multi-widget map rendering
+
+Reduce widget map snapshot size and cap scale to avoid blank renders when multiple map widgets are on screen. Allow using a fresh snapshot from the other appearance style while the preferred style is still generating, and scale the pin marker to match the smaller snapshot. Also bump project build number.
+EOF
+)" && git status --porcelain=v1</summary>
+
+```bash
+git add -A && git commit -m "$(cat <<'EOF'
+Fix multi-widget map rendering
+
+Reduce widget map snapshot size and cap scale to avoid blank renders when multiple map widgets are on screen. Allow using a fresh snapshot from the other appearance style while the preferred style is still generating, and scale the pin marker to match the smaller snapshot. Also bump project build number.
+EOF
+)" && git status --porcelain=v1
+```
+
+```
+fatal: Unable to create '/Users/bietiekay/code/miataru-ios-app/.git/index.lock': Operation not permitted
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git add -A && git commit -m "$(cat <<'EOF'
+Fix multi-widget map rendering
+
+Reduce widget map snapshot size and cap scale to avoid blank renders when multiple map widgets are on screen. Allow using a fresh snapshot from the other appearance style while the preferred style is still generating, and scale the pin marker to match the smaller snapshot. Also bump project build number.
+EOF
+)" && git status --porcelain=v1</summary>
+
+```bash
+git add -A && git commit -m "$(cat <<'EOF'
+Fix multi-widget map rendering
+
+Reduce widget map snapshot size and cap scale to avoid blank renders when multiple map widgets are on screen. Allow using a fresh snapshot from the other appearance style while the preferred style is still generating, and scale the pin marker to match the smaller snapshot. Also bump project build number.
+EOF
+)" && git status --porcelain=v1
+```
+
+```
+[master 4fab362] Fix multi-widget map rendering
+ 5 files changed, 4194 insertions(+), 11 deletions(-)
+ create mode 100644 miataru/.specstory/history/2026-01-12_13-08Z-multiple-iphone-map-widget-rendering.md
+ create mode 100644 miataru/.specstory/history/2026-01-12_16-21Z-multiple-map-widget-rendering-issue.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status</summary>
+
+```bash
+git status
+```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git show --stat --oneline -1</summary>
+
+```bash
+git show --stat --oneline -1
+```
+
+```
+4fab362 Fix multi-widget map rendering
+ ..._13-08Z-multiple-iphone-map-widget-rendering.md | 1660 +++++++++++++
+ ...2_16-21Z-multiple-map-widget-rendering-issue.md | 2502 ++++++++++++++++++++
+ miataru/miataru.xcodeproj/project.pbxproj          |    4 +-
+ .../miataruWidgets/DeviceLocationMapWidget.swift   |   16 +-
+ .../WidgetMapSnapshotGenerator.swift               |   23 +-
+ 5 files changed, 4194 insertions(+), 11 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+## Description of the changes
+
+- **Map widget now works with multiple instances**
+  - Reduced WidgetKit map snapshot workload by changing snapshot defaults from **600×600 → 420×420** and capping `MKMapSnapshotter.Options().scale` to **≤ 2.0** to avoid blank/empty renders when multiple widgets are on screen.
+- **Better appearance-style behavior**
+  - In `DeviceLocationMapWidget`, if the *preferred* light/dark snapshot isn’t ready yet, the widget will **temporarily show the other-style snapshot** (as long as it’s fresh) instead of falling back to the placeholder.
+- **Marker scaled down**
+  - The pin/annotation marker is now **scaled relative to the snapshot canvas size** (with min/max bounds) so it doesn’t look oversized after the snapshot size reduction.
+- **Project build number bump**
+  - `CURRENT_PROJECT_VERSION` changed **1 → 2** in `project.pbxproj`.
+- **Docs**
+  - Added the two `.specstory` history markdown files.
+
+## Commit
+
+- Created commit: **`4fab362 Fix multi-widget map rendering`**
+- Repo state: **clean**, branch is **ahead of `origin/master` by 1 commit**.
 
 ---
 
