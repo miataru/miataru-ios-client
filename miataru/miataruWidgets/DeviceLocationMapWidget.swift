@@ -135,6 +135,15 @@ struct DeviceLocationMapWidgetEntryView: View {
             }
         }()
 
+        let fallbackURL: URL? = {
+            switch colorScheme {
+            case .dark:
+                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)
+            default:
+                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)
+            }
+        }()
+
         func isFreshEnough(_ url: URL) -> Bool {
             guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
                   let modDate = attrs[.modificationDate] as? Date else {
@@ -146,10 +155,13 @@ struct DeviceLocationMapWidgetEntryView: View {
         // Never show a stale snapshot for a newer text payload. If the file is stale/missing,
         // show the placeholder until the new snapshot render finishes and WidgetCenter reloads.
         //
-        // Also never show the *wrong appearance style* (e.g. dark snapshot in light mode):
-        // if the preferred appearance snapshot isn't fresh yet, show placeholder instead.
+        // Prefer showing the current appearance style, but if only the *other* style is
+        // available and still fresh for this payload, show it instead of a placeholder.
+        // This avoids “stuck placeholder” scenarios when WidgetKit budget delays the
+        // secondary snapshot generation, especially with multiple widgets on screen.
         let candidateURL: URL? = {
             if let preferredURL, isFreshEnough(preferredURL) { return preferredURL }
+            if let fallbackURL, isFreshEnough(fallbackURL) { return fallbackURL }
             return nil
         }()
 
