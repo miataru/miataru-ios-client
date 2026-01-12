@@ -84,29 +84,6 @@
         }
       }
     },
-    "widget_intent_no_devices" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Geräte verfügbar"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No devices available"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "利用可能なデバイスがありません"
-          }
-        }
-      }
-    },
     "widget_intent_title" : {
       "comment" : "Title for widget device selection intent",
       "localizations" : {
