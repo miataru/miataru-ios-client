@@ -19,7 +19,8 @@ enum WidgetTimelineDataLoader {
         let cachedPayload = SharedWidgetDataManager.read()
         let cachedDeviceIDs = cachedPayload?.devices.map { $0.id } ?? []
         let config = SharedWidgetConfigManager.read()
-        let targetID = configuration.device?.id
+        let knownIDs = cachedDeviceIDs + (config?.deviceIDs ?? [])
+        let targetID = canonicalID(configuration.device?.id, knownIDs: knownIDs)
             ?? cachedPayload?.devices.first?.id
             ?? config?.deviceIDs.first
 
@@ -30,13 +31,16 @@ enum WidgetTimelineDataLoader {
         )
 
         guard let config, let serverURL = URL(string: config.miataruServerURL) else {
-            let device = targetID.flatMap { id in payload.devices.first(where: { $0.id == id }) }
+            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }
             return (payload, device)
         }
 
-        let requestIDs = uniqueDeviceIDs(primary: targetID, additional: config.ownDeviceID)
+        let requestIDs = uniqueDeviceIDs(
+            primary: targetID,
+            additional: canonicalID(config.ownDeviceID, knownIDs: knownIDs) ?? config.ownDeviceID
+        )
         guard !requestIDs.isEmpty else {
-            let device = targetID.flatMap { id in payload.devices.first(where: { $0.id == id }) }
+            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }
             return (payload, device)
         }
 
@@ -56,7 +60,7 @@ enum WidgetTimelineDataLoader {
         }
 
         let selectedDeviceID = targetID ?? requestIDs.first ?? cachedDeviceIDs.first
-        let device = selectedDeviceID.flatMap { id in payload.devices.first(where: { $0.id == id }) }
+        let device = selectedDeviceID.flatMap { id in deviceMatching(id, in: payload) }
 
         if generateMapSnapshots, let device {
             // Generating MKMapSnapshotter images can be slow and may exceed WidgetKit's
@@ -89,6 +93,23 @@ enum WidgetTimelineDataLoader {
             ordered.append(additional)
         }
         return ordered
+    }
+
+    private static func canonicalID(_ id: String?, knownIDs: [String]) -> String? {
+        guard let id, !id.isEmpty else { return nil }
+        if let exact = knownIDs.first(where: { $0 == id }) {
+            return exact
+        }
+        let lowercasedID = id.lowercased()
+        return knownIDs.first(where: { $0.lowercased() == lowercasedID })
+    }
+
+    private static func deviceMatching(_ id: String, in payload: WidgetSharedPayload) -> WidgetDeviceData? {
+        if let exact = payload.devices.first(where: { $0.id == id }) {
+            return exact
+        }
+        let lowercasedID = id.lowercased()
+        return payload.devices.first(where: { $0.id.lowercased() == lowercasedID })
     }
 
     private static func merge(_ locations: [MiataruLocationData],
@@ -125,4 +146,3 @@ enum WidgetTimelineDataLoader {
         return updatedPayload
     }
 }
-
