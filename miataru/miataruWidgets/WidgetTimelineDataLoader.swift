@@ -9,6 +9,9 @@
 
 import Foundation
 import MiataruAPIClient
+#if canImport(UIKit)
+import UIKit
+#endif
 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 enum WidgetTimelineDataLoader {
@@ -58,11 +61,20 @@ enum WidgetTimelineDataLoader {
         if generateMapSnapshots, let device {
             // Generating MKMapSnapshotter images can be slow and may exceed WidgetKit's
             // tight execution budget if awaited during timeline generation.
-            // Do it best-effort in the background and let the provider schedule a near-term
-            // refresh if it detects stale/missing snapshots.
-            Task.detached(priority: .utility) {
-                await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)
+            // However, detached tasks can be delayed/suspended; we prefer to render the
+            // currently displayed appearance synchronously so the widget can update promptly.
+            #if canImport(UIKit)
+            let preferred = UITraitCollection.current.userInterfaceStyle
+            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device, preferredStyle: preferred)
+
+            // Best-effort: also render the other appearance so switching light/dark
+            // doesn't force a placeholder as often.
+            Task.detached(priority: .background) {
+                await WidgetMapSnapshotGenerator.ensureOtherStyleBestEffort(for: device, preferredStyle: preferred)
             }
+            #else
+            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)
+            #endif
         }
 
         return (payload, device)

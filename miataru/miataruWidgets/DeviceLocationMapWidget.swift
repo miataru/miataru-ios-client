@@ -124,6 +124,8 @@ struct DeviceLocationMapWidgetEntryView: View {
     }
 
     private func snapshotLayer(for device: WidgetDeviceData) -> some View {
+        let referenceTimestamp = min(device.timestamp, Date())
+
         let preferredURL: URL? = {
             switch colorScheme {
             case .dark:
@@ -132,9 +134,26 @@ struct DeviceLocationMapWidgetEntryView: View {
                 return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)
             }
         }()
-        let fallbackURL = SharedWidgetDataManager.mapSnapshotURL(for: device.id)
 
-        if let url = preferredURL ?? fallbackURL,
+        func isFreshEnough(_ url: URL) -> Bool {
+            guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+                  let modDate = attrs[.modificationDate] as? Date else {
+                return false
+            }
+            return modDate >= referenceTimestamp
+        }
+
+        // Never show a stale snapshot for a newer text payload. If the file is stale/missing,
+        // show the placeholder until the new snapshot render finishes and WidgetCenter reloads.
+        //
+        // Also never show the *wrong appearance style* (e.g. dark snapshot in light mode):
+        // if the preferred appearance snapshot isn't fresh yet, show placeholder instead.
+        let candidateURL: URL? = {
+            if let preferredURL, isFreshEnough(preferredURL) { return preferredURL }
+            return nil
+        }()
+
+        if let url = candidateURL,
            let data = try? Data(contentsOf: url),
            let uiImage = UIImage(data: data) {
             return AnyView(
@@ -205,7 +224,7 @@ struct DeviceLocationMapWidgetEntryView: View {
     private func overlay(for device: WidgetDeviceData, family: WidgetFamily) -> some View {
         let locality = formattedLocality(for: device)
         let distance = formattedDistance(to: device, from: entry.ownDevice)
-        let lastUpdate = formattedRelativeTimestamp(for: device.timestamp)
+        let lastUpdate = formattedUpdateTimestamp(for: device.timestamp)
 
         let primaryComponents = [device.name, locality, distance].filter { !$0.isEmpty }
         let primaryLine = primaryComponents.joined(separator: " • ")
@@ -278,12 +297,16 @@ struct DeviceLocationMapWidgetEntryView: View {
         return formatter
     }
 
-    private func formattedRelativeTimestamp(for date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        let base = formatter.localizedString(for: date, relativeTo: Date())
+    private func formattedUpdateTimestamp(for date: Date) -> String {
         let label = NSLocalizedString("widget_last_update", comment: "Prefix for last update timestamp")
-        return "\(label) \(base)"
+        let now = Date()
+        let stamp: String
+        if Calendar.current.isDate(date, inSameDayAs: now) {
+            stamp = date.formatted(date: .omitted, time: .shortened)
+        } else {
+            stamp = date.formatted(date: .abbreviated, time: .shortened)
+        }
+        return "\(label) \(stamp)"
     }
 }
 

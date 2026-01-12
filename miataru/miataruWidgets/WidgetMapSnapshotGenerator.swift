@@ -13,6 +13,9 @@ import MapKit
 #if canImport(UIKit)
 import UIKit
 #endif
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 /// Generates pre-rendered map images (with a simple device marker) and writes them into
 /// the shared App Group container for WidgetKit consumption.
@@ -23,8 +26,20 @@ import UIKit
 @available(iOS 17.0, *)
 enum WidgetMapSnapshotGenerator {
     #if canImport(UIKit)
+    static func ensureOtherStyleBestEffort(for device: WidgetDeviceData,
+                                          size: CGSize = CGSize(width: 600, height: 600),
+                                          preferredStyle: UIUserInterfaceStyle) async {
+        let other: UIUserInterfaceStyle = (preferredStyle == .dark ? .light : .dark)
+
+        if needsRegeneration(deviceID: device.id, style: other, deviceTimestamp: device.timestamp) {
+            let coord = CLLocationCoordinate2D(latitude: device.latitude, longitude: device.longitude)
+            await renderSnapshot(for: device, coordinate: coord, size: size, style: other)
+        }
+    }
+
     static func ensureSnapshotsUpToDate(for device: WidgetDeviceData,
-                                        size: CGSize = CGSize(width: 600, height: 600)) async {
+                                        size: CGSize = CGSize(width: 600, height: 600),
+                                        preferredStyle: UIUserInterfaceStyle? = nil) async {
         let ts = device.timestamp
         let coord = CLLocationCoordinate2D(latitude: device.latitude, longitude: device.longitude)
 
@@ -33,6 +48,21 @@ enum WidgetMapSnapshotGenerator {
         let needsDark = needsRegeneration(deviceID: device.id, style: .dark, deviceTimestamp: ts)
         guard needsLight || needsDark else { return }
 
+        // If we know which appearance is currently being displayed, only render that style.
+        // Rendering both can exceed WidgetKit's budget and lead to delayed updates.
+        if let preferredStyle {
+            switch preferredStyle {
+            case .dark:
+                if needsDark { await renderSnapshot(for: device, coordinate: coord, size: size, style: .dark) }
+            case .light:
+                if needsLight { await renderSnapshot(for: device, coordinate: coord, size: size, style: .light) }
+            default:
+                break
+            }
+            return
+        }
+
+        // Fallback when preferred style is unknown: render both (light first).
         if needsLight {
             await renderSnapshot(for: device, coordinate: coord, size: size, style: .light)
         }
@@ -66,7 +96,8 @@ enum WidgetMapSnapshotGenerator {
         options.mapType = .standard
         options.pointOfInterestFilter = .excludingAll
         options.showsBuildings = false
-        options.region = region(for: coordinate, accuracy: device.accuracy)
+        let region = region(for: coordinate, accuracy: device.accuracy)
+        options.region = region
         options.traitCollection = UITraitCollection(userInterfaceStyle: style)
 
         do {
@@ -75,6 +106,12 @@ enum WidgetMapSnapshotGenerator {
             let image = render(snapshot: snapshot, coordinate: coordinate, size: size, markerImage: marker)
             if let data = image.pngData() {
                 try data.write(to: url, options: [.atomic])
+
+                #if canImport(WidgetKit)
+                // WidgetKit does not automatically refresh when a file on disk changes.
+                // Trigger a reload so the widget picks up the new snapshot immediately.
+                WidgetCenter.shared.reloadTimelines(ofKind: "DeviceLocationMapWidget")
+                #endif
             }
         } catch {
             #if DEBUG
