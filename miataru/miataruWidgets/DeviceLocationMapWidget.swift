@@ -121,6 +121,9 @@ struct DeviceLocationMapWidgetEntryView: View {
                     )
             }
         }
+        .containerBackground(for: .widget) {
+            Color(.systemBackground)
+        }
     }
 
     private func snapshotLayer(for device: WidgetDeviceData) -> some View {
@@ -333,4 +336,3 @@ struct DeviceLocationMapWidget: Widget {
         .contentMarginsDisabled()
     }
 }
-
