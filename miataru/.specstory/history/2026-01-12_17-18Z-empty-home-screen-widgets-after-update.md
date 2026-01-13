@@ -12,9 +12,7962 @@ Its even the case that, when I tap on the widget it opens the app but NOT the de
 
 ---
 
-_**Agent (model gpt-5.2, mode Custom)**_
+_**Agent (model default, mode Custom)**_
 
 
+Investigating the empty widgets issue. Reviewing the widget implementation and related code.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/SettingsManagers/App Settings/Devices/DeviceLocationCacheStore.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="list_dir_v2">
+<details>
+<summary>Tool use: **list_dir_v2**</summary>
+
+
+Parameters:
+
+```json
+{
+  "targetDirectory": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets"
+}
+```
+Result:
+
+```json
+{
+  "directoryTreeRoot": {
+    "absPath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataruWidgets",
+    "childrenFiles": [
+      {
+        "name": "DeviceLocationMapWidget.swift"
+      },
+      {
+        "name": "DeviceLocationTextWidget.swift"
+      },
+      {
+        "name": "Info.plist"
+      },
+      {
+        "name": "Localizable.xcstrings"
+      },
+      {
+        "name": "miataruWidgets.entitlements"
+      },
+      {
+        "name": "MiataruWidgets.swift"
+      },
+      {
+        "name": "SharedWidgetConfig.swift"
+      },
+      {
+        "name": "SharedWidgetData.swift"
+      },
+      {
+        "name": "WidgetIntents.swift"
+      },
+      {
+        "name": "WidgetMapSnapshotGenerator.swift"
+      },
+      {
+        "name": "WidgetTimelineDataLoader.swift"
+      }
+    ],
+    "childrenWereProcessed": true
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="semantic_search_full">
+<details>
+<summary>Tool use: **semantic_search_full**</summary>
+
+
+Parameters:
+
+```json
+{
+  "query": "How are widgets configured and how do they load device location data?",
+  "topK": 10,
+  "explanation": ""
+}
+```
+Result:
+
+```json
+{
+  "codeResults": [
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/WidgetDataSyncCoordinator.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 63
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * WidgetDataSyncCoordinator.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\nimport CoreLocation\n#if canImport(UIKit)\nimport UIKit\n#endif\n#if canImport(WidgetKit)\nimport WidgetKit\n#endif\n\n/// Bridges the main app data (devices + cached locations) into the App Group JSON\n/// that widgets consume. All calls are lightweight and overwrite the shared file.\nenum WidgetDataSyncCoordinator {\n    /// Syncs all known devices and cached locations into the shared payload and refreshes widgets.\n    static func syncAllDevices() {\n        let devices = KnownDeviceStore.shared.devices\n        let locations = DeviceLocationCacheStore.shared.locations\n        let ownDeviceID = thisDeviceIDManager.shared.deviceID\n\n        let payload = buildPayload(devices: devices, locations: locations, ownDeviceID: ownDeviceID)\n        SharedWidgetDataManager.write(payload)\n        syncWidgetConfig(\n            serverURL: SettingsManager.shared.miataruServerURL,\n            deviceIDs: devices.map { $0.DeviceID },\n            ownDeviceID: ownDeviceID,\n            shouldReloadTimelines: false\n        )\n\n        #if canImport(WidgetKit)\n        WidgetCenter.shared.reloadAllTimelines()\n        #endif\n    }\n\n    /// Sync only the widget configuration (server + device IDs) into the shared container.\n    static func syncWidgetConfig(serverURL: String, deviceIDs: [String], ownDeviceID: String, shouldReloadTimelines: Bool = true) {\n        let config = SharedWidgetConfig(\n            miataruServerURL: serverURL,\n            deviceIDs: deviceIDs,\n            ownDeviceID: ownDeviceID,\n            authorizationToken: nil\n        )\n        SharedWidgetConfigManager.write(config)\n\n        #if canImport(WidgetKit)\n        if shouldReloadTimelines {\n            WidgetCenter.shared.reloadAllTimelines()\n        }\n        #endif\n    }\n\n    /// Builds the payload from the current stores.\n    static func buildPayload(devices: [KnownDevice], locations: [CachedDeviceLocation], ownDeviceID: String) -&gt; WidgetSharedPayload {\n        var entries: [WidgetDeviceData] = []\n        var ownDevice: WidgetDeviceData?",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * WidgetDataSyncCoordinator.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "text": "import CoreLocation",
+            "lineNumber": 11
+          },
+          {
+            "text": "#if canImport(UIKit)",
+            "lineNumber": 12
+          },
+          {
+            "text": "import UIKit",
+            "lineNumber": 13
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 14
+          },
+          {
+            "text": "#if canImport(WidgetKit)",
+            "lineNumber": 15
+          },
+          {
+            "text": "import WidgetKit",
+            "lineNumber": 16
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "/// Bridges the main app data (devices + cached locations) into the App Group JSON",
+            "lineNumber": 19
+          },
+          {
+            "text": "/// that widgets consume. All calls are lightweight and overwrite the shared file.",
+            "lineNumber": 20
+          },
+          {
+            "text": "enum WidgetDataSyncCoordinator {",
+            "lineNumber": 21
+          },
+          {
+            "text": "    /// Syncs all known devices and cached locations into the shared payload and refreshes widgets.",
+            "lineNumber": 22
+          },
+          {
+            "text": "    static func syncAllDevices() {",
+            "lineNumber": 23
+          },
+          {
+            "text": "        let devices = KnownDeviceStore.shared.devices",
+            "lineNumber": 24
+          },
+          {
+            "text": "        let locations = DeviceLocationCacheStore.shared.locations",
+            "lineNumber": 25
+          },
+          {
+            "text": "        let ownDeviceID = thisDeviceIDManager.shared.deviceID",
+            "lineNumber": 26
+          },
+          {
+            "lineNumber": 27
+          },
+          {
+            "text": "        let payload = buildPayload(devices: devices, locations: locations, ownDeviceID: ownDeviceID)",
+            "lineNumber": 28
+          },
+          {
+            "text": "        SharedWidgetDataManager.write(payload)",
+            "lineNumber": 29
+          },
+          {
+            "text": "        syncWidgetConfig(",
+            "lineNumber": 30
+          },
+          {
+            "text": "            serverURL: SettingsManager.shared.miataruServerURL,",
+            "lineNumber": 31
+          },
+          {
+            "text": "            deviceIDs: devices.map { $0.DeviceID },",
+            "lineNumber": 32
+          },
+          {
+            "text": "            ownDeviceID: ownDeviceID,",
+            "lineNumber": 33
+          },
+          {
+            "text": "            shouldReloadTimelines: false",
+            "lineNumber": 34
+          },
+          {
+            "text": "        )",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "        #if canImport(WidgetKit)",
+            "lineNumber": 37
+          },
+          {
+            "text": "        WidgetCenter.shared.reloadAllTimelines()",
+            "lineNumber": 38
+          },
+          {
+            "text": "        #endif",
+            "lineNumber": 39
+          },
+          {
+            "text": "    }",
+            "lineNumber": 40
+          },
+          {
+            "lineNumber": 41
+          },
+          {
+            "text": "    /// Sync only the widget configuration (server + device IDs) into the shared container.",
+            "lineNumber": 42
+          },
+          {
+            "text": "    static func syncWidgetConfig(serverURL: String, deviceIDs: [String], ownDeviceID: String, shouldReloadTimelines: Bool = true) {",
+            "lineNumber": 43
+          },
+          {
+            "text": "        let config = SharedWidgetConfig(",
+            "lineNumber": 44
+          },
+          {
+            "text": "            miataruServerURL: serverURL,",
+            "lineNumber": 45
+          },
+          {
+            "text": "            deviceIDs: deviceIDs,",
+            "lineNumber": 46
+          },
+          {
+            "text": "            ownDeviceID: ownDeviceID,",
+            "lineNumber": 47
+          },
+          {
+            "text": "            authorizationToken: nil",
+            "lineNumber": 48
+          },
+          {
+            "text": "        )",
+            "lineNumber": 49
+          },
+          {
+            "text": "        SharedWidgetConfigManager.write(config)",
+            "lineNumber": 50
+          },
+          {
+            "lineNumber": 51
+          },
+          {
+            "text": "        #if canImport(WidgetKit)",
+            "lineNumber": 52
+          },
+          {
+            "text": "        if shouldReloadTimelines {",
+            "lineNumber": 53
+          },
+          {
+            "text": "            WidgetCenter.shared.reloadAllTimelines()",
+            "lineNumber": 54
+          },
+          {
+            "text": "        }",
+            "lineNumber": 55
+          },
+          {
+            "text": "        #endif",
+            "lineNumber": 56
+          },
+          {
+            "text": "    }",
+            "lineNumber": 57
+          },
+          {
+            "lineNumber": 58
+          },
+          {
+            "text": "    /// Builds the payload from the current stores.",
+            "lineNumber": 59
+          },
+          {
+            "text": "    static func buildPayload(devices: [KnownDevice], locations: [CachedDeviceLocation], ownDeviceID: String) -&gt; WidgetSharedPayload {",
+            "lineNumber": 60
+          },
+          {
+            "text": "        var entries: [WidgetDeviceData] = []",
+            "lineNumber": 61
+          },
+          {
+            "text": "        var ownDevice: WidgetDeviceData?",
+            "lineNumber": 62
+          }
+        ]
+      },
+      "score": 0.4486161470413208
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/WidgetTimelineDataLoader.swift",
+        "range": {
+          "startPosition": {
+            "line": 46
+          },
+          "endPosition": {
+            "line": 87,
+            "column": 8
+          }
+        },
+        "contents": "        do {\n            let locations = try await MiataruAPIClient.getLocation(\n                serverURL: serverURL,\n                forDeviceIDs: requestIDs,\n                requestingDeviceID: config.ownDeviceID\n            )\n            payload = merge(locations, into: payload, cached: cachedPayload, ownDeviceID: config.ownDeviceID ?? payload.ownDeviceID)\n            SharedWidgetDataManager.write(payload)\n        } catch {\n#if DEBUG\n            print(\"[Widget] Failed to fetch locations for IDs \\(requestIDs): \\(error)\")\n#endif\n            // Fall back to cached payload\n        }\n\n        let selectedDeviceID = targetID ?? requestIDs.first ?? cachedDeviceIDs.first\n        let device = selectedDeviceID.flatMap { id in deviceMatching(id, in: payload) }\n\n        if generateMapSnapshots, let device {\n            // Generating MKMapSnapshotter images can be slow and may exceed WidgetKit's\n            // tight execution budget if awaited during timeline generation.\n            // However, detached tasks can be delayed/suspended; we prefer to render the\n            // currently displayed appearance synchronously so the widget can update promptly.\n            #if canImport(UIKit)\n            let preferred = UITraitCollection.current.userInterfaceStyle\n            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device, preferredStyle: preferred)\n\n            // Best-effort: also render the other appearance so switching light/dark\n            // doesn't force a placeholder as often.\n            Task.detached(priority: .background) {\n                await WidgetMapSnapshotGenerator.ensureOtherStyleBestEffort(for: device, preferredStyle: preferred)\n            }\n            #else\n            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)\n            #endif\n        }\n\n        return (payload, device)\n    }\n\n    private static func uniqueDeviceIDs(primary: String?, additional: String?) -&gt; [String] {\n        ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        do {",
+            "lineNumber": 47
+          },
+          {
+            "text": "            let locations = try await MiataruAPIClient.getLocation(",
+            "lineNumber": 48
+          },
+          {
+            "text": "                serverURL: serverURL,",
+            "lineNumber": 49
+          },
+          {
+            "text": "                forDeviceIDs: requestIDs,",
+            "lineNumber": 50
+          },
+          {
+            "text": "                requestingDeviceID: config.ownDeviceID",
+            "lineNumber": 51
+          },
+          {
+            "text": "            )",
+            "lineNumber": 52
+          },
+          {
+            "text": "            payload = merge(locations, into: payload, cached: cachedPayload, ownDeviceID: config.ownDeviceID ?? payload.ownDeviceID)",
+            "lineNumber": 53
+          },
+          {
+            "text": "            SharedWidgetDataManager.write(payload)",
+            "lineNumber": 54
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 55
+          },
+          {
+            "text": "#if DEBUG",
+            "lineNumber": 56
+          },
+          {
+            "text": "            print(\"[Widget] Failed to fetch locations for IDs \\(requestIDs): \\(error)\")",
+            "lineNumber": 57
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 58
+          },
+          {
+            "text": "            // Fall back to cached payload",
+            "lineNumber": 59
+          },
+          {
+            "text": "        }",
+            "lineNumber": 60
+          },
+          {
+            "lineNumber": 61
+          },
+          {
+            "text": "        let selectedDeviceID = targetID ?? requestIDs.first ?? cachedDeviceIDs.first",
+            "lineNumber": 62
+          },
+          {
+            "text": "        let device = selectedDeviceID.flatMap { id in deviceMatching(id, in: payload) }",
+            "lineNumber": 63
+          },
+          {
+            "lineNumber": 64
+          },
+          {
+            "text": "        if generateMapSnapshots, let device {",
+            "lineNumber": 65
+          },
+          {
+            "text": "            // Generating MKMapSnapshotter images can be slow and may exceed WidgetKit's",
+            "lineNumber": 66
+          },
+          {
+            "text": "            // tight execution budget if awaited during timeline generation.",
+            "lineNumber": 67
+          },
+          {
+            "text": "            // However, detached tasks can be delayed/suspended; we prefer to render the",
+            "lineNumber": 68
+          },
+          {
+            "text": "            // currently displayed appearance synchronously so the widget can update promptly.",
+            "lineNumber": 69
+          },
+          {
+            "text": "            #if canImport(UIKit)",
+            "lineNumber": 70
+          },
+          {
+            "text": "            let preferred = UITraitCollection.current.userInterfaceStyle",
+            "lineNumber": 71
+          },
+          {
+            "text": "            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device, preferredStyle: preferred)",
+            "lineNumber": 72
+          },
+          {
+            "lineNumber": 73
+          },
+          {
+            "text": "            // Best-effort: also render the other appearance so switching light/dark",
+            "lineNumber": 74
+          },
+          {
+            "text": "            // doesn't force a placeholder as often.",
+            "lineNumber": 75
+          },
+          {
+            "text": "            Task.detached(priority: .background) {",
+            "lineNumber": 76
+          },
+          {
+            "text": "                await WidgetMapSnapshotGenerator.ensureOtherStyleBestEffort(for: device, preferredStyle: preferred)",
+            "lineNumber": 77
+          },
+          {
+            "text": "            }",
+            "lineNumber": 78
+          },
+          {
+            "text": "            #else",
+            "lineNumber": 79
+          },
+          {
+            "text": "            await WidgetMapSnapshotGenerator.ensureSnapshotsUpToDate(for: device)",
+            "lineNumber": 80
+          },
+          {
+            "text": "            #endif",
+            "lineNumber": 81
+          },
+          {
+            "text": "        }",
+            "lineNumber": 82
+          },
+          {
+            "lineNumber": 83
+          },
+          {
+            "text": "        return (payload, device)",
+            "lineNumber": 84
+          },
+          {
+            "text": "    }",
+            "lineNumber": 85
+          },
+          {
+            "lineNumber": 86
+          },
+          {
+            "text": "    private static func uniqueDeviceIDs(primary: String?, additional: String?) -&gt; [String] {",
+            "lineNumber": 87
+          },
+          {
+            "text": "        ",
+            "lineNumber": 88
+          }
+        ]
+      },
+      "score": 0.43845635652542114
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationTextWidget.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 55
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * DeviceLocationTextWidget.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport WidgetKit\nimport SwiftUI\nimport CoreLocation\nimport MapKit\nimport MiataruAPIClient\n\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nstruct DeviceLocationEntry: TimelineEntry {\n    let date: Date\n    let configuration: DeviceSelectionIntent\n    let device: WidgetDeviceData?\n    let ownDevice: WidgetDeviceData?\n}\n\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nstruct DeviceLocationTextProvider: AppIntentTimelineProvider {\n    typealias Entry = DeviceLocationEntry\n    typealias Intent = DeviceSelectionIntent\n\n    func placeholder(in context: Context) -&gt; DeviceLocationEntry {\n        DeviceLocationEntry(date: Date(), configuration: DeviceSelectionIntent(), device: nil, ownDevice: nil)\n    }\n\n    func snapshot(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; DeviceLocationEntry {\n        await buildEntry(configuration: configuration)\n    }\n\n    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceLocationEntry&gt; {\n        let entry = await buildEntry(configuration: configuration)\n        let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)\n        return Timeline(entries: [entry], policy: .after(next))\n    }\n\n    private func buildEntry(configuration: DeviceSelectionIntent) async -&gt; DeviceLocationEntry {\n        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration)\n        return DeviceLocationEntry(\n            date: Date(),\n            configuration: configuration,\n            device: device,\n            ownDevice: payload.ownDevice\n        )\n    }\n}\n\nstruct DeviceLocationTextWidgetEntryView: View {\n    @Environment(\\.widgetFamily) private var family",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * DeviceLocationTextWidget.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import WidgetKit",
+            "lineNumber": 10
+          },
+          {
+            "text": "import SwiftUI",
+            "lineNumber": 11
+          },
+          {
+            "text": "import CoreLocation",
+            "lineNumber": 12
+          },
+          {
+            "text": "import MapKit",
+            "lineNumber": 13
+          },
+          {
+            "text": "import MiataruAPIClient",
+            "lineNumber": 14
+          },
+          {
+            "lineNumber": 15
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 16
+          },
+          {
+            "text": "struct DeviceLocationEntry: TimelineEntry {",
+            "lineNumber": 17
+          },
+          {
+            "text": "    let date: Date",
+            "lineNumber": 18
+          },
+          {
+            "text": "    let configuration: DeviceSelectionIntent",
+            "lineNumber": 19
+          },
+          {
+            "text": "    let device: WidgetDeviceData?",
+            "lineNumber": 20
+          },
+          {
+            "text": "    let ownDevice: WidgetDeviceData?",
+            "lineNumber": 21
+          },
+          {
+            "text": "}",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 24
+          },
+          {
+            "text": "struct DeviceLocationTextProvider: AppIntentTimelineProvider {",
+            "lineNumber": 25
+          },
+          {
+            "text": "    typealias Entry = DeviceLocationEntry",
+            "lineNumber": 26
+          },
+          {
+            "text": "    typealias Intent = DeviceSelectionIntent",
+            "lineNumber": 27
+          },
+          {
+            "lineNumber": 28
+          },
+          {
+            "text": "    func placeholder(in context: Context) -&gt; DeviceLocationEntry {",
+            "lineNumber": 29
+          },
+          {
+            "text": "        DeviceLocationEntry(date: Date(), configuration: DeviceSelectionIntent(), device: nil, ownDevice: nil)",
+            "lineNumber": 30
+          },
+          {
+            "text": "    }",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "    func snapshot(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; DeviceLocationEntry {",
+            "lineNumber": 33
+          },
+          {
+            "text": "        await buildEntry(configuration: configuration)",
+            "lineNumber": 34
+          },
+          {
+            "text": "    }",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceLocationEntry&gt; {",
+            "lineNumber": 37
+          },
+          {
+            "text": "        let entry = await buildEntry(configuration: configuration)",
+            "lineNumber": 38
+          },
+          {
+            "text": "        let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)",
+            "lineNumber": 39
+          },
+          {
+            "text": "        return Timeline(entries: [entry], policy: .after(next))",
+            "lineNumber": 40
+          },
+          {
+            "text": "    }",
+            "lineNumber": 41
+          },
+          {
+            "lineNumber": 42
+          },
+          {
+            "text": "    private func buildEntry(configuration: DeviceSelectionIntent) async -&gt; DeviceLocationEntry {",
+            "lineNumber": 43
+          },
+          {
+            "text": "        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration)",
+            "lineNumber": 44
+          },
+          {
+            "text": "        return DeviceLocationEntry(",
+            "lineNumber": 45
+          },
+          {
+            "text": "            date: Date(),",
+            "lineNumber": 46
+          },
+          {
+            "text": "            configuration: configuration,",
+            "lineNumber": 47
+          },
+          {
+            "text": "            device: device,",
+            "lineNumber": 48
+          },
+          {
+            "text": "            ownDevice: payload.ownDevice",
+            "lineNumber": 49
+          },
+          {
+            "text": "        )",
+            "lineNumber": 50
+          },
+          {
+            "text": "    }",
+            "lineNumber": 51
+          },
+          {
+            "text": "}",
+            "lineNumber": 52
+          },
+          {
+            "lineNumber": 53
+          },
+          {
+            "text": "struct DeviceLocationTextWidgetEntryView: View {",
+            "lineNumber": 54
+          },
+          {
+            "text": "    @Environment(\\.widgetFamily) private var family",
+            "lineNumber": 55
+          }
+        ]
+      },
+      "score": 0.4344973564147949
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 40
+          },
+          "endPosition": {
+            "line": 63
+          }
+        },
+        "contents": "    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceMapEntry&gt; {\n        let entry = await buildEntry(configuration: configuration)\n        // Default refresh cadence. The system may still throttle this.\n        var next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)\n\n        // If the map snapshot file is missing or older than the data we’re displaying,\n        // ask WidgetKit to give us another chance soon. This helps the widget recover\n        // from slow snapshot rendering without \"freezing\" for long periods.\n        if let device = entry.device, needsSnapshotRefresh(for: device) {\n            next = Calendar.current.date(byAdding: .minute, value: 2, to: Date()) ?? Date().addingTimeInterval(120)\n        }\n\n        return Timeline(entries: [entry], policy: .after(next))\n    }\n\n    private func buildEntry(configuration: DeviceSelectionIntent) async -&gt; DeviceMapEntry {\n        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration, generateMapSnapshots: true)\n        return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload.ownDevice)\n    }\n\n    private func needsSnapshotRefresh(for device: WidgetDeviceData) -&gt; Bool {\n        #if canImport(UIKit)\n        let styles: [UIUserInterfaceStyle] = [.light, .dark]",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceMapEntry&gt; {",
+            "lineNumber": 41
+          },
+          {
+            "text": "        let entry = await buildEntry(configuration: configuration)",
+            "lineNumber": 42
+          },
+          {
+            "text": "        // Default refresh cadence. The system may still throttle this.",
+            "lineNumber": 43
+          },
+          {
+            "text": "        var next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)",
+            "lineNumber": 44
+          },
+          {
+            "lineNumber": 45
+          },
+          {
+            "text": "        // If the map snapshot file is missing or older than the data we’re displaying,",
+            "lineNumber": 46
+          },
+          {
+            "text": "        // ask WidgetKit to give us another chance soon. This helps the widget recover",
+            "lineNumber": 47
+          },
+          {
+            "text": "        // from slow snapshot rendering without \"freezing\" for long periods.",
+            "lineNumber": 48
+          },
+          {
+            "text": "        if let device = entry.device, needsSnapshotRefresh(for: device) {",
+            "lineNumber": 49
+          },
+          {
+            "text": "            next = Calendar.current.date(byAdding: .minute, value: 2, to: Date()) ?? Date().addingTimeInterval(120)",
+            "lineNumber": 50
+          },
+          {
+            "text": "        }",
+            "lineNumber": 51
+          },
+          {
+            "lineNumber": 52
+          },
+          {
+            "text": "        return Timeline(entries: [entry], policy: .after(next))",
+            "lineNumber": 53
+          },
+          {
+            "text": "    }",
+            "lineNumber": 54
+          },
+          {
+            "lineNumber": 55
+          },
+          {
+            "text": "    private func buildEntry(configuration: DeviceSelectionIntent) async -&gt; DeviceMapEntry {",
+            "lineNumber": 56
+          },
+          {
+            "text": "        let (payload, device) = await WidgetTimelineDataLoader.loadEntryData(configuration: configuration, generateMapSnapshots: true)",
+            "lineNumber": 57
+          },
+          {
+            "text": "        return DeviceMapEntry(date: Date(), configuration: configuration, device: device, ownDevice: payload.ownDevice)",
+            "lineNumber": 58
+          },
+          {
+            "text": "    }",
+            "lineNumber": 59
+          },
+          {
+            "lineNumber": 60
+          },
+          {
+            "text": "    private func needsSnapshotRefresh(for device: WidgetDeviceData) -&gt; Bool {",
+            "lineNumber": 61
+          },
+          {
+            "text": "        #if canImport(UIKit)",
+            "lineNumber": 62
+          },
+          {
+            "text": "        let styles: [UIUserInterfaceStyle] = [.light, .dark]",
+            "lineNumber": 63
+          }
+        ]
+      },
+      "score": 0.42800819873809814
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/WidgetTimelineDataLoader.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 48,
+            "column": 16
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * WidgetTimelineDataLoader.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\nimport MiataruAPIClient\n#if canImport(UIKit)\nimport UIKit\n#endif\n\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nenum WidgetTimelineDataLoader {\n    static func loadEntryData(configuration: DeviceSelectionIntent, generateMapSnapshots: Bool = false) async -&gt; (WidgetSharedPayload, WidgetDeviceData?) {\n        let cachedPayload = SharedWidgetDataManager.read()\n        let cachedDeviceIDs = cachedPayload?.devices.map { $0.id } ?? []\n        let config = SharedWidgetConfigManager.read()\n        let knownIDs = cachedDeviceIDs + (config?.deviceIDs ?? [])\n        let targetID = canonicalID(configuration.device?.id, knownIDs: knownIDs)\n            ?? cachedPayload?.devices.first?.id\n            ?? config?.deviceIDs.first\n\n        var payload = cachedPayload ?? WidgetSharedPayload(\n            devices: [],\n            ownDeviceID: config?.ownDeviceID,\n            ownDevice: nil\n        )\n\n        guard let config, let serverURL = URL(string: config.miataruServerURL) else {\n            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }\n            return (payload, device)\n        }\n\n        let requestIDs = uniqueDeviceIDs(\n            primary: targetID,\n            additional: canonicalID(config.ownDeviceID, knownIDs: knownIDs) ?? config.ownDeviceID\n        )\n        guard !requestIDs.isEmpty else {\n            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }\n            return (payload, device)\n        }\n\n        do {\n            let locations = try await MiataruAPIClient.getLocation(\n                ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * WidgetTimelineDataLoader.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "text": "import MiataruAPIClient",
+            "lineNumber": 11
+          },
+          {
+            "text": "#if canImport(UIKit)",
+            "lineNumber": 12
+          },
+          {
+            "text": "import UIKit",
+            "lineNumber": 13
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 14
+          },
+          {
+            "lineNumber": 15
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 16
+          },
+          {
+            "text": "enum WidgetTimelineDataLoader {",
+            "lineNumber": 17
+          },
+          {
+            "text": "    static func loadEntryData(configuration: DeviceSelectionIntent, generateMapSnapshots: Bool = false) async -&gt; (WidgetSharedPayload, WidgetDeviceData?) {",
+            "lineNumber": 18
+          },
+          {
+            "text": "        let cachedPayload = SharedWidgetDataManager.read()",
+            "lineNumber": 19
+          },
+          {
+            "text": "        let cachedDeviceIDs = cachedPayload?.devices.map { $0.id } ?? []",
+            "lineNumber": 20
+          },
+          {
+            "text": "        let config = SharedWidgetConfigManager.read()",
+            "lineNumber": 21
+          },
+          {
+            "text": "        let knownIDs = cachedDeviceIDs + (config?.deviceIDs ?? [])",
+            "lineNumber": 22
+          },
+          {
+            "text": "        let targetID = canonicalID(configuration.device?.id, knownIDs: knownIDs)",
+            "lineNumber": 23
+          },
+          {
+            "text": "            ?? cachedPayload?.devices.first?.id",
+            "lineNumber": 24
+          },
+          {
+            "text": "            ?? config?.deviceIDs.first",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "        var payload = cachedPayload ?? WidgetSharedPayload(",
+            "lineNumber": 27
+          },
+          {
+            "text": "            devices: [],",
+            "lineNumber": 28
+          },
+          {
+            "text": "            ownDeviceID: config?.ownDeviceID,",
+            "lineNumber": 29
+          },
+          {
+            "text": "            ownDevice: nil",
+            "lineNumber": 30
+          },
+          {
+            "text": "        )",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "        guard let config, let serverURL = URL(string: config.miataruServerURL) else {",
+            "lineNumber": 33
+          },
+          {
+            "text": "            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }",
+            "lineNumber": 34
+          },
+          {
+            "text": "            return (payload, device)",
+            "lineNumber": 35
+          },
+          {
+            "text": "        }",
+            "lineNumber": 36
+          },
+          {
+            "lineNumber": 37
+          },
+          {
+            "text": "        let requestIDs = uniqueDeviceIDs(",
+            "lineNumber": 38
+          },
+          {
+            "text": "            primary: targetID,",
+            "lineNumber": 39
+          },
+          {
+            "text": "            additional: canonicalID(config.ownDeviceID, knownIDs: knownIDs) ?? config.ownDeviceID",
+            "lineNumber": 40
+          },
+          {
+            "text": "        )",
+            "lineNumber": 41
+          },
+          {
+            "text": "        guard !requestIDs.isEmpty else {",
+            "lineNumber": 42
+          },
+          {
+            "text": "            let device = targetID.flatMap { id in deviceMatching(id, in: payload) }",
+            "lineNumber": 43
+          },
+          {
+            "text": "            return (payload, device)",
+            "lineNumber": 44
+          },
+          {
+            "text": "        }",
+            "lineNumber": 45
+          },
+          {
+            "lineNumber": 46
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 47
+          },
+          {
+            "text": "            let locations = try await MiataruAPIClient.getLocation(",
+            "lineNumber": 48
+          },
+          {
+            "text": "                ",
+            "lineNumber": 49
+          }
+        ]
+      },
+      "score": 0.42104849219322205
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/SharedWidgetData.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 58
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * SharedWidgetData.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\n#if canImport(UIKit)\nimport UIKit\n#endif\n\nstruct WidgetColor: Codable, Hashable {\n    let red: Double\n    let green: Double\n    let blue: Double\n    let alpha: Double\n}\n\nstruct WidgetDeviceData: Codable, Identifiable, Hashable {\n    let id: String\n    let name: String\n    let latitude: Double\n    let longitude: Double\n    let locality: String?\n    let country: String?\n    let timestamp: Date\n    let accuracy: Double?\n    let color: WidgetColor?\n}\n\nstruct WidgetSharedPayload: Codable {\n    var devices: [WidgetDeviceData]\n    var ownDeviceID: String?\n    var ownDevice: WidgetDeviceData?\n}\n\nenum SharedWidgetDataManager {\n    static let appGroupIdentifier = \"group.com.miataru.ios\"\n    private static let sharedDataFileName = \"SharedDeviceData.json\"\n    // IMPORTANT: Widget snapshots must not share filenames with app-side snapshots.\n    // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.\n    private static let snapshotPrefix = \"WidgetMapSnapshot-\"\n    private static let snapshotExtension = \"png\"\n\n    static var sharedContainerURL: URL? {\n        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)\n    }\n\n    static var sharedDataURL: URL? {\n        sharedContainerURL?.appendingPathComponent(sharedDataFileName)\n    }\n\n    static func mapSnapshotURL(for deviceID: String, style: UIUserInterfaceStyle? = nil) -&gt; URL? {\n        #if canImport(UIKit)\n        let suffix: String",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * SharedWidgetData.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "text": "#if canImport(UIKit)",
+            "lineNumber": 11
+          },
+          {
+            "text": "import UIKit",
+            "lineNumber": 12
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 13
+          },
+          {
+            "lineNumber": 14
+          },
+          {
+            "text": "struct WidgetColor: Codable, Hashable {",
+            "lineNumber": 15
+          },
+          {
+            "text": "    let red: Double",
+            "lineNumber": 16
+          },
+          {
+            "text": "    let green: Double",
+            "lineNumber": 17
+          },
+          {
+            "text": "    let blue: Double",
+            "lineNumber": 18
+          },
+          {
+            "text": "    let alpha: Double",
+            "lineNumber": 19
+          },
+          {
+            "text": "}",
+            "lineNumber": 20
+          },
+          {
+            "lineNumber": 21
+          },
+          {
+            "text": "struct WidgetDeviceData: Codable, Identifiable, Hashable {",
+            "lineNumber": 22
+          },
+          {
+            "text": "    let id: String",
+            "lineNumber": 23
+          },
+          {
+            "text": "    let name: String",
+            "lineNumber": 24
+          },
+          {
+            "text": "    let latitude: Double",
+            "lineNumber": 25
+          },
+          {
+            "text": "    let longitude: Double",
+            "lineNumber": 26
+          },
+          {
+            "text": "    let locality: String?",
+            "lineNumber": 27
+          },
+          {
+            "text": "    let country: String?",
+            "lineNumber": 28
+          },
+          {
+            "text": "    let timestamp: Date",
+            "lineNumber": 29
+          },
+          {
+            "text": "    let accuracy: Double?",
+            "lineNumber": 30
+          },
+          {
+            "text": "    let color: WidgetColor?",
+            "lineNumber": 31
+          },
+          {
+            "text": "}",
+            "lineNumber": 32
+          },
+          {
+            "lineNumber": 33
+          },
+          {
+            "text": "struct WidgetSharedPayload: Codable {",
+            "lineNumber": 34
+          },
+          {
+            "text": "    var devices: [WidgetDeviceData]",
+            "lineNumber": 35
+          },
+          {
+            "text": "    var ownDeviceID: String?",
+            "lineNumber": 36
+          },
+          {
+            "text": "    var ownDevice: WidgetDeviceData?",
+            "lineNumber": 37
+          },
+          {
+            "text": "}",
+            "lineNumber": 38
+          },
+          {
+            "lineNumber": 39
+          },
+          {
+            "text": "enum SharedWidgetDataManager {",
+            "lineNumber": 40
+          },
+          {
+            "text": "    static let appGroupIdentifier = \"group.com.miataru.ios\"",
+            "lineNumber": 41
+          },
+          {
+            "text": "    private static let sharedDataFileName = \"SharedDeviceData.json\"",
+            "lineNumber": 42
+          },
+          {
+            "text": "    // IMPORTANT: Widget snapshots must not share filenames with app-side snapshots.",
+            "lineNumber": 43
+          },
+          {
+            "text": "    // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.",
+            "lineNumber": 44
+          },
+          {
+            "text": "    private static let snapshotPrefix = \"WidgetMapSnapshot-\"",
+            "lineNumber": 45
+          },
+          {
+            "text": "    private static let snapshotExtension = \"png\"",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "    static var sharedContainerURL: URL? {",
+            "lineNumber": 48
+          },
+          {
+            "text": "        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)",
+            "lineNumber": 49
+          },
+          {
+            "text": "    }",
+            "lineNumber": 50
+          },
+          {
+            "lineNumber": 51
+          },
+          {
+            "text": "    static var sharedDataURL: URL? {",
+            "lineNumber": 52
+          },
+          {
+            "text": "        sharedContainerURL?.appendingPathComponent(sharedDataFileName)",
+            "lineNumber": 53
+          },
+          {
+            "text": "    }",
+            "lineNumber": 54
+          },
+          {
+            "lineNumber": 55
+          },
+          {
+            "text": "    static func mapSnapshotURL(for deviceID: String, style: UIUserInterfaceStyle? = nil) -&gt; URL? {",
+            "lineNumber": 56
+          },
+          {
+            "text": "        #if canImport(UIKit)",
+            "lineNumber": 57
+          },
+          {
+            "text": "        let suffix: String",
+            "lineNumber": 58
+          }
+        ]
+      },
+      "score": 0.41969233751296997
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationTextWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 162
+          },
+          "endPosition": {
+            "line": 202
+          }
+        },
+        "contents": "    private func formattedDistance(to device: WidgetDeviceData, from ownDevice: WidgetDeviceData?) -&gt; String {\n        guard let own = ownDevice else {\n            return NSLocalizedString(\"widget_distance_unknown\", comment: \"Shown when distance cannot be calculated\")\n        }\n        let deviceLocation = CLLocation(latitude: device.latitude, longitude: device.longitude)\n        let ownLocation = CLLocation(latitude: own.latitude, longitude: own.longitude)\n        let meters = deviceLocation.distance(from: ownLocation)\n        return distanceFormatter.string(fromDistance: meters)\n    }\n\n    private func formattedUpdateTimestamp(for date: Date) -&gt; String {\n        let label = NSLocalizedString(\"widget_last_update\", comment: \"Prefix for last update timestamp\")\n        let now = Date()\n        let stamp: String\n        if Calendar.current.isDate(date, inSameDayAs: now) {\n            stamp = date.formatted(date: .omitted, time: .shortened)\n        } else {\n            stamp = date.formatted(date: .abbreviated, time: .shortened)\n        }\n        return \"\\(label) \\(stamp)\"\n    }\n\n    private var distanceFormatter: MKDistanceFormatter {\n        let formatter = MKDistanceFormatter()\n        formatter.units = .default\n        formatter.unitStyle = .abbreviated\n        return formatter\n    }\n}\n\nstruct DeviceLocationTextWidget: Widget {\n    var body: some WidgetConfiguration {\n        AppIntentConfiguration(kind: \"DeviceLocationTextWidget\", intent: DeviceSelectionIntent.self, provider: DeviceLocationTextProvider()) { entry in\n            DeviceLocationTextWidgetEntryView(entry: entry)\n        }\n        .configurationDisplayName(NSLocalizedString(\"widget_text_display_name\", comment: \"Display name for the text location widget\"))\n        .description(NSLocalizedString(\"widget_text_description\", comment: \"Description for the text location widget\"))\n        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    private func formattedDistance(to device: WidgetDeviceData, from ownDevice: WidgetDeviceData?) -&gt; String {",
+            "lineNumber": 163
+          },
+          {
+            "text": "        guard let own = ownDevice else {",
+            "lineNumber": 164
+          },
+          {
+            "text": "            return NSLocalizedString(\"widget_distance_unknown\", comment: \"Shown when distance cannot be calculated\")",
+            "lineNumber": 165
+          },
+          {
+            "text": "        }",
+            "lineNumber": 166
+          },
+          {
+            "text": "        let deviceLocation = CLLocation(latitude: device.latitude, longitude: device.longitude)",
+            "lineNumber": 167
+          },
+          {
+            "text": "        let ownLocation = CLLocation(latitude: own.latitude, longitude: own.longitude)",
+            "lineNumber": 168
+          },
+          {
+            "text": "        let meters = deviceLocation.distance(from: ownLocation)",
+            "lineNumber": 169
+          },
+          {
+            "text": "        return distanceFormatter.string(fromDistance: meters)",
+            "lineNumber": 170
+          },
+          {
+            "text": "    }",
+            "lineNumber": 171
+          },
+          {
+            "lineNumber": 172
+          },
+          {
+            "text": "    private func formattedUpdateTimestamp(for date: Date) -&gt; String {",
+            "lineNumber": 173
+          },
+          {
+            "text": "        let label = NSLocalizedString(\"widget_last_update\", comment: \"Prefix for last update timestamp\")",
+            "lineNumber": 174
+          },
+          {
+            "text": "        let now = Date()",
+            "lineNumber": 175
+          },
+          {
+            "text": "        let stamp: String",
+            "lineNumber": 176
+          },
+          {
+            "text": "        if Calendar.current.isDate(date, inSameDayAs: now) {",
+            "lineNumber": 177
+          },
+          {
+            "text": "            stamp = date.formatted(date: .omitted, time: .shortened)",
+            "lineNumber": 178
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 179
+          },
+          {
+            "text": "            stamp = date.formatted(date: .abbreviated, time: .shortened)",
+            "lineNumber": 180
+          },
+          {
+            "text": "        }",
+            "lineNumber": 181
+          },
+          {
+            "text": "        return \"\\(label) \\(stamp)\"",
+            "lineNumber": 182
+          },
+          {
+            "text": "    }",
+            "lineNumber": 183
+          },
+          {
+            "lineNumber": 184
+          },
+          {
+            "text": "    private var distanceFormatter: MKDistanceFormatter {",
+            "lineNumber": 185
+          },
+          {
+            "text": "        let formatter = MKDistanceFormatter()",
+            "lineNumber": 186
+          },
+          {
+            "text": "        formatter.units = .default",
+            "lineNumber": 187
+          },
+          {
+            "text": "        formatter.unitStyle = .abbreviated",
+            "lineNumber": 188
+          },
+          {
+            "text": "        return formatter",
+            "lineNumber": 189
+          },
+          {
+            "text": "    }",
+            "lineNumber": 190
+          },
+          {
+            "text": "}",
+            "lineNumber": 191
+          },
+          {
+            "lineNumber": 192
+          },
+          {
+            "text": "struct DeviceLocationTextWidget: Widget {",
+            "lineNumber": 193
+          },
+          {
+            "text": "    var body: some WidgetConfiguration {",
+            "lineNumber": 194
+          },
+          {
+            "text": "        AppIntentConfiguration(kind: \"DeviceLocationTextWidget\", intent: DeviceSelectionIntent.self, provider: DeviceLocationTextProvider()) { entry in",
+            "lineNumber": 195
+          },
+          {
+            "text": "            DeviceLocationTextWidgetEntryView(entry: entry)",
+            "lineNumber": 196
+          },
+          {
+            "text": "        }",
+            "lineNumber": 197
+          },
+          {
+            "text": "        .configurationDisplayName(NSLocalizedString(\"widget_text_display_name\", comment: \"Display name for the text location widget\"))",
+            "lineNumber": 198
+          },
+          {
+            "text": "        .description(NSLocalizedString(\"widget_text_description\", comment: \"Description for the text location widget\"))",
+            "lineNumber": 199
+          },
+          {
+            "text": "        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])",
+            "lineNumber": 200
+          },
+          {
+            "text": "    }",
+            "lineNumber": 201
+          },
+          {
+            "text": "}",
+            "lineNumber": 202
+          }
+        ]
+      },
+      "score": 0.41251620650291443
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/SharedWidgetData.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 43
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * SharedWidgetData.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\n#if canImport(UIKit)\nimport UIKit\n#endif\n\n/// Common data structures and utilities used to exchange data between the main app\n/// and the WidgetKit extension via the shared App Group container.\nstruct WidgetColor: Codable, Hashable {\n    let red: Double\n    let green: Double\n    let blue: Double\n    let alpha: Double\n}\n\nstruct WidgetDeviceData: Codable, Identifiable, Hashable {\n    let id: String\n    let name: String\n    let latitude: Double\n    let longitude: Double\n    let locality: String?\n    let country: String?\n    let timestamp: Date\n    let accuracy: Double?\n    let color: WidgetColor?\n}\n\nstruct WidgetSharedPayload: Codable {\n    var devices: [WidgetDeviceData]\n    var ownDeviceID: String?\n    var ownDevice: WidgetDeviceData?\n}\n\nenum SharedWidgetDataManager {\n    static let appGroupIdentifier = \"group.com.miataru.ios\"",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * SharedWidgetData.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "text": "#if canImport(UIKit)",
+            "lineNumber": 11
+          },
+          {
+            "text": "import UIKit",
+            "lineNumber": 12
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 13
+          },
+          {
+            "lineNumber": 14
+          },
+          {
+            "text": "/// Common data structures and utilities used to exchange data between the main app",
+            "lineNumber": 15
+          },
+          {
+            "text": "/// and the WidgetKit extension via the shared App Group container.",
+            "lineNumber": 16
+          },
+          {
+            "text": "struct WidgetColor: Codable, Hashable {",
+            "lineNumber": 17
+          },
+          {
+            "text": "    let red: Double",
+            "lineNumber": 18
+          },
+          {
+            "text": "    let green: Double",
+            "lineNumber": 19
+          },
+          {
+            "text": "    let blue: Double",
+            "lineNumber": 20
+          },
+          {
+            "text": "    let alpha: Double",
+            "lineNumber": 21
+          },
+          {
+            "text": "}",
+            "lineNumber": 22
+          },
+          {
+            "lineNumber": 23
+          },
+          {
+            "text": "struct WidgetDeviceData: Codable, Identifiable, Hashable {",
+            "lineNumber": 24
+          },
+          {
+            "text": "    let id: String",
+            "lineNumber": 25
+          },
+          {
+            "text": "    let name: String",
+            "lineNumber": 26
+          },
+          {
+            "text": "    let latitude: Double",
+            "lineNumber": 27
+          },
+          {
+            "text": "    let longitude: Double",
+            "lineNumber": 28
+          },
+          {
+            "text": "    let locality: String?",
+            "lineNumber": 29
+          },
+          {
+            "text": "    let country: String?",
+            "lineNumber": 30
+          },
+          {
+            "text": "    let timestamp: Date",
+            "lineNumber": 31
+          },
+          {
+            "text": "    let accuracy: Double?",
+            "lineNumber": 32
+          },
+          {
+            "text": "    let color: WidgetColor?",
+            "lineNumber": 33
+          },
+          {
+            "text": "}",
+            "lineNumber": 34
+          },
+          {
+            "lineNumber": 35
+          },
+          {
+            "text": "struct WidgetSharedPayload: Codable {",
+            "lineNumber": 36
+          },
+          {
+            "text": "    var devices: [WidgetDeviceData]",
+            "lineNumber": 37
+          },
+          {
+            "text": "    var ownDeviceID: String?",
+            "lineNumber": 38
+          },
+          {
+            "text": "    var ownDevice: WidgetDeviceData?",
+            "lineNumber": 39
+          },
+          {
+            "text": "}",
+            "lineNumber": 40
+          },
+          {
+            "lineNumber": 41
+          },
+          {
+            "text": "enum SharedWidgetDataManager {",
+            "lineNumber": 42
+          },
+          {
+            "text": "    static let appGroupIdentifier = \"group.com.miataru.ios\"",
+            "lineNumber": 43
+          }
+        ]
+      },
+      "score": 0.40948134660720825
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/WidgetTimelineDataLoader.swift",
+        "range": {
+          "startPosition": {
+            "line": 118
+          },
+          "endPosition": {
+            "line": 148
+          }
+        },
+        "contents": "        var updatedPayload = payload\n        updatedPayload.ownDeviceID = ownDeviceID ?? payload.ownDeviceID\n\n        for location in locations {\n            let metadataSource = cached ?? payload\n            let metadata = metadataSource.devices.first(where: { $0.id == location.Device })\n\n            let entry = WidgetDeviceData(\n                id: location.Device,\n                name: metadata?.name ?? location.Device,\n                latitude: location.Latitude,\n                longitude: location.Longitude,\n                locality: metadata?.locality,\n                country: metadata?.country,\n                timestamp: location.TimestampDate,\n                accuracy: location.HorizontalAccuracy,\n                color: metadata?.color\n            )\n\n            updatedPayload.devices.removeAll { $0.id == entry.id }\n            updatedPayload.devices.append(entry)\n\n            if entry.id == updatedPayload.ownDeviceID {\n                updatedPayload.ownDevice = entry\n            }\n        }\n\n        return updatedPayload\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        var updatedPayload = payload",
+            "lineNumber": 119
+          },
+          {
+            "text": "        updatedPayload.ownDeviceID = ownDeviceID ?? payload.ownDeviceID",
+            "lineNumber": 120
+          },
+          {
+            "lineNumber": 121
+          },
+          {
+            "text": "        for location in locations {",
+            "lineNumber": 122
+          },
+          {
+            "text": "            let metadataSource = cached ?? payload",
+            "lineNumber": 123
+          },
+          {
+            "text": "            let metadata = metadataSource.devices.first(where: { $0.id == location.Device })",
+            "lineNumber": 124
+          },
+          {
+            "lineNumber": 125
+          },
+          {
+            "text": "            let entry = WidgetDeviceData(",
+            "lineNumber": 126
+          },
+          {
+            "text": "                id: location.Device,",
+            "lineNumber": 127
+          },
+          {
+            "text": "                name: metadata?.name ?? location.Device,",
+            "lineNumber": 128
+          },
+          {
+            "text": "                latitude: location.Latitude,",
+            "lineNumber": 129
+          },
+          {
+            "text": "                longitude: location.Longitude,",
+            "lineNumber": 130
+          },
+          {
+            "text": "                locality: metadata?.locality,",
+            "lineNumber": 131
+          },
+          {
+            "text": "                country: metadata?.country,",
+            "lineNumber": 132
+          },
+          {
+            "text": "                timestamp: location.TimestampDate,",
+            "lineNumber": 133
+          },
+          {
+            "text": "                accuracy: location.HorizontalAccuracy,",
+            "lineNumber": 134
+          },
+          {
+            "text": "                color: metadata?.color",
+            "lineNumber": 135
+          },
+          {
+            "text": "            )",
+            "lineNumber": 136
+          },
+          {
+            "lineNumber": 137
+          },
+          {
+            "text": "            updatedPayload.devices.removeAll { $0.id == entry.id }",
+            "lineNumber": 138
+          },
+          {
+            "text": "            updatedPayload.devices.append(entry)",
+            "lineNumber": 139
+          },
+          {
+            "lineNumber": 140
+          },
+          {
+            "text": "            if entry.id == updatedPayload.ownDeviceID {",
+            "lineNumber": 141
+          },
+          {
+            "text": "                updatedPayload.ownDevice = entry",
+            "lineNumber": 142
+          },
+          {
+            "text": "            }",
+            "lineNumber": 143
+          },
+          {
+            "text": "        }",
+            "lineNumber": 144
+          },
+          {
+            "lineNumber": 145
+          },
+          {
+            "text": "        return updatedPayload",
+            "lineNumber": 146
+          },
+          {
+            "text": "    }",
+            "lineNumber": 147
+          },
+          {
+            "text": "}",
+            "lineNumber": 148
+          }
+        ]
+      },
+      "score": 0.40759074687957764
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/WidgetDataSyncCoordinator.swift",
+        "range": {
+          "startPosition": {
+            "line": 59
+          },
+          "endPosition": {
+            "line": 110
+          }
+        },
+        "contents": "    static func buildPayload(devices: [KnownDevice], locations: [CachedDeviceLocation], ownDeviceID: String) -&gt; WidgetSharedPayload {\n        var entries: [WidgetDeviceData] = []\n        var ownDevice: WidgetDeviceData?\n\n        for device in devices {\n            guard let location = locations.first(where: { $0.deviceID == device.DeviceID }) else { continue }\n            guard let entry = WidgetDeviceDataBuilder.makeEntry(device: device, location: location) else { continue }\n            entries.append(entry)\n            if device.DeviceID == ownDeviceID {\n                ownDevice = entry\n            }\n        }\n\n        return WidgetSharedPayload(\n            devices: entries,\n            ownDeviceID: ownDeviceID,\n            ownDevice: ownDevice\n        )\n    }\n}\n\n// MARK: - Helpers\n\nprivate enum WidgetDeviceDataBuilder {\n    static func makeEntry(device: KnownDevice, location: CachedDeviceLocation) -&gt; WidgetDeviceData? {\n        WidgetDeviceData(\n            id: device.DeviceID,\n            name: device.DeviceName,\n            latitude: location.latitude,\n            longitude: location.longitude,\n            locality: location.locality,\n            country: location.country,\n            timestamp: location.timestamp,\n            accuracy: location.accuracy,\n            color: WidgetColorFactory.color(from: device.DeviceColor)\n        )\n    }\n}\n\nprivate enum WidgetColorFactory {\n    static func color(from uiColor: UIColor?) -&gt; WidgetColor? {\n        guard let uiColor else { return nil }\n        var r: CGFloat = 0\n        var g: CGFloat = 0\n        var b: CGFloat = 0\n        var a: CGFloat = 0\n        uiColor.getRed(&amp;r, green: &amp;g, blue: &amp;b, alpha: &amp;a)\n        return WidgetColor(red: Double(r), green: Double(g), blue: Double(b), alpha: Double(a))\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    static func buildPayload(devices: [KnownDevice], locations: [CachedDeviceLocation], ownDeviceID: String) -&gt; WidgetSharedPayload {",
+            "lineNumber": 60
+          },
+          {
+            "text": "        var entries: [WidgetDeviceData] = []",
+            "lineNumber": 61
+          },
+          {
+            "text": "        var ownDevice: WidgetDeviceData?",
+            "lineNumber": 62
+          },
+          {
+            "lineNumber": 63
+          },
+          {
+            "text": "        for device in devices {",
+            "lineNumber": 64
+          },
+          {
+            "text": "            guard let location = locations.first(where: { $0.deviceID == device.DeviceID }) else { continue }",
+            "lineNumber": 65
+          },
+          {
+            "text": "            guard let entry = WidgetDeviceDataBuilder.makeEntry(device: device, location: location) else { continue }",
+            "lineNumber": 66
+          },
+          {
+            "text": "            entries.append(entry)",
+            "lineNumber": 67
+          },
+          {
+            "text": "            if device.DeviceID == ownDeviceID {",
+            "lineNumber": 68
+          },
+          {
+            "text": "                ownDevice = entry",
+            "lineNumber": 69
+          },
+          {
+            "text": "            }",
+            "lineNumber": 70
+          },
+          {
+            "text": "        }",
+            "lineNumber": 71
+          },
+          {
+            "lineNumber": 72
+          },
+          {
+            "text": "        return WidgetSharedPayload(",
+            "lineNumber": 73
+          },
+          {
+            "text": "            devices: entries,",
+            "lineNumber": 74
+          },
+          {
+            "text": "            ownDeviceID: ownDeviceID,",
+            "lineNumber": 75
+          },
+          {
+            "text": "            ownDevice: ownDevice",
+            "lineNumber": 76
+          },
+          {
+            "text": "        )",
+            "lineNumber": 77
+          },
+          {
+            "text": "    }",
+            "lineNumber": 78
+          },
+          {
+            "text": "}",
+            "lineNumber": 79
+          },
+          {
+            "lineNumber": 80
+          },
+          {
+            "text": "// MARK: - Helpers",
+            "lineNumber": 81
+          },
+          {
+            "lineNumber": 82
+          },
+          {
+            "text": "private enum WidgetDeviceDataBuilder {",
+            "lineNumber": 83
+          },
+          {
+            "text": "    static func makeEntry(device: KnownDevice, location: CachedDeviceLocation) -&gt; WidgetDeviceData? {",
+            "lineNumber": 84
+          },
+          {
+            "text": "        WidgetDeviceData(",
+            "lineNumber": 85
+          },
+          {
+            "text": "            id: device.DeviceID,",
+            "lineNumber": 86
+          },
+          {
+            "text": "            name: device.DeviceName,",
+            "lineNumber": 87
+          },
+          {
+            "text": "            latitude: location.latitude,",
+            "lineNumber": 88
+          },
+          {
+            "text": "            longitude: location.longitude,",
+            "lineNumber": 89
+          },
+          {
+            "text": "            locality: location.locality,",
+            "lineNumber": 90
+          },
+          {
+            "text": "            country: location.country,",
+            "lineNumber": 91
+          },
+          {
+            "text": "            timestamp: location.timestamp,",
+            "lineNumber": 92
+          },
+          {
+            "text": "            accuracy: location.accuracy,",
+            "lineNumber": 93
+          },
+          {
+            "text": "            color: WidgetColorFactory.color(from: device.DeviceColor)",
+            "lineNumber": 94
+          },
+          {
+            "text": "        )",
+            "lineNumber": 95
+          },
+          {
+            "text": "    }",
+            "lineNumber": 96
+          },
+          {
+            "text": "}",
+            "lineNumber": 97
+          },
+          {
+            "lineNumber": 98
+          },
+          {
+            "text": "private enum WidgetColorFactory {",
+            "lineNumber": 99
+          },
+          {
+            "text": "    static func color(from uiColor: UIColor?) -&gt; WidgetColor? {",
+            "lineNumber": 100
+          },
+          {
+            "text": "        guard let uiColor else { return nil }",
+            "lineNumber": 101
+          },
+          {
+            "text": "        var r: CGFloat = 0",
+            "lineNumber": 102
+          },
+          {
+            "text": "        var g: CGFloat = 0",
+            "lineNumber": 103
+          },
+          {
+            "text": "        var b: CGFloat = 0",
+            "lineNumber": 104
+          },
+          {
+            "text": "        var a: CGFloat = 0",
+            "lineNumber": 105
+          },
+          {
+            "text": "        uiColor.getRed(&amp;r, green: &amp;g, blue: &amp;b, alpha: &amp;a)",
+            "lineNumber": 106
+          },
+          {
+            "text": "        return WidgetColor(red: Double(r), green: Double(g), blue: Double(b), alpha: Double(a))",
+            "lineNumber": 107
+          },
+          {
+            "text": "    }",
+            "lineNumber": 108
+          },
+          {
+            "text": "}",
+            "lineNumber": 109
+          }
+        ]
+      },
+      "score": 0.39418476819992065
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 328
+          },
+          "endPosition": {
+            "line": 339
+          }
+        },
+        "contents": "struct DeviceLocationMapWidget: Widget {\n    var body: some WidgetConfiguration {\n        AppIntentConfiguration(kind: \"DeviceLocationMapWidget\", intent: DeviceSelectionIntent.self, provider: DeviceLocationMapProvider()) { entry in\n            DeviceLocationMapWidgetEntryView(entry: entry)\n        }\n        .configurationDisplayName(NSLocalizedString(\"widget_map_display_name\", comment: \"Display name for the map widget\"))\n        .description(NSLocalizedString(\"widget_map_description\", comment: \"Description for the map widget\"))\n        .supportedFamilies([.systemMedium, .systemLarge])\n        .contentMarginsDisabled()\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "struct DeviceLocationMapWidget: Widget {",
+            "lineNumber": 329
+          },
+          {
+            "text": "    var body: some WidgetConfiguration {",
+            "lineNumber": 330
+          },
+          {
+            "text": "        AppIntentConfiguration(kind: \"DeviceLocationMapWidget\", intent: DeviceSelectionIntent.self, provider: DeviceLocationMapProvider()) { entry in",
+            "lineNumber": 331
+          },
+          {
+            "text": "            DeviceLocationMapWidgetEntryView(entry: entry)",
+            "lineNumber": 332
+          },
+          {
+            "text": "        }",
+            "lineNumber": 333
+          },
+          {
+            "text": "        .configurationDisplayName(NSLocalizedString(\"widget_map_display_name\", comment: \"Display name for the map widget\"))",
+            "lineNumber": 334
+          },
+          {
+            "text": "        .description(NSLocalizedString(\"widget_map_description\", comment: \"Description for the map widget\"))",
+            "lineNumber": 335
+          },
+          {
+            "text": "        .supportedFamilies([.systemMedium, .systemLarge])",
+            "lineNumber": 336
+          },
+          {
+            "text": "        .contentMarginsDisabled()",
+            "lineNumber": 337
+          },
+          {
+            "text": "    }",
+            "lineNumber": 338
+          },
+          {
+            "text": "}",
+            "lineNumber": 339
+          }
+        ]
+      },
+      "score": 0.3934667110443115
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/miataruApp.swift",
+        "range": {
+          "startPosition": {
+            "line": 34
+          },
+          "endPosition": {
+            "line": 73,
+            "column": 12
+          }
+        },
+        "contents": "}\n\n@main\nstruct miataruApp: App {\n    @Environment(\\.scenePhase) private var scenePhase\n    @StateObject private var appState = AppState()\n    @State private var autolockCancellable: AnyCancellable? = nil\n    @State private var showAddDeviceSheet = false\n    @State private var pendingDeviceID: String? = nil\n    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate\n    \n    init() {\n        SettingsManager.shared.registerDefaultsFromSettingsBundle()\n        // Beim ersten Start oder für einen Reset:\n        //SettingsManager.shared.loadSettingsFromPlist(plistName: \"Root\")\n        let deviceID = thisDeviceIDManager.shared.deviceID\n        debugLog(\"this devices ID: \\(deviceID)\")\n        \n        // LocationManager initialisieren und Berechtigungen nur anfordern, wenn gewünscht\n        let locationManager = LocationManager.shared\n        if SettingsManager.shared.trackAndReportLocation {\n            locationManager.requestLocationPermission()\n        }\n        // Ensure widgets have initial data even before the first update cycle.\n        WidgetDataSyncCoordinator.syncAllDevices()\n        // Do NOT call startTracking() here!\n        // Tracking is now controlled by the observer in LocationManager.observeSettings().\n        // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.\n        // If the setting is enabled, tracking will start automatically.\n        // If the setting is disabled, tracking will be stopped automatically.\n        // This ensures the app always respects the user's preference, even on app launch.\n        // locationManager.startTracking() // Removed to ensure correct behavior\n        \n        // Debuging: Remove before flight !!!!! ##########################\n        //UserDefaults.standard.hasCompletedOnboarding = false\n    }\n    \n    var body: some Scene {\n        WindowGroup(id: \"main\") {\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "}",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "@main",
+            "lineNumber": 37
+          },
+          {
+            "text": "struct miataruApp: App {",
+            "lineNumber": 38
+          },
+          {
+            "text": "    @Environment(\\.scenePhase) private var scenePhase",
+            "lineNumber": 39
+          },
+          {
+            "text": "    @StateObject private var appState = AppState()",
+            "lineNumber": 40
+          },
+          {
+            "text": "    @State private var autolockCancellable: AnyCancellable? = nil",
+            "lineNumber": 41
+          },
+          {
+            "text": "    @State private var showAddDeviceSheet = false",
+            "lineNumber": 42
+          },
+          {
+            "text": "    @State private var pendingDeviceID: String? = nil",
+            "lineNumber": 43
+          },
+          {
+            "text": "    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate",
+            "lineNumber": 44
+          },
+          {
+            "text": "    ",
+            "lineNumber": 45
+          },
+          {
+            "text": "    init() {",
+            "lineNumber": 46
+          },
+          {
+            "text": "        SettingsManager.shared.registerDefaultsFromSettingsBundle()",
+            "lineNumber": 47
+          },
+          {
+            "text": "        // Beim ersten Start oder für einen Reset:",
+            "lineNumber": 48
+          },
+          {
+            "text": "        //SettingsManager.shared.loadSettingsFromPlist(plistName: \"Root\")",
+            "lineNumber": 49
+          },
+          {
+            "text": "        let deviceID = thisDeviceIDManager.shared.deviceID",
+            "lineNumber": 50
+          },
+          {
+            "text": "        debugLog(\"this devices ID: \\(deviceID)\")",
+            "lineNumber": 51
+          },
+          {
+            "text": "        ",
+            "lineNumber": 52
+          },
+          {
+            "text": "        // LocationManager initialisieren und Berechtigungen nur anfordern, wenn gewünscht",
+            "lineNumber": 53
+          },
+          {
+            "text": "        let locationManager = LocationManager.shared",
+            "lineNumber": 54
+          },
+          {
+            "text": "        if SettingsManager.shared.trackAndReportLocation {",
+            "lineNumber": 55
+          },
+          {
+            "text": "            locationManager.requestLocationPermission()",
+            "lineNumber": 56
+          },
+          {
+            "text": "        }",
+            "lineNumber": 57
+          },
+          {
+            "text": "        // Ensure widgets have initial data even before the first update cycle.",
+            "lineNumber": 58
+          },
+          {
+            "text": "        WidgetDataSyncCoordinator.syncAllDevices()",
+            "lineNumber": 59
+          },
+          {
+            "text": "        // Do NOT call startTracking() here!",
+            "lineNumber": 60
+          },
+          {
+            "text": "        // Tracking is now controlled by the observer in LocationManager.observeSettings().",
+            "lineNumber": 61
+          },
+          {
+            "text": "        // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.",
+            "lineNumber": 62
+          },
+          {
+            "text": "        // If the setting is enabled, tracking will start automatically.",
+            "lineNumber": 63
+          },
+          {
+            "text": "        // If the setting is disabled, tracking will be stopped automatically.",
+            "lineNumber": 64
+          },
+          {
+            "text": "        // This ensures the app always respects the user's preference, even on app launch.",
+            "lineNumber": 65
+          },
+          {
+            "text": "        // locationManager.startTracking() // Removed to ensure correct behavior",
+            "lineNumber": 66
+          },
+          {
+            "text": "        ",
+            "lineNumber": 67
+          },
+          {
+            "text": "        // Debuging: Remove before flight !!!!! ##########################",
+            "lineNumber": 68
+          },
+          {
+            "text": "        //UserDefaults.standard.hasCompletedOnboarding = false",
+            "lineNumber": 69
+          },
+          {
+            "text": "    }",
+            "lineNumber": 70
+          },
+          {
+            "text": "    ",
+            "lineNumber": 71
+          },
+          {
+            "text": "    var body: some Scene {",
+            "lineNumber": 72
+          },
+          {
+            "text": "        WindowGroup(id: \"main\") {",
+            "lineNumber": 73
+          },
+          {
+            "text": "            ",
+            "lineNumber": 74
+          }
+        ]
+      },
+      "score": 0.383419007062912
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/App Settings/SettingsManager.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 55
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * SettingsManager.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 20.06.25.\n */\n\nimport Foundation\nimport Combine\n\nclass SettingsManager: ObservableObject {\n    private let defaults = UserDefaults.standard\n    \n    // MARK: - Properties\n    @Published var disableDeviceAutolock: Bool {\n        didSet { defaults.set(disableDeviceAutolock, forKey: Keys.disableDeviceAutolock) }\n    }\n    @Published var indicateAccuracyOnMap: Bool {\n        didSet { defaults.set(indicateAccuracyOnMap, forKey: Keys.indicateAccuracyOnMap) }\n    }\n    @Published var groupsZoomToFit: Bool {\n        didSet { defaults.set(groupsZoomToFit, forKey: Keys.groupsZoomToFit) }\n    }\n    @Published var miataruServerURL: String {\n        didSet {\n            defaults.set(miataruServerURL, forKey: Keys.miataruServerURL)\n            WidgetDataSyncCoordinator.syncWidgetConfig(\n                serverURL: miataruServerURL,\n                deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },\n                ownDeviceID: thisDeviceIDManager.shared.deviceID\n            )\n        }\n    }\n    @Published var trackAndReportLocation: Bool {\n        didSet { \n            defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation)\n            // Check location permissions when tracking is enabled\n            if trackAndReportLocation {\n                checkAndRequestLocationPermissions()\n            }\n        }\n    }\n    @Published var saveLocationHistoryOnServer: Bool {\n        didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }\n    }\n    @Published var locationDataRetentionTime: Int {\n        didSet { defaults.set(String(locationDataRetentionTime), forKey: \"location_data_retention_time\") }\n    }\n    @Published var mapType: Int {\n        didSet { defaults.set(String(mapType), forKey: Keys.mapType) }\n    }\n    @Published var mapUpdateInterval: Int {\n        didSet { defaults.set(String(mapUpdateInterval), forKey: Keys.mapUpdateInterval) }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * SettingsManager.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 20.06.25.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "text": "import Combine",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "class SettingsManager: ObservableObject {",
+            "lineNumber": 13
+          },
+          {
+            "text": "    private let defaults = UserDefaults.standard",
+            "lineNumber": 14
+          },
+          {
+            "text": "    ",
+            "lineNumber": 15
+          },
+          {
+            "text": "    // MARK: - Properties",
+            "lineNumber": 16
+          },
+          {
+            "text": "    @Published var disableDeviceAutolock: Bool {",
+            "lineNumber": 17
+          },
+          {
+            "text": "        didSet { defaults.set(disableDeviceAutolock, forKey: Keys.disableDeviceAutolock) }",
+            "lineNumber": 18
+          },
+          {
+            "text": "    }",
+            "lineNumber": 19
+          },
+          {
+            "text": "    @Published var indicateAccuracyOnMap: Bool {",
+            "lineNumber": 20
+          },
+          {
+            "text": "        didSet { defaults.set(indicateAccuracyOnMap, forKey: Keys.indicateAccuracyOnMap) }",
+            "lineNumber": 21
+          },
+          {
+            "text": "    }",
+            "lineNumber": 22
+          },
+          {
+            "text": "    @Published var groupsZoomToFit: Bool {",
+            "lineNumber": 23
+          },
+          {
+            "text": "        didSet { defaults.set(groupsZoomToFit, forKey: Keys.groupsZoomToFit) }",
+            "lineNumber": 24
+          },
+          {
+            "text": "    }",
+            "lineNumber": 25
+          },
+          {
+            "text": "    @Published var miataruServerURL: String {",
+            "lineNumber": 26
+          },
+          {
+            "text": "        didSet {",
+            "lineNumber": 27
+          },
+          {
+            "text": "            defaults.set(miataruServerURL, forKey: Keys.miataruServerURL)",
+            "lineNumber": 28
+          },
+          {
+            "text": "            WidgetDataSyncCoordinator.syncWidgetConfig(",
+            "lineNumber": 29
+          },
+          {
+            "text": "                serverURL: miataruServerURL,",
+            "lineNumber": 30
+          },
+          {
+            "text": "                deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },",
+            "lineNumber": 31
+          },
+          {
+            "text": "                ownDeviceID: thisDeviceIDManager.shared.deviceID",
+            "lineNumber": 32
+          },
+          {
+            "text": "            )",
+            "lineNumber": 33
+          },
+          {
+            "text": "        }",
+            "lineNumber": 34
+          },
+          {
+            "text": "    }",
+            "lineNumber": 35
+          },
+          {
+            "text": "    @Published var trackAndReportLocation: Bool {",
+            "lineNumber": 36
+          },
+          {
+            "text": "        didSet { ",
+            "lineNumber": 37
+          },
+          {
+            "text": "            defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation)",
+            "lineNumber": 38
+          },
+          {
+            "text": "            // Check location permissions when tracking is enabled",
+            "lineNumber": 39
+          },
+          {
+            "text": "            if trackAndReportLocation {",
+            "lineNumber": 40
+          },
+          {
+            "text": "                checkAndRequestLocationPermissions()",
+            "lineNumber": 41
+          },
+          {
+            "text": "            }",
+            "lineNumber": 42
+          },
+          {
+            "text": "        }",
+            "lineNumber": 43
+          },
+          {
+            "text": "    }",
+            "lineNumber": 44
+          },
+          {
+            "text": "    @Published var saveLocationHistoryOnServer: Bool {",
+            "lineNumber": 45
+          },
+          {
+            "text": "        didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }",
+            "lineNumber": 46
+          },
+          {
+            "text": "    }",
+            "lineNumber": 47
+          },
+          {
+            "text": "    @Published var locationDataRetentionTime: Int {",
+            "lineNumber": 48
+          },
+          {
+            "text": "        didSet { defaults.set(String(locationDataRetentionTime), forKey: \"location_data_retention_time\") }",
+            "lineNumber": 49
+          },
+          {
+            "text": "    }",
+            "lineNumber": 50
+          },
+          {
+            "text": "    @Published var mapType: Int {",
+            "lineNumber": 51
+          },
+          {
+            "text": "        didSet { defaults.set(String(mapType), forKey: Keys.mapType) }",
+            "lineNumber": 52
+          },
+          {
+            "text": "    }",
+            "lineNumber": 53
+          },
+          {
+            "text": "    @Published var mapUpdateInterval: Int {",
+            "lineNumber": 54
+          },
+          {
+            "text": "        didSet { defaults.set(String(mapUpdateInterval), forKey: Keys.mapUpdateInterval) }",
+            "lineNumber": 55
+          }
+        ]
+      },
+      "score": 0.381045937538147
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/SharedWidgetConfig.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 52
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * SharedWidgetConfig.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\n\nstruct SharedWidgetConfig: Codable {\n    let miataruServerURL: String\n    let deviceIDs: [String]\n    let ownDeviceID: String?\n    let authorizationToken: String?\n}\n\nenum SharedWidgetConfigManager {\n    private static let configFileName = \"SharedWidgetConfig.json\"\n    private static let appGroupIdentifier = \"group.com.miataru.ios\"\n\n    static var sharedContainerURL: URL? {\n        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)\n    }\n\n    static var configURL: URL? {\n        sharedContainerURL?.appendingPathComponent(configFileName)\n    }\n\n    static func write(_ config: SharedWidgetConfig) {\n        guard let url = configURL else { return }\n        do {\n            let data = try JSONEncoder().encode(config)\n            try data.write(to: url, options: [.atomic])\n        } catch {\n            print(\"Failed to write shared widget config: \\(error)\")\n        }\n    }\n\n    static func read() -&gt; SharedWidgetConfig? {\n        guard let url = configURL else { return nil }\n        guard let data = try? Data(contentsOf: url) else { return nil }\n        do {\n            return try JSONDecoder().decode(SharedWidgetConfig.self, from: data)\n        } catch {\n            print(\"Failed to decode shared widget config: \\(error)\")\n            return nil\n        }\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * SharedWidgetConfig.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "lineNumber": 11
+          },
+          {
+            "text": "struct SharedWidgetConfig: Codable {",
+            "lineNumber": 12
+          },
+          {
+            "text": "    let miataruServerURL: String",
+            "lineNumber": 13
+          },
+          {
+            "text": "    let deviceIDs: [String]",
+            "lineNumber": 14
+          },
+          {
+            "text": "    let ownDeviceID: String?",
+            "lineNumber": 15
+          },
+          {
+            "text": "    let authorizationToken: String?",
+            "lineNumber": 16
+          },
+          {
+            "text": "}",
+            "lineNumber": 17
+          },
+          {
+            "lineNumber": 18
+          },
+          {
+            "text": "enum SharedWidgetConfigManager {",
+            "lineNumber": 19
+          },
+          {
+            "text": "    private static let configFileName = \"SharedWidgetConfig.json\"",
+            "lineNumber": 20
+          },
+          {
+            "text": "    private static let appGroupIdentifier = \"group.com.miataru.ios\"",
+            "lineNumber": 21
+          },
+          {
+            "lineNumber": 22
+          },
+          {
+            "text": "    static var sharedContainerURL: URL? {",
+            "lineNumber": 23
+          },
+          {
+            "text": "        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)",
+            "lineNumber": 24
+          },
+          {
+            "text": "    }",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "    static var configURL: URL? {",
+            "lineNumber": 27
+          },
+          {
+            "text": "        sharedContainerURL?.appendingPathComponent(configFileName)",
+            "lineNumber": 28
+          },
+          {
+            "text": "    }",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "    static func write(_ config: SharedWidgetConfig) {",
+            "lineNumber": 31
+          },
+          {
+            "text": "        guard let url = configURL else { return }",
+            "lineNumber": 32
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 33
+          },
+          {
+            "text": "            let data = try JSONEncoder().encode(config)",
+            "lineNumber": 34
+          },
+          {
+            "text": "            try data.write(to: url, options: [.atomic])",
+            "lineNumber": 35
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 36
+          },
+          {
+            "text": "            print(\"Failed to write shared widget config: \\(error)\")",
+            "lineNumber": 37
+          },
+          {
+            "text": "        }",
+            "lineNumber": 38
+          },
+          {
+            "text": "    }",
+            "lineNumber": 39
+          },
+          {
+            "lineNumber": 40
+          },
+          {
+            "text": "    static func read() -&gt; SharedWidgetConfig? {",
+            "lineNumber": 41
+          },
+          {
+            "text": "        guard let url = configURL else { return nil }",
+            "lineNumber": 42
+          },
+          {
+            "text": "        guard let data = try? Data(contentsOf: url) else { return nil }",
+            "lineNumber": 43
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 44
+          },
+          {
+            "text": "            return try JSONDecoder().decode(SharedWidgetConfig.self, from: data)",
+            "lineNumber": 45
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 46
+          },
+          {
+            "text": "            print(\"Failed to decode shared widget config: \\(error)\")",
+            "lineNumber": 47
+          },
+          {
+            "text": "            return nil",
+            "lineNumber": 48
+          },
+          {
+            "text": "        }",
+            "lineNumber": 49
+          },
+          {
+            "text": "    }",
+            "lineNumber": 50
+          },
+          {
+            "text": "}",
+            "lineNumber": 51
+          }
+        ]
+      },
+      "score": 0.377366304397583
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/SharedWidgetData.swift",
+        "range": {
+          "startPosition": {
+            "line": 41
+          },
+          "endPosition": {
+            "line": 90
+          }
+        },
+        "contents": "enum SharedWidgetDataManager {\n    static let appGroupIdentifier = \"group.com.miataru.ios\"\n    private static let sharedDataFileName = \"SharedDeviceData.json\"\n    private static let snapshotPrefix = \"MapSnapshot-\"\n    private static let snapshotExtension = \"png\"\n\n    /// Location of the shared App Group container.\n    static var sharedContainerURL: URL? {\n        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)\n    }\n\n    /// Location of the JSON payload used by widgets to read the latest data.\n    static var sharedDataURL: URL? {\n        sharedContainerURL?.appendingPathComponent(sharedDataFileName)\n    }\n\n    /// Location of the map snapshot image for a specific device and appearance.\n    static func mapSnapshotURL(for deviceID: String, style: Any? = nil) -&gt; URL? {\n        let suffix: String\n        #if canImport(UIKit)\n        if let style = style as? UIUserInterfaceStyle {\n            switch style {\n            case .dark: suffix = \"-dark\"\n            case .light: suffix = \"-light\"\n            default: suffix = \"\"\n            }\n        } else {\n            suffix = \"\"\n        }\n        #else\n        suffix = \"\"\n        #endif\n        return sharedContainerURL?.appendingPathComponent(\"\\(snapshotPrefix)\\(deviceID)\\(suffix).\\(snapshotExtension)\")\n    }\n\n    /// Persist a payload into the shared container.\n    static func write(_ payload: WidgetSharedPayload) {\n        guard let url = sharedDataURL else { return }\n        do {\n            let data = try JSONEncoder().encode(payload)\n            try data.write(to: url, options: [.atomic])\n        } catch {\n            debugLog(\"Failed to write shared widget data: \\(error)\")\n        }\n    }\n\n    /// Load the last written payload from the shared container.\n    static func read() -&gt; WidgetSharedPayload? {\n        guard let url = sharedDataURL else { return nil }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "enum SharedWidgetDataManager {",
+            "lineNumber": 42
+          },
+          {
+            "text": "    static let appGroupIdentifier = \"group.com.miataru.ios\"",
+            "lineNumber": 43
+          },
+          {
+            "text": "    private static let sharedDataFileName = \"SharedDeviceData.json\"",
+            "lineNumber": 44
+          },
+          {
+            "text": "    private static let snapshotPrefix = \"MapSnapshot-\"",
+            "lineNumber": 45
+          },
+          {
+            "text": "    private static let snapshotExtension = \"png\"",
+            "lineNumber": 46
+          },
+          {
+            "lineNumber": 47
+          },
+          {
+            "text": "    /// Location of the shared App Group container.",
+            "lineNumber": 48
+          },
+          {
+            "text": "    static var sharedContainerURL: URL? {",
+            "lineNumber": 49
+          },
+          {
+            "text": "        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)",
+            "lineNumber": 50
+          },
+          {
+            "text": "    }",
+            "lineNumber": 51
+          },
+          {
+            "lineNumber": 52
+          },
+          {
+            "text": "    /// Location of the JSON payload used by widgets to read the latest data.",
+            "lineNumber": 53
+          },
+          {
+            "text": "    static var sharedDataURL: URL? {",
+            "lineNumber": 54
+          },
+          {
+            "text": "        sharedContainerURL?.appendingPathComponent(sharedDataFileName)",
+            "lineNumber": 55
+          },
+          {
+            "text": "    }",
+            "lineNumber": 56
+          },
+          {
+            "lineNumber": 57
+          },
+          {
+            "text": "    /// Location of the map snapshot image for a specific device and appearance.",
+            "lineNumber": 58
+          },
+          {
+            "text": "    static func mapSnapshotURL(for deviceID: String, style: Any? = nil) -&gt; URL? {",
+            "lineNumber": 59
+          },
+          {
+            "text": "        let suffix: String",
+            "lineNumber": 60
+          },
+          {
+            "text": "        #if canImport(UIKit)",
+            "lineNumber": 61
+          },
+          {
+            "text": "        if let style = style as? UIUserInterfaceStyle {",
+            "lineNumber": 62
+          },
+          {
+            "text": "            switch style {",
+            "lineNumber": 63
+          },
+          {
+            "text": "            case .dark: suffix = \"-dark\"",
+            "lineNumber": 64
+          },
+          {
+            "text": "            case .light: suffix = \"-light\"",
+            "lineNumber": 65
+          },
+          {
+            "text": "            default: suffix = \"\"",
+            "lineNumber": 66
+          },
+          {
+            "text": "            }",
+            "lineNumber": 67
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 68
+          },
+          {
+            "text": "            suffix = \"\"",
+            "lineNumber": 69
+          },
+          {
+            "text": "        }",
+            "lineNumber": 70
+          },
+          {
+            "text": "        #else",
+            "lineNumber": 71
+          },
+          {
+            "text": "        suffix = \"\"",
+            "lineNumber": 72
+          },
+          {
+            "text": "        #endif",
+            "lineNumber": 73
+          },
+          {
+            "text": "        return sharedContainerURL?.appendingPathComponent(\"\\(snapshotPrefix)\\(deviceID)\\(suffix).\\(snapshotExtension)\")",
+            "lineNumber": 74
+          },
+          {
+            "text": "    }",
+            "lineNumber": 75
+          },
+          {
+            "lineNumber": 76
+          },
+          {
+            "text": "    /// Persist a payload into the shared container.",
+            "lineNumber": 77
+          },
+          {
+            "text": "    static func write(_ payload: WidgetSharedPayload) {",
+            "lineNumber": 78
+          },
+          {
+            "text": "        guard let url = sharedDataURL else { return }",
+            "lineNumber": 79
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 80
+          },
+          {
+            "text": "            let data = try JSONEncoder().encode(payload)",
+            "lineNumber": 81
+          },
+          {
+            "text": "            try data.write(to: url, options: [.atomic])",
+            "lineNumber": 82
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 83
+          },
+          {
+            "text": "            debugLog(\"Failed to write shared widget data: \\(error)\")",
+            "lineNumber": 84
+          },
+          {
+            "text": "        }",
+            "lineNumber": 85
+          },
+          {
+            "text": "    }",
+            "lineNumber": 86
+          },
+          {
+            "lineNumber": 87
+          },
+          {
+            "text": "    /// Load the last written payload from the shared container.",
+            "lineNumber": 88
+          },
+          {
+            "text": "    static func read() -&gt; WidgetSharedPayload? {",
+            "lineNumber": 89
+          },
+          {
+            "text": "        guard let url = sharedDataURL else { return nil }",
+            "lineNumber": 90
+          }
+        ]
+      },
+      "score": 0.37599873542785645
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationTextWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 105
+          },
+          "endPosition": {
+            "line": 164,
+            "column": 12
+          }
+        },
+        "contents": "        .padding(padding)\n    }\n\n    private func metrics(for family: WidgetFamily) -&gt; (Font, Font, Font, Font, CGFloat, EdgeInsets) {\n        switch family {\n        case .systemSmall:\n            return (\n                .footnote.weight(.semibold),\n                .caption2,\n                .caption2,\n                .caption2,\n                2,\n                EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)\n            )\n        case .systemMedium:\n            return (\n                .title3.weight(.semibold),\n                .callout,\n                .callout,\n                .caption,\n                6,\n                EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)\n            )\n        default:\n            return (\n                .headline,\n                .subheadline,\n                .caption,\n                .caption2,\n                4,\n                EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)\n            )\n        }\n    }\n\n    private var placeholder: some View {\n        VStack(alignment: .leading, spacing: 4) {\n            Text(\"Device\")\n                .font(.headline)\n            Text(\"Location loading…\")\n                .font(.subheadline)\n            Text(\"—\")\n                .font(.caption)\n        }\n        .padding()\n    }\n\n    private func formattedLocality(for device: WidgetDeviceData) -&gt; String {\n        let locality = device.locality ?? \"\"\n        let country = device.country ?? \"\"\n        let combined = [locality, country].filter { !$0.isEmpty }.joined(separator: \", \")\n        if combined.isEmpty {\n            return NSLocalizedString(\"widget_location_unknown\", comment: \"Shown when no placemark is available for the widget\")\n        }\n        return combined\n    }\n\n    private func formattedDistance(to device: WidgetDeviceData, from ownDevice: WidgetDeviceData?) -&gt; String {\n        guard let own = ownDevice else {\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        .padding(padding)",
+            "lineNumber": 106
+          },
+          {
+            "text": "    }",
+            "lineNumber": 107
+          },
+          {
+            "lineNumber": 108
+          },
+          {
+            "text": "    private func metrics(for family: WidgetFamily) -&gt; (Font, Font, Font, Font, CGFloat, EdgeInsets) {",
+            "lineNumber": 109
+          },
+          {
+            "text": "        switch family {",
+            "lineNumber": 110
+          },
+          {
+            "text": "        case .systemSmall:",
+            "lineNumber": 111
+          },
+          {
+            "text": "            return (",
+            "lineNumber": 112
+          },
+          {
+            "text": "                .footnote.weight(.semibold),",
+            "lineNumber": 113
+          },
+          {
+            "text": "                .caption2,",
+            "lineNumber": 114
+          },
+          {
+            "text": "                .caption2,",
+            "lineNumber": 115
+          },
+          {
+            "text": "                .caption2,",
+            "lineNumber": 116
+          },
+          {
+            "text": "                2,",
+            "lineNumber": 117
+          },
+          {
+            "text": "                EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)",
+            "lineNumber": 118
+          },
+          {
+            "text": "            )",
+            "lineNumber": 119
+          },
+          {
+            "text": "        case .systemMedium:",
+            "lineNumber": 120
+          },
+          {
+            "text": "            return (",
+            "lineNumber": 121
+          },
+          {
+            "text": "                .title3.weight(.semibold),",
+            "lineNumber": 122
+          },
+          {
+            "text": "                .callout,",
+            "lineNumber": 123
+          },
+          {
+            "text": "                .callout,",
+            "lineNumber": 124
+          },
+          {
+            "text": "                .caption,",
+            "lineNumber": 125
+          },
+          {
+            "text": "                6,",
+            "lineNumber": 126
+          },
+          {
+            "text": "                EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)",
+            "lineNumber": 127
+          },
+          {
+            "text": "            )",
+            "lineNumber": 128
+          },
+          {
+            "text": "        default:",
+            "lineNumber": 129
+          },
+          {
+            "text": "            return (",
+            "lineNumber": 130
+          },
+          {
+            "text": "                .headline,",
+            "lineNumber": 131
+          },
+          {
+            "text": "                .subheadline,",
+            "lineNumber": 132
+          },
+          {
+            "text": "                .caption,",
+            "lineNumber": 133
+          },
+          {
+            "text": "                .caption2,",
+            "lineNumber": 134
+          },
+          {
+            "text": "                4,",
+            "lineNumber": 135
+          },
+          {
+            "text": "                EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)",
+            "lineNumber": 136
+          },
+          {
+            "text": "            )",
+            "lineNumber": 137
+          },
+          {
+            "text": "        }",
+            "lineNumber": 138
+          },
+          {
+            "text": "    }",
+            "lineNumber": 139
+          },
+          {
+            "lineNumber": 140
+          },
+          {
+            "text": "    private var placeholder: some View {",
+            "lineNumber": 141
+          },
+          {
+            "text": "        VStack(alignment: .leading, spacing: 4) {",
+            "lineNumber": 142
+          },
+          {
+            "text": "            Text(\"Device\")",
+            "lineNumber": 143
+          },
+          {
+            "text": "                .font(.headline)",
+            "lineNumber": 144
+          },
+          {
+            "text": "            Text(\"Location loading…\")",
+            "lineNumber": 145
+          },
+          {
+            "text": "                .font(.subheadline)",
+            "lineNumber": 146
+          },
+          {
+            "text": "            Text(\"—\")",
+            "lineNumber": 147
+          },
+          {
+            "text": "                .font(.caption)",
+            "lineNumber": 148
+          },
+          {
+            "text": "        }",
+            "lineNumber": 149
+          },
+          {
+            "text": "        .padding()",
+            "lineNumber": 150
+          },
+          {
+            "text": "    }",
+            "lineNumber": 151
+          },
+          {
+            "lineNumber": 152
+          },
+          {
+            "text": "    private func formattedLocality(for device: WidgetDeviceData) -&gt; String {",
+            "lineNumber": 153
+          },
+          {
+            "text": "        let locality = device.locality ?? \"\"",
+            "lineNumber": 154
+          },
+          {
+            "text": "        let country = device.country ?? \"\"",
+            "lineNumber": 155
+          },
+          {
+            "text": "        let combined = [locality, country].filter { !$0.isEmpty }.joined(separator: \", \")",
+            "lineNumber": 156
+          },
+          {
+            "text": "        if combined.isEmpty {",
+            "lineNumber": 157
+          },
+          {
+            "text": "            return NSLocalizedString(\"widget_location_unknown\", comment: \"Shown when no placemark is available for the widget\")",
+            "lineNumber": 158
+          },
+          {
+            "text": "        }",
+            "lineNumber": 159
+          },
+          {
+            "text": "        return combined",
+            "lineNumber": 160
+          },
+          {
+            "text": "    }",
+            "lineNumber": 161
+          },
+          {
+            "lineNumber": 162
+          },
+          {
+            "text": "    private func formattedDistance(to device: WidgetDeviceData, from ownDevice: WidgetDeviceData?) -&gt; String {",
+            "lineNumber": 163
+          },
+          {
+            "text": "        guard let own = ownDevice else {",
+            "lineNumber": 164
+          },
+          {
+            "text": "            ",
+            "lineNumber": 165
+          }
+        ]
+      },
+      "score": 0.3747725486755371
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationTextWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 53
+          },
+          "endPosition": {
+            "line": 111,
+            "column": 12
+          }
+        },
+        "contents": "struct DeviceLocationTextWidgetEntryView: View {\n    @Environment(\\.widgetFamily) private var family\n    let entry: DeviceLocationEntry\n\n    var body: some View {\n        ZStack {\n            if let device = entry.device {\n                content(for: device)\n                    .widgetURL(URL(string: \"miataru://\\(device.id)\"))\n            } else {\n                placeholder\n            }\n        }\n        .containerBackground(for: .widget) {\n            ContainerRelativeShape()\n                .fill(Color(.systemBackground))\n        }\n    }\n\n    private func content(for device: WidgetDeviceData) -&gt; some View {\n        let distanceText = formattedDistance(to: device, from: entry.ownDevice)\n        let locality = formattedLocality(for: device)\n        let lastUpdate = formattedUpdateTimestamp(for: device.timestamp)\n\n        let (nameFont, detailFont, distanceFont, updateFont, spacing, padding) = metrics(for: family)\n\n        return VStack(alignment: .leading, spacing: spacing) {\n            Text(device.name)\n                .font(nameFont)\n                .lineLimit(1)\n                .minimumScaleFactor(0.7)\n            Text(locality)\n                .font(detailFont)\n                .lineLimit(1)\n                .minimumScaleFactor(0.7)\n            if family != .accessoryRectangular {\n                Text(distanceText)\n                    .font(distanceFont)\n                    .lineLimit(1)\n                    .minimumScaleFactor(0.7)\n                Text(lastUpdate)\n                    .font(updateFont)\n                    .foregroundStyle(.secondary)\n                    .lineLimit(1)\n                    .minimumScaleFactor(0.7)\n            } else {\n                Text(distanceText)\n                    .font(distanceFont)\n                    .lineLimit(1)\n                    .minimumScaleFactor(0.7)\n            }\n        }\n        .padding(padding)\n    }\n\n    private func metrics(for family: WidgetFamily) -&gt; (Font, Font, Font, Font, CGFloat, EdgeInsets) {\n        switch family {\n        case .systemSmall:\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "struct DeviceLocationTextWidgetEntryView: View {",
+            "lineNumber": 54
+          },
+          {
+            "text": "    @Environment(\\.widgetFamily) private var family",
+            "lineNumber": 55
+          },
+          {
+            "text": "    let entry: DeviceLocationEntry",
+            "lineNumber": 56
+          },
+          {
+            "lineNumber": 57
+          },
+          {
+            "text": "    var body: some View {",
+            "lineNumber": 58
+          },
+          {
+            "text": "        ZStack {",
+            "lineNumber": 59
+          },
+          {
+            "text": "            if let device = entry.device {",
+            "lineNumber": 60
+          },
+          {
+            "text": "                content(for: device)",
+            "lineNumber": 61
+          },
+          {
+            "text": "                    .widgetURL(URL(string: \"miataru://\\(device.id)\"))",
+            "lineNumber": 62
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 63
+          },
+          {
+            "text": "                placeholder",
+            "lineNumber": 64
+          },
+          {
+            "text": "            }",
+            "lineNumber": 65
+          },
+          {
+            "text": "        }",
+            "lineNumber": 66
+          },
+          {
+            "text": "        .containerBackground(for: .widget) {",
+            "lineNumber": 67
+          },
+          {
+            "text": "            ContainerRelativeShape()",
+            "lineNumber": 68
+          },
+          {
+            "text": "                .fill(Color(.systemBackground))",
+            "lineNumber": 69
+          },
+          {
+            "text": "        }",
+            "lineNumber": 70
+          },
+          {
+            "text": "    }",
+            "lineNumber": 71
+          },
+          {
+            "lineNumber": 72
+          },
+          {
+            "text": "    private func content(for device: WidgetDeviceData) -&gt; some View {",
+            "lineNumber": 73
+          },
+          {
+            "text": "        let distanceText = formattedDistance(to: device, from: entry.ownDevice)",
+            "lineNumber": 74
+          },
+          {
+            "text": "        let locality = formattedLocality(for: device)",
+            "lineNumber": 75
+          },
+          {
+            "text": "        let lastUpdate = formattedUpdateTimestamp(for: device.timestamp)",
+            "lineNumber": 76
+          },
+          {
+            "lineNumber": 77
+          },
+          {
+            "text": "        let (nameFont, detailFont, distanceFont, updateFont, spacing, padding) = metrics(for: family)",
+            "lineNumber": 78
+          },
+          {
+            "lineNumber": 79
+          },
+          {
+            "text": "        return VStack(alignment: .leading, spacing: spacing) {",
+            "lineNumber": 80
+          },
+          {
+            "text": "            Text(device.name)",
+            "lineNumber": 81
+          },
+          {
+            "text": "                .font(nameFont)",
+            "lineNumber": 82
+          },
+          {
+            "text": "                .lineLimit(1)",
+            "lineNumber": 83
+          },
+          {
+            "text": "                .minimumScaleFactor(0.7)",
+            "lineNumber": 84
+          },
+          {
+            "text": "            Text(locality)",
+            "lineNumber": 85
+          },
+          {
+            "text": "                .font(detailFont)",
+            "lineNumber": 86
+          },
+          {
+            "text": "                .lineLimit(1)",
+            "lineNumber": 87
+          },
+          {
+            "text": "                .minimumScaleFactor(0.7)",
+            "lineNumber": 88
+          },
+          {
+            "text": "            if family != .accessoryRectangular {",
+            "lineNumber": 89
+          },
+          {
+            "text": "                Text(distanceText)",
+            "lineNumber": 90
+          },
+          {
+            "text": "                    .font(distanceFont)",
+            "lineNumber": 91
+          },
+          {
+            "text": "                    .lineLimit(1)",
+            "lineNumber": 92
+          },
+          {
+            "text": "                    .minimumScaleFactor(0.7)",
+            "lineNumber": 93
+          },
+          {
+            "text": "                Text(lastUpdate)",
+            "lineNumber": 94
+          },
+          {
+            "text": "                    .font(updateFont)",
+            "lineNumber": 95
+          },
+          {
+            "text": "                    .foregroundStyle(.secondary)",
+            "lineNumber": 96
+          },
+          {
+            "text": "                    .lineLimit(1)",
+            "lineNumber": 97
+          },
+          {
+            "text": "                    .minimumScaleFactor(0.7)",
+            "lineNumber": 98
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 99
+          },
+          {
+            "text": "                Text(distanceText)",
+            "lineNumber": 100
+          },
+          {
+            "text": "                    .font(distanceFont)",
+            "lineNumber": 101
+          },
+          {
+            "text": "                    .lineLimit(1)",
+            "lineNumber": 102
+          },
+          {
+            "text": "                    .minimumScaleFactor(0.7)",
+            "lineNumber": 103
+          },
+          {
+            "text": "            }",
+            "lineNumber": 104
+          },
+          {
+            "text": "        }",
+            "lineNumber": 105
+          },
+          {
+            "text": "        .padding(padding)",
+            "lineNumber": 106
+          },
+          {
+            "text": "    }",
+            "lineNumber": 107
+          },
+          {
+            "lineNumber": 108
+          },
+          {
+            "text": "    private func metrics(for family: WidgetFamily) -&gt; (Font, Font, Font, Font, CGFloat, EdgeInsets) {",
+            "lineNumber": 109
+          },
+          {
+            "text": "        switch family {",
+            "lineNumber": 110
+          },
+          {
+            "text": "        case .systemSmall:",
+            "lineNumber": 111
+          },
+          {
+            "text": "            ",
+            "lineNumber": 112
+          }
+        ]
+      },
+      "score": 0.36451709270477295
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/SharedWidgetConfig.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 52
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * SharedWidgetConfig.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport Foundation\n\n/// Lightweight configuration that mirrors the settings widgets need to reach the server.\nstruct SharedWidgetConfig: Codable {\n    let miataruServerURL: String\n    let deviceIDs: [String]\n    let ownDeviceID: String?\n    let authorizationToken: String?\n}\n\nenum SharedWidgetConfigManager {\n    private static let configFileName = \"SharedWidgetConfig.json\"\n\n    static var sharedContainerURL: URL? {\n        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedWidgetDataManager.appGroupIdentifier)\n    }\n\n    static var configURL: URL? {\n        sharedContainerURL?.appendingPathComponent(configFileName)\n    }\n\n    static func write(_ config: SharedWidgetConfig) {\n        guard let url = configURL else { return }\n        do {\n            let data = try JSONEncoder().encode(config)\n            try data.write(to: url, options: [.atomic])\n        } catch {\n            debugLog(\"Failed to write shared widget config: \\(error)\")\n        }\n    }\n\n    static func read() -&gt; SharedWidgetConfig? {\n        guard let url = configURL else { return nil }\n        guard let data = try? Data(contentsOf: url) else { return nil }\n        do {\n            return try JSONDecoder().decode(SharedWidgetConfig.self, from: data)\n        } catch {\n            debugLog(\"Failed to decode shared widget config: \\(error)\")\n            return nil\n        }\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * SharedWidgetConfig.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 10
+          },
+          {
+            "lineNumber": 11
+          },
+          {
+            "text": "/// Lightweight configuration that mirrors the settings widgets need to reach the server.",
+            "lineNumber": 12
+          },
+          {
+            "text": "struct SharedWidgetConfig: Codable {",
+            "lineNumber": 13
+          },
+          {
+            "text": "    let miataruServerURL: String",
+            "lineNumber": 14
+          },
+          {
+            "text": "    let deviceIDs: [String]",
+            "lineNumber": 15
+          },
+          {
+            "text": "    let ownDeviceID: String?",
+            "lineNumber": 16
+          },
+          {
+            "text": "    let authorizationToken: String?",
+            "lineNumber": 17
+          },
+          {
+            "text": "}",
+            "lineNumber": 18
+          },
+          {
+            "lineNumber": 19
+          },
+          {
+            "text": "enum SharedWidgetConfigManager {",
+            "lineNumber": 20
+          },
+          {
+            "text": "    private static let configFileName = \"SharedWidgetConfig.json\"",
+            "lineNumber": 21
+          },
+          {
+            "lineNumber": 22
+          },
+          {
+            "text": "    static var sharedContainerURL: URL? {",
+            "lineNumber": 23
+          },
+          {
+            "text": "        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedWidgetDataManager.appGroupIdentifier)",
+            "lineNumber": 24
+          },
+          {
+            "text": "    }",
+            "lineNumber": 25
+          },
+          {
+            "lineNumber": 26
+          },
+          {
+            "text": "    static var configURL: URL? {",
+            "lineNumber": 27
+          },
+          {
+            "text": "        sharedContainerURL?.appendingPathComponent(configFileName)",
+            "lineNumber": 28
+          },
+          {
+            "text": "    }",
+            "lineNumber": 29
+          },
+          {
+            "lineNumber": 30
+          },
+          {
+            "text": "    static func write(_ config: SharedWidgetConfig) {",
+            "lineNumber": 31
+          },
+          {
+            "text": "        guard let url = configURL else { return }",
+            "lineNumber": 32
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 33
+          },
+          {
+            "text": "            let data = try JSONEncoder().encode(config)",
+            "lineNumber": 34
+          },
+          {
+            "text": "            try data.write(to: url, options: [.atomic])",
+            "lineNumber": 35
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 36
+          },
+          {
+            "text": "            debugLog(\"Failed to write shared widget config: \\(error)\")",
+            "lineNumber": 37
+          },
+          {
+            "text": "        }",
+            "lineNumber": 38
+          },
+          {
+            "text": "    }",
+            "lineNumber": 39
+          },
+          {
+            "lineNumber": 40
+          },
+          {
+            "text": "    static func read() -&gt; SharedWidgetConfig? {",
+            "lineNumber": 41
+          },
+          {
+            "text": "        guard let url = configURL else { return nil }",
+            "lineNumber": 42
+          },
+          {
+            "text": "        guard let data = try? Data(contentsOf: url) else { return nil }",
+            "lineNumber": 43
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 44
+          },
+          {
+            "text": "            return try JSONDecoder().decode(SharedWidgetConfig.self, from: data)",
+            "lineNumber": 45
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 46
+          },
+          {
+            "text": "            debugLog(\"Failed to decode shared widget config: \\(error)\")",
+            "lineNumber": 47
+          },
+          {
+            "text": "            return nil",
+            "lineNumber": 48
+          },
+          {
+            "text": "        }",
+            "lineNumber": 49
+          },
+          {
+            "text": "    }",
+            "lineNumber": 50
+          },
+          {
+            "text": "}",
+            "lineNumber": 51
+          }
+        ]
+      },
+      "score": 0.3629688620567322
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/App Settings/Devices/DeviceLocationCacheStore.swift",
+        "range": {
+          "startPosition": {
+            "line": 162
+          },
+          "endPosition": {
+            "line": 206
+          }
+        },
+        "contents": "        } else {\n            let newLocation = CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed)\n            locations.append(newLocation)\n            // New entry: if no placemark present, enqueue\n            enqueueGeocodingIfNeeded(for: deviceID)\n            WidgetDataSyncCoordinator.syncAllDevices()\n        }\n\n        // Widget snapshots are now generated inside the widget extension to avoid\n        // app/widget write races on the same files.\n        // (Intentionally no app-side snapshot generation here.)\n    }\n\n    func getLocation(for deviceID: String) -&gt; CachedDeviceLocation? {\n        return locations.first(where: { $0.deviceID == deviceID })\n    }\n\n    func getPlacemark(for deviceID: String) -&gt; (country: String?, locality: String?)? {\n        guard let loc = locations.first(where: { $0.deviceID == deviceID }) else { return nil }\n        return (loc.country, loc.locality)\n    }\n\n    func setPlacemark(for deviceID: String, country: String?, locality: String?, timeZone: TimeZone? = nil) {\n        if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {\n            let loc = locations[idx]\n            let updated = CachedDeviceLocation(\n                deviceID: loc.deviceID,\n                latitude: loc.latitude,\n                longitude: loc.longitude,\n                accuracy: loc.accuracy,\n                timestamp: loc.timestamp,\n                country: country,\n                locality: locality,\n                timeZone: timeZone ?? loc.timeZone,\n                batteryLevel: loc.batteryLevel,\n                altitude: loc.altitude\n            )\n            locations[idx] = updated\n            WidgetDataSyncCoordinator.syncAllDevices()\n        }\n    }\n    \n    func removeLocation(for deviceID: String) {\n        locations.removeAll { $0.deviceID == deviceID }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        } else {",
+            "lineNumber": 163
+          },
+          {
+            "text": "            let newLocation = CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed)",
+            "lineNumber": 164
+          },
+          {
+            "text": "            locations.append(newLocation)",
+            "lineNumber": 165
+          },
+          {
+            "text": "            // New entry: if no placemark present, enqueue",
+            "lineNumber": 166
+          },
+          {
+            "text": "            enqueueGeocodingIfNeeded(for: deviceID)",
+            "lineNumber": 167
+          },
+          {
+            "text": "            WidgetDataSyncCoordinator.syncAllDevices()",
+            "lineNumber": 168
+          },
+          {
+            "text": "        }",
+            "lineNumber": 169
+          },
+          {
+            "lineNumber": 170
+          },
+          {
+            "text": "        // Widget snapshots are now generated inside the widget extension to avoid",
+            "lineNumber": 171
+          },
+          {
+            "text": "        // app/widget write races on the same files.",
+            "lineNumber": 172
+          },
+          {
+            "text": "        // (Intentionally no app-side snapshot generation here.)",
+            "lineNumber": 173
+          },
+          {
+            "text": "    }",
+            "lineNumber": 174
+          },
+          {
+            "lineNumber": 175
+          },
+          {
+            "text": "    func getLocation(for deviceID: String) -&gt; CachedDeviceLocation? {",
+            "lineNumber": 176
+          },
+          {
+            "text": "        return locations.first(where: { $0.deviceID == deviceID })",
+            "lineNumber": 177
+          },
+          {
+            "text": "    }",
+            "lineNumber": 178
+          },
+          {
+            "lineNumber": 179
+          },
+          {
+            "text": "    func getPlacemark(for deviceID: String) -&gt; (country: String?, locality: String?)? {",
+            "lineNumber": 180
+          },
+          {
+            "text": "        guard let loc = locations.first(where: { $0.deviceID == deviceID }) else { return nil }",
+            "lineNumber": 181
+          },
+          {
+            "text": "        return (loc.country, loc.locality)",
+            "lineNumber": 182
+          },
+          {
+            "text": "    }",
+            "lineNumber": 183
+          },
+          {
+            "lineNumber": 184
+          },
+          {
+            "text": "    func setPlacemark(for deviceID: String, country: String?, locality: String?, timeZone: TimeZone? = nil) {",
+            "lineNumber": 185
+          },
+          {
+            "text": "        if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {",
+            "lineNumber": 186
+          },
+          {
+            "text": "            let loc = locations[idx]",
+            "lineNumber": 187
+          },
+          {
+            "text": "            let updated = CachedDeviceLocation(",
+            "lineNumber": 188
+          },
+          {
+            "text": "                deviceID: loc.deviceID,",
+            "lineNumber": 189
+          },
+          {
+            "text": "                latitude: loc.latitude,",
+            "lineNumber": 190
+          },
+          {
+            "text": "                longitude: loc.longitude,",
+            "lineNumber": 191
+          },
+          {
+            "text": "                accuracy: loc.accuracy,",
+            "lineNumber": 192
+          },
+          {
+            "text": "                timestamp: loc.timestamp,",
+            "lineNumber": 193
+          },
+          {
+            "text": "                country: country,",
+            "lineNumber": 194
+          },
+          {
+            "text": "                locality: locality,",
+            "lineNumber": 195
+          },
+          {
+            "text": "                timeZone: timeZone ?? loc.timeZone,",
+            "lineNumber": 196
+          },
+          {
+            "text": "                batteryLevel: loc.batteryLevel,",
+            "lineNumber": 197
+          },
+          {
+            "text": "                altitude: loc.altitude",
+            "lineNumber": 198
+          },
+          {
+            "text": "            )",
+            "lineNumber": 199
+          },
+          {
+            "text": "            locations[idx] = updated",
+            "lineNumber": 200
+          },
+          {
+            "text": "            WidgetDataSyncCoordinator.syncAllDevices()",
+            "lineNumber": 201
+          },
+          {
+            "text": "        }",
+            "lineNumber": 202
+          },
+          {
+            "text": "    }",
+            "lineNumber": 203
+          },
+          {
+            "text": "    ",
+            "lineNumber": 204
+          },
+          {
+            "text": "    func removeLocation(for deviceID: String) {",
+            "lineNumber": 205
+          },
+          {
+            "text": "        locations.removeAll { $0.deviceID == deviceID }",
+            "lineNumber": 206
+          }
+        ]
+      },
+      "score": 0.35536518692970276
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/App Settings/SettingsManager.swift",
+        "range": {
+          "startPosition": {
+            "line": 132
+          },
+          "endPosition": {
+            "line": 159
+          }
+        },
+        "contents": "    private func checkAndRequestLocationPermissions() {\n        // Reuse the existing LocationManager instance instead of creating a duplicate\n        LocationManager.shared.requestLocationPermission()\n    }\n    \n    // MARK: - Initialwerte laden\n    init() {\n        let d = UserDefaults.standard\n        self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false\n        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? true\n        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true\n        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? \"https://service.miataru.com\"\n        self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false\n        self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false\n        self.locationDataRetentionTime = Int(d.string(forKey: \"location_data_retention_time\") ?? \"1440\") ?? 1440\n        self.mapType = Int(d.string(forKey: Keys.mapType) ?? \"1\") ?? 1\n        self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? \"30\") ?? 30\n        self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? \"1\") ?? 1\n        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? \"10000000\") ?? 10000000\n        self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? \"0\") ?? 0\n        self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? \"2\") ?? 2\n        self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true\n        self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false\n        self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false\n        self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)\n        // Default: 1000m, Off=0, 100m=100, 10km=10000\n        self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? \"1000\") ?? 1000",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    private func checkAndRequestLocationPermissions() {",
+            "lineNumber": 133
+          },
+          {
+            "text": "        // Reuse the existing LocationManager instance instead of creating a duplicate",
+            "lineNumber": 134
+          },
+          {
+            "text": "        LocationManager.shared.requestLocationPermission()",
+            "lineNumber": 135
+          },
+          {
+            "text": "    }",
+            "lineNumber": 136
+          },
+          {
+            "text": "    ",
+            "lineNumber": 137
+          },
+          {
+            "text": "    // MARK: - Initialwerte laden",
+            "lineNumber": 138
+          },
+          {
+            "text": "    init() {",
+            "lineNumber": 139
+          },
+          {
+            "text": "        let d = UserDefaults.standard",
+            "lineNumber": 140
+          },
+          {
+            "text": "        self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false",
+            "lineNumber": 141
+          },
+          {
+            "text": "        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? true",
+            "lineNumber": 142
+          },
+          {
+            "text": "        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true",
+            "lineNumber": 143
+          },
+          {
+            "text": "        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? \"https://service.miataru.com\"",
+            "lineNumber": 144
+          },
+          {
+            "text": "        self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false",
+            "lineNumber": 145
+          },
+          {
+            "text": "        self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false",
+            "lineNumber": 146
+          },
+          {
+            "text": "        self.locationDataRetentionTime = Int(d.string(forKey: \"location_data_retention_time\") ?? \"1440\") ?? 1440",
+            "lineNumber": 147
+          },
+          {
+            "text": "        self.mapType = Int(d.string(forKey: Keys.mapType) ?? \"1\") ?? 1",
+            "lineNumber": 148
+          },
+          {
+            "text": "        self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? \"30\") ?? 30",
+            "lineNumber": 149
+          },
+          {
+            "text": "        self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? \"1\") ?? 1",
+            "lineNumber": 150
+          },
+          {
+            "text": "        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? \"10000000\") ?? 10000000",
+            "lineNumber": 151
+          },
+          {
+            "text": "        self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? \"0\") ?? 0",
+            "lineNumber": 152
+          },
+          {
+            "text": "        self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? \"2\") ?? 2",
+            "lineNumber": 153
+          },
+          {
+            "text": "        self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true",
+            "lineNumber": 154
+          },
+          {
+            "text": "        self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false",
+            "lineNumber": 155
+          },
+          {
+            "text": "        self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false",
+            "lineNumber": 156
+          },
+          {
+            "text": "        self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)",
+            "lineNumber": 157
+          },
+          {
+            "text": "        // Default: 1000m, Off=0, 100m=100, 10km=10000",
+            "lineNumber": 158
+          },
+          {
+            "text": "        self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? \"1000\") ?? 1000",
+            "lineNumber": 159
+          }
+        ]
+      },
+      "score": 0.35023605823516846
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 42
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * DeviceLocationMapWidget.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport WidgetKit\nimport SwiftUI\nimport Foundation\nimport CoreLocation\nimport MapKit\n#if canImport(UIKit)\nimport UIKit\n#endif\nimport MiataruAPIClient\n\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nstruct DeviceMapEntry: TimelineEntry {\n    let date: Date\n    let configuration: DeviceSelectionIntent\n    let device: WidgetDeviceData?\n    let ownDevice: WidgetDeviceData?\n}\n\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nstruct DeviceLocationMapProvider: AppIntentTimelineProvider {\n    typealias Entry = DeviceMapEntry\n    typealias Intent = DeviceSelectionIntent\n\n    func placeholder(in context: Context) -&gt; DeviceMapEntry {\n        DeviceMapEntry(date: Date(), configuration: DeviceSelectionIntent(), device: nil, ownDevice: nil)\n    }\n\n    func snapshot(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; DeviceMapEntry {\n        await buildEntry(configuration: configuration)\n    }\n\n    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceMapEntry&gt; {\n        let entry = await buildEntry(configuration: configuration)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * DeviceLocationMapWidget.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import WidgetKit",
+            "lineNumber": 10
+          },
+          {
+            "text": "import SwiftUI",
+            "lineNumber": 11
+          },
+          {
+            "text": "import Foundation",
+            "lineNumber": 12
+          },
+          {
+            "text": "import CoreLocation",
+            "lineNumber": 13
+          },
+          {
+            "text": "import MapKit",
+            "lineNumber": 14
+          },
+          {
+            "text": "#if canImport(UIKit)",
+            "lineNumber": 15
+          },
+          {
+            "text": "import UIKit",
+            "lineNumber": 16
+          },
+          {
+            "text": "#endif",
+            "lineNumber": 17
+          },
+          {
+            "text": "import MiataruAPIClient",
+            "lineNumber": 18
+          },
+          {
+            "lineNumber": 19
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 20
+          },
+          {
+            "text": "struct DeviceMapEntry: TimelineEntry {",
+            "lineNumber": 21
+          },
+          {
+            "text": "    let date: Date",
+            "lineNumber": 22
+          },
+          {
+            "text": "    let configuration: DeviceSelectionIntent",
+            "lineNumber": 23
+          },
+          {
+            "text": "    let device: WidgetDeviceData?",
+            "lineNumber": 24
+          },
+          {
+            "text": "    let ownDevice: WidgetDeviceData?",
+            "lineNumber": 25
+          },
+          {
+            "text": "}",
+            "lineNumber": 26
+          },
+          {
+            "lineNumber": 27
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 28
+          },
+          {
+            "text": "struct DeviceLocationMapProvider: AppIntentTimelineProvider {",
+            "lineNumber": 29
+          },
+          {
+            "text": "    typealias Entry = DeviceMapEntry",
+            "lineNumber": 30
+          },
+          {
+            "text": "    typealias Intent = DeviceSelectionIntent",
+            "lineNumber": 31
+          },
+          {
+            "lineNumber": 32
+          },
+          {
+            "text": "    func placeholder(in context: Context) -&gt; DeviceMapEntry {",
+            "lineNumber": 33
+          },
+          {
+            "text": "        DeviceMapEntry(date: Date(), configuration: DeviceSelectionIntent(), device: nil, ownDevice: nil)",
+            "lineNumber": 34
+          },
+          {
+            "text": "    }",
+            "lineNumber": 35
+          },
+          {
+            "lineNumber": 36
+          },
+          {
+            "text": "    func snapshot(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; DeviceMapEntry {",
+            "lineNumber": 37
+          },
+          {
+            "text": "        await buildEntry(configuration: configuration)",
+            "lineNumber": 38
+          },
+          {
+            "text": "    }",
+            "lineNumber": 39
+          },
+          {
+            "lineNumber": 40
+          },
+          {
+            "text": "    func timeline(for configuration: DeviceSelectionIntent, in context: Context) async -&gt; Timeline&lt;DeviceMapEntry&gt; {",
+            "lineNumber": 41
+          },
+          {
+            "text": "        let entry = await buildEntry(configuration: configuration)",
+            "lineNumber": 42
+          }
+        ]
+      },
+      "score": 0.34974193572998047
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 126
+          },
+          "endPosition": {
+            "line": 174,
+            "column": 12
+          }
+        },
+        "contents": "        }\n    }\n\n    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {\n        let referenceTimestamp = min(device.timestamp, Date())\n\n        let preferredURL: URL? = {\n            switch colorScheme {\n            case .dark:\n                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)\n            default:\n                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)\n            }\n        }()\n\n        let fallbackURL: URL? = {\n            switch colorScheme {\n            case .dark:\n                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)\n            default:\n                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)\n            }\n        }()\n\n        func isFreshEnough(_ url: URL) -&gt; Bool {\n            guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),\n                  let modDate = attrs[.modificationDate] as? Date else {\n                return false\n            }\n            return modDate &gt;= referenceTimestamp\n        }\n\n        // Never show a stale snapshot for a newer text payload. If the file is stale/missing,\n        // show the placeholder until the new snapshot render finishes and WidgetCenter reloads.\n        //\n        // Prefer showing the current appearance style, but if only the *other* style is\n        // available and still fresh for this payload, show it instead of a placeholder.\n        // This avoids “stuck placeholder” scenarios when WidgetKit budget delays the\n        // secondary snapshot generation, especially with multiple widgets on screen.\n        let candidateURL: URL? = {\n            if let preferredURL, isFreshEnough(preferredURL) { return preferredURL }\n            if let fallbackURL, isFreshEnough(fallbackURL) { return fallbackURL }\n            return nil\n        }()\n\n        if let url = candidateURL,\n           let data = try? Data(contentsOf: url),\n           let uiImage = UIImage(data: data) {\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        }",
+            "lineNumber": 127
+          },
+          {
+            "text": "    }",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {",
+            "lineNumber": 130
+          },
+          {
+            "text": "        let referenceTimestamp = min(device.timestamp, Date())",
+            "lineNumber": 131
+          },
+          {
+            "lineNumber": 132
+          },
+          {
+            "text": "        let preferredURL: URL? = {",
+            "lineNumber": 133
+          },
+          {
+            "text": "            switch colorScheme {",
+            "lineNumber": 134
+          },
+          {
+            "text": "            case .dark:",
+            "lineNumber": 135
+          },
+          {
+            "text": "                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)",
+            "lineNumber": 136
+          },
+          {
+            "text": "            default:",
+            "lineNumber": 137
+          },
+          {
+            "text": "                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)",
+            "lineNumber": 138
+          },
+          {
+            "text": "            }",
+            "lineNumber": 139
+          },
+          {
+            "text": "        }()",
+            "lineNumber": 140
+          },
+          {
+            "lineNumber": 141
+          },
+          {
+            "text": "        let fallbackURL: URL? = {",
+            "lineNumber": 142
+          },
+          {
+            "text": "            switch colorScheme {",
+            "lineNumber": 143
+          },
+          {
+            "text": "            case .dark:",
+            "lineNumber": 144
+          },
+          {
+            "text": "                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .light)",
+            "lineNumber": 145
+          },
+          {
+            "text": "            default:",
+            "lineNumber": 146
+          },
+          {
+            "text": "                return SharedWidgetDataManager.mapSnapshotURL(for: device.id, style: .dark)",
+            "lineNumber": 147
+          },
+          {
+            "text": "            }",
+            "lineNumber": 148
+          },
+          {
+            "text": "        }()",
+            "lineNumber": 149
+          },
+          {
+            "lineNumber": 150
+          },
+          {
+            "text": "        func isFreshEnough(_ url: URL) -&gt; Bool {",
+            "lineNumber": 151
+          },
+          {
+            "text": "            guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),",
+            "lineNumber": 152
+          },
+          {
+            "text": "                  let modDate = attrs[.modificationDate] as? Date else {",
+            "lineNumber": 153
+          },
+          {
+            "text": "                return false",
+            "lineNumber": 154
+          },
+          {
+            "text": "            }",
+            "lineNumber": 155
+          },
+          {
+            "text": "            return modDate &gt;= referenceTimestamp",
+            "lineNumber": 156
+          },
+          {
+            "text": "        }",
+            "lineNumber": 157
+          },
+          {
+            "lineNumber": 158
+          },
+          {
+            "text": "        // Never show a stale snapshot for a newer text payload. If the file is stale/missing,",
+            "lineNumber": 159
+          },
+          {
+            "text": "        // show the placeholder until the new snapshot render finishes and WidgetCenter reloads.",
+            "lineNumber": 160
+          },
+          {
+            "text": "        //",
+            "lineNumber": 161
+          },
+          {
+            "text": "        // Prefer showing the current appearance style, but if only the *other* style is",
+            "lineNumber": 162
+          },
+          {
+            "text": "        // available and still fresh for this payload, show it instead of a placeholder.",
+            "lineNumber": 163
+          },
+          {
+            "text": "        // This avoids “stuck placeholder” scenarios when WidgetKit budget delays the",
+            "lineNumber": 164
+          },
+          {
+            "text": "        // secondary snapshot generation, especially with multiple widgets on screen.",
+            "lineNumber": 165
+          },
+          {
+            "text": "        let candidateURL: URL? = {",
+            "lineNumber": 166
+          },
+          {
+            "text": "            if let preferredURL, isFreshEnough(preferredURL) { return preferredURL }",
+            "lineNumber": 167
+          },
+          {
+            "text": "            if let fallbackURL, isFreshEnough(fallbackURL) { return fallbackURL }",
+            "lineNumber": 168
+          },
+          {
+            "text": "            return nil",
+            "lineNumber": 169
+          },
+          {
+            "text": "        }()",
+            "lineNumber": 170
+          },
+          {
+            "lineNumber": 171
+          },
+          {
+            "text": "        if let url = candidateURL,",
+            "lineNumber": 172
+          },
+          {
+            "text": "           let data = try? Data(contentsOf: url),",
+            "lineNumber": 173
+          },
+          {
+            "text": "           let uiImage = UIImage(data: data) {",
+            "lineNumber": 174
+          },
+          {
+            "text": "            ",
+            "lineNumber": 175
+          }
+        ]
+      },
+      "score": 0.3474198579788208
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/MiataruWidgets.swift",
+        "range": {
+          "startPosition": {},
+          "endPosition": {
+            "line": 21
+          }
+        },
+        "contents": "/*\n * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com\n *\n * MiataruWidgets.swift\n * miataru\n *\n * Created by Daniel Kirstenpfad on 2026-01-06.\n */\n\nimport WidgetKit\nimport SwiftUI\n\n@main\n@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)\nstruct MiataruWidgets: WidgetBundle {\n    var body: some Widget {\n        DeviceLocationTextWidget()\n        DeviceLocationMapWidget()\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "/*",
+            "lineNumber": 1
+          },
+          {
+            "text": " * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com",
+            "lineNumber": 2
+          },
+          {
+            "text": " *",
+            "lineNumber": 3
+          },
+          {
+            "text": " * MiataruWidgets.swift",
+            "lineNumber": 4
+          },
+          {
+            "text": " * miataru",
+            "lineNumber": 5
+          },
+          {
+            "text": " *",
+            "lineNumber": 6
+          },
+          {
+            "text": " * Created by Daniel Kirstenpfad on 2026-01-06.",
+            "lineNumber": 7
+          },
+          {
+            "text": " */",
+            "lineNumber": 8
+          },
+          {
+            "lineNumber": 9
+          },
+          {
+            "text": "import WidgetKit",
+            "lineNumber": 10
+          },
+          {
+            "text": "import SwiftUI",
+            "lineNumber": 11
+          },
+          {
+            "lineNumber": 12
+          },
+          {
+            "text": "@main",
+            "lineNumber": 13
+          },
+          {
+            "text": "@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)",
+            "lineNumber": 14
+          },
+          {
+            "text": "struct MiataruWidgets: WidgetBundle {",
+            "lineNumber": 15
+          },
+          {
+            "text": "    var body: some Widget {",
+            "lineNumber": 16
+          },
+          {
+            "text": "        DeviceLocationTextWidget()",
+            "lineNumber": 17
+          },
+          {
+            "text": "        DeviceLocationMapWidget()",
+            "lineNumber": 18
+          },
+          {
+            "text": "    }",
+            "lineNumber": 19
+          },
+          {
+            "text": "}",
+            "lineNumber": 20
+          }
+        ]
+      },
+      "score": 0.34380289912223816
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 85
+          },
+          "endPosition": {
+            "line": 132
+          }
+        },
+        "contents": "        return false\n    }\n}\n\nstruct DeviceLocationMapWidgetEntryView: View {\n    let entry: DeviceMapEntry\n    @Environment(\\.colorScheme) private var colorScheme\n    @Environment(\\.widgetFamily) private var family\n\n    var body: some View {\n        ZStack {\n            if let device = entry.device {\n                GeometryReader { geo in\n                    ZStack(alignment: .topLeading) {\n                        snapshotLayer(for: device)\n                            .frame(width: geo.size.width, height: geo.size.height)\n                            .clipped()\n                        if family != .accessoryRectangular {\n                            topFadeOverlay\n                            overlay(for: device, family: family)\n                                .padding(.top, overlayTopPadding)\n                                .frame(maxWidth: geo.size.width * overlayWidthFactor, alignment: .topLeading)\n                                .padding(.horizontal, overlayHorizontalPadding)\n                        }\n                    }\n                    .ignoresSafeArea() // fill widget content area\n                }\n                .widgetURL(URL(string: \"miataru://\\(device.id)\"))\n            } else {\n                Color.gray.opacity(0.3)\n                    .overlay(\n                        Text(NSLocalizedString(\"widget_no_device_selected\", comment: \"Shown when no device is available for the widget\"))\n                            .font(.caption)\n                            .padding(8),\n                        alignment: .bottomLeading\n                    )\n            }\n        }\n        .containerBackground(for: .widget) {\n            ContainerRelativeShape()\n                .fill(Color(.systemBackground))\n        }\n    }\n\n    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {\n        let referenceTimestamp = min(device.timestamp, Date())",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        return false",
+            "lineNumber": 86
+          },
+          {
+            "text": "    }",
+            "lineNumber": 87
+          },
+          {
+            "text": "}",
+            "lineNumber": 88
+          },
+          {
+            "lineNumber": 89
+          },
+          {
+            "text": "struct DeviceLocationMapWidgetEntryView: View {",
+            "lineNumber": 90
+          },
+          {
+            "text": "    let entry: DeviceMapEntry",
+            "lineNumber": 91
+          },
+          {
+            "text": "    @Environment(\\.colorScheme) private var colorScheme",
+            "lineNumber": 92
+          },
+          {
+            "text": "    @Environment(\\.widgetFamily) private var family",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "    var body: some View {",
+            "lineNumber": 95
+          },
+          {
+            "text": "        ZStack {",
+            "lineNumber": 96
+          },
+          {
+            "text": "            if let device = entry.device {",
+            "lineNumber": 97
+          },
+          {
+            "text": "                GeometryReader { geo in",
+            "lineNumber": 98
+          },
+          {
+            "text": "                    ZStack(alignment: .topLeading) {",
+            "lineNumber": 99
+          },
+          {
+            "text": "                        snapshotLayer(for: device)",
+            "lineNumber": 100
+          },
+          {
+            "text": "                            .frame(width: geo.size.width, height: geo.size.height)",
+            "lineNumber": 101
+          },
+          {
+            "text": "                            .clipped()",
+            "lineNumber": 102
+          },
+          {
+            "text": "                        if family != .accessoryRectangular {",
+            "lineNumber": 103
+          },
+          {
+            "text": "                            topFadeOverlay",
+            "lineNumber": 104
+          },
+          {
+            "text": "                            overlay(for: device, family: family)",
+            "lineNumber": 105
+          },
+          {
+            "text": "                                .padding(.top, overlayTopPadding)",
+            "lineNumber": 106
+          },
+          {
+            "text": "                                .frame(maxWidth: geo.size.width * overlayWidthFactor, alignment: .topLeading)",
+            "lineNumber": 107
+          },
+          {
+            "text": "                                .padding(.horizontal, overlayHorizontalPadding)",
+            "lineNumber": 108
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 109
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 110
+          },
+          {
+            "text": "                    .ignoresSafeArea() // fill widget content area",
+            "lineNumber": 111
+          },
+          {
+            "text": "                }",
+            "lineNumber": 112
+          },
+          {
+            "text": "                .widgetURL(URL(string: \"miataru://\\(device.id)\"))",
+            "lineNumber": 113
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 114
+          },
+          {
+            "text": "                Color.gray.opacity(0.3)",
+            "lineNumber": 115
+          },
+          {
+            "text": "                    .overlay(",
+            "lineNumber": 116
+          },
+          {
+            "text": "                        Text(NSLocalizedString(\"widget_no_device_selected\", comment: \"Shown when no device is available for the widget\"))",
+            "lineNumber": 117
+          },
+          {
+            "text": "                            .font(.caption)",
+            "lineNumber": 118
+          },
+          {
+            "text": "                            .padding(8),",
+            "lineNumber": 119
+          },
+          {
+            "text": "                        alignment: .bottomLeading",
+            "lineNumber": 120
+          },
+          {
+            "text": "                    )",
+            "lineNumber": 121
+          },
+          {
+            "text": "            }",
+            "lineNumber": 122
+          },
+          {
+            "text": "        }",
+            "lineNumber": 123
+          },
+          {
+            "text": "        .containerBackground(for: .widget) {",
+            "lineNumber": 124
+          },
+          {
+            "text": "            ContainerRelativeShape()",
+            "lineNumber": 125
+          },
+          {
+            "text": "                .fill(Color(.systemBackground))",
+            "lineNumber": 126
+          },
+          {
+            "text": "        }",
+            "lineNumber": 127
+          },
+          {
+            "text": "    }",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {",
+            "lineNumber": 130
+          },
+          {
+            "text": "        let referenceTimestamp = min(device.timestamp, Date())",
+            "lineNumber": 131
+          }
+        ]
+      },
+      "score": 0.3427906036376953
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/SettingsManagers/App Settings/Devices/DeviceLocationCacheStore.swift",
+        "range": {
+          "startPosition": {
+            "line": 81
+          },
+          "endPosition": {
+            "line": 134,
+            "column": 12
+          }
+        },
+        "contents": "class DeviceLocationCacheStore: ObservableObject {\n    static let shared = DeviceLocationCacheStore()\n    \n    @Published var locations: [CachedDeviceLocation] = [] {\n        didSet {\n            save()\n        }\n    }\n    private let fileName = \"deviceLocations.plist\"\n    private let geocoder = CLGeocoder()\n    private var geocodeQueue: [String] = []\n    private var isProcessingGeocode: Bool = false\n    private var geocodeDistanceThresholdMeters: CLLocationDistance {\n        CLLocationDistance(SettingsManager.shared.reverseGeocodingThresholdMeters)\n    }\n    \n    private var fileURL: URL {\n        AppDirectories.applicationSupportFile(named: fileName)\n    }\n    \n    private init() {\n        self.locations = load()\n        // Enqueue reverse geocoding for any cached entries missing placemarks or timezone\n        for loc in locations where (loc.country == nil &amp;&amp; loc.locality == nil) || loc.timeZone == nil {\n            enqueueGeocodingIfNeeded(for: loc.deviceID)\n        }\n    }\n    \n    private func save() {\n        do {\n            let data = try NSKeyedArchiver.archivedData(withRootObject: locations, requiringSecureCoding: true)\n            try data.write(to: fileURL)\n        } catch {\n            debugLog(\"Error saving device locations: \\(error)\")\n        }\n    }\n\n    private func load() -&gt; [CachedDeviceLocation] {\n        guard let data = try? Data(contentsOf: fileURL) else { return [] }\n        do {\n            if let locations = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, CachedDeviceLocation.self, NSDate.self, NSString.self], from: data) as? [CachedDeviceLocation] {\n                return locations\n            }\n        } catch {\n            debugLog(\"Error loading device locations: \\(error)\")\n            // Remove incompatible cache file to prevent repeated load failures\n            try? FileManager.default.removeItem(at: fileURL)\n        }\n        return []\n    }\n\n    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {\n        if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "class DeviceLocationCacheStore: ObservableObject {",
+            "lineNumber": 82
+          },
+          {
+            "text": "    static let shared = DeviceLocationCacheStore()",
+            "lineNumber": 83
+          },
+          {
+            "text": "    ",
+            "lineNumber": 84
+          },
+          {
+            "text": "    @Published var locations: [CachedDeviceLocation] = [] {",
+            "lineNumber": 85
+          },
+          {
+            "text": "        didSet {",
+            "lineNumber": 86
+          },
+          {
+            "text": "            save()",
+            "lineNumber": 87
+          },
+          {
+            "text": "        }",
+            "lineNumber": 88
+          },
+          {
+            "text": "    }",
+            "lineNumber": 89
+          },
+          {
+            "text": "    private let fileName = \"deviceLocations.plist\"",
+            "lineNumber": 90
+          },
+          {
+            "text": "    private let geocoder = CLGeocoder()",
+            "lineNumber": 91
+          },
+          {
+            "text": "    private var geocodeQueue: [String] = []",
+            "lineNumber": 92
+          },
+          {
+            "text": "    private var isProcessingGeocode: Bool = false",
+            "lineNumber": 93
+          },
+          {
+            "text": "    private var geocodeDistanceThresholdMeters: CLLocationDistance {",
+            "lineNumber": 94
+          },
+          {
+            "text": "        CLLocationDistance(SettingsManager.shared.reverseGeocodingThresholdMeters)",
+            "lineNumber": 95
+          },
+          {
+            "text": "    }",
+            "lineNumber": 96
+          },
+          {
+            "text": "    ",
+            "lineNumber": 97
+          },
+          {
+            "text": "    private var fileURL: URL {",
+            "lineNumber": 98
+          },
+          {
+            "text": "        AppDirectories.applicationSupportFile(named: fileName)",
+            "lineNumber": 99
+          },
+          {
+            "text": "    }",
+            "lineNumber": 100
+          },
+          {
+            "text": "    ",
+            "lineNumber": 101
+          },
+          {
+            "text": "    private init() {",
+            "lineNumber": 102
+          },
+          {
+            "text": "        self.locations = load()",
+            "lineNumber": 103
+          },
+          {
+            "text": "        // Enqueue reverse geocoding for any cached entries missing placemarks or timezone",
+            "lineNumber": 104
+          },
+          {
+            "text": "        for loc in locations where (loc.country == nil &amp;&amp; loc.locality == nil) || loc.timeZone == nil {",
+            "lineNumber": 105
+          },
+          {
+            "text": "            enqueueGeocodingIfNeeded(for: loc.deviceID)",
+            "lineNumber": 106
+          },
+          {
+            "text": "        }",
+            "lineNumber": 107
+          },
+          {
+            "text": "    }",
+            "lineNumber": 108
+          },
+          {
+            "text": "    ",
+            "lineNumber": 109
+          },
+          {
+            "text": "    private func save() {",
+            "lineNumber": 110
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 111
+          },
+          {
+            "text": "            let data = try NSKeyedArchiver.archivedData(withRootObject: locations, requiringSecureCoding: true)",
+            "lineNumber": 112
+          },
+          {
+            "text": "            try data.write(to: fileURL)",
+            "lineNumber": 113
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 114
+          },
+          {
+            "text": "            debugLog(\"Error saving device locations: \\(error)\")",
+            "lineNumber": 115
+          },
+          {
+            "text": "        }",
+            "lineNumber": 116
+          },
+          {
+            "text": "    }",
+            "lineNumber": 117
+          },
+          {
+            "lineNumber": 118
+          },
+          {
+            "text": "    private func load() -&gt; [CachedDeviceLocation] {",
+            "lineNumber": 119
+          },
+          {
+            "text": "        guard let data = try? Data(contentsOf: fileURL) else { return [] }",
+            "lineNumber": 120
+          },
+          {
+            "text": "        do {",
+            "lineNumber": 121
+          },
+          {
+            "text": "            if let locations = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, CachedDeviceLocation.self, NSDate.self, NSString.self], from: data) as? [CachedDeviceLocation] {",
+            "lineNumber": 122
+          },
+          {
+            "text": "                return locations",
+            "lineNumber": 123
+          },
+          {
+            "text": "            }",
+            "lineNumber": 124
+          },
+          {
+            "text": "        } catch {",
+            "lineNumber": 125
+          },
+          {
+            "text": "            debugLog(\"Error loading device locations: \\(error)\")",
+            "lineNumber": 126
+          },
+          {
+            "text": "            // Remove incompatible cache file to prevent repeated load failures",
+            "lineNumber": 127
+          },
+          {
+            "text": "            try? FileManager.default.removeItem(at: fileURL)",
+            "lineNumber": 128
+          },
+          {
+            "text": "        }",
+            "lineNumber": 129
+          },
+          {
+            "text": "        return []",
+            "lineNumber": 130
+          },
+          {
+            "text": "    }",
+            "lineNumber": 131
+          },
+          {
+            "lineNumber": 132
+          },
+          {
+            "text": "    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {",
+            "lineNumber": 133
+          },
+          {
+            "text": "        if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {",
+            "lineNumber": 134
+          },
+          {
+            "text": "            ",
+            "lineNumber": 135
+          }
+        ]
+      },
+      "score": 0.3327428996562958
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="semantic_search_full">
+<details>
+<summary>Tool use: **semantic_search_full**</summary>
+
+
+Parameters:
+
+```json
+{
+  "query": "How are widget tap actions handled to navigate to device map view?",
+  "topK": 10,
+  "explanation": ""
+}
+```
+Result:
+
+```json
+{
+  "codeResults": [
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 935
+          },
+          "endPosition": {
+            "line": 967
+          }
+        },
+        "contents": "    private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {\n        let tapStart = Date()\n        let nearby: [KnownDevice]\n        \n        if let precomputed = precomputedNearbyDevices[deviceID] {\n            nearby = precomputed\n            let elapsed = Date().timeIntervalSince(tapStart)\n            print(\"Device tap handled with precomputed nearby for \\(deviceID) in \\(String(format: \"%.3f\", elapsed))s (count: \\(precomputed.count))\")\n        } else {\n            nearby = nearbyDevices(around: deviceID, coordinate: coordinate)\n            let elapsed = Date().timeIntervalSince(tapStart)\n            print(\"Device tap computed nearby for \\(deviceID) in \\(String(format: \"%.3f\", elapsed))s (count: \\(nearby.count))\")\n        }\n        \n        if nearby.count &gt; 1 {\n            print(\"About to set devicePickerData with \\(nearby.count) devices: \\(nearby.map { $0.DeviceName })\")\n            devicePickerData = DevicePickerData(devices: nearby)\n            let elapsed = Date().timeIntervalSince(tapStart)\n            print(\"Device tap result for \\(deviceID): showing picker with \\(nearby.count) devices after \\(String(format: \"%.3f\", elapsed))s\")\n        } else if let first = nearby.first {\n            presentActions(for: first.DeviceID)\n            let elapsed = Date().timeIntervalSince(tapStart)\n            print(\"Device tap result for \\(deviceID): presenting actions for \\(first.DeviceID) after \\(String(format: \"%.3f\", elapsed))s (nearby count: \\(nearby.count))\")\n        } else {\n            presentActions(for: deviceID)\n            let elapsed = Date().timeIntervalSince(tapStart)\n            print(\"Device tap result for \\(deviceID): presenting fallback actions after \\(String(format: \"%.3f\", elapsed))s (no nearby devices)\")\n        }\n    }\n    \n    private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -&gt; [KnownDevice] {\n        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {",
+            "lineNumber": 936
+          },
+          {
+            "text": "        let tapStart = Date()",
+            "lineNumber": 937
+          },
+          {
+            "text": "        let nearby: [KnownDevice]",
+            "lineNumber": 938
+          },
+          {
+            "text": "        ",
+            "lineNumber": 939
+          },
+          {
+            "text": "        if let precomputed = precomputedNearbyDevices[deviceID] {",
+            "lineNumber": 940
+          },
+          {
+            "text": "            nearby = precomputed",
+            "lineNumber": 941
+          },
+          {
+            "text": "            let elapsed = Date().timeIntervalSince(tapStart)",
+            "lineNumber": 942
+          },
+          {
+            "text": "            print(\"Device tap handled with precomputed nearby for \\(deviceID) in \\(String(format: \"%.3f\", elapsed))s (count: \\(precomputed.count))\")",
+            "lineNumber": 943
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 944
+          },
+          {
+            "text": "            nearby = nearbyDevices(around: deviceID, coordinate: coordinate)",
+            "lineNumber": 945
+          },
+          {
+            "text": "            let elapsed = Date().timeIntervalSince(tapStart)",
+            "lineNumber": 946
+          },
+          {
+            "text": "            print(\"Device tap computed nearby for \\(deviceID) in \\(String(format: \"%.3f\", elapsed))s (count: \\(nearby.count))\")",
+            "lineNumber": 947
+          },
+          {
+            "text": "        }",
+            "lineNumber": 948
+          },
+          {
+            "text": "        ",
+            "lineNumber": 949
+          },
+          {
+            "text": "        if nearby.count &gt; 1 {",
+            "lineNumber": 950
+          },
+          {
+            "text": "            print(\"About to set devicePickerData with \\(nearby.count) devices: \\(nearby.map { $0.DeviceName })\")",
+            "lineNumber": 951
+          },
+          {
+            "text": "            devicePickerData = DevicePickerData(devices: nearby)",
+            "lineNumber": 952
+          },
+          {
+            "text": "            let elapsed = Date().timeIntervalSince(tapStart)",
+            "lineNumber": 953
+          },
+          {
+            "text": "            print(\"Device tap result for \\(deviceID): showing picker with \\(nearby.count) devices after \\(String(format: \"%.3f\", elapsed))s\")",
+            "lineNumber": 954
+          },
+          {
+            "text": "        } else if let first = nearby.first {",
+            "lineNumber": 955
+          },
+          {
+            "text": "            presentActions(for: first.DeviceID)",
+            "lineNumber": 956
+          },
+          {
+            "text": "            let elapsed = Date().timeIntervalSince(tapStart)",
+            "lineNumber": 957
+          },
+          {
+            "text": "            print(\"Device tap result for \\(deviceID): presenting actions for \\(first.DeviceID) after \\(String(format: \"%.3f\", elapsed))s (nearby count: \\(nearby.count))\")",
+            "lineNumber": 958
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 959
+          },
+          {
+            "text": "            presentActions(for: deviceID)",
+            "lineNumber": 960
+          },
+          {
+            "text": "            let elapsed = Date().timeIntervalSince(tapStart)",
+            "lineNumber": 961
+          },
+          {
+            "text": "            print(\"Device tap result for \\(deviceID): presenting fallback actions after \\(String(format: \"%.3f\", elapsed))s (no nearby devices)\")",
+            "lineNumber": 962
+          },
+          {
+            "text": "        }",
+            "lineNumber": 963
+          },
+          {
+            "text": "    }",
+            "lineNumber": 964
+          },
+          {
+            "text": "    ",
+            "lineNumber": 965
+          },
+          {
+            "text": "    private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -&gt; [KnownDevice] {",
+            "lineNumber": 966
+          },
+          {
+            "text": "        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)",
+            "lineNumber": 967
+          }
+        ]
+      },
+      "score": 0.47165393829345703
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 793
+          },
+          "endPosition": {
+            "line": 826
+          }
+        },
+        "contents": "    private func refreshCachedDeviceCoordinates() {\n        var dict: [String: CLLocationCoordinate2D] = [:]\n        if let mainCoord = deviceCoordinate(for: deviceID) {\n            dict[deviceID] = mainCoord\n        }\n        for other in deviceStore.devices where other.DeviceID != deviceID {\n            if let coord = deviceCoordinate(for: other.DeviceID) {\n                dict[other.DeviceID] = coord\n            }\n        }\n        cachedDeviceCoordinates = dict\n        precomputedNearbyDevices = computeNearbyGroups(from: dict)\n    }\n    \n    private func presentActions(for deviceID: String) {\n        selectedActionDeviceID = deviceID\n        devicePickerData = nil\n        showDeviceActionDialog = true\n    }\n    \n    private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {\n        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)\n        if nearby.count &gt; 1 {\n            devicePickerData = DevicePickerData(devices: nearby)\n        } else if let first = nearby.first {\n            presentActions(for: first.DeviceID)\n        } else {\n            presentActions(for: deviceID)\n        }\n    }\n    \n    private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -&gt; [KnownDevice] {\n        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    private func refreshCachedDeviceCoordinates() {",
+            "lineNumber": 794
+          },
+          {
+            "text": "        var dict: [String: CLLocationCoordinate2D] = [:]",
+            "lineNumber": 795
+          },
+          {
+            "text": "        if let mainCoord = deviceCoordinate(for: deviceID) {",
+            "lineNumber": 796
+          },
+          {
+            "text": "            dict[deviceID] = mainCoord",
+            "lineNumber": 797
+          },
+          {
+            "text": "        }",
+            "lineNumber": 798
+          },
+          {
+            "text": "        for other in deviceStore.devices where other.DeviceID != deviceID {",
+            "lineNumber": 799
+          },
+          {
+            "text": "            if let coord = deviceCoordinate(for: other.DeviceID) {",
+            "lineNumber": 800
+          },
+          {
+            "text": "                dict[other.DeviceID] = coord",
+            "lineNumber": 801
+          },
+          {
+            "text": "            }",
+            "lineNumber": 802
+          },
+          {
+            "text": "        }",
+            "lineNumber": 803
+          },
+          {
+            "text": "        cachedDeviceCoordinates = dict",
+            "lineNumber": 804
+          },
+          {
+            "text": "        precomputedNearbyDevices = computeNearbyGroups(from: dict)",
+            "lineNumber": 805
+          },
+          {
+            "text": "    }",
+            "lineNumber": 806
+          },
+          {
+            "text": "    ",
+            "lineNumber": 807
+          },
+          {
+            "text": "    private func presentActions(for deviceID: String) {",
+            "lineNumber": 808
+          },
+          {
+            "text": "        selectedActionDeviceID = deviceID",
+            "lineNumber": 809
+          },
+          {
+            "text": "        devicePickerData = nil",
+            "lineNumber": 810
+          },
+          {
+            "text": "        showDeviceActionDialog = true",
+            "lineNumber": 811
+          },
+          {
+            "text": "    }",
+            "lineNumber": 812
+          },
+          {
+            "text": "    ",
+            "lineNumber": 813
+          },
+          {
+            "text": "    private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {",
+            "lineNumber": 814
+          },
+          {
+            "text": "        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)",
+            "lineNumber": 815
+          },
+          {
+            "text": "        if nearby.count &gt; 1 {",
+            "lineNumber": 816
+          },
+          {
+            "text": "            devicePickerData = DevicePickerData(devices: nearby)",
+            "lineNumber": 817
+          },
+          {
+            "text": "        } else if let first = nearby.first {",
+            "lineNumber": 818
+          },
+          {
+            "text": "            presentActions(for: first.DeviceID)",
+            "lineNumber": 819
+          },
+          {
+            "text": "        } else {",
+            "lineNumber": 820
+          },
+          {
+            "text": "            presentActions(for: deviceID)",
+            "lineNumber": 821
+          },
+          {
+            "text": "        }",
+            "lineNumber": 822
+          },
+          {
+            "text": "    }",
+            "lineNumber": 823
+          },
+          {
+            "text": "    ",
+            "lineNumber": 824
+          },
+          {
+            "text": "    private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -&gt; [KnownDevice] {",
+            "lineNumber": 825
+          },
+          {
+            "text": "        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)",
+            "lineNumber": 826
+          }
+        ]
+      },
+      "score": 0.4378446340560913
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 598
+          },
+          "endPosition": {
+            "line": 612,
+            "column": 40
+          }
+        },
+        "contents": "                            Rectangle()\n                                .foregroundColor(.clear)\n                                .contentShape(Rectangle())\n                                .frame(width: 120, height: 160)\n                                .offset(y: 12)\n                                .zIndex(1)\n                                .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))\n                                .accessibilityAddTraits(.isButton)\n                                .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))\n                                .onTapGesture {\n                                    handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)\n                                }\n                                .contextMenu {\n                                    Button {\n                                        ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                            Rectangle()",
+            "lineNumber": 599
+          },
+          {
+            "text": "                                .foregroundColor(.clear)",
+            "lineNumber": 600
+          },
+          {
+            "text": "                                .contentShape(Rectangle())",
+            "lineNumber": 601
+          },
+          {
+            "text": "                                .frame(width: 120, height: 160)",
+            "lineNumber": 602
+          },
+          {
+            "text": "                                .offset(y: 12)",
+            "lineNumber": 603
+          },
+          {
+            "text": "                                .zIndex(1)",
+            "lineNumber": 604
+          },
+          {
+            "text": "                                .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))",
+            "lineNumber": 605
+          },
+          {
+            "text": "                                .accessibilityAddTraits(.isButton)",
+            "lineNumber": 606
+          },
+          {
+            "text": "                                .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))",
+            "lineNumber": 607
+          },
+          {
+            "text": "                                .onTapGesture {",
+            "lineNumber": 608
+          },
+          {
+            "text": "                                    handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)",
+            "lineNumber": 609
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 610
+          },
+          {
+            "text": "                                .contextMenu {",
+            "lineNumber": 611
+          },
+          {
+            "text": "                                    Button {",
+            "lineNumber": 612
+          },
+          {
+            "text": "                                        ",
+            "lineNumber": 613
+          }
+        ]
+      },
+      "score": 0.4299655854701996
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 628
+          },
+          "endPosition": {
+            "line": 642,
+            "column": 48
+          }
+        },
+        "contents": "                                    Rectangle()\n                                        .foregroundColor(.clear)\n                                        .contentShape(Rectangle())\n                                        .frame(width: 120, height: 160)\n                                        .offset(y: 12)\n                                        .zIndex(1)\n                                        .accessibilityLabel(Text(annotationID))\n                                        .accessibilityAddTraits(.isButton)\n                                        .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))\n                                        .onTapGesture {\n                                            handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)\n                                        }\n                                        .contextMenu {\n                                            Button {\n                                                ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                                    Rectangle()",
+            "lineNumber": 629
+          },
+          {
+            "text": "                                        .foregroundColor(.clear)",
+            "lineNumber": 630
+          },
+          {
+            "text": "                                        .contentShape(Rectangle())",
+            "lineNumber": 631
+          },
+          {
+            "text": "                                        .frame(width: 120, height: 160)",
+            "lineNumber": 632
+          },
+          {
+            "text": "                                        .offset(y: 12)",
+            "lineNumber": 633
+          },
+          {
+            "text": "                                        .zIndex(1)",
+            "lineNumber": 634
+          },
+          {
+            "text": "                                        .accessibilityLabel(Text(annotationID))",
+            "lineNumber": 635
+          },
+          {
+            "text": "                                        .accessibilityAddTraits(.isButton)",
+            "lineNumber": 636
+          },
+          {
+            "text": "                                        .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))",
+            "lineNumber": 637
+          },
+          {
+            "text": "                                        .onTapGesture {",
+            "lineNumber": 638
+          },
+          {
+            "text": "                                            handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)",
+            "lineNumber": 639
+          },
+          {
+            "text": "                                        }",
+            "lineNumber": 640
+          },
+          {
+            "text": "                                        .contextMenu {",
+            "lineNumber": 641
+          },
+          {
+            "text": "                                            Button {",
+            "lineNumber": 642
+          },
+          {
+            "text": "                                                ",
+            "lineNumber": 643
+          }
+        ]
+      },
+      "score": 0.42349210381507874
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 423
+          },
+          "endPosition": {
+            "line": 462,
+            "column": 20
+          }
+        },
+        "contents": "        .sheet(isPresented: $showEditDeviceSheet) {\n            let targetID = selectedActionDeviceID ?? deviceID\n            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == targetID }) {\n                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)\n            }\n        }\n        .navigationDestination(isPresented: $showNavigationSheet) {\n            if let device = selectedActionDevice ?? device {\n                iPhone_DeviceNavigationView(device: device)\n            }\n        }\n        .navigationDestination(isPresented: $showHistoryView) {\n            if let device = selectedActionDevice ?? device {\n                iPhone_DeviceHistoryMapView(device: device)\n            }\n        }\n        .confirmationDialog(\n            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),\n            isPresented: $showDeviceActionDialog,\n            titleVisibility: .visible\n        ) {\n            if let actionDevice = selectedActionDevice {\n                Button(NSLocalizedString(\"edit_device\", comment: \"Edit this device\")) {\n                    triggerEdit(for: actionDevice.DeviceID)\n                }\n                if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {\n                    Button(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\")) {\n                        triggerNavigation(for: actionDevice.DeviceID)\n                    }\n                }\n                Button(NSLocalizedString(\"show_history\", comment: \"Show device history\")) {\n                    triggerHistory(for: actionDevice)\n                }\n            }\n            Button(NSLocalizedString(\"cancel\", comment: \"Cancel\"), role: .cancel) { }\n        }\n        .sheet(item: $devicePickerData) { pickerData in\n            VStack(spacing: 0) {\n                Text(NSLocalizedString(\"select_device\", comment: \"Select a device to show actions\"))\n                    ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        .sheet(isPresented: $showEditDeviceSheet) {",
+            "lineNumber": 424
+          },
+          {
+            "text": "            let targetID = selectedActionDeviceID ?? deviceID",
+            "lineNumber": 425
+          },
+          {
+            "text": "            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == targetID }) {",
+            "lineNumber": 426
+          },
+          {
+            "text": "                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)",
+            "lineNumber": 427
+          },
+          {
+            "text": "            }",
+            "lineNumber": 428
+          },
+          {
+            "text": "        }",
+            "lineNumber": 429
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showNavigationSheet) {",
+            "lineNumber": 430
+          },
+          {
+            "text": "            if let device = selectedActionDevice ?? device {",
+            "lineNumber": 431
+          },
+          {
+            "text": "                iPhone_DeviceNavigationView(device: device)",
+            "lineNumber": 432
+          },
+          {
+            "text": "            }",
+            "lineNumber": 433
+          },
+          {
+            "text": "        }",
+            "lineNumber": 434
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showHistoryView) {",
+            "lineNumber": 435
+          },
+          {
+            "text": "            if let device = selectedActionDevice ?? device {",
+            "lineNumber": 436
+          },
+          {
+            "text": "                iPhone_DeviceHistoryMapView(device: device)",
+            "lineNumber": 437
+          },
+          {
+            "text": "            }",
+            "lineNumber": 438
+          },
+          {
+            "text": "        }",
+            "lineNumber": 439
+          },
+          {
+            "text": "        .confirmationDialog(",
+            "lineNumber": 440
+          },
+          {
+            "text": "            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),",
+            "lineNumber": 441
+          },
+          {
+            "text": "            isPresented: $showDeviceActionDialog,",
+            "lineNumber": 442
+          },
+          {
+            "text": "            titleVisibility: .visible",
+            "lineNumber": 443
+          },
+          {
+            "text": "        ) {",
+            "lineNumber": 444
+          },
+          {
+            "text": "            if let actionDevice = selectedActionDevice {",
+            "lineNumber": 445
+          },
+          {
+            "text": "                Button(NSLocalizedString(\"edit_device\", comment: \"Edit this device\")) {",
+            "lineNumber": 446
+          },
+          {
+            "text": "                    triggerEdit(for: actionDevice.DeviceID)",
+            "lineNumber": 447
+          },
+          {
+            "text": "                }",
+            "lineNumber": 448
+          },
+          {
+            "text": "                if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {",
+            "lineNumber": 449
+          },
+          {
+            "text": "                    Button(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\")) {",
+            "lineNumber": 450
+          },
+          {
+            "text": "                        triggerNavigation(for: actionDevice.DeviceID)",
+            "lineNumber": 451
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 452
+          },
+          {
+            "text": "                }",
+            "lineNumber": 453
+          },
+          {
+            "text": "                Button(NSLocalizedString(\"show_history\", comment: \"Show device history\")) {",
+            "lineNumber": 454
+          },
+          {
+            "text": "                    triggerHistory(for: actionDevice)",
+            "lineNumber": 455
+          },
+          {
+            "text": "                }",
+            "lineNumber": 456
+          },
+          {
+            "text": "            }",
+            "lineNumber": 457
+          },
+          {
+            "text": "            Button(NSLocalizedString(\"cancel\", comment: \"Cancel\"), role: .cancel) { }",
+            "lineNumber": 458
+          },
+          {
+            "text": "        }",
+            "lineNumber": 459
+          },
+          {
+            "text": "        .sheet(item: $devicePickerData) { pickerData in",
+            "lineNumber": 460
+          },
+          {
+            "text": "            VStack(spacing: 0) {",
+            "lineNumber": 461
+          },
+          {
+            "text": "                Text(NSLocalizedString(\"select_device\", comment: \"Select a device to show actions\"))",
+            "lineNumber": 462
+          },
+          {
+            "text": "                    ",
+            "lineNumber": 463
+          }
+        ]
+      },
+      "score": 0.4207926094532013
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataruWidgets/DeviceLocationMapWidget.swift",
+        "range": {
+          "startPosition": {
+            "line": 85
+          },
+          "endPosition": {
+            "line": 132
+          }
+        },
+        "contents": "        return false\n    }\n}\n\nstruct DeviceLocationMapWidgetEntryView: View {\n    let entry: DeviceMapEntry\n    @Environment(\\.colorScheme) private var colorScheme\n    @Environment(\\.widgetFamily) private var family\n\n    var body: some View {\n        ZStack {\n            if let device = entry.device {\n                GeometryReader { geo in\n                    ZStack(alignment: .topLeading) {\n                        snapshotLayer(for: device)\n                            .frame(width: geo.size.width, height: geo.size.height)\n                            .clipped()\n                        if family != .accessoryRectangular {\n                            topFadeOverlay\n                            overlay(for: device, family: family)\n                                .padding(.top, overlayTopPadding)\n                                .frame(maxWidth: geo.size.width * overlayWidthFactor, alignment: .topLeading)\n                                .padding(.horizontal, overlayHorizontalPadding)\n                        }\n                    }\n                    .ignoresSafeArea() // fill widget content area\n                }\n                .widgetURL(URL(string: \"miataru://\\(device.id)\"))\n            } else {\n                Color.gray.opacity(0.3)\n                    .overlay(\n                        Text(NSLocalizedString(\"widget_no_device_selected\", comment: \"Shown when no device is available for the widget\"))\n                            .font(.caption)\n                            .padding(8),\n                        alignment: .bottomLeading\n                    )\n            }\n        }\n        .containerBackground(for: .widget) {\n            ContainerRelativeShape()\n                .fill(Color(.systemBackground))\n        }\n    }\n\n    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {\n        let referenceTimestamp = min(device.timestamp, Date())",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        return false",
+            "lineNumber": 86
+          },
+          {
+            "text": "    }",
+            "lineNumber": 87
+          },
+          {
+            "text": "}",
+            "lineNumber": 88
+          },
+          {
+            "lineNumber": 89
+          },
+          {
+            "text": "struct DeviceLocationMapWidgetEntryView: View {",
+            "lineNumber": 90
+          },
+          {
+            "text": "    let entry: DeviceMapEntry",
+            "lineNumber": 91
+          },
+          {
+            "text": "    @Environment(\\.colorScheme) private var colorScheme",
+            "lineNumber": 92
+          },
+          {
+            "text": "    @Environment(\\.widgetFamily) private var family",
+            "lineNumber": 93
+          },
+          {
+            "lineNumber": 94
+          },
+          {
+            "text": "    var body: some View {",
+            "lineNumber": 95
+          },
+          {
+            "text": "        ZStack {",
+            "lineNumber": 96
+          },
+          {
+            "text": "            if let device = entry.device {",
+            "lineNumber": 97
+          },
+          {
+            "text": "                GeometryReader { geo in",
+            "lineNumber": 98
+          },
+          {
+            "text": "                    ZStack(alignment: .topLeading) {",
+            "lineNumber": 99
+          },
+          {
+            "text": "                        snapshotLayer(for: device)",
+            "lineNumber": 100
+          },
+          {
+            "text": "                            .frame(width: geo.size.width, height: geo.size.height)",
+            "lineNumber": 101
+          },
+          {
+            "text": "                            .clipped()",
+            "lineNumber": 102
+          },
+          {
+            "text": "                        if family != .accessoryRectangular {",
+            "lineNumber": 103
+          },
+          {
+            "text": "                            topFadeOverlay",
+            "lineNumber": 104
+          },
+          {
+            "text": "                            overlay(for: device, family: family)",
+            "lineNumber": 105
+          },
+          {
+            "text": "                                .padding(.top, overlayTopPadding)",
+            "lineNumber": 106
+          },
+          {
+            "text": "                                .frame(maxWidth: geo.size.width * overlayWidthFactor, alignment: .topLeading)",
+            "lineNumber": 107
+          },
+          {
+            "text": "                                .padding(.horizontal, overlayHorizontalPadding)",
+            "lineNumber": 108
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 109
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 110
+          },
+          {
+            "text": "                    .ignoresSafeArea() // fill widget content area",
+            "lineNumber": 111
+          },
+          {
+            "text": "                }",
+            "lineNumber": 112
+          },
+          {
+            "text": "                .widgetURL(URL(string: \"miataru://\\(device.id)\"))",
+            "lineNumber": 113
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 114
+          },
+          {
+            "text": "                Color.gray.opacity(0.3)",
+            "lineNumber": 115
+          },
+          {
+            "text": "                    .overlay(",
+            "lineNumber": 116
+          },
+          {
+            "text": "                        Text(NSLocalizedString(\"widget_no_device_selected\", comment: \"Shown when no device is available for the widget\"))",
+            "lineNumber": 117
+          },
+          {
+            "text": "                            .font(.caption)",
+            "lineNumber": 118
+          },
+          {
+            "text": "                            .padding(8),",
+            "lineNumber": 119
+          },
+          {
+            "text": "                        alignment: .bottomLeading",
+            "lineNumber": 120
+          },
+          {
+            "text": "                    )",
+            "lineNumber": 121
+          },
+          {
+            "text": "            }",
+            "lineNumber": 122
+          },
+          {
+            "text": "        }",
+            "lineNumber": 123
+          },
+          {
+            "text": "        .containerBackground(for: .widget) {",
+            "lineNumber": 124
+          },
+          {
+            "text": "            ContainerRelativeShape()",
+            "lineNumber": 125
+          },
+          {
+            "text": "                .fill(Color(.systemBackground))",
+            "lineNumber": 126
+          },
+          {
+            "text": "        }",
+            "lineNumber": 127
+          },
+          {
+            "text": "    }",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "    private func snapshotLayer(for device: WidgetDeviceData) -&gt; some View {",
+            "lineNumber": 130
+          },
+          {
+            "text": "        let referenceTimestamp = min(device.timestamp, Date())",
+            "lineNumber": 131
+          }
+        ]
+      },
+      "score": 0.41584575176239014
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/iPhone_DevicesView.swift",
+        "range": {
+          "startPosition": {
+            "line": 127
+          },
+          "endPosition": {
+            "line": 173
+          }
+        },
+        "contents": "            .navigationDestination(for: String.self) { deviceID in\n                iPhone_DeviceMapView(\n                    deviceID: deviceID,\n                    onNavigateToDevice: { newDeviceID in\n                        // Push another device map view onto the stack\n                        navigationPath.append(newDeviceID)\n                    }\n                )\n            }\n            .navigationDestination(item: $navigationTargetDevice) { device in\n                iPhone_DeviceNavigationView(device: device)\n            }\n            .sheet(isPresented: $showingAddDevice) {\n                iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)\n            }\n            .sheet(item: $editingDevice) { device in\n                if let index = store.devices.firstIndex(where: { $0.id == device.id }) {\n                    iPhone_EditDeviceView(\n                        device: $store.devices[index],\n                        isPresented: Binding(\n                            get: { editingDevice != nil },\n                            set: { if !$0 { editingDevice = nil } }\n                        )\n                    )\n                }\n            }\n            .refreshable {\n                let success = await refreshAllDeviceLocations(forceGeocoding: true)\n                if success { Haptic.notifySuccess() }\n            }\n            .onAppear {\n                isVisible = true\n                if !hasPerformedInitialAutoNavigate,\n                   navigationPath.isEmpty,\n                   let lastID = settings.lastOpenedDeviceID,\n                   store.devices.contains(where: { $0.DeviceID == lastID }) {\n                    navigationPath.append(lastID)\n                    didAutoNavigateFromSavedDevice = true\n                }\n                hasPerformedInitialAutoNavigate = true\n            }\n            .onDisappear {\n                isVisible = false\n            }\n            .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in\n                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "            .navigationDestination(for: String.self) { deviceID in",
+            "lineNumber": 128
+          },
+          {
+            "text": "                iPhone_DeviceMapView(",
+            "lineNumber": 129
+          },
+          {
+            "text": "                    deviceID: deviceID,",
+            "lineNumber": 130
+          },
+          {
+            "text": "                    onNavigateToDevice: { newDeviceID in",
+            "lineNumber": 131
+          },
+          {
+            "text": "                        // Push another device map view onto the stack",
+            "lineNumber": 132
+          },
+          {
+            "text": "                        navigationPath.append(newDeviceID)",
+            "lineNumber": 133
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 134
+          },
+          {
+            "text": "                )",
+            "lineNumber": 135
+          },
+          {
+            "text": "            }",
+            "lineNumber": 136
+          },
+          {
+            "text": "            .navigationDestination(item: $navigationTargetDevice) { device in",
+            "lineNumber": 137
+          },
+          {
+            "text": "                iPhone_DeviceNavigationView(device: device)",
+            "lineNumber": 138
+          },
+          {
+            "text": "            }",
+            "lineNumber": 139
+          },
+          {
+            "text": "            .sheet(isPresented: $showingAddDevice) {",
+            "lineNumber": 140
+          },
+          {
+            "text": "                iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)",
+            "lineNumber": 141
+          },
+          {
+            "text": "            }",
+            "lineNumber": 142
+          },
+          {
+            "text": "            .sheet(item: $editingDevice) { device in",
+            "lineNumber": 143
+          },
+          {
+            "text": "                if let index = store.devices.firstIndex(where: { $0.id == device.id }) {",
+            "lineNumber": 144
+          },
+          {
+            "text": "                    iPhone_EditDeviceView(",
+            "lineNumber": 145
+          },
+          {
+            "text": "                        device: $store.devices[index],",
+            "lineNumber": 146
+          },
+          {
+            "text": "                        isPresented: Binding(",
+            "lineNumber": 147
+          },
+          {
+            "text": "                            get: { editingDevice != nil },",
+            "lineNumber": 148
+          },
+          {
+            "text": "                            set: { if !$0 { editingDevice = nil } }",
+            "lineNumber": 149
+          },
+          {
+            "text": "                        )",
+            "lineNumber": 150
+          },
+          {
+            "text": "                    )",
+            "lineNumber": 151
+          },
+          {
+            "text": "                }",
+            "lineNumber": 152
+          },
+          {
+            "text": "            }",
+            "lineNumber": 153
+          },
+          {
+            "text": "            .refreshable {",
+            "lineNumber": 154
+          },
+          {
+            "text": "                let success = await refreshAllDeviceLocations(forceGeocoding: true)",
+            "lineNumber": 155
+          },
+          {
+            "text": "                if success { Haptic.notifySuccess() }",
+            "lineNumber": 156
+          },
+          {
+            "text": "            }",
+            "lineNumber": 157
+          },
+          {
+            "text": "            .onAppear {",
+            "lineNumber": 158
+          },
+          {
+            "text": "                isVisible = true",
+            "lineNumber": 159
+          },
+          {
+            "text": "                if !hasPerformedInitialAutoNavigate,",
+            "lineNumber": 160
+          },
+          {
+            "text": "                   navigationPath.isEmpty,",
+            "lineNumber": 161
+          },
+          {
+            "text": "                   let lastID = settings.lastOpenedDeviceID,",
+            "lineNumber": 162
+          },
+          {
+            "text": "                   store.devices.contains(where: { $0.DeviceID == lastID }) {",
+            "lineNumber": 163
+          },
+          {
+            "text": "                    navigationPath.append(lastID)",
+            "lineNumber": 164
+          },
+          {
+            "text": "                    didAutoNavigateFromSavedDevice = true",
+            "lineNumber": 165
+          },
+          {
+            "text": "                }",
+            "lineNumber": 166
+          },
+          {
+            "text": "                hasPerformedInitialAutoNavigate = true",
+            "lineNumber": 167
+          },
+          {
+            "text": "            }",
+            "lineNumber": 168
+          },
+          {
+            "text": "            .onDisappear {",
+            "lineNumber": 169
+          },
+          {
+            "text": "                isVisible = false",
+            "lineNumber": 170
+          },
+          {
+            "text": "            }",
+            "lineNumber": 171
+          },
+          {
+            "text": "            .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in",
+            "lineNumber": 172
+          },
+          {
+            "text": "                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }",
+            "lineNumber": 173
+          }
+        ]
+      },
+      "score": 0.4156722128391266
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 747,
+            "column": 24
+          },
+          "endPosition": {
+            "line": 795
+          }
+        },
+        "contents": ".mapControlVisibility(.hidden)\n                }\n                .ignoresSafeArea()\n                .simultaneousGesture(\n                    DragGesture(minimumDistance: 2)\n                        .onChanged { _ in isAutoCenteringEnabled = false }\n                )\n                .simultaneousGesture(\n                    MagnificationGesture()\n                        .onChanged { _ in isAutoCenteringEnabled = false }\n                )\n                .simultaneousGesture(\n                    RotationGesture()\n                        .onChanged { _ in isAutoCenteringEnabled = false }\n                )\n                .mapStyle(mapStyleFromSettings(settings.mapType))\n            } else {\n                // For iOS versions below 17, use a legacy map view implementation\n                if let currentDevice = device {\n                    iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)\n                        .ignoresSafeArea()\n                }\n            }\n\n    }\n\n    // MARK: - Device action helpers\n    \n    private func triggerEdit(for deviceID: String) {\n        selectedActionDeviceID = deviceID\n        showDeviceActionDialog = false\n        showEditDeviceSheet = true\n    }\n    \n    private func triggerNavigation(for deviceID: String) {\n        selectedActionDeviceID = deviceID\n        showDeviceActionDialog = false\n        showNavigationSheet = true\n    }\n    \n    private func triggerHistory(for device: KnownDevice) {\n        selectedActionDeviceID = device.DeviceID\n        showDeviceActionDialog = false\n        showHistoryView = true\n    }\n\n    private func refreshCachedDeviceCoordinates() {\n        var dict: [String: CLLocationCoordinate2D] = [:]",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": ".mapControlVisibility(.hidden)",
+            "lineNumber": 748
+          },
+          {
+            "text": "                }",
+            "lineNumber": 749
+          },
+          {
+            "text": "                .ignoresSafeArea()",
+            "lineNumber": 750
+          },
+          {
+            "text": "                .simultaneousGesture(",
+            "lineNumber": 751
+          },
+          {
+            "text": "                    DragGesture(minimumDistance: 2)",
+            "lineNumber": 752
+          },
+          {
+            "text": "                        .onChanged { _ in isAutoCenteringEnabled = false }",
+            "lineNumber": 753
+          },
+          {
+            "text": "                )",
+            "lineNumber": 754
+          },
+          {
+            "text": "                .simultaneousGesture(",
+            "lineNumber": 755
+          },
+          {
+            "text": "                    MagnificationGesture()",
+            "lineNumber": 756
+          },
+          {
+            "text": "                        .onChanged { _ in isAutoCenteringEnabled = false }",
+            "lineNumber": 757
+          },
+          {
+            "text": "                )",
+            "lineNumber": 758
+          },
+          {
+            "text": "                .simultaneousGesture(",
+            "lineNumber": 759
+          },
+          {
+            "text": "                    RotationGesture()",
+            "lineNumber": 760
+          },
+          {
+            "text": "                        .onChanged { _ in isAutoCenteringEnabled = false }",
+            "lineNumber": 761
+          },
+          {
+            "text": "                )",
+            "lineNumber": 762
+          },
+          {
+            "text": "                .mapStyle(mapStyleFromSettings(settings.mapType))",
+            "lineNumber": 763
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 764
+          },
+          {
+            "text": "                // For iOS versions below 17, use a legacy map view implementation",
+            "lineNumber": 765
+          },
+          {
+            "text": "                if let currentDevice = device {",
+            "lineNumber": 766
+          },
+          {
+            "text": "                    iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)",
+            "lineNumber": 767
+          },
+          {
+            "text": "                        .ignoresSafeArea()",
+            "lineNumber": 768
+          },
+          {
+            "text": "                }",
+            "lineNumber": 769
+          },
+          {
+            "text": "            }",
+            "lineNumber": 770
+          },
+          {
+            "lineNumber": 771
+          },
+          {
+            "text": "    }",
+            "lineNumber": 772
+          },
+          {
+            "lineNumber": 773
+          },
+          {
+            "text": "    // MARK: - Device action helpers",
+            "lineNumber": 774
+          },
+          {
+            "text": "    ",
+            "lineNumber": 775
+          },
+          {
+            "text": "    private func triggerEdit(for deviceID: String) {",
+            "lineNumber": 776
+          },
+          {
+            "text": "        selectedActionDeviceID = deviceID",
+            "lineNumber": 777
+          },
+          {
+            "text": "        showDeviceActionDialog = false",
+            "lineNumber": 778
+          },
+          {
+            "text": "        showEditDeviceSheet = true",
+            "lineNumber": 779
+          },
+          {
+            "text": "    }",
+            "lineNumber": 780
+          },
+          {
+            "text": "    ",
+            "lineNumber": 781
+          },
+          {
+            "text": "    private func triggerNavigation(for deviceID: String) {",
+            "lineNumber": 782
+          },
+          {
+            "text": "        selectedActionDeviceID = deviceID",
+            "lineNumber": 783
+          },
+          {
+            "text": "        showDeviceActionDialog = false",
+            "lineNumber": 784
+          },
+          {
+            "text": "        showNavigationSheet = true",
+            "lineNumber": 785
+          },
+          {
+            "text": "    }",
+            "lineNumber": 786
+          },
+          {
+            "text": "    ",
+            "lineNumber": 787
+          },
+          {
+            "text": "    private func triggerHistory(for device: KnownDevice) {",
+            "lineNumber": 788
+          },
+          {
+            "text": "        selectedActionDeviceID = device.DeviceID",
+            "lineNumber": 789
+          },
+          {
+            "text": "        showDeviceActionDialog = false",
+            "lineNumber": 790
+          },
+          {
+            "text": "        showHistoryView = true",
+            "lineNumber": 791
+          },
+          {
+            "text": "    }",
+            "lineNumber": 792
+          },
+          {
+            "lineNumber": 793
+          },
+          {
+            "text": "    private func refreshCachedDeviceCoordinates() {",
+            "lineNumber": 794
+          },
+          {
+            "text": "        var dict: [String: CLLocationCoordinate2D] = [:]",
+            "lineNumber": 795
+          }
+        ]
+      },
+      "score": 0.405300498008728
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/iPhone_DevicesView.swift",
+        "range": {
+          "startPosition": {
+            "line": 61
+          },
+          "endPosition": {
+            "line": 97
+          }
+        },
+        "contents": "                    } else {\n                        DeviceRowView(device: device, cache: cache)\n                            .contentShape(Rectangle())\n                            .onTapGesture {\n                                editingDevice = device\n                                selectedDeviceID = device.DeviceID\n                            }\n                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))\n                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {\n                                Button(role: .destructive) {\n                                    store.removeDevice(byID: device.DeviceID)\n                                } label: {\n                                    Label(\"delete_device\", systemImage: \"trash\")\n                                }\n                            }\n                            .swipeActions(edge: .leading) {\n                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {\n                                    Button {\n                                        navigationTargetDevice = device\n                                    } label: {\n                                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")\n                                    }\n                                    .tint(.green)\n                                }\n                                Button {\n                                    editingDevice = device\n                                } label: {\n                                    Label(\"edit_device_swipe\", systemImage: \"pencil\")\n                                }\n                                .tint(.blue)\n                            }\n                    }\n                }\n                .onMove { indices, newOffset in\n                    store.devices.move(fromOffsets: indices, toOffset: newOffset)\n                }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                    } else {",
+            "lineNumber": 62
+          },
+          {
+            "text": "                        DeviceRowView(device: device, cache: cache)",
+            "lineNumber": 63
+          },
+          {
+            "text": "                            .contentShape(Rectangle())",
+            "lineNumber": 64
+          },
+          {
+            "text": "                            .onTapGesture {",
+            "lineNumber": 65
+          },
+          {
+            "text": "                                editingDevice = device",
+            "lineNumber": 66
+          },
+          {
+            "text": "                                selectedDeviceID = device.DeviceID",
+            "lineNumber": 67
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 68
+          },
+          {
+            "text": "                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))",
+            "lineNumber": 69
+          },
+          {
+            "text": "                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {",
+            "lineNumber": 70
+          },
+          {
+            "text": "                                Button(role: .destructive) {",
+            "lineNumber": 71
+          },
+          {
+            "text": "                                    store.removeDevice(byID: device.DeviceID)",
+            "lineNumber": 72
+          },
+          {
+            "text": "                                } label: {",
+            "lineNumber": 73
+          },
+          {
+            "text": "                                    Label(\"delete_device\", systemImage: \"trash\")",
+            "lineNumber": 74
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 75
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 76
+          },
+          {
+            "text": "                            .swipeActions(edge: .leading) {",
+            "lineNumber": 77
+          },
+          {
+            "text": "                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {",
+            "lineNumber": 78
+          },
+          {
+            "text": "                                    Button {",
+            "lineNumber": 79
+          },
+          {
+            "text": "                                        navigationTargetDevice = device",
+            "lineNumber": 80
+          },
+          {
+            "text": "                                    } label: {",
+            "lineNumber": 81
+          },
+          {
+            "text": "                                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")",
+            "lineNumber": 82
+          },
+          {
+            "text": "                                    }",
+            "lineNumber": 83
+          },
+          {
+            "text": "                                    .tint(.green)",
+            "lineNumber": 84
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 85
+          },
+          {
+            "text": "                                Button {",
+            "lineNumber": 86
+          },
+          {
+            "text": "                                    editingDevice = device",
+            "lineNumber": 87
+          },
+          {
+            "text": "                                } label: {",
+            "lineNumber": 88
+          },
+          {
+            "text": "                                    Label(\"edit_device_swipe\", systemImage: \"pencil\")",
+            "lineNumber": 89
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 90
+          },
+          {
+            "text": "                                .tint(.blue)",
+            "lineNumber": 91
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 92
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 93
+          },
+          {
+            "text": "                }",
+            "lineNumber": 94
+          },
+          {
+            "text": "                .onMove { indices, newOffset in",
+            "lineNumber": 95
+          },
+          {
+            "text": "                    store.devices.move(fromOffsets: indices, toOffset: newOffset)",
+            "lineNumber": 96
+          },
+          {
+            "text": "                }",
+            "lineNumber": 97
+          }
+        ]
+      },
+      "score": 0.3978649377822876
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/iPad_DevicesView.swift",
+        "range": {
+          "startPosition": {
+            "line": 203
+          },
+          "endPosition": {
+            "line": 240
+          }
+        },
+        "contents": "            NavigationStack {\n                if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {\n                    iPad_DeviceMapView(\n                        deviceID: device.DeviceID,\n                        onNavigateToDevice: { newDeviceID in\n                            // Navigate to the new device in the split view\n                            selection = newDeviceID\n                        }\n                    )\n                        .id(mapViewKey) // Force view refresh when device changes\n                        .navigationDestination(item: $navigationTargetDevice) { device in\n                            iPhone_DeviceNavigationView(device: device)\n                        }\n                        .toolbar {\n                            ToolbarItem(placement: .navigationBarTrailing) {\n                                Button(action: { editingDevice = device }) {\n                                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit the selected device.\"), systemImage: \"pencil\")\n                                        .labelStyle(.titleAndIcon)\n                                }\n                            }\n                        }\n                        .sheet(item: $editingDevice) { device in\n                            if let index = store.devices.firstIndex(where: { $0.id == device.id }) {\n                                iPhone_EditDeviceView(\n                                    device: $store.devices[index],\n                                    isPresented: Binding(\n                                        get: { editingDevice != nil },\n                                        set: { if !$0 { editingDevice = nil } }\n                                    )\n                                )\n                            }\n                        }\n                } else {\n                    Text(\"Select a device to view details\")\n                        .foregroundColor(.secondary)\n                }\n            }",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "            NavigationStack {",
+            "lineNumber": 204
+          },
+          {
+            "text": "                if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {",
+            "lineNumber": 205
+          },
+          {
+            "text": "                    iPad_DeviceMapView(",
+            "lineNumber": 206
+          },
+          {
+            "text": "                        deviceID: device.DeviceID,",
+            "lineNumber": 207
+          },
+          {
+            "text": "                        onNavigateToDevice: { newDeviceID in",
+            "lineNumber": 208
+          },
+          {
+            "text": "                            // Navigate to the new device in the split view",
+            "lineNumber": 209
+          },
+          {
+            "text": "                            selection = newDeviceID",
+            "lineNumber": 210
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 211
+          },
+          {
+            "text": "                    )",
+            "lineNumber": 212
+          },
+          {
+            "text": "                        .id(mapViewKey) // Force view refresh when device changes",
+            "lineNumber": 213
+          },
+          {
+            "text": "                        .navigationDestination(item: $navigationTargetDevice) { device in",
+            "lineNumber": 214
+          },
+          {
+            "text": "                            iPhone_DeviceNavigationView(device: device)",
+            "lineNumber": 215
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 216
+          },
+          {
+            "text": "                        .toolbar {",
+            "lineNumber": 217
+          },
+          {
+            "text": "                            ToolbarItem(placement: .navigationBarTrailing) {",
+            "lineNumber": 218
+          },
+          {
+            "text": "                                Button(action: { editingDevice = device }) {",
+            "lineNumber": 219
+          },
+          {
+            "text": "                                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit the selected device.\"), systemImage: \"pencil\")",
+            "lineNumber": 220
+          },
+          {
+            "text": "                                        .labelStyle(.titleAndIcon)",
+            "lineNumber": 221
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 222
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 223
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 224
+          },
+          {
+            "text": "                        .sheet(item: $editingDevice) { device in",
+            "lineNumber": 225
+          },
+          {
+            "text": "                            if let index = store.devices.firstIndex(where: { $0.id == device.id }) {",
+            "lineNumber": 226
+          },
+          {
+            "text": "                                iPhone_EditDeviceView(",
+            "lineNumber": 227
+          },
+          {
+            "text": "                                    device: $store.devices[index],",
+            "lineNumber": 228
+          },
+          {
+            "text": "                                    isPresented: Binding(",
+            "lineNumber": 229
+          },
+          {
+            "text": "                                        get: { editingDevice != nil },",
+            "lineNumber": 230
+          },
+          {
+            "text": "                                        set: { if !$0 { editingDevice = nil } }",
+            "lineNumber": 231
+          },
+          {
+            "text": "                                    )",
+            "lineNumber": 232
+          },
+          {
+            "text": "                                )",
+            "lineNumber": 233
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 234
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 235
+          },
+          {
+            "text": "                } else {",
+            "lineNumber": 236
+          },
+          {
+            "text": "                    Text(\"Select a device to view details\")",
+            "lineNumber": 237
+          },
+          {
+            "text": "                        .foregroundColor(.secondary)",
+            "lineNumber": 238
+          },
+          {
+            "text": "                }",
+            "lineNumber": 239
+          },
+          {
+            "text": "            }",
+            "lineNumber": 240
+          }
+        ]
+      },
+      "score": 0.3953930139541626
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/iPhone_DevicesView.swift",
+        "range": {
+          "startPosition": {
+            "line": 29
+          },
+          "endPosition": {
+            "line": 63,
+            "column": 28
+          }
+        },
+        "contents": "    var body: some View {\n        NavigationStack(path: $navigationPath) {\n            List {\n                ForEach(store.devices) { device in\n                    if editMode == .inactive {\n                        NavigationLink(value: device.DeviceID) {\n                            DeviceRowView(device: device, cache: cache)\n                        }\n                        .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))\n                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {\n                            Button(role: .destructive) {\n                                store.removeDevice(byID: device.DeviceID)\n                            } label: {\n                                Label(\"delete_device\", systemImage: \"trash\")\n                            }\n                        }\n                        .swipeActions(edge: .leading) {\n                            if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {\n                                Button {\n                                    navigationTargetDevice = device\n                                } label: {\n                                    Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")\n                                }\n                                .tint(.green)\n                            }\n                            Button {\n                                editingDevice = device\n                            } label: {\n                                Label(\"edit_device_swipe\", systemImage: \"pencil\")\n                            }\n                            .tint(.blue)\n                        }\n                    } else {\n                        DeviceRowView(device: device, cache: cache)\n                            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    var body: some View {",
+            "lineNumber": 30
+          },
+          {
+            "text": "        NavigationStack(path: $navigationPath) {",
+            "lineNumber": 31
+          },
+          {
+            "text": "            List {",
+            "lineNumber": 32
+          },
+          {
+            "text": "                ForEach(store.devices) { device in",
+            "lineNumber": 33
+          },
+          {
+            "text": "                    if editMode == .inactive {",
+            "lineNumber": 34
+          },
+          {
+            "text": "                        NavigationLink(value: device.DeviceID) {",
+            "lineNumber": 35
+          },
+          {
+            "text": "                            DeviceRowView(device: device, cache: cache)",
+            "lineNumber": 36
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 37
+          },
+          {
+            "text": "                        .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))",
+            "lineNumber": 38
+          },
+          {
+            "text": "                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {",
+            "lineNumber": 39
+          },
+          {
+            "text": "                            Button(role: .destructive) {",
+            "lineNumber": 40
+          },
+          {
+            "text": "                                store.removeDevice(byID: device.DeviceID)",
+            "lineNumber": 41
+          },
+          {
+            "text": "                            } label: {",
+            "lineNumber": 42
+          },
+          {
+            "text": "                                Label(\"delete_device\", systemImage: \"trash\")",
+            "lineNumber": 43
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 44
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 45
+          },
+          {
+            "text": "                        .swipeActions(edge: .leading) {",
+            "lineNumber": 46
+          },
+          {
+            "text": "                            if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {",
+            "lineNumber": 47
+          },
+          {
+            "text": "                                Button {",
+            "lineNumber": 48
+          },
+          {
+            "text": "                                    navigationTargetDevice = device",
+            "lineNumber": 49
+          },
+          {
+            "text": "                                } label: {",
+            "lineNumber": 50
+          },
+          {
+            "text": "                                    Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")",
+            "lineNumber": 51
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 52
+          },
+          {
+            "text": "                                .tint(.green)",
+            "lineNumber": 53
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 54
+          },
+          {
+            "text": "                            Button {",
+            "lineNumber": 55
+          },
+          {
+            "text": "                                editingDevice = device",
+            "lineNumber": 56
+          },
+          {
+            "text": "                            } label: {",
+            "lineNumber": 57
+          },
+          {
+            "text": "                                Label(\"edit_device_swipe\", systemImage: \"pencil\")",
+            "lineNumber": 58
+          },
+          {
+            "text": "                            }",
+            "lineNumber": 59
+          },
+          {
+            "text": "                            .tint(.blue)",
+            "lineNumber": 60
+          },
+          {
+            "text": "                        }",
+            "lineNumber": 61
+          },
+          {
+            "text": "                    } else {",
+            "lineNumber": 62
+          },
+          {
+            "text": "                        DeviceRowView(device: device, cache: cache)",
+            "lineNumber": 63
+          },
+          {
+            "text": "                            ",
+            "lineNumber": 64
+          }
+        ]
+      },
+      "score": 0.3930096924304962
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 671
+          },
+          "endPosition": {
+            "line": 689,
+            "column": 52
+          }
+        },
+        "contents": "                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))\n                                                .shadow(radius: 2)\n                                        }\n                                        // Larger transparent rectangle to match main device hit area and avoid clipping\n                                        Rectangle()\n                                            .foregroundColor(.clear)\n                                            .contentShape(Rectangle())\n                                            .frame(width: 120, height: 160)\n                                            .offset(y: 12)\n                                            .zIndex(1)\n                                            .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))\n                                            .accessibilityAddTraits(.isButton)\n                                            .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))\n                                            .onTapGesture {\n                                                handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)\n                                            }\n                                            .contextMenu {\n                                                Button {\n                                                    ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                                            MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))",
+            "lineNumber": 672
+          },
+          {
+            "text": "                                                .shadow(radius: 2)",
+            "lineNumber": 673
+          },
+          {
+            "text": "                                        }",
+            "lineNumber": 674
+          },
+          {
+            "text": "                                        // Larger transparent rectangle to match main device hit area and avoid clipping",
+            "lineNumber": 675
+          },
+          {
+            "text": "                                        Rectangle()",
+            "lineNumber": 676
+          },
+          {
+            "text": "                                            .foregroundColor(.clear)",
+            "lineNumber": 677
+          },
+          {
+            "text": "                                            .contentShape(Rectangle())",
+            "lineNumber": 678
+          },
+          {
+            "text": "                                            .frame(width: 120, height: 160)",
+            "lineNumber": 679
+          },
+          {
+            "text": "                                            .offset(y: 12)",
+            "lineNumber": 680
+          },
+          {
+            "text": "                                            .zIndex(1)",
+            "lineNumber": 681
+          },
+          {
+            "text": "                                            .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))",
+            "lineNumber": 682
+          },
+          {
+            "text": "                                            .accessibilityAddTraits(.isButton)",
+            "lineNumber": 683
+          },
+          {
+            "text": "                                            .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))",
+            "lineNumber": 684
+          },
+          {
+            "text": "                                            .onTapGesture {",
+            "lineNumber": 685
+          },
+          {
+            "text": "                                                handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)",
+            "lineNumber": 686
+          },
+          {
+            "text": "                                            }",
+            "lineNumber": 687
+          },
+          {
+            "text": "                                            .contextMenu {",
+            "lineNumber": 688
+          },
+          {
+            "text": "                                                Button {",
+            "lineNumber": 689
+          },
+          {
+            "text": "                                                    ",
+            "lineNumber": 690
+          }
+        ]
+      },
+      "score": 0.3905406594276428
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 380
+          },
+          "endPosition": {
+            "line": 423
+          }
+        },
+        "contents": "            \n            if abs(context.camera.heading) &lt; 0.1 {\n                userHasRotatedMap = false\n            } else if headingChanged {\n                userHasRotatedMap = true\n            }\n            if headingChanged || zoomChanged {\n                currentMapCamera = context.camera\n                currentRegion = context.region\n                currentMapSpan = context.region.span\n            }\n            // Always update region for off-screen arrows\n            currentRegion = context.region\n            updateVisibleDeviceCount(with: context.region)\n            refreshCachedDeviceCoordinates()\n            if isProgrammaticCameraChange {\n                isProgrammaticCameraChange = false\n                suppressUserCameraChangeDetectionUntil = nil\n            }\n        }\n        // Update 'now' every second for relative time display (inline publisher to avoid autoconnect disconnects)\n        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in\n            now = input\n        }\n        // Show edit device sheet when requested\n        .sheet(isPresented: $showEditDeviceSheet) {\n            let targetID = selectedActionDeviceID ?? deviceID\n            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == targetID }) {\n                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)\n            }\n        }\n        .navigationDestination(isPresented: $showNavigationSheet) {\n            if let device = selectedActionDevice ?? device {\n                iPhone_DeviceNavigationView(device: device)\n            }\n        }\n        .navigationDestination(isPresented: $showHistoryView) {\n            if let device = selectedActionDevice ?? device {\n                iPhone_DeviceHistoryMapView(device: device)\n            }\n        }\n        .confirmationDialog(\n            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "            ",
+            "lineNumber": 381
+          },
+          {
+            "text": "            if abs(context.camera.heading) &lt; 0.1 {",
+            "lineNumber": 382
+          },
+          {
+            "text": "                userHasRotatedMap = false",
+            "lineNumber": 383
+          },
+          {
+            "text": "            } else if headingChanged {",
+            "lineNumber": 384
+          },
+          {
+            "text": "                userHasRotatedMap = true",
+            "lineNumber": 385
+          },
+          {
+            "text": "            }",
+            "lineNumber": 386
+          },
+          {
+            "text": "            if headingChanged || zoomChanged {",
+            "lineNumber": 387
+          },
+          {
+            "text": "                currentMapCamera = context.camera",
+            "lineNumber": 388
+          },
+          {
+            "text": "                currentRegion = context.region",
+            "lineNumber": 389
+          },
+          {
+            "text": "                currentMapSpan = context.region.span",
+            "lineNumber": 390
+          },
+          {
+            "text": "            }",
+            "lineNumber": 391
+          },
+          {
+            "text": "            // Always update region for off-screen arrows",
+            "lineNumber": 392
+          },
+          {
+            "text": "            currentRegion = context.region",
+            "lineNumber": 393
+          },
+          {
+            "text": "            updateVisibleDeviceCount(with: context.region)",
+            "lineNumber": 394
+          },
+          {
+            "text": "            refreshCachedDeviceCoordinates()",
+            "lineNumber": 395
+          },
+          {
+            "text": "            if isProgrammaticCameraChange {",
+            "lineNumber": 396
+          },
+          {
+            "text": "                isProgrammaticCameraChange = false",
+            "lineNumber": 397
+          },
+          {
+            "text": "                suppressUserCameraChangeDetectionUntil = nil",
+            "lineNumber": 398
+          },
+          {
+            "text": "            }",
+            "lineNumber": 399
+          },
+          {
+            "text": "        }",
+            "lineNumber": 400
+          },
+          {
+            "text": "        // Update 'now' every second for relative time display (inline publisher to avoid autoconnect disconnects)",
+            "lineNumber": 401
+          },
+          {
+            "text": "        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in",
+            "lineNumber": 402
+          },
+          {
+            "text": "            now = input",
+            "lineNumber": 403
+          },
+          {
+            "text": "        }",
+            "lineNumber": 404
+          },
+          {
+            "text": "        // Show edit device sheet when requested",
+            "lineNumber": 405
+          },
+          {
+            "text": "        .sheet(isPresented: $showEditDeviceSheet) {",
+            "lineNumber": 406
+          },
+          {
+            "text": "            let targetID = selectedActionDeviceID ?? deviceID",
+            "lineNumber": 407
+          },
+          {
+            "text": "            if let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == targetID }) {",
+            "lineNumber": 408
+          },
+          {
+            "text": "                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)",
+            "lineNumber": 409
+          },
+          {
+            "text": "            }",
+            "lineNumber": 410
+          },
+          {
+            "text": "        }",
+            "lineNumber": 411
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showNavigationSheet) {",
+            "lineNumber": 412
+          },
+          {
+            "text": "            if let device = selectedActionDevice ?? device {",
+            "lineNumber": 413
+          },
+          {
+            "text": "                iPhone_DeviceNavigationView(device: device)",
+            "lineNumber": 414
+          },
+          {
+            "text": "            }",
+            "lineNumber": 415
+          },
+          {
+            "text": "        }",
+            "lineNumber": 416
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showHistoryView) {",
+            "lineNumber": 417
+          },
+          {
+            "text": "            if let device = selectedActionDevice ?? device {",
+            "lineNumber": 418
+          },
+          {
+            "text": "                iPhone_DeviceHistoryMapView(device: device)",
+            "lineNumber": 419
+          },
+          {
+            "text": "            }",
+            "lineNumber": 420
+          },
+          {
+            "text": "        }",
+            "lineNumber": 421
+          },
+          {
+            "text": "        .confirmationDialog(",
+            "lineNumber": 422
+          },
+          {
+            "text": "            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),",
+            "lineNumber": 423
+          }
+        ]
+      },
+      "score": 0.3901346027851105
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Groups Views/iPad_GroupMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 555
+          },
+          "endPosition": {
+            "line": 595,
+            "column": 12
+          }
+        },
+        "contents": "            )\n        }\n        .confirmationDialog(\n            Text(NSLocalizedString(\"map_device_quick_actions_title\", comment: \"Title for device actions when tapping near a marker\")),\n            isPresented: $showQuickActionsDialog,\n            titleVisibility: .visible\n        ) {\n            if let deviceID = quickActionDeviceID {\n                Button {\n                    editingDeviceID = deviceID\n                    showEditDeviceSheet = true\n                } label: {\n                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\").labelStyle(.titleAndIcon)\n                }\n                if deviceID != thisDeviceIDManager.shared.deviceID {\n                    Button {\n                        navigationDeviceID = deviceID\n                        showNavigationSheet = true\n                    } label: {\n                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\").labelStyle(.titleAndIcon)\n                    }\n                }\n                Button {\n                    historyDeviceID = deviceID\n                    showHistoryView = true\n                } label: {\n                    Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\").labelStyle(.titleAndIcon)\n                }\n            }\n        } message: {\n            if let deviceID = quickActionDeviceID {\n                Text(String(format: NSLocalizedString(\"map_device_quick_actions_message\", comment: \"Message showing the device name the actions will affect\"), deviceDisplayName(for: deviceID)))\n            }\n        }\n    }\n\n\n    @available(iOS 17.0, *)\n    private func handleMapTap(at location: CGPoint, proxy: MapProxy) {\n        let candidates = groupDeviceIDs.compactMap { deviceID -&gt; (String, CGFloat)? in\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "            )",
+            "lineNumber": 556
+          },
+          {
+            "text": "        }",
+            "lineNumber": 557
+          },
+          {
+            "text": "        .confirmationDialog(",
+            "lineNumber": 558
+          },
+          {
+            "text": "            Text(NSLocalizedString(\"map_device_quick_actions_title\", comment: \"Title for device actions when tapping near a marker\")),",
+            "lineNumber": 559
+          },
+          {
+            "text": "            isPresented: $showQuickActionsDialog,",
+            "lineNumber": 560
+          },
+          {
+            "text": "            titleVisibility: .visible",
+            "lineNumber": 561
+          },
+          {
+            "text": "        ) {",
+            "lineNumber": 562
+          },
+          {
+            "text": "            if let deviceID = quickActionDeviceID {",
+            "lineNumber": 563
+          },
+          {
+            "text": "                Button {",
+            "lineNumber": 564
+          },
+          {
+            "text": "                    editingDeviceID = deviceID",
+            "lineNumber": 565
+          },
+          {
+            "text": "                    showEditDeviceSheet = true",
+            "lineNumber": 566
+          },
+          {
+            "text": "                } label: {",
+            "lineNumber": 567
+          },
+          {
+            "text": "                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\").labelStyle(.titleAndIcon)",
+            "lineNumber": 568
+          },
+          {
+            "text": "                }",
+            "lineNumber": 569
+          },
+          {
+            "text": "                if deviceID != thisDeviceIDManager.shared.deviceID {",
+            "lineNumber": 570
+          },
+          {
+            "text": "                    Button {",
+            "lineNumber": 571
+          },
+          {
+            "text": "                        navigationDeviceID = deviceID",
+            "lineNumber": 572
+          },
+          {
+            "text": "                        showNavigationSheet = true",
+            "lineNumber": 573
+          },
+          {
+            "text": "                    } label: {",
+            "lineNumber": 574
+          },
+          {
+            "text": "                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\").labelStyle(.titleAndIcon)",
+            "lineNumber": 575
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 576
+          },
+          {
+            "text": "                }",
+            "lineNumber": 577
+          },
+          {
+            "text": "                Button {",
+            "lineNumber": 578
+          },
+          {
+            "text": "                    historyDeviceID = deviceID",
+            "lineNumber": 579
+          },
+          {
+            "text": "                    showHistoryView = true",
+            "lineNumber": 580
+          },
+          {
+            "text": "                } label: {",
+            "lineNumber": 581
+          },
+          {
+            "text": "                    Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\").labelStyle(.titleAndIcon)",
+            "lineNumber": 582
+          },
+          {
+            "text": "                }",
+            "lineNumber": 583
+          },
+          {
+            "text": "            }",
+            "lineNumber": 584
+          },
+          {
+            "text": "        } message: {",
+            "lineNumber": 585
+          },
+          {
+            "text": "            if let deviceID = quickActionDeviceID {",
+            "lineNumber": 586
+          },
+          {
+            "text": "                Text(String(format: NSLocalizedString(\"map_device_quick_actions_message\", comment: \"Message showing the device name the actions will affect\"), deviceDisplayName(for: deviceID)))",
+            "lineNumber": 587
+          },
+          {
+            "text": "            }",
+            "lineNumber": 588
+          },
+          {
+            "text": "        }",
+            "lineNumber": 589
+          },
+          {
+            "text": "    }",
+            "lineNumber": 590
+          },
+          {
+            "lineNumber": 591
+          },
+          {
+            "lineNumber": 592
+          },
+          {
+            "text": "    @available(iOS 17.0, *)",
+            "lineNumber": 593
+          },
+          {
+            "text": "    private func handleMapTap(at location: CGPoint, proxy: MapProxy) {",
+            "lineNumber": 594
+          },
+          {
+            "text": "        let candidates = groupDeviceIDs.compactMap { deviceID -&gt; (String, CGFloat)? in",
+            "lineNumber": 595
+          },
+          {
+            "text": "            ",
+            "lineNumber": 596
+          }
+        ]
+      },
+      "score": 0.3901166319847107
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 542
+          },
+          "endPosition": {
+            "line": 582,
+            "column": 12
+          }
+        },
+        "contents": "            )\n        }\n        .confirmationDialog(\n            Text(NSLocalizedString(\"map_device_quick_actions_title\", comment: \"Title for device actions when tapping near a marker\")),\n            isPresented: $showQuickActionsDialog,\n            titleVisibility: .visible\n        ) {\n            if let deviceID = quickActionDeviceID {\n                Button {\n                    editingDeviceID = deviceID\n                    showEditDeviceSheet = true\n                } label: {\n                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\")\n                }\n                if deviceID != thisDeviceIDManager.shared.deviceID {\n                    Button {\n                        navigationDeviceID = deviceID\n                        showNavigationSheet = true\n                    } label: {\n                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")\n                    }\n                }\n                Button {\n                    historyDeviceID = deviceID\n                    showHistoryView = true\n                } label: {\n                    Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\")\n                }\n            }\n        } message: {\n            if let deviceID = quickActionDeviceID {\n                Text(String(format: NSLocalizedString(\"map_device_quick_actions_message\", comment: \"Message showing the device name the actions will affect\"), deviceDisplayName(for: deviceID)))\n            }\n        }\n    }\n\n\n    @available(iOS 17.0, *)\n    private func handleMapTap(at location: CGPoint, proxy: MapProxy) {\n        let candidates = groupDeviceIDs.compactMap { deviceID -&gt; (String, CGFloat)? in\n            ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "            )",
+            "lineNumber": 543
+          },
+          {
+            "text": "        }",
+            "lineNumber": 544
+          },
+          {
+            "text": "        .confirmationDialog(",
+            "lineNumber": 545
+          },
+          {
+            "text": "            Text(NSLocalizedString(\"map_device_quick_actions_title\", comment: \"Title for device actions when tapping near a marker\")),",
+            "lineNumber": 546
+          },
+          {
+            "text": "            isPresented: $showQuickActionsDialog,",
+            "lineNumber": 547
+          },
+          {
+            "text": "            titleVisibility: .visible",
+            "lineNumber": 548
+          },
+          {
+            "text": "        ) {",
+            "lineNumber": 549
+          },
+          {
+            "text": "            if let deviceID = quickActionDeviceID {",
+            "lineNumber": 550
+          },
+          {
+            "text": "                Button {",
+            "lineNumber": 551
+          },
+          {
+            "text": "                    editingDeviceID = deviceID",
+            "lineNumber": 552
+          },
+          {
+            "text": "                    showEditDeviceSheet = true",
+            "lineNumber": 553
+          },
+          {
+            "text": "                } label: {",
+            "lineNumber": 554
+          },
+          {
+            "text": "                    Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\")",
+            "lineNumber": 555
+          },
+          {
+            "text": "                }",
+            "lineNumber": 556
+          },
+          {
+            "text": "                if deviceID != thisDeviceIDManager.shared.deviceID {",
+            "lineNumber": 557
+          },
+          {
+            "text": "                    Button {",
+            "lineNumber": 558
+          },
+          {
+            "text": "                        navigationDeviceID = deviceID",
+            "lineNumber": 559
+          },
+          {
+            "text": "                        showNavigationSheet = true",
+            "lineNumber": 560
+          },
+          {
+            "text": "                    } label: {",
+            "lineNumber": 561
+          },
+          {
+            "text": "                        Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")",
+            "lineNumber": 562
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 563
+          },
+          {
+            "text": "                }",
+            "lineNumber": 564
+          },
+          {
+            "text": "                Button {",
+            "lineNumber": 565
+          },
+          {
+            "text": "                    historyDeviceID = deviceID",
+            "lineNumber": 566
+          },
+          {
+            "text": "                    showHistoryView = true",
+            "lineNumber": 567
+          },
+          {
+            "text": "                } label: {",
+            "lineNumber": 568
+          },
+          {
+            "text": "                    Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\")",
+            "lineNumber": 569
+          },
+          {
+            "text": "                }",
+            "lineNumber": 570
+          },
+          {
+            "text": "            }",
+            "lineNumber": 571
+          },
+          {
+            "text": "        } message: {",
+            "lineNumber": 572
+          },
+          {
+            "text": "            if let deviceID = quickActionDeviceID {",
+            "lineNumber": 573
+          },
+          {
+            "text": "                Text(String(format: NSLocalizedString(\"map_device_quick_actions_message\", comment: \"Message showing the device name the actions will affect\"), deviceDisplayName(for: deviceID)))",
+            "lineNumber": 574
+          },
+          {
+            "text": "            }",
+            "lineNumber": 575
+          },
+          {
+            "text": "        }",
+            "lineNumber": 576
+          },
+          {
+            "text": "    }",
+            "lineNumber": 577
+          },
+          {
+            "lineNumber": 578
+          },
+          {
+            "lineNumber": 579
+          },
+          {
+            "text": "    @available(iOS 17.0, *)",
+            "lineNumber": 580
+          },
+          {
+            "text": "    private func handleMapTap(at location: CGPoint, proxy: MapProxy) {",
+            "lineNumber": 581
+          },
+          {
+            "text": "        let candidates = groupDeviceIDs.compactMap { deviceID -&gt; (String, CGFloat)? in",
+            "lineNumber": 582
+          },
+          {
+            "text": "            ",
+            "lineNumber": 583
+          }
+        ]
+      },
+      "score": 0.38900256156921387
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Devices Views/iPad_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 702
+          },
+          "endPosition": {
+            "line": 720,
+            "column": 56
+          }
+        },
+        "contents": "                                                MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))\n                                                    .shadow(radius: 2)\n                                            }\n                                            // Larger transparent rectangle to match main device hit area and avoid clipping\n                                            Rectangle()\n                                                .foregroundColor(.clear)\n                                                .contentShape(Rectangle())\n                                                .frame(width: 120, height: 160)\n                                                .offset(y: 12)\n                                                .zIndex(1)\n                                                .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))\n                                                .accessibilityAddTraits(.isButton)\n                                                .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))\n                                                .onTapGesture {\n                                                    handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)\n                                                }\n                                                .contextMenu {\n                                                    Button {\n                                                        ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                                                MiataruMapMarker(color: Color(other.DeviceColor ?? UIColor.systemBlue))",
+            "lineNumber": 703
+          },
+          {
+            "text": "                                                    .shadow(radius: 2)",
+            "lineNumber": 704
+          },
+          {
+            "text": "                                            }",
+            "lineNumber": 705
+          },
+          {
+            "text": "                                            // Larger transparent rectangle to match main device hit area and avoid clipping",
+            "lineNumber": 706
+          },
+          {
+            "text": "                                            Rectangle()",
+            "lineNumber": 707
+          },
+          {
+            "text": "                                                .foregroundColor(.clear)",
+            "lineNumber": 708
+          },
+          {
+            "text": "                                                .contentShape(Rectangle())",
+            "lineNumber": 709
+          },
+          {
+            "text": "                                                .frame(width: 120, height: 160)",
+            "lineNumber": 710
+          },
+          {
+            "text": "                                                .offset(y: 12)",
+            "lineNumber": 711
+          },
+          {
+            "text": "                                                .zIndex(1)",
+            "lineNumber": 712
+          },
+          {
+            "text": "                                                .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))",
+            "lineNumber": 713
+          },
+          {
+            "text": "                                                .accessibilityAddTraits(.isButton)",
+            "lineNumber": 714
+          },
+          {
+            "text": "                                                .accessibilityHint(Text(NSLocalizedString(\"open_device_actions_hint\", comment: \"Open actions for this device\")))",
+            "lineNumber": 715
+          },
+          {
+            "text": "                                                .onTapGesture {",
+            "lineNumber": 716
+          },
+          {
+            "text": "                                                    handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)",
+            "lineNumber": 717
+          },
+          {
+            "text": "                                                }",
+            "lineNumber": 718
+          },
+          {
+            "text": "                                                .contextMenu {",
+            "lineNumber": 719
+          },
+          {
+            "text": "                                                    Button {",
+            "lineNumber": 720
+          },
+          {
+            "text": "                                                        ",
+            "lineNumber": 721
+          }
+        ]
+      },
+      "score": 0.38611114025115967
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Devices Views/iPhone_DeviceMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 421
+          },
+          "endPosition": {
+            "line": 443
+          }
+        },
+        "contents": "        .confirmationDialog(\n            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),\n            isPresented: $showDeviceActionDialog,\n            titleVisibility: .visible\n        ) {\n            if let actionDevice = selectedActionDevice {\n                Button(NSLocalizedString(\"edit_device\", comment: \"Edit this device\")) {\n                    triggerEdit(for: actionDevice.DeviceID)\n                }\n                if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {\n                    Button(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\")) {\n                        triggerNavigation(for: actionDevice.DeviceID)\n                    }\n                }\n                Button(NSLocalizedString(\"show_history\", comment: \"Show device history\")) {\n                    triggerHistory(for: actionDevice)\n                }\n            }\n            Button(NSLocalizedString(\"cancel\", comment: \"Cancel\"), role: .cancel) { }\n        }\n        .sheet(item: $devicePickerData) { pickerData in\n            let _ = print(\"Sheet content closure evaluated: pickerData.devices.count = \\(pickerData.devices.count), devices: \\(pickerData.devices.map { $0.DeviceName })\")",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        .confirmationDialog(",
+            "lineNumber": 422
+          },
+          {
+            "text": "            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? \"\") : NSLocalizedString(\"device_actions\", comment: \"Actions for the selected device\"),",
+            "lineNumber": 423
+          },
+          {
+            "text": "            isPresented: $showDeviceActionDialog,",
+            "lineNumber": 424
+          },
+          {
+            "text": "            titleVisibility: .visible",
+            "lineNumber": 425
+          },
+          {
+            "text": "        ) {",
+            "lineNumber": 426
+          },
+          {
+            "text": "            if let actionDevice = selectedActionDevice {",
+            "lineNumber": 427
+          },
+          {
+            "text": "                Button(NSLocalizedString(\"edit_device\", comment: \"Edit this device\")) {",
+            "lineNumber": 428
+          },
+          {
+            "text": "                    triggerEdit(for: actionDevice.DeviceID)",
+            "lineNumber": 429
+          },
+          {
+            "text": "                }",
+            "lineNumber": 430
+          },
+          {
+            "text": "                if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {",
+            "lineNumber": 431
+          },
+          {
+            "text": "                    Button(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\")) {",
+            "lineNumber": 432
+          },
+          {
+            "text": "                        triggerNavigation(for: actionDevice.DeviceID)",
+            "lineNumber": 433
+          },
+          {
+            "text": "                    }",
+            "lineNumber": 434
+          },
+          {
+            "text": "                }",
+            "lineNumber": 435
+          },
+          {
+            "text": "                Button(NSLocalizedString(\"show_history\", comment: \"Show device history\")) {",
+            "lineNumber": 436
+          },
+          {
+            "text": "                    triggerHistory(for: actionDevice)",
+            "lineNumber": 437
+          },
+          {
+            "text": "                }",
+            "lineNumber": 438
+          },
+          {
+            "text": "            }",
+            "lineNumber": 439
+          },
+          {
+            "text": "            Button(NSLocalizedString(\"cancel\", comment: \"Cancel\"), role: .cancel) { }",
+            "lineNumber": 440
+          },
+          {
+            "text": "        }",
+            "lineNumber": 441
+          },
+          {
+            "text": "        .sheet(item: $devicePickerData) { pickerData in",
+            "lineNumber": 442
+          },
+          {
+            "text": "            let _ = print(\"Sheet content closure evaluated: pickerData.devices.count = \\(pickerData.devices.count), devices: \\(pickerData.devices.map { $0.DeviceName })\")",
+            "lineNumber": 443
+          }
+        ]
+      },
+      "score": 0.378315806388855
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/miataruApp.swift",
+        "range": {
+          "startPosition": {
+            "line": 118
+          },
+          "endPosition": {
+            "line": 170
+          }
+        },
+        "contents": "    private func handleIncomingURL(_ url: URL) {\n        guard url.scheme == \"miataru\" else { return }\n        let deviceID = (url.host ?? \"\").uppercased()\n        guard !deviceID.isEmpty else { return }\n\n        Task { @MainActor in\n            // When resuming from background, SwiftUI may restore navigation state after the URL\n            // event is delivered. Deferring slightly ensures the deep link wins over restoration.\n            await Task.yield()\n            try? await Task.sleep(nanoseconds: 180_000_000)\n\n            // If the device already exists, navigate to it; otherwise fall back to add flow.\n            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {\n                showAddDeviceSheet = false\n                pendingDeviceID = nil\n                SettingsManager.shared.lastOpenedDeviceID = deviceID\n            } else {\n                pendingDeviceID = deviceID\n                showAddDeviceSheet = true\n            }\n        }\n    }\n}\n\nprivate struct DeviceWindowEntrypoint: View {\n    @Binding var deviceID: String?\n    @Environment(\\.openWindow) private var openWindow\n    @Environment(\\.dismissWindow) private var dismissWindow\n\n    init(deviceID: Binding&lt;String?&gt;) {\n        self._deviceID = deviceID\n    }\n\n    var body: some View {\n        Group {\n            if let id = deviceID {\n                iPad_DeviceMapView(deviceID: id)\n            } else {\n                Text(NSLocalizedString(\"no_device_selected\", comment: \"No device selected for this window.\"))\n            }\n        }\n        .task {\n            if LaunchGuard.isFirstActivation {\n                LaunchGuard.isFirstActivation = false\n                openWindow(id: \"main\")\n                if let id = deviceID {\n                    dismissWindow(value: id)\n                }\n            }\n        }\n    }\n}",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "    private func handleIncomingURL(_ url: URL) {",
+            "lineNumber": 119
+          },
+          {
+            "text": "        guard url.scheme == \"miataru\" else { return }",
+            "lineNumber": 120
+          },
+          {
+            "text": "        let deviceID = (url.host ?? \"\").uppercased()",
+            "lineNumber": 121
+          },
+          {
+            "text": "        guard !deviceID.isEmpty else { return }",
+            "lineNumber": 122
+          },
+          {
+            "lineNumber": 123
+          },
+          {
+            "text": "        Task { @MainActor in",
+            "lineNumber": 124
+          },
+          {
+            "text": "            // When resuming from background, SwiftUI may restore navigation state after the URL",
+            "lineNumber": 125
+          },
+          {
+            "text": "            // event is delivered. Deferring slightly ensures the deep link wins over restoration.",
+            "lineNumber": 126
+          },
+          {
+            "text": "            await Task.yield()",
+            "lineNumber": 127
+          },
+          {
+            "text": "            try? await Task.sleep(nanoseconds: 180_000_000)",
+            "lineNumber": 128
+          },
+          {
+            "lineNumber": 129
+          },
+          {
+            "text": "            // If the device already exists, navigate to it; otherwise fall back to add flow.",
+            "lineNumber": 130
+          },
+          {
+            "text": "            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {",
+            "lineNumber": 131
+          },
+          {
+            "text": "                showAddDeviceSheet = false",
+            "lineNumber": 132
+          },
+          {
+            "text": "                pendingDeviceID = nil",
+            "lineNumber": 133
+          },
+          {
+            "text": "                SettingsManager.shared.lastOpenedDeviceID = deviceID",
+            "lineNumber": 134
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 135
+          },
+          {
+            "text": "                pendingDeviceID = deviceID",
+            "lineNumber": 136
+          },
+          {
+            "text": "                showAddDeviceSheet = true",
+            "lineNumber": 137
+          },
+          {
+            "text": "            }",
+            "lineNumber": 138
+          },
+          {
+            "text": "        }",
+            "lineNumber": 139
+          },
+          {
+            "text": "    }",
+            "lineNumber": 140
+          },
+          {
+            "text": "}",
+            "lineNumber": 141
+          },
+          {
+            "lineNumber": 142
+          },
+          {
+            "text": "private struct DeviceWindowEntrypoint: View {",
+            "lineNumber": 143
+          },
+          {
+            "text": "    @Binding var deviceID: String?",
+            "lineNumber": 144
+          },
+          {
+            "text": "    @Environment(\\.openWindow) private var openWindow",
+            "lineNumber": 145
+          },
+          {
+            "text": "    @Environment(\\.dismissWindow) private var dismissWindow",
+            "lineNumber": 146
+          },
+          {
+            "lineNumber": 147
+          },
+          {
+            "text": "    init(deviceID: Binding&lt;String?&gt;) {",
+            "lineNumber": 148
+          },
+          {
+            "text": "        self._deviceID = deviceID",
+            "lineNumber": 149
+          },
+          {
+            "text": "    }",
+            "lineNumber": 150
+          },
+          {
+            "lineNumber": 151
+          },
+          {
+            "text": "    var body: some View {",
+            "lineNumber": 152
+          },
+          {
+            "text": "        Group {",
+            "lineNumber": 153
+          },
+          {
+            "text": "            if let id = deviceID {",
+            "lineNumber": 154
+          },
+          {
+            "text": "                iPad_DeviceMapView(deviceID: id)",
+            "lineNumber": 155
+          },
+          {
+            "text": "            } else {",
+            "lineNumber": 156
+          },
+          {
+            "text": "                Text(NSLocalizedString(\"no_device_selected\", comment: \"No device selected for this window.\"))",
+            "lineNumber": 157
+          },
+          {
+            "text": "            }",
+            "lineNumber": 158
+          },
+          {
+            "text": "        }",
+            "lineNumber": 159
+          },
+          {
+            "text": "        .task {",
+            "lineNumber": 160
+          },
+          {
+            "text": "            if LaunchGuard.isFirstActivation {",
+            "lineNumber": 161
+          },
+          {
+            "text": "                LaunchGuard.isFirstActivation = false",
+            "lineNumber": 162
+          },
+          {
+            "text": "                openWindow(id: \"main\")",
+            "lineNumber": 163
+          },
+          {
+            "text": "                if let id = deviceID {",
+            "lineNumber": 164
+          },
+          {
+            "text": "                    dismissWindow(value: id)",
+            "lineNumber": 165
+          },
+          {
+            "text": "                }",
+            "lineNumber": 166
+          },
+          {
+            "text": "            }",
+            "lineNumber": 167
+          },
+          {
+            "text": "        }",
+            "lineNumber": 168
+          },
+          {
+            "text": "    }",
+            "lineNumber": 169
+          },
+          {
+            "text": "}",
+            "lineNumber": 170
+          }
+        ]
+      },
+      "score": 0.37716615200042725
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPad/Groups Views/iPad_GroupMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 421
+          },
+          "endPosition": {
+            "line": 442,
+            "column": 16
+          }
+        },
+        "contents": "        .sheet(isPresented: $showEditDeviceSheet) {\n            if let deviceID = editingDeviceID, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {\n                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)\n            }\n        }\n        .navigationDestination(isPresented: $showNavigationSheet) {\n            if let deviceID = navigationDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {\n                iPhone_DeviceNavigationView(device: device)\n            }\n        }\n        .navigationDestination(isPresented: $showHistoryView) {\n            if let id = historyDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == id }) {\n                iPhone_DeviceHistoryMapView(device: device)\n            }\n        }\n    }\n    \n    @ViewBuilder\n    private func mapSection() -&gt; some View {\n        MapReader { proxy in\n            Map(position: $cameraPosition, scope: mapScope) {\n                ",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "        .sheet(isPresented: $showEditDeviceSheet) {",
+            "lineNumber": 422
+          },
+          {
+            "text": "            if let deviceID = editingDeviceID, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {",
+            "lineNumber": 423
+          },
+          {
+            "text": "                iPhone_EditDeviceView(device: $deviceStore.devices[index], isPresented: $showEditDeviceSheet)",
+            "lineNumber": 424
+          },
+          {
+            "text": "            }",
+            "lineNumber": 425
+          },
+          {
+            "text": "        }",
+            "lineNumber": 426
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showNavigationSheet) {",
+            "lineNumber": 427
+          },
+          {
+            "text": "            if let deviceID = navigationDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {",
+            "lineNumber": 428
+          },
+          {
+            "text": "                iPhone_DeviceNavigationView(device: device)",
+            "lineNumber": 429
+          },
+          {
+            "text": "            }",
+            "lineNumber": 430
+          },
+          {
+            "text": "        }",
+            "lineNumber": 431
+          },
+          {
+            "text": "        .navigationDestination(isPresented: $showHistoryView) {",
+            "lineNumber": 432
+          },
+          {
+            "text": "            if let id = historyDeviceID, let device = deviceStore.devices.first(where: { $0.DeviceID == id }) {",
+            "lineNumber": 433
+          },
+          {
+            "text": "                iPhone_DeviceHistoryMapView(device: device)",
+            "lineNumber": 434
+          },
+          {
+            "text": "            }",
+            "lineNumber": 435
+          },
+          {
+            "text": "        }",
+            "lineNumber": 436
+          },
+          {
+            "text": "    }",
+            "lineNumber": 437
+          },
+          {
+            "text": "    ",
+            "lineNumber": 438
+          },
+          {
+            "text": "    @ViewBuilder",
+            "lineNumber": 439
+          },
+          {
+            "text": "    private func mapSection() -&gt; some View {",
+            "lineNumber": 440
+          },
+          {
+            "text": "        MapReader { proxy in",
+            "lineNumber": 441
+          },
+          {
+            "text": "            Map(position: $cameraPosition, scope: mapScope) {",
+            "lineNumber": 442
+          },
+          {
+            "text": "                ",
+            "lineNumber": 443
+          }
+        ]
+      },
+      "score": 0.37684786319732666
+    },
+    {
+      "codeBlock": {
+        "relativeWorkspacePath": "./miataru/views/iPhone/Groups Views/iPhone_GroupMapView.swift",
+        "range": {
+          "startPosition": {
+            "line": 476
+          },
+          "endPosition": {
+            "line": 508
+          }
+        },
+        "contents": "                                    MiataruMapMarker(\n                                        color: Color(device.DeviceColor ?? UIColor.blue)\n                                    )\n                                        .shadow(radius: 2)\n                                        .accessibilityHidden(true)\n                                }\n                                Rectangle()\n                                    .foregroundColor(.clear)\n                                    .contentShape(Rectangle())\n                                    .frame(width: 80, height: 120)\n                                    .offset(y: 12)\n                                    .zIndex(1)\n                                    .contextMenu {\n                                        Button {\n                                            editingDeviceID = deviceID\n                                            showEditDeviceSheet = true\n                                        } label: {\n                                            Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\")\n                                        }\n                                        if deviceID != thisDeviceIDManager.shared.deviceID {\n                                            Button {\n                                                navigationDeviceID = deviceID\n                                                showNavigationSheet = true\n                                            } label: {\n                                                Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")\n                                            }\n                                        }\n                                        Button {\n                                            historyDeviceID = deviceID\n                                            showHistoryView = true\n                                        } label: {\n                                            Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\")",
+        "signatures": {},
+        "detailedLines": [
+          {
+            "text": "                                    MiataruMapMarker(",
+            "lineNumber": 477
+          },
+          {
+            "text": "                                        color: Color(device.DeviceColor ?? UIColor.blue)",
+            "lineNumber": 478
+          },
+          {
+            "text": "                                    )",
+            "lineNumber": 479
+          },
+          {
+            "text": "                                        .shadow(radius: 2)",
+            "lineNumber": 480
+          },
+          {
+            "text": "                                        .accessibilityHidden(true)",
+            "lineNumber": 481
+          },
+          {
+            "text": "                                }",
+            "lineNumber": 482
+          },
+          {
+            "text": "                                Rectangle()",
+            "lineNumber": 483
+          },
+          {
+            "text": "                                    .foregroundColor(.clear)",
+            "lineNumber": 484
+          },
+          {
+            "text": "                                    .contentShape(Rectangle())",
+            "lineNumber": 485
+          },
+          {
+            "text": "                                    .frame(width: 80, height: 120)",
+            "lineNumber": 486
+          },
+          {
+            "text": "                                    .offset(y: 12)",
+            "lineNumber": 487
+          },
+          {
+            "text": "                                    .zIndex(1)",
+            "lineNumber": 488
+          },
+          {
+            "text": "                                    .contextMenu {",
+            "lineNumber": 489
+          },
+          {
+            "text": "                                        Button {",
+            "lineNumber": 490
+          },
+          {
+            "text": "                                            editingDeviceID = deviceID",
+            "lineNumber": 491
+          },
+          {
+            "text": "                                            showEditDeviceSheet = true",
+            "lineNumber": 492
+          },
+          {
+            "text": "                                        } label: {",
+            "lineNumber": 493
+          },
+          {
+            "text": "                                            Label(NSLocalizedString(\"edit_device\", comment: \"Edit this device\"), systemImage: \"pencil\")",
+            "lineNumber": 494
+          },
+          {
+            "text": "                                        }",
+            "lineNumber": 495
+          },
+          {
+            "text": "                                        if deviceID != thisDeviceIDManager.shared.deviceID {",
+            "lineNumber": 496
+          },
+          {
+            "text": "                                            Button {",
+            "lineNumber": 497
+          },
+          {
+            "text": "                                                navigationDeviceID = deviceID",
+            "lineNumber": 498
+          },
+          {
+            "text": "                                                showNavigationSheet = true",
+            "lineNumber": 499
+          },
+          {
+            "text": "                                            } label: {",
+            "lineNumber": 500
+          },
+          {
+            "text": "                                                Label(NSLocalizedString(\"navigation\", comment: \"Navigate to this device\"), systemImage: \"location\")",
+            "lineNumber": 501
+          },
+          {
+            "text": "                                            }",
+            "lineNumber": 502
+          },
+          {
+            "text": "                                        }",
+            "lineNumber": 503
+          },
+          {
+            "text": "                                        Button {",
+            "lineNumber": 504
+          },
+          {
+            "text": "                                            historyDeviceID = deviceID",
+            "lineNumber": 505
+          },
+          {
+            "text": "                                            showHistoryView = true",
+            "lineNumber": 506
+          },
+          {
+            "text": "                                        } label: {",
+            "lineNumber": 507
+          },
+          {
+            "text": "                                            Label(NSLocalizedString(\"show_history\", comment: \"Show device history\"), systemImage: \"clock.arrow.circlepath\")",
+            "lineNumber": 508
+          }
+        ]
+      },
+      "score": 0.3715641498565674
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
 
 ---
 
