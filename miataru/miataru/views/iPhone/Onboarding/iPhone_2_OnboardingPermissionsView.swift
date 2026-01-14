@@ -13,6 +13,7 @@ import CoreLocation
 struct iPhone_2_OnboardingLocationPermissionView: View {
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @State private var showSettingsAlert = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -39,7 +40,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                         (
-                            Text("To give Miataru the permission please enable the toggle and answer the following dialog with '")
+                            Text("You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '")
                             + Text("Allow While Using App").bold()
                             + Text("'.")
                         )
@@ -50,19 +51,42 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                     }
                 }
                 HStack(spacing: 12) {
-                    Text("Enable Location Tracking")
+                    Text("Location Tracking")
                     Toggle("", isOn: Binding(
                         get: { settings.trackAndReportLocation },
                         set: { newValue in
-                            settings.trackAndReportLocation = newValue
                             if newValue {
-                                locationManager.requestLocationPermission()
+                                // Check if permission was previously denied
+                                let currentStatus = locationManager.authorizationStatus
+                                if currentStatus == .denied || currentStatus == .restricted {
+                                    // Show alert before opening Settings
+                                    showSettingsAlert = true
+                                } else {
+                                    // Permission not determined or already granted, request normally
+                                    settings.trackAndReportLocation = newValue
+                                    locationManager.requestLocationPermission()
+                                }
+                            } else {
+                                settings.trackAndReportLocation = newValue
                             }
                         }
                     ))
                     .labelsHidden()
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
+                .alert(NSLocalizedString("location_permission_open_settings_title", comment: "Alert title when redirecting to Settings for location permission"), isPresented: $showSettingsAlert) {
+                    Button(NSLocalizedString("cancel", comment: "Cancel button"), role: .cancel) {
+                        // User cancelled, keep toggle off
+                        settings.trackAndReportLocation = false
+                    }
+                    Button(NSLocalizedString("location_permission_open_settings_button", comment: "Button to open Settings for location permission")) {
+                        // User confirmed, open Settings
+                        settings.trackAndReportLocation = true
+                        LocationManager.shared.openAppSettings()
+                    }
+                } message: {
+                    Text(NSLocalizedString("location_permission_open_settings_message", comment: "Explanation message when redirecting to Settings for location permission"))
+                }
             }
             Text("").padding(.bottom,16)
             Spacer()
