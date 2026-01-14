@@ -100,6 +100,16 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        // Update authorization status (in case it changed while app was in background)
+        let currentStatus = locationManager.authorizationStatus
+        self.authorizationStatus = currentStatus
+        
+        // If permission is denied/restricted but toggle is on, update it
+        if (currentStatus == .denied || currentStatus == .restricted) && settings.trackAndReportLocation {
+            debugLog("Permission still denied/restricted after returning from Settings, setting trackAndReportLocation to false")
+            settings.trackAndReportLocation = false
+        }
+        
         // Re-check permission escalation / first-time prompt if needed
         ensureAuthorizationIfNeeded()
         if isTracking {
@@ -162,8 +172,50 @@ final class LocationManager: NSObject, ObservableObject {
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
             locationManager.requestAlwaysAuthorization()
-        default:
+        case .authorizedAlways:
+            // Permission already granted, no action needed
             break
+        case .denied, .restricted:
+            // Permission was denied, open Settings so user can change it
+            openAppSettings()
+        @unknown default:
+            break
+        }
+    }
+    
+    func openAppSettings() {
+        Task { @MainActor in
+            // Use the standard iOS Settings URL
+            let settingsUrlString = UIApplication.openSettingsURLString
+            debugLog("Attempting to open Settings with URL: \(settingsUrlString)")
+            
+            guard let settingsUrl = URL(string: settingsUrlString) else {
+                debugLog("Failed to create settings URL from: \(settingsUrlString)")
+                return
+            }
+            
+            // Check if we can open the URL (this should always be true for app-settings:)
+            guard UIApplication.shared.canOpenURL(settingsUrl) else {
+                debugLog("Cannot open Settings URL - URL scheme not available")
+                return
+            }
+            
+            // Open Settings with completion handler
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(settingsUrl, options: [:]) { success in
+                    DispatchQueue.main.async {
+                        if success {
+                            debugLog("Successfully opened Settings")
+                        } else {
+                            debugLog("Failed to open Settings - completion handler returned false")
+                        }
+                    }
+                }
+            } else {
+                // Fallback for iOS 9 and earlier
+                let opened = UIApplication.shared.openURL(settingsUrl)
+                debugLog("openURL returned: \(opened)")
+            }
         }
     }
 
@@ -225,6 +277,10 @@ final class LocationManager: NSObject, ObservableObject {
         case .denied, .restricted:
             // Explicitly stop tracking if permission is denied/restricted
             stopTracking()
+            // Update the setting to reflect the actual permission state
+            if settings.trackAndReportLocation {
+                settings.trackAndReportLocation = false
+            }
         @unknown default:
             stopHighAccuracyUpdates()
             stopSignificantChangeUpdates()
@@ -499,6 +555,13 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         Task { @MainActor in
             self.authorizationStatus = status
+            // If permission is denied or restricted, update the setting to reflect the actual state
+            if status == .denied || status == .restricted {
+                if settings.trackAndReportLocation {
+                    debugLog("Location permission denied/restricted, setting trackAndReportLocation to false")
+                    settings.trackAndReportLocation = false
+                }
+            }
             if status == .authorizedWhenInUse,
                settings.trackAndReportLocation,
                !hasRequestedAlwaysAuthorization {
