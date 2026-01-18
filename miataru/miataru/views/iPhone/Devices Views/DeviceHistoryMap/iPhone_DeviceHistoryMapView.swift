@@ -10,6 +10,9 @@
 import SwiftUI
 import MapKit
 import MiataruAPIClient
+#if canImport(UIKit)
+import UIKit
+#endif
 
 struct iPhone_DeviceHistoryMapView: View {
     let device: KnownDevice
@@ -248,43 +251,53 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
 
                 if let bounds = timelineBounds, !viewModel.history.isEmpty {
-                    quickRangePicker(bounds: bounds)
-                        .padding(.horizontal, 16)
+                    if isPlaying {
+                        // Collapsed view: only play button
+                        collapsedPlaybackButton
+                            .padding(.horizontal, 16)
+                    } else {
+                        // Expanded view: all controls
+                        quickRangePicker(bounds: bounds)
+                            .padding(.horizontal, 16)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
 
-                    DeviceHistoryTimelineOverlay(
-                        fullRange: bounds,
-                        selection: Binding(
-                            get: { selectedRange ?? bounds },
-                            set: { newValue in
-                                selectedRange = normalizeRange(newValue)
-                            }
-                        ),
-                        scrubValue: Binding(
-                            get: { scrubTimestamp ?? bounds.upperBound },
-                            set: { newValue in
-                                scrubTimestamp = newValue
-                            }
-                        ),
-                        ticks: timelineTicks,
-                        selectedCount: fullVisibleHistory.count,
-                        totalCount: viewModel.history.count,
-                        isPlaying: isPlaying,
-                        playbackSpeed: playbackSpeed,
-                        onPlayPause: togglePlayback,
-                        onLongPressSpeedUp: handleLongPressSpeedUp,
-                        onScrubShown: { hasUserScrubbed = true },
-                        stopPlayback: stopPlayback,
-                        startPlayback: startPlayback,
-                        isPlaybackStepping: isPlaybackStepping,
-                        onScrubBegan: handleScrubBegan,
-                        onScrubEnded: handleScrubEnded,
-                        onSelectionDragBegan: handleSelectionDragBegan,
-                        onSelectionDragEnded: handleSelectionDragEnded
-                    )
-                    .padding(.horizontal, 16)
+                        DeviceHistoryTimelineOverlay(
+                            fullRange: bounds,
+                            selection: Binding(
+                                get: { selectedRange ?? bounds },
+                                set: { newValue in
+                                    selectedRange = normalizeRange(newValue)
+                                }
+                            ),
+                            scrubValue: Binding(
+                                get: { scrubTimestamp ?? bounds.upperBound },
+                                set: { newValue in
+                                    scrubTimestamp = newValue
+                                }
+                            ),
+                            ticks: timelineTicks,
+                            selectedCount: fullVisibleHistory.count,
+                            totalCount: viewModel.history.count,
+                            isPlaying: isPlaying,
+                            playbackSpeed: playbackSpeed,
+                            onPlayPause: togglePlayback,
+                            onLongPressSpeedUp: handleLongPressSpeedUp,
+                            onScrubShown: { hasUserScrubbed = true },
+                            stopPlayback: stopPlayback,
+                            startPlayback: startPlayback,
+                            isPlaybackStepping: isPlaybackStepping,
+                            onScrubBegan: handleScrubBegan,
+                            onScrubEnded: handleScrubEnded,
+                            onSelectionDragBegan: handleSelectionDragBegan,
+                            onSelectionDragEnded: handleSelectionDragEnded
+                        )
+                        .padding(.horizontal, 16)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
                 }
             }
             .padding(.bottom, 16)
+            .animation(.easeInOut(duration: 0.3), value: isPlaying)
         }
         .overlay {
             if showSpeedOverlay {
@@ -353,6 +366,80 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var collapsedPlaybackButton: some View {
+        ZStack {
+            // Play/Pause icon with pulse animation when playing
+            Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                .symbolRenderingMode(.hierarchical)
+                .font(.system(size: 56))
+                .foregroundStyle(isPlaying ? Color.accentColor : Color.primary)
+                .contentTransition(.symbolEffect(.replace))
+                .scaleEffect(isPlaying ? 1.05 : 1.0)
+                .animation(
+                    isPlaying
+                        ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
+                        : .default,
+                    value: isPlaying
+                )
+
+            // Speed badge shown when playing faster than 1x
+            if isPlaying && playbackSpeed > 1.0 {
+                Text(String(format: "%.0fx", playbackSpeed))
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Color.blue, in: Capsule())
+                    .offset(x: 20, y: -20)
+                    .transition(.scale.combined(with: .opacity))
+                    .animation(.easeInOut(duration: 0.2), value: playbackSpeed)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            togglePlayback()
+        }
+        .onLongPressGesture(minimumDuration: 0.4) {
+            triggerMediumHaptic()
+            handleLongPressSpeedUp()
+        }
+        .background {
+            if #available(iOS 26.0, *) {
+                Color.clear.glassEffect(in: .circle)
+            } else {
+                Color.clear
+                    .background(.ultraThinMaterial)
+                    .clipShape(Circle())
+            }
+        }
+        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .padding(12)
+        .accessibilityLabel(
+            Text(
+                NSLocalizedString(
+                    isPlaying ? "history_pause_timeline" : "history_play_timeline",
+                    comment: "Play/pause timeline playback"
+                )
+            )
+        )
+        .accessibilityHint(
+            Text(
+                NSLocalizedString(
+                    "history_playback_speed_hint",
+                    comment: "Long press to change playback speed"
+                )
+            )
+        )
+    }
+
+    private func triggerMediumHaptic() {
+        #if canImport(UIKit)
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        #endif
     }
 
     private func normalizeRange(_ range: ClosedRange<Double>) -> ClosedRange<Double> {
