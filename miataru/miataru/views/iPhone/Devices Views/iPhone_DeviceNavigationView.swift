@@ -49,6 +49,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isAutoRouteUpdateLocked: Bool = false
     @State private var isRouteReversed: Bool = true // Default: device to user
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
+    @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
     // Legacy fields removed in favor of RouteRequestCounter
@@ -59,6 +60,10 @@ struct iPhone_DeviceNavigationView: View {
     private let minimumProgressToShowGhost: Double = 0.05
     // Distance threshold (meters) for reusing cached routes and detecting significant movement
     private let routeReuseDistanceThreshold: CLLocationDistance = 100
+    // Distance threshold (meters) for automatically stopping navigation when devices are close
+    private let autoStopDistanceThreshold: CLLocationDistance = 50
+    // Track the initial distance when navigation started to determine if auto-stop should be enabled
+    @State private var initialDistance: CLLocationDistance? = nil
     // Track the inputs used for the most recent route calculation to avoid unnecessary recalculations
     @State private var lastRouteUserCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
@@ -249,6 +254,8 @@ struct iPhone_DeviceNavigationView: View {
                 // Provide cancel handler for bottom accessory (iOS 26)
                 routeInfoState.onCancel = { dismiss() }
                 updateCoordinates(recenter: true)
+                // Record initial distance after coordinates are set
+                recordInitialDistance()
                 if !useCachedRouteIfValid() { // prefer cached route on appear
                     calculateRoute()
                 }
@@ -258,9 +265,11 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
+                checkAutoStopCondition()
             }
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
+                checkAutoStopCondition()
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
@@ -347,6 +356,9 @@ struct iPhone_DeviceNavigationView: View {
         .overlay(
             ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
         )
+        .overlay(
+            InfoOverlay(message: infoOverlayManager.message, visible: infoOverlayManager.visible)
+        )
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 reloadToolbarButton()
@@ -397,6 +409,7 @@ struct iPhone_DeviceNavigationView: View {
             lastRouteUserTimestamp = nil
             lastRouteDeviceTimestamp = nil
             lastRouteTransportType = nil
+            initialDistance = nil
             // Fetch and recenter for the new device
             Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
         }
@@ -655,6 +668,10 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 // Always update coordinates to allow auto-centering when enabled
                 updateCoordinates(recenter: resetAndRecenter)
+                // Record initial distance if not yet recorded (after first successful fetch)
+                if initialDistance == nil {
+                    recordInitialDistance()
+                }
                 // Recalculate route only on explicit reload (or initial load elsewhere) 
                 if resetAndRecenter {
                     if ignoreRouteCache {
@@ -689,6 +706,8 @@ struct iPhone_DeviceNavigationView: View {
                             calculateRoute()
                         }
                     }
+                    // Check if devices are close enough to auto-stop navigation
+                    checkAutoStopCondition()
                 }
             }
     }
@@ -793,6 +812,52 @@ struct iPhone_DeviceNavigationView: View {
             isProgrammaticCameraChange = true
             withAnimation(.easeInOut(duration: 0.5)) {
                 mapPosition = .region(region)
+            }
+        }
+    }
+    
+    // MARK: - Auto-stop navigation when devices are close
+    
+    private func recordInitialDistance() {
+        // Record the initial distance between devices when navigation starts
+        // This is used to determine if auto-stop should be enabled
+        guard let user = userCoordinate, let device = deviceCoordinate else { return }
+        let userLocation = CLLocation(latitude: user.latitude, longitude: user.longitude)
+        let deviceLocation = CLLocation(latitude: device.latitude, longitude: device.longitude)
+        let distance = userLocation.distance(from: deviceLocation)
+        if initialDistance == nil {
+            initialDistance = distance
+        }
+    }
+    
+    private func checkAutoStopCondition() {
+        // Automatically stop navigation if devices are within 50m of each other,
+        // but only if they weren't already within 50m when navigation started
+        guard let user = userCoordinate, let device = deviceCoordinate else { return }
+        guard let initialDist = initialDistance else {
+            // If initial distance hasn't been recorded yet, record it now
+            recordInitialDistance()
+            return
+        }
+        
+        let userLocation = CLLocation(latitude: user.latitude, longitude: user.longitude)
+        let deviceLocation = CLLocation(latitude: device.latitude, longitude: device.longitude)
+        let currentDistance = userLocation.distance(from: deviceLocation)
+        
+        // Only auto-stop if:
+        // 1. Current distance is within threshold (50m)
+        // 2. Initial distance was greater than threshold (devices were not already close)
+        if currentDistance <= autoStopDistanceThreshold && initialDist > autoStopDistanceThreshold {
+            // Devices have moved close to each other, stop navigation automatically
+            // Show info overlay and trigger haptics before dismissing
+            Haptic.notifySuccess()
+            infoOverlayManager.show(
+                message: NSLocalizedString("navigation_stopped_automatically", comment: "Navigation stopped automatically - devices are close"),
+                duration: 2.5
+            )
+            // Delay dismissal slightly to allow overlay to be visible
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                dismiss()
             }
         }
     }

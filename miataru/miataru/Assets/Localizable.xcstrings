@@ -12838,6 +12838,71 @@
         }
       }
     },
+    "navigation_stopped_automatically" : {
+      "comment" : "Navigation stopped automatically - devices are close",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation stoppet automatisk - enheder er tæt på"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation automatisch beendet - Geräte sind nah beieinander"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation stopped automatically - devices are close"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navegación detenida automáticamente - los dispositivos están cerca"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigointi pysähtyi automaattisesti - laitteet ovat lähellä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation arrêtée automatiquement - les appareils sont proches"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigazione interrotta automaticamente - i dispositivi sono vicini"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナビゲーションが自動的に停止しました - デバイスが近くにあります"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigatie automatisch gestopt - apparaten zijn dichtbij"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导航已自动停止 - 设备距离很近"
+          }
+        }
+      }
+    },
     "navigation_auto_route_update" : {
       "localizations" : {
         "da" : {
