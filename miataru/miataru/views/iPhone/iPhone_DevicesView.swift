@@ -19,7 +19,6 @@ struct iPhone_DevicesView: View {
     @State private var editMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
     @State private var selectedDeviceID: String? = nil
-    @State private var lastDeviceListRefresh: Date? = nil
     @State private var isVisible: Bool = false
     @State private var navigationPath: [String] = [] // Typed navigation path for device IDs
     @State private var didAutoNavigateFromSavedDevice: Bool = false
@@ -152,7 +151,7 @@ struct iPhone_DevicesView: View {
                 }
             }
             .refreshable {
-                let success = await refreshAllDeviceLocations(forceGeocoding: true)
+                let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
                 if success { Haptic.notifySuccess() }
             }
             .onAppear {
@@ -170,30 +169,14 @@ struct iPhone_DevicesView: View {
                 isVisible = false
             }
             .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
-                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
-                let interval = Double(SettingsManager.shared.mapUpdateInterval)
-                let now = Date()
-                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
-                    // Throttle: do not refresh yet
-                    return
-                }
-                lastDeviceListRefresh = now
                 Task {
-                    _ = await refreshAllDeviceLocations()
+                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
                 }
             }
             
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-                guard settings.autoRefreshDeviceList, isVisible, UIApplication.shared.applicationState == .active else { return }
-                let interval = Double(SettingsManager.shared.mapUpdateInterval)
-                let now = Date()
-                if let last = lastDeviceListRefresh, now.timeIntervalSince(last) < interval {
-                    // Throttle: do not refresh yet
-                    return
-                }
-                lastDeviceListRefresh = now
                 Task {
-                    _ = await refreshAllDeviceLocations()
+                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
                 }
 
                 // Re-assert deep link navigation after activation to beat any restored navigation stack state.
@@ -236,49 +219,6 @@ struct iPhone_DevicesView: View {
             }
             // Intentionally do not reset didAutoNavigateFromSavedDevice on
             // changes to lastOpenedDeviceID to avoid unintended re-pushes
-        }
-    }
-
-    private func refreshAllDeviceLocations(forceGeocoding: Bool = false) async -> Bool {
-        guard let url = URL(string: SettingsManager.shared.miataruServerURL), !store.devices.isEmpty else { return false }
-        let deviceIDs = store.devices.map { $0.DeviceID }
-        do {
-            debugLog("[iPhone_DevicesView] refreshAllDeviceLocations")
-            let locations = try await MiataruAPIClient.getLocation(
-                serverURL: url,
-                forDeviceIDs: deviceIDs,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID
-            )
-            for location in locations {
-                DeviceLocationCacheStore.shared.setLocation(
-                    for: location.Device,
-                    latitude: location.Latitude,
-                    longitude: location.Longitude,
-                    accuracy: location.HorizontalAccuracy,
-                    timestamp: location.TimestampDate,
-                    batteryLevel: location.BatteryLevel,
-                    altitude: location.Altitude
-                )
-            }
-            // Remove cache entry for devices without location
-            let foundIDs = Set(locations.map { $0.Device })
-            let missingIDs = Set(deviceIDs).subtracting(foundIDs)
-            for missingID in missingIDs {
-                DeviceLocationCacheStore.shared.removeLocation(for: missingID)
-            }
-            // Force geocoding only if explicitly requested (e.g., manual refresh)
-            if forceGeocoding {
-                DeviceLocationCacheStore.shared.forceGeocodingForAllDevices()
-            }
-            return true
-        } catch {
-            debugLog("Error refreshing device locations: \(error)")
-            // Remove all device locations from cache if download fails
-            for deviceID in deviceIDs {
-                DeviceLocationCacheStore.shared.removeLocation(for: deviceID)
-            }
-            // Optional: User-Overlay anzeigen
-            return false
         }
     }
 }
