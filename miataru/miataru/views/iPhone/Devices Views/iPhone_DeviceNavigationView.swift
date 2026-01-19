@@ -64,6 +64,8 @@ struct iPhone_DeviceNavigationView: View {
     private let autoStopDistanceThreshold: CLLocationDistance = 50
     // Track the initial distance when navigation started to determine if auto-stop should be enabled
     @State private var initialDistance: CLLocationDistance? = nil
+    // Track if navigation has been automatically stopped to prevent re-triggering
+    @State private var navigationStopped: Bool = false
     // Track the inputs used for the most recent route calculation to avoid unnecessary recalculations
     @State private var lastRouteUserCoordinate: CLLocationCoordinate2D? = nil
     @State private var lastRouteDeviceCoordinate: CLLocationCoordinate2D? = nil
@@ -410,6 +412,7 @@ struct iPhone_DeviceNavigationView: View {
             lastRouteDeviceTimestamp = nil
             lastRouteTransportType = nil
             initialDistance = nil
+            navigationStopped = false
             // Fetch and recenter for the new device
             Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
         }
@@ -833,6 +836,8 @@ struct iPhone_DeviceNavigationView: View {
     private func checkAutoStopCondition() {
         // Automatically stop navigation if devices are within 50m of each other,
         // but only if they weren't already within 50m when navigation started
+        // Skip check if navigation has already been stopped
+        guard !navigationStopped else { return }
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
         guard let initialDist = initialDistance else {
             // If initial distance hasn't been recorded yet, record it now
@@ -849,17 +854,29 @@ struct iPhone_DeviceNavigationView: View {
         // 2. Initial distance was greater than threshold (devices were not already close)
         if currentDistance <= autoStopDistanceThreshold && initialDist > autoStopDistanceThreshold {
             // Devices have moved close to each other, stop navigation automatically
-            // Show info overlay and trigger haptics before dismissing
+            // Mark navigation as stopped to prevent re-triggering
+            navigationStopped = true
+            // Show info overlay and trigger haptics
             Haptic.notifySuccess()
             infoOverlayManager.show(
                 message: NSLocalizedString("navigation_stopped_automatically", comment: "Navigation stopped automatically - devices are close"),
-                duration: 2.5
+                duration: 6.0
             )
-            // Delay dismissal slightly to allow overlay to be visible
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                dismiss()
-            }
+            // Stop navigation but keep the map view showing both devices
+            stopNavigation()
         }
+    }
+    
+    private func stopNavigation() {
+        // Stop navigation without dismissing the view
+        // Clear route and navigation info, but keep the map showing both devices
+        route = nil
+        travelTime = nil
+        distanceText = nil
+        routeInfoState.hide()
+        stopAutoUpdate()
+        // Update bottom accessory to reflect that navigation is stopped
+        updateBottomAccessory()
     }
 }
 
