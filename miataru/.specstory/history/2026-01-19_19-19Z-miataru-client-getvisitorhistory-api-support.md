@@ -6950,7 +6950,18 @@ Parameters:
   ]
 }
 ```
-Status: **loading**
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
+    }
+  ]
+}
+```
+Status: **completed**
 
 
 </details>
@@ -6958,13 +6969,258 @@ Status: **loading**
 
 ---
 
-<tool-use data-tool-type="unknown" data-tool-name="read_file_v2">
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Verifying the `getVisitorHistory()` method was added correctly:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Checking if `GetVisitorHistoryPayload` was added correctly:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
 <details>
-<summary>Tool use: **read_file_v2**</summary>
-
-Status: **loading**
+<summary>Tool use: **ripgrep_raw_search**</summary>
 
 
+Parameters:
+
+```json
+{
+  "pattern": "GetVisitorHistoryPayload",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "GetVisitorHistoryPayload",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+              "matches": [
+                {
+                  "lineNumber": 47,
+                  "content": "    var MiataruGetVisitorHistory: GetVisitorHistoryPayload"
+                },
+                {
+                  "lineNumber": 78,
+                  "content": "public struct GetVisitorHistoryPayload: Codable {"
+                },
+                {
+                  "lineNumber": 586,
+                  "content": "            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(amount))"
+                }
+              ]
+            }
+          ],
+          "totalLines": 3,
+          "totalMatchedLines": 3
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Implementation complete. Verifying the response struct handles edge cases correctly:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Fixing the response decoder: if `MiataruVisitors` is missing, we still need to initialize `MiataruServerConfig` before returning.
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<details>
+<summary>Tool use: **read_lints**</summary>
+
+
+Parameters:
+
+```json
+{
+  "paths": [
+    "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
+  ]
+}
+```
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Implementation complete. Summary:
+
+## Implementation complete
+
+GetVisitorHistory API support has been added to the Miataru client library. Implemented:
+
+### 1. Data structures
+- `GetVisitorHistoryPayload` — request payload with `Device` and `Amount`
+- `GetVisitorHistoryRequestBody` — private request body encoder
+- `MiataruVisitor` — visitor entry with `DeviceID`, `TimeStamp`, and `TimeStampDate` computed property
+- `MiataruVisitorHistoryServerConfig` — server configuration with max and available visitor counts
+- `MiataruGetVisitorHistoryResponse` — response struct with graceful handling of malformed entries
+
+### 2. Public API method
+- `getVisitorHistory(serverURL:forDeviceID:amount:)` — public async method following the same pattern as `getLocationHistory()`
+
+### Features
+- Follows the existing `getLocationHistory()` pattern
+- Handles malformed visitor entries gracefully (skips with logging)
+- Supports timestamp decoding (string or number format)
+- Includes debug logging consistent with existing methods
+- Proper error handling with `APIError`
+- No linter errors
+
+The implementation matches the API specification and is ready for use. The app can now call `MiataruAPIClient.getVisitorHistory()` to retrieve visitor history for any device.
+
+---
+
+_**User**_
+
+describe and commit the complete repository
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking git status, then committing the changes with a descriptive message.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
+	modified:   miataru.xcodeproj/project.pbxproj
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-01-18_15-40Z-proximity-navigation-notification-behavior.md
+	.specstory/history/2026-01-19_19-19Z-miataru-client-getvisitorhistory-api-support.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
 </details>
 </tool-use>
 
