@@ -52,6 +52,10 @@ struct iPhone_DeviceNavigationView: View {
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
+    @StateObject private var mutualNavigationDetector = MutualNavigationDetector(
+        ourDeviceId: thisDeviceIDManager.shared.deviceID,
+        serverURL: SettingsManager.shared.miataruServerURL
+    )
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -77,159 +81,163 @@ struct iPhone_DeviceNavigationView: View {
 
     var body: some View {
         VStack {
-            Map(position: $mapPosition, scope: mapScope) {
-                if let coord = animatedUserCoordinate {
-                    Annotation("", coordinate: coord, anchor: .bottom) {
-                        let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
-                        ZStack {
-                            // Pulsing behind everything for user marker
-                            if settings.pulsingMapMarkers {
-                                let circleDiameter = (/* marker height */ 40.0) * 0.65
-                                let pulsingSize = circleDiameter * 1.5
-                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
-                                PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
-                                    .offset(y: pulsingOffset)
-                                    .allowsHitTesting(false)
-                                    .accessibilityHidden(true)
-                            }
-                            VStack(spacing: 0) {
-                                if let ts = userTimestamp {
-                                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        let timeString = relativeTimeString(from: ts, to: context.date)
-                                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
-                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
-                                        Text(displayText)
-                                            .font(.caption)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(.ultraThinMaterial)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                            )
-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
-                                            .shadow(radius: 2)
-                                            .zIndex(2)
-                                    }
-                                }
-                                // Device name label above the marker for clarity
-                                DeviceNameLabel(
-                                    deviceName: myDevice?.DeviceName ?? "",
-                                    deviceID: thisDeviceIDManager.shared.deviceID
-                                )
-                                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
-                                    .shadow(radius: 2)
-                            }
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .contentShape(Rectangle())
-                                .frame(width: 80, height: 120)
-                                .offset(y: 12)
-                                .zIndex(1)
-                        }
-                        .offset(y: 35)
-                    }
+            mapWithModifiers
+        }
+        .overlay(
+            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
+        )
+        .overlay(
+            InfoOverlay(message: infoOverlayManager.message, visible: infoOverlayManager.visible)
+        )
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                reloadToolbarButton()
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    isRouteReversed.toggle()
+                    calculateRoute(ignoreCache: true)
+                }) {
+                    directionIndicatorIcon()
                 }
-                if let coord = animatedDeviceCoordinate {
-                    Annotation("", coordinate: coord, anchor: .bottom) {
-                        ZStack {
-                            // Pulsing behind everything for target device marker
-                            if settings.pulsingMapMarkers {
-                                let circleDiameter = (/* marker height */ 40.0) * 0.65
-                                let pulsingSize = circleDiameter * 1.5
-                                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
-                                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
-                                    .offset(y: pulsingOffset)
-                                    .allowsHitTesting(false)
-                                    .accessibilityHidden(true)
-                            }
-                            VStack(spacing: 0) {
-                                if let timestamp = deviceTimestamp {
-                                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                                        let timeString = relativeTimeString(from: timestamp, to: context.date)
-                                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
-                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
-                                        Text(displayText)
-                                            .font(.caption)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(.ultraThinMaterial)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                                            )
-                                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
-                                            .shadow(radius: 2)
-                                            .zIndex(2)
-                                    }
-                                }
-                                // Device name label above the marker for clarity
-                                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
-                                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
-                                    .shadow(radius: 2)
-                            }
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .contentShape(Rectangle())
-                                .frame(width: 80, height: 120)
-                                .offset(y: 12)
-                                .zIndex(1)
-                        }
-                        .offset(y: 35)
-                    }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(NSLocalizedString("reverse_navigation_direction", comment: "Reverse navigation direction")))
+                .accessibilityHint(Text(NSLocalizedString("reverse_navigation_direction_hint", comment: "Swaps the route to show navigation from the device to you, or from you to the device.")))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: openInAppleMaps) {
+                    Image(systemName: "map")
                 }
-                // Draw the route if available; optionally show a progress/ghost segment
-                if let route = route {
-                    if settings.showRouteProgress {
-                        let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                        let userSpeed = locationManager.currentLocation?.speed
-                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
-                            for: route,
-                            deviceTimestamp: deviceTimestamp,
-                            knownDeviceSpeed: knownSpeed,
-                            userTimestamp: userTimestamp,
-                            knownUserSpeed: userSpeed,
-                            now: now,
-                            isRouteReversed: isRouteReversed
-                        ) {
-                            if progress <= minimumProgressToShowGhost {
+                .buttonStyle(.plain)
+            }
+        }
+        .id(device.DeviceID)
+            .onChange(of: device.DeviceID) {
+            // Reset all device-related state when a new device is injected
+            // We intentionally do NOT clear the route cache here; it is keyed by device id
+            userCoordinate = nil
+            deviceCoordinate = nil
+            animatedUserCoordinate = nil
+            animatedDeviceCoordinate = nil
+            route = nil
+            travelTime = nil
+            distanceText = nil
+            currentRegion = nil
+            hasSetInitialRegion = false
+            userHasInteractedWithMap = false
+            currentMapCamera = nil
+            userHasRotatedMap = false
+            isProgrammaticCameraChange = false
+            isAutoCenteringEnabled = true
+            // Ensure auto-update lock state follows global setting for new navigation
+            isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
+            isRouteReversed = true // Reset to default: device to user
+            deviceTimestamp = nil
+            isLoading = false
+            lastRouteUserCoordinate = nil
+            lastRouteDeviceCoordinate = nil
+            lastRouteUserTimestamp = nil
+            lastRouteDeviceTimestamp = nil
+            lastRouteTransportType = nil
+            initialDistance = nil
+            navigationStopped = false
+            // Restart mutual navigation detection for new device
+            mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
+            // Fetch and recenter for the new device
+            Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
+        }
+    }
+
+    private var baseMapView: some View {
+        Map(position: $mapPosition, scope: mapScope) {
+            if let coord = animatedUserCoordinate {
+                Annotation("", coordinate: coord, anchor: .bottom) {
+                    userMarkerContent
+                }
+            }
+            if let coord = animatedDeviceCoordinate {
+                Annotation("", coordinate: coord, anchor: .bottom) {
+                    deviceMarkerContent
+                }
+            }
+            if let route = route {
+                let isMutual = mutualNavigationDetector.isMutualNavigation
+                if settings.showRouteProgress {
+                    let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
+                    let userSpeed = locationManager.currentLocation?.speed
+                    if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
+                        for: route,
+                        deviceTimestamp: deviceTimestamp,
+                        knownDeviceSpeed: knownSpeed,
+                        userTimestamp: userTimestamp,
+                        knownUserSpeed: userSpeed,
+                        now: now,
+                        isRouteReversed: isRouteReversed
+                    ) {
+                        if progress <= minimumProgressToShowGhost {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            if isMutual {
                                 MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.remaining, lineWidth: 4)
-                            } else if progress >= 1 {
+                                    .stroke(RouteStyle.remaining.opacity(0.6), lineWidth: 2.5)
+                            }
+                        } else if progress >= 1 {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                            if isMutual {
                                 MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.completed, lineWidth: 4)
-                            } else {
-                                MapPolyline(done)
-                                    .stroke(RouteStyle.completed, lineWidth: 4)
-                                MapPolyline(todo)
-                                    .stroke(RouteStyle.remaining, lineWidth: 4)
-                                MapCircle(center: ghost, radius: 50)
-                                    .foregroundStyle(RouteStyle.completed.opacity(0.5))
-                                Annotation("", coordinate: ghost) {
-                                    VStack(spacing: 2) {
-                                        Image(systemName: transportSymbolName())
-                                            .font(.system(size: 16))
-                                            .foregroundColor(Color.primary.opacity(0.9))
-                                            .shadow(radius: 4)
-                                        DeviceNameLabel(
-                                            deviceName: device.DeviceName,
-                                            deviceID: device.DeviceID,
-                                            font: .caption2,
-                                            opacity: 0.8
-                                        )
-                                    }
-                                }
+                                    .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
                             }
                         } else {
-                            MapPolyline(route.polyline)
-                                .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                            MapPolyline(coordinates: done)
+                                .stroke(RouteStyle.completed, lineWidth: 4)
+                            MapPolyline(coordinates: todo)
+                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            if isMutual {
+                                MapPolyline(coordinates: done)
+                                    .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
+                                MapPolyline(coordinates: todo)
+                                    .stroke(RouteStyle.remaining.opacity(0.6), lineWidth: 2.5)
+                            }
+                            MapCircle(center: ghost, radius: 50)
+                                .foregroundStyle(RouteStyle.completed.opacity(0.5))
+                            Annotation("", coordinate: ghost) {
+                                VStack(spacing: 2) {
+                                    Image(systemName: transportSymbolName())
+                                        .font(.system(size: 16))
+                                        .foregroundColor(Color.primary.opacity(0.9))
+                                        .shadow(radius: 4)
+                                    DeviceNameLabel(
+                                        deviceName: device.DeviceName,
+                                        deviceID: device.DeviceID,
+                                        font: .caption2,
+                                        opacity: 0.8
+                                    )
+                                }
+                            }
                         }
                     } else {
                         MapPolyline(route.polyline)
                             .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                        if isMutual {
+                            MapPolyline(route.polyline)
+                                .stroke(RouteStyle.withoutRemaining.opacity(0.6), lineWidth: 2.5)
+                        }
+                    }
+                } else {
+                    MapPolyline(route.polyline)
+                        .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                    if isMutual {
+                        MapPolyline(route.polyline)
+                            .stroke(RouteStyle.withoutRemaining.opacity(0.6), lineWidth: 2.5)
                     }
                 }
             }
+        }
+    }
+    
+    private var mapWithModifiers: some View {
+        baseMapView
             .mapStyle(mapStyleFromSettings(settings.mapType))
             .mapControls {
                 MapCompass(heading: 1, size: 10)
@@ -264,6 +272,8 @@ struct iPhone_DeviceNavigationView: View {
                 Task { await fetchTargetDeviceLocation(resetAndRecenter: false) }
                 startAutoUpdate()
                 updateBottomAccessory()
+                // Start mutual navigation detection
+                mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -281,6 +291,8 @@ struct iPhone_DeviceNavigationView: View {
                 // Hide accessory and remove cancel handler when leaving
                 routeInfoState.hide()
                 routeInfoState.onCancel = nil
+                // Stop mutual navigation detection
+                mutualNavigationDetector.stopMonitoring()
             }
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
@@ -302,6 +314,9 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: distanceText) { _, _ in
                 updateBottomAccessory()
             }
+            .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, _ in
+                updateBottomAccessory()
+            }
             .onMapCameraChange(frequency: .continuous) { context in
                 // Track camera state changes to detect user rotation and keep a compass affordance
                 let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
@@ -320,32 +335,7 @@ struct iPhone_DeviceNavigationView: View {
                 currentRegion = context.region
             }
             .overlay(alignment: .top) {
-                if travelTime != nil || distanceText != nil {
-                    if #available(iOS 26.0, *) {
-                        // Use bottom accessory on iOS 26; no top overlay
-                        EmptyView()
-                    } else {
-                        HStack(spacing: 8) {
-                            if let travelTime {
-                                Image(systemName: "clock")
-                                    .imageScale(.small)
-                                    .accessibilityHidden(true)
-                                Text(travelTime)
-                            }
-                            if travelTime != nil && distanceText != nil {
-                                Image(systemName: transportSymbolName())
-                                    .imageScale(.small)
-                                    .accessibilityHidden(true)
-                            }
-                            if let distanceText { Text(distanceText) }
-                        }
-                        .font(.callout.monospacedDigit())
-                        .padding(8)
-                        .background(.thinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .padding()
-                    }
-                }
+                topOverlayContent
             }
             .overlay(alignment: .bottomTrailing) {
                 scaleBarView()
@@ -353,70 +343,143 @@ struct iPhone_DeviceNavigationView: View {
             .overlay(alignment: .topTrailing) {
                 compassView()
             }
-
-        }
-        .overlay(
-            ErrorOverlay(message: errorOverlayManager.message, visible: errorOverlayManager.visible)
-        )
-        .overlay(
-            InfoOverlay(message: infoOverlayManager.message, visible: infoOverlayManager.visible)
-        )
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                reloadToolbarButton()
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    isRouteReversed.toggle()
-                    calculateRoute(ignoreCache: true)
-                }) {
-                    directionIndicatorIcon()
+    }
+    
+    @ViewBuilder
+    private var topOverlayContent: some View {
+        if travelTime != nil || distanceText != nil {
+            if #available(iOS 26.0, *) {
+                // Use bottom accessory on iOS 26; no top overlay
+                EmptyView()
+            } else {
+                HStack(spacing: 8) {
+                    if let travelTime {
+                        Image(systemName: "clock")
+                            .imageScale(.small)
+                            .accessibilityHidden(true)
+                        Text(travelTime)
+                    }
+                    if travelTime != nil && distanceText != nil {
+                        Image(systemName: transportSymbolName())
+                            .imageScale(.small)
+                            .accessibilityHidden(true)
+                    }
+                    if let distanceText {
+                        let baseText = distanceText
+                        let mutualSuffix = mutualNavigationDetector.isMutualNavigation ? " - \(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other"))" : ""
+                        Text(baseText + mutualSuffix)
+                    }
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text(NSLocalizedString("reverse_navigation_direction", comment: "Reverse navigation direction")))
-                .accessibilityHint(Text(NSLocalizedString("reverse_navigation_direction_hint", comment: "Swaps the route to show navigation from the device to you, or from you to the device.")))
+                .font(.callout.monospacedDigit())
+                .padding(8)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding()
             }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: openInAppleMaps) {
-                    Image(systemName: "map")
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .id(device.DeviceID)
-        .onChange(of: device.DeviceID) {
-            // Reset all device-related state when a new device is injected
-            // We intentionally do NOT clear the route cache here; it is keyed by device id
-            userCoordinate = nil
-            deviceCoordinate = nil
-            animatedUserCoordinate = nil
-            animatedDeviceCoordinate = nil
-            route = nil
-            travelTime = nil
-            distanceText = nil
-            currentRegion = nil
-            hasSetInitialRegion = false
-            userHasInteractedWithMap = false
-            currentMapCamera = nil
-            userHasRotatedMap = false
-            isProgrammaticCameraChange = false
-            isAutoCenteringEnabled = true
-            // Ensure auto-update lock state follows global setting for new navigation
-            isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
-            isRouteReversed = true // Reset to default: device to user
-            deviceTimestamp = nil
-            isLoading = false
-            lastRouteUserCoordinate = nil
-            lastRouteDeviceCoordinate = nil
-            lastRouteUserTimestamp = nil
-            lastRouteDeviceTimestamp = nil
-            lastRouteTransportType = nil
-            initialDistance = nil
-            navigationStopped = false
-            // Fetch and recenter for the new device
-            Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
         }
     }
+    
+    
+    @ViewBuilder
+    private var userMarkerContent: some View {
+        let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
+        ZStack {
+            // Pulsing behind everything for user marker
+            if settings.pulsingMapMarkers {
+                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                let pulsingSize = circleDiameter * 1.5
+                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
+                PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
+                    .offset(y: pulsingOffset)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+            VStack(spacing: 0) {
+                if let ts = userTimestamp {
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        let timeString = relativeTimeString(from: ts, to: context.date)
+                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
+                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        Text(displayText)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Capsule())
+                            .overlay(
+                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                            )
+                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                            .shadow(radius: 2)
+                            .zIndex(2)
+                    }
+                }
+                // Device name label above the marker for clarity
+                DeviceNameLabel(
+                    deviceName: myDevice?.DeviceName ?? "",
+                    deviceID: thisDeviceIDManager.shared.deviceID
+                )
+                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+                    .shadow(radius: 2)
+            }
+            Rectangle()
+                .foregroundColor(.clear)
+                .contentShape(Rectangle())
+                .frame(width: 80, height: 120)
+                .offset(y: 12)
+                .zIndex(1)
+        }
+        .offset(y: 35)
+    }
+    
+    @ViewBuilder
+    private var deviceMarkerContent: some View {
+        ZStack {
+            // Pulsing behind everything for target device marker
+            if settings.pulsingMapMarkers {
+                let circleDiameter = (/* marker height */ 40.0) * 0.65
+                let pulsingSize = circleDiameter * 1.5
+                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
+                PulsingAccuracyCircle(pulsingColor: Color(device.DeviceColor ?? .red), size: pulsingSize)
+                    .offset(y: pulsingOffset)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
+            VStack(spacing: 0) {
+                if let timestamp = deviceTimestamp {
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        let timeString = relativeTimeString(from: timestamp, to: context.date)
+                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
+                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        Text(displayText)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Capsule())
+                            .overlay(
+                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                            )
+                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                            .shadow(radius: 2)
+                            .zIndex(2)
+                    }
+                }
+                // Device name label above the marker for clarity
+                DeviceNameLabel(deviceName: device.DeviceName, deviceID: device.DeviceID)
+                MiataruMapMarker(color: Color(device.DeviceColor ?? .red))
+                    .shadow(radius: 2)
+            }
+            Rectangle()
+                .foregroundColor(.clear)
+                .contentShape(Rectangle())
+                .frame(width: 80, height: 120)
+                .offset(y: 12)
+                .zIndex(1)
+        }
+        .offset(y: 35)
+    }
+    
 
     @ViewBuilder
     private func directionIndicatorIcon() -> some View {
@@ -964,10 +1027,12 @@ extension iPhone_DeviceNavigationView {
                 etaText: travelTime,
                 distanceText: distanceText,
                 transportSymbolName: transportSymbolName(),
-                visible: visible
+                visible: visible,
+                isMutualNavigation: mutualNavigationDetector.isMutualNavigation
             )
         }
     }
+    
     
 }
 
