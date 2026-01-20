@@ -33,6 +33,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State private var showMailComposer = false
     @State private var showShareFallback = false
     @State private var qrImage: UIImage? = nil
+    @State private var navigationPath = NavigationPath()
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -40,7 +41,8 @@ struct iPhone_MyDeviceQRCodeView: View {
         GeometryReader { geometry in
             let isLandscape = geometry.size.width > geometry.size.height
             
-            ScrollView {
+            NavigationStack(path: $navigationPath) {
+                ScrollView {
                 VStack(spacing: 0) {
                     // QR Code Section
                     VStack(spacing: isLandscape ? 16 : 20) {
@@ -206,62 +208,88 @@ struct iPhone_MyDeviceQRCodeView: View {
                     }
                     .padding(.horizontal, isLandscape ? 20 : 16)
                     .padding(.top, isLandscape ? 16 : 20)
-                    .padding(.bottom, isLandscape ? 20 : 30)
+                    
+                    // Visitor History Button
+                    Button(action: {
+                        navigationPath.append("visitorHistory")
+                    }) {
+                        HStack {
+                            Image(systemName: "clock.arrow.circlepath")
+                            Text(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.accentColor.opacity(0.1))
+                        .foregroundColor(.accentColor)
+                        .cornerRadius(10)
+                    }
+                    .padding(.horizontal, isLandscape ? 20 : 16)
+                    .padding(.top, isLandscape ? 12 : 16)
+                    .accessibilityLabel(NSLocalizedString("visitor_history_accessibility_label", comment: "Accessibility label for visitor history button"))
+                    
+                    Spacer()
+                        .frame(height: isLandscape ? 20 : 30)
                 }
                 .frame(
                     width: geometry.size.width,
                     height: geometry.size.height,
                     alignment: isLandscape ? .center : .top
                 )
-            }
-            .navigationTitle("my_device")
-            .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
-        }
-        .overlay(
-            // Overlay für Kopier-Bestätigung
-            Group {
-                if showCopiedAlert {
-                    VStack {
-                        Spacer()
-                        
-                        HStack(spacing: 12) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                                .font(.title2)
-                            
-                            Text("device_id_copied_to_clipboard")
-                                .font(.body)
-                                .fontWeight(.medium)
-                                .foregroundColor(.white)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.black.opacity(0.8))
-                        )
-                        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
-                        
-                        Spacer()
+                }
+                .navigationTitle("my_device")
+                .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
+                .navigationDestination(for: String.self) { destination in
+                    if destination == "visitorHistory" {
+                        iPhone_VisitorHistoryView()
                     }
-                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
-                    .zIndex(1)
+                }
+                .overlay(
+                // Overlay für Kopier-Bestätigung
+                Group {
+                    if showCopiedAlert {
+                        VStack {
+                            Spacer()
+                            
+                            HStack(spacing: 12) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                    .font(.title2)
+                                
+                                Text("device_id_copied_to_clipboard")
+                                    .font(.body)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.black.opacity(0.8))
+                            )
+                            .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                            
+                            Spacer()
+                        }
+                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                        .zIndex(1)
+                    }
+                    }
+                )
+                .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
+                    MailView(
+                        deviceID: thisDeviceIDManager.shared.deviceID,
+                        qrImage: qrImage ?? (generateQRCodeImage() ?? UIImage())
+                    )
+                }
+                .sheet(isPresented: $showShareFallback) {
+                    let items: [Any] = {
+                        var arr: [Any] = [shareText]
+                        if let img = qrImage ?? generateQRCodeImage() { arr.append(img) }
+                        return arr
+                    }()
+                    ActivityView(activityItems: items)
                 }
             }
-        )
-        .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
-            MailView(
-                deviceID: thisDeviceIDManager.shared.deviceID,
-                qrImage: qrImage ?? (generateQRCodeImage() ?? UIImage())
-            )
-        }
-        .sheet(isPresented: $showShareFallback) {
-            let items: [Any] = {
-                var arr: [Any] = [shareText]
-                if let img = qrImage ?? generateQRCodeImage() { arr.append(img) }
-                return arr
-            }()
-            ActivityView(activityItems: items)
         }
     }
 

@@ -17,14 +17,16 @@ final class RouteInfoState: ObservableObject {
     @Published var etaText: String = ""
     @Published var distanceText: String = ""
     @Published var transportSymbolName: String = "car"
+    @Published var isMutualNavigation: Bool = false
 
     // Optional handler to cancel the current navigation/session
     var onCancel: (() -> Void)?
 
-    func update(etaText: String?, distanceText: String?, transportSymbolName: String?, visible: Bool) {
+    func update(etaText: String?, distanceText: String?, transportSymbolName: String?, visible: Bool, isMutualNavigation: Bool = false) {
         self.etaText = etaText ?? ""
         self.distanceText = distanceText ?? ""
         self.transportSymbolName = transportSymbolName ?? self.transportSymbolName
+        self.isMutualNavigation = isMutualNavigation
         self.isVisible = visible && ((etaText?.isEmpty == false) || (distanceText?.isEmpty == false))
     }
 

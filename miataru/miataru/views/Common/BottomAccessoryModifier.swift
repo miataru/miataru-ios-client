@@ -55,7 +55,9 @@ struct BottomAccessoryModifier: ViewModifier {
         HStack(spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
-                Text("\(routeInfoState.distanceText) • \(routeInfoState.etaText)")
+                let baseText = "\(routeInfoState.distanceText) • \(routeInfoState.etaText)"
+                let mutualSuffix = routeInfoState.isMutualNavigation ? " - \(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other"))" : ""
+                Text(baseText + mutualSuffix)
                     .font(.system(size: 14, weight: .regular))
                     .lineLimit(1)
                 Spacer(minLength: 0)
