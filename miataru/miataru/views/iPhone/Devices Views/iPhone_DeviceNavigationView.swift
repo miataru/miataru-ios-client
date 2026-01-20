@@ -189,14 +189,14 @@ struct iPhone_DeviceNavigationView: View {
                                     .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
                             }
                         } else {
-                            MapPolyline(coordinates: done)
+                            MapPolyline(done)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
-                            MapPolyline(coordinates: todo)
+                            MapPolyline(todo)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
                             if isMutual {
-                                MapPolyline(coordinates: done)
+                                MapPolyline(done)
                                     .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
-                                MapPolyline(coordinates: todo)
+                                MapPolyline(todo)
                                     .stroke(RouteStyle.remaining.opacity(0.6), lineWidth: 2.5)
                             }
                             MapCircle(center: ghost, radius: 50)
