@@ -10,34 +10,6 @@
 import SwiftUI
 import MiataruAPIClient
 
-// #region agent log
-private func writeDebugLog(_ message: String, data: [String: Any] = [:], hypothesisId: String = "") {
-    let logPath = "/Users/bietiekay/code/miataru-ios-app/miataru/.cursor/debug.log"
-    let logEntry: [String: Any] = [
-        "sessionId": "debug-session",
-        "runId": "run1",
-        "hypothesisId": hypothesisId,
-        "location": "iPhone_VisitorHistoryView.swift",
-        "message": message,
-        "data": data,
-        "timestamp": Int64(Date().timeIntervalSince1970 * 1000)
-    ]
-    if let jsonData = try? JSONSerialization.data(withJSONObject: logEntry),
-       let jsonString = String(data: jsonData, encoding: .utf8) {
-        let logLine = jsonString + "\n"
-        let url = URL(fileURLWithPath: logPath)
-        if !FileManager.default.fileExists(atPath: logPath) {
-            FileManager.default.createFile(atPath: logPath, contents: nil, attributes: nil)
-        }
-        if let fileHandle = try? FileHandle(forWritingTo: url) {
-            fileHandle.seekToEndOfFile()
-            fileHandle.write(logLine.data(using: .utf8)!)
-            fileHandle.closeFile()
-        }
-    }
-}
-// #endregion agent log
-
 struct iPhone_VisitorHistoryView: View {
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var settings = SettingsManager.shared
@@ -90,9 +62,6 @@ struct iPhone_VisitorHistoryView: View {
         .navigationTitle(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
         .navigationBarTitleDisplayMode(.large)
         .onAppear {
-            // #region agent log
-            writeDebugLog("View appeared, calling loadVisitorHistory", hypothesisId: "E")
-            // #endregion agent log
             loadVisitorHistory()
         }
         .sheet(isPresented: $showAddDeviceSheet, onDismiss: {
@@ -122,21 +91,10 @@ struct iPhone_VisitorHistoryView: View {
     }
     
     private func loadVisitorHistory() {
-        // #region agent log
-        writeDebugLog("loadVisitorHistory called", data: ["serverURL": settings.miataruServerURL], hypothesisId: "A")
-        // #endregion agent log
-        
         guard let url = URL(string: settings.miataruServerURL) else {
-            // #region agent log
-            writeDebugLog("Invalid server URL", data: ["serverURL": settings.miataruServerURL], hypothesisId: "A")
-            // #endregion agent log
             errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
             return
         }
-        
-        // #region agent log
-        writeDebugLog("URL constructed successfully", data: ["url": url.absoluteString], hypothesisId: "A")
-        // #endregion agent log
         
         isLoading = true
         errorMessage = nil
@@ -144,35 +102,17 @@ struct iPhone_VisitorHistoryView: View {
         Task {
             do {
                 let ourDeviceId = thisDeviceIDManager.shared.deviceID
-                // #region agent log
-                writeDebugLog("Device ID retrieved", data: ["deviceID": ourDeviceId, "isEmpty": ourDeviceId.isEmpty], hypothesisId: "B")
-                // #endregion agent log
-                
-                // #region agent log
-                writeDebugLog("Calling API getVisitorHistory", data: ["url": url.absoluteString, "deviceID": ourDeviceId, "amount": 100], hypothesisId: "C")
-                // #endregion agent log
-                
                 let fetchedVisitors = try await MiataruAPIClient.getVisitorHistory(
                     serverURL: url,
                     forDeviceID: ourDeviceId,
                     amount: 100
                 )
                 
-                // #region agent log
-                writeDebugLog("API call succeeded", data: ["visitorCount": fetchedVisitors.count], hypothesisId: "C")
-                // #endregion agent log
-                
                 await MainActor.run {
                     self.visitors = fetchedVisitors
                     self.isLoading = false
-                    // #region agent log
-                    writeDebugLog("Visitors updated in UI", data: ["visitorCount": fetchedVisitors.count], hypothesisId: "C")
-                    // #endregion agent log
                 }
             } catch {
-                // #region agent log
-                writeDebugLog("API call failed", data: ["error": String(describing: error), "errorType": String(describing: type(of: error))], hypothesisId: "C")
-                // #endregion agent log
                 await MainActor.run {
                     self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
                     self.isLoading = false
