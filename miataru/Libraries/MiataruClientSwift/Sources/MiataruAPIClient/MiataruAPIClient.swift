@@ -3,6 +3,35 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - Debug Logging Helper
+// #region agent log
+private func writeDebugLog(_ message: String, data: [String: Any] = [:], hypothesisId: String = "") {
+    let logPath = "/Users/bietiekay/code/miataru-ios-app/miataru/.cursor/debug.log"
+    let logEntry: [String: Any] = [
+        "sessionId": "debug-session",
+        "runId": "run1",
+        "hypothesisId": hypothesisId,
+        "location": "MiataruAPIClient.swift",
+        "message": message,
+        "data": data,
+        "timestamp": Int64(Date().timeIntervalSince1970 * 1000)
+    ]
+    if let jsonData = try? JSONSerialization.data(withJSONObject: logEntry),
+       let jsonString = String(data: jsonData, encoding: .utf8) {
+        let logLine = jsonString + "\n"
+        let url = URL(fileURLWithPath: logPath)
+        if !FileManager.default.fileExists(atPath: logPath) {
+            FileManager.default.createFile(atPath: logPath, contents: nil, attributes: nil)
+        }
+        if let fileHandle = try? FileHandle(forWritingTo: url) {
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(logLine.data(using: .utf8)!)
+            fileHandle.closeFile()
+        }
+    }
+}
+// #endregion agent log
+
 // MARK: - Local Logging Helper
 
 /// Lightweight logging helper for the Miataru client library.
@@ -330,6 +359,11 @@ public struct MiataruVisitor: Codable {
             return Date(timeIntervalSince1970: 0)
         }
     }
+    
+    /// Unique identifier combining DeviceID and TimeStamp for use in ForEach
+    public var uniqueID: String {
+        return "\(DeviceID)-\(TimeStamp)"
+    }
 
     enum CodingKeys: String, CodingKey {
         case DeviceID
@@ -377,6 +411,32 @@ public struct MiataruVisitorHistoryServerConfig: Codable {
         self.MaximumNumberOfVisitorHistory = MaximumNumberOfVisitorHistory
         self.AvailableVisitorHistory = AvailableVisitorHistory
     }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // MaximumNumberOfVisitorHistory can come as String or number
+        if let maxString = try? container.decode(String.self, forKey: .MaximumNumberOfVisitorHistory) {
+            MaximumNumberOfVisitorHistory = maxString
+        } else if let maxInt = try? container.decode(Int.self, forKey: .MaximumNumberOfVisitorHistory) {
+            MaximumNumberOfVisitorHistory = String(maxInt)
+        } else if let maxDouble = try? container.decode(Double.self, forKey: .MaximumNumberOfVisitorHistory) {
+            MaximumNumberOfVisitorHistory = String(Int(maxDouble))
+        } else {
+            MaximumNumberOfVisitorHistory = "0"
+        }
+        
+        // AvailableVisitorHistory can come as String or number
+        if let availString = try? container.decode(String.self, forKey: .AvailableVisitorHistory) {
+            AvailableVisitorHistory = availString
+        } else if let availInt = try? container.decode(Int.self, forKey: .AvailableVisitorHistory) {
+            AvailableVisitorHistory = String(availInt)
+        } else if let availDouble = try? container.decode(Double.self, forKey: .AvailableVisitorHistory) {
+            AvailableVisitorHistory = String(Int(availDouble))
+        } else {
+            AvailableVisitorHistory = "0"
+        }
+    }
 }
 
 /// The structure of the response for a GetVisitorHistory request.
@@ -397,11 +457,28 @@ public struct MiataruGetVisitorHistoryResponse: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
+        // #region agent log
+        writeDebugLog("Decoding MiataruGetVisitorHistoryResponse", data: ["hasServerConfig": container.contains(.MiataruServerConfig), "hasVisitors": container.contains(.MiataruVisitors)], hypothesisId: "D")
+        // #endregion agent log
+
         // Decode server config
-        MiataruServerConfig = try container.decode(MiataruVisitorHistoryServerConfig.self, forKey: .MiataruServerConfig)
+        do {
+            MiataruServerConfig = try container.decode(MiataruVisitorHistoryServerConfig.self, forKey: .MiataruServerConfig)
+            // #region agent log
+            writeDebugLog("Server config decoded successfully", hypothesisId: "D")
+            // #endregion agent log
+        } catch {
+            // #region agent log
+            writeDebugLog("Server config decode failed", data: ["error": String(describing: error)], hypothesisId: "D")
+            // #endregion agent log
+            throw error
+        }
 
         // Decode visitors array with graceful handling of malformed entries
         guard var visitorsContainer = try? container.nestedUnkeyedContainer(forKey: .MiataruVisitors) else {
+            // #region agent log
+            writeDebugLog("Visitors array not found or empty", hypothesisId: "D")
+            // #endregion agent log
             MiataruVisitors = []
             return
         }
@@ -588,19 +665,40 @@ public enum MiataruAPIClient {
 
         let data: Data
         do {
+            // #region agent log
+            writeDebugLog("Starting POST request", data: ["url": url.absoluteString, "deviceID": deviceID, "amount": amount], hypothesisId: "C")
+            // #endregion agent log
             data = try await performPostRequest(url: url, encodablePayload: requestBody) {
                 "[MiataruAPIClient] Requesting visitor history for device \(deviceID) amount=\(amount) payload=\($0)"
             }
+            // #region agent log
+            writeDebugLog("POST request succeeded", data: ["dataSize": data.count], hypothesisId: "C")
+            // #endregion agent log
         } catch APIError.encodingError(let err) {
+            // #region agent log
+            writeDebugLog("Encoding error", data: ["error": err.localizedDescription], hypothesisId: "C")
+            // #endregion agent log
             debugLog("[MiataruAPIClient] Encoding visitor history request failed for device \(deviceID): \(err.localizedDescription)")
             throw APIError.encodingError(err)
         }
 
         do {
+            // #region agent log
+            if let jsonString = String(data: data, encoding: .utf8) {
+                writeDebugLog("Attempting to decode response", data: ["responsePreview": String(jsonString.prefix(500))], hypothesisId: "D")
+            }
+            // #endregion agent log
             let response = try jsonDecoder.decode(MiataruGetVisitorHistoryResponse.self, from: data)
+            // #region agent log
+            writeDebugLog("Decoding succeeded", data: ["visitorCount": response.MiataruVisitors.count], hypothesisId: "D")
+            // #endregion agent log
             debugLog("[MiataruAPIClient] Received visitor history entries=\(response.MiataruVisitors.count) for device \(deviceID)")
             return response.MiataruVisitors
         } catch {
+            // #region agent log
+            let jsonString = String(data: data, encoding: .utf8) ?? "Unable to decode as UTF-8"
+            writeDebugLog("Decoding failed", data: ["error": String(describing: error), "errorType": String(describing: type(of: error)), "responsePreview": String(jsonString.prefix(500))], hypothesisId: "D")
+            // #endregion agent log
             if let jsonString = String(data: data, encoding: .utf8) {
                 debugLog("[MiataruAPIClient] Visitor history decode failed for device \(deviceID). Payload=\(jsonString)")
             }

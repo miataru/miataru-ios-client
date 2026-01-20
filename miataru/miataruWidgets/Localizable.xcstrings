@@ -198,7 +198,6 @@
       }
     },
     "Show ${device}" : {
-      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
