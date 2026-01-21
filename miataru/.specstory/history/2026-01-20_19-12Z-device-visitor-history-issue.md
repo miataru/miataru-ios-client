@@ -23971,3 +23971,721 @@ Removing debug instrumentation from the API client:
 
 ---
 
+
+Finding and removing all debug logging calls:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+Removing all debug logging calls:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "#region agent log|writeDebugLog",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "#region agent log|writeDebugLog",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "./Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+              "matches": [
+                {
+                  "lineNumber": 622,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 623,
+                  "content": "            writeDebugLog(\"Starting POST request\", data: [\"url\": url.absoluteString, \"deviceID\": deviceID, \"amount\": amount], hypothesisId: \"C\")"
+                },
+                {
+                  "lineNumber": 628,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 629,
+                  "content": "            writeDebugLog(\"POST request succeeded\", data: [\"dataSize\": data.count], hypothesisId: \"C\")"
+                },
+                {
+                  "lineNumber": 632,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 633,
+                  "content": "            writeDebugLog(\"Encoding error\", data: [\"error\": err.localizedDescription], hypothesisId: \"C\")"
+                },
+                {
+                  "lineNumber": 640,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 642,
+                  "content": "                writeDebugLog(\"Attempting to decode response\", data: [\"responsePreview\": String(jsonString.prefix(500))], hypothesisId: \"D\")"
+                },
+                {
+                  "lineNumber": 646,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 647,
+                  "content": "            writeDebugLog(\"Decoding succeeded\", data: [\"visitorCount\": response.MiataruVisitors.count], hypothesisId: \"D\")"
+                },
+                {
+                  "lineNumber": 652,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 654,
+                  "content": "            writeDebugLog(\"Decoding failed\", data: [\"error\": String(describing: error), \"errorType\": String(describing: type(of: error)), \"responsePreview\": String(jsonString.prefix(500))], hypothesisId: \"D\")"
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-20_19-12Z-device-visitor-history-issue.md",
+              "matches": [
+                {
+                  "lineNumber": 22388,
+                  "content": "        \"contents\": \"        errorMessage = nil\\n        \\n        Task {\\n            do {\\n                let ourDeviceId = thisDeviceIDManager.shared.deviceID\\n                // #region agent log\\n                writeDebugLog(\\\"Device ID retrieved\\\", data: [\\\"deviceID\\\": ourDeviceId, \\\"isEmpty\\\": ourDeviceId.isEmpty], hypothesisId: \\\"B\\\")\\n                // #endregion agent log\\n                \\n                // #region agent log\\n                writeDebugLog(\\\"Calling API getVisitorHistory\\\", data: [\\\"url\\\": url.absoluteString, \\\"deviceID\\\": ourDeviceId, \\\"amount\\\": 100], hypothesisId: \\\"C\\\")\\n                // #endregion agent log\\n                \\n                let fetchedVisitors = try await MiataruAPIClient.getVisitorHistory(\\n                    serverURL: url,\\n                    forDeviceID: ourDeviceId,\\n                    amount: 100\\n                )\\n                \\n                // #region agent log\\n                writeDebugLog(\\\"API call succeeded\\ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 22412,
+                  "content": "            \"text\": \"                // #region agent log\","
+                },
+                {
+                  "lineNumber": 22416,
+                  "content": "            \"text\": \"                writeDebugLog(\\\"Device ID retrieved\\\", data: [\\\"deviceID\\\": ourDeviceId, \\\"isEmpty\\\": ourDeviceId.isEmpty], hypothesisId: \\\"B\\\")\","
+                },
+                {
+                  "lineNumber": 22428,
+                  "content": "            \"text\": \"                // #region agent log\","
+                },
+                {
+                  "lineNumber": 22432,
+                  "content": "            \"text\": \"                writeDebugLog(\\\"Calling API getVisitorHistory\\\", data: [\\\"url\\\": url.absoluteString, \\\"deviceID\\\": ourDeviceId, \\\"amount\\\": 100], hypothesisId: \\\"C\\\")\","
+                },
+                {
+                  "lineNumber": 22468,
+                  "content": "            \"text\": \"                // #region agent log\","
+                },
+                {
+                  "lineNumber": 22472,
+                  "content": "            \"text\": \"                writeDebugLog(\\\"API call succeeded\\\", data: [\\\"visitorCount\\\": fetchedVisitors.count], hypothesisId: \\\"C\\\")\","
+                },
+                {
+                  "lineNumber": 22496,
+                  "content": "            \"text\": \"                    // #region agent log\","
+                },
+                {
+                  "lineNumber": 22500,
+                  "content": "            \"text\": \"                    writeDebugLog(\\\"Visitors updated in UI\\\", data: [\\\"visitorCount\\\": fetchedVisitors.count], hypothesisId: \\\"C\\\")\","
+                },
+                {
+                  "lineNumber": 22516,
+                  "content": "            \"text\": \"                // #region agent log\","
+                },
+                {
+                  "lineNumber": 23591,
+                  "content": "- Debug instrumentation added (wrapped in collapsible &#96;#region agent log&#96; regions) for troubleshooting"
+                },
+                {
+                  "lineNumber": 23621,
+                  "content": "  \"pattern\": \"#region agent log|writeDebugLog\","
+                },
+                {
+                  "lineNumber": 23631,
+                  "content": "    \"pattern\": \"#region agent log|writeDebugLog\","
+                },
+                {
+                  "lineNumber": 23643,
+                  "content": "                  \"content\": \"// #region agent log\""
+                },
+                {
+                  "lineNumber": 23647,
+                  "content": "                  \"content\": \"private func writeDebugLog(_ message: String, data: [String: Any] = [:], hypothesisId: String = \\\"\\\") {\""
+                },
+                {
+                  "lineNumber": 23651,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23655,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"View appeared, calling loadVisitorHistory\\\", hypothesisId: \\\"E\\\")\""
+                },
+                {
+                  "lineNumber": 23659,
+                  "content": "                  \"content\": \"        // #region agent log\""
+                },
+                {
+                  "lineNumber": 23663,
+                  "content": "                  \"content\": \"        writeDebugLog(\\\"loadVisitorHistory called\\\", data: [\\\"serverURL\\\": settings.miataruServerURL], hypothesisId: \\\"A\\\")\""
+                },
+                {
+                  "lineNumber": 23667,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23671,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Invalid server URL\\\", data: [\\\"serverURL\\\": settings.miataruServerURL], hypothesisId: \\\"A\\\")\""
+                },
+                {
+                  "lineNumber": 23675,
+                  "content": "                  \"content\": \"        // #region agent log\""
+                },
+                {
+                  "lineNumber": 23679,
+                  "content": "                  \"content\": \"        writeDebugLog(\\\"URL constructed successfully\\\", data: [\\\"url\\\": url.absoluteString], hypothesisId: \\\"A\\\")\""
+                },
+                {
+                  "lineNumber": 23683,
+                  "content": "                  \"content\": \"                // #region agent log\""
+                },
+                {
+                  "lineNumber": 23687,
+                  "content": "                  \"content\": \"                writeDebugLog(\\\"Device ID retrieved\\\", data: [\\\"deviceID\\\": ourDeviceId, \\\"isEmpty\\\": ourDeviceId.isEmpty], hypothesisId: \\\"B\\\")\""
+                },
+                {
+                  "lineNumber": 23691,
+                  "content": "                  \"content\": \"                // #region agent log\""
+                },
+                {
+                  "lineNumber": 23695,
+                  "content": "                  \"content\": \"                writeDebugLog(\\\"Calling API getVisitorHistory\\\", data: [\\\"url\\\": url.absoluteString, \\\"deviceID\\\": ourDeviceId, \\\"amount\\\": 100], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23699,
+                  "content": "                  \"content\": \"                // #region agent log\""
+                },
+                {
+                  "lineNumber": 23703,
+                  "content": "                  \"content\": \"                writeDebugLog(\\\"API call succeeded\\\", data: [\\\"visitorCount\\\": fetchedVisitors.count], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23707,
+                  "content": "                  \"content\": \"                    // #region agent log\""
+                },
+                {
+                  "lineNumber": 23711,
+                  "content": "                  \"content\": \"                    writeDebugLog(\\\"Visitors updated in UI\\\", data: [\\\"visitorCount\\\": fetchedVisitors.count], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23715,
+                  "content": "                  \"content\": \"                // #region agent log\""
+                },
+                {
+                  "lineNumber": 23719,
+                  "content": "                  \"content\": \"                writeDebugLog(\\\"API call failed\\\", data: [\\\"error\\\": String(describing: error), \\\"errorType\\\": String(describing: type(of: error))], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23749,
+                  "content": "  \"pattern\": \"#region agent log|writeDebugLog\","
+                },
+                {
+                  "lineNumber": 23759,
+                  "content": "    \"pattern\": \"#region agent log|writeDebugLog\","
+                },
+                {
+                  "lineNumber": 23771,
+                  "content": "                  \"content\": \"// #region agent log\""
+                },
+                {
+                  "lineNumber": 23775,
+                  "content": "                  \"content\": \"private func writeDebugLog(_ message: String, data: [String: Any] = [:], hypothesisId: String = \\\"\\\") {\""
+                },
+                {
+                  "lineNumber": 23779,
+                  "content": "                  \"content\": \"        // #region agent log\""
+                },
+                {
+                  "lineNumber": 23783,
+                  "content": "                  \"content\": \"        writeDebugLog(\\\"Decoding MiataruGetVisitorHistoryResponse\\\", data: [\\\"hasServerConfig\\\": container.contains(.MiataruServerConfig), \\\"hasVisitors\\\": container.contains(.MiataruVisitors)], hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23787,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23791,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Server config decoded successfully\\\", hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23795,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23799,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Server config decode failed\\\", data: [\\\"error\\\": String(describing: error)], hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23803,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23807,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Visitors array not found or empty\\\", hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23811,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23815,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Starting POST request\\\", data: [\\\"url\\\": url.absoluteString, \\\"deviceID\\\": deviceID, \\\"amount\\\": amount], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23819,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23823,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"POST request succeeded\\\", data: [\\\"dataSize\\\": data.count], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23827,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23831,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Encoding error\\\", data: [\\\"error\\\": err.localizedDescription], hypothesisId: \\\"C\\\")\""
+                },
+                {
+                  "lineNumber": 23835,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23839,
+                  "content": "                  \"content\": \"                writeDebugLog(\\\"Attempting to decode response\\\", data: [\\\"responsePreview\\\": String(jsonString.prefix(500))], hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23843,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23847,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Decoding succeeded\\\", data: [\\\"visitorCount\\\": response.MiataruVisitors.count], hypothesisId: \\\"D\\\")\""
+                },
+                {
+                  "lineNumber": 23851,
+                  "content": "                  \"content\": \"            // #region agent log\""
+                },
+                {
+                  "lineNumber": 23855,
+                  "content": "                  \"content\": \"            writeDebugLog(\\\"Decoding failed\\\", data: [\\\"error\\\": String(describing: error), \\\"errorType\\\": String(describing: type(of: error)), \\\"responsePreview\\\": String(jsonString.prefix(500))], hypothesisId: \\\"D\\\")\""
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-12_16-21Z-multiple-map-widget-rendering-issue.md",
+              "matches": [
+                {
+                  "lineNumber": 2427,
+                  "content": "  \"pattern\": \"#region agent log|#endregion agent log\","
+                },
+                {
+                  "lineNumber": 2438,
+                  "content": "    \"pattern\": \"#region agent log|#endregion agent log\","
+                },
+                {
+                  "lineNumber": 2505,
+                  "content": "            // #region agent log"
+                },
+                {
+                  "lineNumber": 2527,
+                  "content": "        // #region agent log"
+                },
+                {
+                  "lineNumber": 2718,
+                  "content": "  \"pattern\": \"#region agent log|#endregion agent log|hypothesisId|runId\\\":\\\"pre-fix\","
+                },
+                {
+                  "lineNumber": 2729,
+                  "content": "    \"pattern\": \"#region agent log|#endregion agent log|hypothesisId|runId\\\":\\\"pre-fix\","
+                },
+                {
+                  "lineNumber": 2806,
+                  "content": "- Verified there are **no remaining &#96;#region agent log&#96; blocks** or &#96;WidgetDebugLogger&#96; references in &#96;miataruWidgets/&#96;, and no lints reported."
+                }
+              ]
+            },
+            {
+              "file": "./.specstory/history/2026-01-12_11-46Z-map-widget-image-rendering-issues.md",
+              "matches": [
+                {
+                  "lineNumber": 7442,
+                  "content": "In the WidgetMapSnapshotGenerator, I imported WidgetKit because it's needed for reloading timelines. I’ll maintain the conditional import for WidgetKit. I also need to eliminate all the \"#region agent log\" markers and use the Delete tool to remove the unnecessary files after the patch. Once I’ve completed the edits, I plan to run lints, but since Xcode compile isn't possible, I'll use ReadLints for the edited files instead. Patching will be done sequentially.&lt;/details&gt;&lt;/think&gt;"
+                }
+              ]
+            }
+          ],
+          "totalLines": 77,
+          "totalMatchedLines": 77
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Checking and removing remaining debug logging:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<details>
+<summary>Tool use: **read_lints**</summary>
+
+
+Parameters:
+
+```json
+{
+  "paths": [
+    "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+    "miataru/views/iPhone/iPhone_VisitorHistoryView.swift"
+  ]
+}
+```
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift"
+    },
+    {
+      "relativeWorkspacePath": "miataru/views/iPhone/iPhone_VisitorHistoryView.swift"
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+Verifying all debug code is removed from source files:
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "#region agent log|writeDebugLog",
+  "path": "miataru/views/iPhone/iPhone_VisitorHistoryView.swift",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "#region agent log|writeDebugLog",
+    "path": "miataru/views/iPhone/iPhone_VisitorHistoryView.swift",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "#region agent log|writeDebugLog",
+  "path": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "#region agent log|writeDebugLog",
+    "path": "Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {}
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+
+All debug instrumentation has been removed from both source files.
+
+**Removed from `iPhone_VisitorHistoryView.swift`:**
+- `writeDebugLog` function definition
+- All debug logging calls in `onAppear` and `loadVisitorHistory`
+
+**Removed from `MiataruAPIClient.swift`:**
+- `writeDebugLog` function definition
+- All debug logging calls in `getVisitorHistory` and `MiataruGetVisitorHistoryResponse.init(from decoder:)`
+
+The code is clean and ready. The only remaining references to debug logging are in the `.specstory` history file, which is documentation only.
+
+Should I commit these changes?
+
+---
+
+_**User**_
+
+describe and commit
+
+---
+
+_**Agent (model default, mode Custom)**_
+
+
+Checking what changed, then committing:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch history
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift
+	modified:   miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-01-20_19-12Z-device-visitor-history-issue.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat
+```
+
+```
+ .../MiataruAPIClient/MiataruAPIClient.swift        | 69 +---------------------
+ .../views/iPhone/iPhone_VisitorHistoryView.swift   | 60 -------------------
+ 2 files changed, 1 insertion(+), 128 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Staging and committing the changes:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add Libraries/MiataruClientSwift/Sources/MiataruAPIClient/MiataruAPIClient.swift miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Remove debug instrumentation from visitor history feature
+
+Removed all temporary debug logging code that was added during troubleshooting:
+
+- Removed writeDebugLog function and all debug logging calls from 
+  iPhone_VisitorHistoryView.swift (60 lines removed)
+- Removed writeDebugLog function and all debug logging calls from 
+  MiataruAPIClient.swift (69 lines removed)
+
+Total: 128 lines of debug instrumentation removed
+
+The visitor history feature is now production-ready with clean code.
+All functionality remains intact - only temporary debugging code was removed."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Remove debug instrumentation from visitor history feature
+
+Removed all temporary debug logging code that was added during troubleshooting:
+
+- Removed writeDebugLog function and all debug logging calls from 
+  iPhone_VisitorHistoryView.swift (60 lines removed)
+- Removed writeDebugLog function and all debug logging calls from 
+  MiataruAPIClient.swift (69 lines removed)
+
+Total: 128 lines of debug instrumentation removed
+
+The visitor history feature is now production-ready with clean code.
+All functionality remains intact - only temporary debugging code was removed."
+```
+
+```
+[history 153ec21] Remove debug instrumentation from visitor history feature
+ 2 files changed, 1 insertion(+), 128 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All changes have been committed.
+
+## Summary
+
+**Commit:** `153ec21` - "Remove debug instrumentation from visitor history feature"
+
+### Changes committed
+
+**Removed debug instrumentation:**
+- **iPhone_VisitorHistoryView.swift**: Removed 60 lines
+  - Removed `writeDebugLog` function definition
+  - Removed all debug logging calls from `onAppear` and `loadVisitorHistory`
+  
+- **MiataruAPIClient.swift**: Removed 69 lines
+  - Removed `writeDebugLog` function definition
+  - Removed all debug logging calls from `getVisitorHistory` and response decoding
+
+**Total:** 128 lines of temporary debug code removed
+
+The visitor history feature is now production-ready with clean code. All functionality remains intact—only the temporary debugging instrumentation added during troubleshooting has been removed.
+
+The codebase is clean and ready for production use.
+
+---
+

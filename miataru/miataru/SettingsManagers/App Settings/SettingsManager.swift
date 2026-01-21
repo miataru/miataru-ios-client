@@ -66,6 +66,9 @@ class SettingsManager: ObservableObject {
     @Published var locationSensitivityLevel: Int {
         didSet { defaults.set(locationSensitivityLevel, forKey: Keys.locationSensitivityLevel) }
     }
+    @Published var periodicLocationUpdateIntervalHours: Int {
+        didSet { defaults.set(periodicLocationUpdateIntervalHours, forKey: Keys.periodicLocationUpdateIntervalHours) }
+    }
     @Published var autoRefreshDeviceList: Bool {
         didSet { defaults.set(autoRefreshDeviceList, forKey: Keys.autoRefreshDeviceList) }
     }
@@ -119,6 +122,7 @@ class SettingsManager: ObservableObject {
         static let historyNumberOfDays = "history_number_of_days"
         static let locationActivityType = "location_activity_type"
         static let locationSensitivityLevel = "location_sensitivity_level"
+        static let periodicLocationUpdateIntervalHours = "periodic_location_update_interval_hours"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
         static let showRouteProgress = "show_route_progress"
@@ -151,6 +155,7 @@ class SettingsManager: ObservableObject {
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
+        self.periodicLocationUpdateIntervalHours = Int(d.string(forKey: Keys.periodicLocationUpdateIntervalHours) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
         self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false
