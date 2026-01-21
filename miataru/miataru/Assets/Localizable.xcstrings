@@ -15304,61 +15304,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-kode"
+            "value" : "denne enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-Code"
+            "value" : "dieses Gerät"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-Code"
+            "value" : "this device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Código QR"
+            "value" : "este dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-koodi"
+            "value" : "tämä laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Code QR"
+            "value" : "cet appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR code"
+            "value" : "questo dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QRコード"
+            "value" : "このデバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-code"
+            "value" : "dit apparaat"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "二维码"
+            "value" : "此设备"
           }
         }
       }
