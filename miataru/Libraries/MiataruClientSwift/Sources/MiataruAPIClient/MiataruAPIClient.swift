@@ -323,9 +323,11 @@ public struct MiataruVisitor: Codable {
     public let TimeStamp: String
 
     /// Computed property for accessing the timestamp as a Date.
+    /// The timestamp from the API is in milliseconds, so we divide by 1000.
     public var TimeStampDate: Date {
         if let ts = Double(TimeStamp) {
-            return Date(timeIntervalSince1970: ts)
+            // Timestamps from the API are in milliseconds, convert to seconds
+            return Date(timeIntervalSince1970: ts / 1000.0)
         } else {
             return Date(timeIntervalSince1970: 0)
         }
@@ -631,6 +633,69 @@ public enum MiataruAPIClient {
             let response = try jsonDecoder.decode(MiataruGetVisitorHistoryResponse.self, from: data)
             debugLog("[MiataruAPIClient] Received visitor history entries=\(response.MiataruVisitors.count) for device \(deviceID)")
             return response.MiataruVisitors
+        } catch {
+            if let jsonString = String(data: data, encoding: .utf8) {
+                debugLog("[MiataruAPIClient] Visitor history decode failed for device \(deviceID). Payload=\(jsonString)")
+            }
+            throw APIError.decodingError(error)
+        }
+    }
+    
+    /// Fetches the visitor history for a specific device from the server, including server configuration.
+    /// This version automatically requests all available visitor history entries from the server.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The ID of the device to fetch the visitor history for.
+    ///   - amount: The maximum number of visitor history entries to retrieve. If nil, requests the maximum available from server.
+    /// - Returns: The full response including server config and visitors.
+    /// - Throws: An `APIError` if the request fails.
+    public static func getVisitorHistoryWithConfig(serverURL: URL,
+                                                   forDeviceID deviceID: String,
+                                                   amount: Int?) async throws -> MiataruGetVisitorHistoryResponse {
+        
+        let url = serverURL.appendingPathComponent("v1/GetVisitorHistory")
+        
+        // First request with a reasonable default to get server config
+        let initialAmount = amount ?? 1000
+        let requestBody = GetVisitorHistoryRequestBody(
+            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(initialAmount))
+        )
+
+        let data: Data
+        do {
+            data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+                "[MiataruAPIClient] Requesting visitor history for device \(deviceID) amount=\(initialAmount) payload=\($0)"
+            }
+        } catch APIError.encodingError(let err) {
+            debugLog("[MiataruAPIClient] Encoding visitor history request failed for device \(deviceID): \(err.localizedDescription)")
+            throw APIError.encodingError(err)
+        }
+
+        do {
+            let response = try jsonDecoder.decode(MiataruGetVisitorHistoryResponse.self, from: data)
+            debugLog("[MiataruAPIClient] Received visitor history entries=\(response.MiataruVisitors.count) for device \(deviceID), available=\(response.MiataruServerConfig.AvailableVisitorHistory), max=\(response.MiataruServerConfig.MaximumNumberOfVisitorHistory)")
+            
+            // If amount was nil and we got fewer than available, request again with the available count
+            if amount == nil, let available = Int(response.MiataruServerConfig.AvailableVisitorHistory), available > response.MiataruVisitors.count {
+                let secondRequestBody = GetVisitorHistoryRequestBody(
+                    MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(available))
+                )
+                do {
+                    let secondData = try await performPostRequest(url: url, encodablePayload: secondRequestBody) {
+                        "[MiataruAPIClient] Requesting full visitor history for device \(deviceID) amount=\(available) payload=\($0)"
+                    }
+                    let fullResponse = try jsonDecoder.decode(MiataruGetVisitorHistoryResponse.self, from: secondData)
+                    debugLog("[MiataruAPIClient] Received full visitor history entries=\(fullResponse.MiataruVisitors.count) for device \(deviceID)")
+                    return fullResponse
+                } catch {
+                    // If second request fails, return the first response
+                    debugLog("[MiataruAPIClient] Second visitor history request failed, using first response: \(error)")
+                    return response
+                }
+            }
+            
+            return response
         } catch {
             if let jsonString = String(data: data, encoding: .utf8) {
                 debugLog("[MiataruAPIClient] Visitor history decode failed for device \(deviceID). Payload=\(jsonString)")
