@@ -11,14 +11,19 @@ import SwiftUI
 import MiataruAPIClient
 import CoreLocation
 
+// Helper struct for sheet(item:) presentation
+struct DeviceIDItem: Identifiable {
+    let id: String
+    let deviceID: String
+}
+
 struct iPhone_VisitorHistoryView: View {
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var settings = SettingsManager.shared
     @State private var visitors: [MiataruVisitor] = []
     @State private var isLoading = false
     @State private var errorMessage: String? = nil
-    @State private var showAddDeviceSheet = false
-    @State private var pendingDeviceID: String? = nil
+    @State private var pendingDeviceItem: DeviceIDItem? = nil
     
     var body: some View {
         List {
@@ -55,8 +60,7 @@ struct iPhone_VisitorHistoryView: View {
                         visitor: visitor,
                         knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
                         onAddDevice: {
-                            pendingDeviceID = visitor.DeviceID
-                            showAddDeviceSheet = true
+                            pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
                         }
                     )
                 }
@@ -74,19 +78,20 @@ struct iPhone_VisitorHistoryView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAddDeviceSheet, onDismiss: {
-            pendingDeviceID = nil
-            // Refresh visitor history after adding device to show updated name
-            Task {
-                await loadVisitorHistory()
-            }
-        }) {
-            if let deviceID = pendingDeviceID {
-                iPhone_AddDeviceView(
-                    store: deviceStore,
-                    isPresented: $showAddDeviceSheet,
-                    prefillDeviceID: deviceID
-                )
+        .sheet(item: $pendingDeviceItem) { item in
+            iPhone_AddDeviceView(
+                store: deviceStore,
+                isPresented: Binding(
+                    get: { pendingDeviceItem != nil },
+                    set: { if !$0 { pendingDeviceItem = nil } }
+                ),
+                prefillDeviceID: item.deviceID
+            )
+            .onDisappear {
+                // Refresh visitor history after adding device to show updated name
+                Task {
+                    await loadVisitorHistory()
+                }
             }
         }
         .onReceive(deviceStore.$devices) { _ in
@@ -125,41 +130,6 @@ struct iPhone_VisitorHistoryView: View {
             )
             
             await MainActor.run {
-                // #region agent log
-                let currentTime = Date()
-                let visitorTimestamps = response.MiataruVisitors.map { [
-                    "deviceID": $0.DeviceID,
-                    "timeStamp": $0.TimeStamp,
-                    "timeStampDate": $0.TimeStampDate.timeIntervalSince1970,
-                    "secondsAgo": currentTime.timeIntervalSince($0.TimeStampDate)
-                ] }
-                let logData: [String: Any] = [
-                    "sessionId": "debug-session",
-                    "runId": "run1",
-                    "hypothesisId": "D",
-                    "location": "iPhone_VisitorHistoryView.swift:112",
-                    "message": "Visitor history loaded",
-                    "data": [
-                        "currentTime": currentTime.timeIntervalSince1970,
-                        "visitorCount": response.MiataruVisitors.count,
-                        "availableVisitorHistory": response.MiataruServerConfig.AvailableVisitorHistory,
-                        "maximumVisitorHistory": response.MiataruServerConfig.MaximumNumberOfVisitorHistory,
-                        "visitors": visitorTimestamps
-                    ],
-                    "timestamp": Int64(Date().timeIntervalSince1970 * 1000)
-                ]
-                if let jsonData = try? JSONSerialization.data(withJSONObject: logData),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    let logPath = URL(fileURLWithPath: "/Users/bietiekay/code/miataru-ios-app/miataru/.cursor/debug.log")
-                    if let fileHandle = try? FileHandle(forWritingTo: logPath) {
-                        fileHandle.seekToEndOfFile()
-                        fileHandle.write((jsonString + "\n").data(using: .utf8)!)
-                        fileHandle.closeFile()
-                    } else {
-                        try? (jsonString + "\n").write(to: logPath, atomically: true, encoding: .utf8)
-                    }
-                }
-                // #endregion
                 self.visitors = response.MiataruVisitors
                 self.isLoading = false
             }
