@@ -36,7 +36,7 @@ struct DeviceHistoryTimelineOverlay: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(formattedDateTime(selection.lowerBound)) – \(formattedDateTime(selection.upperBound))")
+                    Text("\(formattedDateTime(selection.lowerBound)) • \(formattedDateTime(selection.upperBound))")
                         .font(.footnote)
                         .fontWeight(.semibold)
                     Text(String(format: NSLocalizedString("history_timeline_visible_count", comment: "Visible items count out of total"), selectedCount, totalCount))
