@@ -15822,3 +15822,228 @@ When "Off" is selected, the app only sends location updates when the location ch
 
 ---
 
+_**User**_
+
+describe and commit all changes in the repo
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking git status, then committing the changes with a descriptive message.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch history
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   .specstory/history/2026-01-20_19-12Z-device-visitor-history-issue.md
+	modified:   miataru/Assets/Localizable.xcstrings
+	modified:   miataru/LocationManagers/LocationManager.swift
+	modified:   miataru/SettingsManagers/App Settings/SettingsManager.swift
+	modified:   miataru/views/iPhone/Settings Views/iPhone_SettingsView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-01-20_19-24Z-miataru-server-time-based-location-updates.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Reviewing the diff to draft the commit message, then staging and committing:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat
+```
+
+```
+ ...26-01-20_19-12Z-device-visitor-history-issue.md | 718 +++++++++++++++++++++
+ miataru/miataru/Assets/Localizable.xcstrings       | 715 ++++++++++++++++++++
+ .../miataru/LocationManagers/LocationManager.swift |  32 +-
+ .../App Settings/SettingsManager.swift             |   5 +
+ .../Settings Views/iPhone_SettingsView.swift       |  19 +
+ 5 files changed, 1488 insertions(+), 1 deletion(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A
+```
+</details>
+</tool-use>
+
+---
+
+
+Committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add time-based periodic location updates to Miataru server
+
+This commit implements periodic location updates that send location, battery level, and other metadata to the server at configurable intervals, even when the device location hasn't changed significantly.
+
+Features:
+- Added configurable periodic update interval setting (1-24 hours or Off)
+- Updates are sent based on both location change criteria (existing) and time-based criteria (new)
+- When periodic updates are enabled, updates are sent at least every N hours regardless of location changes
+- Users can disable periodic updates by selecting 'Off' option
+- Default interval is set to 2 hours
+
+Implementation details:
+- SettingsManager: Added periodicLocationUpdateIntervalHours property with UserDefaults persistence
+- LocationManager: 
+  - Added time-based check in location update logic
+  - Persisted lastServerUpdate to UserDefaults to survive app restarts
+  - Time threshold calculated from user-configured interval
+- iPhone_SettingsView: Added Picker UI for periodic update interval in location tracking settings section
+- Localizable.xcstrings: Added localization strings for all 10 supported languages:
+  - periodic_location_update_interval_title
+  - periodic_location_update_interval_explanation
+  - periodic_update_off (to disable feature)
+  - periodic_update_1_hour through periodic_update_24_hours
+
+The feature ensures battery level and other metadata stay current on the server even for stationary devices."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Add time-based periodic location updates to Miataru server
+
+This commit implements periodic location updates that send location, battery level, and other metadata to the server at configurable intervals, even when the device location hasn't changed significantly.
+
+Features:
+- Added configurable periodic update interval setting (1-24 hours or Off)
+- Updates are sent based on both location change criteria (existing) and time-based criteria (new)
+- When periodic updates are enabled, updates are sent at least every N hours regardless of location changes
+- Users can disable periodic updates by selecting 'Off' option
+- Default interval is set to 2 hours
+
+Implementation details:
+- SettingsManager: Added periodicLocationUpdateIntervalHours property with UserDefaults persistence
+- LocationManager: 
+  - Added time-based check in location update logic
+  - Persisted lastServerUpdate to UserDefaults to survive app restarts
+  - Time threshold calculated from user-configured interval
+- iPhone_SettingsView: Added Picker UI for periodic update interval in location tracking settings section
+- Localizable.xcstrings: Added localization strings for all 10 supported languages:
+  - periodic_location_update_interval_title
+  - periodic_location_update_interval_explanation
+  - periodic_update_off (to disable feature)
+  - periodic_update_1_hour through periodic_update_24_hours
+
+The feature ensures battery level and other metadata stay current on the server even for stationary devices."
+```
+
+```
+[history 3bc3ad9] Add time-based periodic location updates to Miataru server
+ 6 files changed, 17312 insertions(+), 1 deletion(-)
+ create mode 100644 miataru/.specstory/history/2026-01-20_19-24Z-miataru-server-time-based-location-updates.md
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Verifying the commit was created:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git log -1 --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git log -1 --stat
+```
+
+```
+commit 3bc3ad9cfc01f7f02093e93d3b0d7e02947e4dac
+Author: Daniel Kirstenpfad &lt;bietiekay@miataru.com&gt;
+Date:   Wed Jan 21 18:25:16 2026 +0100
+
+    Add time-based periodic location updates to Miataru server
+    
+    This commit implements periodic location updates that send location, battery level, and other metadata to the server at configurable intervals, even when the device location hasn't changed significantly.
+    
+    Features:
+    - Added configurable periodic update interval setting (1-24 hours or Off)
+    - Updates are sent based on both location change criteria (existing) and time-based criteria (new)
+    - When periodic updates are enabled, updates are sent at least every N hours regardless of location changes
+    - Users can disable periodic updates by selecting 'Off' option
+    - Default interval is set to 2 hours
+    
+    Implementation details:
+    - SettingsManager: Added periodicLocationUpdateIntervalHours property with UserDefaults persistence
+    - LocationManager:
+      - Added time-based check in location update logic
+      - Persisted lastServerUpdate to UserDefaults to survive app restarts
+      - Time threshold calculated from user-configured interval
+    - iPhone_SettingsView: Added Picker UI for periodic update interval in location tracking settings section
+    - Localizable.xcstrings: Added localization strings for all 10 supported languages:
+      - periodic_location_update_interval_title
+      - periodic_location_update_interval_explanation
+      - periodic_update_off (to disable feature)
+      - periodic_update_1_hour through periodic_update_24_hours
+    
+    The feature ensures battery level and other metadata stay current on the server even for stationary devices.
+
+ ...26-01-20_19-12Z-device-visitor-history-issue.md |   718 +
+ ...Z-miataru-server-time-based-location-updates.md | 15824 +++++++++++++++++++
+ miataru/miataru/Assets/Localizable.xcstrings       |   715 +
+ .../miataru/LocationManagers/LocationManager.swift |    32 +-
+ .../App Settings/SettingsManager.swift             |     5 +
+ .../Settings Views/iPhone_SettingsView.swift       |    19 +
+ 6 files changed, 17312 insertions(+), 1 deletion(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Committed all changes.
+
+## Commit Summary
+
+**Commit Hash:** `3bc3ad9cfc01f7f02093e93d3b0d7e02947e4dac`
+
+**Files Changed:**
+- `miataru/SettingsManagers/App Settings/SettingsManager.swift` - Added periodic update interval setting
+- `miataru/LocationManagers/LocationManager.swift` - Added time
+
+---
+
