@@ -35,6 +35,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
     private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
     private let backgroundMetricsLastResetKey = "miataru_backgroundMetricsLastReset"
+    private let lastServerUpdateKey = "miataru_lastServerUpdate"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
@@ -89,6 +90,10 @@ final class LocationManager: NSObject, ObservableObject {
         }
         if let savedDate = userDefaults.object(forKey: lastBackgroundUpdateKey) as? Date {
             lastBackgroundUpdate = savedDate
+        }
+        // Load persisted lastServerUpdate
+        if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
+            lastServerUpdate = savedDate
         }
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
@@ -341,7 +346,9 @@ final class LocationManager: NSObject, ObservableObject {
                 )
                 if success {
                     self.serverUpdateStatus = .success
-                    self.lastServerUpdate = Date()
+                    let updateDate = Date()
+                    self.lastServerUpdate = updateDate
+                    self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
                     NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
                 } else {
                     self.serverUpdateStatus = .failed("Server response was not successful")
@@ -529,6 +536,29 @@ extension LocationManager: CLLocationManagerDelegate {
                 shouldAcceptUpdate = true
                 debugLog("[LocationManager] First location update accepted.")
             }
+            
+            // Check time-based criteria: send update if enough time has passed since last server update
+            // Only check if periodic updates are enabled (interval > 0)
+            if !shouldAcceptUpdate && settings.periodicLocationUpdateIntervalHours > 0 {
+                let timeThreshold = Double(settings.periodicLocationUpdateIntervalHours) * 3600.0 // Convert hours to seconds
+                let now = Date()
+                if let lastUpdate = self.lastServerUpdate {
+                    let timeSinceLastUpdate = now.timeIntervalSince(lastUpdate)
+                    if timeSinceLastUpdate >= timeThreshold {
+                        shouldAcceptUpdate = true
+                        debugLog("[LocationManager] Location update accepted: time-based (\(Int(timeSinceLastUpdate))s) >= threshold (\(Int(timeThreshold))s)")
+                    } else {
+                        debugLog("[LocationManager] Location update ignored: time since last update (\(Int(timeSinceLastUpdate))s) < threshold (\(Int(timeThreshold))s)")
+                    }
+                } else {
+                    // No previous server update, accept this one
+                    shouldAcceptUpdate = true
+                    debugLog("[LocationManager] Location update accepted: no previous server update recorded")
+                }
+            } else if !shouldAcceptUpdate && settings.periodicLocationUpdateIntervalHours == 0 {
+                debugLog("[LocationManager] Location update ignored: periodic updates disabled")
+            }
+            
             guard shouldAcceptUpdate else { return }
             self.currentLocation = location
             self.lastUpdateTime = Date()
