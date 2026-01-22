@@ -1737,7 +1737,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un nombre de vos dernières mises à jour de position est conservé sur le serveur (par défaut : les 1000 dernières)."
+            "value" : "Un nombre de tes dernières mises à jour de position est conservé sur le serveur (par défaut : les 1000 dernières)."
           }
         },
         "it" : {
@@ -1867,7 +1867,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous pouvez choisir la fréquence de mise à jour de votre position lorsque l’app est au premier plan. Standard est recommandé pour la plupart des utilisateurs et économise la batterie."
+            "value" : "Tu peux choisir la fréquence de mise à jour de ta position lorsque l’app est au premier plan. Standard est recommandé pour la plupart des utilisateurs et économise la batterie."
           }
         },
         "it" : {
@@ -2192,7 +2192,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "À quelle fréquence la position de votre appareil doit-elle être mise à jour ?"
+            "value" : "À quelle fréquence la position de ton appareil doit-elle être mise à jour ?"
           }
         },
         "it" : {
@@ -2321,7 +2321,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoute cet appareil inconnu à votre liste d'appareils"
+            "value" : "Ajoute cet appareil inconnu à ta liste d'appareils"
           }
         },
         "it" : {
@@ -3421,7 +3421,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez le serveur en lequel vous avez confiance."
+            "value" : "Choisis le serveur en lequel tu as confiance."
           }
         },
         "it" : {
@@ -4201,7 +4201,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copie votre identifiant d’appareil dans le presse-papiers"
+            "value" : "Copie ton identifiant d’appareil dans le presse-papiers"
           }
         },
         "it" : {
@@ -6464,7 +6464,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Documentation pour configurer votre propre serveur (GitHub)"
+            "value" : "Documentation pour configurer ton propre serveur (GitHub)"
           }
         },
         "it" : {
@@ -6593,7 +6593,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Partagez facilement votre identifiant d’appareil ou ajoutez-en d’autres en scannant des codes QR."
+            "value" : "Partagez facilement ton identifiant d’appareil ou ajoute-en d’autres en scannant des codes QR."
           }
         },
         "it" : {
@@ -7111,7 +7111,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si activé, l’app empêchera votre appareil de se verrouiller automatiquement pendant que Miataru est ouvert."
+            "value" : "Si activé, l’app empêchera ton appareil de se verrouiller automatiquement pendant que Miataru est ouvert."
           }
         },
         "it" : {
@@ -7176,7 +7176,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si activé, la carte affichera la précision estimée de votre position actuelle."
+            "value" : "Si activé, la carte affichera la précision estimée de ta position actuelle."
           }
         },
         "it" : {
@@ -9966,7 +9966,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avec l’historique serveur activé, le serveur enregistre l’historique de vos positions (selon le serveur et la fréquence des mises à jour). Sans historique, seule la dernière position est conservée pendant un certain temps."
+            "value" : "Avec l’historique serveur activé, le serveur enregistre l’historique de tes positions (selon le serveur et la fréquence des mises à jour). Sans historique, seule la dernière position est conservée pendant un certain temps."
           }
         },
         "it" : {
@@ -11299,7 +11299,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Standortberechtigung wurde zuvor verweigert. Um die Standortverfolgung zu aktivieren, öffnen Sie bitte die Einstellungen und gewähren Sie Miataru Zugriff auf Ihren Standort."
+            "value" : "Die Standortberechtigung wurde zuvor verweigert. Um die Standortverfolgung zu aktivieren, öffne bitte die Einstellungen und gewähre Miataru Zugriff auf deinen Standort."
           }
         },
         "en" : {
@@ -12422,7 +12422,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru vous aide à partager la position de votre appareil avec des personnes et des groupes de confiance."
+            "value" : "Miataru t'aide à partager la position de ton appareil avec des personnes et des groupes de confiance."
           }
         },
         "it" : {
@@ -12550,7 +12550,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru a besoin de votre position pour fournir ses fonctionnalités principales, comme partager votre position avec des contacts de confiance."
+            "value" : "Miataru a besoin de ta position pour fournir ses fonctionnalités principales, comme partager ta position avec des contacts de confiance."
           }
         },
         "it" : {
@@ -12873,7 +12873,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voici le code QR de votre appareil."
+            "value" : "Voici le code QR de ton appareil."
           }
         },
         "it" : {
@@ -14000,721 +14000,6 @@
         }
       }
     },
-    "periodic_location_update_interval_explanation" : {
-      "comment" : "Explanation for periodic location update interval picker",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Selvom din placering ikke har ændret sig, sender appen opdateringer til serveren mindst så ofte. Dette sikrer, at batteriniveau og andre oplysninger forbliver aktuelle."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auch wenn sich Ihr Standort nicht geändert hat, sendet die App mindestens so oft Updates an den Server. Dies stellt sicher, dass der Batteriestand und andere Informationen aktuell bleiben."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Even if your location hasn't changed, the app will send updates to the server at least this often. This ensures battery level and other information stays current."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Incluso si tu ubicación no ha cambiado, la aplicación enviará actualizaciones al servidor al menos con esta frecuencia. Esto asegura que el nivel de batería y otra información se mantenga actualizada."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vaikka sijaintisi ei ole muuttunut, sovellus lähettää päivityksiä palvelimelle vähintään näin usein. Tämä varmistaa, että akkutaso ja muut tiedot pysyvät ajantasalla."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Même si votre position n'a pas changé, l'application enverra des mises à jour au serveur au moins aussi souvent. Cela garantit que le niveau de batterie et d'autres informations restent à jour."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anche se la tua posizione non è cambiata, l'app invierà aggiornamenti al server almeno con questa frequenza. Ciò garantisce che il livello della batteria e altre informazioni rimangano aggiornate."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置情報が変更されていなくても、アプリは少なくともこの頻度でサーバーに更新を送信します。これにより、バッテリーレベルやその他の情報が最新の状態に保たれます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zelfs als uw locatie niet is veranderd, stuurt de app minstens zo vaak updates naar de server. Dit zorgt ervoor dat het batterijniveau en andere informatie actueel blijven."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "即使您的位置没有改变，应用也会至少以这个频率向服务器发送更新。这确保电池电量和其他信息保持最新。"
-          }
-        }
-      }
-    },
-    "periodic_location_update_interval_title" : {
-      "comment" : "Title for periodic location update interval picker",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Periodisk placeringsopdateringsinterval"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervall für periodische Standortaktualisierung"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Periodic Location Update Interval"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervalo de actualización periódica de ubicación"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jaksollinen sijaintipäivitysväli"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervalle de mise à jour périodique de la position"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervallo aggiornamento posizione periodico"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "定期的な位置情報更新間隔"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interval periodieke locatie-update"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "定期位置更新间隔"
-          }
-        }
-      }
-    },
-    "periodic_update_1_hour" : {
-      "comment" : "1 hour option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 time"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Stunde"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 hour"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 hora"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 tunti"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 heure"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 ora"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1小时"
-          }
-        }
-      }
-    },
-    "periodic_update_2_hours" : {
-      "comment" : "2 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2小时"
-          }
-        }
-      }
-    },
-    "periodic_update_3_hours" : {
-      "comment" : "3 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3小时"
-          }
-        }
-      }
-    },
-    "periodic_update_4_hours" : {
-      "comment" : "4 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4小时"
-          }
-        }
-      }
-    },
-    "periodic_update_6_hours" : {
-      "comment" : "6 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "6小时"
-          }
-        }
-      }
-    },
-    "periodic_update_8_hours" : {
-      "comment" : "8 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8小时"
-          }
-        }
-      }
-    },
-    "periodic_update_12_hours" : {
-      "comment" : "12 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "12小时"
-          }
-        }
-      }
-    },
-    "periodic_update_24_hours" : {
-      "comment" : "24 hours option for periodic update interval",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24小时"
-          }
-        }
-      }
-    },
-    "periodic_update_off" : {
-      "comment" : "Off option to disable periodic updates",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Slukket"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aus"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Off"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivado"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pois päältä"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Désactivé"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Disattivato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オフ"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭"
-          }
-        }
-      }
-    },
     "Permission granted, but not active" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
@@ -15331,7 +14616,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous pouvez utiliser ce code QR pour partager votre identifiant d’appareil avec d’autres. Scannez-le lors de l’ajout d’un nouvel appareil dans Miataru."
+            "value" : "Tu peux utiliser ce code QR pour partager ton identifiant d’appareil avec d’autres. Scanne-le lors de l’ajout d’un nouvel appareil dans Miataru."
           }
         },
         "it" : {
@@ -16087,7 +15372,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tauscht die Route, um die Navigation vom Gerät zu Ihnen oder von Ihnen zum Gerät anzuzeigen."
+            "value" : "Tauscht die Route, um die Navigation vom Gerät zu dir oder von dir zum Gerät anzuzeigen."
           }
         },
         "en" : {
@@ -16111,7 +15396,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inverse l’itinéraire pour afficher la navigation de l’appareil vers vous, ou de vous vers l’appareil."
+            "value" : "Inverse l’itinéraire pour afficher la navigation de l’appareil vers toi, ou de toi vers l’appareil."
           }
         },
         "it" : {
@@ -18048,7 +17333,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Montrez votre code QR à une personne de confiance."
+            "value" : "Montrez ton code QR à une personne de confiance."
           }
         },
         "it" : {
@@ -18563,7 +17848,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Balayez vers la gauche pour vous configurer en quelques étapes."
+            "value" : "Balaye vers la gauche pour te configurer en quelques étapes."
           }
         },
         "it" : {
@@ -19982,7 +19267,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous êtes prêt à commencer !"
+            "value" : "Tu es prêt à commencer !"
           }
         },
         "it" : {
@@ -20046,7 +19331,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous pouvez modifier vos réglages ou autorisations à tout moment dans l’app."
+            "value" : "Tu peux modifier tes réglages ou autorisations à tout moment dans l’app."
           }
         },
         "it" : {
@@ -20110,7 +19395,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous pouvez choisir comment vos données de localisation sont stockées sur le serveur Miataru."
+            "value" : "Tu peux choisir comment tes données de localisation sont stockées sur le serveur Miataru."
           }
         },
         "it" : {
@@ -20174,7 +19459,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous n'avez pas à autoriser l'accès à la localisation car vous pouvez utiliser des fonctions de base comme voir les localisations d'autres appareils sans partager votre propre localisation. Vous pouvez faire glisser vers la gauche pour continuer sans activer le partage de localisation.\nPour accorder l'autorisation à Miataru, activez le bouton et répondez à la boîte de dialogue suivante par. '"
+            "value" : "Tu n'as pas à autoriser l'accès à la localisation car tu peux utiliser des fonctions de base comme voir les localisations d'autres appareils sans partager ta propre localisation. Tu peux faire glisser vers la gauche pour continuer sans activer le partage de localisation.\nPour accorder l'autorisation à Miataru, active le bouton et réponds à la boîte de dialogue suivante par. '"
           }
         },
         "it" : {
@@ -20238,7 +19523,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vos données ne sont envoyées que lorsque vous les activez explicitement"
+            "value" : "Tes données ne sont envoyées que lorsque tu les actives explicitement"
           }
         },
         "it" : {
@@ -20302,7 +19587,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vos données restent sur le serveur que vous choisissez pendant la durée que vous choisissez"
+            "value" : "Tes données restent sur le serveur que tu choisis pendant la durée que tu choisis"
           }
         },
         "it" : {
@@ -20366,7 +19651,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vos données de localisation sont stockées sur un serveur de confiance. Vous pouvez utiliser le serveur Miataru par défaut ou saisir l’adresse de votre propre serveur."
+            "value" : "Tes données de localisation sont stockées sur un serveur de confiance. Tu peux utiliser le serveur Miataru par défaut ou saisir l’adresse de ton propre serveur."
           }
         },
         "it" : {
