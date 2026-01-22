@@ -66,25 +66,6 @@ struct iPhone_SettingsView: View {
                         Text(NSLocalizedString("location_sensitivity_explanation", comment: "Explanation for location sensitivity picker"))
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(NSLocalizedString("periodic_location_update_interval_title", comment: "Title for periodic location update interval picker"))
-                                .font(.headline)
-                            Picker("", selection: $settings.periodicLocationUpdateIntervalHours) {
-                                Text(NSLocalizedString("periodic_update_off", comment: "Off option to disable periodic updates")).tag(0)
-                                Text(NSLocalizedString("periodic_update_1_hour", comment: "1 hour option for periodic update interval")).tag(1)
-                                Text(NSLocalizedString("periodic_update_2_hours", comment: "2 hours option for periodic update interval")).tag(2)
-                                Text(NSLocalizedString("periodic_update_3_hours", comment: "3 hours option for periodic update interval")).tag(3)
-                                Text(NSLocalizedString("periodic_update_4_hours", comment: "4 hours option for periodic update interval")).tag(4)
-                                Text(NSLocalizedString("periodic_update_6_hours", comment: "6 hours option for periodic update interval")).tag(6)
-                                Text(NSLocalizedString("periodic_update_8_hours", comment: "8 hours option for periodic update interval")).tag(8)
-                                Text(NSLocalizedString("periodic_update_12_hours", comment: "12 hours option for periodic update interval")).tag(12)
-                                Text(NSLocalizedString("periodic_update_24_hours", comment: "24 hours option for periodic update interval")).tag(24)
-                            }
-                            .pickerStyle(.menu)
-                        }
-                        Text(NSLocalizedString("periodic_location_update_interval_explanation", comment: "Explanation for periodic location update interval picker"))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
                     }
                 }
                 Section(header: Text("server_url")) {
