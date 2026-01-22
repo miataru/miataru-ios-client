@@ -537,28 +537,6 @@ extension LocationManager: CLLocationManagerDelegate {
                 debugLog("[LocationManager] First location update accepted.")
             }
             
-            // Check time-based criteria: send update if enough time has passed since last server update
-            // Only check if periodic updates are enabled (interval > 0)
-            if !shouldAcceptUpdate && settings.periodicLocationUpdateIntervalHours > 0 {
-                let timeThreshold = Double(settings.periodicLocationUpdateIntervalHours) * 3600.0 // Convert hours to seconds
-                let now = Date()
-                if let lastUpdate = self.lastServerUpdate {
-                    let timeSinceLastUpdate = now.timeIntervalSince(lastUpdate)
-                    if timeSinceLastUpdate >= timeThreshold {
-                        shouldAcceptUpdate = true
-                        debugLog("[LocationManager] Location update accepted: time-based (\(Int(timeSinceLastUpdate))s) >= threshold (\(Int(timeThreshold))s)")
-                    } else {
-                        debugLog("[LocationManager] Location update ignored: time since last update (\(Int(timeSinceLastUpdate))s) < threshold (\(Int(timeThreshold))s)")
-                    }
-                } else {
-                    // No previous server update, accept this one
-                    shouldAcceptUpdate = true
-                    debugLog("[LocationManager] Location update accepted: no previous server update recorded")
-                }
-            } else if !shouldAcceptUpdate && settings.periodicLocationUpdateIntervalHours == 0 {
-                debugLog("[LocationManager] Location update ignored: periodic updates disabled")
-            }
-            
             guard shouldAcceptUpdate else { return }
             self.currentLocation = location
             self.lastUpdateTime = Date()
