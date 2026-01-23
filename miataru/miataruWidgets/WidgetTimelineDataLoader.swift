@@ -50,6 +50,8 @@ enum WidgetTimelineDataLoader {
                 forDeviceIDs: requestIDs,
                 requestingDeviceID: config.ownDeviceID
             )
+            // Track widget-initiated request
+            SharedWidgetDataManager.recordWidgetRequest()
             payload = merge(locations, into: payload, cached: cachedPayload, ownDeviceID: config.ownDeviceID ?? payload.ownDeviceID)
             SharedWidgetDataManager.write(payload)
         } catch {

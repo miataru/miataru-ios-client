@@ -15490,6 +15490,71 @@
         }
       }
     },
+    "Widget requests (last 24 hours)" : {
+      "comment" : "Number of widget-initiated requests in the last 24 hours in Location Tracking Details",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-anmodninger (sidste 24 timer)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-Anfragen (letzte 24 Stunden)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget requests (last 24 hours)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solicitudes de widget (últimas 24 horas)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-pyynnöt (viimeiset 24 tuntia)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requêtes de widget (24 dernières heures)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richieste widget (ultime 24 ore)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ウィジェットリクエスト（過去24時間）"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-verzoeken (laatste 24 uur)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小组件请求（过去24小时）"
+          }
+        }
+      }
+    },
     "route_generation_failed" : {
       "comment" : "Route calculation failed. Please try again.",
       "localizations" : {
