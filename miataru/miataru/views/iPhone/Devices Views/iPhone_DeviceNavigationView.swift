@@ -56,6 +56,8 @@ struct iPhone_DeviceNavigationView: View {
         ourDeviceId: thisDeviceIDManager.shared.deviceID,
         serverURL: SettingsManager.shared.miataruServerURL
     )
+    // Track mutual navigation state in @State to ensure Map content updates
+    @State private var isMutualNavigation: Bool = false
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -141,6 +143,8 @@ struct iPhone_DeviceNavigationView: View {
             lastRouteTransportType = nil
             initialDistance = nil
             navigationStopped = false
+            // Reset mutual navigation state
+            isMutualNavigation = false
             // Restart mutual navigation detection for new device
             mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
             // Fetch and recenter for the new device
@@ -161,7 +165,8 @@ struct iPhone_DeviceNavigationView: View {
                 }
             }
             if let route = route {
-                let isMutual = mutualNavigationDetector.isMutualNavigation
+                // Directly reference isMutualNavigation to ensure Map content observes the state change
+                // This allows the overlay polyline to be added/removed without reloading the entire map
                 if settings.showRouteProgress {
                     let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
                     let userSpeed = locationManager.currentLocation?.speed
@@ -177,27 +182,27 @@ struct iPhone_DeviceNavigationView: View {
                         if progress <= minimumProgressToShowGhost {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
-                            if isMutual {
+                            if isMutualNavigation {
                                 MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.remaining.opacity(0.6), lineWidth: 2.5)
+                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else if progress >= 1 {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
-                            if isMutual {
+                            if isMutualNavigation {
                                 MapPolyline(route.polyline)
-                                    .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
+                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else {
                             MapPolyline(done)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
                             MapPolyline(todo)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
-                            if isMutual {
+                            if isMutualNavigation {
                                 MapPolyline(done)
-                                    .stroke(RouteStyle.completed.opacity(0.6), lineWidth: 2.5)
+                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                                 MapPolyline(todo)
-                                    .stroke(RouteStyle.remaining.opacity(0.6), lineWidth: 2.5)
+                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                             MapCircle(center: ghost, radius: 50)
                                 .foregroundStyle(RouteStyle.completed.opacity(0.5))
@@ -219,17 +224,17 @@ struct iPhone_DeviceNavigationView: View {
                     } else {
                         MapPolyline(route.polyline)
                             .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                        if isMutual {
+                        if isMutualNavigation {
                             MapPolyline(route.polyline)
-                                .stroke(RouteStyle.withoutRemaining.opacity(0.6), lineWidth: 2.5)
+                                .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                         }
                     }
                 } else {
                     MapPolyline(route.polyline)
                         .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                    if isMutual {
+                    if isMutualNavigation {
                         MapPolyline(route.polyline)
-                            .stroke(RouteStyle.withoutRemaining.opacity(0.6), lineWidth: 2.5)
+                            .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                     }
                 }
             }
@@ -274,6 +279,8 @@ struct iPhone_DeviceNavigationView: View {
                 updateBottomAccessory()
                 // Start mutual navigation detection
                 mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
+                // Initialize mutual navigation state
+                isMutualNavigation = mutualNavigationDetector.isMutualNavigation
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -314,7 +321,8 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: distanceText) { _, _ in
                 updateBottomAccessory()
             }
-            .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, _ in
+            .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, newValue in
+                isMutualNavigation = newValue
                 updateBottomAccessory()
             }
             .onMapCameraChange(frequency: .continuous) { context in
