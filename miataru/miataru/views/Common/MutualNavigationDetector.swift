@@ -87,20 +87,27 @@ final class MutualNavigationDetector: ObservableObject {
             )
             
             await MainActor.run {
-                // Only update if visitor history changed (compare by count and device IDs)
+                // Update cached history if it changed (compare by count and device IDs)
                 let hasChanged = visitors.count != cachedVisitorHistory.count ||
                     !visitors.allSatisfy { visitor in
                         cachedVisitorHistory.contains { $0.DeviceID == visitor.DeviceID && $0.TimeStamp == visitor.TimeStamp }
                     }
                 if hasChanged {
                     cachedVisitorHistory = visitors
-                    updateMutualState(targetDeviceId: targetId)
                 }
+                // Always re-evaluate mutual state based on current time, even if history hasn't changed.
+                // This ensures the state updates when the age of the last visit exceeds the exit threshold.
+                updateMutualState(targetDeviceId: targetId)
                 lastPollTime = Date()
             }
         } catch {
             debugLog("[MutualNavigationDetector] Failed to fetch visitor history: \(error)")
-            // Don't update state on error, keep using cached data
+            // On error, still re-evaluate state based on cached data since time is passing
+            await MainActor.run {
+                if let targetId = targetDeviceId {
+                    updateMutualState(targetDeviceId: targetId)
+                }
+            }
         }
     }
     
