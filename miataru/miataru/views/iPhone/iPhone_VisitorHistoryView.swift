@@ -201,16 +201,24 @@ struct VisitorHistoryRow: View {
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     let subtitle = subtitleText(now: context.date)
                     Text(subtitle)
-                        .font(.caption)
+                        .font(.caption2)
                         .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
                 
+                // Distance (separate line)
+                let distance = distanceText()
+                Text(distance)
+                    .font(.caption2)
+                    .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                
                 // Placemark (like DeviceRowView)
                 let place = placemarkText()
                 Text(place)
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -281,6 +289,51 @@ struct VisitorHistoryRow: View {
         let exactDateTime = "\(timeString) \(separator) \(dateString)"
         
         return "\(lastSeen): \(relativeTimeWithOffset) (\(exactDateTime))"
+    }
+    
+    /// Returns the distance text for the visitor row (separate line)
+    private func distanceText() -> String {
+        let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
+        
+        guard let visitorCached = cache.getLocation(for: visitor.DeviceID),
+              let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
+            let unknown = NSLocalizedString("device_row_unknown", comment: "Default value for unknown distance")
+            return "\(distanceLabel): \(unknown)"
+        }
+        
+        let visitorLoc = CLLocation(latitude: visitorCached.latitude, longitude: visitorCached.longitude)
+        let myLoc = CLLocation(latitude: myCached.latitude, longitude: myCached.longitude)
+        let distance = visitorLoc.distance(from: myLoc) // in meters
+        
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        
+        let formattedDistance: String
+        if usesMetric {
+            let meterUnit = NSLocalizedString("device_row_meter_unit", comment: "Unit for meters in device row distance display")
+            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", comment: "Unit for kilometers in device row distance display")
+            if distance < 1000 {
+                formattedDistance = String(format: "%.0f %@", distance, meterUnit)
+            } else {
+                formattedDistance = String(format: "%d %@", Int(round(distance / 1000)), kilometerUnit)
+            }
+        } else {
+            let feetUnit = NSLocalizedString("device_row_feet_unit", comment: "Unit for feet in device row distance display (imperial)")
+            let milesUnit = NSLocalizedString("device_row_miles_unit", comment: "Unit for miles in device row distance display (imperial)")
+            let distanceInFeet = distance / 0.3048
+            let distanceInMiles = distance / 1609.34
+            if distanceInFeet > 528 { // More than 1/10 mile
+                formattedDistance = String(format: "%.2f %@", distanceInMiles, milesUnit)
+            } else {
+                formattedDistance = String(format: "%.0f %@", distanceInFeet, feetUnit)
+            }
+        }
+        
+        return "\(distanceLabel): \(formattedDistance)"
     }
     
     /// Returns the placemark text (like DeviceRowView)

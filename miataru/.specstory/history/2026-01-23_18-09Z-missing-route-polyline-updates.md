@@ -11163,3 +11163,155 @@ The orange overlay polyline should now appear/disappear smoothly when mutual nav
 
 ---
 
+_**User**_
+
+thanks it does! - Describe all changes and commit everything
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+Checking git status, then committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch history
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   miataru.xcodeproj/project.pbxproj
+	modified:   miataru/views/Common/Map/RouteStyle.swift
+	modified:   miataru/views/iPhone/Devices Views/iPhone_DeviceNavigationView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-01-23_18-03Z-mutually-active-display-update-issue.md
+	.specstory/history/2026-01-23_18-09Z-missing-route-polyline-updates.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Staging all changes and committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Fix route polyline visual update for mutually active navigation
+
+When devices are mutually active during navigation (both navigating to each other),
+the route polyline now properly displays a visual indicator without requiring
+a full map reload.
+
+Changes:
+- Added @State variable isMutualNavigation to track mutual navigation state
+  and ensure Map content builder observes changes
+- Added RouteStyle.mutualNavigation color (orange) for the overlay polyline
+- Updated route polyline rendering to show orange overlay (2.5px width) on top
+  of main route polyline when mutual navigation is active
+- Removed .id() modifier that was causing unnecessary full map reloads
+- Map now smoothly adds/removes overlay polyline when mutual state changes
+  without resetting camera position or reloading the entire map
+
+The orange overlay polyline provides clear visual feedback when both devices
+are actively navigating to each other, making the mutual navigation state
+immediately apparent to users."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git commit -m "Fix route polyline visual update for mutually active navigation
+
+When devices are mutually active during navigation (both navigating to each other),
+the route polyline now properly displays a visual indicator without requiring
+a full map reload.
+
+Changes:
+- Added @State variable isMutualNavigation to track mutual navigation state
+  and ensure Map content builder observes changes
+- Added RouteStyle.mutualNavigation color (orange) for the overlay polyline
+- Updated route polyline rendering to show orange overlay (2.5px width) on top
+  of main route polyline when mutual navigation is active
+- Removed .id() modifier that was causing unnecessary full map reloads
+- Map now smoothly adds/removes overlay polyline when mutual state changes
+  without resetting camera position or reloading the entire map
+
+The orange overlay polyline provides clear visual feedback when both devices
+are actively navigating to each other, making the mutual navigation state
+immediately apparent to users."
+```
+
+```
+[history ca96cb4] Fix route polyline visual update for mutually active navigation
+ 5 files changed, 22420 insertions(+), 15 deletions(-)
+ create mode 100644 miataru/.specstory/history/2026-01-23_18-03Z-mutually-active-display-update-issue.md
+ create mode 100644 miataru/.specstory/history/2026-01-23_18-09Z-missing-route-polyline-updates.md
+
+```
+</details>
+</tool-use>
+
+---
+
+
+All changes have been committed. Summary:
+
+## Summary of Changes
+
+**Problem fixed:**
+- Route polyline didn't update when devices became mutually active during navigation
+- Map was reloading when mutual navigation state changed
+
+**Solution implemented:**
+
+1. **State management** (`iPhone_DeviceNavigationView.swift`):
+   - Added `@State private var isMutualNavigation: Bool = false` to track mutual navigation state
+   - Synced with `mutualNavigationDetector.isMutualNavigation` via `.onChange` handler
+   - Ensures Map content builder observes state changes
+
+2. **Visual indicator** (`RouteStyle.swift`):
+   - Added `RouteStyle.mutualNavigation` color (orange) for the overlay polyline
+   - Provides clear visual distinction from the main route
+
+3. **Route polyline rendering** (`iPhone_DeviceNavigationView.swift`):
+   - Updated all route polyline rendering paths to conditionally show orange overlay
+   - Overlay is 2.5px width (thinner than main 4px polyline)
+   - Applies to all route states: remaining, completed, and progress segments
+
+4. **Performance optimization**:
+   - Removed `.id()` modifier that was causing full map reloads
+   - Map now smoothly adds/removes overlay polyline without reloading
+   - Camera position and map state remain unchanged during updates
+
+**Result:**
+When devices are mutually active, an orange overlay polyline appears on top of the main route polyline, providing clear visual feedback without map reloads or camera resets.
+
+Commit created: `ca96cb4`
+
+---
+
