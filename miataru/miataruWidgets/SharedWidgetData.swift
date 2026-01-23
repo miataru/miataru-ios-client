@@ -44,6 +44,8 @@ enum SharedWidgetDataManager {
     // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.
     private static let snapshotPrefix = "WidgetMapSnapshot-"
     private static let snapshotExtension = "png"
+    private static let widgetRequestTimestampsKey = "miataru_widgetRequestTimestamps"
+    private static let maxStoredTimestamps = 1000
 
     static var sharedContainerURL: URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
@@ -89,6 +91,37 @@ enum SharedWidgetDataManager {
         } catch {
             print("Failed to decode shared widget data: \(error)")
             return nil
+        }
+    }
+    
+    /// Records a widget-initiated location request timestamp.
+    /// This can be called from the widget extension to track requests.
+    static func recordWidgetRequest() {
+        guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else { return }
+        let now = Date()
+        var timestamps: [Date] = []
+        
+        // Load existing timestamps
+        if let data = userDefaults.data(forKey: widgetRequestTimestampsKey),
+           let decoded = try? JSONDecoder().decode([Date].self, from: data) {
+            timestamps = decoded
+        }
+        
+        // Add new timestamp
+        timestamps.append(now)
+        
+        // Keep only recent timestamps (last 7 days) to prevent unbounded growth
+        let sevenDaysAgo = now.addingTimeInterval(-7 * 24 * 60 * 60)
+        timestamps = timestamps.filter { $0 > sevenDaysAgo }
+        
+        // Limit total stored timestamps
+        if timestamps.count > maxStoredTimestamps {
+            timestamps = Array(timestamps.suffix(maxStoredTimestamps))
+        }
+        
+        // Save back to UserDefaults
+        if let data = try? JSONEncoder().encode(timestamps) {
+            userDefaults.set(data, forKey: widgetRequestTimestampsKey)
         }
     }
 }
