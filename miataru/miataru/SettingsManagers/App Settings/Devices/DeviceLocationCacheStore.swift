@@ -87,6 +87,9 @@ class DeviceLocationCacheStore: ObservableObject {
             save()
         }
     }
+    
+    /// Set of device IDs that have looked for the current user's device in the past 90 seconds
+    @Published var recentVisitorDeviceIDs: Set<String> = []
     private let fileName = "deviceLocations.plist"
     private let geocoder = CLGeocoder()
     private var geocodeQueue: [String] = []
@@ -234,6 +237,16 @@ class DeviceLocationCacheStore: ObservableObject {
         for location in locations {
             enqueueGeocodingIfNeeded(for: location.deviceID, force: true)
         }
+    }
+    
+    /// Sets the device IDs that have looked for the current user's device in the past 90 seconds
+    func setRecentVisitorDeviceIDs(_ deviceIDs: Set<String>) {
+        recentVisitorDeviceIDs = deviceIDs
+    }
+    
+    /// Checks if a device has looked for the current user's device in the past 90 seconds
+    func hasRecentVisitor(deviceID: String) -> Bool {
+        return recentVisitorDeviceIDs.contains(deviceID)
     }
 
     private func processNextGeocode() {

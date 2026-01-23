@@ -27,21 +27,34 @@ struct DeviceRowView: View {
     
     var body: some View {
         HStack {
-            if let batteryLevel = displayedCachedLocation?.batteryLevel {
-                DeviceBatterySymbol(
-                    batteryLevel: batteryLevel,
-                    deviceColor: Color(device.DeviceColor ?? UIColor.gray),
-                    size: 16
-                )
-            } else {
-                ZStack {
-                    Circle()
-                        .fill(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
-                        .frame(width: 16, height: 16)
-                        .shadow(radius: 4)
+            VStack(alignment: .center, spacing: 2) {
+                if let batteryLevel = displayedCachedLocation?.batteryLevel {
+                    DeviceBatterySymbol(
+                        batteryLevel: batteryLevel,
+                        deviceColor: Color(device.DeviceColor ?? UIColor.gray),
+                        size: 20
+                    )
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
+                            .frame(width: 20, height: 20)
+                            .shadow(radius: 4)
+                    }
+                    .frame(width: 20, height: 20)
                 }
-                .frame(width: 16, height: 16)
+                
+                // Eye symbol if device has looked for current user in past 90 seconds
+                if cache.hasRecentVisitor(deviceID: device.DeviceID) {
+                    Image(systemName: "eye")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.adjustedDeviceColor(Color(device.DeviceColor ?? UIColor.gray), for: colorScheme))
+                        .shadow(radius: 2)
+                }
             }
+            .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(device.DeviceName)
                     .font(.headline)
