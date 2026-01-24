@@ -20,7 +20,7 @@ struct iPad_DeviceMapView: View {
     var previewDeviceAccuracy: Double? = nil
     var previewDeviceTimestamp: Date? = nil
     var onNavigateToDevice: ((String) -> Void)? = nil // Callback for navigation
-    var shouldUpdateLastOpenedDeviceID: Bool = true // Whether to update settings.lastOpenedDeviceID (false for separate windows)
+    var shouldUpdateLastOpenedDeviceID: Bool = true // Whether to update settings.lastOpenedDeviceID (false for separate windows and local selections)
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
@@ -280,7 +280,9 @@ struct iPad_DeviceMapView: View {
             // Ensure auto-centering is enabled on fresh start
             isAutoCenteringEnabled = true
             // Only update lastOpenedDeviceID when in main window context (not in separate windows)
-            if shouldUpdateLastOpenedDeviceID {
+            // AND when it's not already set to this device (to avoid triggering onChange in other windows)
+            // Note: shouldUpdateLastOpenedDeviceID is now set to false for local selections to prevent cross-window sync
+            if shouldUpdateLastOpenedDeviceID && settings.lastOpenedDeviceID != deviceID {
                 settings.lastOpenedDeviceID = deviceID
             }
             selectedActionDeviceID = deviceID

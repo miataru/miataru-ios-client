@@ -22,6 +22,7 @@ struct iPad_DevicesView: View {
     @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
     @State private var navigationTargetDevice: KnownDevice? = nil
+    @State private var isUpdatingFromDeepLink = false // Track if we're updating selection from deep link (to prevent circular updates)
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openWindow) private var openWindow
 
@@ -191,7 +192,10 @@ struct iPad_DevicesView: View {
                         onNavigateToDevice: { newDeviceID in
                             // Navigate to the new device in the split view
                             selection = newDeviceID
-                        }
+                        },
+                        // Only update lastOpenedDeviceID for deep links, not for local selections
+                        // This prevents cross-window synchronization when user selects a device locally
+                        shouldUpdateLastOpenedDeviceID: isUpdatingFromDeepLink
                     )
                         .id(device.DeviceID) // Force view refresh when device changes
                         .navigationDestination(item: $navigationTargetDevice) { device in
@@ -250,9 +254,20 @@ struct iPad_DevicesView: View {
                 }
                 await Task.yield()
                 try? await Task.sleep(nanoseconds: 180_000_000)
-                guard settings.lastOpenedDeviceID == requestedID else { return }
+                guard settings.lastOpenedDeviceID == requestedID else {
+                    isUpdatingFromDeepLink = false
+                    return
+                }
+                // Mark that we're updating from deep link to prevent onChange(of: selection) from updating lastOpenedDeviceID
+                isUpdatingFromDeepLink = true
+                // Update selection from deep link - this will trigger onChange(of: selection)
                 selection = requestedID
                 lastSelectedDeviceID = requestedID
+                // Reset flag after a delay to allow onChange(of: selection) to complete
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+                    isUpdatingFromDeepLink = false
+                }
             }
         }
         .onChange(of: selection) { oldSelection, newSelection in
@@ -262,6 +277,8 @@ struct iPad_DevicesView: View {
                 navigationTargetDevice = nil
                 lastSelectedDeviceID = newSelection
                 mapViewKey = UUID()
+                // Do NOT update settings.lastOpenedDeviceID here - this prevents cross-window sync
+                // settings.lastOpenedDeviceID will only be updated for deep links
             }
         }
         .onChange(of: editMode) { _, newMode in
