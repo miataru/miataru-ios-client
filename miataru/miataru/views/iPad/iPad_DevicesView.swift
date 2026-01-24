@@ -193,7 +193,7 @@ struct iPad_DevicesView: View {
                             selection = newDeviceID
                         }
                     )
-                        .id(mapViewKey) // Force view refresh when device changes
+                        .id(device.DeviceID) // Force view refresh when device changes
                         .navigationDestination(item: $navigationTargetDevice) { device in
                             iPhone_DeviceNavigationView(device: device)
                         }
