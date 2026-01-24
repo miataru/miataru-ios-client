@@ -16,11 +16,42 @@ struct iPhone_AddDeviceView: View {
     var prefillDeviceID: String? = nil
     @State private var deviceName: String = ""
     @State private var deviceID: String = ""
-    @State private var deviceColor: Color = .gray
+    @State private var deviceColor: Color = Self.randomVividColor()
     @State private var isShowingScanner = false
     @State private var showInvalidQRAlert = false
     @State private var showDuplicateAlert = false
     @State private var showColorPickerSheet = false
+    
+    // Returns a random vivid color from an extensive palette of visible colors
+    private static func randomVividColor() -> Color {
+        let vividColors: [Color] = [
+            // Standard SwiftUI named colors
+            .red, .orange, .yellow, .green, .blue, .purple, .pink,
+            .mint, .teal, .cyan, .indigo,
+            // Additional vibrant colors using RGB
+            Color(red: 1.0, green: 0.0, blue: 0.5),      // Hot pink
+            Color(red: 1.0, green: 0.4, blue: 0.0),     // Orange red
+            Color(red: 1.0, green: 0.6, blue: 0.0),      // Dark orange
+            Color(red: 0.0, green: 0.8, blue: 0.4),      // Emerald green
+            Color(red: 0.0, green: 0.6, blue: 1.0),      // Sky blue
+            Color(red: 0.2, green: 0.6, blue: 1.0),      // Light blue
+            Color(red: 0.4, green: 0.0, blue: 1.0),       // Violet
+            Color(red: 0.6, green: 0.0, blue: 1.0),       // Purple
+            Color(red: 0.8, green: 0.0, blue: 0.8),      // Magenta
+            Color(red: 1.0, green: 0.0, blue: 0.8),      // Fuchsia
+            Color(red: 0.0, green: 0.9, blue: 0.7),      // Turquoise
+            Color(red: 0.0, green: 0.7, blue: 0.9),      // Cyan blue
+            Color(red: 0.3, green: 0.9, blue: 0.3),      // Lime green
+            Color(red: 0.9, green: 0.9, blue: 0.0),      // Gold
+            Color(red: 1.0, green: 0.5, blue: 0.0),      // Deep orange
+            Color(red: 0.8, green: 0.2, blue: 0.6),      // Rose
+            Color(red: 0.5, green: 0.0, blue: 0.8),      // Deep purple
+            Color(red: 0.0, green: 0.5, blue: 0.8),      // Ocean blue
+            Color(red: 0.2, green: 0.8, blue: 0.2),     // Bright green
+            Color(red: 0.9, green: 0.3, blue: 0.3),      // Coral
+        ]
+        return vividColors.randomElement() ?? .blue
+    }
     
     init(store: KnownDeviceStore, isPresented: Binding<Bool>, prefillDeviceID: String? = nil) {
         self.store = store
