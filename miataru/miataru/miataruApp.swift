@@ -118,7 +118,7 @@ struct miataruApp: App {
 
     private func handleIncomingURL(_ url: URL) {
         guard url.scheme == "miataru" else { return }
-        let deviceID = (url.host ?? "").uppercased()
+        let deviceID = url.host ?? ""
         guard !deviceID.isEmpty else { return }
 
         Task { @MainActor in
