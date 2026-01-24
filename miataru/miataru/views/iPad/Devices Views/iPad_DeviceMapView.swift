@@ -20,6 +20,7 @@ struct iPad_DeviceMapView: View {
     var previewDeviceAccuracy: Double? = nil
     var previewDeviceTimestamp: Date? = nil
     var onNavigateToDevice: ((String) -> Void)? = nil // Callback for navigation
+    var shouldUpdateLastOpenedDeviceID: Bool = true // Whether to update settings.lastOpenedDeviceID (false for separate windows)
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0), // Will be set in onAppear
@@ -278,7 +279,10 @@ struct iPad_DeviceMapView: View {
         .onAppear {
             // Ensure auto-centering is enabled on fresh start
             isAutoCenteringEnabled = true
-            settings.lastOpenedDeviceID = deviceID
+            // Only update lastOpenedDeviceID when in main window context (not in separate windows)
+            if shouldUpdateLastOpenedDeviceID {
+                settings.lastOpenedDeviceID = deviceID
+            }
             selectedActionDeviceID = deviceID
             // Force map re-instantiation to avoid black screen on restore
             mapInteractionID = UUID()
@@ -338,7 +342,8 @@ struct iPad_DeviceMapView: View {
             stopAutoUpdate()
             mapMovementTimer?.invalidate()
             mapMovementTimer = nil
-            if settings.lastOpenedDeviceID == deviceID {
+            // Only clear lastOpenedDeviceID when in main window context (not in separate windows)
+            if shouldUpdateLastOpenedDeviceID && settings.lastOpenedDeviceID == deviceID {
                 settings.lastOpenedDeviceID = nil
             }
         }

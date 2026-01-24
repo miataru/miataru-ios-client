@@ -152,7 +152,7 @@ private struct DeviceWindowEntrypoint: View {
     var body: some View {
         Group {
             if let id = deviceID {
-                iPad_DeviceMapView(deviceID: id)
+                iPad_DeviceMapView(deviceID: id, shouldUpdateLastOpenedDeviceID: false)
             } else {
                 Text(NSLocalizedString("no_device_selected", comment: "No device selected for this window."))
             }
