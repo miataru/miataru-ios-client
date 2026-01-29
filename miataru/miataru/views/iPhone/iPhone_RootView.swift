@@ -20,21 +20,16 @@ struct iPhone_RootView: View {
                     Label("devices", systemImage: "iphone.gen3.badge.location")
                 }
                 .tag(0)
-            iPhone_GroupsView()
-                .tabItem {
-                    Label("groups", systemImage: "person.3")
-                }
-                .tag(1)
             iPhone_MyDeviceQRCodeView()
                 .tabItem {
                     Label("qr", systemImage: "qrcode")
                 }
-                .tag(2)
+                .tag(1)
             iPhone_SettingsView()
                 .tabItem {
                     Label("settings", systemImage: "gear")
                 }
-                .tag(3)
+                .tag(2)
         }
         .environmentObject(DeviceGroupStore.shared)
         .environmentObject(RouteInfoState.shared)
