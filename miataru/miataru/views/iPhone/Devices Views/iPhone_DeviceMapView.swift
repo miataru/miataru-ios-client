@@ -575,7 +575,11 @@ struct iPhone_DeviceMapView: View {
                                     TimelineView(.periodic(from: .now, by: 1)) { context in
                                         let timeString = relativeTimeString(from: timestamp, to: context.date)
                                         let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
-                                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                        let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                        let speedText = settings.showCurrentSpeedOnMap
+                                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed)
+                                            : nil
+                                        let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                         Text(displayText)
                                             .font(.caption)
                                             .padding(.horizontal, 8)
@@ -653,7 +657,11 @@ struct iPhone_DeviceMapView: View {
                                             TimelineView(.periodic(from: .now, by: 1)) { context in
                                                 let timeString = relativeTimeString(from: cached.timestamp, to: context.date)
                                                 let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: other.DeviceID))
-                                                let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                                let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                                let speedText = settings.showCurrentSpeedOnMap
+                                                    ? mapSpeedLabelText(speedMetersPerSecond: cached.speed)
+                                                    : nil
+                                                let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                                 Text(displayText)
                                                     .font(.caption)
                                                     .padding(.horizontal, 8)

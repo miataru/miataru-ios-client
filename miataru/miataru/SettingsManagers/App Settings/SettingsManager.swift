@@ -69,6 +69,9 @@ class SettingsManager: ObservableObject {
     @Published var autoRefreshDeviceList: Bool {
         didSet { defaults.set(autoRefreshDeviceList, forKey: Keys.autoRefreshDeviceList) }
     }
+    @Published var showCurrentSpeedOnMap: Bool {
+        didSet { defaults.set(showCurrentSpeedOnMap, forKey: Keys.showCurrentSpeedOnMap) }
+    }
     @Published var showOffscreenArrowsForOtherDevices: Bool {
         didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: Keys.showOffscreenArrowsForOtherDevices) }
     }
@@ -120,6 +123,7 @@ class SettingsManager: ObservableObject {
         static let locationActivityType = "location_activity_type"
         static let locationSensitivityLevel = "location_sensitivity_level"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
+        static let showCurrentSpeedOnMap = "show_current_speed_on_map"
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
         static let showRouteProgress = "show_route_progress"
         static let lastOpenedDeviceID = "last_opened_device_id"
@@ -152,6 +156,7 @@ class SettingsManager: ObservableObject {
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
+        self.showCurrentSpeedOnMap = d.object(forKey: Keys.showCurrentSpeedOnMap) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
         self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false
         self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)

@@ -93,6 +93,10 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_auto_refresh_device_list", comment: "Explanation for auto refresh device list toggle"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Toggle("show_current_speed_on_map", isOn: $settings.showCurrentSpeedOnMap)
+                    Text(NSLocalizedString("explanation_show_current_speed_on_map", comment: "Explanation for showing current speed on the map toggle"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     /*Picker("show_history_days", selection: $settings.historyNumberOfDays) {
                         Text("1day").tag(1)
                         Text("2days").tag(2)

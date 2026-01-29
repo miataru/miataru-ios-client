@@ -456,7 +456,11 @@ struct iPhone_GroupMapView: View {
                                         TimelineView(.periodic(from: .now, by: 1)) { context in
                                             let timeString = relativeTimeString(from: timestamp, to: context.date, unitsStyle: .abbreviated)
                                             let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
-                                            let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                            let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                                            let speedText = settings.showCurrentSpeedOnMap
+                                                ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed)
+                                                : nil
+                                            let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                             Text(displayText)
                                                 .font(.caption)
                                                 .padding(.horizontal, 8)

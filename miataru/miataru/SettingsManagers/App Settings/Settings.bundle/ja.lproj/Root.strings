@@ -48,6 +48,7 @@
 "100km" = "100 km";
 "zoom_to_fit_for_groups" = "グループに合わせてズーム";
 "auto_refresh_device_list" = "デバイスリストを自動更新";
+"show_current_speed_on_map" = "マップに現在の速度を表示";
 "explanation_auto_refresh_device_list" = "有効にすると、位置情報の更新やアプリがフォアグラウンドになるたびにデバイスリストが自動的に更新されます。"; 
 "navigation" = "ナビゲーション";
 "transport_mode" = "移動手段";

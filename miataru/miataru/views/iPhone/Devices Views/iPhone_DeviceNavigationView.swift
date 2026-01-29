@@ -407,7 +407,11 @@ struct iPhone_DeviceNavigationView: View {
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let timeString = relativeTimeString(from: ts, to: context.date)
                         let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
-                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        let speedText = settings.showCurrentSpeedOnMap
+                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: thisDeviceIDManager.shared.deviceID)?.speed)
+                            : nil
+                        let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                         Text(displayText)
                             .font(.caption)
                             .padding(.horizontal, 8)
@@ -458,7 +462,11 @@ struct iPhone_DeviceNavigationView: View {
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let timeString = relativeTimeString(from: timestamp, to: context.date)
                         let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
-                        let displayText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                        let speedText = settings.showCurrentSpeedOnMap
+                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: device.DeviceID)?.speed)
+                            : nil
+                        let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                         Text(displayText)
                             .font(.caption)
                             .padding(.horizontal, 8)

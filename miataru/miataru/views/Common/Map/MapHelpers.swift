@@ -60,6 +60,38 @@ func relativeTimeString(
     return formatter.localizedString(for: date, relativeTo: now)
 }
 
+/// Returns a formatted speed string for map labels when speed exceeds 10 km/h.
+func mapSpeedLabelText(speedMetersPerSecond: Double?) -> String? {
+    guard let speedMetersPerSecond, speedMetersPerSecond > 0 else { return nil }
+    let speedKilometersPerHour = speedMetersPerSecond * 3.6
+    guard speedKilometersPerHour > 10 else { return nil }
+
+    let usesMetric: Bool
+    if #available(iOS 16.0, *) {
+        usesMetric = Locale.current.measurementSystem == .metric
+    } else {
+        usesMetric = Locale.current.usesMetricSystem
+    }
+
+    let value: Double
+    if usesMetric {
+        value = speedKilometersPerHour
+    } else {
+        value = speedKilometersPerHour / 1.609344
+    }
+
+    let numberFormatter = NumberFormatter()
+    numberFormatter.locale = .current
+    numberFormatter.maximumFractionDigits = 0
+    numberFormatter.minimumFractionDigits = 0
+    guard let numberString = numberFormatter.string(from: NSNumber(value: value)) else {
+        return nil
+    }
+
+    let unitString = usesMetric ? "km/h" : "mph"
+    return "\(numberString) \(unitString)"
+}
+
 /// Returns a formatted timezone offset string (e.g., "+2" or "-5") comparing device timezone to local timezone
 func timezoneOffsetString(deviceTimeZone: TimeZone?) -> String? {
     guard let deviceTimeZone = deviceTimeZone else { return nil }

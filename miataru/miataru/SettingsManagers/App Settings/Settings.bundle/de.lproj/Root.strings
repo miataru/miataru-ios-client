@@ -48,6 +48,7 @@
 "100km" = "100 km";
 "zoom_to_fit_for_groups" = "Zoom für Gruppen anpassen";
 "auto_refresh_device_list" = "Geräteliste automatisch aktualisieren";
+"show_current_speed_on_map" = "Aktuelle Geschwindigkeit auf der Karte anzeigen";
 "explanation_auto_refresh_device_list" = "Wenn aktiviert, wird die Geräteliste automatisch aktualisiert, sobald ein Standort-Update gesendet wird oder das Gerät in den Vordergrund kommt."; 
 "navigation" = "Navigation";
 "transport_mode" = "Transportmittel";
