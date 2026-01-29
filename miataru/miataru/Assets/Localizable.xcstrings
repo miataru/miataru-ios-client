@@ -7660,6 +7660,71 @@
         }
       }
     },
+    "explanation_show_current_speed_on_map" : {
+      "comment" : "Explanation for showing current speed on the map toggle",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når slået til vises en enheds aktuelle hastighed (hvis >10) over markøren på kortet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, wird die aktuelle Geschwindigkeit eines Geräts (wenn >10) über dem Marker auf der Karte angezeigt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When on, the current speed of a device will be shown (if >10) above the marker on the map."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si está activado, se mostrará la velocidad actual de un dispositivo (si >10) sobre el marcador en el mapa."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kun käytössä, laitteen nykyinen nopeus näytetään (jos >10) kartan merkinnän yläpuolella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si activé, la vitesse actuelle d’un appareil est affichée (si >10) au-dessus du repère sur la carte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se attivato, la velocità attuale di un dispositivo verrà mostrata (se >10) sopra il marker sulla mappa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オンの場合、デバイスの現在速度が（>10 の場合）マップ上のマーカーの上に表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indien ingeschakeld wordt de huidige snelheid van een apparaat (als >10) boven de markering op de kaart weergegeven."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用后，将在地图上的标记上方显示设备当前速度（如果 >10）。"
+          }
+        }
+      }
+    },
     "explanation_show_history_days" : {
       "comment" : "Explanation for show history days picker",
       "localizations" : {
@@ -7786,71 +7851,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启用后，地图会显示指向可见范围外其他已知设备的箭头；在可见范围内则显示设备。"
-          }
-        }
-      }
-    },
-    "explanation_show_current_speed_on_map" : {
-      "comment" : "Explanation for showing current speed on the map toggle",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Når slået til vises en enheds aktuelle hastighed (hvis >10) over markøren på kortet."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn aktiviert, wird die aktuelle Geschwindigkeit eines Geräts (wenn >10) über dem Marker auf der Karte angezeigt."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When on, the current speed of a device will be shown (if >10) above the marker on the map."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si está activado, se mostrará la velocidad actual de un dispositivo (si >10) sobre el marcador en el mapa."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kun käytössä, laitteen nykyinen nopeus näytetään (jos >10) kartan merkinnän yläpuolella."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si activé, la vitesse actuelle d’un appareil est affichée (si >10) au-dessus du repère sur la carte."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se attivato, la velocità attuale di un dispositivo verrà mostrata (se >10) sopra il marker sulla mappa."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オンの場合、デバイスの現在速度が（>10 の場合）マップ上のマーカーの上に表示されます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indien ingeschakeld wordt de huidige snelheid van een apparaat (als >10) boven de markering op de kaart weergegeven."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启用后，将在地图上的标记上方显示设备当前速度（如果 >10）。"
           }
         }
       }
@@ -9084,7 +9084,7 @@
       }
     },
     "groups" : {
-      "comment" : "Groups list header on iPad\nGroups list title on iPad\nNavigation title for the groups list",
+      "comment" : "Groups list header on iPad\nGroups list title on iPad\nNavigation title for the groups list\nSection header for the groups list",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -15555,71 +15555,6 @@
         }
       }
     },
-    "Widget requests (last 24 hours)" : {
-      "comment" : "Number of widget-initiated requests in the last 24 hours in Location Tracking Details",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget-anmodninger (sidste 24 timer)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget-Anfragen (letzte 24 Stunden)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget requests (last 24 hours)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solicitudes de widget (últimas 24 horas)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget-pyynnöt (viimeiset 24 tuntia)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Requêtes de widget (24 dernières heures)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Richieste widget (ultime 24 ore)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ウィジェットリクエスト（過去24時間）"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget-verzoeken (laatste 24 uur)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "小组件请求（过去24小时）"
-          }
-        }
-      }
-    },
     "route_generation_failed" : {
       "comment" : "Route calculation failed. Please try again.",
       "localizations" : {
@@ -17492,6 +17427,70 @@
         }
       }
     },
+    "show_current_speed_on_map" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "vis aktuel hastighed på kortet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuelle Geschwindigkeit auf der Karte anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "show current speed on the map"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mostrar la velocidad actual en el mapa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "näytä nykyinen nopeus kartalla"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "afficher la vitesse actuelle sur la carte"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mostra la velocità attuale sulla mappa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地図に現在の速度を表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "toon huidige snelheid op de kaart"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在地图上显示当前速度"
+          }
+        }
+      }
+    },
     "show_history" : {
       "comment" : "Show device history",
       "localizations" : {
@@ -17617,70 +17616,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在设备地图上显示其他设备"
-          }
-        }
-      }
-    },
-    "show_current_speed_on_map" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "vis aktuel hastighed på kortet"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktuelle Geschwindigkeit auf der Karte anzeigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "show current speed on the map"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "mostrar la velocidad actual en el mapa"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "näytä nykyinen nopeus kartalla"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "afficher la vitesse actuelle sur la carte"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "mostra la velocità attuale sulla mappa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "地図に現在の速度を表示"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "toon huidige snelheid op de kaart"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在地图上显示当前速度"
           }
         }
       }
@@ -19422,6 +19357,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "欢迎使用 Miataru！"
+          }
+        }
+      }
+    },
+    "Widget requests (last 24 hours)" : {
+      "comment" : "Number of widget-initiated requests in the last 24 hours in Location Tracking Details",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-anmodninger (sidste 24 timer)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-Anfragen (letzte 24 Stunden)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget requests (last 24 hours)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solicitudes de widget (últimas 24 horas)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-pyynnöt (viimeiset 24 tuntia)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requêtes de widget (24 dernières heures)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richieste widget (ultime 24 ore)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ウィジェットリクエスト（過去24時間）"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget-verzoeken (laatste 24 uur)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小组件请求（过去24小时）"
           }
         }
       }
