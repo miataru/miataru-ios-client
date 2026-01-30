@@ -1,6 +1,15 @@
 {
-  "originHash" : "8f5b3c8fd0aafc68fa7f2b43d951c4b9dad3da2dd7cd3bac93ae511e370182c4",
+  "originHash" : "678ba68015e36a73f159d230788d7dca7edeffa66926b9b7fd12c858a4bcefd6",
   "pins" : [
+    {
+      "identity" : "navigationoverlaykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bietiekay/NavigationOverlayKit",
+      "state" : {
+        "revision" : "8597311f0ee794c97b3b565f40957feb919c28c8",
+        "version" : "1.0.0"
+      }
+    },
     {
       "identity" : "swift-qrcode-generator",
       "kind" : "remoteSourceControl",

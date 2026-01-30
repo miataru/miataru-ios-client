@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
 		8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };
+		8BD5C0882F2D1E1B0007FE5B /* NavigationOverlayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8BD5C0872F2D1E1B0007FE5B /* NavigationOverlayKit */; };
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
 		8C00000D3E00000100000001 /* miataruWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
@@ -105,6 +106,7 @@
 			files = (
 				8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */,
 				8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */,
+				8BD5C0882F2D1E1B0007FE5B /* NavigationOverlayKit in Frameworks */,
 				8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,6 +190,7 @@
 				8BDCBB332E06E9CF000041DC /* CodeScanner */,
 				8B3AFA8D2E0E900B0046E5B3 /* QRCode */,
 				8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */,
+				8BD5C0872F2D1E1B0007FE5B /* NavigationOverlayKit */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -312,6 +315,7 @@
 				8BDCBB322E06E9CF000041DC /* XCLocalSwiftPackageReference "Libraries/CodeScanner-main" */,
 				8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */,
 				8B0556F42E0FFF31008B3C81 /* XCLocalSwiftPackageReference "Libraries/MiataruClientSwift" */,
+				8BD5C0862F2D1D090007FE5B /* XCRemoteSwiftPackageReference "NavigationOverlayKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8BA62CE92E057D1700F54650 /* Products */;
@@ -796,6 +800,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		8BD5C0862F2D1D090007FE5B /* XCRemoteSwiftPackageReference "NavigationOverlayKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bietiekay/NavigationOverlayKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -805,6 +820,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */;
 			productName = QRCode;
+		};
+		8BD5C0872F2D1E1B0007FE5B /* NavigationOverlayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BD5C0862F2D1D090007FE5B /* XCRemoteSwiftPackageReference "NavigationOverlayKit" */;
+			productName = NavigationOverlayKit;
 		};
 		8BDCBB332E06E9CF000041DC /* CodeScanner */ = {
 			isa = XCSwiftPackageProductDependency;

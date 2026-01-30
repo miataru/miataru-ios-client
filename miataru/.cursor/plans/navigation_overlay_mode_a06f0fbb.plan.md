@@ -4,13 +4,13 @@ overview: Add NavigationOverlayKit to show turn-by-turn instructions when naviga
 todos:
   - id: overlay-wireup
     content: Wire overlay view/model into iPhone_DeviceNavigationView
-    status: pending
+    status: completed
   - id: sync-updates
     content: Update overlay on route and location changes
-    status: pending
+    status: completed
   - id: docs-changelog
     content: Update CHANGELOG and feature docs
-    status: pending
+    status: completed
 isProject: false
 ---
 
