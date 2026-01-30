@@ -17,45 +17,128 @@ struct DeviceIDItem: Identifiable {
     let deviceID: String
 }
 
+@MainActor
+final class VisitorHistoryViewModel: ObservableObject {
+    @Published var visitors: [MiataruVisitor] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String? = nil
+    
+    private let settings = SettingsManager.shared
+    
+    var sortedVisitors: [MiataruVisitor] {
+        visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
+    
+    func loadVisitorHistory() async {
+        guard let url = URL(string: settings.miataruServerURL) else {
+            errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            return
+        }
+        
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let ourDeviceId = thisDeviceIDManager.shared.deviceID
+            // Request with nil amount to get all available from server
+            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
+                serverURL: url,
+                forDeviceID: ourDeviceId,
+                amount: nil
+            )
+            self.visitors = response.MiataruVisitors
+            self.isLoading = false
+        } catch {
+            self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            self.isLoading = false
+            debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
+        }
+    }
+}
+
+struct VisitorHistoryStateView<Content: View>: View {
+    @ObservedObject var viewModel: VisitorHistoryViewModel
+    let content: ([MiataruVisitor]) -> Content
+    
+    var body: some View {
+        if viewModel.isLoading {
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+            }
+            .padding()
+        } else if let error = viewModel.errorMessage {
+            VStack(spacing: 16) {
+                Text(error)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
+                    Task {
+                        await viewModel.loadVisitorHistory()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+        } else if viewModel.visitors.isEmpty {
+            VStack(spacing: 8) {
+                Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+        } else {
+            content(viewModel.sortedVisitors)
+        }
+    }
+}
+
+struct VisitorHistorySection: View {
+    @ObservedObject var viewModel: VisitorHistoryViewModel
+    @ObservedObject var deviceStore: KnownDeviceStore
+    @Binding var pendingDeviceItem: DeviceIDItem?
+    let isLandscape: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: isLandscape ? 12 : 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "clock.arrow.circlepath")
+                Text(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+            }
+            .font(isLandscape ? .headline : .title3)
+            
+            VisitorHistoryStateView(viewModel: viewModel) { visitors in
+                LazyVStack(spacing: 8) {
+                    ForEach(visitors, id: \.uniqueID) { visitor in
+                        VisitorHistoryRow(
+                            visitor: visitor,
+                            knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
+                            onAddDevice: {
+                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                            }
+                        )
+                        if visitor.uniqueID != visitors.last?.uniqueID {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 struct iPhone_VisitorHistoryView: View {
     @StateObject private var deviceStore = KnownDeviceStore.shared
-    @ObservedObject private var settings = SettingsManager.shared
-    @State private var visitors: [MiataruVisitor] = []
-    @State private var isLoading = false
-    @State private var errorMessage: String? = nil
+    @StateObject private var viewModel = VisitorHistoryViewModel()
     @State private var pendingDeviceItem: DeviceIDItem? = nil
     
     var body: some View {
         List {
-            if isLoading {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                }
-                .padding()
-            } else if let error = errorMessage {
-                VStack(spacing: 16) {
-                    Text(error)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                    Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
-                        Task {
-                            await loadVisitorHistory()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .padding()
-            } else if visitors.isEmpty {
-                VStack(spacing: 8) {
-                    Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-            } else {
-                ForEach(sortedVisitors, id: \.uniqueID) { visitor in
+            VisitorHistoryStateView(viewModel: viewModel) { visitors in
+                ForEach(visitors, id: \.uniqueID) { visitor in
                     VisitorHistoryRow(
                         visitor: visitor,
                         knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
@@ -69,12 +152,12 @@ struct iPhone_VisitorHistoryView: View {
         .navigationTitle(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
         .navigationBarTitleDisplayMode(.large)
         .refreshable {
-            await loadVisitorHistory()
+            await viewModel.loadVisitorHistory()
         }
         .onAppear {
-            if visitors.isEmpty {
+            if viewModel.visitors.isEmpty {
                 Task {
-                    await loadVisitorHistory()
+                    await viewModel.loadVisitorHistory()
                 }
             }
         }
@@ -90,55 +173,9 @@ struct iPhone_VisitorHistoryView: View {
             .onDisappear {
                 // Refresh visitor history after adding device to show updated name
                 Task {
-                    await loadVisitorHistory()
+                    await viewModel.loadVisitorHistory()
                 }
             }
-        }
-        .onReceive(deviceStore.$devices) { _ in
-            // Refresh when devices are added/updated to show updated names
-            if !visitors.isEmpty {
-                // Trigger view update by accessing sortedVisitors
-                _ = sortedVisitors
-            }
-        }
-    }
-    
-    private var sortedVisitors: [MiataruVisitor] {
-        visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
-    }
-    
-    private func loadVisitorHistory() async {
-        guard let url = URL(string: settings.miataruServerURL) else {
-            await MainActor.run {
-                errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
-            }
-            return
-        }
-        
-        await MainActor.run {
-            isLoading = true
-            errorMessage = nil
-        }
-        
-        do {
-            let ourDeviceId = thisDeviceIDManager.shared.deviceID
-            // Request with nil amount to get all available from server
-            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
-                serverURL: url,
-                forDeviceID: ourDeviceId,
-                amount: nil
-            )
-            
-            await MainActor.run {
-                self.visitors = response.MiataruVisitors
-                self.isLoading = false
-            }
-        } catch {
-            await MainActor.run {
-                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
-                self.isLoading = false
-            }
-            debugLog("[iPhone_VisitorHistoryView] Failed to load visitor history: \(error)")
         }
     }
 }

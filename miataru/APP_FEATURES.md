@@ -84,12 +84,13 @@ This document lists all features offered by the miataru iOS app. Each item is de
 **For users:**
 - Display your own device ID as a QR code, copy it, or share via link or email.
 - Add other devices by scanning their Miataru QR code.
-- The QR tab offers one‑tap sharing, and the add‑device sheet guides scanning and rejects non‑Miataru codes.
+- The QR tab offers one‑tap sharing, shows visitor history directly below your code, and the add‑device sheet guides scanning and rejects non‑Miataru codes.
 
 - The share sheet includes additional options, and email sharing attaches the QR image reliably.
 
 **For developers:**
 - `iPhone_MyDeviceQRCodeView` renders customizable QR codes using the `QRCode` package and supports `ShareLink` and `MFMailComposeViewController`.
+- `VisitorHistoryViewModel` and `VisitorHistorySection` power inline visitor history within the QR tab, while `iPhone_VisitorHistoryView` reuses the same data loader.
 - `iPhone_AddDeviceView` validates the `miataru://` prefix from scanned codes before accepting an ID and allows manual entry with color selection.
 
 ## Onboarding Flow
