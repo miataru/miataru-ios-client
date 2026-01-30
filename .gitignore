@@ -30,7 +30,7 @@ DerivedData/
 *.dSYM
 
 # Cursor & Editor
-.cursor/
+#.cursor/
 .vscode/
 .idea/
 *.swp
