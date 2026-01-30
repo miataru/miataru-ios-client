@@ -19,6 +19,7 @@ struct iPhone_GroupMapView: View {
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
+    @Environment(\.animationsAllowed) private var animationsAllowed
     
     @Namespace var mapScope
     @State private var region = MKCoordinateRegion(
@@ -108,7 +109,17 @@ struct iPhone_GroupMapView: View {
                                                         screenSize: screenSize,
                                                         heading: currentMapCamera?.heading ?? 0) {
                 let tap = {
-                    withAnimation(.easeInOut(duration: 0.8)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.8)) {
+                            if #available(iOS 17.0, *) {
+                                if let currentRegion = cameraPosition.region {
+                                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                                }
+                            } else {
+                                self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                            }
+                        }
+                    } else {
                         if #available(iOS 17.0, *) {
                             if let currentRegion = cameraPosition.region {
                                 cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
@@ -199,12 +210,12 @@ struct iPhone_GroupMapView: View {
                             .padding(.top, 10)
                             .padding(.leading, 10)
                             .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
-                            .transition(.opacity)
+                            .transition(animationsAllowed ? .opacity : .identity)
                             .zIndex(10)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                 }
-                .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+                .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: showNetworkErrorIcon)
                 
                 // Off-screen device arrows (only shown when map is not rotated)
                 if !screenSize.width.isZero && !screenSize.height.isZero {
@@ -247,11 +258,11 @@ struct iPhone_GroupMapView: View {
                             .padding([.top, .trailing], 10)
                             .zIndex(3)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                            .transition(.opacity)
+                            .transition(animationsAllowed ? .opacity : .identity)
                         }
                     }
                 }
-                .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+                .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
             }
         }
         .navigationTitle(group.groupName)
@@ -282,7 +293,11 @@ struct iPhone_GroupMapView: View {
                 // Set initial map position based on available locations
                 let bestLocation = bestAvailableLocation
                 let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                withAnimation(.easeInOut(duration: 0.5)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
+                    }
+                } else {
                     cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
                 }
                 
@@ -336,7 +351,11 @@ struct iPhone_GroupMapView: View {
                 // Set initial map position based on available locations
                 let bestLocation = bestAvailableLocation
                 let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-                withAnimation(.easeInOut(duration: 0.5)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
+                    }
+                } else {
                     cameraPosition = .region(MKCoordinateRegion(center: bestLocation, span: span))
                 }
                 
@@ -370,7 +389,11 @@ struct iPhone_GroupMapView: View {
             if headingChanged || zoomChanged || centerChanged {
                 // Map is moving - set state and reset timer
                 if !isMapMoving {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isMapMoving = true
+                        }
+                    } else {
                         isMapMoving = true
                     }
                 }
@@ -380,7 +403,11 @@ struct iPhone_GroupMapView: View {
                 
                 // Start new timer to detect when movement stops (after 0.3 seconds of no movement)
                 mapMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isMapMoving = false
+                        }
+                    } else {
                         isMapMoving = false
                     }
                 }
@@ -730,11 +757,19 @@ struct iPhone_GroupMapView: View {
                     switch error {
                     case .requestFailed(_):
                         // Show only the network error icon, not the overlay
-                        withAnimation {
+                        if animationsAllowed {
+                            withAnimation {
+                                showNetworkErrorIcon = true
+                            }
+                        } else {
                             showNetworkErrorIcon = true
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            withAnimation {
+                            if animationsAllowed {
+                                withAnimation {
+                                    showNetworkErrorIcon = false
+                                }
+                            } else {
                                 showNetworkErrorIcon = false
                             }
                         }
@@ -763,7 +798,11 @@ struct iPhone_GroupMapView: View {
         guard !validCoordinates.isEmpty else {
             let fallbackCoord = fallbackLocation
             let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: fallbackCoord, span: span))
+                }
+            } else {
                 cameraPosition = .region(MKCoordinateRegion(center: fallbackCoord, span: span))
             }
             return
@@ -776,7 +815,11 @@ struct iPhone_GroupMapView: View {
             if validCoordinates.count == 1 {
                 let coordinate = validCoordinates.first!
                 let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                withAnimation(.easeInOut(duration: 0.5)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                    }
+                } else {
                     cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
                 }
             } else {
@@ -793,7 +836,11 @@ struct iPhone_GroupMapView: View {
                 let rawLonDelta = maxLon - minLon
                 if rawLatDelta == 0 && rawLonDelta == 0 {
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                        }
+                    } else {
                         cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
                     }
                     return
@@ -810,13 +857,21 @@ struct iPhone_GroupMapView: View {
                 if !latitudeDelta.isFinite || !longitudeDelta.isFinite || latitudeDelta < 0.0001 || longitudeDelta < 0.0001 {
                     debugLog("[Map] Invalid region, setting fallback")
                     let span = MKCoordinateSpan(latitudeDelta: minDelta, longitudeDelta: minDelta)
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                        }
+                    } else {
                         cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
                     }
                     return
                 }
                 let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-                withAnimation(.easeInOut(duration: 0.5)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                    }
+                } else {
                     cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
                 }
             }
@@ -860,7 +915,7 @@ struct iPhone_GroupMapView: View {
     
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         debugLog("Error: \(debugMessage)")
-        errorOverlayManager.show(message: userMessage)
+        errorOverlayManager.show(message: userMessage, animationsAllowed: animationsAllowed)
     }
     
     private func alignMapToNorth() {
@@ -872,9 +927,14 @@ struct iPhone_GroupMapView: View {
             heading: 0, // North
             pitch: currentCamera.pitch
         )
-        withAnimation {
+        if animationsAllowed {
+            withAnimation {
+                cameraPosition = .camera(newCamera)
+                userHasRotatedMap = false // Hide compass when aligned to north
+            }
+        } else {
             cameraPosition = .camera(newCamera)
-            userHasRotatedMap = false // Hide compass when aligned to north
+            userHasRotatedMap = false
         }
     }
     
@@ -891,7 +951,11 @@ struct iPhone_GroupMapView: View {
         if validCoordinates.count == 1 {
             let coordinate = validCoordinates.first!
             let span = spanForZoomLevel(settings.mapZoomLevel)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                }
+            } else {
                 cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
             }
         } else {
@@ -918,7 +982,11 @@ struct iPhone_GroupMapView: View {
                 latitudeDelta: minLatDelta,
                 longitudeDelta: minLonDelta
             )
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
+                }
+            } else {
                 cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
             }
         }

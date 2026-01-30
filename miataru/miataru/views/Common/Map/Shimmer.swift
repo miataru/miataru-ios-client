@@ -153,9 +153,7 @@ public extension View {
         color: Color? = nil,
         mode: Shimmer.Mode = .mask
     ) -> some View {
-        // Gate shimmer by scene phase and Low Power Mode
-        modifier(ShimmerGate(active: active))
-            .modifier(ConditionalShimmer(active: active, animation: animation, gradient: gradient, bandSize: bandSize, color: color, mode: mode))
+        modifier(ConditionalShimmer(active: active, animation: animation, gradient: gradient, bandSize: bandSize, color: color, mode: mode))
     }
 
     /// Adds an animated shimmering effect to any view, typically to show that an operation is in progress.
@@ -175,25 +173,8 @@ public extension View {
     }
 }
 
-// MARK: - Internal helpers for gating shimmer
-
-private struct ShimmerGate: ViewModifier {
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
-
-    let active: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
-                isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
-            }
-            .environment(\.shimmeringAllowed, active && scenePhase == .active && !isLowPowerMode)
-    }
-}
-
 private struct ConditionalShimmer: ViewModifier {
-    @Environment(\.shimmeringAllowed) private var shimmeringAllowed
+    @Environment(\.animationsAllowed) private var animationsAllowed
 
     let active: Bool
     let animation: Animation
@@ -203,7 +184,7 @@ private struct ConditionalShimmer: ViewModifier {
     let mode: Shimmer.Mode
 
     func body(content: Content) -> some View {
-        if active && shimmeringAllowed {
+        if active && animationsAllowed {
             content.modifier(Shimmer(animation: animation, gradient: gradient, bandSize: bandSize, color: color, mode: mode))
         } else {
             content
@@ -211,15 +192,35 @@ private struct ConditionalShimmer: ViewModifier {
     }
 }
 
-// Custom environment key to propagate shimmering permission
-private struct ShimmeringAllowedKey: EnvironmentKey {
+// MARK: - Global animation permission
+
+private struct AnimationsAllowedKey: EnvironmentKey {
     static let defaultValue: Bool = true
 }
 
-private extension EnvironmentValues {
-    var shimmeringAllowed: Bool {
-        get { self[ShimmeringAllowedKey.self] }
-        set { self[ShimmeringAllowedKey.self] = newValue }
+extension EnvironmentValues {
+    var animationsAllowed: Bool {
+        get { self[AnimationsAllowedKey.self] }
+        set { self[AnimationsAllowedKey.self] = newValue }
+    }
+}
+
+struct AnimationsGate: ViewModifier {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
+
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
+                isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
+            }
+            .environment(\.animationsAllowed, scenePhase == .active && !isLowPowerMode)
+    }
+}
+
+extension View {
+    func animationsGate() -> some View {
+        modifier(AnimationsGate())
     }
 }
 

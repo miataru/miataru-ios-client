@@ -29,6 +29,8 @@ import Foundation
 ///   device point.
 
 struct OffScreenDeviceArrow: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     let deviceName: String
     let deviceColor: Color
     let screenCenter: CGPoint
@@ -127,11 +129,11 @@ struct OffScreenDeviceArrow: View {
             .position(arrowPosition.position)
             .opacity(calculateOpacity())
             .scaleEffect(isPressed ? 0.9 : 1.0) // Visual feedback when pressed
-            .animation(.easeInOut(duration: 0.3), value: isVisible)
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
-            .animation(.easeInOut(duration: 0.2), value: mapHeading) // Animate with heading changes
-            .animation(.easeInOut(duration: 0.5), value: isMapMoving) // Fade in/out based on map movement
-            .animation(.easeInOut(duration: 3.0), value: hasInitiallyAppeared) // Slow fade out after initial appearance
+            .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: isVisible)
+            .animation(animationsAllowed ? .easeInOut(duration: 0.1) : nil, value: isPressed)
+            .animation(animationsAllowed ? .easeInOut(duration: 0.2) : nil, value: mapHeading) // Animate with heading changes
+            .animation(animationsAllowed ? .easeInOut(duration: 0.5) : nil, value: isMapMoving) // Fade in/out based on map movement
+            .animation(animationsAllowed ? .easeInOut(duration: 3.0) : nil, value: hasInitiallyAppeared) // Slow fade out after initial appearance
             .onTapGesture {
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -141,18 +143,30 @@ struct OffScreenDeviceArrow: View {
                 onTap()
             }
             .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-                withAnimation(.easeInOut(duration: 0.1)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        isPressed = pressing
+                    }
+                } else {
                     isPressed = pressing
                 }
             }, perform: {})
             .onAppear {
-                withAnimation(.easeInOut(duration: 0.3).delay(0.1)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.3).delay(0.1)) {
+                        isVisible = true
+                    }
+                } else {
                     isVisible = true
                 }
                 // After initial appearance, wait a moment then fade out if map is not moving
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     if !isMapMoving && isVisible {
-                        withAnimation(.easeInOut(duration: 3.0)) {
+                        if animationsAllowed {
+                            withAnimation(.easeInOut(duration: 3.0)) {
+                                hasInitiallyAppeared = true
+                            }
+                        } else {
                             hasInitiallyAppeared = true
                         }
                     }
@@ -161,7 +175,11 @@ struct OffScreenDeviceArrow: View {
             .onChange(of: isMapMoving) { oldValue, newValue in
                 // When map starts moving, reset the initial appearance flag to show full opacity
                 if newValue && hasInitiallyAppeared {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            hasInitiallyAppeared = false
+                        }
+                    } else {
                         hasInitiallyAppeared = false
                     }
                 }
@@ -169,7 +187,11 @@ struct OffScreenDeviceArrow: View {
                 if !newValue && isVisible && !hasInitiallyAppeared {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         if !isMapMoving && isVisible {
-                            withAnimation(.easeInOut(duration: 3.0)) {
+                            if animationsAllowed {
+                                withAnimation(.easeInOut(duration: 3.0)) {
+                                    hasInitiallyAppeared = true
+                                }
+                            } else {
                                 hasInitiallyAppeared = true
                             }
                         }

@@ -15,6 +15,8 @@ import UIKit
 #endif
 
 struct iPhone_DeviceHistoryMapView: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     let device: KnownDevice
     @StateObject private var viewModel = DeviceHistoryMapViewModel()
     // Map state
@@ -259,7 +261,7 @@ struct iPhone_DeviceHistoryMapView: View {
                         // Expanded view: all controls
                         quickRangePicker(bounds: bounds)
                             .padding(.horizontal, 16)
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .transition(animationsAllowed ? .opacity.combined(with: .move(edge: .bottom)) : .identity)
 
                         DeviceHistoryTimelineOverlay(
                             fullRange: bounds,
@@ -292,17 +294,17 @@ struct iPhone_DeviceHistoryMapView: View {
                             onSelectionDragEnded: handleSelectionDragEnded
                         )
                         .padding(.horizontal, 16)
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        .transition(animationsAllowed ? .opacity.combined(with: .move(edge: .bottom)) : .identity)
                     }
                 }
             }
             .padding(.bottom, 16)
-            .animation(.easeInOut(duration: 0.3), value: isPlaying)
+            .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: isPlaying)
         }
         .overlay {
             if showSpeedOverlay {
                 PlaybackSpeedOverlay(speed: playbackSpeed)
-                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                    .transition(animationsAllowed ? .opacity.combined(with: .scale(scale: 0.8)) : .identity)
             }
         }
         .navigationTitle(device.DeviceName)
@@ -379,9 +381,11 @@ struct iPhone_DeviceHistoryMapView: View {
                 .contentTransition(.symbolEffect(.replace))
                 .scaleEffect(isPlaying ? 1.05 : 1.0)
                 .animation(
-                    isPlaying
-                        ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
-                        : .default,
+                    animationsAllowed
+                        ? (isPlaying
+                            ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
+                            : .default)
+                        : nil,
                     value: isPlaying
                 )
 
@@ -394,8 +398,8 @@ struct iPhone_DeviceHistoryMapView: View {
                     .padding(.vertical, 3)
                     .background(Color.blue, in: Capsule())
                     .offset(x: 20, y: -20)
-                    .transition(.scale.combined(with: .opacity))
-                    .animation(.easeInOut(duration: 0.2), value: playbackSpeed)
+                    .transition(animationsAllowed ? .scale.combined(with: .opacity) : .identity)
+                    .animation(animationsAllowed ? .easeInOut(duration: 0.2) : nil, value: playbackSpeed)
             }
         }
         .contentShape(Rectangle())
@@ -574,7 +578,7 @@ struct iPhone_DeviceHistoryMapView: View {
         let suppressionWindow: TimeInterval = animated ? 0.9 : 0.35
         suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(suppressionWindow)
 
-        if animated {
+        if animated && animationsAllowed {
             withAnimation(.easeInOut(duration: 0.5)) {
                 cameraPosition = .region(region)
             }
@@ -774,12 +778,20 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func showSpeedOverlayBriefly() {
         speedOverlayTask?.cancel()
-        withAnimation(.easeInOut(duration: 0.2)) {
+        if animationsAllowed {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showSpeedOverlay = true
+            }
+        } else {
             showSpeedOverlay = true
         }
         speedOverlayTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 1_200_000_000)
-            withAnimation(.easeOut(duration: 0.3)) {
+            if animationsAllowed {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    showSpeedOverlay = false
+                }
+            } else {
                 showSpeedOverlay = false
             }
         }

@@ -13,6 +13,8 @@ import UIKit
 #endif
 
 struct DeviceHistoryTimelineOverlay: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     let fullRange: ClosedRange<Double>
     @Binding var selection: ClosedRange<Double>
     @Binding var scrubValue: Double
@@ -101,9 +103,11 @@ struct DeviceHistoryTimelineOverlay: View {
                 .padding(10)
                 .scaleEffect(pulseScale)
                 .animation(
-                    isPlaying
-                        ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
-                        : .default,
+                    animationsAllowed
+                        ? (isPlaying
+                            ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true)
+                            : .default)
+                        : nil,
                     value: pulseScale
                 )
 
@@ -116,8 +120,8 @@ struct DeviceHistoryTimelineOverlay: View {
                     .padding(.vertical, 2)
                     .background(Color.blue, in: Capsule())
                     .offset(x: 14, y: -14)
-                    .transition(.scale.combined(with: .opacity))
-                    .animation(.easeInOut(duration: 0.2), value: playbackSpeed)
+                    .transition(animationsAllowed ? .scale.combined(with: .opacity) : .identity)
+                    .animation(animationsAllowed ? .easeInOut(duration: 0.2) : nil, value: playbackSpeed)
             }
         }
         .contentShape(Rectangle())

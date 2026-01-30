@@ -42,6 +42,8 @@ struct GhostAnnotationView: View {
 }
 
 struct MarkerAnnotationDebugView: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     var deviceName: String = NSLocalizedString("debug_marker_device_name", comment: "Sample device name used in the marker debug view.")
     var deviceColor: Color = .red
     var transportIconName: String = "car"
@@ -212,7 +214,11 @@ struct MarkerAnnotationDebugView: View {
                     timerCancellable = Timer.publish(every: 0.25, on: .main, in: .common)
                         .autoconnect()
                         .sink { _ in
-                            withAnimation(.easeInOut(duration: 0.24)) {
+                            if animationsAllowed {
+                                withAnimation(.easeInOut(duration: 0.24)) {
+                                    updateAnimatedCoordinates()
+                                }
+                            } else {
                                 updateAnimatedCoordinates()
                             }
                         }

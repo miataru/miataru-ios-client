@@ -12,6 +12,7 @@ import Combine
 
 struct iPhone_3_OnboardingServerView: View {
     @ObservedObject private var settings = SettingsManager.shared
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @State private var useDefaultServer: Bool = true
     @State private var customServerURL: String = ""
     @State private var showURLError: Bool = false
@@ -106,7 +107,7 @@ struct iPhone_3_OnboardingServerView: View {
                 .frame(minHeight: geometry.size.height - keyboardHeight)
             }
         }
-        .animation(.easeOut(duration: 0.25), value: keyboardHeight)
+        .animation(animationsAllowed ? .easeOut(duration: 0.25) : nil, value: keyboardHeight)
         .padding()
         .background(Color(.systemBackground))
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in

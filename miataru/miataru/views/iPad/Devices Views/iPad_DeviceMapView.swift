@@ -41,6 +41,7 @@ struct iPad_DeviceMapView: View {
     @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
     @ObservedObject private var settings = SettingsManager.shared // App settings
     @ObservedObject private var cache = DeviceLocationCacheStore.shared // Device location cache
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
     @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
@@ -102,7 +103,17 @@ struct iPad_DeviceMapView: View {
                 heading: currentMapCamera?.heading ?? 0
             ) {
             let tap = {
-                withAnimation(.easeInOut(duration: 0.8)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        if #available(iOS 17.0, *) {
+                            if let currentRegion = cameraPosition.region {
+                                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                            }
+                        } else {
+                            self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                        }
+                    }
+                } else {
                     if #available(iOS 17.0, *) {
                         if let currentRegion = cameraPosition.region {
                             cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
@@ -321,7 +332,14 @@ struct iPad_DeviceMapView: View {
             let coordinate = bestAvailableLocation
             // iPad-specific: Force animations with longer duration for better visual feedback
             beginProgrammaticCameraAnimation(duration: 1.0)
-            withAnimation(.easeInOut(duration: 1.0)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    region = MKCoordinateRegion(center: coordinate, span: span)
+                    if #available(iOS 17.0, *) {
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                    }
+                }
+            } else {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
                     cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
@@ -356,7 +374,14 @@ struct iPad_DeviceMapView: View {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             // iPad-specific: Enhanced zoom animations
             beginProgrammaticCameraAnimation(duration: 0.8)
-            withAnimation(.easeInOut(duration: 0.8)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    region.span = span
+                    if #available(iOS 17.0, *) {
+                        cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
+                    }
+                }
+            } else {
                 region.span = span
                 if #available(iOS 17.0, *) {
                     cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
@@ -386,7 +411,11 @@ struct iPad_DeviceMapView: View {
             if headingChanged || zoomChanged || centerChanged {
                 // Map is moving - set state and reset timer
                 if !isMapMoving {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isMapMoving = true
+                        }
+                    } else {
                         isMapMoving = true
                     }
                 }
@@ -396,7 +425,11 @@ struct iPad_DeviceMapView: View {
                 
                 // Start new timer to detect when movement stops (after 0.3 seconds of no movement)
                 mapMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isMapMoving = false
+                        }
+                    } else {
                         isMapMoving = false
                     }
                 }
@@ -508,12 +541,12 @@ struct iPad_DeviceMapView: View {
                     .padding(.top, 10)
                     .padding(.leading, 10)
                     .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
-                    .transition(.opacity)
+                    .transition(animationsAllowed ? .opacity : .identity)
                     .zIndex(10)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: showNetworkErrorIcon)
     }
     
     @ViewBuilder
@@ -555,11 +588,11 @@ struct iPad_DeviceMapView: View {
                     .padding([.top, .trailing], 10)
                     .zIndex(3)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .transition(.opacity)
+                    .transition(animationsAllowed ? .opacity : .identity)
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
     }
     
     @ViewBuilder
@@ -909,12 +942,20 @@ struct iPad_DeviceMapView: View {
     private func updateButton() -> some View {
         // Button to manually update device location
         Button {
-            withAnimation {
+            if animationsAllowed {
+                withAnimation {
+                    isUpdating = true
+                }
+            } else {
                 isUpdating = true
             }
             Task {
                 await fetchLocation(resetZoomToSettings: true)
-                withAnimation {
+                if animationsAllowed {
+                    withAnimation {
+                        isUpdating = false
+                    }
+                } else {
                     isUpdating = false
                 }
             }
@@ -976,16 +1017,50 @@ struct iPad_DeviceMapView: View {
                 if coordinateChanged {
                     // iPad-specific: Enhanced location change animations with explicit map movement
                     isProgrammaticCameraChange = true
-                    withAnimation(.easeInOut(duration: 1.2)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 1.2)) {
+                            if #available(iOS 17.0, *) {
+                                if resetZoomToSettings {
+                                    // On manual update: realign map to north (heading = 0)
+                                    let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                                    let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
+                                    cameraPosition = .camera(northCamera)
+                                    currentMapSpan = settingsSpan // Also update currentMapSpan
+                                } else if isAutoCenteringEnabled {
+                                    // On automatic update: keep current orientation (heading) but animate map movement
+                                    if let currentCamera = currentMapCamera {
+                                        let newCamera = MapCamera(
+                                            centerCoordinate: coordinate,
+                                            distance: currentCamera.distance,
+                                            heading: currentCamera.heading,
+                                            pitch: currentCamera.pitch
+                                        )
+                                        cameraPosition = .camera(newCamera)
+                                    } else {
+                                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentMapSpan))
+                                    }
+                                }
+                            } else {
+                                if resetZoomToSettings {
+                                    // On manual update: use zoom level from settings
+                                    let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
+                                    region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
+                                } else if isAutoCenteringEnabled {
+                                    // On automatic update: keep current zoom level but animate map movement
+                                    let currentZoomLevel = currentZoomLevelFromSpan(region.span)
+                                    let currentSpan = spanForZoomLevel(currentZoomLevel)
+                                    region = MKCoordinateRegion(center: coordinate, span: currentSpan)
+                                }
+                            }
+                        }
+                    } else {
                         if #available(iOS 17.0, *) {
                             if resetZoomToSettings {
-                                // On manual update: realign map to north (heading = 0)
                                 let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                                 let northCamera = MapCamera(centerCoordinate: coordinate, distance: currentMapCamera?.distance ?? 1000, heading: 0, pitch: currentMapCamera?.pitch ?? 0)
                                 cameraPosition = .camera(northCamera)
-                                currentMapSpan = settingsSpan // Also update currentMapSpan
+                                currentMapSpan = settingsSpan
                             } else if isAutoCenteringEnabled {
-                                // On automatic update: keep current orientation (heading) but animate map movement
                                 if let currentCamera = currentMapCamera {
                                     let newCamera = MapCamera(
                                         centerCoordinate: coordinate,
@@ -1000,11 +1075,9 @@ struct iPad_DeviceMapView: View {
                             }
                         } else {
                             if resetZoomToSettings {
-                                // On manual update: use zoom level from settings
                                 let settingsSpan = spanForZoomLevel(settings.mapZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: settingsSpan)
                             } else if isAutoCenteringEnabled {
-                                // On automatic update: keep current zoom level but animate map movement
                                 let currentZoomLevel = currentZoomLevelFromSpan(region.span)
                                 let currentSpan = spanForZoomLevel(currentZoomLevel)
                                 region = MKCoordinateRegion(center: coordinate, span: currentSpan)
@@ -1028,11 +1101,19 @@ struct iPad_DeviceMapView: View {
                 showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
             case .requestFailed(_):
                 // Show only the network error icon, not the overlay
-                withAnimation {
+                if animationsAllowed {
+                    withAnimation {
+                        showNetworkErrorIcon = true
+                    }
+                } else {
                     showNetworkErrorIcon = true
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation {
+                    if animationsAllowed {
+                        withAnimation {
+                            showNetworkErrorIcon = false
+                        }
+                    } else {
                         showNetworkErrorIcon = false
                     }
                 }
@@ -1068,7 +1149,7 @@ struct iPad_DeviceMapView: View {
     // Shows the error overlay with a debug and user message
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         debugLog("Error: \(debugMessage)")
-        errorOverlayManager.show(message: userMessage)
+        errorOverlayManager.show(message: userMessage, animationsAllowed: animationsAllowed)
     }
 
     // Aligns the map to north (heading = 0)
@@ -1083,9 +1164,14 @@ struct iPad_DeviceMapView: View {
         )
         // iPad-specific: Enhanced compass alignment animation
         beginProgrammaticCameraAnimation(duration: 1.0)
-        withAnimation(.easeInOut(duration: 1.0)) {
+        if animationsAllowed {
+            withAnimation(.easeInOut(duration: 1.0)) {
+                cameraPosition = .camera(newCamera)
+                userHasRotatedMap = false // Hide compass when aligned to north
+            }
+        } else {
             cameraPosition = .camera(newCamera)
-            userHasRotatedMap = false // Hide compass when aligned to north
+            userHasRotatedMap = false
         }
     }
 
@@ -1098,14 +1184,23 @@ struct iPad_DeviceMapView: View {
             let newRegion = MKCoordinateRegion(center: coordinate, span: span)
             // iPad-specific: Enhanced zoom reset animation
             beginProgrammaticCameraAnimation(duration: 1.0)
-            withAnimation(.easeInOut(duration: 1.0)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    cameraPosition = .region(newRegion)
+                    currentMapSpan = span
+                }
+            } else {
                 cameraPosition = .region(newRegion)
                 currentMapSpan = span
             }
         } else {
             // iPad-specific: Enhanced zoom reset animation
             beginProgrammaticCameraAnimation(duration: 1.0)
-            withAnimation(.easeInOut(duration: 1.0)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 1.0)) {
+                    region = MKCoordinateRegion(center: coordinate, span: span)
+                }
+            } else {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
         }

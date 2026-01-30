@@ -19,6 +19,7 @@ struct iPhone_DeviceNavigationView: View {
 
     @EnvironmentObject private var routeInfoState: RouteInfoState
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var routeCache = RouteCacheStore.shared
     @ObservedObject private var locationManager = LocationManager.shared
@@ -559,10 +560,18 @@ struct iPhone_DeviceNavigationView: View {
                 .padding(.vertical, 8)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    withAnimation { isUpdating = true }
+                    if animationsAllowed {
+                        withAnimation { isUpdating = true }
+                    } else {
+                        isUpdating = true
+                    }
                     Task {
                         await fetchTargetDeviceLocation(resetAndRecenter: true, ignoreRouteCache: true)
-                        withAnimation { isUpdating = false }
+                        if animationsAllowed {
+                            withAnimation { isUpdating = false }
+                        } else {
+                            isUpdating = false
+                        }
                     }
                 }
                 .onLongPressGesture(minimumDuration: 0.6) {
@@ -579,7 +588,7 @@ struct iPhone_DeviceNavigationView: View {
                 .accessibilityLabel(Text(NSLocalizedString("reload", comment: "Reload target device location")))
                 .accessibilityHint(Text(NSLocalizedString("reload_longpress_hint", comment: "Long-press to toggle automatic route updates.")))
         }
-        .animation(.easeInOut(duration: 0.2), value: isAutoRouteUpdateLocked)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.2) : nil, value: isAutoRouteUpdateLocked)
         .accessibilityAddTraits(.isButton)
     }
 
@@ -592,7 +601,11 @@ struct iPhone_DeviceNavigationView: View {
             userCoordinate = coord
             userTimestamp = loc.timestamp
             if changed || animatedUserCoordinate == nil {
-                withAnimation { animatedUserCoordinate = coord }
+                if animationsAllowed {
+                    withAnimation { animatedUserCoordinate = coord }
+                } else {
+                    animatedUserCoordinate = coord
+                }
             }
         }
         if let cached = cache.getLocation(for: device.DeviceID) {
@@ -600,14 +613,22 @@ struct iPhone_DeviceNavigationView: View {
             let changed = deviceCoordinate?.latitude != coord.latitude || deviceCoordinate?.longitude != coord.longitude
             deviceCoordinate = coord
             if changed || animatedDeviceCoordinate == nil {
-                withAnimation { animatedDeviceCoordinate = coord }
+                if animationsAllowed {
+                    withAnimation { animatedDeviceCoordinate = coord }
+                } else {
+                    animatedDeviceCoordinate = coord
+                }
             }
         }
         if let user = userCoordinate, let dest = deviceCoordinate,
            (!hasSetInitialRegion || recenter || isAutoCenteringEnabled) {
             let region = regionThatFits(user: user, dest: dest)
             isProgrammaticCameraChange = true
-            withAnimation {
+            if animationsAllowed {
+                withAnimation {
+                    mapPosition = .region(region)
+                }
+            } else {
                 mapPosition = .region(region)
             }
             hasSetInitialRegion = true
@@ -754,7 +775,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         debugLog("Error: \(debugMessage)")
-        errorOverlayManager.show(message: userMessage)
+        errorOverlayManager.show(message: userMessage, animationsAllowed: animationsAllowed)
     }
 
     // MARK: - Remote updates for the selected device only
@@ -788,7 +809,11 @@ struct iPhone_DeviceNavigationView: View {
                 deviceCoordinate = coordinate
                 deviceTimestamp = loc.TimestampDate
                 if changed || animatedDeviceCoordinate == nil {
-                    withAnimation { animatedDeviceCoordinate = coordinate }
+                    if animationsAllowed {
+                        withAnimation { animatedDeviceCoordinate = coordinate }
+                    } else {
+                        animatedDeviceCoordinate = coordinate
+                    }
                 }
                 // Always update coordinates to allow auto-centering when enabled
                 updateCoordinates(recenter: resetAndRecenter)
@@ -907,10 +932,10 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 .padding([.top, .trailing], 10)
                 .zIndex(3)
-                .transition(.opacity)
+                .transition(animationsAllowed ? .opacity : .identity)
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
     }
 
     private func alignMapToNorth() {
@@ -923,7 +948,12 @@ struct iPhone_DeviceNavigationView: View {
             pitch: currentCamera.pitch
         )
         isProgrammaticCameraChange = true
-        withAnimation {
+        if animationsAllowed {
+            withAnimation {
+                mapPosition = .camera(newCamera)
+                userHasRotatedMap = false
+            }
+        } else {
             mapPosition = .camera(newCamera)
             userHasRotatedMap = false
         }
@@ -934,7 +964,11 @@ struct iPhone_DeviceNavigationView: View {
         if let user = userCoordinate, let dest = deviceCoordinate {
             let region = regionThatFits(user: user, dest: dest)
             isProgrammaticCameraChange = true
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    mapPosition = .region(region)
+                }
+            } else {
                 mapPosition = .region(region)
             }
         }
@@ -981,7 +1015,8 @@ struct iPhone_DeviceNavigationView: View {
             Haptic.notifySuccess()
             infoOverlayManager.show(
                 message: NSLocalizedString("navigation_stopped_automatically", comment: "Navigation stopped automatically - devices are close"),
-                duration: 6.0
+                duration: 6.0,
+                animationsAllowed: animationsAllowed
             )
             // Stop navigation but keep the map view showing both devices
             stopNavigation()

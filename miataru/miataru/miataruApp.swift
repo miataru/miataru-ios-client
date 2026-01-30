@@ -75,6 +75,7 @@ struct miataruApp: App {
                 .environmentObject(appState)
                 .environmentObject(RouteInfoState.shared)
                 .environmentObject(SettingsManager.shared)
+                .animationsGate()
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
                     OnboardingContainerView(isPresented: $appState.showOnboarding)
                         .background(Color(.systemBackground))
@@ -113,6 +114,7 @@ struct miataruApp: App {
             DeviceWindowEntrypoint(deviceID: deviceID)
                 .environmentObject(RouteInfoState.shared)
                 .environmentObject(SettingsManager.shared)
+                .animationsGate()
         }
     }
 

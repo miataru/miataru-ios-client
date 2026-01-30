@@ -13,6 +13,8 @@ import MessageUI
 import UIKit
 
 struct iPhone_MyDeviceQRCodeView: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     @State var content: String = "miataru://" + thisDeviceIDManager.shared.deviceID
     @State var correction: QRCode.ErrorCorrection = .low
 
@@ -100,13 +102,21 @@ struct iPhone_MyDeviceQRCodeView: View {
 
                                 Button(action: {
                                     UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
-                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                    if animationsAllowed {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showCopiedAlert = true
+                                        }
+                                    } else {
                                         showCopiedAlert = true
                                     }
 
                                     // Automatically hide alert after 2 seconds
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                        if animationsAllowed {
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                showCopiedAlert = false
+                                            }
+                                        } else {
                                             showCopiedAlert = false
                                         }
                                     }
@@ -157,13 +167,21 @@ struct iPhone_MyDeviceQRCodeView: View {
 
                                 Button(action: {
                                     UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
-                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                    if animationsAllowed {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            showCopiedAlert = true
+                                        }
+                                    } else {
                                         showCopiedAlert = true
                                     }
 
                                     // Automatically hide alert after 2 seconds
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                        if animationsAllowed {
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                showCopiedAlert = false
+                                            }
+                                        } else {
                                             showCopiedAlert = false
                                         }
                                     }
@@ -270,7 +288,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                             
                             Spacer()
                         }
-                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                        .transition(animationsAllowed ? .opacity.combined(with: .scale(scale: 0.8)) : .identity)
                         .zIndex(1)
                     }
                     }

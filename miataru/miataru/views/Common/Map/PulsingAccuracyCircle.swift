@@ -49,6 +49,7 @@ import SwiftUI
 /// ```
 
 struct PulsingAccuracyCircle: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
 
     @State private var isPulsing = false
 
@@ -113,38 +114,40 @@ struct PulsingAccuracyCircle: View {
     }
     
     var body: some View {
-        ZStack {
-            // Core circle stays at base size so the indicator never appears too small
-            Circle()
-                .fill(pulsingColor.gradient)
-                .frame(width: size, height: size)
-                .opacity(coreOpacity)
+        if animationsAllowed {
+            ZStack {
+                // Core circle stays at base size so the indicator never appears too small
+                Circle()
+                    .fill(pulsingColor.gradient)
+                    .frame(width: size, height: size)
+                    .opacity(coreOpacity)
 
-            // Halo 1 - expands outward from 1.0x to `haloMaxScale`
-            Circle()
-                .fill(pulsingColor.gradient)
-                .frame(width: size, height: size)
-                .opacity(halo1Opacity)
-                .scaleEffect(isPulsing ? haloMaxScale : 1.0)
-                .animation(easeGently.delay(halo1Delay), value: isPulsing)
+                // Halo 1 - expands outward from 1.0x to `haloMaxScale`
+                Circle()
+                    .fill(pulsingColor.gradient)
+                    .frame(width: size, height: size)
+                    .opacity(halo1Opacity)
+                    .scaleEffect(isPulsing ? haloMaxScale : 1.0)
+                    .animation(easeGently.delay(halo1Delay), value: isPulsing)
 
-            // Halo 2 - stagger start for smoother, layered pulsing effect
-            Circle()
-                .fill(pulsingColor.gradient)
-                .frame(width: size, height: size)
-                .opacity(halo2Opacity)
-                .scaleEffect(isPulsing ? haloMaxScale : 1.0)
-                .animation(easeGently.delay(halo2Delay), value: isPulsing)
-        }
-        // Reserve headroom so expanding halos are not clipped
-        .frame(width: size * haloMaxScale, height: size * haloMaxScale)
-        // Flatten the rendering to mitigate perspective warping when composited
-        // into 3D contexts (e.g., MapKit or other transformed containers)
-        .drawingGroup()
-        .onAppear {
-            // Start the pulse once the view appears
-            withAnimation {
-                isPulsing.toggle()
+                // Halo 2 - stagger start for smoother, layered pulsing effect
+                Circle()
+                    .fill(pulsingColor.gradient)
+                    .frame(width: size, height: size)
+                    .opacity(halo2Opacity)
+                    .scaleEffect(isPulsing ? haloMaxScale : 1.0)
+                    .animation(easeGently.delay(halo2Delay), value: isPulsing)
+            }
+            // Reserve headroom so expanding halos are not clipped
+            .frame(width: size * haloMaxScale, height: size * haloMaxScale)
+            // Flatten the rendering to mitigate perspective warping when composited
+            // into 3D contexts (e.g., MapKit or other transformed containers)
+            .drawingGroup()
+            .onAppear {
+                // Start the pulse once the view appears
+                withAnimation {
+                    isPulsing.toggle()
+                }
             }
         }
     }

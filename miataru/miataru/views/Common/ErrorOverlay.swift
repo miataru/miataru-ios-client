@@ -11,6 +11,8 @@ import SwiftUI
 import Combine
 
 struct ErrorOverlay: View {
+    @Environment(\.animationsAllowed) private var animationsAllowed
+
     let message: String
     let visible: Bool
 
@@ -31,8 +33,8 @@ struct ErrorOverlay: View {
                 }
                 Spacer()
             }
-            .transition(.scale.combined(with: .opacity))
-            .animation(.easeInOut(duration: 0.3), value: visible)
+            .transition(animationsAllowed ? .scale.combined(with: .opacity) : .identity)
+            .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: visible)
             .zIndex(1)
         }
     }
@@ -44,16 +46,24 @@ class ErrorOverlayManager: ObservableObject {
 
     private var hideCancellable: AnyCancellable?
 
-    func show(message: String, duration: TimeInterval = 3.0) {
+    func show(message: String, duration: TimeInterval = 3.0, animationsAllowed: Bool = true) {
         self.message = message
-        withAnimation {
+        if animationsAllowed {
+            withAnimation {
+                self.visible = true
+            }
+        } else {
             self.visible = true
         }
         hideCancellable?.cancel()
         hideCancellable = Just(())
             .delay(for: .seconds(duration), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
-                withAnimation {
+                if animationsAllowed {
+                    withAnimation {
+                        self?.visible = false
+                    }
+                } else {
                     self?.visible = false
                 }
             }

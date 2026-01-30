@@ -13,6 +13,7 @@ import QRCode
 struct iPhone_EditDeviceView: View {
     @Binding var device: KnownDevice
     @Binding var isPresented: Bool
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @State private var copiedIDFeedback = false
     @State private var tempDeviceName: String = ""
     @State private var tempDeviceColor: Color = .gray
@@ -115,12 +116,12 @@ struct iPhone_EditDeviceView: View {
                         .background(Color.black.opacity(0.8))
                         .foregroundColor(.white)
                         .cornerRadius(10)
-                        .transition(.opacity)
+                        .transition(animationsAllowed ? .opacity : .identity)
                         .zIndex(1)
                 }
             }, alignment: .top
         )
-        .animation(.easeInOut, value: copiedIDFeedback)
+        .animation(animationsAllowed ? .easeInOut : nil, value: copiedIDFeedback)
     }
 }
 

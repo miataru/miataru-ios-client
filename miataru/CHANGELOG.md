@@ -6,3 +6,4 @@ v2.9
 - Added a navigation instruction overlay when routing from the current device to a selected device.
 - Fixed route progress ghost and segmentation to follow the active navigation direction.
 - Made route caching direction-aware to avoid reusing reversed routes.
+- Disabled shimmer, pulsing, and UI animations while Low Power Mode is enabled.

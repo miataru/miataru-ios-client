@@ -40,6 +40,7 @@ struct iPhone_DeviceMapView: View {
     @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
     @ObservedObject private var settings = SettingsManager.shared // App settings
     @ObservedObject private var cache = DeviceLocationCacheStore.shared // Device location cache
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
     @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
@@ -101,7 +102,17 @@ struct iPhone_DeviceMapView: View {
                 heading: currentMapCamera?.heading ?? 0
             ) {
             let tap = {
-                withAnimation(.easeInOut(duration: 0.8)) {
+                if animationsAllowed {
+                    withAnimation(.easeInOut(duration: 0.8)) {
+                        if #available(iOS 17.0, *) {
+                            if let currentRegion = cameraPosition.region {
+                                cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
+                            }
+                        } else {
+                            self.region = MKCoordinateRegion(center: coordinate, span: self.region.span)
+                        }
+                    }
+                } else {
                     if #available(iOS 17.0, *) {
                         if let currentRegion = cameraPosition.region {
                             cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: currentRegion.span))
@@ -309,7 +320,14 @@ struct iPhone_DeviceMapView: View {
             let coordinate = bestAvailableLocation
             // Initial region set is programmatic; suppress user detection for the animation
             beginProgrammaticCameraAnimation(duration: 0.5)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    region = MKCoordinateRegion(center: coordinate, span: span)
+                    if #available(iOS 17.0, *) {
+                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
+                    }
+                }
+            } else {
                 region = MKCoordinateRegion(center: coordinate, span: span)
                 if #available(iOS 17.0, *) {
                     cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
@@ -336,7 +354,14 @@ struct iPhone_DeviceMapView: View {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             // Programmatic zoom change; suppress user detection during animation
             beginProgrammaticCameraAnimation(duration: 0.5)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    region.span = span
+                    if #available(iOS 17.0, *) {
+                        cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
+                    }
+                }
+            } else {
                 region.span = span
                 if #available(iOS 17.0, *) {
                     cameraPosition = .region(MKCoordinateRegion(center: region.center, span: span))
@@ -363,7 +388,11 @@ struct iPhone_DeviceMapView: View {
             if headingChanged || zoomChanged || centerChanged {
                 // Map is moving - set state and reset timer
                 if !isMapMoving {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isMapMoving = true
+                        }
+                    } else {
                         isMapMoving = true
                     }
                 }
@@ -373,7 +402,11 @@ struct iPhone_DeviceMapView: View {
                 
                 // Start new timer to detect when movement stops (after 0.3 seconds of no movement)
                 mapMovementTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    if animationsAllowed {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isMapMoving = false
+                        }
+                    } else {
                         isMapMoving = false
                     }
                 }
@@ -490,12 +523,12 @@ struct iPhone_DeviceMapView: View {
                     .padding(.top, 10)
                     .padding(.leading, 10)
                     .shadow(color: Color(.systemRed).opacity(0.5), radius: 8, x: 0, y: 4)
-                    .transition(.opacity)
+                    .transition(animationsAllowed ? .opacity : .identity)
                     .zIndex(10)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: showNetworkErrorIcon)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: showNetworkErrorIcon)
     }
     
     @ViewBuilder
@@ -537,11 +570,11 @@ struct iPhone_DeviceMapView: View {
                     .padding([.top, .trailing], 10)
                     .zIndex(3)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .transition(.opacity)
+                    .transition(animationsAllowed ? .opacity : .identity)
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: userHasRotatedMap)
+        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
     }
     
     @ViewBuilder
@@ -1055,7 +1088,10 @@ struct iPhone_DeviceMapView: View {
         if let cachedHistory = DeviceHistoryCacheStore.shared.getHistory(for: device.DeviceID) {
             if cachedHistory.isEmpty {
                 await MainActor.run {
-                    errorOverlayManager.show(message: NSLocalizedString("history_no_data", comment: "No history available placeholder"))
+                    errorOverlayManager.show(
+                        message: NSLocalizedString("history_no_data", comment: "No history available placeholder"),
+                        animationsAllowed: animationsAllowed
+                    )
                 }
             } else {
                 await MainActor.run {
@@ -1067,7 +1103,10 @@ struct iPhone_DeviceMapView: View {
 
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
             await MainActor.run {
-                errorOverlayManager.show(message: NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+                errorOverlayManager.show(
+                    message: NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"),
+                    animationsAllowed: animationsAllowed
+                )
             }
             return
         }
@@ -1087,7 +1126,10 @@ struct iPhone_DeviceMapView: View {
 
             guard !sorted.isEmpty else {
                 await MainActor.run {
-                    errorOverlayManager.show(message: NSLocalizedString("history_no_data", comment: "No history available placeholder"))
+                    errorOverlayManager.show(
+                        message: NSLocalizedString("history_no_data", comment: "No history available placeholder"),
+                        animationsAllowed: animationsAllowed
+                    )
                 }
                 return
             }
@@ -1099,11 +1141,11 @@ struct iPhone_DeviceMapView: View {
         } catch let apiError as MiataruAPIClient.APIError {
             let message = mapHistoryAPIError(apiError)
             await MainActor.run {
-                errorOverlayManager.show(message: message)
+                errorOverlayManager.show(message: message, animationsAllowed: animationsAllowed)
             }
         } catch {
             await MainActor.run {
-                errorOverlayManager.show(message: error.localizedDescription)
+                errorOverlayManager.show(message: error.localizedDescription, animationsAllowed: animationsAllowed)
             }
         }
     }
@@ -1178,7 +1220,7 @@ struct iPhone_DeviceMapView: View {
     // Shows the error overlay with a debug and user message
     private func showErrorOverlay(_ debugMessage: String, _ userMessage: String) {
         debugLog("Error: \(debugMessage)")
-        errorOverlayManager.show(message: userMessage)
+        errorOverlayManager.show(message: userMessage, animationsAllowed: animationsAllowed)
     }
 
     // Aligns the map to north (heading = 0)
@@ -1192,9 +1234,14 @@ struct iPhone_DeviceMapView: View {
             pitch: currentCamera.pitch
         )
         beginProgrammaticCameraAnimation(duration: 0.5)
-        withAnimation(.easeInOut(duration: 0.5)) {
+        if animationsAllowed {
+            withAnimation(.easeInOut(duration: 0.5)) {
+                cameraPosition = .camera(newCamera)
+                userHasRotatedMap = false // Hide compass when aligned to north
+            }
+        } else {
             cameraPosition = .camera(newCamera)
-            userHasRotatedMap = false // Hide compass when aligned to north
+            userHasRotatedMap = false
         }
     }
 
@@ -1206,13 +1253,22 @@ struct iPhone_DeviceMapView: View {
         if #available(iOS 17.0, *) {
             let newRegion = MKCoordinateRegion(center: coordinate, span: span)
             beginProgrammaticCameraAnimation(duration: 0.5)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    cameraPosition = .region(newRegion)
+                    currentMapSpan = span
+                }
+            } else {
                 cameraPosition = .region(newRegion)
                 currentMapSpan = span
             }
         } else {
             beginProgrammaticCameraAnimation(duration: 0.5)
-            withAnimation(.easeInOut(duration: 0.5)) {
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    region = MKCoordinateRegion(center: coordinate, span: span)
+                }
+            } else {
                 region = MKCoordinateRegion(center: coordinate, span: span)
             }
         }
