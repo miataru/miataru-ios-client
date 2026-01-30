@@ -3,3 +3,4 @@ v2.9
 - Moved the iPhone groups list below devices with an inline add button.
 - Added subtle sound cues when mutual navigation activates or deactivates.
 - Added haptic feedback for navigation changes and key device actions.
+- Added a navigation instruction overlay when routing from the current device to a selected device.

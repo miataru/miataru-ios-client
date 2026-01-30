@@ -155,3 +155,35 @@ extension MKPolyline {
     }
 }
 
+extension MKPolyline {
+    func closestDistance(to point: MKMapPoint) -> CLLocationDistance? {
+        guard pointCount > 0 else { return nil }
+        let points = self.points()
+        if pointCount == 1 {
+            return point.distance(to: points[0])
+        }
+        var closest = CLLocationDistance.greatestFiniteMagnitude
+        for index in 0..<(pointCount - 1) {
+            let start = points[index]
+            let end = points[index + 1]
+            let distance = distanceFrom(point, toSegmentBetween: start, end)
+            if distance < closest {
+                closest = distance
+            }
+        }
+        return closest.isFinite ? closest : nil
+    }
+
+    private func distanceFrom(_ point: MKMapPoint, toSegmentBetween start: MKMapPoint, _ end: MKMapPoint) -> CLLocationDistance {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        if dx == 0 && dy == 0 {
+            return point.distance(to: start)
+        }
+        let t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)
+        let clamped = max(0, min(1, t))
+        let projected = MKMapPoint(x: start.x + clamped * dx, y: start.y + clamped * dy)
+        return point.distance(to: projected)
+    }
+}
+

@@ -12,6 +12,7 @@ import MapKit
 import Combine
 import CoreLocation
 import MiataruAPIClient
+import NavigationOverlayKit
 
 struct iPhone_DeviceNavigationView: View {
     var device: KnownDevice
@@ -48,6 +49,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var now = Date()
     @State private var isAutoRouteUpdateLocked: Bool = false
     @State private var isRouteReversed: Bool = true // Default: device to user
+    @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
+    @State private var lastOverlayStepIndex: Int? = nil
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -137,6 +140,8 @@ struct iPhone_DeviceNavigationView: View {
             // Ensure auto-update lock state follows global setting for new navigation
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
             isRouteReversed = true // Reset to default: device to user
+            navigationOverlayViewModel = nil
+            lastOverlayStepIndex = nil
             deviceTimestamp = nil
             isLoading = false
             lastRouteUserCoordinate = nil
@@ -293,10 +298,12 @@ struct iPhone_DeviceNavigationView: View {
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
                 checkAutoStopCondition()
+                updateNavigationOverlayStep()
             }
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
                 checkAutoStopCondition()
+                updateNavigationOverlayStep()
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
@@ -321,7 +328,7 @@ struct iPhone_DeviceNavigationView: View {
                 calculateRoute()
             }
             .onChange(of: isRouteReversed) { _, _ in
-                // Route direction changed
+                refreshNavigationOverlayForCurrentRoute()
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
@@ -359,7 +366,7 @@ struct iPhone_DeviceNavigationView: View {
                 currentRegion = context.region
             }
             .overlay(alignment: .top) {
-                topOverlayContent
+                topOverlayStack
             }
             .overlay(alignment: .bottomTrailing) {
                 scaleBarView()
@@ -369,6 +376,21 @@ struct iPhone_DeviceNavigationView: View {
             }
     }
     
+    @ViewBuilder
+    private var topOverlayStack: some View {
+        VStack(spacing: 8) {
+            navigationOverlayContent
+            topOverlayContent
+        }
+    }
+
+    @ViewBuilder
+    private var navigationOverlayContent: some View {
+        if let navigationOverlayViewModel, !isRouteReversed, route != nil {
+            NavigationOverlayView(viewModel: navigationOverlayViewModel, alignment: .top)
+        }
+    }
+
     @ViewBuilder
     private var topOverlayContent: some View {
         if travelTime != nil || distanceText != nil {
@@ -656,6 +678,7 @@ struct iPhone_DeviceNavigationView: View {
                     formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
                     distanceText = formattedDistance(first.distance)
+                    refreshNavigationOverlayForCurrentRoute()
                     // Remember inputs used for this route calculation
                     lastRouteUserCoordinate = user
                     lastRouteDeviceCoordinate = device
@@ -677,6 +700,7 @@ struct iPhone_DeviceNavigationView: View {
                     travelTime = nil
                     distanceText = nil
                     lastRouteTransportType = nil
+                    refreshNavigationOverlayForCurrentRoute()
                     showErrorOverlay(
                         "No route found",
                         NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
@@ -687,6 +711,7 @@ struct iPhone_DeviceNavigationView: View {
                 travelTime = nil
                 distanceText = nil
                 lastRouteTransportType = nil
+                refreshNavigationOverlayForCurrentRoute()
                 showErrorOverlay(
                     "Route calculation failed: \(error.localizedDescription)",
                     NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
@@ -968,6 +993,8 @@ struct iPhone_DeviceNavigationView: View {
         route = nil
         travelTime = nil
         distanceText = nil
+        navigationOverlayViewModel = nil
+        lastOverlayStepIndex = nil
         routeInfoState.hide()
         stopAutoUpdate()
         // Update bottom accessory to reflect that navigation is stopped
@@ -1004,6 +1031,7 @@ extension iPhone_DeviceNavigationView {
                 formatter.unitsStyle = .short
                 travelTime = formatter.string(from: cached.route.expectedTravelTime)
                 distanceText = formattedDistance(cached.route.distance)
+                refreshNavigationOverlayForCurrentRoute()
                 // Align last-route inputs so existing change detection logic works
                 lastRouteUserCoordinate = cached.userCoordinate
                 lastRouteDeviceCoordinate = cached.deviceCoordinate
@@ -1050,6 +1078,53 @@ extension iPhone_DeviceNavigationView {
         case 3: return "tram"
         default: return "car"
         }
+    }
+
+    private func refreshNavigationOverlayForCurrentRoute() {
+        guard !isRouteReversed, let route else {
+            navigationOverlayViewModel = nil
+            lastOverlayStepIndex = nil
+            return
+        }
+        navigationOverlayViewModel = NavigationOverlayViewModel(route: route, unit: navigationOverlayUnit())
+        lastOverlayStepIndex = nil
+        updateNavigationOverlayStep()
+    }
+
+    private func updateNavigationOverlayStep() {
+        guard !isRouteReversed,
+              let route,
+              let navigationOverlayViewModel,
+              let location = locationManager.currentLocation else { return }
+        guard let stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return }
+        if stepIndex != lastOverlayStepIndex {
+            navigationOverlayViewModel.update(step: stepIndex)
+            lastOverlayStepIndex = stepIndex
+        }
+    }
+
+    private func closestStepIndex(for route: MKRoute, to coordinate: CLLocationCoordinate2D) -> Int? {
+        let point = MKMapPoint(coordinate)
+        var bestIndex: Int?
+        var bestDistance: CLLocationDistance = .greatestFiniteMagnitude
+        for (index, step) in route.steps.enumerated() {
+            guard let distance = step.polyline.closestDistance(to: point) else { continue }
+            if distance < bestDistance {
+                bestDistance = distance
+                bestIndex = index
+            }
+        }
+        return bestIndex
+    }
+
+    private func navigationOverlayUnit() -> UnitLength {
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+        return usesMetric ? .meters : .feet
     }
 
     private func updateBottomAccessory() {
