@@ -28,10 +28,20 @@ public enum Haptic {
 		performNotification(.error)
 	}
 
+	public static func impactMedium() {
+		performImpact(.medium)
+	}
+
 	private enum NotificationType {
 		case success
 		case warning
 		case error
+	}
+
+	private enum ImpactStyle {
+		case light
+		case medium
+		case heavy
 	}
 
 	private static func performNotification(_ type: NotificationType) {
@@ -47,6 +57,32 @@ public enum Haptic {
 			case .error:
 				generator.notificationOccurred(.error)
 			}
+		}
+		#elseif canImport(AppKit)
+		// macOS provides limited, generic haptic feedback
+		DispatchQueue.main.async {
+			NSHapticFeedbackManager.defaultPerformer.perform(.generic, performanceTime: .now)
+		}
+		#else
+		// No-op on unsupported platforms
+		#endif
+	}
+
+	private static func performImpact(_ style: ImpactStyle) {
+		#if canImport(UIKit)
+		DispatchQueue.main.async {
+			let uiStyle: UIImpactFeedbackGenerator.FeedbackStyle
+			switch style {
+			case .light:
+				uiStyle = .light
+			case .medium:
+				uiStyle = .medium
+			case .heavy:
+				uiStyle = .heavy
+			}
+			let generator = UIImpactFeedbackGenerator(style: uiStyle)
+			generator.prepare()
+			generator.impactOccurred()
 		}
 		#elseif canImport(AppKit)
 		// macOS provides limited, generic haptic feedback

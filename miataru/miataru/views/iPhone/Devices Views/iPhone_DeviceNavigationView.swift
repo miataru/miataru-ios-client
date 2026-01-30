@@ -266,12 +266,16 @@ struct iPhone_DeviceNavigationView: View {
             )
             .onAppear {
                 isViewActive = true
+                Haptic.impactMedium()
                 // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
                 isAutoCenteringEnabled = true
                 // Sync auto-update lock state with global setting on appear
                 isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
                 // Provide cancel handler for bottom accessory (iOS 26)
-                routeInfoState.onCancel = { dismiss() }
+                routeInfoState.onCancel = {
+                    Haptic.impactMedium()
+                    dismiss()
+                }
                 updateCoordinates(recenter: true)
                 // Record initial distance after coordinates are set
                 recordInitialDistance()
@@ -335,6 +339,7 @@ struct iPhone_DeviceNavigationView: View {
                 } else {
                     SoundEffectPlayer.shared.play(named: mutualNavigationOffSoundName, fileExtension: "caf")
                 }
+                Haptic.impactMedium()
             }
             .onMapCameraChange(frequency: .continuous) { context in
                 // Track camera state changes to detect user rotation and keep a compass affordance

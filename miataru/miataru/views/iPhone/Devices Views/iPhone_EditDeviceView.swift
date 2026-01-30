@@ -32,6 +32,7 @@ struct iPhone_EditDeviceView: View {
                         Spacer()
                         Button(action: {
                             UIPasteboard.general.string = device.DeviceID
+                            Haptic.impactMedium()
                             copiedIDFeedback = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                                 copiedIDFeedback = false
@@ -93,6 +94,7 @@ struct iPhone_EditDeviceView: View {
                         if #available(iOS 14.0, *) {
                             device.DeviceColor = UIColor(tempDeviceColor)
                         }
+                        Haptic.notifySuccess()
                         isPresented = false
                     }
                     .disabled(tempDeviceName.isEmpty)

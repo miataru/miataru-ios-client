@@ -100,8 +100,10 @@ struct iPhone_AddDeviceView: View {
                         let newDevice = KnownDevice(name: deviceName, deviceID: deviceID, color: uiColor)
                         let success = store.add(device: newDevice)
                         if success {
+                            Haptic.notifySuccess()
                             isPresented = false
                         } else {
+                            Haptic.notifyWarning()
                             showDuplicateAlert = true
                         }
                     }
@@ -116,6 +118,7 @@ struct iPhone_AddDeviceView: View {
                     let prefix = "miataru://"
                     if res.string.hasPrefix(prefix) {
                         deviceID = String(res.string.dropFirst(prefix.count)).uppercased()
+                        Haptic.impactMedium()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             isShowingScanner = false
                         }
@@ -124,6 +127,7 @@ struct iPhone_AddDeviceView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             isShowingScanner = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                Haptic.notifyWarning()
                                 showInvalidQRAlert = true
                             }
                         }
