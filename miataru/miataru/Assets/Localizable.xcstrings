@@ -18974,6 +18974,7 @@
     },
     "visitor_history_accessibility_label" : {
       "comment" : "Accessibility label for visitor history button",
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {

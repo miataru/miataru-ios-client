@@ -330,3 +330,716 @@ When you’re ready, tell me to proceed with execution.
 
 ---
 
+_**User**_
+
+Implement the plan as specified, it is attached for your reference. Do NOT edit the plan file itself.
+
+To-do's from the plan have already been created. Do not create them again. Mark them as in_progress as you work, starting with the first one. Don't stop until you have completed all the to-dos.
+
+---
+
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing to update tasks with TodoWrite**</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [-] Create reusable visitor history section + shared load logic
+- [ ] Insert inline visitor section below QR code tab content
+- [ ] Rewire standalone visitor view to reuse shared section
+- [ ] Update changelog and relevant docs
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Designing reusable visitor history section**
+
+Planning to extract visitor history display into a reusable struct with its own ObservableObject view model managing loading state. We'll implement it with a VStack inside the existing ScrollView on the QR tab, adding refreshable support and retry UI, reusing the existing row view styled with dividers and background.
+**Designing view model with shared settings and device store**
+
+Decided to embed shared settings access inside the view model and keep device store as a separate state object passed into the visitor history section view. The view model is marked @MainActor with async loading and manages loading/error states, while the section view gets bindings for interaction and handles UI states like loading and errors. The QR view will manage presenting the add-device sheet via a pending item binding. NavigationPath state is removed but NavigationStack stays for the title bar.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Identifying doc for update**
+
+I'm confirming which doc to update between APP_FEATURES and APP_STORE_DESCRIPTION, leaning toward APP_FEATURES for a minimal, relevant change. Next, I'll read it.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/APP_FEATURES.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Designing visitor history section view**
+
+Planning a VisitorHistorySection SwiftUI view that conditionally shows the header and renders visitor rows with careful padding control delegated to the parent. It will handle loading, error, empty states, and display visitors using a sorted list from the view model.
+**Creating shared visitor history state view**
+
+I'm designing a reusable VisitorHistoryStateView to handle loading, error, empty, and visitor list states with a content closure for flexible rendering across List and ScrollView contexts. This enables sharing view model logic while adapting layout for QR inline or list views without duplicating state handling.</details></think>
+
+---
+
+Failed to find context:
+            }
+            .onDisappear {
+                // Refresh visitor history after adding device to show updated name
+                Task {
+                    await loadVisitorHistory()
+                }
+            }
+        }
+        .onReceive(deviceStore.$devices) { _ in
+            // Refresh when devices are added/updated to show updated names
+            if !visitors.isEmpty {
+                // Trigger view update by accessing sortedVisitors
+                _ = sortedVisitors
+            }
+        }
+    }
+    
+    private var sortedVisitors: [MiataruVisitor] {
+        visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
+    
+    private func loadVisitorHistory() async {
+        guard let url = URL(string: settings.miataruServerURL) else {
+            await MainActor.run {
+                errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            }
+            return
+        }
+        
+        await MainActor.run {
+            isLoading = true
+            errorMessage = nil
+        }
+        
+        do {
+            let ourDeviceId = thisDeviceIDManager.shared.deviceID
+            // Request with nil amount to get all available from server
+            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
+                serverURL: url,
+                forDeviceID: ourDeviceId,
+                amount: nil
+            )
+            
+            await MainActor.run {
+                self.visitors = response.MiataruVisitors
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+                self.isLoading = false
+            }
+            debugLog("[iPhone_VisitorHistoryView] Failed to load visitor history: \(error)")
+        }
+    }
+}
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing careful patch application**</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Applying patch incrementally**</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Updating iPhone VisitorHistoryView body**
+
+I'm modifying the body of the iPhone_VisitorHistoryView and removing the load/sorted section at the bottom using a patch.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Refactoring QR view for state management**
+
+Planning to remove navigation path and destination, add state objects for visitor history and device store, and replace the visitor history button with a section component inside the NavigationStack; also adding pull-to-refresh and adjusting padding based on orientation.
+**Adding refresh and sheet for pending device**
+
+Adding refreshable modifier to trigger visitor history loading and adding a sheet for pendingDeviceItem alongside existing mail and share sheets in the QR view.</details></think>
+
+---
+
+Failed to find context:
+                }
+                .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
+                    MailView(
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Re-reading file bottom due to patch conflict**</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Applying patch to navigation state**
+
+I'm replacing the navigationPath and adding new state variables as part of the patch application.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Preparing to change navigation stack**</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Replacing visitor history button with refreshable section**</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Inserting refreshable and onAppear on ScrollView**
+
+I'll add .refreshable and .onAppear modifiers directly to the ScrollView after its .frame closure but before the .navigationTitle, targeting visitor history loading logic.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Removing navigationDestination block**</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adding sheet for pending device item**</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Confirming state cleanup and import needs**
+
+The navigationPath state is fully removed and references cleared; no import additions needed since dependencies are already imported. Next, I'll update the CHANGELOG with a note about the visitor log inline feature near the top of the v2.9 list.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Updating feature descriptions**
+
+I'm revising the QR section to add that the user sees visitor history inline, and updating the developer note to mention the new inline visitor history section and the associated view model around lines 83-93.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/APP_FEATURES.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Updating todo statuses**
+
+I'm marking the first task complete and setting the second one to in-progress using TodoWrite with merge enabled.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Create reusable visitor history section + shared load logic
+- [-] Insert inline visitor section below QR code tab content
+- [ ] Rewire standalone visitor view to reuse shared section
+- [ ] Update changelog and relevant docs
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Sequencing todo status updates**
+
+Planning to mark embed as completed and wire as in progress first, then set wire completed and docs in progress, and finally mark docs completed in 2-3 sequential update calls to align with task progress accurately.</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Create reusable visitor history section + shared load logic
+- [x] Insert inline visitor section below QR code tab content
+- [-] Rewire standalone visitor view to reuse shared section
+- [ ] Update changelog and relevant docs
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Marking work status**</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Create reusable visitor history section + shared load logic
+- [x] Insert inline visitor section below QR code tab content
+- [x] Rewire standalone visitor view to reuse shared section
+- [-] Update changelog and relevant docs
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Marking docs completed**</details></think>
+
+---
+
+<tool-use data-tool-type="task" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Create reusable visitor history section + shared load logic
+- [x] Insert inline visitor section below QR code tab content
+- [x] Rewire standalone visitor view to reuse shared section
+- [x] Update changelog and relevant docs
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning targeted lint runs**
+
+I plan to run ReadLints selectively on files that have substantive edits to optimize linting efficiency.</details></think>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<details>
+<summary>Tool use: **read_lints**</summary>
+
+
+Parameters:
+
+```json
+{
+  "paths": [
+    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift",
+    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
+  ]
+}
+```
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift"
+    },
+    {
+      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Gathering code snippets with line numbers**
+
+I'm preparing to extract key code snippets with line numbers from iPhone_MyDeviceQRCodeView to cite changes and support documentation updates, facilitating clear references and manual testing guidance.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Extracting VisitorHistory snippet**
+
+I'm retrieving lines from VisitorHistory view around the new classes to understand how model data and sections are used in this context.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+Visitor history now renders as an inline section directly under the QR code tab, using a shared view model/state view so the standalone visitor history screen still works without duplicated logic. I also added pull‑to‑refresh on the QR tab and kept the add‑device flow available from the inline list.  
+```232:322:miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
+VisitorHistorySection(
+    viewModel: visitorHistoryViewModel,
+    deviceStore: deviceStore,
+    pendingDeviceItem: $pendingDeviceItem,
+    isLandscape: isLandscape
+)
+.padding(.horizontal, isLandscape ? 20 : 16)
+.padding(.top, isLandscape ? 16 : 20)
+
+Spacer()
+    .frame(height: isLandscape ? 20 : 30)
+}
+.frame(
+    width: geometry.size.width,
+    height: geometry.size.height,
+    alignment: isLandscape ? .center : .top
+)
+}
+.refreshable {
+    await visitorHistoryViewModel.loadVisitorHistory()
+}
+.onAppear {
+    if visitorHistoryViewModel.visitors.isEmpty {
+        Task {
+            await visitorHistoryViewModel.loadVisitorHistory()
+        }
+    }
+}
+.navigationTitle("my_device")
+```
+
+Shared visitor history loading/state is now centralized and reused both inline and in the standalone view.  
+```20:176:miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+@MainActor
+final class VisitorHistoryViewModel: ObservableObject {
+    @Published var visitors: [MiataruVisitor] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String? = nil
+
+    private let settings = SettingsManager.shared
+
+    var sortedVisitors: [MiataruVisitor] {
+        visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
+
+    func loadVisitorHistory() async {
+        guard let url = URL(string: settings.miataruServerURL) else {
+            errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            return
+        }
+
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            let ourDeviceId = thisDeviceIDManager.shared.deviceID
+            // Request with nil amount to get all available from server
+            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
+                serverURL: url,
+                forDeviceID: ourDeviceId,
+                amount: nil
+            )
+            self.visitors = response.MiataruVisitors
+            self.isLoading = false
+        } catch {
+            self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            self.isLoading = false
+            debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
+        }
+    }
+}
+
+struct VisitorHistoryStateView<Content: View>: View {
+    @ObservedObject var viewModel: VisitorHistoryViewModel
+    let content: ([MiataruVisitor]) -> Content
+    // ...
+}
+```
+
+Docs updated to reflect the inline visitor history placement in `CHANGELOG.md` and `APP_FEATURES.md`.
+
+Tests not run (not requested).
+
+If you want, I can run the app and verify the QR tab layout in portrait/landscape and the inline visitor add flow.
+
+---
+
+_**User**_
+
+scolling down is not fully possible, it blocks it seems, why?
+
+---
+
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Identifying fixed height issue in QR view**
+
+A fixed frame height on VStack is blocking scroll in QR view, so I'll check the file to remove or replace it with minHeight to fix scrolling.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Adjusting height to minHeight**
+
+I'm replacing fixed height with minHeight using a frame modifier to maintain width and proper alignment, then applying the patch.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Explaining scroll block and lint update decision**
+
+The scroll is blocked due to a fixed height, so I'll mention that concisely. The lint update feels minor, so I'll likely skip it to keep the response focused.</details></think>
+
+---
+
+The scroll was blocked because the QR tab’s `VStack` was constrained to the screen height (`height: geometry.size.height`), so the `ScrollView` couldn’t grow beyond it. I switched that to `minHeight`, which lets content extend and scroll normally.
+
+If it still feels tight in landscape, I can also remove the `minHeight` entirely or tweak the padding.
+
+---
+
+_**User**_
+
+/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift:44:25 The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+
+
+---
+
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Refactoring large view to fix type-checking**
+
+Planning to split the large view body by extracting ScrollView content into a private @ViewBuilder function returning some View, then use it in the main body to help fix type-checker errors caused by the big body size.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Splitting scroll content into private ViewBuilder function**
+
+Creating a private `qrScrollContent` function with `@ViewBuilder` to encapsulate the main VStack inside the ScrollView, simplifying the body structure and preparing for potential subview splits.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_lints">
+<details>
+<summary>Tool use: **read_lints**</summary>
+
+
+Parameters:
+
+```json
+{
+  "paths": [
+    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
+  ]
+}
+```
+Result:
+
+```json
+{
+  "linterErrorsByFile": [
+    {
+      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
+    }
+  ]
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+That compiler error was from the huge `body` expression. I split the scroll content into a dedicated `@ViewBuilder` function so type-checking is much simpler. This should clear the error.
+
+If you want, I can further split the QR and Device ID sections into their own subviews too, but this should already fix the build.
+
+---
+
+_**User**_
+
+/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift:53:46 Extra argument 'minHeight' in call
+
+
+---
+
