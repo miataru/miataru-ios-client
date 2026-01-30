@@ -58,6 +58,7 @@ struct iPhone_DeviceNavigationView: View {
     )
     // Track mutual navigation state in @State to ensure Map content updates
     @State private var isMutualNavigation: Bool = false
+    @State private var isViewActive: Bool = false
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -80,6 +81,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteTransportType: Int? = nil
     // Generous daily upper bound to prevent accidental request lockout while developing/testing
     private let routeRequestDailyLimit: Int = 17000
+    private let mutualNavigationOnSoundName = "handshake_call_2"
+    private let mutualNavigationOffSoundName = "handshake_resp_2"
 
     var body: some View {
         VStack {
@@ -262,6 +265,7 @@ struct iPhone_DeviceNavigationView: View {
                     .onChanged { _ in markUserInteraction() }
             )
             .onAppear {
+                isViewActive = true
                 // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
                 isAutoCenteringEnabled = true
                 // Sync auto-update lock state with global setting on appear
@@ -294,6 +298,7 @@ struct iPhone_DeviceNavigationView: View {
                 now = input
             }
             .onDisappear {
+                isViewActive = false
                 stopAutoUpdate()
                 // Hide accessory and remove cancel handler when leaving
                 routeInfoState.hide()
@@ -324,6 +329,12 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, newValue in
                 isMutualNavigation = newValue
                 updateBottomAccessory()
+                guard isViewActive else { return }
+                if newValue {
+                    SoundEffectPlayer.shared.play(named: mutualNavigationOnSoundName, fileExtension: "caf")
+                } else {
+                    SoundEffectPlayer.shared.play(named: mutualNavigationOffSoundName, fileExtension: "caf")
+                }
             }
             .onMapCameraChange(frequency: .continuous) { context in
                 // Track camera state changes to detect user rotation and keep a compass affordance
