@@ -81,8 +81,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteTransportType: Int? = nil
     // Generous daily upper bound to prevent accidental request lockout while developing/testing
     private let routeRequestDailyLimit: Int = 17000
-    private let mutualNavigationOnSoundName = "handshake_call_2"
-    private let mutualNavigationOffSoundName = "handshake_resp_2"
+    private let mutualNavigationOnSoundName = "confirm"
+    private let mutualNavigationOffSoundName = "cancel"
 
     var body: some View {
         VStack {
