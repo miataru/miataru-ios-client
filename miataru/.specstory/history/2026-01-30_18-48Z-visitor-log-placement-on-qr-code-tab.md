@@ -1043,3 +1043,1719 @@ _**User**_
 
 ---
 
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Fixing frame modifier parameters**
+
+The frame modifier incorrectly uses a width with minHeight parameter, which isn't valid; I need to adjust it to use maxWidth and minHeight or just minHeight with proper alignment. I'll apply a patch to correct this.</details></think>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+Fixed: `minHeight` can’t be used with the `width:` overload. I switched it to the `maxWidth/minHeight` overload so it compiles.
+
+If you want the content to also expand horizontally beyond safe area, I can adjust the frame/alignment further.
+
+---
+
+_**User**_
+
+describe all changes, and commit
+
+---
+
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Preparing git status, diff, and log for commit**
+
+I'm collecting git status, diff, and log information with git_write and Shell parallel to describe changes before committing the updated files using a heredoc.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status -sb</summary>
+
+```bash
+git status -sb
+```
+
+```
+## master...origin/master
+ M .specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md
+ M APP_FEATURES.md
+ M CHANGELOG.md
+ M miataru/Assets/Localizable.xcstrings
+ M miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
+ M miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git diff</summary>
+
+```bash
+git diff
+```
+
+```
+diff --git a/miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md b/miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md
+index de5964bd..e2ef5880 100644
+--- a/miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md
++++ b/miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md
+@@ -330,3 +330,716 @@ When you’re ready, tell me to proceed with execution.
+ 
+ ---
+ 
++_**User**_
++
++Implement the plan as specified, it is attached for your reference. Do NOT edit the plan file itself.
++
++To-do's from the plan have already been created. Do not create them again. Mark them as in_progress as you work, starting with the first one. Don't stop until you have completed all the to-dos.
++
++---
++
++_**Agent (model gpt-5.2-codex, mode Agent)**_
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Preparing to update tasks with TodoWrite**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="task" data-tool-name="todo_write"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **todo_write** • Todo List&lt;/summary&gt;
++
++- [-] Create reusable visitor history section + shared load logic
++- [ ] Insert inline visitor section below QR code tab content
++- [ ] Rewire standalone visitor view to reuse shared section
++- [ ] Update changelog and relevant docs
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Designing reusable visitor history section**
++
++Planning to extract visitor history display into a reusable struct with its own ObservableObject view model managing loading state. We'll implement it with a VStack inside the existing ScrollView on the QR tab, adding refreshable support and retry UI, reusing the existing row view styled with dividers and background.
++**Designing view model with shared settings and device store**
++
++Decided to embed shared settings access inside the view model and keep device store as a separate state object passed into the visitor history section view. The view model is marked @MainActor with async loading and manages loading/error states, while the section view gets bindings for interaction and handles UI states like loading and errors. The QR view will manage presenting the add-device sheet via a pending item binding. NavigationPath state is removed but NavigationStack stays for the title bar.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Identifying doc for update**
++
++I'm confirming which doc to update between APP_FEATURES and APP_STORE_DESCRIPTION, leaning toward APP_FEATURES for a minimal, relevant change. Next, I'll read it.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/APP_FEATURES.md&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Designing visitor history section view**
++
++Planning a VisitorHistorySection SwiftUI view that conditionally shows the header and renders visitor rows with careful padding control delegated to the parent. It will handle loading, error, empty states, and display visitors using a sorted list from the view model.
++**Creating shared visitor history state view**
++
++I'm designing a reusable VisitorHistoryStateView to handle loading, error, empty, and visitor list states with a content closure for flexible rendering across List and ScrollView contexts. This enables sharing view model logic while adapting layout for QR inline or list views without duplicating state handling.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++Failed to find context:
++            }
++            .onDisappear {
++                // Refresh visitor history after adding device to show updated name
++                Task {
++                    await loadVisitorHistory()
++                }
++            }
++        }
++        .onReceive(deviceStore.$devices) { _ in
++            // Refresh when devices are added/updated to show updated names
++            if !visitors.isEmpty {
++                // Trigger view update by accessing sortedVisitors
++                _ = sortedVisitors
++            }
++        }
++    }
++    
++    private var sortedVisitors: [MiataruVisitor] {
++        visitors.sorted { $0.TimeStampDate &gt; $1.TimeStampDate }
++    }
++    
++    private func loadVisitorHistory() async {
++        guard let url = URL(string: settings.miataruServerURL) else {
++            await MainActor.run {
++                errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++            }
++            return
++        }
++        
++        await MainActor.run {
++            isLoading = true
++            errorMessage = nil
++        }
++        
++        do {
++            let ourDeviceId = thisDeviceIDManager.shared.deviceID
++            // Request with nil amount to get all available from server
++            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
++                serverURL: url,
++                forDeviceID: ourDeviceId,
++                amount: nil
++            )
++            
++            await MainActor.run {
++                self.visitors = response.MiataruVisitors
++                self.isLoading = false
++            }
++        } catch {
++            await MainActor.run {
++                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++                self.isLoading = false
++            }
++            debugLog("[iPhone_VisitorHistoryView] Failed to load visitor history: \(error)")
++        }
++    }
++}
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Preparing careful patch application**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Applying patch incrementally**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Updating iPhone VisitorHistoryView body**
++
++I'm modifying the body of the iPhone_VisitorHistoryView and removing the load/sorted section at the bottom using a patch.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Refactoring QR view for state management**
++
++Planning to remove navigation path and destination, add state objects for visitor history and device store, and replace the visitor history button with a section component inside the NavigationStack; also adding pull-to-refresh and adjusting padding based on orientation.
++**Adding refresh and sheet for pending device**
++
++Adding refreshable modifier to trigger visitor history loading and adding a sheet for pendingDeviceItem alongside existing mail and share sheets in the QR view.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++Failed to find context:
++                }
++                .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
++                    MailView(
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Re-reading file bottom due to patch conflict**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Applying patch to navigation state**
++
++I'm replacing the navigationPath and adding new state variables as part of the patch application.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Preparing to change navigation stack**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Replacing visitor history button with refreshable section**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Inserting refreshable and onAppear on ScrollView**
++
++I'll add .refreshable and .onAppear modifiers directly to the ScrollView after its .frame closure but before the .navigationTitle, targeting visitor history loading logic.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Removing navigationDestination block**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Adding sheet for pending device item**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Confirming state cleanup and import needs**
++
++The navigationPath state is fully removed and references cleared; no import additions needed since dependencies are already imported. Next, I'll update the CHANGELOG with a note about the visitor log inline feature near the top of the v2.9 list.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Updating feature descriptions**
++
++I'm revising the QR section to add that the user sees visitor history inline, and updating the developer note to mention the new inline visitor history section and the associated view model around lines 83-93.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/APP_FEATURES.md&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Updating todo statuses**
++
++I'm marking the first task complete and setting the second one to in-progress using TodoWrite with merge enabled.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="task" data-tool-name="todo_write"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **todo_write** • Todo List&lt;/summary&gt;
++
++- [x] Create reusable visitor history section + shared load logic
++- [-] Insert inline visitor section below QR code tab content
++- [ ] Rewire standalone visitor view to reuse shared section
++- [ ] Update changelog and relevant docs
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Sequencing todo status updates**
++
++Planning to mark embed as completed and wire as in progress first, then set wire completed and docs in progress, and finally mark docs completed in 2-3 sequential update calls to align with task progress accurately.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="task" data-tool-name="todo_write"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **todo_write** • Todo List&lt;/summary&gt;
++
++- [x] Create reusable visitor history section + shared load logic
++- [x] Insert inline visitor section below QR code tab content
++- [-] Rewire standalone visitor view to reuse shared section
++- [ ] Update changelog and relevant docs
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Marking work status**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="task" data-tool-name="todo_write"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **todo_write** • Todo List&lt;/summary&gt;
++
++- [x] Create reusable visitor history section + shared load logic
++- [x] Insert inline visitor section below QR code tab content
++- [x] Rewire standalone visitor view to reuse shared section
++- [-] Update changelog and relevant docs
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Marking docs completed**&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="task" data-tool-name="todo_write"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **todo_write** • Todo List&lt;/summary&gt;
++
++- [x] Create reusable visitor history section + shared load logic
++- [x] Insert inline visitor section below QR code tab content
++- [x] Rewire standalone visitor view to reuse shared section
++- [x] Update changelog and relevant docs
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Planning targeted lint runs**
++
++I plan to run ReadLints selectively on files that have substantive edits to optimize linting efficiency.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="unknown" data-tool-name="read_lints"&gt;
++&lt;details&gt;
++&lt;summary&gt;Tool use: **read_lints**&lt;/summary&gt;
++
++
++Parameters:
++
++&#96;&#96;&#96;json
++{
++  "paths": [
++    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift",
++    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
++  ]
++}
++&#96;&#96;&#96;
++Result:
++
++&#96;&#96;&#96;json
++{
++  "linterErrorsByFile": [
++    {
++      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift"
++    },
++    {
++      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
++    }
++  ]
++}
++&#96;&#96;&#96;
++Status: **completed**
++
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Gathering code snippets with line numbers**
++
++I'm preparing to extract key code snippets with line numbers from iPhone_MyDeviceQRCodeView to cite changes and support documentation updates, facilitating clear references and manual testing guidance.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Extracting VisitorHistory snippet**
++
++I'm retrieving lines from VisitorHistory view around the new classes to understand how model data and sections are used in this context.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++Visitor history now renders as an inline section directly under the QR code tab, using a shared view model/state view so the standalone visitor history screen still works without duplicated logic. I also added pull‑to‑refresh on the QR tab and kept the add‑device flow available from the inline list.  
++&#96;&#96;&#96;232:322:miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
++VisitorHistorySection(
++    viewModel: visitorHistoryViewModel,
++    deviceStore: deviceStore,
++    pendingDeviceItem: $pendingDeviceItem,
++    isLandscape: isLandscape
++)
++.padding(.horizontal, isLandscape ? 20 : 16)
++.padding(.top, isLandscape ? 16 : 20)
++
++Spacer()
++    .frame(height: isLandscape ? 20 : 30)
++}
++.frame(
++    width: geometry.size.width,
++    height: geometry.size.height,
++    alignment: isLandscape ? .center : .top
++)
++}
++.refreshable {
++    await visitorHistoryViewModel.loadVisitorHistory()
++}
++.onAppear {
++    if visitorHistoryViewModel.visitors.isEmpty {
++        Task {
++            await visitorHistoryViewModel.loadVisitorHistory()
++        }
++    }
++}
++.navigationTitle("my_device")
++&#96;&#96;&#96;
++
++Shared visitor history loading/state is now centralized and reused both inline and in the standalone view.  
++&#96;&#96;&#96;20:176:miataru/views/iPhone/iPhone_VisitorHistoryView.swift
++@MainActor
++final class VisitorHistoryViewModel: ObservableObject {
++    @Published var visitors: [MiataruVisitor] = []
++    @Published var isLoading = false
++    @Published var errorMessage: String? = nil
++
++    private let settings = SettingsManager.shared
++
++    var sortedVisitors: [MiataruVisitor] {
++        visitors.sorted { $0.TimeStampDate &gt; $1.TimeStampDate }
++    }
++
++    func loadVisitorHistory() async {
++        guard let url = URL(string: settings.miataruServerURL) else {
++            errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++            return
++        }
++
++        isLoading = true
++        errorMessage = nil
++
++        do {
++            let ourDeviceId = thisDeviceIDManager.shared.deviceID
++            // Request with nil amount to get all available from server
++            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
++                serverURL: url,
++                forDeviceID: ourDeviceId,
++                amount: nil
++            )
++            self.visitors = response.MiataruVisitors
++            self.isLoading = false
++        } catch {
++            self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++            self.isLoading = false
++            debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
++        }
++    }
++}
++
++struct VisitorHistoryStateView&lt;Content: View&gt;: View {
++    @ObservedObject var viewModel: VisitorHistoryViewModel
++    let content: ([MiataruVisitor]) -&gt; Content
++    // ...
++}
++&#96;&#96;&#96;
++
++Docs updated to reflect the inline visitor history placement in &#96;CHANGELOG.md&#96; and &#96;APP_FEATURES.md&#96;.
++
++Tests not run (not requested).
++
++If you want, I can run the app and verify the QR tab layout in portrait/landscape and the inline visitor add flow.
++
++---
++
++_**User**_
++
++scolling down is not fully possible, it blocks it seems, why?
++
++---
++
++_**Agent (model gpt-5.2-codex, mode Agent)**_
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Identifying fixed height issue in QR view**
++
++A fixed frame height on VStack is blocking scroll in QR view, so I'll check the file to remove or replace it with minHeight to fix scrolling.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Adjusting height to minHeight**
++
++I'm replacing fixed height with minHeight using a frame modifier to maintain width and proper alignment, then applying the patch.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Explaining scroll block and lint update decision**
++
++The scroll is blocked due to a fixed height, so I'll mention that concisely. The lint update feels minor, so I'll likely skip it to keep the response focused.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++The scroll was blocked because the QR tab’s &#96;VStack&#96; was constrained to the screen height (&#96;height: geometry.size.height&#96;), so the &#96;ScrollView&#96; couldn’t grow beyond it. I switched that to &#96;minHeight&#96;, which lets content extend and scroll normally.
++
++If it still feels tight in landscape, I can also remove the &#96;minHeight&#96; entirely or tweak the padding.
++
++---
++
++_**User**_
++
++/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift:44:25 The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
++
++
++---
++
++_**Agent (model gpt-5.2-codex, mode Agent)**_
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Refactoring large view to fix type-checking**
++
++Planning to split the large view body by extracting ScrollView content into a private @ViewBuilder function returning some View, then use it in the main body to help fix type-checker errors caused by the big body size.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="read" data-tool-name="read_file_v2"&gt;
++&lt;details&gt;&lt;summary&gt;Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++&lt;think&gt;&lt;details&gt;&lt;summary&gt;Thought Process&lt;/summary&gt;
++**Splitting scroll content into private ViewBuilder function**
++
++Creating a private &#96;qrScrollContent&#96; function with &#96;@ViewBuilder&#96; to encapsulate the main VStack inside the ScrollView, simplifying the body structure and preparing for potential subview splits.&lt;/details&gt;&lt;/think&gt;
++
++---
++
++&lt;tool-use data-tool-type="write" data-tool-name="edit_file_v2"&gt;
++
++&lt;details&gt;&lt;summary&gt;Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift&lt;/summary&gt;
++
++&lt;/details&gt;
++
++&lt;/tool-use&gt;
++
++---
++
++&lt;tool-use data-tool-type="unknown" data-tool-name="read_lints"&gt;
++&lt;details&gt;
++&lt;summary&gt;Tool use: **read_lints**&lt;/summary&gt;
++
++
++Parameters:
++
++&#96;&#96;&#96;json
++{
++  "paths": [
++    "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
++  ]
++}
++&#96;&#96;&#96;
++Result:
++
++&#96;&#96;&#96;json
++{
++  "linterErrorsByFile": [
++    {
++      "relativeWorkspacePath": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift"
++    }
++  ]
++}
++&#96;&#96;&#96;
++Status: **completed**
++
++
++&lt;/details&gt;
++&lt;/tool-use&gt;
++
++---
++
++That compiler error was from the huge &#96;body&#96; expression. I split the scroll content into a dedicated &#96;@ViewBuilder&#96; function so type-checking is much simpler. This should clear the error.
++
++If you want, I can further split the QR and Device ID sections into their own subviews too, but this should already fix the build.
++
++---
++
++_**User**_
++
++/Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift:53:46 Extra argument 'minHeight' in call
++
++
++---
++
+diff --git a/miataru/APP_FEATURES.md b/miataru/APP_FEATURES.md
+index 12b847fd..f2870d41 100644
+--- a/miataru/APP_FEATURES.md
++++ b/miataru/APP_FEATURES.md
+@@ -84,12 +84,13 @@ This document lists all features offered by the miataru iOS app. Each item is de
+ **For users:**
+ - Display your own device ID as a QR code, copy it, or share via link or email.
+ - Add other devices by scanning their Miataru QR code.
+-- The QR tab offers one‑tap sharing, and the add‑device sheet guides scanning and rejects non‑Miataru codes.
++- The QR tab offers one‑tap sharing, shows visitor history directly below your code, and the add‑device sheet guides scanning and rejects non‑Miataru codes.
+ 
+ - The share sheet includes additional options, and email sharing attaches the QR image reliably.
+ 
+ **For developers:**
+ - &#96;iPhone_MyDeviceQRCodeView&#96; renders customizable QR codes using the &#96;QRCode&#96; package and supports &#96;ShareLink&#96; and &#96;MFMailComposeViewController&#96;.
++- &#96;VisitorHistoryViewModel&#96; and &#96;VisitorHistorySection&#96; power inline visitor history within the QR tab, while &#96;iPhone_VisitorHistoryView&#96; reuses the same data loader.
+ - &#96;iPhone_AddDeviceView&#96; validates the &#96;miataru://&#96; prefix from scanned codes before accepting an ID and allows manual entry with color selection.
+ 
+ ## Onboarding Flow
+diff --git a/miataru/CHANGELOG.md b/miataru/CHANGELOG.md
+index 2f026528..4e1b4917 100644
+--- a/miataru/CHANGELOG.md
++++ b/miataru/CHANGELOG.md
+@@ -1,4 +1,5 @@
+ v2.9
++- Showed visitor history directly under the QR code tab instead of a separate screen.
+ - Added an optional toggle to show current device speed above map markers.
+ - Moved the iPhone groups list below devices with an inline add button.
+ - Added subtle sound cues when mutual navigation activates or deactivates.
+diff --git a/miataru/miataru/Assets/Localizable.xcstrings b/miataru/miataru/Assets/Localizable.xcstrings
+index 959bf56e..d4eec11e 100644
+--- a/miataru/miataru/Assets/Localizable.xcstrings
++++ b/miataru/miataru/Assets/Localizable.xcstrings
+@@ -18974,6 +18974,7 @@
+     },
+     "visitor_history_accessibility_label" : {
+       "comment" : "Accessibility label for visitor history button",
++      "extractionState" : "stale",
+       "localizations" : {
+         "da" : {
+           "stringUnit" : {
+diff --git a/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift b/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
+index fca0073a..20d00b31 100644
+--- a/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
++++ b/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift
+@@ -35,7 +35,9 @@ struct iPhone_MyDeviceQRCodeView: View {
+     @State private var showMailComposer = false
+     @State private var showShareFallback = false
+     @State private var qrImage: UIImage? = nil
+-    @State private var navigationPath = NavigationPath()
++    @StateObject private var deviceStore = KnownDeviceStore.shared
++    @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
++    @State private var pendingDeviceItem: DeviceIDItem? = nil
+ 
+     let gradient = Gradient(colors: [.black, .pink])
+     
+@@ -43,224 +45,27 @@ struct iPhone_MyDeviceQRCodeView: View {
+         GeometryReader { geometry in
+             let isLandscape = geometry.size.width &gt; geometry.size.height
+             
+-            NavigationStack(path: $navigationPath) {
++            NavigationStack {
+                 ScrollView {
+-                VStack(spacing: 0) {
+-                    // QR Code Section
+-                    VStack(spacing: isLandscape ? 16 : 20) {
+-                        ZStack {
+-                            backgroundColor
+-                            qrContent
+-                                .components(.eyeOuter)
+-                                .fill(eyeColor)
+-                            qrContent
+-                                .components(.eyePupil)
+-                                .fill(pupilColor)
+-                            qrContent
+-                                .components(.onPixels)
+-                                .fill(dataColor)
+-                        }
+-                        .frame(
+-                            width: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
+-                            height: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
+-                            alignment: .center
+-                        )
+-                        .padding(.horizontal, isLandscape ? 20 : 16)
+-                        .padding(.vertical, isLandscape ? 12 : 16)
+-                        
+-                        // Title and explanation
+-                        VStack(spacing: isLandscape ? 8 : 12) {
+-                            Text("my_device_qr_code")
+-                                .font(isLandscape ? .title2 : .title)
+-                                .multilineTextAlignment(.center)
+-                            
+-                            Text("qr_code_explanation")
+-                                .font(isLandscape ? .caption : .body)
+-                                .foregroundColor(.secondary)
+-                                .multilineTextAlignment(.center)
+-                                .padding(.horizontal, isLandscape ? 40 : 20)
+-                        }
+-                    }
+-                    .padding(.top, isLandscape ? 20 : 30)
+-                    
+-                    // Device ID Section
+-                    VStack(spacing: isLandscape ? 12 : 16) {
+-                        Text("device_id")
+-                            .font(isLandscape ? .subheadline : .headline)
+-                            .foregroundColor(.secondary)
+-                        
+-                        if isLandscape {
+-                            HStack(spacing: 6) {
+-                                Text(thisDeviceIDManager.shared.deviceID)
+-                                    .font(.system(.caption, design: .monospaced))
+-                                    .padding(.horizontal, 8)
+-                                    .padding(.vertical, 6)
+-                                    .background(Color(.systemGray6))
+-                                    .cornerRadius(8)
+-                                    .lineLimit(1)
+-                                    .minimumScaleFactor(0.8)
+-
+-                                Button(action: {
+-                                    UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+-                                    if animationsAllowed {
+-                                        withAnimation(.easeInOut(duration: 0.3)) {
+-                                            showCopiedAlert = true
+-                                        }
+-                                    } else {
+-                                        showCopiedAlert = true
+-                                    }
+-
+-                                    // Automatically hide alert after 2 seconds
+-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+-                                        if animationsAllowed {
+-                                            withAnimation(.easeInOut(duration: 0.3)) {
+-                                                showCopiedAlert = false
+-                                            }
+-                                        } else {
+-                                            showCopiedAlert = false
+-                                        }
+-                                    }
+-                                }) {
+-                                    Image(systemName: "doc.on.doc")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title3)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
+-                                .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
+-
+-                                ShareLink(item: shareText) {
+-                                    Image(systemName: "square.and.arrow.up")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title3)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text("share_device_url_button_label"))
+-
+-                                Button(action: {
+-                                    if MFMailComposeViewController.canSendMail() {
+-                                        if let img = generateQRCodeImage() { qrImage = img }
+-                                        showMailComposer = true
+-                                    } else {
+-                                        if let img = generateQRCodeImage() { qrImage = img }
+-                                        showShareFallback = true
+-                                    }
+-                                }) {
+-                                    Image(systemName: "envelope")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title3)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text("share_device_email_button_label"))
+-                            }
+-                        } else {
+-                            // Portrait: device id + copy on first row
+-                            HStack(spacing: 8) {
+-                                Text(thisDeviceIDManager.shared.deviceID)
+-                                    .font(.system(.footnote, design: .monospaced))
+-                                    .padding(.horizontal, 12)
+-                                    .padding(.vertical, 8)
+-                                    .background(Color(.systemGray6))
+-                                    .cornerRadius(8)
+-                                    .lineLimit(1)
+-                                    .minimumScaleFactor(0.8)
+-
+-                                Button(action: {
+-                                    UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+-                                    if animationsAllowed {
+-                                        withAnimation(.easeInOut(duration: 0.3)) {
+-                                            showCopiedAlert = true
+-                                        }
+-                                    } else {
+-                                        showCopiedAlert = true
+-                                    }
+-
+-                                    // Automatically hide alert after 2 seconds
+-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+-                                        if animationsAllowed {
+-                                            withAnimation(.easeInOut(duration: 0.3)) {
+-                                                showCopiedAlert = false
+-                                            }
+-                                        } else {
+-                                            showCopiedAlert = false
+-                                        }
+-                                    }
+-                                }) {
+-                                    Image(systemName: "doc.on.doc")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title2)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
+-                                .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
+-                            }
+-
+-                            // Portrait: share buttons on second row below
+-                            HStack(spacing: 16) {
+-                                ShareLink(item: shareText) {
+-                                    Image(systemName: "square.and.arrow.up")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title2)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text("share_device_url_button_label"))
+-
+-                                Button(action: {
+-                                    if MFMailComposeViewController.canSendMail() {
+-                                        if let img = generateQRCodeImage() { qrImage = img }
+-                                        showMailComposer = true
+-                                    } else {
+-                                        if let img = generateQRCodeImage() { qrImage = img }
+-                                        showShareFallback = true
+-                                    }
+-                                }) {
+-                                    Image(systemName: "envelope")
+-                                        .foregroundColor(.blue)
+-                                        .font(.title2)
+-                                }
+-                                .buttonStyle(PlainButtonStyle())
+-                                .accessibilityLabel(Text("share_device_email_button_label"))
+-                            }
+-                            .padding(.top, 4)
+-                        }
+-                    }
+-                    .padding(.horizontal, isLandscape ? 20 : 16)
+-                    .padding(.top, isLandscape ? 16 : 20)
+-                    
+-                    // Visitor History Button
+-                    Button(action: {
+-                        navigationPath.append("visitorHistory")
+-                    }) {
+-                        HStack {
+-                            Image(systemName: "clock.arrow.circlepath")
+-                            Text(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+-                        }
+-                        .frame(maxWidth: .infinity)
+-                        .padding(.vertical, 12)
+-                        .background(Color.accentColor.opacity(0.1))
+-                        .foregroundColor(.accentColor)
+-                        .cornerRadius(10)
+-                    }
+-                    .padding(.horizontal, isLandscape ? 20 : 16)
+-                    .padding(.top, isLandscape ? 12 : 16)
+-                    .accessibilityLabel(NSLocalizedString("visitor_history_accessibility_label", comment: "Accessibility label for visitor history button"))
+-                    
+-                    Spacer()
+-                        .frame(height: isLandscape ? 20 : 30)
+-                }
++                    qrScrollContent(geometry: geometry, isLandscape: isLandscape)
+                 .frame(
+-                    width: geometry.size.width,
+-                    height: geometry.size.height,
++                    maxWidth: geometry.size.width,
++                    minHeight: geometry.size.height,
+                     alignment: isLandscape ? .center : .top
+                 )
+                 }
+-                .navigationTitle("my_device")
+-                .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
+-                .navigationDestination(for: String.self) { destination in
+-                    if destination == "visitorHistory" {
+-                        iPhone_VisitorHistoryView()
++                .refreshable {
++                    await visitorHistoryViewModel.loadVisitorHistory()
++                }
++                .onAppear {
++                    if visitorHistoryViewModel.visitors.isEmpty {
++                        Task {
++                            await visitorHistoryViewModel.loadVisitorHistory()
++                        }
+                     }
+                 }
++                .navigationTitle("my_device")
++                .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
+                 .overlay(
+                 // Overlay für Kopier-Bestätigung
+                 Group {
+@@ -307,7 +112,220 @@ struct iPhone_MyDeviceQRCodeView: View {
+                     }()
+                     ActivityView(activityItems: items)
+                 }
++                .sheet(item: $pendingDeviceItem) { item in
++                    iPhone_AddDeviceView(
++                        store: deviceStore,
++                        isPresented: Binding(
++                            get: { pendingDeviceItem != nil },
++                            set: { if !$0 { pendingDeviceItem = nil } }
++                        ),
++                        prefillDeviceID: item.deviceID
++                    )
++                    .onDisappear {
++                        Task {
++                            await visitorHistoryViewModel.loadVisitorHistory()
++                        }
++                    }
++                }
++            }
++        }
++    }
++
++    @ViewBuilder
++    private func qrScrollContent(geometry: GeometryProxy, isLandscape: Bool) -&gt; some View {
++        VStack(spacing: 0) {
++            // QR Code Section
++            VStack(spacing: isLandscape ? 16 : 20) {
++                ZStack {
++                    backgroundColor
++                    qrContent
++                        .components(.eyeOuter)
++                        .fill(eyeColor)
++                    qrContent
++                        .components(.eyePupil)
++                        .fill(pupilColor)
++                    qrContent
++                        .components(.onPixels)
++                        .fill(dataColor)
++                }
++                .frame(
++                    width: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
++                    height: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
++                    alignment: .center
++                )
++                .padding(.horizontal, isLandscape ? 20 : 16)
++                .padding(.vertical, isLandscape ? 12 : 16)
++                
++                // Title and explanation
++                VStack(spacing: isLandscape ? 8 : 12) {
++                    Text("my_device_qr_code")
++                        .font(isLandscape ? .title2 : .title)
++                        .multilineTextAlignment(.center)
++                    
++                    Text("qr_code_explanation")
++                        .font(isLandscape ? .caption : .body)
++                        .foregroundColor(.secondary)
++                        .multilineTextAlignment(.center)
++                        .padding(.horizontal, isLandscape ? 40 : 20)
++                }
++            }
++            .padding(.top, isLandscape ? 20 : 30)
++            
++            // Device ID Section
++            VStack(spacing: isLandscape ? 12 : 16) {
++                Text("device_id")
++                    .font(isLandscape ? .subheadline : .headline)
++                    .foregroundColor(.secondary)
++                
++                if isLandscape {
++                    HStack(spacing: 6) {
++                        Text(thisDeviceIDManager.shared.deviceID)
++                            .font(.system(.caption, design: .monospaced))
++                            .padding(.horizontal, 8)
++                            .padding(.vertical, 6)
++                            .background(Color(.systemGray6))
++                            .cornerRadius(8)
++                            .lineLimit(1)
++                            .minimumScaleFactor(0.8)
++
++                        Button(action: {
++                            UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
++                            if animationsAllowed {
++                                withAnimation(.easeInOut(duration: 0.3)) {
++                                    showCopiedAlert = true
++                                }
++                            } else {
++                                showCopiedAlert = true
++                            }
++
++                            // Automatically hide alert after 2 seconds
++                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
++                                if animationsAllowed {
++                                    withAnimation(.easeInOut(duration: 0.3)) {
++                                        showCopiedAlert = false
++                                    }
++                                } else {
++                                    showCopiedAlert = false
++                                }
++                            }
++                        }) {
++                            Image(systemName: "doc.on.doc")
++                                .foregroundColor(.blue)
++                                .font(.title3)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
++                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
++
++                        ShareLink(item: shareText) {
++                            Image(systemName: "square.and.arrow.up")
++                                .foregroundColor(.blue)
++                                .font(.title3)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text("share_device_url_button_label"))
++
++                        Button(action: {
++                            if MFMailComposeViewController.canSendMail() {
++                                if let img = generateQRCodeImage() { qrImage = img }
++                                showMailComposer = true
++                            } else {
++                                if let img = generateQRCodeImage() { qrImage = img }
++                                showShareFallback = true
++                            }
++                        }) {
++                            Image(systemName: "envelope")
++                                .foregroundColor(.blue)
++                                .font(.title3)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text("share_device_email_button_label"))
++                    }
++                } else {
++                    // Portrait: device id + copy on first row
++                    HStack(spacing: 8) {
++                        Text(thisDeviceIDManager.shared.deviceID)
++                            .font(.system(.footnote, design: .monospaced))
++                            .padding(.horizontal, 12)
++                            .padding(.vertical, 8)
++                            .background(Color(.systemGray6))
++                            .cornerRadius(8)
++                            .lineLimit(1)
++                            .minimumScaleFactor(0.8)
++
++                        Button(action: {
++                            UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
++                            if animationsAllowed {
++                                withAnimation(.easeInOut(duration: 0.3)) {
++                                    showCopiedAlert = true
++                                }
++                            } else {
++                                showCopiedAlert = true
++                            }
++
++                            // Automatically hide alert after 2 seconds
++                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
++                                if animationsAllowed {
++                                    withAnimation(.easeInOut(duration: 0.3)) {
++                                        showCopiedAlert = false
++                                    }
++                                } else {
++                                    showCopiedAlert = false
++                                }
++                            }
++                        }) {
++                            Image(systemName: "doc.on.doc")
++                                .foregroundColor(.blue)
++                                .font(.title2)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
++                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
++                    }
++
++                    // Portrait: share buttons on second row below
++                    HStack(spacing: 16) {
++                        ShareLink(item: shareText) {
++                            Image(systemName: "square.and.arrow.up")
++                                .foregroundColor(.blue)
++                                .font(.title2)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text("share_device_url_button_label"))
++
++                        Button(action: {
++                            if MFMailComposeViewController.canSendMail() {
++                                if let img = generateQRCodeImage() { qrImage = img }
++                                showMailComposer = true
++                            } else {
++                                if let img = generateQRCodeImage() { qrImage = img }
++                                showShareFallback = true
++                            }
++                        }) {
++                            Image(systemName: "envelope")
++                                .foregroundColor(.blue)
++                                .font(.title2)
++                        }
++                        .buttonStyle(PlainButtonStyle())
++                        .accessibilityLabel(Text("share_device_email_button_label"))
++                    }
++                    .padding(.top, 4)
++                }
+             }
++            .padding(.horizontal, isLandscape ? 20 : 16)
++            .padding(.top, isLandscape ? 16 : 20)
++            
++            VisitorHistorySection(
++                viewModel: visitorHistoryViewModel,
++                deviceStore: deviceStore,
++                pendingDeviceItem: $pendingDeviceItem,
++                isLandscape: isLandscape
++            )
++            .padding(.horizontal, isLandscape ? 20 : 16)
++            .padding(.top, isLandscape ? 16 : 20)
++            
++            Spacer()
++                .frame(height: isLandscape ? 20 : 30)
+         }
+     }
+ 
+diff --git a/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift b/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+index ff48702c..2ef268c8 100644
+--- a/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift
++++ b/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift
+@@ -17,45 +17,128 @@ struct DeviceIDItem: Identifiable {
+     let deviceID: String
+ }
+ 
+-struct iPhone_VisitorHistoryView: View {
+-    @StateObject private var deviceStore = KnownDeviceStore.shared
+-    @ObservedObject private var settings = SettingsManager.shared
+-    @State private var visitors: [MiataruVisitor] = []
+-    @State private var isLoading = false
+-    @State private var errorMessage: String? = nil
+-    @State private var pendingDeviceItem: DeviceIDItem? = nil
++@MainActor
++final class VisitorHistoryViewModel: ObservableObject {
++    @Published var visitors: [MiataruVisitor] = []
++    @Published var isLoading = false
++    @Published var errorMessage: String? = nil
++    
++    private let settings = SettingsManager.shared
++    
++    var sortedVisitors: [MiataruVisitor] {
++        visitors.sorted { $0.TimeStampDate &gt; $1.TimeStampDate }
++    }
++    
++    func loadVisitorHistory() async {
++        guard let url = URL(string: settings.miataruServerURL) else {
++            errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++            return
++        }
++        
++        isLoading = true
++        errorMessage = nil
++        
++        do {
++            let ourDeviceId = thisDeviceIDManager.shared.deviceID
++            // Request with nil amount to get all available from server
++            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
++                serverURL: url,
++                forDeviceID: ourDeviceId,
++                amount: nil
++            )
++            self.visitors = response.MiataruVisitors
++            self.isLoading = false
++        } catch {
++            self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
++            self.isLoading = false
++            debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
++        }
++    }
++}
++
++struct VisitorHistoryStateView&lt;Content: View&gt;: View {
++    @ObservedObject var viewModel: VisitorHistoryViewModel
++    let content: ([MiataruVisitor]) -&gt; Content
+     
+     var body: some View {
+-        List {
+-            if isLoading {
+-                HStack {
+-                    Spacer()
+-                    ProgressView()
+-                    Spacer()
++        if viewModel.isLoading {
++            HStack {
++                Spacer()
++                ProgressView()
++                Spacer()
++            }
++            .padding()
++        } else if let error = viewModel.errorMessage {
++            VStack(spacing: 16) {
++                Text(error)
++                    .foregroundColor(.secondary)
++                    .multilineTextAlignment(.center)
++                Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
++                    Task {
++                        await viewModel.loadVisitorHistory()
++                    }
+                 }
+-                .padding()
+-            } else if let error = errorMessage {
+-                VStack(spacing: 16) {
+-                    Text(error)
+-                        .foregroundColor(.secondary)
+-                        .multilineTextAlignment(.center)
+-                    Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
+-                        Task {
+-                            await loadVisitorHistory()
++                .buttonStyle(.borderedProminent)
++            }
++            .padding()
++            .frame(maxWidth: .infinity)
++        } else if viewModel.visitors.isEmpty {
++            VStack(spacing: 8) {
++                Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
++                    .foregroundColor(.secondary)
++            }
++            .frame(maxWidth: .infinity)
++            .padding()
++        } else {
++            content(viewModel.sortedVisitors)
++        }
++    }
++}
++
++struct VisitorHistorySection: View {
++    @ObservedObject var viewModel: VisitorHistoryViewModel
++    @ObservedObject var deviceStore: KnownDeviceStore
++    @Binding var pendingDeviceItem: DeviceIDItem?
++    let isLandscape: Bool
++    
++    var body: some View {
++        VStack(alignment: .leading, spacing: isLandscape ? 12 : 16) {
++            HStack(spacing: 8) {
++                Image(systemName: "clock.arrow.circlepath")
++                Text(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
++            }
++            .font(isLandscape ? .headline : .title3)
++            
++            VisitorHistoryStateView(viewModel: viewModel) { visitors in
++                LazyVStack(spacing: 8) {
++                    ForEach(visitors, id: \.uniqueID) { visitor in
++                        VisitorHistoryRow(
++                            visitor: visitor,
++                            knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
++                            onAddDevice: {
++                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
++                            }
++                        )
++                        if visitor.uniqueID != visitors.last?.uniqueID {
++                            Divider()
+                         }
+                     }
+-                    .buttonStyle(.borderedProminent)
+                 }
+-                .padding()
+-            } else if visitors.isEmpty {
+-                VStack(spacing: 8) {
+-                    Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
+-                        .foregroundColor(.secondary)
+-                }
+-                .frame(maxWidth: .infinity)
+-                .padding()
+-            } else {
+-                ForEach(sortedVisitors, id: \.uniqueID) { visitor in
++            }
++        }
++        .frame(maxWidth: .infinity, alignment: .leading)
++    }
++}
++
++struct iPhone_VisitorHistoryView: View {
++    @StateObject private var deviceStore = KnownDeviceStore.shared
++    @StateObject private var viewModel = VisitorHistoryViewModel()
++    @State private var pendingDeviceItem: DeviceIDItem? = nil
++    
++    var body: some View {
++        List {
++            VisitorHistoryStateView(viewModel: viewModel) { visitors in
++                ForEach(visitors, id: \.uniqueID) { visitor in
+                     VisitorHistoryRow(
+                         visitor: visitor,
+                         knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
+@@ -69,12 +152,12 @@ struct iPhone_VisitorHistoryView: View {
+         .navigationTitle(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+         .navigationBarTitleDisplayMode(.large)
+         .refreshable {
+-            await loadVisitorHistory()
++            await viewModel.loadVisitorHistory()
+         }
+         .onAppear {
+-            if visitors.isEmpty {
++            if viewModel.visitors.isEmpty {
+                 Task {
+-                    await loadVisitorHistory()
++                    await viewModel.loadVisitorHistory()
+                 }
+             }
+         }
+@@ -90,56 +173,10 @@ struct iPhone_VisitorHistoryView: View {
+             .onDisappear {
+                 // Refresh visitor history after adding device to show updated name
+                 Task {
+-                    await loadVisitorHistory()
++                    await viewModel.loadVisitorHistory()
+                 }
+             }
+         }
+-        .onReceive(deviceStore.$devices) { _ in
+-            // Refresh when devices are added/updated to show updated names
+-            if !visitors.isEmpty {
+-                // Trigger view update by accessing sortedVisitors
+-                _ = sortedVisitors
+-            }
+-        }
+-    }
+-    
+-    private var sortedVisitors: [MiataruVisitor] {
+-        visitors.sorted { $0.TimeStampDate &gt; $1.TimeStampDate }
+-    }
+-    
+-    private func loadVisitorHistory() async {
+-        guard let url = URL(string: settings.miataruServerURL) else {
+-            await MainActor.run {
+-                errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+-            }
+-            return
+-        }
+-        
+-        await MainActor.run {
+-            isLoading = true
+-            errorMessage = nil
+-        }
+-        
+-        do {
+-            let ourDeviceId = thisDeviceIDManager.shared.deviceID
+-            // Request with nil amount to get all available from server
+-            let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
+-                serverURL: url,
+-                forDeviceID: ourDeviceId,
+-                amount: nil
+-            )
+-            
+-            await MainActor.run {
+-                self.visitors = response.MiataruVisitors
+-                self.isLoading = false
+-            }
+-        } catch {
+-            await MainActor.run {
+-                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+-                self.isLoading = false
+-            }
+-            debugLog("[iPhone_VisitorHistoryView] Failed to load visitor history: \(error)")
+-        }
+     }
+ }
+ 
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git log -5 --oneline</summary>
+
+```bash
+git log -5 --oneline
+```
+
+```
+bc5569bd docs
+e4991c76 Gate animations in Low Power Mode
+5916c1c0 Fix navigation ghost direction and cache
+6aabf295 doc for navigation instructions
+84732ac5 Add navigation instruction overlay
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning selective file reads**
+
+I'm preparing to read the diff file and key changed source files to summarize changes while avoiding unrelated files like .specstory and Localizable.xcstrings unless clearly related, ensuring only relevant files get staged for commit.</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/views/iPhone/iPhone_VisitorHistoryView.swift</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/APP_FEATURES.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Planning to read localization and specstory diffs**</details></think>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/Assets/Localizable.xcstrings</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Excluding large auto-updated files from commit**
+
+Localizable and .specstory files are auto-modified but shouldn’t be committed, so I'll exclude them and stage only the intended source and doc files, then provide a concise summary of changes before committing with a short, clear message.
+**Staging selected files and committing**
+
+I'll stage the approved files explicitly, commit with the planned message using a heredoc, then check status to confirm excluded files remain uncommitted, and report this to the user.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git add "miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift" "miataru/views/iPhone/iPhone_VisitorHistoryView.swift" "CHANGELOG.md" "APP_FEATURES.md"</summary>
+
+```bash
+git add "miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift" "miataru/views/iPhone/iPhone_VisitorHistoryView.swift" "CHANGELOG.md" "APP_FEATURES.md"
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git commit -m "$(cat <<'EOF'
+Inline visitor history on QR tab.
+
+EOF
+)"</summary>
+
+```bash
+git commit -m "$(cat <<'EOF'
+Inline visitor history on QR tab.
+
+EOF
+)"
+```
+
+```
+[master 1b840ed5] Inline visitor history on QR tab.
+ 4 files changed, 353 insertions(+), 296 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status -sb</summary>
+
+```bash
+git status -sb
+```
+
+```
+## master...origin/master [ahead 1]
+ M .specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md
+ M miataru/Assets/Localizable.xcstrings
+
+```
+</details>
+</tool-use>
+
+---
+
+Committed.
+
+Changes made:
+- `miataru/views/iPhone/iPhone_MyDeviceQRCodeView.swift`: replaced the visitor history button with an inline visitor history section, added shared state handling, refresh/load flow, and split the body into `qrScrollContent` for compiler performance.
+- `miataru/views/iPhone/iPhone_VisitorHistoryView.swift`: introduced `VisitorHistoryViewModel`, `VisitorHistoryStateView`, and `VisitorHistorySection` so QR tab and standalone view share loading/error/empty logic.
+- `CHANGELOG.md`: noted the visitor history is now shown directly under the QR code tab.
+- `APP_FEATURES.md`: updated QR tab user/developer descriptions to reflect inline visitor history.
+
+Commit: `Inline visitor history on QR tab.`
+
+Uncommitted changes remain (not included in the commit):
+- `miataru/Assets/Localizable.xcstrings`
+- `.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md`
+
+If you want those included, tell me and I’ll stage/commit them.
+
+---
+
