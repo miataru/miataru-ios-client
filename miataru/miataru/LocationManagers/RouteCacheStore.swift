@@ -17,6 +17,7 @@ final class RouteCacheStore: ObservableObject {
     struct RouteKey: Hashable {
         let deviceId: String
         let transportType: Int
+        let isRouteReversed: Bool
     }
 
     struct CachedRoute {
@@ -31,18 +32,19 @@ final class RouteCacheStore: ObservableObject {
 
     private let defaultDistanceThreshold: CLLocationDistance = 100 // meters
 
-    func get(for deviceId: String, transportType: Int) -> CachedRoute? {
-        cache[RouteKey(deviceId: deviceId, transportType: transportType)]
+    func get(for deviceId: String, transportType: Int, isRouteReversed: Bool) -> CachedRoute? {
+        cache[RouteKey(deviceId: deviceId, transportType: transportType, isRouteReversed: isRouteReversed)]
     }
 
     func set(for deviceId: String,
              transportType: Int,
+             isRouteReversed: Bool,
              route: MKRoute,
              userCoordinate: CLLocationCoordinate2D,
              deviceCoordinate: CLLocationCoordinate2D,
              userTimestamp: Date?,
              deviceTimestamp: Date?) {
-        let key = RouteKey(deviceId: deviceId, transportType: transportType)
+        let key = RouteKey(deviceId: deviceId, transportType: transportType, isRouteReversed: isRouteReversed)
         let value = CachedRoute(route: route,
                                 userCoordinate: userCoordinate,
                                 deviceCoordinate: deviceCoordinate,

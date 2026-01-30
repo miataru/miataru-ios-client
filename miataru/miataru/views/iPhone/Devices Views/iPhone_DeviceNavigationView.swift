@@ -689,6 +689,7 @@ struct iPhone_DeviceNavigationView: View {
                     routeCache.set(
                         for: self.device.DeviceID,
                         transportType: settings.navigationTransportType,
+                        isRouteReversed: isRouteReversed,
                         route: first,
                         userCoordinate: user,
                         deviceCoordinate: device,
@@ -1018,7 +1019,11 @@ extension iPhone_DeviceNavigationView {
     private func useCachedRouteIfValid() -> Bool {
         guard let user = userCoordinate, let device = deviceCoordinate else { return false }
         let transport = settings.navigationTransportType
-        if let cached = routeCache.get(for: self.device.DeviceID, transportType: transport) {
+        if let cached = routeCache.get(
+            for: self.device.DeviceID,
+            transportType: transport,
+            isRouteReversed: isRouteReversed
+        ) {
             if routeCache.isValid(
                 cached: cached,
                 currentUserCoordinate: user,

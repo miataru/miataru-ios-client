@@ -4,3 +4,5 @@ v2.9
 - Added subtle sound cues when mutual navigation activates or deactivates.
 - Added haptic feedback for navigation changes and key device actions.
 - Added a navigation instruction overlay when routing from the current device to a selected device.
+- Fixed route progress ghost and segmentation to follow the active navigation direction.
+- Made route caching direction-aware to avoid reusing reversed routes.

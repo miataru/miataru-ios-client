@@ -29,7 +29,7 @@ struct RouteGhostCalculator {
     ///   - userTimestamp: The last known timestamp of the local device location.
     ///   - knownUserSpeed: Optional local device speed in meters per second.
     ///   - now: Reference time (defaults to Date()).
-    ///   - isRouteReversed: Whether the route is reversed (device at start vs end).
+    ///   - isRouteReversed: Whether the route is reversed (device → user). When false, route is user → device.
     /// - Returns: (donePolyline, todoPolyline, ghostCoordinate, progress [0,1]) or nil if cannot compute.
     static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, userTimestamp: Date?, knownUserSpeed: Double?, now: Date = Date(), isRouteReversed: Bool = false) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
         guard route.distance > 0 else { return nil }
@@ -39,87 +39,46 @@ struct RouteGhostCalculator {
         let deviceSpeed = usableSpeed(knownDeviceSpeed)
         let userSpeed = usableSpeed(knownUserSpeed)
         
-        // Pick the fastest available speed; choose its corresponding timestamp for elapsed time
-        let chosenSpeed: Double?
-        let chosenTimestamp: Date?
-        if let deviceSpeed, let userSpeed {
-            if deviceSpeed >= userSpeed {
-                chosenSpeed = deviceSpeed
-                chosenTimestamp = deviceTimestamp
-            } else {
-                chosenSpeed = userSpeed
-                chosenTimestamp = userTimestamp
-            }
-        } else if let deviceSpeed {
-            chosenSpeed = deviceSpeed
-            chosenTimestamp = deviceTimestamp
-        } else if let userSpeed {
-            chosenSpeed = userSpeed
-            chosenTimestamp = userTimestamp
-        } else {
-            chosenSpeed = nil
-            chosenTimestamp = nil
-        }
+        // Use the speed/timestamp of the journey start to keep progress aligned to route direction.
+        let primarySpeed = isRouteReversed ? deviceSpeed : userSpeed
+        let primaryTimestamp = isRouteReversed ? deviceTimestamp : userTimestamp
+        let secondaryTimestamp = isRouteReversed ? userTimestamp : deviceTimestamp
         
         let fallbackElapsed: TimeInterval
-        if let deviceTimestamp {
-            fallbackElapsed = now.timeIntervalSince(deviceTimestamp)
-        } else if let userTimestamp {
-            fallbackElapsed = now.timeIntervalSince(userTimestamp)
+        if let primaryTimestamp {
+            fallbackElapsed = now.timeIntervalSince(primaryTimestamp)
+        } else if let secondaryTimestamp {
+            fallbackElapsed = now.timeIntervalSince(secondaryTimestamp)
         } else {
             fallbackElapsed = 0
         }
         
-        let distanceFromDevice: CLLocationDistance
-        if let speed = chosenSpeed {
-            if let ts = chosenTimestamp {
+        let distanceFromStart: CLLocationDistance
+        if let speed = primarySpeed {
+            if let ts = primaryTimestamp {
                 let elapsed = max(0, now.timeIntervalSince(ts))
-                distanceFromDevice = min(totalDistance, max(0, elapsed * speed))
+                distanceFromStart = min(totalDistance, max(0, elapsed * speed))
             } else {
                 // Without a timestamp we cannot project using speed; fall back to travel time
                 let expected = route.expectedTravelTime
                 let progress = expected > 0 ? max(0, min(1, fallbackElapsed / expected)) : 0
-                distanceFromDevice = totalDistance * progress
+                distanceFromStart = totalDistance * progress
             }
         } else {
-            // Fallback: use expectedTravelTime proportion if available (device appears stationary)
+            // Fallback: use expectedTravelTime proportion if available (start appears stationary)
             let expected = route.expectedTravelTime
             let progress = expected > 0 ? max(0, min(1, fallbackElapsed / expected)) : 0
-            distanceFromDevice = totalDistance * progress
+            distanceFromStart = totalDistance * progress
         }
 
-        // Ghost calculation should ALWAYS be from the device's perspective
-        // The device is always at the start of its journey, regardless of route direction
-        // When isRouteReversed = true: device at start of polyline, travels forward
-        // When isRouteReversed = false: device at end of polyline, travels forward (backward along polyline)
-        let splitDistance: CLLocationDistance
-        if isRouteReversed {
-            // Device at start, travels forward: split at distanceFromDevice from start
-            splitDistance = max(0, min(totalDistance, distanceFromDevice))
-        } else {
-            // Device at end, travels forward from its position (backward along polyline)
-            // Split at distance from start: totalDistance - distanceFromDevice
-            splitDistance = max(0, min(totalDistance, totalDistance - distanceFromDevice))
-        }
+        // Ghost calculation follows the active route direction (start -> end).
+        let splitDistance = max(0, min(totalDistance, distanceFromStart))
         
         guard let (splitStartToSplit, splitSplitToEnd, ghost) = route.polyline.split(at: splitDistance) else { return nil }
-        let progressValue = max(0, min(1, distanceFromDevice / totalDistance))
+        let progressValue = max(0, min(1, distanceFromStart / totalDistance))
         
-        // Return (done, todo, ghost, progress) from the device's perspective:
-        // - done = segment device has already traveled from its starting position
-        // - todo = segment device still needs to travel
-        if isRouteReversed {
-            // Device at start, travels forward along polyline
-            // done = start to ghost, todo = ghost to end
-            return (splitStartToSplit, splitSplitToEnd, ghost, progressValue)
-        } else {
-            // Device at end, travels forward from its position (backward along polyline)
-            // From device's perspective at end:
-            // - done = segment from end to ghost (which is splitSplitToEnd, reversed)
-            // - todo = segment from ghost to start (which is splitStartToSplit)
-            // Since device travels backward, we swap the segments
-            return (splitSplitToEnd, splitStartToSplit, ghost, progressValue)
-        }
+        // Return (done, todo, ghost, progress) from route start to end.
+        return (splitStartToSplit, splitSplitToEnd, ghost, progressValue)
     }
 
     private static func usableSpeed(_ speed: Double?) -> Double? {
