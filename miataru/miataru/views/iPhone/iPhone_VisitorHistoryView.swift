@@ -34,7 +34,7 @@ final class VisitorHistoryViewModel: ObservableObject {
     func refreshIfNeeded(isVisible: Bool, force: Bool = false) async {
         if force {
             lastRefresh = Date()
-            await loadVisitorHistory()
+            await loadVisitorHistory(showLoading: false)
             return
         }
 
@@ -43,16 +43,18 @@ final class VisitorHistoryViewModel: ObservableObject {
         }
 
         lastRefresh = Date()
-        await loadVisitorHistory()
+        await loadVisitorHistory(showLoading: false)
     }
     
-    func loadVisitorHistory() async {
+    func loadVisitorHistory(showLoading: Bool = true) async {
         guard let url = URL(string: settings.miataruServerURL) else {
             errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
             return
         }
         
-        isLoading = true
+        if showLoading {
+            isLoading = true
+        }
         errorMessage = nil
         
         do {
@@ -190,12 +192,12 @@ struct iPhone_VisitorHistoryView: View {
         .navigationTitle(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
         .navigationBarTitleDisplayMode(.large)
         .refreshable {
-            await viewModel.loadVisitorHistory()
+            await viewModel.loadVisitorHistory(showLoading: false)
         }
         .onAppear {
             if viewModel.visitors.isEmpty {
                 Task {
-                    await viewModel.loadVisitorHistory()
+                    await viewModel.loadVisitorHistory(showLoading: true)
                 }
             }
         }
@@ -211,7 +213,7 @@ struct iPhone_VisitorHistoryView: View {
             .onDisappear {
                 // Refresh visitor history after adding device to show updated name
                 Task {
-                    await viewModel.loadVisitorHistory()
+                    await viewModel.loadVisitorHistory(showLoading: false)
                 }
             }
         }

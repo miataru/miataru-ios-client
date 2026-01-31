@@ -62,7 +62,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                     isVisible = true
                     if visitorHistoryViewModel.visitors.isEmpty {
                         Task {
-                            await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
+                            await visitorHistoryViewModel.loadVisitorHistory(showLoading: true)
                         }
                     }
                 }
@@ -138,7 +138,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                     )
                     .onDisappear {
                         Task {
-                            await visitorHistoryViewModel.loadVisitorHistory()
+                            await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
                         }
                     }
                 }
