@@ -10,6 +10,7 @@
 import SwiftUI
 import MiataruAPIClient
 import CoreLocation
+import UIKit
 
 // Helper struct for sheet(item:) presentation
 struct DeviceIDItem: Identifiable {
@@ -24,9 +25,25 @@ final class VisitorHistoryViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     
     private let settings = SettingsManager.shared
+    private var lastRefresh: Date?
     
     var sortedVisitors: [MiataruVisitor] {
         visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
+
+    func refreshIfNeeded(isVisible: Bool, force: Bool = false) async {
+        if force {
+            lastRefresh = Date()
+            await loadVisitorHistory()
+            return
+        }
+
+        guard await shouldRefresh(isVisible: isVisible) else {
+            return
+        }
+
+        lastRefresh = Date()
+        await loadVisitorHistory()
     }
     
     func loadVisitorHistory() async {
@@ -53,6 +70,27 @@ final class VisitorHistoryViewModel: ObservableObject {
             self.isLoading = false
             debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
         }
+    }
+
+    private func shouldRefresh(isVisible: Bool) async -> Bool {
+        guard settings.autoRefreshDeviceList,
+              isVisible else {
+            return false
+        }
+
+        let isActive = UIApplication.shared.applicationState == .active
+        guard isActive else {
+            return false
+        }
+
+        let interval = Double(settings.mapUpdateInterval)
+        let now = Date()
+
+        if let last = lastRefresh, now.timeIntervalSince(last) < interval {
+            return false
+        }
+
+        return true
     }
 }
 

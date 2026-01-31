@@ -38,6 +38,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
     @State private var pendingDeviceItem: DeviceIDItem? = nil
+    @State private var isVisible: Bool = false
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -55,13 +56,27 @@ struct iPhone_MyDeviceQRCodeView: View {
                 )
                 }
                 .refreshable {
-                    await visitorHistoryViewModel.loadVisitorHistory()
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
                 }
                 .onAppear {
+                    isVisible = true
                     if visitorHistoryViewModel.visitors.isEmpty {
                         Task {
-                            await visitorHistoryViewModel.loadVisitorHistory()
+                            await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
                         }
+                    }
+                }
+                .onDisappear {
+                    isVisible = false
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
+                    Task {
+                        await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    Task {
+                        await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
                     }
                 }
                 .navigationTitle("my_device")
