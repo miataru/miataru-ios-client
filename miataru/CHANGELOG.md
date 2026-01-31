@@ -2,7 +2,6 @@ v2.9
 - Showed visitor history directly under the QR code tab instead of a separate screen.
 - Auto-refresh the visitor history list on the QR code tab while it is visible.
 - Added a separate update interval for non-map device refreshes in settings.
-- Localized the new update interval strings across app and settings bundles.
 - Added an optional toggle to show current device speed above map markers.
 - Moved the iPhone groups list below devices with an inline add button.
 - Added subtle sound cues when mutual navigation activates or deactivates.
