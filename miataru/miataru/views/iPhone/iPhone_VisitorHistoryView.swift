@@ -63,13 +63,17 @@ final class VisitorHistoryViewModel: ObservableObject {
             let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
                 serverURL: url,
                 forDeviceID: ourDeviceId,
-                deviceKey: nil,
+                deviceKey: settings.deviceKey,
                 amount: nil
             )
             self.visitors = response.MiataruVisitors
             self.isLoading = false
         } catch {
-            self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
+                self.errorMessage = authMessage
+            } else {
+                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            }
             self.isLoading = false
             debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
         }

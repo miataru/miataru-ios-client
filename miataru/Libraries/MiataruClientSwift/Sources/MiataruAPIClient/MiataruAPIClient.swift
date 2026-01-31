@@ -1016,6 +1016,8 @@ public enum MiataruAPIClient {
                                                 httpBody: data,
                                                 bodyString: bodyString,
                                                 customLog: logMessage)
+        } catch let error as APIError {
+            throw error
         } catch {
             debugLog("[MiataruAPIClient] Failed to encode request for URL \(url.absoluteString): \(error.localizedDescription)")
             throw APIError.encodingError(error)

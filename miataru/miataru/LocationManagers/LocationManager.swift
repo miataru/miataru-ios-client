@@ -117,6 +117,11 @@ final class LocationManager: NSObject, ObservableObject {
         
         // Re-check permission escalation / first-time prompt if needed
         ensureAuthorizationIfNeeded()
+        if !isTracking,
+           settings.trackAndReportLocation,
+           !settings.deviceKeyAuthBlocked {
+            startTracking()
+        }
         if isTracking {
             startHighAccuracyUpdates()
         }
@@ -247,6 +252,10 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Tracking Control
     func startTracking() {
         debugLog("startTracking called")
+        if settings.deviceKeyAuthBlocked {
+            debugLog("startTracking blocked due to DeviceKey auth failure")
+            return
+        }
         isTracking = true
         updateTrackingMode()
     }
@@ -320,6 +329,12 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Server Communication
     @MainActor
     private func sendLocationToServer(_ location: CLLocation) {
+        if settings.deviceKeyAuthBlocked {
+            self.serverUpdateStatus = .failed(
+                NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+            )
+            return
+        }
         guard isNetworkAvailable else {
             debugLog("No network available, skipping server update.")
             self.serverUpdateStatus = .failed("No network connection")
@@ -354,7 +369,14 @@ final class LocationManager: NSObject, ObservableObject {
                     self.serverUpdateStatus = .failed("Server response was not successful")
                 }
             } catch {
-                self.serverUpdateStatus = .failed(error.localizedDescription)
+                if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
+                    settings.deviceKeyAuthBlocked = true
+                    settings.deviceKeyAuthBlockedKey = settings.deviceKey
+                    self.stopTracking()
+                    self.serverUpdateStatus = .failed(authMessage)
+                } else {
+                    self.serverUpdateStatus = .failed(error.localizedDescription)
+                }
             }
         }
     }
@@ -378,6 +400,7 @@ final class LocationManager: NSObject, ObservableObject {
 
         return UpdateLocationPayload(
             Device: thisDeviceIDManager.shared.deviceID,
+            DeviceKey: settings.deviceKey,
             Timestamp: String(Int64(timestamp)),
             Longitude: longitude,
             Latitude: latitude,

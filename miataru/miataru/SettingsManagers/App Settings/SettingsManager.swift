@@ -93,6 +93,48 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(automaticRouteUpdateDuringNavigation, forKey: Keys.automaticRouteUpdateDuringNavigation) }
     }
 
+    @Published var deviceKey: String? {
+        didSet {
+            if let key = deviceKey, !key.isEmpty {
+                defaults.set(key, forKey: Keys.deviceKey)
+            } else {
+                defaults.removeObject(forKey: Keys.deviceKey)
+            }
+            if deviceKeyAuthBlocked,
+               let blockedKey = deviceKeyAuthBlockedKey,
+               let currentKey = deviceKey,
+               !currentKey.isEmpty,
+               blockedKey != currentKey {
+                deviceKeyAuthBlocked = false
+                deviceKeyAuthBlockedKey = nil
+            }
+        }
+    }
+
+    @Published var deviceKeyLastChanged: Date? {
+        didSet {
+            if let date = deviceKeyLastChanged {
+                defaults.set(date, forKey: Keys.deviceKeyLastChanged)
+            } else {
+                defaults.removeObject(forKey: Keys.deviceKeyLastChanged)
+            }
+        }
+    }
+
+    @Published var deviceKeyAuthBlocked: Bool {
+        didSet { defaults.set(deviceKeyAuthBlocked, forKey: Keys.deviceKeyAuthBlocked) }
+    }
+
+    @Published var deviceKeyAuthBlockedKey: String? {
+        didSet {
+            if let key = deviceKeyAuthBlockedKey, !key.isEmpty {
+                defaults.set(key, forKey: Keys.deviceKeyAuthBlockedKey)
+            } else {
+                defaults.removeObject(forKey: Keys.deviceKeyAuthBlockedKey)
+            }
+        }
+    }
+
     @Published var lastOpenedDeviceID: String? {
         didSet {
             if let id = lastOpenedDeviceID {
@@ -135,6 +177,10 @@ class SettingsManager: ObservableObject {
         static let navigationTransportType = "navigation_transport_type"
         static let pulsingMapMarkers = "pulsating_map_markers"
         static let automaticRouteUpdateDuringNavigation = "automatic_route_update_during_navigation"
+        static let deviceKey = "device_key"
+        static let deviceKeyLastChanged = "device_key_last_changed"
+        static let deviceKeyAuthBlocked = "device_key_auth_blocked"
+        static let deviceKeyAuthBlockedKey = "device_key_auth_blocked_key"
     }
     
     // MARK: - Location Permission Management
@@ -170,6 +216,10 @@ class SettingsManager: ObservableObject {
         self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
         self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? true
         self.automaticRouteUpdateDuringNavigation = d.object(forKey: Keys.automaticRouteUpdateDuringNavigation) as? Bool ?? true
+        self.deviceKey = d.string(forKey: Keys.deviceKey)
+        self.deviceKeyLastChanged = d.object(forKey: Keys.deviceKeyLastChanged) as? Date
+        self.deviceKeyAuthBlocked = d.object(forKey: Keys.deviceKeyAuthBlocked) as? Bool ?? false
+        self.deviceKeyAuthBlockedKey = d.string(forKey: Keys.deviceKeyAuthBlockedKey)
     }
     
     // MARK: - Synchronize

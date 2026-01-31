@@ -4,19 +4,19 @@ overview: Add DeviceKey persistence, management UI, and authenticated requests a
 todos:
   - id: store-devicekey
     content: Add DeviceKey + timestamp to SettingsManager
-    status: pending
+    status: completed
   - id: devicekey-sheet
     content: Build DeviceKey sheet UI and flows (A/B states)
-    status: pending
+    status: completed
   - id: wire-devicekey
     content: Pass DeviceKey into protected API calls
-    status: pending
+    status: completed
   - id: auth-error-handling
     content: Force sheet on auth errors + user feedback
-    status: pending
+    status: completed
   - id: strings-tests
     content: Add strings and validate with tests/manual checks
-    status: pending
+    status: completed
 isProject: false
 ---
 

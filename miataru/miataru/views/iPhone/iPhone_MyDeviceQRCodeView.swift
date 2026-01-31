@@ -34,6 +34,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State private var showCopiedAlert = false
     @State private var showMailComposer = false
     @State private var showShareFallback = false
+    @State private var showDeviceKeySheet = false
     @State private var qrImage: UIImage? = nil
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
@@ -81,6 +82,19 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
                 .navigationTitle("my_device")
                 .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: {
+                            showDeviceKeySheet = true
+                        }) {
+                            Image(systemName: "key.card")
+                                .foregroundColor(.blue)
+                                .font(.title2)
+                        }
+                        .accessibilityLabel(Text("device_key_button_label"))
+                        .accessibilityHint(Text("device_key_button_hint"))
+                    }
+                }
                 .overlay(
                 // Overlay für Kopier-Bestätigung
                 Group {
@@ -126,6 +140,9 @@ struct iPhone_MyDeviceQRCodeView: View {
                         return arr
                     }()
                     ActivityView(activityItems: items)
+                }
+                .sheet(isPresented: $showDeviceKeySheet) {
+                    iPhone_DeviceKeySheetView(showsMismatchWarning: false)
                 }
                 .sheet(item: $pendingDeviceItem) { item in
                     iPhone_AddDeviceView(

@@ -140,7 +140,7 @@ final class DeviceLocationRefresher {
             let visitors = try await MiataruAPIClient.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: currentDeviceID,
-                deviceKey: nil,
+                deviceKey: settings.deviceKey,
                 amount: 50
             )
             
@@ -159,6 +159,7 @@ final class DeviceLocationRefresher {
             
             debugLog("[DeviceLocationRefresher] Found \(recentVisitorDeviceIDs.count) devices that looked for current user in past 90 seconds")
         } catch {
+            _ = DeviceKeyAuthHandler.handle(error: error)
             debugLog("[DeviceLocationRefresher] Error refreshing visitor history: \(error)")
             // On error, clear recent visitors
             await MainActor.run {
