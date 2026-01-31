@@ -19,7 +19,7 @@ struct Mac_OnboardingContainerView: View {
         AnyView(iPhone_3_OnboardingServerView()),
         AnyView(iPhone_4_OnboardingLocationHistoryView()),
         AnyView(iPhone_5_OnboardingQRcodeView()),
-        AnyView(iPhone_6_OnboardingDoneView())
+        AnyView(iPhone_7_OnboardingDoneView())
     ]
     
     var body: some View {

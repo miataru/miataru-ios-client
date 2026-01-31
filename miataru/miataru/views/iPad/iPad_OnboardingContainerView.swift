@@ -20,7 +20,7 @@ struct iPad_OnboardingContainerView: View {
             AnyView(iPhone_3_OnboardingServerView()),
             AnyView(iPhone_4_OnboardingLocationHistoryView()),
             AnyView(iPhone_5_OnboardingQRcodeView()),
-            AnyView(iPhone_6_OnboardingDoneView(onFinish: {
+            AnyView(iPhone_7_OnboardingDoneView(onFinish: {
                 UserDefaults.standard.hasCompletedOnboarding = true
                 isPresented = false
             }))

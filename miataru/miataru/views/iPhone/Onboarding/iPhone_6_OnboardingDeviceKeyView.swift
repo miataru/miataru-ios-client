@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2013-2025, Daniel Kirstenpfad, www.miataru.com
+ * Copyright (c) 2013-2026, Daniel Kirstenpfad, www.miataru.com
  *
- * iPhone_6_OnboardingDoneView.swift
+ * iPhone_6_OnboardingDeviceKeyView.swift
  * miataru
  *
- * Created by Daniel Kirstenpfad on 20.06.25.
+ * Created by Daniel Kirstenpfad on 31.01.26.
  */
 
 import SwiftUI
 
-struct iPhone_6_OnboardingDoneView: View {
+struct iPhone_6_OnboardingDeviceKeyView: View {
     var onFinish: () -> Void = {}
 
     var body: some View {
@@ -50,5 +50,5 @@ struct iPhone_6_OnboardingDoneView: View {
 }
 
 #Preview {
-    iPhone_6_OnboardingDoneView()
+    iPhone_7_OnboardingDoneView()
 }
