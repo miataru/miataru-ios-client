@@ -44,14 +44,13 @@ final class DeviceLocationRefresher {
             return false
         }
         
-        let interval = Double(settings.mapUpdateInterval)
+        let interval = Double(settings.outsideMapUpdateInterval)
         let now = Date()
         
         if let last = lastRefresh, now.timeIntervalSince(last) < interval {
             // Throttle: do not refresh yet
             return false
         }
-        
         return true
     }
     
@@ -116,7 +115,6 @@ final class DeviceLocationRefresher {
             
             // Fetch visitor history for current user's device after locations are retrieved
             await refreshVisitorHistory(serverURL: url)
-            
             return true
         } catch {
             debugLog("Error refreshing device locations: \(error)")

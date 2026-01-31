@@ -33,6 +33,7 @@
 "hybrid_map" = "Hybridkarte";
 "sat_map" = "Satellitenkarte";
 "map_update_interval" = "Aktualisierungsintervall für Devices";
+"outside_map_update_interval" = "Aktualisierungsintervall für andere Ansichten";
 "5s" = "5 Sekunden";
 "10s" = "10 Sekunden";
 "15s" = "15 Sekunden";

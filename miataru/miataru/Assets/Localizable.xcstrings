@@ -7335,6 +7335,71 @@
         }
       }
     },
+    "explanation_outside_map_update_interval" : {
+      "comment" : "Explanation for outside map update interval picker",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angiv hvor ofte enhedsdata opdateres fra serveren uden for kortet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lege fest, wie oft Gerätedaten außerhalb der Karte vom Server aktualisiert werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set how often the device data is being updated from the server outside of map."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define con qué frecuencia se actualizan los datos del dispositivo desde el servidor fuera del mapa."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Määritä, kuinka usein laitetiedot päivitetään palvelimelta kartan ulkopuolella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez la fréquence à laquelle les données de l’appareil sont mises à jour depuis le serveur en dehors de la carte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imposta con quale frequenza i dati del dispositivo vengono aggiornati dal server al di fuori della mappa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップ以外でデバイスデータをサーバーから更新する頻度を設定します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stel in hoe vaak de apparaatgegevens buiten de kaart vanaf de server worden bijgewerkt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置在地图之外从服务器更新设备数据的频率。"
+          }
+        }
+      }
+    },
     "explanation_map_zoom_level" : {
       "comment" : "Explanation for map zoom level picker",
       "localizations" : {
@@ -12384,6 +12449,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "地图更新间隔"
+          }
+        }
+      }
+    },
+    "outside_map_update_interval" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opdateringsinterval alle andre steder"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktualisierungsintervall überall sonst"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update interval everywhere else"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalo de actualización en el resto de la app"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Päivitysväli muualla"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalle de mise à jour ailleurs"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervallo di aggiornamento altrove"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マップ以外の更新間隔"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bijwerkinterval elders"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地图以外的更新间隔"
           }
         }
       }

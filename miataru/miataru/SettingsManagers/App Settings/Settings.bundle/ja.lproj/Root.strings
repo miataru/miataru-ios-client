@@ -33,6 +33,7 @@
 "hybrid_map" = "ハイブリッドマップ";
 "sat_map" = "衛星地図";
 "map_update_interval" = "マップの更新間隔";
+"outside_map_update_interval" = "マップ以外の更新間隔";
 "5s" = "5秒";
 "10s" = "10秒";
 "15s" = "15秒";

@@ -85,7 +85,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             return false
         }
 
-        let interval = Double(settings.mapUpdateInterval)
+        let interval = Double(settings.outsideMapUpdateInterval)
         let now = Date()
 
         if let last = lastRefresh, now.timeIntervalSince(last) < interval {

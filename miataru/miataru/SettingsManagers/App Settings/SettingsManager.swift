@@ -54,6 +54,9 @@ class SettingsManager: ObservableObject {
     @Published var mapUpdateInterval: Int {
         didSet { defaults.set(String(mapUpdateInterval), forKey: Keys.mapUpdateInterval) }
     }
+    @Published var outsideMapUpdateInterval: Int {
+        didSet { defaults.set(String(outsideMapUpdateInterval), forKey: Keys.outsideMapUpdateInterval) }
+    }
     @Published var mapZoomLevel: Int {
         didSet { defaults.set(String(mapZoomLevel), forKey: Keys.mapZoomLevel) }
     }
@@ -113,6 +116,7 @@ class SettingsManager: ObservableObject {
         static let mapType = "map_type"
         static let disableDeviceAutolock = "disable_device_autolock_while_in_foreground"
         static let mapUpdateInterval = "map_update_interval"
+        static let outsideMapUpdateInterval = "outside_map_update_interval"
         static let mapZoomLevel = "map_zoom_level"
         static let indicateAccuracyOnMap = "indicate_accuracy_on_map"
         static let groupsZoomToFit = "groups_zoom_to_fit"
@@ -151,6 +155,7 @@ class SettingsManager: ObservableObject {
         self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "1440") ?? 1440
         self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1
         self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
+        self.outsideMapUpdateInterval = Int(d.string(forKey: Keys.outsideMapUpdateInterval) ?? "30") ?? 30
         self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
         self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0

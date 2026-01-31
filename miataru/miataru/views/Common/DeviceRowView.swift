@@ -90,7 +90,7 @@ struct DeviceRowView: View {
                 locationUpdateCancellable?.cancel()
                 locationUpdateCancellable = nil
             }
-            .onChange(of: settings.mapUpdateInterval) { _, _ in
+            .onChange(of: settings.outsideMapUpdateInterval) { _, _ in
                 setupThrottledLocationSubscription()
             }
             .onChange(of: displayedCachedLocation?.timestamp) { _, _ in
@@ -246,7 +246,7 @@ struct DeviceRowView: View {
 
     private func setupThrottledLocationSubscription() {
         locationUpdateCancellable?.cancel()
-        let intervalSeconds: Double = max(1.0, Double(settings.mapUpdateInterval))
+        let intervalSeconds: Double = max(1.0, Double(settings.outsideMapUpdateInterval))
         let throttleStride: RunLoop.SchedulerTimeType.Stride = .seconds(intervalSeconds)
         let publisher = cache.$locations
             .map { (_: [CachedDeviceLocation]) -> CachedDeviceLocation? in

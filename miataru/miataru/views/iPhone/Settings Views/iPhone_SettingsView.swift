@@ -132,6 +132,16 @@ struct iPhone_SettingsView: View {
                     Text(NSLocalizedString("explanation_map_update_interval", comment: "Explanation for map update interval picker"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Picker("outside_map_update_interval", selection: $settings.outsideMapUpdateInterval) {
+                        Text("5s").tag(5)
+                        Text("10s").tag(10)
+                        Text("15s").tag(15)
+                        Text("30s").tag(30)
+                        Text("60s").tag(60)
+                    }
+                    Text(NSLocalizedString("explanation_outside_map_update_interval", comment: "Explanation for outside map update interval picker"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     Picker("map_zoom_level", selection: $settings.mapZoomLevel) {
                         Text("1km").tag(1)
                         Text("2km").tag(2)
