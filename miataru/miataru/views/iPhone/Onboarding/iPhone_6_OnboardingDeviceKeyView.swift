@@ -16,7 +16,7 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Text("Your Device Key")
+            Text("device_key_title")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("devicekey")
