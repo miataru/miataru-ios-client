@@ -928,6 +928,9 @@ struct iPhone_DeviceMapView: View {
                         showNetworkErrorIcon = false
                     }
                 }
+            case .serverError(_, let message):
+                let userMessage = String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+                showErrorOverlay("Server error: \(message)", userMessage)
             }
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
@@ -1112,13 +1115,12 @@ struct iPhone_DeviceMapView: View {
         }
 
         let requestingDeviceID = thisDeviceIDManager.shared.deviceID
-        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID
 
         do {
             let data = try await MiataruAPIClient.getLocationHistory(
                 serverURL: url,
                 forDeviceID: device.DeviceID,
-                requestingDeviceID: requestID,
+                requestingDeviceID: requestingDeviceID,
                 amount: 10000
             )
             let normalized = normalizeHistoryEntries(from: data)
@@ -1162,6 +1164,8 @@ struct iPhone_DeviceMapView: View {
             return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
             return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+        case .serverError(_, let message):
+            return String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
         }
     }
 

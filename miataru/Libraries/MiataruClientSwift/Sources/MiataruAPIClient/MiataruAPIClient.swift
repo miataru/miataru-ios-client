@@ -56,6 +56,48 @@ private struct GetVisitorHistoryRequestBody: Encodable {
     }
 }
 
+/// Strongly typed request body for the DeleteLocation endpoint.
+private struct DeleteLocationRequestBody: Encodable {
+    var MiataruDeleteLocation: DeleteLocationPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruDeleteLocation
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruDeleteLocation, forKey: .MiataruDeleteLocation)
+    }
+}
+
+/// Strongly typed request body for the SetDeviceKey endpoint.
+private struct SetDeviceKeyRequestBody: Encodable {
+    var MiataruSetDeviceKey: SetDeviceKeyPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruSetDeviceKey
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruSetDeviceKey, forKey: .MiataruSetDeviceKey)
+    }
+}
+
+/// Strongly typed request body for the SetAllowedDeviceList endpoint.
+private struct SetAllowedDeviceListRequestBody: Encodable {
+    var MiataruSetAllowedDeviceList: SetAllowedDeviceListPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruSetAllowedDeviceList
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruSetAllowedDeviceList, forKey: .MiataruSetAllowedDeviceList)
+    }
+}
+
 /// Payload for GetLocation request.
 public struct GetLocationPayload: Codable {
     public let Device: String
@@ -74,19 +116,103 @@ public struct GetLocationHistoryPayload: Codable {
     }
 }
 
+/// Payload for the DeleteLocation request.
+public struct DeleteLocationPayload: Codable {
+    public let Device: String
+    public let DeviceKey: String?
+
+    public init(Device: String, DeviceKey: String? = nil) {
+        self.Device = Device
+        self.DeviceKey = DeviceKey
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case Device
+        case DeviceKey
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(Device, forKey: .Device)
+        if let DeviceKey = DeviceKey, !DeviceKey.isEmpty {
+            try container.encode(DeviceKey, forKey: .DeviceKey)
+        }
+    }
+}
+
+/// Payload for the SetDeviceKey request.
+public struct SetDeviceKeyPayload: Codable {
+    public let DeviceID: String
+    public let CurrentDeviceKey: String?
+    public let NewDeviceKey: String
+
+    public init(DeviceID: String, CurrentDeviceKey: String? = nil, NewDeviceKey: String) {
+        self.DeviceID = DeviceID
+        self.CurrentDeviceKey = CurrentDeviceKey
+        self.NewDeviceKey = NewDeviceKey
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case DeviceID
+        case CurrentDeviceKey
+        case NewDeviceKey
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(DeviceID, forKey: .DeviceID)
+        if let CurrentDeviceKey = CurrentDeviceKey, !CurrentDeviceKey.isEmpty {
+            try container.encode(CurrentDeviceKey, forKey: .CurrentDeviceKey)
+        }
+        try container.encode(NewDeviceKey, forKey: .NewDeviceKey)
+    }
+}
+
+/// Payload for the SetAllowedDeviceList request.
+public struct SetAllowedDeviceListPayload: Codable {
+    public let DeviceID: String
+    public let DeviceKey: String
+    public let allowedDevices: [MiataruAllowedDevice]
+
+    public init(DeviceID: String, DeviceKey: String, allowedDevices: [MiataruAllowedDevice]) {
+        self.DeviceID = DeviceID
+        self.DeviceKey = DeviceKey
+        self.allowedDevices = allowedDevices
+    }
+}
+
 /// Payload for the GetVisitorHistory request.
 public struct GetVisitorHistoryPayload: Codable {
     public let Device: String
     public let Amount: String
-    public init(Device: String, Amount: String) {
+    public let DeviceKey: String?
+
+    public init(Device: String, Amount: String, DeviceKey: String? = nil) {
         self.Device = Device
         self.Amount = Amount
+        self.DeviceKey = DeviceKey
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case Device
+        case Amount
+        case DeviceKey
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(Device, forKey: .Device)
+        try container.encode(Amount, forKey: .Amount)
+        if let DeviceKey = DeviceKey, !DeviceKey.isEmpty {
+            try container.encode(DeviceKey, forKey: .DeviceKey)
+        }
     }
 }
 
 /// Payload for the UpdateLocation request.
 public struct UpdateLocationPayload: Codable {
     public let Device: String
+    public let DeviceKey: String?
     public var Timestamp: String
     public var Longitude: Double
     public var Latitude: Double
@@ -111,11 +237,12 @@ public struct UpdateLocationPayload: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude
+        case Device, DeviceKey, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude
     }
 
-    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil) {
+    public init(Device: String, DeviceKey: String? = nil, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil) {
         self.Device = Device
+        self.DeviceKey = DeviceKey
         self.Timestamp = Timestamp
         self.Longitude = Longitude
         self.Latitude = Latitude
@@ -128,6 +255,9 @@ public struct UpdateLocationPayload: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(Device, forKey: .Device)
+        if let DeviceKey = DeviceKey, !DeviceKey.isEmpty {
+            try container.encode(DeviceKey, forKey: .DeviceKey)
+        }
         try container.encode(Timestamp, forKey: .Timestamp)
         try container.encode(String(Longitude), forKey: .Longitude)
         try container.encode(String(Latitude), forKey: .Latitude)
@@ -140,6 +270,7 @@ public struct UpdateLocationPayload: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         Device = try container.decode(String.self, forKey: .Device)
+        DeviceKey = try? container.decode(String.self, forKey: .DeviceKey)
         // Timestamp kann als String oder als Zahl kommen
         if let tsString = try? container.decode(String.self, forKey: .Timestamp) {
             Timestamp = tsString
@@ -496,7 +627,41 @@ public struct MiataruUpdateLocationResponse: Codable {
     let MiataruResponse: String // Expect "ACK"
 }
 
+public struct MiataruDeleteLocationResponse: Codable {
+    let MiataruResponse: String
+    let MiataruVerboseResponse: String
+    let MiataruDeletedCount: Int?
+}
+
+public struct MiataruSetDeviceKeyResponse: Codable {
+    let MiataruResponse: String
+    let MiataruVerboseResponse: String
+}
+
+public struct MiataruSetAllowedDeviceListResponse: Codable {
+    let MiataruResponse: String
+    let MiataruVerboseResponse: String
+}
+
+public struct MiataruAllowedDevice: Codable {
+    public let DeviceID: String
+    public let hasCurrentLocationAccess: Bool
+    public let hasHistoryAccess: Bool
+
+    public init(DeviceID: String, hasCurrentLocationAccess: Bool, hasHistoryAccess: Bool) {
+        self.DeviceID = DeviceID
+        self.hasCurrentLocationAccess = hasCurrentLocationAccess
+        self.hasHistoryAccess = hasHistoryAccess
+    }
+}
+
+private struct ErrorResponse: Decodable {
+    let error: String
+}
+
 public enum MiataruAPIClient {
+
+    public static let packageVersion = "1.1.0"
 
     private static let session = URLSession.shared
     private static let jsonDecoder = JSONDecoder()
@@ -517,21 +682,20 @@ public enum MiataruAPIClient {
     /// - Parameters:
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceIDs: The IDs of the devices to fetch the location for.
-    ///   - requestingDeviceID: The ID of the device making the request (optional).
+    ///   - requestingDeviceID: The ID of the device making the request.
     /// - Returns: An array of location data objects.
     /// - Throws: An `APIError` if the request fails.
     public static func getLocation(serverURL: URL,
                            forDeviceIDs deviceIDs: [String],
-                           requestingDeviceID: String?) async throws -> [MiataruLocationData] {
+                           requestingDeviceID: String) async throws -> [MiataruLocationData] {
         
         let url = serverURL.appendingPathComponent("v1/GetLocation")
         
         let devicesPayload = deviceIDs.map { ["Device": $0] }
-        var jsonPayload: [String: Any] = ["MiataruGetLocation": devicesPayload]
-        
-        if let reqDeviceID = requestingDeviceID {
-            jsonPayload["MiataruConfig"] = ["RequestMiataruDeviceID": reqDeviceID]
-        }
+        let jsonPayload: [String: Any] = [
+            "MiataruGetLocation": devicesPayload,
+            "MiataruConfig": ["RequestMiataruDeviceID": requestingDeviceID]
+        ]
         
         let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
         
@@ -554,24 +718,19 @@ public enum MiataruAPIClient {
     /// - Parameters:
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceID: The ID of the device to fetch the history for.
-    ///   - requestingDeviceID: The ID of the device making the request (optional).
+    ///   - requestingDeviceID: The ID of the device making the request.
     ///   - amount: The number of history entries to retrieve.
     /// - Returns: An array of location data objects.
     /// - Throws: An `APIError` if the request fails.
     public static func getLocationHistory(serverURL: URL,
                                   forDeviceID deviceID: String,
-                                  requestingDeviceID: String?,
+                                  requestingDeviceID: String,
                                   amount: Int) async throws -> [MiataruLocationData] {
         
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
 
-        let sanitizedRequestID: String? = {
-            guard let value = requestingDeviceID, !value.isEmpty else { return nil }
-            return value
-        }()
-
         let requestBody = GetLocationHistoryRequestBody(
-            MiataruConfig: sanitizedRequestID.map { MiataruConfig(RequestMiataruDeviceID: $0) },
+            MiataruConfig: MiataruConfig(RequestMiataruDeviceID: requestingDeviceID),
             MiataruGetLocationHistory: GetLocationHistoryPayload(Device: deviceID, Amount: String(amount))
         )
 
@@ -606,17 +765,19 @@ public enum MiataruAPIClient {
     /// - Parameters:
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceID: The ID of the device to fetch the visitor history for.
+    ///   - deviceKey: The optional DeviceKey for authentication.
     ///   - amount: The maximum number of visitor history entries to retrieve.
     /// - Returns: An array of visitor data objects.
     /// - Throws: An `APIError` if the request fails.
     public static func getVisitorHistory(serverURL: URL,
                                   forDeviceID deviceID: String,
+                                  deviceKey: String? = nil,
                                   amount: Int) async throws -> [MiataruVisitor] {
         
         let url = serverURL.appendingPathComponent("v1/GetVisitorHistory")
 
         let requestBody = GetVisitorHistoryRequestBody(
-            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(amount))
+            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(amount), DeviceKey: deviceKey)
         )
 
         let data: Data
@@ -647,11 +808,13 @@ public enum MiataruAPIClient {
     /// - Parameters:
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceID: The ID of the device to fetch the visitor history for.
+    ///   - deviceKey: The optional DeviceKey for authentication.
     ///   - amount: The maximum number of visitor history entries to retrieve. If nil, requests the maximum available from server.
     /// - Returns: The full response including server config and visitors.
     /// - Throws: An `APIError` if the request fails.
     public static func getVisitorHistoryWithConfig(serverURL: URL,
                                                    forDeviceID deviceID: String,
+                                                   deviceKey: String? = nil,
                                                    amount: Int?) async throws -> MiataruGetVisitorHistoryResponse {
         
         let url = serverURL.appendingPathComponent("v1/GetVisitorHistory")
@@ -659,7 +822,7 @@ public enum MiataruAPIClient {
         // First request with a reasonable default to get server config
         let initialAmount = amount ?? 1000
         let requestBody = GetVisitorHistoryRequestBody(
-            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(initialAmount))
+            MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(initialAmount), DeviceKey: deviceKey)
         )
 
         let data: Data
@@ -679,7 +842,7 @@ public enum MiataruAPIClient {
             // If amount was nil and we got fewer than available, request again with the available count
             if amount == nil, let available = Int(response.MiataruServerConfig.AvailableVisitorHistory), available > response.MiataruVisitors.count {
                 let secondRequestBody = GetVisitorHistoryRequestBody(
-                    MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(available))
+                    MiataruGetVisitorHistory: GetVisitorHistoryPayload(Device: deviceID, Amount: String(available), DeviceKey: deviceKey)
                 )
                 do {
                     let secondData = try await performPostRequest(url: url, encodablePayload: secondRequestBody) {
@@ -727,6 +890,9 @@ public enum MiataruAPIClient {
             "Latitude": locationData.Latitude,
             "HorizontalAccuracy": locationData.HorizontalAccuracy
         ]
+        if let deviceKey = locationData.DeviceKey, !deviceKey.isEmpty {
+            locationDict["DeviceKey"] = deviceKey
+        }
         if let speed = locationData.Speed { locationDict["Speed"] = speed }
         if let battery = locationData.BatteryLevel { locationDict["BatteryLevel"] = battery }
         if let altitude = locationData.Altitude { locationDict["Altitude"] = altitude }
@@ -744,6 +910,95 @@ public enum MiataruAPIClient {
         do {
             let response = try jsonDecoder.decode(MiataruUpdateLocationResponse.self, from: data)
             return response.MiataruResponse == "ACK"
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Deletes all location data (current, history, visitors) for a device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The ID of the device to delete data for.
+    ///   - deviceKey: The optional DeviceKey for authentication.
+    /// - Returns: The delete response including deleted count if provided.
+    /// - Throws: An `APIError` if the request fails.
+    public static func deleteLocation(serverURL: URL,
+                                      deviceID: String,
+                                      deviceKey: String? = nil) async throws -> MiataruDeleteLocationResponse {
+        let url = serverURL.appendingPathComponent("v1/DeleteLocation")
+        let requestBody = DeleteLocationRequestBody(
+            MiataruDeleteLocation: DeleteLocationPayload(Device: deviceID, DeviceKey: deviceKey)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Deleting location data for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            return try jsonDecoder.decode(MiataruDeleteLocationResponse.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Sets or changes the DeviceKey for a device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The ID of the device to set the key for.
+    ///   - currentDeviceKey: The current key (required when changing an existing key).
+    ///   - newDeviceKey: The new key to set.
+    /// - Returns: The set key response.
+    /// - Throws: An `APIError` if the request fails.
+    public static func setDeviceKey(serverURL: URL,
+                                    deviceID: String,
+                                    currentDeviceKey: String? = nil,
+                                    newDeviceKey: String) async throws -> MiataruSetDeviceKeyResponse {
+        let url = serverURL.appendingPathComponent("v1/setDeviceKey")
+        let requestBody = SetDeviceKeyRequestBody(
+            MiataruSetDeviceKey: SetDeviceKeyPayload(DeviceID: deviceID,
+                                                     CurrentDeviceKey: currentDeviceKey,
+                                                     NewDeviceKey: newDeviceKey)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Setting device key for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            return try jsonDecoder.decode(MiataruSetDeviceKeyResponse.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Sets or updates the allowed devices list for a device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The ID of the device to update.
+    ///   - deviceKey: The DeviceKey for authentication.
+    ///   - allowedDevices: The full list of allowed devices.
+    /// - Returns: The response from the server.
+    /// - Throws: An `APIError` if the request fails.
+    public static func setAllowedDeviceList(serverURL: URL,
+                                            deviceID: String,
+                                            deviceKey: String,
+                                            allowedDevices: [MiataruAllowedDevice]) async throws -> MiataruSetAllowedDeviceListResponse {
+        let url = serverURL.appendingPathComponent("v1/setAllowedDeviceList")
+        let requestBody = SetAllowedDeviceListRequestBody(
+            MiataruSetAllowedDeviceList: SetAllowedDeviceListPayload(DeviceID: deviceID,
+                                                                     DeviceKey: deviceKey,
+                                                                     allowedDevices: allowedDevices)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Setting allowed devices list for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            return try jsonDecoder.decode(MiataruSetAllowedDeviceListResponse.self, from: data)
         } catch {
             throw APIError.decodingError(error)
         }
@@ -838,6 +1093,9 @@ public enum MiataruAPIClient {
             if let responseString = String(data: data, encoding: .utf8) {
                 debugLog("[MiataruAPIClient] Error response body=\(responseString)")
             }
+            if let errorResponse = try? jsonDecoder.decode(ErrorResponse.self, from: data) {
+                throw APIError.serverError(statusCode: httpResponse.statusCode, message: errorResponse.error)
+            }
             throw APIError.invalidResponse(response)
         }
         return data
@@ -849,5 +1107,6 @@ public enum MiataruAPIClient {
         case encodingError(Error)
         case decodingError(Error)
         case requestFailed(Error)
+        case serverError(statusCode: Int, message: String)
     }
 } 

@@ -63,6 +63,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
                 serverURL: url,
                 forDeviceID: ourDeviceId,
+                deviceKey: nil,
                 amount: nil
             )
             self.visitors = response.MiataruVisitors

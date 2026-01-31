@@ -83,6 +83,7 @@ final class MutualNavigationDetector: ObservableObject {
             let visitors = try await MiataruAPIClient.getVisitorHistory(
                 serverURL: url,
                 forDeviceID: ourDeviceId,
+                deviceKey: nil,
                 amount: 100  // Get enough entries to find recent visits
             )
             

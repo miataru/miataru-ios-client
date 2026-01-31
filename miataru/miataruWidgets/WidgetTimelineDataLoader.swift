@@ -48,7 +48,7 @@ enum WidgetTimelineDataLoader {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: serverURL,
                 forDeviceIDs: requestIDs,
-                requestingDeviceID: config.ownDeviceID
+                requestingDeviceID: config.ownDeviceID ?? payload.ownDeviceID ?? ""
             )
             // Track widget-initiated request
             SharedWidgetDataManager.recordWidgetRequest()

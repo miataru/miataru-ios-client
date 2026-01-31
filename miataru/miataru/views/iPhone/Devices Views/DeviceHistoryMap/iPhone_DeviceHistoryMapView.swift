@@ -471,7 +471,6 @@ struct iPhone_DeviceHistoryMapView: View {
             return
         }
         let requestingDeviceID = thisDeviceIDManager.shared.deviceID
-        let requestID = requestingDeviceID.isEmpty ? nil : requestingDeviceID
         await MainActor.run {
             isLoading = true
             loadError = nil
@@ -481,7 +480,7 @@ struct iPhone_DeviceHistoryMapView: View {
             let data = try await MiataruAPIClient.getLocationHistory(
                 serverURL: url,
                 forDeviceID: device.DeviceID,
-                requestingDeviceID: requestID,
+                requestingDeviceID: requestingDeviceID,
                 amount: 10000 // because we do not make it configurable by the user we just get 10k entries, which should be good for "all"
             )
             let normalized = normalizeHistoryEntries(from: data)
@@ -664,6 +663,8 @@ struct iPhone_DeviceHistoryMapView: View {
             return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
             return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+        case .serverError(_, let message):
+            return String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
         }
     }
 

@@ -140,6 +140,7 @@ final class DeviceLocationRefresher {
             let visitors = try await MiataruAPIClient.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: currentDeviceID,
+                deviceKey: nil,
                 amount: 50
             )
             

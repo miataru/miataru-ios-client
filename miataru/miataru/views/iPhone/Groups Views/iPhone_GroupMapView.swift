@@ -890,6 +890,9 @@ struct iPhone_GroupMapView: View {
             showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
         case .requestFailed(let err):
             showErrorOverlay("Network error: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
+        case .serverError(_, let message):
+            let userMessage = String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+            showErrorOverlay("Server error: \(message)", userMessage)
         }
     }
     

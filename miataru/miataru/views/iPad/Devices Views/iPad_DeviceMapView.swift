@@ -1117,6 +1117,9 @@ struct iPad_DeviceMapView: View {
                         showNetworkErrorIcon = false
                     }
                 }
+            case .serverError(_, let message):
+                let userMessage = String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+                showErrorOverlay("Server error: \(message)", userMessage)
             }
         } catch {
             showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
