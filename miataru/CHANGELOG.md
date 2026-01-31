@@ -1,7 +1,5 @@
 v2.9
-- Added DeviceKey management with generate, restore, custom key, and clipboard support.
-- Added DeviceKey mismatch handling that blocks updates and guides users to restore a valid key.
-- Added DeviceKey authentication banner, sheet warnings, and improved error messaging across locales.
+- Added DeviceKey authentication and key management with generate, restore, custom key, and clipboard support.
 - Wired DeviceKey authentication into location updates and visitor history requests.
 - Showed visitor history directly under the QR code tab instead of a separate screen.
 - Moved the iPhone groups list below devices with an inline add button.
