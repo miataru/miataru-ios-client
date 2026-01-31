@@ -22,6 +22,18 @@ struct iPhone_LocationStatusView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+            HStack {
+                Text(NSLocalizedString("Version", comment: "Label for app version on location status screen"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(appVersionText)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
             // Status-Header
             HStack {
                 Image(systemName: statusIcon)
@@ -239,6 +251,13 @@ struct iPhone_LocationStatusView: View {
         formatter.dateStyle = .none
         formatter.timeStyle = .medium
         return formatter.string(from: date)
+    }
+
+    private var appVersionText: String {
+        let bundle = Bundle.main
+        let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+        let build = bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
+        return String(format: "%@ (%@ %@)", version, NSLocalizedString("Build", comment: "Build number label"), build)
     }
     
     // Tracking-Modus-Text

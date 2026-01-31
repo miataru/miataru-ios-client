@@ -3321,6 +3321,9 @@
         }
       }
     },
+    "Build" : {
+      "comment" : "Build number label"
+    },
     "cancel" : {
       "comment" : "Cancel\nCancel button\nCancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
       "localizations" : {
@@ -21248,6 +21251,9 @@
           }
         }
       }
+    },
+    "Version" : {
+      "comment" : "Label for app version on location status screen"
     },
     "visitor_history_empty" : {
       "comment" : "Empty state message when no visitors have accessed the device",
