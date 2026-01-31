@@ -177,6 +177,8 @@ struct iPhone_DevicesView: View {
                                     .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
                                     .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
                             }
+                            .buttonStyle(.bordered)
+                            .buttonBorderShape(.circle)
                         }
                     }
                     .textCase(nil)
