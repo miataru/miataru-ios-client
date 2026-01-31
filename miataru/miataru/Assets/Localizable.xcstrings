@@ -6633,61 +6633,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En DeviceKey beskytter positionsopdateringer, besøgsoversigt og adgangskontrolindstillinger.\n\nNår den er sat, kan nøglen ikke fjernes - kun ændres. Opbevar den sikkert og gem en kopi et trygt sted.\n\nHvis du mister DeviceKey, kan dette Device ID ikke længere opdateres eller gendannes, og du skal nulstille til et nyt Device ID."
+            "value" : "En DeviceKey beskytter positionsopdateringer, besøgsoversigt og adgangskontrolindstillinger.\n\nNår den er sat, kan nøglen ikke fjernes - kun ændres. Opbevar den sikkert og gem en kopi et trygt sted.\n\nDet er valgfrit at sætte den, men det gør din brug mere sikker."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein DeviceKey schützt Standortaktualisierungen, Besucherhistorie und Zugriffssteuerungseinstellungen.\n\nSobald er gesetzt ist, kann der Schlüssel nicht entfernt werden - nur geändert. Bewahre ihn sicher auf und speichere eine Kopie an einem sicheren Ort.\n\nWenn du den DeviceKey verlierst, kann diese Device ID nicht mehr aktualisiert oder wiederhergestellt werden und du musst auf eine neue Device ID zurücksetzen."
+            "value" : "Ein DeviceKey schützt Standortaktualisierungen, Besucherhistorie und Zugriffssteuerungseinstellungen.\n\nSobald er gesetzt ist, kann der Schlüssel nicht entfernt werden - nur geändert. Bewahre ihn sicher auf und speichere eine Kopie an einem sicheren Ort.\n\nDas Einrichten ist optional, macht deine Nutzung aber sicherer."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A DeviceKey protects location updates, visitor history, and access control settings.\n\nOnce set, the key cannot be removed - only changed. Keep it safe and store a copy in a secure place.\n\nIf you lose the DeviceKey, this Device ID can no longer be updated or restored and you will need to reset to a new Device ID."
+            "value" : "A DeviceKey protects location updates, visitor history, and access control settings.\n\nOnce set, the key cannot be removed - only changed. Keep it safe and store a copy in a secure place.\n\nSetting it is optional but makes your use more secure."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protege las actualizaciones de ubicación, el historial de visitantes y la configuración de control de acceso.\n\nUna vez establecido, la clave no se puede eliminar - solo cambiar. Guárdala de forma segura y guarda una copia en un lugar seguro.\n\nSi pierdes el DeviceKey, este Device ID ya no podrá actualizarse ni restaurarse y tendrás que restablecer a un nuevo Device ID."
+            "value" : "Un DeviceKey protege las actualizaciones de ubicación, el historial de visitantes y la configuración de control de acceso.\n\nUna vez establecido, la clave no se puede eliminar - solo cambiar. Guárdala de forma segura y guarda una copia en un lugar seguro.\n\nConfigurarlo es opcional, pero hace tu uso más seguro."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey suojaa sijaintipäivityksiä, vierailijahistoriaa ja pääsynhallinta-asetuksia.\n\nKun avain on asetettu, sitä ei voi poistaa - vain muuttaa. Säilytä se turvallisesti ja tallenna kopio turvalliseen paikkaan.\n\nJos kadotat DeviceKeyn, tätä Device ID:tä ei voi enää päivittää tai palauttaa ja sinun on nollattava uuteen Device ID:hen."
+            "value" : "DeviceKey suojaa sijaintipäivityksiä, vierailijahistoriaa ja pääsynhallinta-asetuksia.\n\nKun avain on asetettu, sitä ei voi poistaa - vain muuttaa. Säilytä se turvallisesti ja tallenna kopio turvalliseen paikkaan.\n\nAsettaminen on valinnaista, mutta se tekee käytöstäsi turvallisempaa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protège les mises à jour de localisation, l'historique des visiteurs et les paramètres de contrôle d'accès.\n\nUne fois défini, la clé ne peut pas être supprimée - seulement modifiée. Conserve-la en sécurité et garde une copie dans un endroit sûr.\n\nSi tu perds le DeviceKey, ce Device ID ne pourra plus être mis à jour ou restauré et tu devras réinitialiser vers un nouveau Device ID."
+            "value" : "Un DeviceKey protège les mises à jour de localisation, l'historique des visiteurs et les paramètres de contrôle d'accès.\n\nUne fois défini, la clé ne peut pas être supprimée - seulement modifiée. Conserve-la en sécurité et garde une copie dans un endroit sûr.\n\nLe définir est facultatif, mais cela rend ton utilisation plus sûre."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protegge gli aggiornamenti della posizione, la cronologia dei visitatori e le impostazioni di controllo accessi.\n\nUna volta impostata, la chiave non può essere rimossa - solo modificata. Conservala in modo sicuro e salva una copia in un luogo sicuro.\n\nSe perdi il DeviceKey, questo Device ID non potrà più essere aggiornato o ripristinato e dovrai reimpostare un nuovo Device ID."
+            "value" : "Un DeviceKey protegge gli aggiornamenti della posizione, la cronologia dei visitatori e le impostazioni di controllo accessi.\n\nUna volta impostata, la chiave non può essere rimossa - solo modificata. Conservala in modo sicuro e salva una copia in un luogo sicuro.\n\nImpostarla è facoltativo, ma rende l'uso più sicuro."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey は位置情報の更新、訪問履歴、アクセス制御設定を保護します。\n\n一度設定すると、キーは削除できません - 変更のみ可能です。安全に保管し、安全な場所にコピーを保存してください。\n\nDeviceKey を失うと、この Device ID は更新や復元ができなくなり、新しい Device ID にリセットする必要があります。"
+            "value" : "DeviceKey は位置情報の更新、訪問履歴、アクセス制御設定を保護します。\n\n一度設定すると、キーは削除できません - 変更のみ可能です。安全に保管し、安全な場所にコピーを保存してください。\n\n設定は任意ですが、より安全に利用できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Een DeviceKey beschermt locatie-updates, bezoekersgeschiedenis en toegangscontrole-instellingen.\n\nZodra deze is ingesteld, kan de sleutel niet worden verwijderd - alleen gewijzigd. Bewaar hem veilig en sla een kopie op op een veilige plek.\n\nAls je de DeviceKey verliest, kan deze Device ID niet langer worden bijgewerkt of hersteld en moet je resetten naar een nieuwe Device ID."
+            "value" : "Een DeviceKey beschermt locatie-updates, bezoekersgeschiedenis en toegangscontrole-instellingen.\n\nZodra deze is ingesteld, kan de sleutel niet worden verwijderd - alleen gewijzigd. Bewaar hem veilig en sla een kopie op op een veilige plek.\n\nInstellen is optioneel, maar maakt je gebruik veiliger."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey 可保护位置更新、访问者历史记录和访问控制设置。\n\n一旦设置，密钥无法移除 - 只能更改。请妥善保管并在安全位置保存一份副本。\n\n如果丢失 DeviceKey，此 Device ID 将无法再更新或恢复，你需要重置为新的 Device ID。"
+            "value" : "DeviceKey 可保护位置更新、访问者历史记录和访问控制设置。\n\n一旦设置，密钥无法移除 - 只能更改。请妥善保管并在安全位置保存一份副本。\n\n设置是可选的，但会让你的使用更安全。"
           }
         }
       }
@@ -21823,6 +21823,10 @@
           }
         }
       }
+    },
+    "Your Device Key" : {
+      "comment" : "A title displayed above an image of a device key.",
+      "isCommentAutoGenerated" : true
     },
     "Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address." : {
       "localizations" : {

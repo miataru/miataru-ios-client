@@ -12,15 +12,34 @@ import SwiftUI
 struct Mac_OnboardingContainerView: View {
     @Binding var isPresented: Bool
     @Binding var currentPage: Int
+    let mode: OnboardingMode
+    @StateObject private var settings = SettingsManager.shared
     
-    private let pages: [AnyView] = [
-        AnyView(iPhone_1_OnboardingWelcomeView()),
-        AnyView(iPhone_2_OnboardingLocationPermissionView()),
-        AnyView(iPhone_3_OnboardingServerView()),
-        AnyView(iPhone_4_OnboardingLocationHistoryView()),
-        AnyView(iPhone_5_OnboardingQRcodeView()),
-        AnyView(iPhone_7_OnboardingDoneView())
-    ]
+    private var pages: [AnyView] {
+        switch mode {
+        case .postUpdate:
+            return [
+                AnyView(iPhone_1_OnboardingWelcomeView()),
+                AnyView(iPhone_6_OnboardingDeviceKeyView()),
+                AnyView(iPhone_7_OnboardingDoneView())
+            ]
+        case .full:
+            var pages: [AnyView] = [
+                AnyView(iPhone_1_OnboardingWelcomeView()),
+                AnyView(iPhone_2_OnboardingLocationPermissionView()),
+                AnyView(iPhone_3_OnboardingServerView()),
+                AnyView(iPhone_5_OnboardingQRcodeView())
+            ]
+            if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_4_OnboardingLocationHistoryView()))
+            }
+            if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_6_OnboardingDeviceKeyView()))
+            }
+            pages.append(AnyView(iPhone_7_OnboardingDoneView()))
+            return pages
+        }
+    }
     
     var body: some View {
         VStack {
@@ -42,7 +61,12 @@ struct Mac_OnboardingContainerView: View {
                     Button("Next") { currentPage += 1 }
                 } else {
                     Button("Finish") {
-                        UserDefaults.standard.hasCompletedOnboarding = true
+                        switch mode {
+                        case .postUpdate:
+                            UserDefaults.standard.hasShownPostUpdateOnboarding = true
+                        case .full:
+                            UserDefaults.standard.hasCompletedOnboarding = true
+                        }
                         isPresented = false
                     }
                 }
@@ -59,7 +83,7 @@ struct Mac_OnboardingContainerView_Previews: PreviewProvider {
     @State static var isPresented = true
     @State static var currentPage = 0
     static var previews: some View {
-        Mac_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage)
+        Mac_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage, mode: .full)
             .frame(width: 600, height: 400)
     }
 }

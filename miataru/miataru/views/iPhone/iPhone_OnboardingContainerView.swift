@@ -12,19 +12,39 @@ import SwiftUI
 struct iPhone_OnboardingContainerView: View {
     @Binding var isPresented: Bool
     @Binding var currentPage: Int
+    let mode: OnboardingMode
+    @StateObject private var settings = SettingsManager.shared
     
     private var pages: [AnyView] {
-        [
-            AnyView(iPhone_1_OnboardingWelcomeView()),
-            AnyView(iPhone_2_OnboardingLocationPermissionView()),
-            AnyView(iPhone_3_OnboardingServerView()),
-            AnyView(iPhone_4_OnboardingLocationHistoryView()),
-            AnyView(iPhone_5_OnboardingQRcodeView()),
-            AnyView(iPhone_7_OnboardingDoneView(onFinish: {
+        switch mode {
+        case .postUpdate:
+            return [
+                AnyView(iPhone_1_OnboardingWelcomeView()),
+                AnyView(iPhone_6_OnboardingDeviceKeyView()),
+                AnyView(iPhone_7_OnboardingDoneView(onFinish: {
+                    UserDefaults.standard.hasShownPostUpdateOnboarding = true
+                    isPresented = false
+                }))
+            ]
+        case .full:
+            var pages: [AnyView] = [
+                AnyView(iPhone_1_OnboardingWelcomeView()),
+                AnyView(iPhone_2_OnboardingLocationPermissionView()),
+                AnyView(iPhone_3_OnboardingServerView()),
+                AnyView(iPhone_5_OnboardingQRcodeView())
+            ]
+            if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_4_OnboardingLocationHistoryView()))
+            }
+            if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_6_OnboardingDeviceKeyView()))
+            }
+            pages.append(AnyView(iPhone_7_OnboardingDoneView(onFinish: {
                 UserDefaults.standard.hasCompletedOnboarding = true
                 isPresented = false
-            }))
-        ]
+            })))
+            return pages
+        }
     }
     
     var body: some View {
@@ -48,6 +68,6 @@ struct iPhone_OnboardingContainerView_Previews: PreviewProvider {
     @State static var isPresented = true
     @State static var currentPage = 0
     static var previews: some View {
-        iPhone_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage)
+        iPhone_OnboardingContainerView(isPresented: $isPresented, currentPage: $currentPage, mode: .full)
     }
 }

@@ -1,6 +1,9 @@
 v2.9
 - Added DeviceKey authentication and key management with generate, restore, custom key, and clipboard support.
 - Wired DeviceKey authentication into location updates and visitor history requests.
+- Inserted the DeviceKey onboarding step when location tracking is enabled.
+- Added a one-time post-update onboarding (Welcome, Device Key, Done) for existing users with location tracking enabled.
+- Showing the Location History onboarding step only when location tracking is enabled.
 - Showed visitor history directly under the QR code tab instead of a separate screen.
 - Moved the iPhone groups list below devices with an inline add button.
 - Auto-refresh the visitor history list on the QR code tab while it is visible.

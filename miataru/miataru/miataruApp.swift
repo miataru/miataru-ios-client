@@ -16,10 +16,38 @@ extension UserDefaults {
         get { bool(forKey: "hasCompletedOnboarding") }
         set { set(newValue, forKey: "hasCompletedOnboarding") }
     }
+
+    var hasShownPostUpdateOnboarding: Bool {
+        get { bool(forKey: "hasShownPostUpdateOnboarding") }
+        set { set(newValue, forKey: "hasShownPostUpdateOnboarding") }
+    }
+
+    var hadLocationTrackingEnabled: Bool {
+        bool(forKey: "track_and_report_location")
+    }
 }
 
 class AppState: ObservableObject {
-    @Published var showOnboarding: Bool = !UserDefaults.standard.hasCompletedOnboarding
+    @Published var showOnboarding: Bool
+    @Published var onboardingMode: OnboardingMode
+
+    init() {
+        let defaults = UserDefaults.standard
+        if !defaults.hasCompletedOnboarding {
+            onboardingMode = .full
+            showOnboarding = true
+            return
+        }
+
+        if !defaults.hasShownPostUpdateOnboarding, defaults.hadLocationTrackingEnabled {
+            onboardingMode = .postUpdate
+            showOnboarding = true
+            return
+        }
+
+        onboardingMode = .full
+        showOnboarding = false
+    }
 }
 
 @MainActor
@@ -37,7 +65,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var appState = AppState()
+    @StateObject private var appState: AppState
     @State private var autolockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
@@ -47,6 +75,8 @@ struct miataruApp: App {
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
+        _appState = StateObject(wrappedValue: AppState())
+
         let deviceID = thisDeviceIDManager.shared.deviceID
         debugLog("this devices ID: \(deviceID)")
         
@@ -77,7 +107,7 @@ struct miataruApp: App {
                 .environmentObject(SettingsManager.shared)
                 .animationsGate()
                 .fullScreenCover(isPresented: $appState.showOnboarding) {
-                    OnboardingContainerView(isPresented: $appState.showOnboarding)
+                    OnboardingContainerView(isPresented: $appState.showOnboarding, mode: appState.onboardingMode)
                         .background(Color(.systemBackground))
                         .ignoresSafeArea()
                 }

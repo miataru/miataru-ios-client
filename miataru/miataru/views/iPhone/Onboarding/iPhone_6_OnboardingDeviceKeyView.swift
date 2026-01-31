@@ -11,37 +11,33 @@ import SwiftUI
 
 struct iPhone_6_OnboardingDeviceKeyView: View {
     var onFinish: () -> Void = {}
+    @State private var showDeviceKeySheet = false
 
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Text("You are Ready to Go!")
+            Text("Your Device Key")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            Image("done")
+            Image("devicekey")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 300)
                 .padding(.horizontal)
                 .accessibilityHidden(true)
-            Text("Miataru is set up and ready.")
+            Text("device_key_intro_text")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Text("You can change your settings or permissions anytime in the app.")
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            Text("Tap on Finish to start using Miataru.")
-                .font(.body)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            Button("Finish") {
-                onFinish()
+            Button("device_key_banner_set_button") {
+                showDeviceKeySheet = true
             }
             .buttonStyle(.borderedProminent)
-            .tint(.blue)
+            .accessibilityHint(Text("device_key_button_hint"))
+            .padding(.horizontal)
+            .sheet(isPresented: $showDeviceKeySheet) {
+                iPhone_DeviceKeySheetView(showsMismatchWarning: false)
+            }
             Spacer()
         }
         .padding()
@@ -50,5 +46,5 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
 }
 
 #Preview {
-    iPhone_7_OnboardingDoneView()
+    iPhone_6_OnboardingDeviceKeyView()
 }
