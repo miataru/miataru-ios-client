@@ -368,3 +368,593 @@ If it still doesn’t trigger, I’ll switch to a `Button` wrapper with a long-p
 
 ---
 
+_**User**_
+
+describe all changes made and commit everything
+
+---
+
+_**Agent (model gpt-5.2-codex, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+**Planning parallel shell commands**
+
+I'm preparing to run three shell commands—git status, diff, and log—in parallel with read-only permissions without using Python.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status --short</summary>
+
+```bash
+git status --short
+```
+
+```
+ M miataru/miataru.xcodeproj/project.pbxproj
+ M miataru/miataru/Assets/Localizable.xcstrings
+ M miataru/miataru/views/iPhone/iPhone_DeviceKeySheetView.swift
+?? miataru/.specstory/history/2026-01-31_20-52Z-device-key-restore-sheet-translation.md
+?? miataru/.specstory/history/2026-01-31_20-57Z-device-key-button-sheet-relocation.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git diff</summary>
+
+```bash
+git diff
+```
+
+```
+diff --git a/miataru/miataru.xcodeproj/project.pbxproj b/miataru/miataru.xcodeproj/project.pbxproj
+index bc3667c2..e2041517 100644
+--- a/miataru/miataru.xcodeproj/project.pbxproj
++++ b/miataru/miataru.xcodeproj/project.pbxproj
+@@ -442,7 +442,7 @@
+ 				CLANG_WARN_UNREACHABLE_CODE = YES;
+ 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+ 				COPY_PHASE_STRIP = NO;
+-				CURRENT_PROJECT_VERSION = 6;
++				CURRENT_PROJECT_VERSION = 7;
+ 				DEBUG_INFORMATION_FORMAT = dwarf;
+ 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+ 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+@@ -512,7 +512,7 @@
+ 				CLANG_WARN_UNREACHABLE_CODE = YES;
+ 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+ 				COPY_PHASE_STRIP = NO;
+-				CURRENT_PROJECT_VERSION = 6;
++				CURRENT_PROJECT_VERSION = 7;
+ 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+ 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+ 				ENABLE_NS_ASSERTIONS = NO;
+diff --git a/miataru/miataru/Assets/Localizable.xcstrings b/miataru/miataru/Assets/Localizable.xcstrings
+index b4c4715a..07913318 100644
+--- a/miataru/miataru/Assets/Localizable.xcstrings
++++ b/miataru/miataru/Assets/Localizable.xcstrings
+@@ -7159,61 +7159,193 @@
+         "da" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Gendan DeviceKey"
++            "value" : "Gendan"
+           }
+         },
+         "de" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "DeviceKey wiederherstellen"
++            "value" : "Wiederherstellen"
+           }
+         },
+         "en" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Restore DeviceKey"
++            "value" : "Restore"
+           }
+         },
+         "es" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Restaurar DeviceKey"
++            "value" : "Restaurar"
+           }
+         },
+         "fi" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Palauta DeviceKey"
++            "value" : "Palauta"
+           }
+         },
+         "fr" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Restaurer le DeviceKey"
++            "value" : "Restaurer"
+           }
+         },
+         "it" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "Ripristina DeviceKey"
++            "value" : "Ripristina"
+           }
+         },
+         "ja" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "DeviceKey を復元"
++            "value" : "復元"
+           }
+         },
+         "nl" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "DeviceKey herstellen"
++            "value" : "Herstellen"
+           }
+         },
+         "zh-Hans" : {
+           "stringUnit" : {
+             "state" : "translated",
+-            "value" : "恢复 DeviceKey"
++            "value" : "恢复"
++          }
++        }
++      }
++    },
++    "device_key_restore_confirm" : {
++      "comment" : "Confirm button for device key restore",
++      "extractionState" : "stale",
++      "localizations" : {
++        "da" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Gendan"
++          }
++        },
++        "de" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Wiederherstellen"
++          }
++        },
++        "en" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restore"
++          }
++        },
++        "es" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restaurar"
++          }
++        },
++        "fi" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Palauta"
++          }
++        },
++        "fr" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restaurer"
++          }
++        },
++        "it" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Ripristina"
++          }
++        },
++        "ja" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "復元"
++          }
++        },
++        "nl" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Herstellen"
++          }
++        },
++        "zh-Hans" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "恢复"
++          }
++        }
++      }
++    },
++    "device_key_restore_message" : {
++      "comment" : "Message for device key restore entry",
++      "extractionState" : "stale",
++      "localizations" : {
++        "da" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Indtast den DeviceKey, du vil gendanne til denne enhed."
++          }
++        },
++        "de" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Gib den DeviceKey ein, den du für dieses Gerät wiederherstellen möchtest."
++          }
++        },
++        "en" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Enter the DeviceKey you want to restore for this device."
++          }
++        },
++        "es" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Introduce el DeviceKey que quieres restaurar para este dispositivo."
++          }
++        },
++        "fi" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Anna DeviceKey, jonka haluat palauttaa tälle laitteelle."
++          }
++        },
++        "fr" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Saisissez le DeviceKey que vous souhaitez restaurer pour cet appareil."
++          }
++        },
++        "it" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Inserisci il DeviceKey che vuoi ripristinare per questo dispositivo."
++          }
++        },
++        "ja" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "このデバイスに復元する DeviceKey を入力してください。"
++          }
++        },
++        "nl" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Voer de DeviceKey in die je voor dit apparaat wilt herstellen."
++          }
++        },
++        "zh-Hans" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "请输入你要为此设备恢复的 DeviceKey。"
+           }
+         }
+       }
+@@ -7283,6 +7415,72 @@
+         }
+       }
+     },
++    "device_key_restore_title" : {
++      "comment" : "Title for device key restore entry",
++      "extractionState" : "stale",
++      "localizations" : {
++        "da" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Gendan DeviceKey"
++          }
++        },
++        "de" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey wiederherstellen"
++          }
++        },
++        "en" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restore DeviceKey"
++          }
++        },
++        "es" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restaurar DeviceKey"
++          }
++        },
++        "fi" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Palauta DeviceKey"
++          }
++        },
++        "fr" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Restaurer le DeviceKey"
++          }
++        },
++        "it" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Ripristina DeviceKey"
++          }
++        },
++        "ja" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey を復元"
++          }
++        },
++        "nl" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey herstellen"
++          }
++        },
++        "zh-Hans" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "恢复 DeviceKey"
++          }
++        }
++      }
++    },
+     "device_key_title" : {
+       "comment" : "Title for device key onboarding screen",
+       "localizations" : {
+diff --git a/miataru/miataru/views/iPhone/iPhone_DeviceKeySheetView.swift b/miataru/miataru/views/iPhone/iPhone_DeviceKeySheetView.swift
+index 49193530..e61aed32 100644
+--- a/miataru/miataru/views/iPhone/iPhone_DeviceKeySheetView.swift
++++ b/miataru/miataru/views/iPhone/iPhone_DeviceKeySheetView.swift
+@@ -68,7 +68,9 @@ struct iPhone_DeviceKeySheetView: View {
+                     titleKey: "device_key_restore_title",
+                     messageKey: "device_key_restore_message",
+                     confirmKey: "device_key_restore_confirm",
+-                    initialValue: settings.deviceKey ?? ""
++                    initialValue: settings.deviceKey ?? "",
++                    showsRegenerateButton: false,
++                    onRegenerate: nil
+                 ) { enteredKey in
+                     await restoreDeviceKey(enteredKey)
+                 }
+@@ -78,7 +80,11 @@ struct iPhone_DeviceKeySheetView: View {
+                     titleKey: "device_key_custom_title",
+                     messageKey: "device_key_custom_message",
+                     confirmKey: "device_key_custom_confirm",
+-                    initialValue: settings.deviceKey ?? ""
++                    initialValue: settings.deviceKey ?? "",
++                    showsRegenerateButton: true,
++                    onRegenerate: {
++                        await regenerateDeviceKey()
++                    }
+                 ) { enteredKey in
+                     await setCustomDeviceKey(enteredKey)
+                 }
+@@ -92,6 +98,11 @@ struct iPhone_DeviceKeySheetView: View {
+                 .font(.system(size: 104))
+                 .foregroundColor(keyCardColor)
+                 .padding(.top, 8)
++                .frame(width: 140, height: 140, alignment: .center)
++                .contentShape(Rectangle())
++                .onLongPressGesture {
++                    showCustomKeySheet = true
++                }
+ 
+             if showsMismatchWarning {
+                 Text("device_key_mismatch_explanation")
+@@ -129,6 +140,11 @@ struct iPhone_DeviceKeySheetView: View {
+                 .font(.system(size: 104))
+                 .foregroundColor(keyCardColor)
+                 .padding(.top, 8)
++                .frame(width: 140, height: 140, alignment: .center)
++                .contentShape(Rectangle())
++                .onLongPressGesture {
++                    showCustomKeySheet = true
++                }
+ 
+             if showsMismatchWarning {
+                 Text("device_key_mismatch_explanation")
+@@ -152,9 +168,6 @@ struct iPhone_DeviceKeySheetView: View {
+                         .cornerRadius(8)
+                         .lineLimit(1)
+                         .minimumScaleFactor(0.6)
+-                        .onLongPressGesture {
+-                            showCustomKeySheet = true
+-                        }
+ 
+                     Button(action: copyDeviceKey) {
+                         Image(systemName: "doc.on.doc")
+@@ -174,20 +187,6 @@ struct iPhone_DeviceKeySheetView: View {
+                     .padding(.horizontal, 16)
+             }
+ 
+-            Button {
+-                Task { await regenerateDeviceKey() }
+-            } label: {
+-                if isBusy {
+-                    ProgressView()
+-                } else {
+-                    Text("device_key_regenerate_button")
+-                        .frame(maxWidth: .infinity)
+-                }
+-            }
+-            .buttonStyle(.borderedProminent)
+-            .disabled(isBusy)
+-            .padding(.horizontal, 16)
+-
+             Button("device_key_restore_button") {
+                 showRestoreSheet = true
+             }
+@@ -422,22 +421,29 @@ private struct DeviceKeyEntrySheet: View {
+     let messageKey: String
+     let confirmKey: String
+     let initialValue: String
++    let showsRegenerateButton: Bool
++    let onRegenerate: (() async -&gt; Void)?
+     let onSubmit: (String) async -&gt; String?
+ 
+     @Environment(\.dismiss) private var dismiss
+     @State private var inputValue: String
+     @State private var isSubmitting = false
++    @State private var isRegenerating = false
+     @State private var errorMessage: String? = nil
+ 
+     init(titleKey: String,
+          messageKey: String,
+          confirmKey: String,
+          initialValue: String,
++         showsRegenerateButton: Bool,
++         onRegenerate: (() async -&gt; Void)?,
+          onSubmit: @escaping (String) async -&gt; String?) {
+         self.titleKey = titleKey
+         self.messageKey = messageKey
+         self.confirmKey = confirmKey
+         self.initialValue = initialValue
++        self.showsRegenerateButton = showsRegenerateButton
++        self.onRegenerate = onRegenerate
+         self.onSubmit = onSubmit
+         _inputValue = State(initialValue: initialValue)
+     }
+@@ -457,6 +463,15 @@ private struct DeviceKeyEntrySheet: View {
+                         .autocorrectionDisabled(true)
+                 }
+ 
++                if showsRegenerateButton {
++                    Section {
++                        Button("device_key_regenerate_button") {
++                            Task { await regenerateDeviceKey() }
++                        }
++                        .disabled(isSubmitting || isRegenerating)
++                    }
++                }
++
+                 if let errorMessage {
+                     Section {
+                         Text(errorMessage)
+@@ -476,12 +491,19 @@ private struct DeviceKeyEntrySheet: View {
+                     Button(LocalizedStringKey(confirmKey)) {
+                         Task { await submit() }
+                     }
+-                    .disabled(isSubmitting)
++                    .disabled(isSubmitting || isRegenerating)
+                 }
+             }
+         }
+     }
+ 
++    private func regenerateDeviceKey() async {
++        guard let onRegenerate else { return }
++        isRegenerating = true
++        await onRegenerate()
++        dismiss()
++    }
++
+     private func submit() async {
+         isSubmitting = true
+         let error = await onSubmit(inputValue)
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git log -5 --oneline</summary>
+
+```bash
+git log -5 --oneline
+```
+
+```
+7fe6bb35 api counter
+ecde65d2 Add 24-hour API request counters
+f750bf80 doc
+8fd7e6c4 Show app version/build on location status
+c51f4112 Add missing DeviceKey custom sheet translations.
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+**Committing all changes with detailed message**
+
+I'm staging all files including unrelated ones as instructed and committing with a concise message covering the device key move, translation updates, and build version bump.</details></think>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git add .</summary>
+
+```bash
+git add .
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git commit -m "$(cat <<'EOF'
+Move device key actions into sheet.
+
+Shift regenerate to the long-press sheet and expand the key card hit area. Update restore strings and bump the project build number.
+EOF
+)"</summary>
+
+```bash
+git commit -m "$(cat <<'EOF'
+Move device key actions into sheet.
+
+Shift regenerate to the long-press sheet and expand the key card hit area. Update restore strings and bump the project build number.
+EOF
+)"
+```
+
+```
+[master 4b6eb3ca] Move device key actions into sheet.
+ 5 files changed, 1641 insertions(+), 32 deletions(-)
+ create mode 100644 miataru/.specstory/history/2026-01-31_20-52Z-device-key-restore-sheet-translation.md
+ create mode 100644 miataru/.specstory/history/2026-01-31_20-57Z-device-key-button-sheet-relocation.md
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: git status --short</summary>
+
+```bash
+git status --short
+```
+</details>
+</tool-use>
+
+---
+
+Moved the regenerate/reset action into the long‑press sheet, added a regenerate button inside that sheet, and shifted the long‑press gesture from the device key text to the key card image with an expanded hit area. Also updated restore-related strings, bumped the project build number, and captured the two specstory history entries.
+
+Committed everything in `4b6eb3ca` with message:
+- `Move device key actions into sheet.`
+
+Working tree is clean.
+
+---
+
