@@ -68,7 +68,9 @@ struct iPhone_DeviceKeySheetView: View {
                     titleKey: "device_key_restore_title",
                     messageKey: "device_key_restore_message",
                     confirmKey: "device_key_restore_confirm",
-                    initialValue: settings.deviceKey ?? ""
+                    initialValue: settings.deviceKey ?? "",
+                    showsRegenerateButton: false,
+                    onRegenerate: nil
                 ) { enteredKey in
                     await restoreDeviceKey(enteredKey)
                 }
@@ -78,7 +80,11 @@ struct iPhone_DeviceKeySheetView: View {
                     titleKey: "device_key_custom_title",
                     messageKey: "device_key_custom_message",
                     confirmKey: "device_key_custom_confirm",
-                    initialValue: settings.deviceKey ?? ""
+                    initialValue: settings.deviceKey ?? "",
+                    showsRegenerateButton: true,
+                    onRegenerate: {
+                        await regenerateDeviceKey()
+                    }
                 ) { enteredKey in
                     await setCustomDeviceKey(enteredKey)
                 }
@@ -92,6 +98,11 @@ struct iPhone_DeviceKeySheetView: View {
                 .font(.system(size: 104))
                 .foregroundColor(keyCardColor)
                 .padding(.top, 8)
+                .frame(width: 140, height: 140, alignment: .center)
+                .contentShape(Rectangle())
+                .onLongPressGesture {
+                    showCustomKeySheet = true
+                }
 
             if showsMismatchWarning {
                 Text("device_key_mismatch_explanation")
@@ -129,6 +140,11 @@ struct iPhone_DeviceKeySheetView: View {
                 .font(.system(size: 104))
                 .foregroundColor(keyCardColor)
                 .padding(.top, 8)
+                .frame(width: 140, height: 140, alignment: .center)
+                .contentShape(Rectangle())
+                .onLongPressGesture {
+                    showCustomKeySheet = true
+                }
 
             if showsMismatchWarning {
                 Text("device_key_mismatch_explanation")
@@ -152,9 +168,6 @@ struct iPhone_DeviceKeySheetView: View {
                         .cornerRadius(8)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
-                        .onLongPressGesture {
-                            showCustomKeySheet = true
-                        }
 
                     Button(action: copyDeviceKey) {
                         Image(systemName: "doc.on.doc")
@@ -173,20 +186,6 @@ struct iPhone_DeviceKeySheetView: View {
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 16)
             }
-
-            Button {
-                Task { await regenerateDeviceKey() }
-            } label: {
-                if isBusy {
-                    ProgressView()
-                } else {
-                    Text("device_key_regenerate_button")
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(isBusy)
-            .padding(.horizontal, 16)
 
             Button("device_key_restore_button") {
                 showRestoreSheet = true
@@ -422,22 +421,29 @@ private struct DeviceKeyEntrySheet: View {
     let messageKey: String
     let confirmKey: String
     let initialValue: String
+    let showsRegenerateButton: Bool
+    let onRegenerate: (() async -> Void)?
     let onSubmit: (String) async -> String?
 
     @Environment(\.dismiss) private var dismiss
     @State private var inputValue: String
     @State private var isSubmitting = false
+    @State private var isRegenerating = false
     @State private var errorMessage: String? = nil
 
     init(titleKey: String,
          messageKey: String,
          confirmKey: String,
          initialValue: String,
+         showsRegenerateButton: Bool,
+         onRegenerate: (() async -> Void)?,
          onSubmit: @escaping (String) async -> String?) {
         self.titleKey = titleKey
         self.messageKey = messageKey
         self.confirmKey = confirmKey
         self.initialValue = initialValue
+        self.showsRegenerateButton = showsRegenerateButton
+        self.onRegenerate = onRegenerate
         self.onSubmit = onSubmit
         _inputValue = State(initialValue: initialValue)
     }
@@ -455,6 +461,15 @@ private struct DeviceKeyEntrySheet: View {
                     TextField("device_key_entry_placeholder", text: $inputValue)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
+                }
+
+                if showsRegenerateButton {
+                    Section {
+                        Button("device_key_regenerate_button") {
+                            Task { await regenerateDeviceKey() }
+                        }
+                        .disabled(isSubmitting || isRegenerating)
+                    }
                 }
 
                 if let errorMessage {
@@ -476,10 +491,17 @@ private struct DeviceKeyEntrySheet: View {
                     Button(LocalizedStringKey(confirmKey)) {
                         Task { await submit() }
                     }
-                    .disabled(isSubmitting)
+                    .disabled(isSubmitting || isRegenerating)
                 }
             }
         }
+    }
+
+    private func regenerateDeviceKey() async {
+        guard let onRegenerate else { return }
+        isRegenerating = true
+        await onRegenerate()
+        dismiss()
     }
 
     private func submit() async {
