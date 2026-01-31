@@ -1,17 +1,13 @@
 v2.9
-- Added DeviceKey authentication and key management with generate, restore, custom key, and clipboard support.
-- Wired DeviceKey authentication into location updates and visitor history requests.
-- Inserted the DeviceKey onboarding step when location tracking is enabled.
-- Added a one-time post-update onboarding (Welcome, Device Key, Done) for existing users with location tracking enabled.
-- Showing the Location History onboarding step only when location tracking is enabled.
-- Showed visitor history directly under the QR code tab instead of a separate screen.
-- Moved the iPhone groups list below devices with an inline add button.
-- Auto-refresh the visitor history list on the QR code tab while it is visible.
-- Added a separate update interval for non-map device refreshes in settings.
+- Added DeviceKey authentication and key management with generate, reset and restore
+- Added a separate update interval for any non-map device refreshes in settings.
 - Added an optional toggle to show current device speed above map markers.
-- Added subtle sound cues when mutual navigation activates or deactivates.
-- Added haptic feedback for navigation changes and key device actions.
+- Added subtle sound cues and haptic feedback when mutual navigation activates or deactivates.
 - Added a navigation instruction overlay when routing from the current device to a selected device.
+- Added a one-time post-update onboarding (Welcome, Device Key, Done)
+- New DeviceKey onboarding step when location tracking is enabled.
+- Some Onboarding steps are ownly shown when  when location tracking is enabled.
+- Moved the iPhone groups list below devices with an inline add button.
+- Auto-refreshing the visitor history list
 - Fixed route progress ghost and segmentation to follow the active navigation direction.
-- Made route caching direction-aware to avoid reusing reversed routes.
 - Disabled shimmer, pulsing, and UI animations while Low Power Mode is enabled.
