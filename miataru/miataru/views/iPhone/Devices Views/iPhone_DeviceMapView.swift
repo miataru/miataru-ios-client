@@ -840,6 +840,7 @@ struct iPhone_DeviceMapView: View {
             }
         }
         do {
+            APIRequestCounter.shared.record(.getLocation)
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: [deviceID],
@@ -1117,6 +1118,7 @@ struct iPhone_DeviceMapView: View {
         let requestingDeviceID = thisDeviceIDManager.shared.deviceID
 
         do {
+            APIRequestCounter.shared.record(.getLocationHistory)
             let data = try await MiataruAPIClient.getLocationHistory(
                 serverURL: url,
                 forDeviceID: device.DeviceID,

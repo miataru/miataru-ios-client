@@ -10265,6 +10265,15 @@
         }
       }
     },
+    "GetLocation calls (last 24 hours)" : {
+      "comment" : "Number of GetLocation calls in the last 24 hours in Location Tracking Details"
+    },
+    "GetLocationHistory calls (last 24 hours)" : {
+      "comment" : "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details"
+    },
+    "GetVisitorHistory calls (last 24 hours)" : {
+      "comment" : "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details"
+    },
     "Group not found" : {
       "comment" : "Shown when a group with the given ID does not exist",
       "localizations" : {
@@ -21187,6 +21196,9 @@
           }
         }
       }
+    },
+    "Updated location calls (last 24 hours)" : {
+      "comment" : "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details"
     },
     "Use Default Server" : {
       "localizations" : {

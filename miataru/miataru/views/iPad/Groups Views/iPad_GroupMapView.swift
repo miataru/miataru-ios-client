@@ -709,6 +709,7 @@ struct iPad_GroupMapView: View {
         }
         do {
             // First attempt: Multi-device call
+            APIRequestCounter.shared.record(.getLocation)
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: groupDeviceIDs,
@@ -750,6 +751,7 @@ struct iPad_GroupMapView: View {
             var anySuccess = false
             for deviceID in groupDeviceIDs {
                 do {
+                    APIRequestCounter.shared.record(.getLocation)
                     let locations = try await MiataruAPIClient.getLocation(
                         serverURL: url,
                         forDeviceIDs: [deviceID],

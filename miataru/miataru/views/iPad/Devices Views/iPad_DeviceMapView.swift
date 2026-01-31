@@ -988,6 +988,7 @@ struct iPad_DeviceMapView: View {
             }
         }
         do {
+            APIRequestCounter.shared.record(.getLocation)
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: [deviceID],

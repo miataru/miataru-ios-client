@@ -16,6 +16,7 @@ struct iPhone_LocationStatusView: View {
     @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
     @ObservedObject private var widgetRequestCounter = WidgetRequestCounter.shared
+    @ObservedObject private var apiRequestCounter = APIRequestCounter.shared
     @ObservedObject private var settings = SettingsManager.shared
     // Legacy @AppStorage fields removed in favor of RouteRequestCounter
     
@@ -107,6 +108,30 @@ struct iPhone_LocationStatusView: View {
                         )
 
                         LocationInfoRow(
+                            title: NSLocalizedString("Updated location calls (last 24 hours)", comment: "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details"),
+                            value: String(apiRequestCounter.updatedLocationCallsLast24Hours),
+                            icon: "arrow.up.circle"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("GetVisitorHistory calls (last 24 hours)", comment: "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details"),
+                            value: String(apiRequestCounter.getVisitorHistoryCallsLast24Hours),
+                            icon: "person.2"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("GetLocation calls (last 24 hours)", comment: "Number of GetLocation calls in the last 24 hours in Location Tracking Details"),
+                            value: String(apiRequestCounter.getLocationCallsLast24Hours),
+                            icon: "location"
+                        )
+
+                        LocationInfoRow(
+                            title: NSLocalizedString("GetLocationHistory calls (last 24 hours)", comment: "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details"),
+                            value: String(apiRequestCounter.getLocationHistoryCallsLast24Hours),
+                            icon: "clock.arrow.circlepath"
+                        )
+
+                        LocationInfoRow(
                             title: NSLocalizedString("Speed", comment: "Speed display in Location Tracking Details"),
                             value: speedText(for: location),
                             icon: "speedometer"
@@ -179,10 +204,12 @@ struct iPhone_LocationStatusView: View {
             routeCounter.checkAndResetIfNeeded()
             // Update widget request count when view appears
             widgetRequestCounter.updateCount()
+            apiRequestCounter.updateCounts()
         }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
             // Update widget request count every minute while view is visible
             widgetRequestCounter.updateCount()
+            apiRequestCounter.updateCounts()
         }
     }
     

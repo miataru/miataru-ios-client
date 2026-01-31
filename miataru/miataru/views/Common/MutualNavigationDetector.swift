@@ -80,6 +80,7 @@ final class MutualNavigationDetector: ObservableObject {
         }
         
         do {
+            APIRequestCounter.shared.record(.getVisitorHistory)
             let visitors = try await MiataruAPIClient.getVisitorHistory(
                 serverURL: url,
                 forDeviceID: ourDeviceId,

@@ -60,6 +60,7 @@ final class VisitorHistoryViewModel: ObservableObject {
         do {
             let ourDeviceId = thisDeviceIDManager.shared.deviceID
             // Request with nil amount to get all available from server
+            APIRequestCounter.shared.record(.getVisitorHistory)
             let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
                 serverURL: url,
                 forDeviceID: ourDeviceId,

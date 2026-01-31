@@ -353,6 +353,7 @@ final class LocationManager: NSObject, ObservableObject {
         self.serverUpdateStatus = .updating
         Task {
             do {
+                APIRequestCounter.shared.record(.updateLocation)
                 let success = try await MiataruAPIClient.updateLocation(
                     serverURL: serverURL,
                     locationData: payload,
