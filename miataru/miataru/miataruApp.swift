@@ -48,6 +48,14 @@ class AppState: ObservableObject {
         onboardingMode = .full
         showOnboarding = false
     }
+
+    func presentFullOnboarding(skipPostUpdate: Bool) {
+        if skipPostUpdate {
+            UserDefaults.standard.hasShownPostUpdateOnboarding = true
+        }
+        onboardingMode = .full
+        showOnboarding = true
+    }
 }
 
 @MainActor

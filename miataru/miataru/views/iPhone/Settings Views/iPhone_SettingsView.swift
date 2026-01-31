@@ -201,7 +201,7 @@ struct iPhone_SettingsView: View {
                 Section {
                     Button("Show Onboarding Wizard Again") {
                         UserDefaults.standard.hasCompletedOnboarding = false
-                        appState.showOnboarding = true
+                        appState.presentFullOnboarding(skipPostUpdate: true)
                     }
                 }
             }
