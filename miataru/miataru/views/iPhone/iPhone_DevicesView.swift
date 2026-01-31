@@ -165,9 +165,10 @@ struct iPhone_DevicesView: View {
                                 if groupEditMode == .active {
                                     Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
                                 } else {
-                                    Image(systemName: "pencil")
+                                    /*Image(systemName: "pencil")
                                         .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
                                         .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
+                                */
                                 }
                             }
                             .disabled(groupStore.groups.isEmpty)
