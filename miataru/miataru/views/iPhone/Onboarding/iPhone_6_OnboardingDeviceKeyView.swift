@@ -33,6 +33,7 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
                 showDeviceKeySheet = true
             }
             .buttonStyle(.borderedProminent)
+            .tint(.blue)
             .accessibilityHint(Text("device_key_button_hint"))
             .padding(.horizontal)
             .sheet(isPresented: $showDeviceKeySheet) {

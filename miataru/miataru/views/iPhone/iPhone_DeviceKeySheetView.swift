@@ -55,6 +55,7 @@ struct iPhone_DeviceKeySheetView: View {
             .padding(.top, 12)
             .navigationTitle("device_key_title")
             .navigationBarTitleDisplayMode(.inline)
+            .tint(.blue)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("close_button_label") {
@@ -129,6 +130,7 @@ struct iPhone_DeviceKeySheetView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .tint(.blue)
             .disabled(isBusy)
             .padding(.horizontal, 16)
         }
@@ -191,6 +193,7 @@ struct iPhone_DeviceKeySheetView: View {
                 showRestoreSheet = true
             }
             .buttonStyle(.bordered)
+            .tint(.blue)
             .disabled(isBusy)
             .padding(.horizontal, 16)
         }
@@ -481,6 +484,7 @@ private struct DeviceKeyEntrySheet: View {
             }
             .navigationTitle(LocalizedStringKey(titleKey))
             .navigationBarTitleDisplayMode(.inline)
+            .tint(.blue)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("cancel_button_label") {
