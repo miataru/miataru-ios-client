@@ -3322,7 +3322,69 @@
       }
     },
     "Build": {
-      "comment": "Build number label"
+      "comment": "Build number label",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compilación"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koontiversio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version (build)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ビルド"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "构建"
+          }
+        }
+      }
     },
     "cancel": {
       "comment": "Cancel\nCancel button\nCancel button to discard changes and dismiss the view\nCancel editing the group\nCancel navigation",
@@ -6112,7 +6174,6 @@
     },
     "device_key_custom_confirm": {
       "comment": "Confirm button for custom device key entry",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -6178,7 +6239,6 @@
     },
     "device_key_custom_message": {
       "comment": "Message for custom device key entry",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -6244,7 +6304,6 @@
     },
     "device_key_custom_title": {
       "comment": "Title for custom device key entry",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -7285,7 +7344,6 @@
     },
     "device_key_restore_confirm": {
       "comment": "Confirm button for device key restore",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -7351,7 +7409,6 @@
     },
     "device_key_restore_message": {
       "comment": "Message for device key restore entry",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -7482,7 +7539,6 @@
     },
     "device_key_restore_title": {
       "comment": "Title for device key restore entry",
-      "extractionState": "stale",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -10529,13 +10585,199 @@
       }
     },
     "GetLocation calls (last 24 hours)": {
-      "comment": "Number of GetLocation calls in the last 24 hours in Location Tracking Details"
+      "comment": "Number of GetLocation calls in the last 24 hours in Location Tracking Details",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation-kald (seneste 24 timer)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation-Aufrufe (letzte 24 Stunden)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation calls (last 24 hours)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llamadas GetLocation (últimas 24 horas)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation-kutsut (viimeiset 24 h)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appels GetLocation (24 dernières heures)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiamate GetLocation (ultime 24 ore)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation 呼び出し（過去24時間）"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation-aanroepen (laatste 24 uur)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocation 调用（过去 24 小时）"
+          }
+        }
+      }
     },
     "GetLocationHistory calls (last 24 hours)": {
-      "comment": "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details"
+      "comment": "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory-kald (seneste 24 timer)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory-Aufrufe (letzte 24 Stunden)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory calls (last 24 hours)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llamadas GetLocationHistory (últimas 24 horas)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory-kutsut (viimeiset 24 h)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appels GetLocationHistory (24 dernières heures)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiamate GetLocationHistory (ultime 24 ore)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory 呼び出し（過去24時間）"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory-aanroepen (laatste 24 uur)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetLocationHistory 调用（过去 24 小时）"
+          }
+        }
+      }
     },
     "GetVisitorHistory calls (last 24 hours)": {
-      "comment": "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details"
+      "comment": "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory-kald (seneste 24 timer)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory-Aufrufe (letzte 24 Stunden)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory calls (last 24 hours)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llamadas GetVisitorHistory (últimas 24 horas)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory-kutsut (viimeiset 24 h)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appels GetVisitorHistory (24 dernières heures)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiamate GetVisitorHistory (ultime 24 ore)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory 呼び出し（過去24時間）"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory-aanroepen (laatste 24 uur)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GetVisitorHistory 调用（过去 24 小时）"
+          }
+        }
+      }
     },
     "Group not found": {
       "comment": "Shown when a group with the given ID does not exist",
@@ -21526,7 +21768,69 @@
       }
     },
     "Updated location calls (last 24 hours)": {
-      "comment": "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details"
+      "comment": "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opdaterede lokationsopkald (seneste 24 timer)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualisierte Standortaufrufe (letzte 24 Stunden)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated location calls (last 24 hours)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Llamadas de ubicación actualizadas (últimas 24 horas)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Päivitetyt sijaintikutsut (viimeiset 24 h)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appels de position mis à jour (24 dernières heures)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiamate di posizione aggiornate (ultime 24 ore)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新された位置情報呼び出し（過去24時間）"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bijgewerkte locatie-aanroepen (laatste 24 uur)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已更新的位置调用（过去 24 小时）"
+          }
+        }
+      }
     },
     "Use Default Server": {
       "localizations": {
@@ -21593,7 +21897,69 @@
       }
     },
     "Version": {
-      "comment": "Label for app version on location status screen"
+      "comment": "Label for app version on location status screen",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versione"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versie"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版本"
+          }
+        }
+      }
     },
     "visitor_history_empty": {
       "comment": "Empty state message when no visitors have accessed the device",

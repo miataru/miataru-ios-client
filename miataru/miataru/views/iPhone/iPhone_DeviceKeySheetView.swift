@@ -66,9 +66,9 @@ struct iPhone_DeviceKeySheetView: View {
             .overlay(copyOverlay)
             .sheet(isPresented: $showRestoreSheet) {
                 DeviceKeyEntrySheet(
-                    titleKey: "device_key_restore_title",
-                    messageKey: "device_key_restore_message",
-                    confirmKey: "device_key_restore_confirm",
+                    title: String(localized: "device_key_restore_title"),
+                    message: String(localized: "device_key_restore_message"),
+                    confirmTitle: String(localized: "device_key_restore_confirm"),
                     initialValue: settings.deviceKey ?? "",
                     showsRegenerateButton: false,
                     onRegenerate: nil
@@ -78,9 +78,9 @@ struct iPhone_DeviceKeySheetView: View {
             }
             .sheet(isPresented: $showCustomKeySheet) {
                 DeviceKeyEntrySheet(
-                    titleKey: "device_key_custom_title",
-                    messageKey: "device_key_custom_message",
-                    confirmKey: "device_key_custom_confirm",
+                    title: String(localized: "device_key_custom_title"),
+                    message: String(localized: "device_key_custom_message"),
+                    confirmTitle: String(localized: "device_key_custom_confirm"),
                     initialValue: settings.deviceKey ?? "",
                     showsRegenerateButton: true,
                     onRegenerate: {
@@ -420,9 +420,9 @@ private enum KeyCardState {
 }
 
 private struct DeviceKeyEntrySheet: View {
-    let titleKey: String
-    let messageKey: String
-    let confirmKey: String
+    let title: String
+    let message: String
+    let confirmTitle: String
     let initialValue: String
     let showsRegenerateButton: Bool
     let onRegenerate: (() async -> Void)?
@@ -434,16 +434,16 @@ private struct DeviceKeyEntrySheet: View {
     @State private var isRegenerating = false
     @State private var errorMessage: String? = nil
 
-    init(titleKey: String,
-         messageKey: String,
-         confirmKey: String,
+    init(title: String,
+         message: String,
+         confirmTitle: String,
          initialValue: String,
          showsRegenerateButton: Bool,
          onRegenerate: (() async -> Void)?,
          onSubmit: @escaping (String) async -> String?) {
-        self.titleKey = titleKey
-        self.messageKey = messageKey
-        self.confirmKey = confirmKey
+        self.title = title
+        self.message = message
+        self.confirmTitle = confirmTitle
         self.initialValue = initialValue
         self.showsRegenerateButton = showsRegenerateButton
         self.onRegenerate = onRegenerate
@@ -455,7 +455,7 @@ private struct DeviceKeyEntrySheet: View {
         NavigationStack {
             Form {
                 Section {
-                    Text(LocalizedStringKey(messageKey))
+                    Text(message)
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
@@ -482,7 +482,7 @@ private struct DeviceKeyEntrySheet: View {
                     }
                 }
             }
-            .navigationTitle(LocalizedStringKey(titleKey))
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .tint(.blue)
             .toolbar {
@@ -492,7 +492,7 @@ private struct DeviceKeyEntrySheet: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(LocalizedStringKey(confirmKey)) {
+                    Button(confirmTitle) {
                         Task { await submit() }
                     }
                     .disabled(isSubmitting || isRegenerating)
