@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (Italian) */
 
-"track_and_history" = "Tracciamento e cronologia";
-"location_track" = "traccia posizione del dispositivo";
+"track_and_history" = "Tracciamento e sicurezza";
+"manage_your_devicekey" = "Gestisci il tuo DeviceKey";
+"location_track" = "Traccia posizione dispositivo";
 "save_location_history_to_server" = "Salva cronologia posizione sul server";
 "store_history_before_autoremove" = "Rimuovi automaticamente i dati di posizione dopo";
 "30minutes" = "30 minuti";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Minimo (50 m/40 m)";
 "server_url" = "URL server Miataru";
 "app_behaviour" = "Comportamento dell'applicazione";
-"deactivate_device_lock" = "disattiva blocco dispositivo";
-"indicate_location_accuracy" = "indica precisione posizione";
+"deactivate_device_lock" = "Disattiva blocco dispositivo";
+"indicate_location_accuracy" = "Indica la precisione della posizione";
 "show_offscreen_arrows_for_other_devices" = "Mostra frecce fuori schermo per altri dispositivi";
 "map_configuration" = "Impostazioni mappa";
 "map_type" = "Tipo di mappa";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "zoom per adattare ai gruppi";
+"zoom_to_fit_for_groups" = "Zoom per adattare ai gruppi";
 "auto_refresh_device_list" = "L'elenco dispositivi si aggiorna automaticamente";
-"show_current_speed_on_map" = "mostra velocità attuale sulla mappa";
+"show_current_speed_on_map" = "Mostra velocità attuale sulla mappa";
 "navigation" = "Navigazione";
 "transport_mode" = "Modalità di trasporto";
 "transport_walk" = "A piedi";
@@ -58,7 +59,7 @@
 "transport_transit" = "Trasporto pubblico";
 "show_route_progress" = "Mostra avanzamento percorso";
 "advanced_map_features" = "Funzionalità avanzate della mappa";
-"pulsating_map_markers" = "Indicatori mappa pulsanti";
+"pulsating_map_markers" = "Marker della mappa pulsanti e brillanti";
 "reverse_geocoding_threshold" = "Soglia di geocodifica inversa";
 "reverse_geocode_every_update" = "Ogni aggiornamento";
 "navigation_auto_route_update" = "Aggiornamento automatico del percorso durante la navigazione";

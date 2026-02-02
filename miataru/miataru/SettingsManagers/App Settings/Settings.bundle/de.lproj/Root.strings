@@ -1,6 +1,7 @@
 /* Lokalisierte Strings für Settings.bundle Root.plist (Deutsch) */
 
-"track_and_history" = "Verfolgung & Verlauf";
+"track_and_history" = "Verfolgung & Sicherheit";
+"manage_your_devicekey" = "DeviceKey verwalten";
 "location_track" = "Standort des Geräts verfolgen";
 "save_location_history_to_server" = "Standortverlauf auf dem Server speichern";
 "store_history_before_autoremove" = "Standortdaten automatisch entfernen nach …";
@@ -59,7 +60,7 @@
 "transport_transit" = "ÖPNV";
 "show_route_progress" = "Routenfortschritt anzeigen";
 "advanced_map_features" = "Erweiterte Kartenfunktionen";
-"pulsating_map_markers" = "Pulsierende Kartenmarker";
+"pulsating_map_markers" = "Pulsierende und schimmernde Kartenmarkierungen";
 "reverse_geocoding_threshold" = "Schwelle für Reverse Geocoding";
 "reverse_geocode_every_update" = "Bei jedem Update";
 "navigation_auto_route_update" = "Route während der Navigation automatisch aktualisieren";

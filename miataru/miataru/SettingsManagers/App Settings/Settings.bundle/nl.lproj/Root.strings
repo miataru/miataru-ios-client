@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (Dutch) */
 
-"track_and_history" = "Tracking en geschiedenis";
-"location_track" = "apparaatlocatie volgen";
+"track_and_history" = "Tracking en beveiliging";
+"manage_your_devicekey" = "Beheer je DeviceKey";
+"location_track" = "Apparaatlocatie volgen";
 "save_location_history_to_server" = "Locatiegeschiedenis op server opslaan";
 "store_history_before_autoremove" = "Locatiegegevens automatisch verwijderen na";
 "30minutes" = "30 minuten";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Minimaal (50 m/40 m)";
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-gedrag";
-"deactivate_device_lock" = "apparaatvergrendeling uitschakelen";
-"indicate_location_accuracy" = "locatienauwkeurigheid weergeven";
+"deactivate_device_lock" = "Apparaatvergrendeling uitschakelen";
+"indicate_location_accuracy" = "Locatienauwkeurigheid aangeven";
 "show_offscreen_arrows_for_other_devices" = "Offscreen-pijlen voor andere apparaten tonen";
 "map_configuration" = "Kaartinstellingen";
 "map_type" = "Kaarttype";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "zoomen om groepen passend te maken";
+"zoom_to_fit_for_groups" = "Zoomen om groepen passend te maken";
 "auto_refresh_device_list" = "Apparaatlijst wordt automatisch bijgewerkt";
-"show_current_speed_on_map" = "huidige snelheid op de kaart tonen";
+"show_current_speed_on_map" = "Huidige snelheid op de kaart tonen";
 "navigation" = "Navigatie";
 "transport_mode" = "Vervoersmodus";
 "transport_walk" = "Lopen";
@@ -58,7 +59,7 @@
 "transport_transit" = "Openbaar vervoer";
 "show_route_progress" = "Routevoortgang tonen";
 "advanced_map_features" = "Geavanceerde kaartfuncties";
-"pulsating_map_markers" = "Pulserende kaartmarkeringen";
+"pulsating_map_markers" = "Pulserende en glimmende kaartmarkeringen";
 "reverse_geocoding_threshold" = "Drempel voor omgekeerde geocodering";
 "reverse_geocode_every_update" = "Elke update";
 "navigation_auto_route_update" = "Automatische route-update tijdens navigatie";

@@ -1,6 +1,7 @@
 /* Localized strings for Settings.bundle Root.plist (Simplified Chinese) */
 
-"track_and_history" = "追踪与历史";
+"track_and_history" = "追踪与安全";
+"manage_your_devicekey" = "管理你的 DeviceKey";
 "location_track" = "跟踪设备位置";
 "save_location_history_to_server" = "将位置历史保存到服务器";
 "store_history_before_autoremove" = "在以下时间后自动删除位置数据";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "最小（50米/40米）";
 "server_url" = "Miataru 服务器 URL";
 "app_behaviour" = "应用行为";
-"deactivate_device_lock" = "停用设备锁";
-"indicate_location_accuracy" = "显示位置精度";
+"deactivate_device_lock" = "禁用设备锁定";
+"indicate_location_accuracy" = "显示定位精度";
 "show_offscreen_arrows_for_other_devices" = "显示其他设备的屏幕外箭头";
 "map_configuration" = "地图设置";
 "map_type" = "地图类型";
@@ -58,7 +59,7 @@
 "transport_transit" = "公共交通";
 "show_route_progress" = "显示路线进度";
 "advanced_map_features" = "高级地图功能";
-"pulsating_map_markers" = "脉动地图标记";
+"pulsating_map_markers" = "地图标记脉动与闪光";
 "reverse_geocoding_threshold" = "反向地理编码阈值";
 "reverse_geocode_every_update" = "每次更新";
 "navigation_auto_route_update" = "导航时自动更新路线";

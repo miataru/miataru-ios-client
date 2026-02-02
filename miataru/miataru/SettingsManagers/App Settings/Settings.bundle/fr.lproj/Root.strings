@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (French) */
 
-"track_and_history" = "Suivi et historique";
-"location_track" = "suivre l'emplacement de l'appareil";
+"track_and_history" = "Suivi et sécurité";
+"manage_your_devicekey" = "Gérer ton DeviceKey";
+"location_track" = "Suivre la position de l'appareil";
 "save_location_history_to_server" = "Enregistrer l'historique de localisation sur le serveur";
 "store_history_before_autoremove" = "Supprimer automatiquement les données de localisation après";
 "30minutes" = "30 minutes";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
 "server_url" = "URL du serveur Miataru";
 "app_behaviour" = "Comportement de l’application";
-"deactivate_device_lock" = "désactiver le verrouillage de l’appareil";
-"indicate_location_accuracy" = "indiquer la précision de localisation";
+"deactivate_device_lock" = "Désactiver le verrouillage de l'appareil";
+"indicate_location_accuracy" = "Indiquer la précision de la position";
 "show_offscreen_arrows_for_other_devices" = "Afficher les flèches hors écran pour les autres appareils";
 "map_configuration" = "Paramètres de la carte";
 "map_type" = "Type de carte";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "ajuster le zoom aux groupes";
+"zoom_to_fit_for_groups" = "Ajuster le zoom aux groupes";
 "auto_refresh_device_list" = "La liste des appareils se met à jour automatiquement";
-"show_current_speed_on_map" = "afficher la vitesse actuelle sur la carte";
+"show_current_speed_on_map" = "Afficher la vitesse actuelle sur la carte";
 "navigation" = "Navigation";
 "transport_mode" = "Mode de transport";
 "transport_walk" = "Marche";
@@ -58,7 +59,7 @@
 "transport_transit" = "Transports en commun";
 "show_route_progress" = "Afficher la progression de l’itinéraire";
 "advanced_map_features" = "Fonctionnalités avancées de la carte";
-"pulsating_map_markers" = "Marqueurs de carte pulsants";
+"pulsating_map_markers" = "Marqueurs de carte pulsants et scintillants";
 "reverse_geocoding_threshold" = "Seuil de géocodage inversé";
 "reverse_geocode_every_update" = "Chaque mise à jour";
 "navigation_auto_route_update" = "Mise à jour automatique de l’itinéraire pendant la navigation";

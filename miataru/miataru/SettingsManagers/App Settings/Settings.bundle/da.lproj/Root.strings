@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (Danish) */
 
-"track_and_history" = "Sporing og historik";
-"location_track" = "spor enhedens placering";
+"track_and_history" = "Sporing og sikkerhed";
+"manage_your_devicekey" = "Administrer din DeviceKey";
+"location_track" = "Spore enhedsplacering";
 "save_location_history_to_server" = "Gem placeringshistorik på server";
 "store_history_before_autoremove" = "Fjern placeringsdata automatisk efter";
 "30minutes" = "30 minutter";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-adfærd";
-"deactivate_device_lock" = "deaktiver enhedslås";
-"indicate_location_accuracy" = "vis placeringsnøjagtighed";
+"deactivate_device_lock" = "Deaktiver enhedslås";
+"indicate_location_accuracy" = "Vis placeringsnøjagtighed";
 "show_offscreen_arrows_for_other_devices" = "Vis offscreen-pile for andre enheder";
 "map_configuration" = "Kortindstillinger";
 "map_type" = "Korttype";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "Zoom for at tilpasse grupper";
+"zoom_to_fit_for_groups" = "Zoom for at passe grupper";
 "auto_refresh_device_list" = "Enhedsliste opdateres automatisk";
-"show_current_speed_on_map" = "vis aktuel hastighed på kortet";
+"show_current_speed_on_map" = "Vis aktuel hastighed på kortet";
 "navigation" = "Navigation";
 "transport_mode" = "Transporttilstand";
 "transport_walk" = "Gang";
@@ -58,7 +59,7 @@
 "transport_transit" = "Offentlig transport";
 "show_route_progress" = "Vis ruteprogress";
 "advanced_map_features" = "Avancerede kortfunktioner";
-"pulsating_map_markers" = "Pulserende kortmarkører";
+"pulsating_map_markers" = "Pulserende og glimtende kortmarkører";
 "reverse_geocoding_threshold" = "Tærskel for omvendt geokodning";
 "reverse_geocode_every_update" = "Hver opdatering";
 "navigation_auto_route_update" = "Auto ruteopdatering under navigation";

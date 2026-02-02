@@ -1,6 +1,7 @@
 /* ローカライズ済み Settings.bundle Root.plist (日本語) */
 
-"track_and_history" = "追跡＆履歴";
+"track_and_history" = "追跡＆セキュリティ";
+"manage_your_devicekey" = "DeviceKey を管理";
 "location_track" = "デバイスの位置を追跡";
 "save_location_history_to_server" = "位置情報履歴をサーバーに保存";
 "store_history_before_autoremove" = "位置情報を自動的に削除します";
@@ -59,7 +60,7 @@
 "transport_transit" = "公共交通機関";
 "show_route_progress" = "ルート進行状況を表示";
 "advanced_map_features" = "高度なマップ機能";
-"pulsating_map_markers" = "脈動するマップマーカー";
+"pulsating_map_markers" = "マップマーカーの鼓動/シマーアニメーション";
 "reverse_geocoding_threshold" = "逆ジオコーディングのしきい値";
 "reverse_geocode_every_update" = "毎回";
 "navigation_auto_route_update" = "ナビ中に自動でルート更新";

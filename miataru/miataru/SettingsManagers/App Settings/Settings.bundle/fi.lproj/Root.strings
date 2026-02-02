@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (Finnish) */
 
-"track_and_history" = "Seuranta ja historia";
-"location_track" = "seuraa laitteen sijaintia";
+"track_and_history" = "Seuranta ja turvallisuus";
+"manage_your_devicekey" = "Hallitse DeviceKey";
+"location_track" = "Seuraa laitteen sijaintia";
 "save_location_history_to_server" = "Tallenna sijaintihistoria palvelimelle";
 "store_history_before_autoremove" = "Poista sijaintitiedot automaattisesti jälkeen";
 "30minutes" = "30 minuuttia";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Minimi (50 m/40 m)";
 "server_url" = "Miataru-palvelimen URL";
 "app_behaviour" = "Sovelluksen toiminta";
-"deactivate_device_lock" = "poista laitteen lukitus käytöstä";
-"indicate_location_accuracy" = "näytä sijainnin tarkkuus";
+"deactivate_device_lock" = "Poista laitteen lukitus käytöstä";
+"indicate_location_accuracy" = "Näytä sijaintitarkkuus";
 "show_offscreen_arrows_for_other_devices" = "Näytä ruudun ulkopuoliset nuolet muille laitteille";
 "map_configuration" = "Kartta-asetukset";
 "map_type" = "Karttatyyppi";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "zoomaus sopivaksi ryhmille";
+"zoom_to_fit_for_groups" = "Zoomaus sopii ryhmiin";
 "auto_refresh_device_list" = "Laiteluettelo päivittyy automaattisesti";
-"show_current_speed_on_map" = "näytä nykyinen nopeus kartalla";
+"show_current_speed_on_map" = "Näytä nykyinen nopeus kartalla";
 "navigation" = "Navigointi";
 "transport_mode" = "Liikkumistapa";
 "transport_walk" = "Kävely";
@@ -58,7 +59,7 @@
 "transport_transit" = "Joukkoliikenne";
 "show_route_progress" = "Näytä reitin eteneminen";
 "advanced_map_features" = "Edistyneet karttaominaisuudet";
-"pulsating_map_markers" = "Sykkivät karttamerkit";
+"pulsating_map_markers" = "Pulsoivat ja kimmeltävät karttamerkit";
 "reverse_geocoding_threshold" = "Käänteisen geokoodauksen kynnys";
 "reverse_geocode_every_update" = "Joka päivitys";
 "navigation_auto_route_update" = "Reitin automaattinen päivitys navigoinnin aikana";

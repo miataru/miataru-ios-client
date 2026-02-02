@@ -13,6 +13,7 @@ struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
     @State private var showingLocationStatus = false
     @State private var showingLocationTest = false
+    @State private var showingDeviceKeySheet = false
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -33,6 +34,15 @@ struct iPhone_SettingsView: View {
                                 Text("24hours").tag(1440)
                                 Text("7days").tag(10080)
                             }
+                        }
+                    }
+                    Button {
+                        showingDeviceKeySheet = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "key.card")
+                                .foregroundColor(.blue)
+                            Text("manage_your_devicekey")
                         }
                     }
                 }
@@ -206,6 +216,9 @@ struct iPhone_SettingsView: View {
                 }
             }
             .navigationTitle("settings")
+            .sheet(isPresented: $showingDeviceKeySheet) {
+                iPhone_DeviceKeySheetView(showsMismatchWarning: false)
+            }
         }
     }
 }

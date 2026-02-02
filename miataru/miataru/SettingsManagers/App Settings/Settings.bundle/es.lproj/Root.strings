@@ -1,7 +1,8 @@
 /* Localized strings for Settings.bundle Root.plist (Spanish) */
 
-"track_and_history" = "Seguimiento y historial";
-"location_track" = "rastrear ubicación del dispositivo";
+"track_and_history" = "Seguimiento y seguridad";
+"manage_your_devicekey" = "Gestiona tu DeviceKey";
+"location_track" = "Rastrear la ubicación del dispositivo";
 "save_location_history_to_server" = "Guardar historial de ubicación en el servidor";
 "store_history_before_autoremove" = "Eliminar datos de ubicación automáticamente después de";
 "30minutes" = "30 minutos";
@@ -24,8 +25,8 @@
 "location_tracking_update_sensitivity_minimal_short" = "Mínimo (50 m/40 m)";
 "server_url" = "URL del servidor Miataru";
 "app_behaviour" = "Comportamiento de la aplicación";
-"deactivate_device_lock" = "desactivar bloqueo del dispositivo";
-"indicate_location_accuracy" = "indicar precisión de ubicación";
+"deactivate_device_lock" = "Desactivar el bloqueo del dispositivo";
+"indicate_location_accuracy" = "Indicar la precisión de la ubicación";
 "show_offscreen_arrows_for_other_devices" = "Mostrar flechas fuera de pantalla para otros dispositivos";
 "map_configuration" = "Configuración del mapa";
 "map_type" = "Tipo de mapa";
@@ -47,9 +48,9 @@
 "25km" = "25 km";
 "50km" = "50 km";
 "100km" = "100 km";
-"zoom_to_fit_for_groups" = "ajustar zoom a grupos";
+"zoom_to_fit_for_groups" = "Ajustar el zoom para los grupos";
 "auto_refresh_device_list" = "La lista de dispositivos se actualiza automáticamente";
-"show_current_speed_on_map" = "mostrar velocidad actual en el mapa";
+"show_current_speed_on_map" = "Mostrar la velocidad actual en el mapa";
 "navigation" = "Navegación";
 "transport_mode" = "Modo de transporte";
 "transport_walk" = "Caminar";
@@ -58,7 +59,7 @@
 "transport_transit" = "Transporte público";
 "show_route_progress" = "Mostrar progreso de ruta";
 "advanced_map_features" = "Funciones avanzadas del mapa";
-"pulsating_map_markers" = "Marcadores del mapa pulsantes";
+"pulsating_map_markers" = "Marcadores del mapa con pulso y brillo";
 "reverse_geocoding_threshold" = "Umbral de geocodificación inversa";
 "reverse_geocode_every_update" = "Cada actualización";
 "navigation_auto_route_update" = "Actualización automática de ruta al navegar";
