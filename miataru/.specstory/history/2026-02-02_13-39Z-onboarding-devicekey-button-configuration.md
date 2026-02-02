@@ -11190,3 +11190,275 @@ Status: **completed**
 
 ---
 
+
+
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru/Assets/Localizable.xcstrings</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+
+Updated the localization so the button shows “Change DeviceKey” (and equivalents) everywhere:
+
+- **en:** Change DeviceKey  
+- **da:** Skift DeviceKey  
+- **de:** DeviceKey ändern  
+- **es:** Cambiar DeviceKey  
+- **fi:** Vaihda DeviceKey  
+- **fr:** Changer le DeviceKey  
+- **it:** Cambia DeviceKey  
+- **ja:** DeviceKey を変更  
+- **nl:** DeviceKey wijzigen  
+- **zh-Hans:** 更改 DeviceKey  
+
+The comment for that key is now “Button label to change DeviceKey when already set”. The Swift code still uses the same key `device_key_banner_configure_button`, so no code changes were needed.
+
+---
+
+_**User**_
+
+describe and commit all
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git status
+```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   .specstory/history/2026-01-31_22-33Z-add-group-button-styling.md
+	modified:   miataru/Assets/Localizable.xcstrings
+	modified:   miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	.specstory/history/2026-02-02_13-39Z-onboarding-devicekey-button-configuration.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff --stat
+```
+
+```
+ .../2026-01-31_22-33Z-add-group-button-styling.md  | 3025 ++++++++++++++++++--
+ miataru/miataru/Assets/Localizable.xcstrings       |   65 +
+ .../iPhone_6_OnboardingDeviceKeyView.swift         |   10 +-
+ 3 files changed, 2915 insertions(+), 185 deletions(-)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Checking the main code changes to craft the commit message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift miataru/Assets/Localizable.xcstrings</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git diff miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift miataru/Assets/Localizable.xcstrings
+```
+
+```
+diff --git a/miataru/miataru/Assets/Localizable.xcstrings b/miataru/miataru/Assets/Localizable.xcstrings
+index 07913318..6385c9a8 100644
+--- a/miataru/miataru/Assets/Localizable.xcstrings
++++ b/miataru/miataru/Assets/Localizable.xcstrings
+@@ -5655,6 +5655,71 @@
+         }
+       }
+     },
++    "device_key_banner_configure_button" : {
++      "comment" : "Button label to change DeviceKey when already set",
++      "localizations" : {
++        "da" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Skift DeviceKey"
++          }
++        },
++        "de" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey ändern"
++          }
++        },
++        "en" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Change DeviceKey"
++          }
++        },
++        "es" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Cambiar DeviceKey"
++          }
++        },
++        "fi" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Vaihda DeviceKey"
++          }
++        },
++        "fr" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Changer le DeviceKey"
++          }
++        },
++        "it" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "Cambia DeviceKey"
++          }
++        },
++        "ja" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey を変更"
++          }
++        },
++        "nl" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "DeviceKey wijzigen"
++          }
++        },
++        "zh-Hans" : {
++          "stringUnit" : {
++            "state" : "translated",
++            "value" : "更改 DeviceKey"
++          }
++        }
++      }
++    },
+     "device_key_button_hint" : {
+       "comment" : "Accessibility hint for device key button",
+       "localizations" : {
+diff --git a/miataru/miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift b/miataru/miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift
+index 4d11e846..507bdda0 100644
+--- a/miataru/miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift
++++ b/miataru/miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift
+@@ -12,6 +12,12 @@ import SwiftUI
+ struct iPhone_6_OnboardingDeviceKeyView: View {
+     var onFinish: () -&gt; Void = {}
+     @State private var showDeviceKeySheet = false
++    @StateObject private var settings = SettingsManager.shared
++    
++    private var hasDeviceKey: Bool {
++        guard let key = settings.deviceKey else { return false }
++        return !key.isEmpty
++    }
+ 
+     var body: some View {
+         VStack(spacing: 32) {
+@@ -29,11 +35,11 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
+                 .font(.body)
+                 .multilineTextAlignment(.center)
+                 .padding(.horizontal)
+-            Button("device_key_banner_set_button") {
++            Button(hasDeviceKey ? "device_key_banner_configure_button" : "device_key_banner_set_button") {
+                 showDeviceKeySheet = true
+             }
+             .buttonStyle(.borderedProminent)
+-            .tint(.blue)
++            .tint(hasDeviceKey ? .green : .blue)
+             .accessibilityHint(Text("device_key_button_hint"))
+             .padding(.horizontal)
+             .sheet(isPresented: $showDeviceKeySheet) {
+
+```
+</details>
+</tool-use>
+
+---
+
+
+Staging all changes and committing with a descriptive message:
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app/miataru && git add -A && git status
+```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+	modified:   .specstory/history/2026-01-31_22-33Z-add-group-button-styling.md
+	new file:   .specstory/history/2026-02-02_13-39Z-onboarding-devicekey-button-configuration.md
+	modified:   miataru/Assets/Localizable.xcstrings
+	modified:   miataru/views/iPhone/Onboarding/iPhone_6_OnboardingDeviceKeyView.swift
+
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2**</summary>
+
+</details>
+</tool-use>
+
+---
+
