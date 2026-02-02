@@ -19,6 +19,7 @@ final class MutualNavigationDetector: ObservableObject {
     private var targetDeviceId: String?
     private let ourDeviceId: String
     private var serverURL: String
+    private let settings = SettingsManager.shared
     private var pollingTimer: AnyCancellable?
     private var cachedVisitorHistory: [MiataruVisitor] = []
     private var lastPollTime: Date?
@@ -84,7 +85,7 @@ final class MutualNavigationDetector: ObservableObject {
             let visitors = try await MiataruAPIClient.getVisitorHistory(
                 serverURL: url,
                 forDeviceID: ourDeviceId,
-                deviceKey: nil,
+                deviceKey: settings.deviceKey,
                 amount: 100  // Get enough entries to find recent visits
             )
             
