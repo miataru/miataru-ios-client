@@ -174,11 +174,20 @@ struct iPhone_DevicesView: View {
                             .disabled(groupStore.groups.isEmpty)
                             Button(action: { showingAddGroup = true }) {
                                 Image(systemName: "plus")
+                                    .padding(8)
+                                    .background {
+                                        if #available(iOS 26.0, *) {
+                                            Color.clear.glassEffect(in: .circle)
+                                        } else {
+                                            Circle().fill(.ultraThinMaterial)
+                                        }
+                                    }
+                                    .clipShape(Circle())
+                                    .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
                                     .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
                                     .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
                             }
-                            .buttonStyle(.bordered)
-                            .buttonBorderShape(.circle)
+                            .buttonStyle(.plain)
                         }
                     }
                     .textCase(nil)
