@@ -12,6 +12,12 @@ import SwiftUI
 struct iPhone_6_OnboardingDeviceKeyView: View {
     var onFinish: () -> Void = {}
     @State private var showDeviceKeySheet = false
+    @StateObject private var settings = SettingsManager.shared
+    
+    private var hasDeviceKey: Bool {
+        guard let key = settings.deviceKey else { return false }
+        return !key.isEmpty
+    }
 
     var body: some View {
         VStack(spacing: 32) {
@@ -29,11 +35,11 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Button("device_key_banner_set_button") {
+            Button(hasDeviceKey ? "device_key_banner_configure_button" : "device_key_banner_set_button") {
                 showDeviceKeySheet = true
             }
             .buttonStyle(.borderedProminent)
-            .tint(.blue)
+            .tint(hasDeviceKey ? .green : .blue)
             .accessibilityHint(Text("device_key_button_hint"))
             .padding(.horizontal)
             .sheet(isPresented: $showDeviceKeySheet) {
