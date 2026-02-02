@@ -773,7 +773,6 @@ public enum MiataruAPIClient {
                                   forDeviceID deviceID: String,
                                   deviceKey: String? = nil,
                                   amount: Int) async throws -> [MiataruVisitor] {
-        
         let url = serverURL.appendingPathComponent("v1/GetVisitorHistory")
 
         let requestBody = GetVisitorHistoryRequestBody(
@@ -816,7 +815,6 @@ public enum MiataruAPIClient {
                                                    forDeviceID deviceID: String,
                                                    deviceKey: String? = nil,
                                                    amount: Int?) async throws -> MiataruGetVisitorHistoryResponse {
-        
         let url = serverURL.appendingPathComponent("v1/GetVisitorHistory")
         
         // First request with a reasonable default to get server config
