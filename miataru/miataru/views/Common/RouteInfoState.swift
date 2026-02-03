@@ -18,6 +18,7 @@ final class RouteInfoState: ObservableObject {
     @Published var distanceText: String = ""
     @Published var transportSymbolName: String = "car"
     @Published var isMutualNavigation: Bool = false
+    @Published var isChromeVisible: Bool = true
 
     // Optional handler to cancel the current navigation/session
     var onCancel: (() -> Void)?

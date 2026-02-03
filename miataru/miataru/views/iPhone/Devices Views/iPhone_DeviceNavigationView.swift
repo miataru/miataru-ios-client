@@ -52,6 +52,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isRouteReversed: Bool = true // Default: device to user
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
     @State private var lastOverlayStepIndex: Int? = nil
+    @State private var isChromeVisible: Bool = true
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -120,6 +121,9 @@ struct iPhone_DeviceNavigationView: View {
                 .buttonStyle(.plain)
             }
         }
+        .toolbar(isChromeVisible ? .visible : .hidden, for: .navigationBar)
+        .toolbar(isChromeVisible ? .visible : .hidden, for: .tabBar)
+        .toolbarBackgroundVisibility(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .id(device.DeviceID)
             .onChange(of: device.DeviceID) {
             // Reset all device-related state when a new device is injected
@@ -270,9 +274,14 @@ struct iPhone_DeviceNavigationView: View {
                 RotationGesture()
                     .onChanged { _ in markUserInteraction() }
             )
+            .simultaneousGesture(
+                TapGesture()
+                    .onEnded { showChromeIfNeeded() }
+            )
             .onAppear {
                 isViewActive = true
                 Haptic.impactMedium()
+                routeInfoState.isChromeVisible = isChromeVisible
                 // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
                 isAutoCenteringEnabled = true
                 // Sync auto-update lock state with global setting on appear
@@ -312,6 +321,7 @@ struct iPhone_DeviceNavigationView: View {
             .onDisappear {
                 isViewActive = false
                 stopAutoUpdate()
+                routeInfoState.isChromeVisible = true
                 // Hide accessory and remove cancel handler when leaving
                 routeInfoState.hide()
                 routeInfoState.onCancel = nil
@@ -389,6 +399,9 @@ struct iPhone_DeviceNavigationView: View {
     private var navigationOverlayContent: some View {
         if let navigationOverlayViewModel, !isRouteReversed, route != nil {
             NavigationOverlayView(viewModel: navigationOverlayViewModel, alignment: .top)
+                .padding(.top, -8)
+                .contentShape(Rectangle())
+                .onTapGesture { toggleChromeVisibility() }
         }
     }
 
@@ -903,10 +916,35 @@ struct iPhone_DeviceNavigationView: View {
         isAutoCenteringEnabled = false
     }
 
+    private func hideChromeIfNeeded() {
+        setChromeVisible(false)
+    }
+
+    private func showChromeIfNeeded() {
+        setChromeVisible(true)
+    }
+
+    private func toggleChromeVisibility() {
+        setChromeVisible(!isChromeVisible)
+    }
+
+    private func setChromeVisible(_ isVisible: Bool) {
+        guard isChromeVisible != isVisible else { return }
+        if animationsAllowed {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isChromeVisible = isVisible
+            }
+        } else {
+            isChromeVisible = isVisible
+        }
+        routeInfoState.isChromeVisible = isVisible
+    }
+
     @ViewBuilder
     private func scaleBarView() -> some View {
         Group {
             if let region = currentRegion {
+                let bottomPadding: CGFloat = isChromeVisible ? 16 : 6
                 Button(action: {
                     isAutoCenteringEnabled = true
                     resetZoomToFitBoth()
@@ -914,7 +952,8 @@ struct iPhone_DeviceNavigationView: View {
                     MapScaleBar(region: region, width: 50)
                 }
                 .buttonStyle(.plain)
-                .padding([.bottom, .trailing], 16)
+                .padding(.trailing, 16)
+                .padding(.bottom, bottomPadding)
                 .zIndex(2)
             }
         }
