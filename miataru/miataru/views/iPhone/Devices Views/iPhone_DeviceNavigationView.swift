@@ -1142,6 +1142,16 @@ extension iPhone_DeviceNavigationView {
             navigationOverlayViewModel.update(step: stepIndex)
             lastOverlayStepIndex = stepIndex
         }
+        let step = route.steps[stepIndex]
+        if let remainingMeters = step.polyline.remainingDistance(toEndFrom: MKMapPoint(location.coordinate)) {
+            let measurement = Measurement(value: remainingMeters, unit: UnitLength.meters)
+                .converted(to: navigationOverlayUnit())
+            navigationOverlayViewModel.updateRemainingDistance(to: measurement)
+        } else {
+            let fallback = Measurement(value: step.distance, unit: UnitLength.meters)
+                .converted(to: navigationOverlayUnit())
+            navigationOverlayViewModel.updateRemainingDistance(to: fallback)
+        }
     }
 
     private func closestStepIndex(for route: MKRoute, to coordinate: CLLocationCoordinate2D) -> Int? {

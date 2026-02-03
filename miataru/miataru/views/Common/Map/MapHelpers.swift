@@ -186,3 +186,49 @@ extension MKPolyline {
         return point.distance(to: projected)
     }
 }
+
+extension MKPolyline {
+    func remainingDistance(toEndFrom point: MKMapPoint) -> CLLocationDistance? {
+        guard pointCount > 0 else { return nil }
+        let points = self.points()
+        if pointCount == 1 {
+            return point.distance(to: points[0])
+        }
+
+        var bestIndex: Int?
+        var bestDistance = CLLocationDistance.greatestFiniteMagnitude
+        var bestProjected: MKMapPoint?
+
+        for index in 0..<(pointCount - 1) {
+            let start = points[index]
+            let end = points[index + 1]
+            let (projected, distance) = projectedPoint(from: point, toSegmentBetween: start, end)
+            if distance < bestDistance {
+                bestDistance = distance
+                bestIndex = index
+                bestProjected = projected
+            }
+        }
+
+        guard let bestIndex, let bestProjected else { return nil }
+        var remaining = bestProjected.distance(to: points[bestIndex + 1])
+        if bestIndex + 1 < pointCount - 1 {
+            for index in (bestIndex + 1)..<(pointCount - 1) {
+                remaining += points[index].distance(to: points[index + 1])
+            }
+        }
+        return remaining
+    }
+
+    private func projectedPoint(from point: MKMapPoint, toSegmentBetween start: MKMapPoint, _ end: MKMapPoint) -> (MKMapPoint, CLLocationDistance) {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        if dx == 0 && dy == 0 {
+            return (start, point.distance(to: start))
+        }
+        let t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)
+        let clamped = max(0, min(1, t))
+        let projected = MKMapPoint(x: start.x + clamped * dx, y: start.y + clamped * dy)
+        return (projected, point.distance(to: projected))
+    }
+}
