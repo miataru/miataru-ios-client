@@ -11,6 +11,7 @@ import SwiftUI
 import MapKit
 import Combine
 import CoreLocation
+import Foundation
 import MiataruAPIClient
 import NavigationOverlayKit
 
@@ -339,7 +340,13 @@ struct iPhone_DeviceNavigationView: View {
                 calculateRoute()
             }
             .onChange(of: isRouteReversed) { _, _ in
-                refreshNavigationOverlayForCurrentRoute()
+                // Clear route and overlay immediately when route direction changes to prevent showing stale route data
+                // The route will be recalculated and overlay refreshed when the new route is calculated
+                route = nil
+                travelTime = nil
+                distanceText = nil
+                navigationOverlayViewModel = nil
+                lastOverlayStepIndex = nil
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
@@ -712,6 +719,7 @@ struct iPhone_DeviceNavigationView: View {
                     formatter.unitsStyle = .short
                     travelTime = formatter.string(from: first.expectedTravelTime)
                     distanceText = formattedDistance(first.distance)
+                    // Refresh overlay with new route - this ensures overlay matches the route direction
                     refreshNavigationOverlayForCurrentRoute()
                     // Remember inputs used for this route calculation
                     lastRouteUserCoordinate = user
@@ -1166,9 +1174,51 @@ extension iPhone_DeviceNavigationView {
             lastOverlayStepIndex = nil
             return
         }
-        navigationOverlayViewModel = NavigationOverlayViewModel(route: route, unit: navigationOverlayUnit())
-        lastOverlayStepIndex = nil
-        updateNavigationOverlayStep()
+        // Create and fully configure the view model before assigning so the view never shows
+        // the kit's default step (e.g. "Arrive at destination") for a frame when switching route
+        let newViewModel = NavigationOverlayViewModel(route: route, unit: navigationOverlayUnit())
+        let effectiveStepIndex: Int
+        if let location = locationManager.currentLocation,
+           let rawStepIndex = closestStepIndex(for: route, to: location.coordinate) {
+            // Never show "Arrive at destination" unless user is actually near the destination:
+            // if closest step is the last step, check distance to route end; if far, use step 0
+            let lastIndex = route.steps.count - 1
+            if rawStepIndex == lastIndex, lastIndex > 0 {
+                let lastStep = route.steps[lastIndex]
+                let userPoint = MKMapPoint(location.coordinate)
+                let distanceToDestination = lastStep.polyline.closestDistance(to: userPoint) ?? .greatestFiniteMagnitude
+                if distanceToDestination > 150 {
+                    effectiveStepIndex = 0
+                } else {
+                    effectiveStepIndex = rawStepIndex
+                }
+            } else {
+                effectiveStepIndex = rawStepIndex
+            }
+            let step = route.steps[effectiveStepIndex]
+            newViewModel.update(step: effectiveStepIndex)
+            if let remainingMeters = step.polyline.remainingDistance(toEndFrom: MKMapPoint(location.coordinate)) {
+                let measurement = Measurement(value: remainingMeters, unit: UnitLength.meters)
+                    .converted(to: navigationOverlayUnit())
+                newViewModel.updateRemainingDistance(to: measurement)
+            } else {
+                let fallback = Measurement(value: step.distance, unit: UnitLength.meters)
+                    .converted(to: navigationOverlayUnit())
+                newViewModel.updateRemainingDistance(to: fallback)
+            }
+            lastOverlayStepIndex = effectiveStepIndex
+        } else if let firstStep = route.steps.first {
+            effectiveStepIndex = 0
+            newViewModel.update(step: 0)
+            let measurement = Measurement(value: firstStep.distance, unit: UnitLength.meters)
+                .converted(to: navigationOverlayUnit())
+            newViewModel.updateRemainingDistance(to: measurement)
+            lastOverlayStepIndex = 0
+        } else {
+            effectiveStepIndex = -1
+            lastOverlayStepIndex = nil
+        }
+        navigationOverlayViewModel = newViewModel
     }
 
     private func updateNavigationOverlayStep() {
@@ -1176,11 +1226,23 @@ extension iPhone_DeviceNavigationView {
               let route,
               let navigationOverlayViewModel,
               let location = locationManager.currentLocation else { return }
-        guard let stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return }
+        guard var stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return }
+        // Never show "Arrive at destination" unless user is actually near the destination
+        let lastIndex = route.steps.count - 1
+        if stepIndex == lastIndex, lastIndex > 0 {
+            let lastStep = route.steps[lastIndex]
+            let userPoint = MKMapPoint(location.coordinate)
+            let distanceToDestination = lastStep.polyline.closestDistance(to: userPoint) ?? .greatestFiniteMagnitude
+            if distanceToDestination > 150 {
+                stepIndex = 0
+            }
+        }
+        // Only update step if it changed to prevent unnecessary flickering
         if stepIndex != lastOverlayStepIndex {
             navigationOverlayViewModel.update(step: stepIndex)
             lastOverlayStepIndex = stepIndex
         }
+        // Always update remaining distance as user moves along the route
         let step = route.steps[stepIndex]
         if let remainingMeters = step.polyline.remainingDistance(toEndFrom: MKMapPoint(location.coordinate)) {
             let measurement = Measurement(value: remainingMeters, unit: UnitLength.meters)
