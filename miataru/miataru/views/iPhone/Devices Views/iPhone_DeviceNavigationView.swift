@@ -54,6 +54,12 @@ struct iPhone_DeviceNavigationView: View {
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
     @State private var lastOverlayStepIndex: Int? = nil
     @State private var isChromeVisible: Bool = true
+    @State private var isFollowDeviceHeadingMode: Bool = false
+    @State private var lastFollowCameraUpdate: Date? = nil
+    @State private var lastFollowCameraCenter: CLLocationCoordinate2D? = nil
+    @State private var lastFollowCameraHeading: CLLocationDirection? = nil
+    @State private var followCameraDistanceOverride: CLLocationDistance? = nil
+    @State private var isFollowAutoZoomEnabled: Bool = true
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -87,6 +93,13 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteTransportType: Int? = nil
     // Generous daily upper bound to prevent accidental request lockout while developing/testing
     private let routeRequestDailyLimit: Int = 17000
+    private let followCameraDistance: CLLocationDistance = 1100
+    private let followCameraMinDistance: CLLocationDistance = 450
+    private let followCameraMaxDistance: CLLocationDistance = 2200
+    private let followUpdateMinInterval: TimeInterval = 0.35
+    private let followUpdateMinDistance: CLLocationDistance = 3
+    private let followUpdateMinHeadingDelta: CLLocationDirection = 2
+    private let routeFitPaddingMultiplier: Double = 1.25
     private let mutualNavigationOnSoundName = "confirm"
     private let mutualNavigationOffSoundName = "cancel"
 
@@ -279,6 +292,10 @@ struct iPhone_DeviceNavigationView: View {
                 TapGesture()
                     .onEnded { showChromeIfNeeded() }
             )
+            .highPriorityGesture(
+                TapGesture(count: 2)
+                    .onEnded { handleMapDoubleTap() }
+            )
             .onAppear {
                 isViewActive = true
                 Haptic.impactMedium()
@@ -347,6 +364,7 @@ struct iPhone_DeviceNavigationView: View {
                 distanceText = nil
                 navigationOverlayViewModel = nil
                 lastOverlayStepIndex = nil
+                isFollowDeviceHeadingMode = false
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
@@ -373,6 +391,10 @@ struct iPhone_DeviceNavigationView: View {
                     // Ignore user interaction detection for programmatic updates
                     isProgrammaticCameraChange = false
                 } else {
+                    if isFollowDeviceHeadingMode {
+                        followCameraDistanceOverride = context.camera.distance
+                        isFollowAutoZoomEnabled = false
+                    }
                     // User interaction is detected via gestures; here we only deduce rotation state
                     if abs(context.camera.heading) < 0.1 {
                         userHasRotatedMap = false
@@ -642,6 +664,11 @@ struct iPhone_DeviceNavigationView: View {
         }
         if let user = userCoordinate, let dest = deviceCoordinate,
            (!hasSetInitialRegion || recenter || isAutoCenteringEnabled) {
+            if isFollowDeviceHeadingMode {
+                updateFollowCamera(animated: false)
+                hasSetInitialRegion = true
+                return
+            }
             let region = regionThatFits(user: user, dest: dest)
             isProgrammaticCameraChange = true
             if animationsAllowed {
@@ -920,6 +947,13 @@ struct iPhone_DeviceNavigationView: View {
     // MARK: - Map UI Helpers (Scale bar and Compass)
 
     private func markUserInteraction() {
+        if isFollowDeviceHeadingMode {
+            if let currentDistance = currentMapCamera?.distance {
+                followCameraDistanceOverride = currentDistance
+                isFollowAutoZoomEnabled = false
+            }
+            return
+        }
         userHasInteractedWithMap = true
         isAutoCenteringEnabled = false
     }
@@ -955,7 +989,13 @@ struct iPhone_DeviceNavigationView: View {
                 let bottomPadding: CGFloat = isChromeVisible ? 16 : 6
                 Button(action: {
                     isAutoCenteringEnabled = true
-                    resetZoomToFitBoth()
+                    if isFollowDeviceHeadingMode {
+                        followCameraDistanceOverride = nil
+                        isFollowAutoZoomEnabled = true
+                        updateFollowCamera(animated: true, force: true)
+                    } else {
+                        resetZoomToFitBoth()
+                    }
                 }) {
                     MapScaleBar(region: region, width: 50)
                 }
@@ -1020,6 +1060,153 @@ struct iPhone_DeviceNavigationView: View {
                 mapPosition = .region(region)
             }
         }
+    }
+
+    private func resetZoomToFitRouteOrBoth() {
+        if let routeRegion = regionThatFitsRoute() {
+            isProgrammaticCameraChange = true
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    mapPosition = .region(routeRegion)
+                }
+            } else {
+                mapPosition = .region(routeRegion)
+            }
+            return
+        }
+        resetZoomToFitBoth()
+    }
+
+    private func handleMapDoubleTap() {
+        guard !isRouteReversed else { return }
+        if isFollowDeviceHeadingMode {
+            disableFollowDeviceHeadingMode()
+        } else {
+            enableFollowDeviceHeadingMode()
+        }
+    }
+
+    private func enableFollowDeviceHeadingMode() {
+        isFollowDeviceHeadingMode = true
+        isAutoCenteringEnabled = true
+        lastFollowCameraUpdate = nil
+        lastFollowCameraCenter = nil
+        lastFollowCameraHeading = nil
+        followCameraDistanceOverride = nil
+        isFollowAutoZoomEnabled = true
+        updateFollowCamera(animated: true, force: true)
+    }
+
+    private func disableFollowDeviceHeadingMode() {
+        isFollowDeviceHeadingMode = false
+        isAutoCenteringEnabled = true
+        lastFollowCameraUpdate = nil
+        lastFollowCameraCenter = nil
+        lastFollowCameraHeading = nil
+        followCameraDistanceOverride = nil
+        isFollowAutoZoomEnabled = true
+        resetZoomToFitRouteOrBoth()
+    }
+
+    private func updateFollowCamera(animated: Bool, force: Bool = false) {
+        guard let user = userCoordinate else { return }
+        let currentDistance = currentMapCamera?.distance ?? followCameraDistance
+        let desiredDistance = isFollowAutoZoomEnabled ? followCameraDistanceForNextStep() : nil
+        let distance = max(
+            followCameraMinDistance,
+            min(followCameraDistanceOverride ?? desiredDistance ?? currentDistance, followCameraMaxDistance)
+        )
+        let pitch = currentMapCamera?.pitch ?? 0
+        let heading = currentDeviceHeading()
+        guard shouldUpdateFollowCamera(center: user, heading: heading, force: force) else { return }
+        let newCamera = MapCamera(
+            centerCoordinate: user,
+            distance: distance,
+            heading: heading,
+            pitch: pitch
+        )
+        isProgrammaticCameraChange = true
+        if animated && animationsAllowed {
+            withAnimation(.easeInOut(duration: 0.4)) {
+                mapPosition = .camera(newCamera)
+            }
+        } else {
+            mapPosition = .camera(newCamera)
+        }
+    }
+
+    private func currentDeviceHeading() -> CLLocationDirection {
+        if let course = locationManager.currentLocation?.course, course >= 0 {
+            return course
+        }
+        return currentMapCamera?.heading ?? 0
+    }
+
+    private func shouldUpdateFollowCamera(center: CLLocationCoordinate2D, heading: CLLocationDirection, force: Bool) -> Bool {
+        let now = Date()
+        if force {
+            lastFollowCameraUpdate = now
+            lastFollowCameraCenter = center
+            lastFollowCameraHeading = heading
+            return true
+        }
+        if let lastTime = lastFollowCameraUpdate, now.timeIntervalSince(lastTime) < followUpdateMinInterval {
+            return false
+        }
+        var shouldUpdate = false
+        if let lastCenter = lastFollowCameraCenter {
+            let lastLocation = CLLocation(latitude: lastCenter.latitude, longitude: lastCenter.longitude)
+            let newLocation = CLLocation(latitude: center.latitude, longitude: center.longitude)
+            let distance = newLocation.distance(from: lastLocation)
+            shouldUpdate = distance >= followUpdateMinDistance
+        } else {
+            shouldUpdate = true
+        }
+        if let lastHeading = lastFollowCameraHeading {
+            let delta = abs(lastHeading - heading)
+            let wrappedDelta = min(delta, 360 - delta)
+            shouldUpdate = shouldUpdate || wrappedDelta >= followUpdateMinHeadingDelta
+        } else {
+            shouldUpdate = true
+        }
+        if shouldUpdate {
+            lastFollowCameraUpdate = now
+            lastFollowCameraCenter = center
+            lastFollowCameraHeading = heading
+        }
+        return shouldUpdate
+    }
+
+    private func followCameraDistanceForNextStep() -> CLLocationDistance? {
+        guard let route,
+              let location = locationManager.currentLocation,
+              let stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return nil }
+        let nextIndex = min(stepIndex + 1, route.steps.count - 1)
+        let step = route.steps[nextIndex]
+        guard let targetCoordinate = stepTargetCoordinate(step) else { return nil }
+        let userLocation = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        let targetLocation = CLLocation(latitude: targetCoordinate.latitude, longitude: targetCoordinate.longitude)
+        let distance = userLocation.distance(from: targetLocation)
+        return max(followCameraMinDistance, min(distance * 3.0, followCameraMaxDistance))
+    }
+
+    private func stepTargetCoordinate(_ step: MKRoute.Step) -> CLLocationCoordinate2D? {
+        let pointCount = step.polyline.pointCount
+        guard pointCount > 0 else { return nil }
+        return step.polyline.points()[pointCount - 1].coordinate
+    }
+
+    private func regionThatFitsRoute() -> MKCoordinateRegion? {
+        guard let route else { return nil }
+        var rect = route.polyline.boundingMapRect
+        if rect.isNull || rect.isEmpty { return nil }
+        let widthPadding = rect.size.width * (routeFitPaddingMultiplier - 1)
+        let heightPadding = rect.size.height * (routeFitPaddingMultiplier - 1)
+        rect = rect.insetBy(dx: -widthPadding / 2, dy: -heightPadding / 2)
+        if rect.size.width == 0 || rect.size.height == 0 {
+            return nil
+        }
+        return MKCoordinateRegion(rect)
     }
     
     // MARK: - Auto-stop navigation when devices are close
