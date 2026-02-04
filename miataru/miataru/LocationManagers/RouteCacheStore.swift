@@ -56,7 +56,8 @@ final class RouteCacheStore: ObservableObject {
     func isValid(cached: CachedRoute,
                  currentUserCoordinate: CLLocationCoordinate2D,
                  currentDeviceCoordinate: CLLocationCoordinate2D,
-                 threshold: CLLocationDistance? = nil) -> Bool {
+                 threshold: CLLocationDistance? = nil,
+                 offRouteThreshold: CLLocationDistance? = nil) -> Bool {
         let limit = threshold ?? defaultDistanceThreshold
 
         let previousUserLocation = CLLocation(latitude: cached.userCoordinate.latitude,
@@ -72,7 +73,47 @@ final class RouteCacheStore: ObservableObject {
         let deviceDistance = previousDeviceLocation.distance(from: currentDeviceLocation)
 
         // Cache is valid only if both ends moved less than the threshold
-        return userDistance < limit && deviceDistance < limit
+        guard userDistance < limit && deviceDistance < limit else {
+            return false
+        }
+        guard let offRouteLimit = offRouteThreshold else {
+            return true
+        }
+        return !isOffRoute(route: cached.route, userCoordinate: currentUserCoordinate, threshold: offRouteLimit)
+    }
+
+    private func isOffRoute(route: MKRoute,
+                            userCoordinate: CLLocationCoordinate2D,
+                            threshold: CLLocationDistance) -> Bool {
+        let polyline = route.polyline
+        guard polyline.pointCount > 1 else { return false }
+
+        let userPoint = MKMapPoint(userCoordinate)
+        let points = polyline.points()
+        var minDistance = CLLocationDistance.greatestFiniteMagnitude
+
+        for index in 0..<(polyline.pointCount - 1) {
+            let distance = distanceFromPoint(userPoint, toSegmentStart: points[index], end: points[index + 1])
+            minDistance = min(minDistance, distance)
+            if minDistance <= threshold {
+                return false
+            }
+        }
+        return minDistance > threshold
+    }
+
+    private func distanceFromPoint(_ point: MKMapPoint,
+                                   toSegmentStart start: MKMapPoint,
+                                   end: MKMapPoint) -> CLLocationDistance {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        if dx == 0 && dy == 0 {
+            return point.distance(to: start)
+        }
+        let t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)
+        let clamped = max(0, min(1, t))
+        let projection = MKMapPoint(x: start.x + clamped * dx, y: start.y + clamped * dy)
+        return point.distance(to: projection)
     }
 
     func clear(for deviceId: String) {

@@ -52,6 +52,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isAutoRouteUpdateLocked: Bool = false
     @State private var isRouteReversed: Bool = true // Default: device to user
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
+    @State private var hasLocationUpdateSinceLastAutoUpdate: Bool = false
     @State private var lastOverlayStepIndex: Int? = nil
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
@@ -77,8 +78,20 @@ struct iPhone_DeviceNavigationView: View {
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
     // Minimum route progress required before showing ghost/progress segmentation
     private let minimumProgressToShowGhost: Double = 0.05
-    // Distance threshold (meters) for reusing cached routes and detecting significant movement
-    private let routeReuseDistanceThreshold: CLLocationDistance = 100
+    private var offRouteThreshold: CLLocationDistance {
+        switch settings.navigationTransportType {
+        case 0: return 15
+        case 3: return 50
+        default: return 25
+        }
+    }
+    private var cacheReuseThreshold: CLLocationDistance {
+        switch settings.navigationTransportType {
+        case 0: return 50
+        case 3: return 150
+        default: return 100
+        }
+    }
     // Distance threshold (meters) for automatically stopping navigation when devices are close
     private let autoStopDistanceThreshold: CLLocationDistance = 50
     // Track the initial distance when navigation started to determine if auto-stop should be enabled
@@ -327,11 +340,13 @@ struct iPhone_DeviceNavigationView: View {
                 updateCoordinates()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
+                hasLocationUpdateSinceLastAutoUpdate = true
             }
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
+                hasLocationUpdateSinceLastAutoUpdate = true
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
@@ -354,7 +369,9 @@ struct iPhone_DeviceNavigationView: View {
                 isAutoRouteUpdateLocked = newValue
             }
             .onChange(of: settings.navigationTransportType) { _, _ in
-                calculateRoute()
+                if !useCachedRouteIfValid() {
+                    calculateRoute()
+                }
             }
             .onChange(of: isRouteReversed) { _, _ in
                 // Clear route and overlay immediately when route direction changes to prevent showing stale route data
@@ -890,7 +907,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func startAutoUpdate() {
         // Start periodic refresh based on user settings. If auto-route updates are enabled
-        // and movement since last route is significant, we refresh the route, preferring cache.
+        // and the user is off-route, we refresh the route, preferring cache.
         stopAutoUpdate()
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
@@ -899,7 +916,12 @@ struct iPhone_DeviceNavigationView: View {
             .sink { _ in
                 Task {
                     await fetchTargetDeviceLocation(resetAndRecenter: false)
-                    if isAutoRouteUpdateLocked && hasSignificantMovementSinceLastRoute() {
+                    if !hasLocationUpdateSinceLastAutoUpdate {
+                        checkAutoStopCondition()
+                        return
+                    }
+                    hasLocationUpdateSinceLastAutoUpdate = false
+                    if isAutoRouteUpdateLocked && isUserOffRoute(threshold: offRouteThreshold) {
                         if !useCachedRouteIfValid() {
                             calculateRoute()
                         }
@@ -910,27 +932,36 @@ struct iPhone_DeviceNavigationView: View {
             }
     }
 
-    private func hasSignificantMovementSinceLastRoute() -> Bool {
-        // Returns true if user OR device has moved more than the threshold since last route
-        // calculation. The threshold is configurable to balance accuracy vs. cost.
-        let threshold: CLLocationDistance = routeReuseDistanceThreshold
-        var userMoved = false
-        if let current = userCoordinate, let last = lastRouteUserCoordinate {
-            let distance = CLLocation(latitude: current.latitude, longitude: current.longitude)
-                .distance(from: CLLocation(latitude: last.latitude, longitude: last.longitude))
-            userMoved = distance > threshold
-        } else if lastRouteUserCoordinate == nil {
-            userMoved = true
+    private func isUserOffRoute(threshold: CLLocationDistance? = nil) -> Bool {
+        guard let route, let user = userCoordinate else { return false }
+        let limit = threshold ?? offRouteThreshold
+        let polyline = route.polyline
+        guard polyline.pointCount > 1 else { return false }
+
+        let userPoint = MKMapPoint(user)
+        let points = polyline.points()
+        var minDistance = CLLocationDistance.greatestFiniteMagnitude
+
+        for index in 0..<(polyline.pointCount - 1) {
+            let distance = distanceFromPoint(userPoint, toSegmentStart: points[index], end: points[index + 1])
+            minDistance = min(minDistance, distance)
+            if minDistance <= limit {
+                return false
+            }
         }
-        var deviceMoved = false
-        if let current = deviceCoordinate, let last = lastRouteDeviceCoordinate {
-            let distance = CLLocation(latitude: current.latitude, longitude: current.longitude)
-                .distance(from: CLLocation(latitude: last.latitude, longitude: last.longitude))
-            deviceMoved = distance > threshold
-        } else if lastRouteDeviceCoordinate == nil {
-            deviceMoved = true
+        return minDistance > limit
+    }
+
+    private func distanceFromPoint(_ point: MKMapPoint, toSegmentStart start: MKMapPoint, end: MKMapPoint) -> CLLocationDistance {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        if dx == 0 && dy == 0 {
+            return point.distance(to: start)
         }
-        return userMoved || deviceMoved
+        let t = ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)
+        let clamped = max(0, min(1, t))
+        let projection = MKMapPoint(x: start.x + clamped * dx, y: start.y + clamped * dy)
+        return point.distance(to: projection)
     }
 
     private func stopAutoUpdate() {
@@ -1298,7 +1329,8 @@ extension iPhone_DeviceNavigationView {
                 cached: cached,
                 currentUserCoordinate: user,
                 currentDeviceCoordinate: device,
-                threshold: routeReuseDistanceThreshold
+                threshold: cacheReuseThreshold,
+                offRouteThreshold: offRouteThreshold
             ) {
                 // Apply cached route and keep display fields in sync
                 route = cached.route
