@@ -32,6 +32,14 @@ public enum Haptic {
 		performImpact(.medium)
 	}
 
+	public static func impactLight() {
+		performImpact(.light)
+	}
+
+	public static func impactHeavy() {
+		performImpact(.heavy)
+	}
+
 	private enum NotificationType {
 		case success
 		case warning

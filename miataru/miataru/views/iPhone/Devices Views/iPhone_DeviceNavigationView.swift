@@ -75,6 +75,7 @@ struct iPhone_DeviceNavigationView: View {
     // Track mutual navigation state in @State to ensure Map content updates
     @State private var isMutualNavigation: Bool = false
     @State private var isViewActive: Bool = false
+    @State private var navigationOverlayCancellables = Set<AnyCancellable>()
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -118,6 +119,11 @@ struct iPhone_DeviceNavigationView: View {
     private let routeFitPaddingMultiplier: Double = 1.25
     private let mutualNavigationOnSoundName = "confirm"
     private let mutualNavigationOffSoundName = "cancel"
+    private let navigationLeftSoundName = "nav_left"
+    private let navigationRightSoundName = "nav_right"
+    private let navigationStraightSoundName = "nav_straight"
+    private let leftNavigationHapticInterval: TimeInterval = 0.2
+    private let rightNavigationHapticInterval: TimeInterval = 0.12
 
     var body: some View {
         VStack {
@@ -176,6 +182,7 @@ struct iPhone_DeviceNavigationView: View {
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
             isRouteReversed = true // Reset to default: device to user
             navigationOverlayViewModel = nil
+            navigationOverlayCancellables.removeAll()
             lastOverlayStepIndex = nil
             deviceTimestamp = nil
             isLoading = false
@@ -359,6 +366,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onDisappear {
                 isViewActive = false
+                navigationOverlayCancellables.removeAll()
                 stopAutoUpdate()
                 routeInfoState.isChromeVisible = true
                 // Hide accessory and remove cancel handler when leaving
@@ -386,6 +394,7 @@ struct iPhone_DeviceNavigationView: View {
                 travelTime = nil
                 distanceText = nil
                 navigationOverlayViewModel = nil
+                navigationOverlayCancellables.removeAll()
                 lastOverlayStepIndex = nil
                 isFollowDeviceHeadingMode = false
                 isNavigationMode = false
@@ -697,7 +706,7 @@ struct iPhone_DeviceNavigationView: View {
             }
         }
         // In navigation mode, always update camera smoothly
-        if isNavigationMode, let user = userCoordinate {
+        if isNavigationMode, let _ = userCoordinate {
             updateFollowCamera(animated: true)
             hasSetInitialRegion = true
             return
@@ -1488,10 +1497,79 @@ extension iPhone_DeviceNavigationView {
         }
     }
 
+    private enum NavigationFeedbackDirection {
+        case left
+        case right
+        case straight
+    }
+
+    private enum NavigationHapticStyle {
+        case light
+        case medium
+        case heavy
+    }
+
+    private func bindNavigationOverlayFeedback(to viewModel: NavigationOverlayViewModel) {
+        navigationOverlayCancellables.removeAll()
+        viewModel.$symbol
+            .compactMap { $0 }
+            .removeDuplicates()
+            .sink { symbol in
+                guard isViewActive, isRouteReversed, isNavigationMode else { return }
+                playNavigationFeedback(for: symbol)
+            }
+            .store(in: &navigationOverlayCancellables)
+    }
+
+    private func playNavigationFeedback(for symbol: NavigationInstruction.Symbol) {
+        let direction = navigationFeedbackDirection(for: symbol)
+        switch direction {
+        case .left:
+            SoundEffectPlayer.shared.play(named: navigationLeftSoundName, fileExtension: "caf")
+            performNavigationHaptic(style: .light, count: 2, interval: leftNavigationHapticInterval)
+        case .right:
+            SoundEffectPlayer.shared.play(named: navigationRightSoundName, fileExtension: "caf")
+            performNavigationHaptic(style: .medium, count: 3, interval: rightNavigationHapticInterval)
+        case .straight:
+            // Straight feedback disabled for now
+            // SoundEffectPlayer.shared.play(named: navigationStraightSoundName, fileExtension: "caf")
+            // performNavigationHaptic(style: .heavy, count: 1, interval: 0)
+        }
+    }
+
+    private func navigationFeedbackDirection(for symbol: NavigationInstruction.Symbol) -> NavigationFeedbackDirection {
+        switch symbol {
+        case .slightLeft, .left, .sharpLeft, .uTurn:
+            return .left
+        case .slightRight, .right, .sharpRight:
+            return .right
+        case .start, .straight, .arrive, .cross, .tunnel, .bridge, .stairs, .escalator:
+            return .straight
+        }
+    }
+
+    private func performNavigationHaptic(style: NavigationHapticStyle, count: Int, interval: TimeInterval) {
+        guard count > 0 else { return }
+        for index in 0..<count {
+            let delay = interval * Double(index)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                switch style {
+                case .light:
+                    Haptic.impactLight()
+                case .medium:
+                    Haptic.impactMedium()
+                case .heavy:
+                    Haptic.impactHeavy()
+                }
+            }
+        }
+    }
+
     private func refreshNavigationOverlayForCurrentRoute() {
-        guard !isRouteReversed, let route else {
+        guard let route else {
             navigationOverlayViewModel = nil
             lastOverlayStepIndex = nil
+            navigationOverlayCancellables.removeAll()
             return
         }
         // Create and fully configure the view model before assigning so the view never shows
@@ -1539,11 +1617,11 @@ extension iPhone_DeviceNavigationView {
             lastOverlayStepIndex = nil
         }
         navigationOverlayViewModel = newViewModel
+        bindNavigationOverlayFeedback(to: newViewModel)
     }
 
     private func updateNavigationOverlayStep() {
-        guard !isRouteReversed,
-              let route,
+        guard let route,
               let navigationOverlayViewModel,
               let location = locationManager.currentLocation else { return }
         guard var stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return }
