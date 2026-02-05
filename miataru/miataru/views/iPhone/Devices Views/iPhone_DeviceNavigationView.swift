@@ -696,10 +696,17 @@ struct iPhone_DeviceNavigationView: View {
                 }
             }
         }
+        // In navigation mode, always update camera smoothly
+        if isNavigationMode, let user = userCoordinate {
+            updateFollowCamera(animated: true)
+            hasSetInitialRegion = true
+            return
+        }
+        
         if let user = userCoordinate, let dest = deviceCoordinate,
            (!hasSetInitialRegion || recenter || isAutoCenteringEnabled) {
-            if isFollowDeviceHeadingMode || isNavigationMode {
-                updateFollowCamera(animated: false)
+            if isFollowDeviceHeadingMode {
+                updateFollowCamera(animated: true)
                 hasSetInitialRegion = true
                 return
             }
