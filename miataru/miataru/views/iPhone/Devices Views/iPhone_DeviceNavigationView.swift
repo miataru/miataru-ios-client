@@ -1532,8 +1532,7 @@ extension iPhone_DeviceNavigationView {
             performNavigationHaptic(style: .medium, count: 3, interval: rightNavigationHapticInterval)
         case .straight:
             // Straight feedback disabled for now
-            // SoundEffectPlayer.shared.play(named: navigationStraightSoundName, fileExtension: "caf")
-            // performNavigationHaptic(style: .heavy, count: 1, interval: 0)
+            break
         }
     }
 
