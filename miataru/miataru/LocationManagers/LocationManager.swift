@@ -23,6 +23,8 @@ final class LocationManager: NSObject, ObservableObject {
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var lastUpdateTime: Date?
     @Published var isTracking: Bool = false
+    @Published var userHeading: Double?
+    @Published private(set) var isHeadingValid: Bool = false
     @Published var lastServerUpdate: Date?
     @Published var serverUpdateStatus: ServerUpdateStatus = .idle
     @Published var updateLog: [UpdateLogEntry] = []
@@ -43,6 +45,10 @@ final class LocationManager: NSObject, ObservableObject {
     private let networkMonitor = NWPathMonitor()
     private var isNetworkAvailable: Bool = true
     private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
+    private var lastSmoothedHeading: Double?
+    private let headingSmoothingAlpha: Double = 0.25
+    private let headingAccuracyThreshold: Double = 35
+    private let headingMinSpeedThreshold: Double = 1.0
     private var hasRequestedAlwaysAuthorization: Bool {
         get { userDefaults.bool(forKey: alwaysAuthorizationRequestedKey) }
         set { userDefaults.set(newValue, forKey: alwaysAuthorizationRequestedKey) }
@@ -70,6 +76,9 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
         locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
+        if CLLocationManager.headingAvailable() {
+            locationManager.headingFilter = 1
+        }
         // Enable battery monitoring to report battery percentage with location updates
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
@@ -265,6 +274,7 @@ final class LocationManager: NSObject, ObservableObject {
         isTracking = false
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
+        stopHeadingUpdates()
         stopForegroundLocationTimer()
     }
     
@@ -309,6 +319,7 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.startUpdatingLocation()
+        startHeadingUpdatesIfAvailable()
         if foregroundLocationTimer == nil {
             debugLog("App is active, will start foreground location timer")
             startForegroundLocationTimer()
@@ -322,6 +333,7 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.allowsBackgroundLocationUpdates = true
         debugLog("allowsBackgroundLocationUpdates set to true (background)")
         locationManager.stopUpdatingLocation()
+        stopHeadingUpdates()
         locationManager.startMonitoringSignificantLocationChanges()
         stopForegroundLocationTimer()
     }
@@ -488,12 +500,67 @@ final class LocationManager: NSObject, ObservableObject {
     private func stopHighAccuracyUpdates() {
         debugLog("[LocationManager] Stopping high accuracy updates")
         locationManager.stopUpdatingLocation()
+        stopHeadingUpdates()
         stopForegroundLocationTimer()
     }
 
     private func stopSignificantChangeUpdates() {
         debugLog("[LocationManager] Stopping significant change updates")
         locationManager.stopMonitoringSignificantLocationChanges()
+    }
+
+    private func startHeadingUpdatesIfAvailable() {
+        guard CLLocationManager.headingAvailable() else {
+            isHeadingValid = false
+            userHeading = nil
+            return
+        }
+        locationManager.startUpdatingHeading()
+    }
+
+    private func stopHeadingUpdates() {
+        locationManager.stopUpdatingHeading()
+        isHeadingValid = false
+        userHeading = nil
+        lastSmoothedHeading = nil
+    }
+
+    private func normalizedHeading(_ heading: Double) -> Double {
+        let normalized = heading.truncatingRemainder(dividingBy: 360)
+        return normalized < 0 ? normalized + 360 : normalized
+    }
+
+    private func smoothHeading(_ newHeading: Double) -> Double {
+        let normalized = normalizedHeading(newHeading)
+        guard let last = lastSmoothedHeading else {
+            lastSmoothedHeading = normalized
+            return normalized
+        }
+        let delta = normalized - last
+        let wrappedDelta: Double = {
+            if delta > 180 { return delta - 360 }
+            if delta < -180 { return delta + 360 }
+            return delta
+        }()
+        let smoothed = normalizedHeading(last + wrappedDelta * headingSmoothingAlpha)
+        lastSmoothedHeading = smoothed
+        return smoothed
+    }
+
+    private func blendedHeading(compass: Double, course: Double?, speed: Double?) -> Double {
+        let normalizedCompass = normalizedHeading(compass)
+        guard let course, course >= 0, let speed, speed >= headingMinSpeedThreshold else {
+            return normalizedCompass
+        }
+        let normalizedCourse = normalizedHeading(course)
+        let weight = min(max(speed / 4.0, 0.0), 1.0)
+        let delta = normalizedCourse - normalizedCompass
+        let wrappedDelta: Double = {
+            if delta > 180 { return delta - 360 }
+            if delta < -180 { return delta + 360 }
+            return delta
+        }()
+        return normalizedHeading(normalizedCompass + wrappedDelta * weight)
     }
     
     private func mappedSensitivityValues(for level: Int) -> (distance: CLLocationDistance, accuracy: CLLocationAccuracy) {
@@ -564,6 +631,12 @@ extension LocationManager: CLLocationManagerDelegate {
             guard shouldAcceptUpdate else { return }
             self.currentLocation = location
             self.lastUpdateTime = Date()
+            if (userHeading == nil || !isHeadingValid),
+               location.course >= 0,
+               location.speed >= headingMinSpeedThreshold {
+                userHeading = smoothHeading(normalizedHeading(location.course))
+                isHeadingValid = true
+            }
             // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
             let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : nil
             let speedValue: Double? = (location.speed >= 0) ? location.speed : nil
@@ -582,6 +655,23 @@ extension LocationManager: CLLocationManagerDelegate {
             )
             self.sendLocationToServer(location)
             self.addUpdateLogEntry(mode: mode)
+        }
+    }
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        Task { @MainActor in
+            let accuracy = newHeading.headingAccuracy
+            guard accuracy >= 0 else {
+                isHeadingValid = false
+                return
+            }
+            isHeadingValid = accuracy <= headingAccuracyThreshold
+            let rawHeading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+            let blended = blendedHeading(
+                compass: rawHeading,
+                course: currentLocation?.course,
+                speed: currentLocation?.speed
+            )
+            userHeading = smoothHeading(blended)
         }
     }
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

@@ -23,7 +23,7 @@ struct BottomAccessoryModifier: ViewModifier {
                 if routeInfoState.isVisible {
                     routeInfoAccessory
                         .padding(.horizontal, 16)
-                        .padding(.bottom, safeAreaBottomInset + (routeInfoState.isChromeVisible ? 60 : 24))
+                        .padding(.bottom, safeAreaBottomInset + (routeInfoState.isChromeVisible ? 40 : 12))
                 }
             }
     }

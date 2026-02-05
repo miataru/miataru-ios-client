@@ -56,11 +56,14 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastOverlayStepIndex: Int? = nil
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
+    @State private var isNavigationMode: Bool = false
     @State private var lastFollowCameraUpdate: Date? = nil
     @State private var lastFollowCameraCenter: CLLocationCoordinate2D? = nil
     @State private var lastFollowCameraHeading: CLLocationDirection? = nil
     @State private var followCameraDistanceOverride: CLLocationDistance? = nil
     @State private var isFollowAutoZoomEnabled: Bool = true
+    @State private var currentMapHeadingDegrees: Double = 0
+    @State private var shouldPerformInitialNavigationZoom: Bool = false
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -385,6 +388,8 @@ struct iPhone_DeviceNavigationView: View {
                 navigationOverlayViewModel = nil
                 lastOverlayStepIndex = nil
                 isFollowDeviceHeadingMode = false
+                isNavigationMode = false
+                shouldPerformInitialNavigationZoom = false
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
@@ -411,7 +416,7 @@ struct iPhone_DeviceNavigationView: View {
                     // Ignore user interaction detection for programmatic updates
                     isProgrammaticCameraChange = false
                 } else {
-                    if isFollowDeviceHeadingMode {
+                    if isFollowDeviceHeadingMode || isNavigationMode {
                         followCameraDistanceOverride = context.camera.distance
                         isFollowAutoZoomEnabled = false
                     }
@@ -422,6 +427,7 @@ struct iPhone_DeviceNavigationView: View {
                         userHasRotatedMap = true
                     }
                 }
+                currentMapHeadingDegrees = context.camera.heading
                 currentMapCamera = context.camera
                 currentRegion = context.region
             }
@@ -448,7 +454,7 @@ struct iPhone_DeviceNavigationView: View {
     private var navigationOverlayContent: some View {
         if let navigationOverlayViewModel, !isRouteReversed, route != nil {
             NavigationOverlayView(viewModel: navigationOverlayViewModel, alignment: .top)
-                .padding(.top, -8)
+                .padding(.top, isChromeVisible ? -12 : -24)
                 .contentShape(Rectangle())
                 .onTapGesture { toggleChromeVisibility() }
         }
@@ -492,57 +498,65 @@ struct iPhone_DeviceNavigationView: View {
     @ViewBuilder
     private var userMarkerContent: some View {
         let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
-        ZStack {
-            // Pulsing behind everything for user marker
-            if settings.pulsingMapMarkers {
-                let circleDiameter = (/* marker height */ 40.0) * 0.65
-                let pulsingSize = circleDiameter * 1.5
-                let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
-                PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
-                    .offset(y: pulsingOffset)
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
-            }
-            VStack(spacing: 0) {
-                if let ts = userTimestamp {
-                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                        let timeString = relativeTimeString(from: ts, to: context.date)
-                        let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
-                        let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
-                        let speedText = settings.showCurrentSpeedOnMap
-                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: thisDeviceIDManager.shared.deviceID)?.speed)
-                            : nil
-                        let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
-                        Text(displayText)
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Capsule())
-                            .overlay(
-                                Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                            )
-                            .shimmering(active: settings.pulsingMapMarkers && isLoading)
-                            .shadow(radius: 2)
-                            .zIndex(2)
-                    }
+        if !isRouteReversed && (isNavigationMode || isFollowDeviceHeadingMode) {
+            UserHeadingAnnotationView(
+                heading: locationManager.userHeading,
+                isHeadingValid: locationManager.isHeadingValid,
+                mapHeading: currentMapHeadingDegrees
+            )
+        } else {
+            ZStack {
+                // Pulsing behind everything for user marker
+                if settings.pulsingMapMarkers {
+                    let circleDiameter = (/* marker height */ 40.0) * 0.65
+                    let pulsingSize = circleDiameter * 1.5
+                    let pulsingOffset = (pulsingSize * 1.6) / 2 + 2
+                    PulsingAccuracyCircle(pulsingColor: Color(myDevice?.DeviceColor ?? UIColor.systemBlue), size: pulsingSize)
+                        .offset(y: pulsingOffset)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
                 }
-                // Device name label above the marker for clarity
-                DeviceNameLabel(
-                    deviceName: myDevice?.DeviceName ?? "",
-                    deviceID: thisDeviceIDManager.shared.deviceID
-                )
-                MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
-                    .shadow(radius: 2)
+                VStack(spacing: 0) {
+                    if let ts = userTimestamp {
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            let timeString = relativeTimeString(from: ts, to: context.date)
+                            let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
+                            let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
+                            let speedText = settings.showCurrentSpeedOnMap
+                                ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: thisDeviceIDManager.shared.deviceID)?.speed)
+                                : nil
+                            let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
+                            Text(displayText)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Capsule())
+                                .overlay(
+                                    Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                )
+                                .shimmering(active: settings.pulsingMapMarkers && isLoading)
+                                .shadow(radius: 2)
+                                .zIndex(2)
+                        }
+                    }
+                    // Device name label above the marker for clarity
+                    DeviceNameLabel(
+                        deviceName: myDevice?.DeviceName ?? "",
+                        deviceID: thisDeviceIDManager.shared.deviceID
+                    )
+                    MiataruMapMarker(color: Color(myDevice?.DeviceColor ?? UIColor.systemBlue))
+                        .shadow(radius: 2)
+                }
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .contentShape(Rectangle())
+                    .frame(width: 80, height: 120)
+                    .offset(y: 12)
+                    .zIndex(1)
             }
-            Rectangle()
-                .foregroundColor(.clear)
-                .contentShape(Rectangle())
-                .frame(width: 80, height: 120)
-                .offset(y: 12)
-                .zIndex(1)
+            .offset(y: 35)
         }
-        .offset(y: 35)
     }
     
     @ViewBuilder
@@ -684,7 +698,7 @@ struct iPhone_DeviceNavigationView: View {
         }
         if let user = userCoordinate, let dest = deviceCoordinate,
            (!hasSetInitialRegion || recenter || isAutoCenteringEnabled) {
-            if isFollowDeviceHeadingMode {
+            if isFollowDeviceHeadingMode || isNavigationMode {
                 updateFollowCamera(animated: false)
                 hasSetInitialRegion = true
                 return
@@ -1020,7 +1034,7 @@ struct iPhone_DeviceNavigationView: View {
     private func scaleBarView() -> some View {
         Group {
             if let region = currentRegion {
-                let bottomPadding: CGFloat = isChromeVisible ? 16 : 6
+                let bottomPadding: CGFloat = isChromeVisible ? 2 : 0
                 Button(action: {
                     isAutoCenteringEnabled = true
                     if isFollowDeviceHeadingMode {
@@ -1044,7 +1058,7 @@ struct iPhone_DeviceNavigationView: View {
     @ViewBuilder
     private func compassView() -> some View {
         Group {
-            if userHasRotatedMap {
+            if userHasRotatedMap && !isNavigationMode && !isFollowDeviceHeadingMode {
                 let heading = currentMapCamera?.heading ?? 0
                 Button(action: {
                     isAutoCenteringEnabled = true
@@ -1112,7 +1126,14 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func handleMapDoubleTap() {
-        guard !isRouteReversed else { return }
+        if isRouteReversed {
+            if isNavigationMode {
+                disableNavigationMode()
+            } else {
+                enableNavigationMode()
+            }
+            return
+        }
         if isFollowDeviceHeadingMode {
             disableFollowDeviceHeadingMode()
         } else {
@@ -1142,7 +1163,52 @@ struct iPhone_DeviceNavigationView: View {
         resetZoomToFitRouteOrBoth()
     }
 
+    private func enableNavigationMode() {
+        isNavigationMode = true
+        isAutoCenteringEnabled = true
+        lastFollowCameraUpdate = nil
+        lastFollowCameraCenter = nil
+        lastFollowCameraHeading = nil
+        followCameraDistanceOverride = nil
+        isFollowAutoZoomEnabled = true
+        if let routeRegion = regionThatFitsRoute() {
+            isProgrammaticCameraChange = true
+            if animationsAllowed {
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    mapPosition = .region(routeRegion)
+                }
+            } else {
+                mapPosition = .region(routeRegion)
+            }
+            shouldPerformInitialNavigationZoom = true
+            Task {
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                await MainActor.run {
+                    if shouldPerformInitialNavigationZoom && isNavigationMode {
+                        performInitialNavigationZoom()
+                    }
+                }
+            }
+        } else {
+            shouldPerformInitialNavigationZoom = false
+            updateFollowCamera(animated: true, force: true)
+        }
+    }
+
+    private func disableNavigationMode() {
+        isNavigationMode = false
+        isAutoCenteringEnabled = true
+        lastFollowCameraUpdate = nil
+        lastFollowCameraCenter = nil
+        lastFollowCameraHeading = nil
+        followCameraDistanceOverride = nil
+        isFollowAutoZoomEnabled = true
+        shouldPerformInitialNavigationZoom = false
+        resetZoomToFitRouteOrBoth()
+    }
+
     private func updateFollowCamera(animated: Bool, force: Bool = false) {
+        guard !shouldPerformInitialNavigationZoom else { return }
         guard let user = userCoordinate else { return }
         let currentDistance = currentMapCamera?.distance ?? followCameraDistance
         let desiredDistance = isFollowAutoZoomEnabled ? followCameraDistanceForNextStep() : nil
@@ -1151,7 +1217,7 @@ struct iPhone_DeviceNavigationView: View {
             min(followCameraDistanceOverride ?? desiredDistance ?? currentDistance, followCameraMaxDistance)
         )
         let pitch = currentMapCamera?.pitch ?? 0
-        let heading = currentDeviceHeading()
+        let heading = currentFollowHeading()
         guard shouldUpdateFollowCamera(center: user, heading: heading, force: force) else { return }
         let newCamera = MapCamera(
             centerCoordinate: user,
@@ -1161,7 +1227,7 @@ struct iPhone_DeviceNavigationView: View {
         )
         isProgrammaticCameraChange = true
         if animated && animationsAllowed {
-            withAnimation(.easeInOut(duration: 0.4)) {
+            withAnimation(.easeInOut(duration: 0.35)) {
                 mapPosition = .camera(newCamera)
             }
         } else {
@@ -1169,7 +1235,32 @@ struct iPhone_DeviceNavigationView: View {
         }
     }
 
-    private func currentDeviceHeading() -> CLLocationDirection {
+    private func performInitialNavigationZoom() {
+        guard let user = userCoordinate else { return }
+        let distance = followCameraDistanceForNextStep() ?? followCameraDistance
+        let pitch = currentMapCamera?.pitch ?? 0
+        let heading = currentFollowHeading()
+        let newCamera = MapCamera(
+            centerCoordinate: user,
+            distance: distance,
+            heading: heading,
+            pitch: pitch
+        )
+        isProgrammaticCameraChange = true
+        if animationsAllowed {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                mapPosition = .camera(newCamera)
+            }
+        } else {
+            mapPosition = .camera(newCamera)
+        }
+        shouldPerformInitialNavigationZoom = false
+    }
+
+    private func currentFollowHeading() -> CLLocationDirection {
+        if isNavigationMode, let heading = locationManager.userHeading {
+            return heading
+        }
         if let course = locationManager.currentLocation?.course, course >= 0 {
             return course
         }
