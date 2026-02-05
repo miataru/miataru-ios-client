@@ -244,20 +244,23 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
-                            MapCircle(center: ghost, radius: 50)
-                                .foregroundStyle(RouteStyle.completed.opacity(0.5))
-                            Annotation("", coordinate: ghost) {
-                                VStack(spacing: 2) {
-                                    Image(systemName: transportSymbolName())
-                                        .font(.system(size: 16))
-                                        .foregroundColor(Color.primary.opacity(0.9))
-                                        .shadow(radius: 4)
-                                    DeviceNameLabel(
-                                        deviceName: device.DeviceName,
-                                        deviceID: device.DeviceID,
-                                        font: .caption2,
-                                        opacity: 0.8
-                                    )
+                            // Only show ghost when navigation is from user to device (not reversed)
+                            if !isRouteReversed {
+                                MapCircle(center: ghost, radius: 50)
+                                    .foregroundStyle(RouteStyle.completed.opacity(0.5))
+                                Annotation("", coordinate: ghost) {
+                                    VStack(spacing: 2) {
+                                        Image(systemName: transportSymbolName())
+                                            .font(.system(size: 16))
+                                            .foregroundColor(Color.primary.opacity(0.9))
+                                            .shadow(radius: 4)
+                                        DeviceNameLabel(
+                                            deviceName: device.DeviceName,
+                                            deviceID: device.DeviceID,
+                                            font: .caption2,
+                                            opacity: 0.8
+                                        )
+                                    }
                                 }
                             }
                         }
