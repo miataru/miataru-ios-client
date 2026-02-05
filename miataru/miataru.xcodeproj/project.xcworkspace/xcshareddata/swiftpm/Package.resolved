@@ -1,13 +1,13 @@
 {
-  "originHash" : "678ba68015e36a73f159d230788d7dca7edeffa66926b9b7fd12c858a4bcefd6",
+  "originHash" : "c36b955c641e6a16d2477e59ea30e10f1809808131783024922dcf8b17a790d4",
   "pins" : [
     {
       "identity" : "navigationoverlaykit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/bietiekay/NavigationOverlayKit",
       "state" : {
-        "revision" : "8597311f0ee794c97b3b565f40957feb919c28c8",
-        "version" : "1.0.0"
+        "revision" : "854387fda62195182a23e2caa59e3652441d3f7d",
+        "version" : "1.1.0"
       }
     },
     {

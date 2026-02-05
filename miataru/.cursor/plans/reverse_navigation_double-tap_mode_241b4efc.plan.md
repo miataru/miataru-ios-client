@@ -4,22 +4,22 @@ overview: "Implementiert Navigations-Verhalten für Reverse-Navigation-Modus: Us
 todos:
   - id: location-manager-heading
     content: "LocationManager: Heading-Pipeline hinzufügen (Course + Compass mischen, glätten, userHeading/isHeadingValid publizieren)"
-    status: pending
+    status: completed
   - id: user-heading-annotation
     content: UserHeadingAnnotationView Komponente erstellen mit HeadingArrowShape und korrekter Rotation
-    status: pending
+    status: completed
   - id: user-marker-integration
     content: "iPhone_DeviceNavigationView: User-Marker mit UserHeadingAnnotationView erweitern, Map-Heading tracken"
-    status: pending
+    status: completed
   - id: double-tap-reverse
     content: Double-Tap Handler für Reverse-Modus erweitern (Navigation-Modus aktivieren)
-    status: pending
+    status: completed
   - id: follow-camera-user-heading
     content: Follow-Camera mit User-Heading erweitern, Rotation nur bei Navigation-Modus
-    status: pending
+    status: completed
   - id: initial-fit-animation
     content: Initiale Fit-Animation + verzögerter Zoom (2.5s) bei Navigation-Start implementieren
-    status: pending
+    status: completed
 isProject: false
 ---
 

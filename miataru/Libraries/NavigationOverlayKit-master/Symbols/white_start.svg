@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="395.14954"
+   height="394.08862"
+   viewBox="0 0 395.14954 394.08862"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(-98.296058,-400.80865)">
+    <rect
+       style="fill:none;stroke:none;stroke-width:5.91138;stroke-dasharray:none"
+       id="rect5-2-9"
+       width="394.08862"
+       height="394.08862"
+       x="98.296059"
+       y="400.80865" />
+    <g
+       id="g12"
+       transform="translate(7.2388998,4.825934)"
+       style="fill:#ffffff;stroke:#ffffff">
+      <path
+         id="path4-8-7"
+         style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;stroke:#ffffff;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+         d="m 245.05078,445.73047 c -83.85644,0 -152.124999,68.2666 -152.124999,152.12305 6e-6,83.85644 68.268559,152.12304 152.124999,152.12304 57.4076,0 107.5089,-31.99441 133.40234,-79.08203 h -16.90429 l 29.78125,-31.23633 c 2.22716,-7.7769 3.84819,-15.80564 4.81054,-24.0332 H 369.0957 c -8.59307,60.89323 -60.72573,107.51758 -124.04492,107.51758 -69.35395,0 -125.28906,-55.93512 -125.28906,-125.28906 0,-69.35395 55.93511,-125.28907 125.28906,-125.28907 63.31918,0 115.45184,46.62435 124.04492,107.51758 h 27.04492 c -0.96232,-8.22734 -2.58347,-16.25649 -4.81054,-24.0332 v -0.002 L 361.54883,524.8105 h 16.90234 C 352.55741,477.724 302.45759,445.73047 245.05078,445.73047 Z" />
+      <circle
+         style="fill:#ffffff;stroke:#ffffff;stroke-width:0.151482;stroke-dasharray:none"
+         id="path4-2-7-5"
+         cx="245.04985"
+         cy="597.85297"
+         r="38.199001" />
+      <path
+         id="path1"
+         style="baseline-shift:baseline;display:inline;overflow:visible;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.927203;enable-background:accumulate;stop-color:#000000"
+         d="m 368.88819,528.13767 47.33446,52.89874 H 258.33884 v 17.00903 17.00901 h 157.88381 l -47.33446,52.89688 h 54.14037 l 62.55601,-69.90589 -62.55601,-69.90777 z" />
+    </g>
+  </g>
+</svg>
