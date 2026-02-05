@@ -254,8 +254,8 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
-                            // Only show ghost when navigation is from user to device (not reversed)
-                            if !isRouteReversed {
+                            // Only show ghost when route is device→user (default); hide when user has reversed to user→device
+                            if isRouteReversed {
                                 MapCircle(center: ghost, radius: 50)
                                     .foregroundStyle(RouteStyle.completed.opacity(0.5))
                                 Annotation("", coordinate: ghost) {
