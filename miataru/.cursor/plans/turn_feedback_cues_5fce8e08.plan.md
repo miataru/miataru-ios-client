@@ -4,13 +4,13 @@ overview: Add turn-by-turn haptic and sound feedback during reversed-route navig
 todos:
   - id: bind-symbol-feedback
     content: Bind NavigationOverlayViewModel.$symbol to feedback
-    status: in_progress
+    status: completed
   - id: add-haptic-helpers
     content: Expose light/heavy haptic helpers in Haptics
-    status: pending
+    status: completed
   - id: map-symbols-to-feedback
     content: Map NavigationInstruction.Symbol to left/right/straight cues
-    status: pending
+    status: completed
 isProject: false
 ---
 
