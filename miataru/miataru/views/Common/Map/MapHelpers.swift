@@ -60,11 +60,12 @@ func relativeTimeString(
     return formatter.localizedString(for: date, relativeTo: now)
 }
 
-/// Returns a formatted speed string for map labels when speed exceeds 10 km/h.
-func mapSpeedLabelText(speedMetersPerSecond: Double?) -> String? {
+/// Returns a formatted speed string (e.g. "45 km/h"). When `minSpeedKmh` is set (default 10),
+/// returns nil if speed is at or below that threshold; use 0 to show any positive speed (e.g. in history).
+func mapSpeedLabelText(speedMetersPerSecond: Double?, minSpeedKmh: Double = 10) -> String? {
     guard let speedMetersPerSecond, speedMetersPerSecond > 0 else { return nil }
     let speedKilometersPerHour = speedMetersPerSecond * 3.6
-    guard speedKilometersPerHour > 10 else { return nil }
+    guard speedKilometersPerHour > minSpeedKmh else { return nil }
 
     let usesMetric: Bool
     if #available(iOS 16.0, *) {

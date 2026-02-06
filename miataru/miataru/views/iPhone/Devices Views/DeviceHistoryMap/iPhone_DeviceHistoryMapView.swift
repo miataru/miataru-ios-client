@@ -609,7 +609,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func formattedDateTimeLabel(for entry: MiataruLocationData) -> String {
         let dateTimeText = Self.timelineDateFormatter.string(from: entry.TimestampDate)
-        let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed)
+        let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed, minSpeedKmh: 0)
         return speedText != nil ? "\(dateTimeText) • \(speedText!)" : dateTimeText
     }
 
