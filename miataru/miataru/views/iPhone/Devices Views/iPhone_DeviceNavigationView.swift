@@ -76,6 +76,9 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isMutualNavigation: Bool = false
     @State private var isViewActive: Bool = false
     @State private var navigationOverlayCancellables = Set<AnyCancellable>()
+    @State private var pendingRouteRetryOnReconnect: Bool = false
+    @State private var routeRetryTask: Task<Void, Never>? = nil
+    private let maxRouteRetryAttempts: Int = 3
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
     private let fitPaddingMultiplier: Double = 1.8
@@ -368,6 +371,8 @@ struct iPhone_DeviceNavigationView: View {
                 isViewActive = false
                 navigationOverlayCancellables.removeAll()
                 stopAutoUpdate()
+                routeRetryTask?.cancel()
+                routeRetryTask = nil
                 routeInfoState.isChromeVisible = true
                 // Hide accessory and remove cancel handler when leaving
                 routeInfoState.hide()
@@ -381,6 +386,11 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: settings.automaticRouteUpdateDuringNavigation) { _, newValue in
                 // Keep UI and behavior in sync with the global setting
                 isAutoRouteUpdateLocked = newValue
+            }
+            .onChange(of: locationManager.isNetworkAvailable) { _, isAvailable in
+                guard isAvailable, pendingRouteRetryOnReconnect else { return }
+                pendingRouteRetryOnReconnect = false
+                calculateRoute(ignoreCache: true)
             }
             .onChange(of: settings.navigationTransportType) { _, _ in
                 if !useCachedRouteIfValid() {
@@ -744,10 +754,15 @@ struct iPhone_DeviceNavigationView: View {
         return MKCoordinateRegion(center: center, span: span)
     }
 
-    private func calculateRoute(ignoreCache: Bool = false) {
+    private func calculateRoute(ignoreCache: Bool = false, retryAttempt: Int = 0) {
         // Calculate a new route between user and selected device.
         // Prefers a cached route when movement < 100m; applies a daily network request limit.
         guard let user = userCoordinate, let device = deviceCoordinate else { return }
+        if retryAttempt == 0 {
+            routeRetryTask?.cancel()
+            routeRetryTask = nil
+            pendingRouteRetryOnReconnect = false
+        }
         // Try to reuse cached route first unless explicitly told to ignore cache
         if !ignoreCache {
             if useCachedRouteIfValid() { return }
@@ -821,10 +836,7 @@ struct iPhone_DeviceNavigationView: View {
                     distanceText = nil
                     lastRouteTransportType = nil
                     refreshNavigationOverlayForCurrentRoute()
-                    showErrorOverlay(
-                        "No route found",
-                        NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
-                    )
+                    handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
                 }
             } catch {
                 route = nil
@@ -832,12 +844,77 @@ struct iPhone_DeviceNavigationView: View {
                 distanceText = nil
                 lastRouteTransportType = nil
                 refreshNavigationOverlayForCurrentRoute()
+                handleRouteRetry(noRouteFound: false, error: error, ignoreCache: true, retryAttempt: retryAttempt)
+            }
+        }
+    }
+
+    private func handleRouteRetry(noRouteFound: Bool, error: Error?, ignoreCache: Bool, retryAttempt: Int) {
+        let nextAttempt = retryAttempt + 1
+        if !locationManager.isNetworkAvailable {
+            pendingRouteRetryOnReconnect = true
+            showErrorOverlay(
+                "Route request failed while offline",
+                NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")
+            )
+            return
+        }
+
+        guard nextAttempt <= maxRouteRetryAttempts else {
+            if noRouteFound {
                 showErrorOverlay(
-                    "Route calculation failed: \(error.localizedDescription)",
+                    "No route found after retries",
+                    NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
+                )
+            } else {
+                showErrorOverlay(
+                    "Route calculation failed after retries: \(error?.localizedDescription ?? "unknown error")",
                     NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
                 )
             }
+            return
         }
+
+        guard noRouteFound || isRetryableRouteError(error) else {
+            showErrorOverlay(
+                "Route calculation failed: \(error?.localizedDescription ?? "unknown error")",
+                NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
+            )
+            return
+        }
+
+        let backoffSeconds = UInt64(pow(2.0, Double(nextAttempt - 1)))
+        routeRetryTask?.cancel()
+        routeRetryTask = Task {
+            try? await Task.sleep(nanoseconds: backoffSeconds * 1_000_000_000)
+            guard !Task.isCancelled, isViewActive else { return }
+            if !locationManager.isNetworkAvailable {
+                pendingRouteRetryOnReconnect = true
+                return
+            }
+            calculateRoute(ignoreCache: ignoreCache, retryAttempt: nextAttempt)
+        }
+    }
+
+    private func isRetryableRouteError(_ error: Error?) -> Bool {
+        guard let error else { return true }
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
+                return true
+            default:
+                return false
+            }
+        }
+        if let mkError = error as? MKError {
+            switch mkError.code {
+            case .directionsNotFound, .serverFailure, .loadingThrottled:
+                return true
+            default:
+                return false
+            }
+        }
+        return false
     }
 
     private func openInAppleMaps() {
