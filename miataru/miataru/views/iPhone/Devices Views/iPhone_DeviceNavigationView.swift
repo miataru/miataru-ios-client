@@ -1486,6 +1486,17 @@ struct iPhone_DeviceNavigationView: View {
         lastOverlayStepIndex = nil
         routeInfoState.hide()
         stopAutoUpdate()
+        // Disable navigation modes when navigation is stopped
+        isNavigationMode = false
+        isFollowDeviceHeadingMode = false
+        shouldPerformInitialNavigationZoom = false
+        // Reset follow camera state
+        lastFollowCameraUpdate = nil
+        lastFollowCameraCenter = nil
+        lastFollowCameraHeading = nil
+        followCameraDistanceOverride = nil
+        isFollowAutoZoomEnabled = true
+        isAutoCenteringEnabled = true
         // Update bottom accessory to reflect that navigation is stopped
         updateBottomAccessory()
     }
