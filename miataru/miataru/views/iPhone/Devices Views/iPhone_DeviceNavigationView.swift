@@ -128,8 +128,6 @@ struct iPhone_DeviceNavigationView: View {
     private let navigationStraightSoundName = "nav_straight"
     private let leftNavigationHapticInterval: TimeInterval = 0.2
     private let rightNavigationHapticInterval: TimeInterval = 0.12
-    /// Reference-type gate so the navigation feedback sink always reads current mode flags (avoids stale capture in Combine).
-    @State private var navigationFeedbackGate = NavigationFeedbackGate()
 
     var body: some View {
         VStack {
@@ -331,9 +329,6 @@ struct iPhone_DeviceNavigationView: View {
             )
             .onAppear {
                 isViewActive = true
-                navigationFeedbackGate.isViewActive = true
-                navigationFeedbackGate.isRouteReversed = isRouteReversed
-                navigationFeedbackGate.isNavigationMode = isNavigationMode
                 Haptic.impactMedium()
                 routeInfoState.isChromeVisible = isChromeVisible
                 // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
@@ -377,7 +372,6 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onDisappear {
                 isViewActive = false
-                navigationFeedbackGate.isViewActive = false
                 navigationOverlayCancellables.removeAll()
                 stopAutoUpdate()
                 routeRetryTask?.cancel()
@@ -406,8 +400,7 @@ struct iPhone_DeviceNavigationView: View {
                     calculateRoute()
                 }
             }
-            .onChange(of: isRouteReversed) { _, newValue in
-                navigationFeedbackGate.isRouteReversed = newValue
+            .onChange(of: isRouteReversed) { _, _ in
                 // Clear route and overlay immediately when route direction changes to prevent showing stale route data
                 // The route will be recalculated and overlay refreshed when the new route is calculated
                 route = nil
@@ -419,9 +412,6 @@ struct iPhone_DeviceNavigationView: View {
                 isFollowDeviceHeadingMode = false
                 isNavigationMode = false
                 shouldPerformInitialNavigationZoom = false
-            }
-            .onChange(of: isNavigationMode) { _, newValue in
-                navigationFeedbackGate.isNavigationMode = newValue
             }
             .onChange(of: travelTime) { _, _ in
                 now = Date()
@@ -1625,12 +1615,11 @@ extension iPhone_DeviceNavigationView {
 
     private func bindNavigationOverlayFeedback(to viewModel: NavigationOverlayViewModel) {
         navigationOverlayCancellables.removeAll()
-        let gate = navigationFeedbackGate
         viewModel.$symbol
             .compactMap { $0 }
             .removeDuplicates()
             .sink { symbol in
-                guard gate.isViewActive, gate.isRouteReversed, gate.isNavigationMode else { return }
+                guard isViewActive, isRouteReversed, isNavigationMode else { return }
                 playNavigationFeedback(for: symbol)
             }
             .store(in: &navigationOverlayCancellables)
@@ -1803,12 +1792,8 @@ extension iPhone_DeviceNavigationView {
             )
         }
     }
+    
+    
 }
 
 
-/// Holds current navigation feedback conditions by reference so Combine sinks see up-to-date values.
-private final class NavigationFeedbackGate {
-    var isViewActive = false
-    var isRouteReversed = true
-    var isNavigationMode = false
-}

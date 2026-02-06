@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
-		8B21FC002F366EBF0031F9C6 /* AnimatedPolylineKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8B21FBFF2F366EBF0031F9C6 /* AnimatedPolylineKit */; };
 		8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };
 		8BD5C0882F2D1E1B0007FE5B /* NavigationOverlayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8BD5C0872F2D1E1B0007FE5B /* NavigationOverlayKit */; };
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
@@ -105,7 +104,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B21FC002F366EBF0031F9C6 /* AnimatedPolylineKit in Frameworks */,
 				8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */,
 				8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */,
 				8BD5C0882F2D1E1B0007FE5B /* NavigationOverlayKit in Frameworks */,
@@ -193,7 +191,6 @@
 				8B3AFA8D2E0E900B0046E5B3 /* QRCode */,
 				8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */,
 				8BD5C0872F2D1E1B0007FE5B /* NavigationOverlayKit */,
-				8B21FBFF2F366EBF0031F9C6 /* AnimatedPolylineKit */,
 			);
 			productName = miataru;
 			productReference = 8BA62CE82E057D1700F54650 /* miataru.app */;
@@ -319,7 +316,6 @@
 				8BDCBB702E0704CD000041DC /* XCLocalSwiftPackageReference "Libraries/QRCode-main" */,
 				8B0556F42E0FFF31008B3C81 /* XCLocalSwiftPackageReference "Libraries/MiataruClientSwift" */,
 				8BD5C0862F2D1D090007FE5B /* XCRemoteSwiftPackageReference "NavigationOverlayKit" */,
-				8B21FBFE2F366EBF0031F9C6 /* XCRemoteSwiftPackageReference "AnimatedPolylineKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8BA62CE92E057D1700F54650 /* Products */;
@@ -446,7 +442,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -516,7 +512,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = X7H5D9Q5T4;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -805,14 +801,6 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8B21FBFE2F366EBF0031F9C6 /* XCRemoteSwiftPackageReference "AnimatedPolylineKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/bietiekay/AnimatedPolylineKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		8BD5C0862F2D1D090007FE5B /* XCRemoteSwiftPackageReference "NavigationOverlayKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/bietiekay/NavigationOverlayKit";
@@ -827,11 +815,6 @@
 		8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MiataruAPIClient;
-		};
-		8B21FBFF2F366EBF0031F9C6 /* AnimatedPolylineKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B21FBFE2F366EBF0031F9C6 /* XCRemoteSwiftPackageReference "AnimatedPolylineKit" */;
-			productName = AnimatedPolylineKit;
 		};
 		8B3AFA8D2E0E900B0046E5B3 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;

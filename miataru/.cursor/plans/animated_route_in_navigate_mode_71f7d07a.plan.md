@@ -4,16 +4,16 @@ overview: Integrate AnimatedPolylineKit so the navigation route shows a default 
 todos:
   - id: animated-overlay-config
     content: "Define AnimatedPolylineConfiguration (demo-style: RouteStyle.remaining, patchLength 0.1, duration 2.5, easeIn/easeOut, .startToEnd) in the new representable or shared helper."
-    status: pending
+    status: completed
   - id: create-overlay-representable
     content: "Create AnimatedRouteOverlayView (UIViewRepresentable): MKMapView with isUserInteractionEnabled = false, region from parent, AnimatedPolylineOverlay + AnimatedPolylineAnimationDriver (loop true), coordinator as delegate with rendererFor returning AnimatedPolylineRenderer; add/remove overlay and driver when routePolyline changes."
-    status: pending
+    status: completed
   - id: integrate-navigation-view
     content: In iPhone_DeviceNavigationView wrap baseMapView in ZStack; add overlay representable on top passing currentRegion and route?.polyline (and map type if needed); ensure overlay covers map frame.
-    status: pending
+    status: completed
   - id: edge-cases-lifecycle
     content: "Handle route/direction change: overlay receives new routePolyline or nil; tear down previous driver/overlay and create new one when route changes. Verify AnimatedPolylineKit import and app target link."
-    status: pending
+    status: completed
 isProject: false
 ---
 
