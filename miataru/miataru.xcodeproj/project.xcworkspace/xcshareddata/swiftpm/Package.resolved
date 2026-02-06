@@ -1,6 +1,15 @@
 {
-  "originHash" : "c36b955c641e6a16d2477e59ea30e10f1809808131783024922dcf8b17a790d4",
+  "originHash" : "870c40d3c05f3cd164a50875d547e32ae84ca6c9dbfb9c0141f99635d8ee64b9",
   "pins" : [
+    {
+      "identity" : "animatedpolylinekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bietiekay/AnimatedPolylineKit",
+      "state" : {
+        "revision" : "135e7565c89a74db7c07cf60494848f42c542fc5",
+        "version" : "1.0.0"
+      }
+    },
     {
       "identity" : "navigationoverlaykit",
       "kind" : "remoteSourceControl",
