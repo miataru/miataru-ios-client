@@ -64,6 +64,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isFollowAutoZoomEnabled: Bool = true
     @State private var currentMapHeadingDegrees: Double = 0
     @State private var shouldPerformInitialNavigationZoom: Bool = false
+    @State private var routeShimmerProgress: CGFloat = 0
     @StateObject private var errorOverlayManager = ErrorOverlayManager()
     @StateObject private var infoOverlayManager = InfoOverlayManager()
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -124,6 +125,27 @@ struct iPhone_DeviceNavigationView: View {
     private let navigationStraightSoundName = "nav_straight"
     private let leftNavigationHapticInterval: TimeInterval = 0.2
     private let rightNavigationHapticInterval: TimeInterval = 0.12
+    private var routeShimmerConfiguration: RouteShimmerConfiguration {
+        RouteShimmerConfiguration(
+            isLooping: true,
+            showsAnimation: true,
+            direction: isRouteReversed ? .forward : .backward,
+            cycleDuration: 1.4,
+            baseLineWidth: 4,
+            shimmerLineWidth: 6,
+            dashLength: 24,
+            dashGap: 26,
+            baseColor: RouteStyle.withoutRemaining,
+            shimmerColor: .white,
+            shimmerOpacity: 0.92
+        )
+    }
+
+    private func shimmerConfig(baseColor: Color) -> RouteShimmerConfiguration {
+        var configuration = routeShimmerConfiguration
+        configuration.baseColor = baseColor
+        return configuration
+    }
 
     var body: some View {
         VStack {
@@ -230,24 +252,36 @@ struct iPhone_DeviceNavigationView: View {
                         isRouteReversed: isRouteReversed
                     ) {
                         if progress <= minimumProgressToShowGhost {
-                            MapPolyline(route.polyline)
-                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            ShimmeringRoutePolyline(
+                                polyline: route.polyline,
+                                configuration: shimmerConfig(baseColor: RouteStyle.remaining),
+                                progress: routeShimmerProgress
+                            )
                             if isMutualNavigation {
                                 MapPolyline(route.polyline)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else if progress >= 1 {
-                            MapPolyline(route.polyline)
-                                .stroke(RouteStyle.completed, lineWidth: 4)
+                            ShimmeringRoutePolyline(
+                                polyline: route.polyline,
+                                configuration: shimmerConfig(baseColor: RouteStyle.completed),
+                                progress: routeShimmerProgress
+                            )
                             if isMutualNavigation {
                                 MapPolyline(route.polyline)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else {
-                            MapPolyline(done)
-                                .stroke(RouteStyle.completed, lineWidth: 4)
-                            MapPolyline(todo)
-                                .stroke(RouteStyle.remaining, lineWidth: 4)
+                            ShimmeringRoutePolyline(
+                                polyline: done,
+                                configuration: shimmerConfig(baseColor: RouteStyle.completed),
+                                progress: routeShimmerProgress
+                            )
+                            ShimmeringRoutePolyline(
+                                polyline: todo,
+                                configuration: shimmerConfig(baseColor: RouteStyle.remaining),
+                                progress: routeShimmerProgress
+                            )
                             if isMutualNavigation {
                                 MapPolyline(done)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
@@ -275,16 +309,22 @@ struct iPhone_DeviceNavigationView: View {
                             }
                         }
                     } else {
-                        MapPolyline(route.polyline)
-                            .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                        ShimmeringRoutePolyline(
+                            polyline: route.polyline,
+                            configuration: routeShimmerConfiguration,
+                            progress: routeShimmerProgress
+                        )
                         if isMutualNavigation {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                         }
                     }
                 } else {
-                    MapPolyline(route.polyline)
-                        .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                    ShimmeringRoutePolyline(
+                        polyline: route.polyline,
+                        configuration: routeShimmerConfiguration,
+                        progress: routeShimmerProgress
+                    )
                     if isMutualNavigation {
                         MapPolyline(route.polyline)
                             .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
@@ -348,6 +388,10 @@ struct iPhone_DeviceNavigationView: View {
                 mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
                 // Initialize mutual navigation state
                 isMutualNavigation = mutualNavigationDetector.isMutualNavigation
+                routeShimmerProgress = 0
+                withAnimation(.linear(duration: routeShimmerConfiguration.cycleDuration).repeatForever(autoreverses: false)) {
+                    routeShimmerProgress = 1
+                }
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -1691,5 +1735,4 @@ extension iPhone_DeviceNavigationView {
     
     
 }
-
 
