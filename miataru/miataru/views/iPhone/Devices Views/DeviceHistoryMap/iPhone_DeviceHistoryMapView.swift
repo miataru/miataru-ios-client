@@ -608,7 +608,9 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     private func formattedDateTimeLabel(for entry: MiataruLocationData) -> String {
-        Self.timelineDateFormatter.string(from: entry.TimestampDate)
+        let dateTimeText = Self.timelineDateFormatter.string(from: entry.TimestampDate)
+        let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed)
+        return speedText != nil ? "\(dateTimeText) • \(speedText!)" : dateTimeText
     }
 
     private func isSelectedEntry(_ entry: MiataruLocationData, selected: MiataruLocationData) -> Bool {
