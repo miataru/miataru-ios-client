@@ -111,6 +111,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastRouteUserTimestamp: Date? = nil
     @State private var lastRouteDeviceTimestamp: Date? = nil
     @State private var lastRouteTransportType: Int? = nil
+    @State private var hasAppliedInitialFetchRouteSync: Bool = false
     // Generous daily upper bound to prevent accidental request lockout while developing/testing
     private let routeRequestDailyLimit: Int = 17000
     private let followCameraDistance: CLLocationDistance = 1100
@@ -194,6 +195,7 @@ struct iPhone_DeviceNavigationView: View {
             lastRouteUserTimestamp = nil
             lastRouteDeviceTimestamp = nil
             lastRouteTransportType = nil
+            hasAppliedInitialFetchRouteSync = false
             initialDistance = nil
             navigationStopped = false
             // Reset mutual navigation state
@@ -338,6 +340,7 @@ struct iPhone_DeviceNavigationView: View {
                     Haptic.impactMedium()
                     dismiss()
                 }
+                hasAppliedInitialFetchRouteSync = false
                 updateCoordinates(recenter: true)
                 // Record initial distance after coordinates are set
                 recordInitialDistance()
@@ -996,6 +999,19 @@ struct iPhone_DeviceNavigationView: View {
                 // Record initial distance if not yet recorded (after first successful fetch)
                 if initialDistance == nil {
                     recordInitialDistance()
+                }
+                // One-time sync: if initial route was calculated from stale cache,
+                // refresh it after the first successful fetch updates device location.
+                if !resetAndRecenter, !hasAppliedInitialFetchRouteSync, route != nil {
+                    let coordChanged = (lastRouteDeviceCoordinate?.latitude != coordinate.latitude)
+                        || (lastRouteDeviceCoordinate?.longitude != coordinate.longitude)
+                    let timestampChanged = lastRouteDeviceTimestamp != loc.TimestampDate
+                    if coordChanged || timestampChanged {
+                        hasAppliedInitialFetchRouteSync = true
+                        calculateRoute(ignoreCache: true)
+                        return
+                    }
+                    hasAppliedInitialFetchRouteSync = true
                 }
                 // Recalculate route only on explicit reload (or initial load elsewhere) 
                 if resetAndRecenter {
