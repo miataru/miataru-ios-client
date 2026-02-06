@@ -43,7 +43,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var foregroundLocationTimer: Timer?
     private var foregroundLocationUpdateTimerTimeframe: Double = 30
     private let networkMonitor = NWPathMonitor()
-    private var isNetworkAvailable: Bool = true
+    @Published private(set) var isNetworkAvailable: Bool = true
     private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
