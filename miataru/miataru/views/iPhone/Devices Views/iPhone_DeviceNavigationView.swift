@@ -85,6 +85,7 @@ struct iPhone_DeviceNavigationView: View {
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
     // Minimum route progress required before showing ghost/progress segmentation
     private let minimumProgressToShowGhost: Double = 0.05
+
     private var offRouteThreshold: CLLocationDistance {
         switch settings.navigationTransportType {
         case 0: return 15
@@ -225,6 +226,12 @@ struct iPhone_DeviceNavigationView: View {
                 if settings.showRouteProgress {
                     let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
                     let userSpeed = locationManager.currentLocation?.speed
+                    // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
+                    let routeStartTimestamp = isRouteReversed ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
+                    let etaHasPassed: Bool = {
+                        guard route.expectedTravelTime > 0, let start = routeStartTimestamp else { return false }
+                        return now.timeIntervalSince(start) >= route.expectedTravelTime
+                    }()
                     if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
                         for: route,
                         deviceTimestamp: deviceTimestamp,
@@ -259,8 +266,8 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
-                            // Only show ghost when route is device→user (default); hide when user has reversed to user→device
-                            if isRouteReversed {
+                            // Ghost is shown when: route is device→user (isRouteReversed), progress is in (0.05, 1), and ETA has not passed (time since route start < route.expectedTravelTime).
+                            if isRouteReversed, !etaHasPassed {
                                 MapCircle(center: ghost, radius: 50)
                                     .foregroundStyle(RouteStyle.completed.opacity(0.5))
                                 Annotation("", coordinate: ghost) {
