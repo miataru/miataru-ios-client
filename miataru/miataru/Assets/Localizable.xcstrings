@@ -2678,22 +2678,64 @@
     "allowed_device_list_access_controls" : {
       "comment" : "Section header for access control toggles",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adgangstilladelser"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriffsberechtigungen"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Access Permissions"
           }
-        }
-      }
-    },
-    "allowed_device_list_allow_button" : {
-      "comment" : "Button to allow/add an unknown visitor device",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allow"
+            "value" : "Permisos de acceso"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käyttöoikeudet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisations d'accès"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorizzazioni di accesso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセス権限"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegangsrechten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "访问权限"
           }
         }
       }
@@ -2701,10 +2743,64 @@
     "allowed_device_list_current_location_access" : {
       "comment" : "Toggle label for current location access",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adgang til nuværende position"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf aktuelle Position"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current Location Access"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso a ubicación actual"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nykyisen sijainnin käyttöoikeus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès à la position actuelle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso alla posizione corrente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在地へのアクセス"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang tot huidige locatie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前位置访问"
           }
         }
       }
@@ -2712,10 +2808,64 @@
     "allowed_device_list_current_location_access_description" : {
       "comment" : "Description for current location access toggle",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillad denne enhed at få adgang til din nuværende position"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diesem Gerät den Zugriff auf Ihre aktuelle Position erlauben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allow this device to access your current location"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir que este dispositivo acceda a tu ubicación actual"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli tämän laitteen käyttää nykyistä sijaintiasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser cet appareil à accéder à votre position actuelle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a questo dispositivo di accedere alla tua posizione corrente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスが現在地にアクセスすることを許可"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sta dit apparaat toe toegang te krijgen tot uw huidige locatie"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许此设备访问您的当前位置"
           }
         }
       }
@@ -2723,10 +2873,64 @@
     "allowed_device_list_devicekey_hint" : {
       "comment" : "Accessibility hint for DeviceKey setup button",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbner DeviceKey-opsætningsark"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet das DeviceKey-Einrichtungsblatt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opens DeviceKey setup sheet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre la hoja de configuración de DeviceKey"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa DeviceKey-asetusarkin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre la feuille de configuration DeviceKey"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre il foglio di configurazione DeviceKey"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey設定シートを開く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent het DeviceKey-instellingenblad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设备密钥设置表"
           }
         }
       }
@@ -2734,10 +2938,64 @@
     "allowed_device_list_disabled_explanation" : {
       "comment" : "Explanation text when feature is disabled",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver adgangskontrol for at administrere, hvilke enheder der kan få adgang til dine positionsdata. Kræver en DeviceKey og kan ikke deaktiveres, når den er aktiveret."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivieren Sie die Zugriffskontrolle, um zu verwalten, welche Geräte auf Ihre Positionsdaten zugreifen können. Erfordert einen DeviceKey und kann nach der Aktivierung nicht deaktiviert werden."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enable access control to manage which devices can access your location data. Requires a DeviceKey and cannot be disabled once enabled."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilita el control de acceso para gestionar qué dispositivos pueden acceder a tus datos de ubicación. Requiere un DeviceKey y no se puede desactivar una vez habilitado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota käyttöoikeuksien hallinta käyttöön hallitsemaan, mitkä laitteet voivat käyttää sijaintitietojasi. Vaatii DeviceKeyn ja sitä ei voi poistaa käytöstä, kun se on otettu käyttöön."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activez le contrôle d'accès pour gérer quels appareils peuvent accéder à vos données de localisation. Nécessite un DeviceKey et ne peut pas être désactivé une fois activé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita il controllo di accesso per gestire quali dispositivi possono accedere ai tuoi dati di posizione. Richiede un DeviceKey e non può essere disabilitato una volta abilitato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセス制御を有効にして、どのデバイスが位置情報にアクセスできるかを管理します。DeviceKeyが必要で、一度有効にすると無効にできません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakel toegangscontrole in om te beheren welke apparaten toegang hebben tot uw locatiegegevens. Vereist een DeviceKey en kan niet worden uitgeschakeld zodra het is ingeschakeld."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用访问控制以管理哪些设备可以访问您的位置数据。需要设备密钥，一旦启用后无法禁用。"
           }
         }
       }
@@ -2745,10 +3003,64 @@
     "allowed_device_list_enable_button" : {
       "comment" : "Button to enable the allowed device list feature",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver adgangskontrol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriffskontrolle aktivieren"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enable Access Control"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilitar control de acceso"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota käyttöoikeuksien hallinta käyttöön"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer le contrôle d'accès"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita controllo accesso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセス制御を有効化"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegangscontrole inschakelen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用访问控制"
           }
         }
       }
@@ -2756,10 +3068,64 @@
     "allowed_device_list_enabled_explanation" : {
       "comment" : "Explanation text when feature is enabled",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kan administrere, hvilke enheder der har adgang til din nuværende position og positionshistorik på skærmen Enheder."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sie können im Bildschirm Geräte verwalten, welche Geräte Zugriff auf Ihre aktuelle Position und Positionsverlauf haben."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "You can manage which devices have access to your current location and location history in the Devices screen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puedes gestionar qué dispositivos tienen acceso a tu ubicación actual y al historial de ubicaciones en la pantalla Dispositivos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voit hallita, mitkä laitteet voivat käyttää nykyistä sijaintiasi ja sijaintihistoriaa Laitteet-näytössä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous pouvez gérer quels appareils ont accès à votre position actuelle et à l'historique des positions dans l'écran Appareils."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi gestire quali dispositivi hanno accesso alla tua posizione corrente e alla cronologia delle posizioni nella schermata Dispositivi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス画面で、現在地と位置履歴にアクセスできるデバイスを管理できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "U kunt beheren welke apparaten toegang hebben tot uw huidige locatie en locatiegeschiedenis in het scherm Apparaten."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您可以在设备屏幕中管理哪些设备可以访问您的当前位置和位置历史记录。"
           }
         }
       }
@@ -2767,10 +3133,64 @@
     "allowed_device_list_enabled_status" : {
       "comment" : "Status text when feature is enabled",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adgangskontrol er aktiveret"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriffskontrolle ist aktiviert"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Access control is enabled"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El control de acceso está habilitado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käyttöoikeuksien hallinta on käytössä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le contrôle d'accès est activé"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il controllo di accesso è abilitato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクセス制御が有効です"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegangscontrole is ingeschakeld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "访问控制已启用"
           }
         }
       }
@@ -2778,10 +3198,64 @@
     "allowed_device_list_history_access" : {
       "comment" : "Toggle label for history access",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adgang til historik"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf Verlauf"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "History Access"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso al historial"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historian käyttöoikeus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès à l'historique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso alla cronologia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴へのアクセス"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang tot geschiedenis"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史记录访问"
           }
         }
       }
@@ -2789,10 +3263,64 @@
     "allowed_device_list_history_access_description" : {
       "comment" : "Description for history access toggle",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillad denne enhed at få adgang til din positionshistorik"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diesem Gerät den Zugriff auf Ihren Positionsverlauf erlauben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allow this device to access your location history"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir que este dispositivo acceda a tu historial de ubicaciones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salli tämän laitteen käyttää sijaintihistoriaasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser cet appareil à accéder à votre historique de localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti a questo dispositivo di accedere alla tua cronologia delle posizioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスが位置履歴にアクセスすることを許可"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sta dit apparaat toe toegang te krijgen tot uw locatiegeschiedenis"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许此设备访问您的位置历史记录"
           }
         }
       }
@@ -2865,10 +3393,64 @@
     "allowed_device_list_intro_text" : {
       "comment" : "Introductory text explaining the allowed device list feature",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver valgfrit adgangskontrol for linkede enheder. Du kan definere pr. enhed, om nuværende position og positionshistorik deles. Dette kræver en DeviceKey og kan ikke slås fra senere."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional Zugriffskontrolle für verknüpfte Geräte aktivieren. Sie können pro Gerät festlegen, ob aktuelle Position und Positionsverlauf geteilt werden. Dies erfordert einen DeviceKey und kann später nicht deaktiviert werden."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Optionally enable access control for linked devices. You can define per device whether current location and location history are shared. This requires a DeviceKey and cannot be turned off later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcionalmente habilita el control de acceso para dispositivos vinculados. Puedes definir por dispositivo si se comparten la ubicación actual y el historial de ubicaciones. Esto requiere un DeviceKey y no se puede desactivar más tarde."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voit valinnallisesti ottaa käyttöoikeuksien hallinnan käyttöön linkitetyille laitteille. Voit määrittää laitteittain, jaetaanko nykyinen sijainti ja sijaintihistoria. Tämä vaatii DeviceKeyn ja sitä ei voi poistaa käytöstä myöhemmin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activez optionnellement le contrôle d'accès pour les appareils liés. Vous pouvez définir par appareil si la position actuelle et l'historique des positions sont partagés. Cela nécessite un DeviceKey et ne peut pas être désactivé plus tard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita opzionalmente il controllo di accesso per i dispositivi collegati. Puoi definire per dispositivo se condividere la posizione corrente e la cronologia delle posizioni. Questo richiede un DeviceKey e non può essere disattivato in seguito."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リンクされたデバイスのアクセス制御をオプションで有効にできます。デバイスごとに現在地と位置履歴を共有するかどうかを定義できます。これにはDeviceKeyが必要で、後でオフにすることはできません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optioneel toegangscontrole inschakelen voor gekoppelde apparaten. U kunt per apparaat definiëren of de huidige locatie en locatiegeschiedenis worden gedeeld. Dit vereist een DeviceKey en kan later niet worden uitgeschakeld."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可选地为链接的设备启用访问控制。您可以按设备定义是否共享当前位置和位置历史记录。这需要设备密钥，以后无法关闭。"
           }
         }
       }
@@ -2876,10 +3458,64 @@
     "allowed_device_list_section_title" : {
       "comment" : "Section header for allowed device list in settings",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enhedsadgangskontrol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte-Zugriffskontrolle"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Device Access Control"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control de acceso de dispositivos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laitteen käyttöoikeuksien hallinta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrôle d'accès des appareils"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controllo accesso dispositivi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスアクセス制御"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegangscontrole voor apparaten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备访问控制"
           }
         }
       }
@@ -2887,10 +3523,64 @@
     "allowed_device_list_setup_devicekey_button" : {
       "comment" : "Button to setup DeviceKey as prerequisite",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opsæt DeviceKey"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey einrichten"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Setup DeviceKey"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurar DeviceKey"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aseta DeviceKey"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer DeviceKey"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura DeviceKey"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKeyを設定"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey instellen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置设备密钥"
           }
         }
       }
@@ -2898,10 +3588,64 @@
     "allowed_device_list_title" : {
       "comment" : "Title for allowed device list onboarding screen",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Styr, hvilke enheder der kan få adgang til dine positionsdata"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steuern Sie, welche Geräte auf Ihre Positionsdaten zugreifen können"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Control which devices can access your location data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controla qué dispositivos pueden acceder a tus datos de ubicación"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hallitse, mitkä laitteet voivat käyttää sijaintitietojasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrôlez quels appareils peuvent accéder à vos données de localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlla quali dispositivi possono accedere ai tuoi dati di posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置データにアクセスできるデバイスを制御"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bepaal welke apparaten toegang hebben tot uw locatiegegevens"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制哪些设备可以访问您的位置数据"
           }
         }
       }
@@ -9585,7 +10329,69 @@
     },
     "Error" : {
       "comment" : "The title of an alert that appears when an error occurs.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fejl"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Virhe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エラー"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fout"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "错误"
+          }
+        }
+      }
     },
     "error_loading_locationdata" : {
       "comment" : "Error loading location data",
@@ -16582,6 +17388,7 @@
       }
     },
     "ok" : {
+      "comment" : "OK button",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -16644,10 +17451,6 @@
           }
         }
       }
-    },
-    "OK" : {
-      "comment" : "The label of an OK button.",
-      "isCommentAutoGenerated" : true
     },
     "Only allowed when app in foregrond" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
@@ -22076,10 +22879,64 @@
     "unknown_visitors_section_title" : {
       "comment" : "Section header for unknown visitors",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukendte besøgende"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannte Besucher"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unknown Visitors"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitantes desconocidos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntemattomat vierailijat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visiteurs inconnus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitatori sconosciuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明な訪問者"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onbekende bezoekers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知访问者"
           }
         }
       }

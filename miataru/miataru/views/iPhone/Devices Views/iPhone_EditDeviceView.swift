@@ -133,8 +133,8 @@ struct iPhone_EditDeviceView: View {
                 tempHasCurrentLocationAccess = device.hasCurrentLocationAccess
                 tempHasHistoryAccess = device.hasHistoryAccess
             }
-            .alert("Error", isPresented: .constant(saveError != nil), presenting: saveError) { _ in
-                Button("OK") {
+            .alert(NSLocalizedString("Error", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
+                Button(NSLocalizedString("ok", comment: "OK button")) {
                     saveError = nil
                 }
             } message: { error in
