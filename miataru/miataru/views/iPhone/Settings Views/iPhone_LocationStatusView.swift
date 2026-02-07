@@ -12,6 +12,7 @@ import CoreLocation
 import UIKit
 
 struct iPhone_LocationStatusView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -201,16 +202,23 @@ struct iPhone_LocationStatusView: View {
             Color.clear.frame(height: 10)
         }
         .onAppear {
-            routeCounter.checkAndResetIfNeeded()
-            // Update widget request count when view appears
-            widgetRequestCounter.updateCount()
-            apiRequestCounter.updateCounts()
+            refreshAllStatistics()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                refreshAllStatistics()
+            }
         }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
-            // Update widget request count every minute while view is visible
-            widgetRequestCounter.updateCount()
-            apiRequestCounter.updateCounts()
+            refreshAllStatistics()
         }
+    }
+    
+    /// Refreshes route (today), widget (last 24h), and API (last 24h) statistics so displayed counts stay correct.
+    private func refreshAllStatistics() {
+        routeCounter.checkAndResetIfNeeded()
+        widgetRequestCounter.updateCount()
+        apiRequestCounter.updateCounts()
     }
     
     // MARK: - Computed Properties

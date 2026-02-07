@@ -11,7 +11,7 @@ import Foundation
 import Combine
 
 /// Centralized manager for counting API requests in the last 24 hours.
-/// Stores timestamps in UserDefaults and exposes a shared observable instance for UI.
+/// Stores timestamps as seconds since 1970 in UserDefaults so counts reset correctly as time passes.
 final class APIRequestCounter: ObservableObject {
     static let shared = APIRequestCounter()
 
@@ -30,6 +30,8 @@ final class APIRequestCounter: ObservableObject {
     private let userDefaults: UserDefaults
     private let timestampsKey = "miataru_apiRequestTimestamps"
     private let maxStoredTimestampsPerType = 2000
+    private static let sevenDaysSeconds: TimeInterval = 7 * 24 * 60 * 60
+    private static let twentyFourHoursSeconds: TimeInterval = 24 * 60 * 60
 
     private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
@@ -52,7 +54,7 @@ final class APIRequestCounter: ObservableObject {
     }
 
     private func updateCounts(now: Date, stored: [String: [Date]], persistPruned: Bool) {
-        let twentyFourHoursAgo = now.addingTimeInterval(-24 * 60 * 60)
+        let twentyFourHoursAgo = now.addingTimeInterval(-Self.twentyFourHoursSeconds)
         let pruned = normalizeStoredTimestamps(stored, now: now)
 
         let updateLocationCount = pruned[RequestType.updateLocation.rawValue]?.filter { $0 > twentyFourHoursAgo }.count ?? 0
@@ -82,8 +84,8 @@ final class APIRequestCounter: ObservableObject {
     }
 
     private func prune(_ timestamps: [Date], now: Date) -> [Date] {
-        let sevenDaysAgo = now.addingTimeInterval(-7 * 24 * 60 * 60)
-        var recent = timestamps.filter { $0 > sevenDaysAgo }
+        let cutoff = now.addingTimeInterval(-Self.sevenDaysSeconds)
+        var recent = timestamps.filter { $0 > cutoff }
         if recent.count > maxStoredTimestampsPerType {
             recent = Array(recent.suffix(maxStoredTimestampsPerType))
         }
@@ -108,18 +110,31 @@ final class APIRequestCounter: ObservableObject {
         }
     }
 
+    /// Loads timestamps; supports [String: [Double]] (seconds since 1970) and legacy [String: [Date]].
     private func loadTimestamps() -> [String: [Date]] {
-        guard let data = userDefaults.data(forKey: timestampsKey),
-              let stored = try? JSONDecoder().decode([String: [Date]].self, from: data) else {
-            return [:]
+        guard let data = userDefaults.data(forKey: timestampsKey) else { return [:] }
+        if let storedSeconds = try? JSONDecoder().decode([String: [Double]].self, from: data) {
+            var result: [String: [Date]] = [:]
+            for (key, seconds) in storedSeconds {
+                result[key] = seconds
+                    .map { Date(timeIntervalSince1970: $0) }
+                    .filter { $0.timeIntervalSince1970 > 0 }
+            }
+            return result
         }
-        return stored
+        if let stored = try? JSONDecoder().decode([String: [Date]].self, from: data) {
+            return stored
+        }
+        return [:]
     }
 
+    /// Saves timestamps as seconds since 1970 for unambiguous decoding and correct 24h rolloff.
     private func saveTimestamps(_ stored: [String: [Date]]) {
-        guard let data = try? JSONEncoder().encode(stored) else {
-            return
+        var secondsStored: [String: [Double]] = [:]
+        for (key, dates) in stored {
+            secondsStored[key] = dates.map { $0.timeIntervalSince1970 }
         }
+        guard let data = try? JSONEncoder().encode(secondsStored) else { return }
         userDefaults.set(data, forKey: timestampsKey)
     }
 }

@@ -95,34 +95,34 @@ enum SharedWidgetDataManager {
     }
     
     /// Records a widget-initiated location request timestamp.
+    /// Uses seconds since 1970 so the main app's WidgetRequestCounter can compute "last 24 hours" reliably.
     /// This can be called from the widget extension to track requests.
     static func recordWidgetRequest() {
         guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else { return }
         let now = Date()
-        var timestamps: [Date] = []
-        
-        // Load existing timestamps
-        if let data = userDefaults.data(forKey: widgetRequestTimestampsKey),
-           let decoded = try? JSONDecoder().decode([Date].self, from: data) {
-            timestamps = decoded
-        }
-        
-        // Add new timestamp
+        var timestamps: [Date] = loadWidgetRequestTimestamps(userDefaults: userDefaults)
         timestamps.append(now)
-        
-        // Keep only recent timestamps (last 7 days) to prevent unbounded growth
         let sevenDaysAgo = now.addingTimeInterval(-7 * 24 * 60 * 60)
         timestamps = timestamps.filter { $0 > sevenDaysAgo }
-        
-        // Limit total stored timestamps
         if timestamps.count > maxStoredTimestamps {
             timestamps = Array(timestamps.suffix(maxStoredTimestamps))
         }
-        
-        // Save back to UserDefaults
-        if let data = try? JSONEncoder().encode(timestamps) {
+        let seconds = timestamps.map { $0.timeIntervalSince1970 }
+        if let data = try? JSONEncoder().encode(seconds) {
             userDefaults.set(data, forKey: widgetRequestTimestampsKey)
         }
+    }
+
+    /// Loads widget request timestamps; supports both [Double] (seconds since 1970) and legacy [Date].
+    private static func loadWidgetRequestTimestamps(userDefaults: UserDefaults) -> [Date] {
+        guard let data = userDefaults.data(forKey: widgetRequestTimestampsKey) else { return [] }
+        if let seconds = try? JSONDecoder().decode([Double].self, from: data) {
+            return seconds.map { Date(timeIntervalSince1970: $0) }.filter { $0.timeIntervalSince1970 > 0 }
+        }
+        if let dates = try? JSONDecoder().decode([Date].self, from: data) {
+            return dates
+        }
+        return []
     }
 }
 
