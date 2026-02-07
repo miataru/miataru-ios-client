@@ -14,6 +14,7 @@ import CoreLocation
 final class RouteCacheStore: ObservableObject {
     static let shared = RouteCacheStore()
 
+    /// Cache key. isRouteReversed: false = reversed route (user→device), true = non-reversed (device→user).
     struct RouteKey: Hashable {
         let deviceId: String
         let transportType: Int

@@ -50,7 +50,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isLoading: Bool = false
     @State private var now = Date()
     @State private var isAutoRouteUpdateLocked: Bool = false
-    @State private var isRouteReversed: Bool = true // Default: device to user
+    /// true = non-reversed route (standard: selected device → user). false = reversed route (user → selected device, "reverse route" button).
+    @State private var isRouteFromDeviceToUser: Bool = true
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
     @State private var hasLocationUpdateSinceLastAutoUpdate: Bool = false
     @State private var lastOverlayStepIndex: Int? = nil
@@ -146,7 +147,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    isRouteReversed.toggle()
+                    isRouteFromDeviceToUser.toggle()
                     calculateRoute(ignoreCache: true)
                 }) {
                     directionIndicatorIcon()
@@ -185,7 +186,7 @@ struct iPhone_DeviceNavigationView: View {
             isAutoCenteringEnabled = true
             // Ensure auto-update lock state follows global setting for new navigation
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
-            isRouteReversed = true // Reset to default: device to user
+            isRouteFromDeviceToUser = true // Reset to non-reversed (standard: device → user)
             navigationOverlayViewModel = nil
             navigationOverlayCancellables.removeAll()
             lastOverlayStepIndex = nil
@@ -227,7 +228,7 @@ struct iPhone_DeviceNavigationView: View {
                     let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
                     let userSpeed = locationManager.currentLocation?.speed
                     // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
-                    let routeStartTimestamp = isRouteReversed ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
+                    let routeStartTimestamp = isRouteFromDeviceToUser ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
                     let etaHasPassed: Bool = {
                         guard route.expectedTravelTime > 0, let start = routeStartTimestamp else { return false }
                         return now.timeIntervalSince(start) >= route.expectedTravelTime
@@ -239,7 +240,7 @@ struct iPhone_DeviceNavigationView: View {
                         userTimestamp: userTimestamp,
                         knownUserSpeed: userSpeed,
                         now: now,
-                        isRouteReversed: isRouteReversed
+                        isRouteReversed: isRouteFromDeviceToUser
                     ) {
                         if progress <= minimumProgressToShowGhost {
                             MapPolyline(route.polyline)
@@ -266,8 +267,8 @@ struct iPhone_DeviceNavigationView: View {
                                 MapPolyline(todo)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
-                            // Ghost is shown when: route is device→user (isRouteReversed), progress is in (0.05, 1), and ETA has not passed (time since route start < route.expectedTravelTime).
-                            if isRouteReversed, !etaHasPassed {
+                            // Ghost is shown when: route is non-reversed (device→user), progress is in (0.05, 1), and ETA has not passed.
+                            if isRouteFromDeviceToUser, !etaHasPassed {
                                 MapCircle(center: ghost, radius: 50)
                                     .foregroundStyle(RouteStyle.completed.opacity(0.5))
                                 Annotation("", coordinate: ghost) {
@@ -407,7 +408,8 @@ struct iPhone_DeviceNavigationView: View {
                     calculateRoute()
                 }
             }
-            .onChange(of: isRouteReversed) { _, _ in
+            .onChange(of: isRouteFromDeviceToUser) { _, _ in
+                // Reversed route = user→device; non-reversed = device→user. Toggle swaps direction.
                 // Clear route and overlay immediately when route direction changes to prevent showing stale route data
                 // The route will be recalculated and overlay refreshed when the new route is calculated
                 route = nil
@@ -481,7 +483,8 @@ struct iPhone_DeviceNavigationView: View {
 
     @ViewBuilder
     private var navigationOverlayContent: some View {
-        if let navigationOverlayViewModel, !isRouteReversed, route != nil {
+        // Navigation overlay (turn-by-turn) only for reversed route (user → device).
+        if let navigationOverlayViewModel, !isRouteFromDeviceToUser, route != nil {
             NavigationOverlayView(viewModel: navigationOverlayViewModel, alignment: .top)
                 .padding(.top, isChromeVisible ? -12 : -24)
                 .contentShape(Rectangle())
@@ -527,7 +530,8 @@ struct iPhone_DeviceNavigationView: View {
     @ViewBuilder
     private var userMarkerContent: some View {
         let myDevice = deviceStore.devices.first { $0.DeviceID == thisDeviceIDManager.shared.deviceID }
-        if !isRouteReversed && (isNavigationMode || isFollowDeviceHeadingMode) {
+        // User heading only when reversed route (user→device) and in focussed navigation.
+        if !isRouteFromDeviceToUser && (isNavigationMode || isFollowDeviceHeadingMode) {
             UserHeadingAnnotationView(
                 heading: locationManager.userHeading,
                 isHeadingValid: locationManager.isHeadingValid,
@@ -644,13 +648,12 @@ struct iPhone_DeviceNavigationView: View {
     @ViewBuilder
     private func directionIndicatorIcon() -> some View {
         // Two-colored arrow icon using palette rendering mode
-        // When isRouteReversed is true (device to user, default): top arrow is accent, bottom is primary
-        // When isRouteReversed is false (user to device): top arrow is primary, bottom is accent
+        // Non-reversed (device→user): top arrow accent, bottom primary. Reversed (user→device): top primary, bottom accent.
         Image(systemName: "arrow.up.arrow.down")
             .symbolRenderingMode(.palette)
             .foregroundStyle(
-                isRouteReversed ? Color.green : Color.primary,
-                isRouteReversed ? Color.primary : Color.green
+                isRouteFromDeviceToUser ? Color.green : Color.primary,
+                isRouteFromDeviceToUser ? Color.primary : Color.green
             )
     }
     
@@ -803,8 +806,8 @@ struct iPhone_DeviceNavigationView: View {
         }
         _ = routeCounter.canRequestAndIncrement(limit: routeRequestDailyLimit)
         let request = MKDirections.Request()
-        // Draw the route from the current user towards the other device, or reversed if isRouteReversed is true
-        if isRouteReversed {
+        // Non-reversed (device→user): source=device, dest=user. Reversed (user→device): source=user, dest=device.
+        if isRouteFromDeviceToUser {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: device))
             request.destination = MKMapItem(placemark: MKPlacemark(coordinate: user))
         } else {
@@ -833,7 +836,7 @@ struct iPhone_DeviceNavigationView: View {
                     routeCache.set(
                         for: self.device.DeviceID,
                         transportType: settings.navigationTransportType,
-                        isRouteReversed: isRouteReversed,
+                        isRouteReversed: isRouteFromDeviceToUser,
                         route: first,
                         userCoordinate: user,
                         deviceCoordinate: device,
@@ -932,7 +935,8 @@ struct iPhone_DeviceNavigationView: View {
         guard let dest = deviceCoordinate else { return }
         let source: MKMapItem
         let destination: MKMapItem
-        if isRouteReversed {
+        // Non-reversed (device→user): open device→user. Reversed (user→device): open user→device.
+        if isRouteFromDeviceToUser {
             source = MKMapItem(placemark: MKPlacemark(coordinate: dest))
             source.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
             destination = MKMapItem.forCurrentLocation()
@@ -1242,18 +1246,14 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func handleMapDoubleTap() {
-        if isRouteReversed {
-            if isNavigationMode {
-                disableNavigationMode()
-            } else {
-                enableNavigationMode()
-            }
-            return
-        }
-        if isFollowDeviceHeadingMode {
-            disableFollowDeviceHeadingMode()
+        // Double-tap to focus on user device only when route is reversed (user → selected device).
+        guard !isRouteFromDeviceToUser else { return }
+        // Behave like a tap on the navigation overlay: hide chrome for full-screen focussed navigation.
+        hideChromeIfNeeded()
+        if isNavigationMode {
+            disableNavigationMode()
         } else {
-            enableFollowDeviceHeadingMode()
+            enableNavigationMode()
         }
     }
 
@@ -1276,6 +1276,7 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraHeading = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
+        showChromeIfNeeded()
         resetZoomToFitRouteOrBoth()
     }
 
@@ -1320,6 +1321,7 @@ struct iPhone_DeviceNavigationView: View {
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         shouldPerformInitialNavigationZoom = false
+        showChromeIfNeeded()
         resetZoomToFitRouteOrBoth()
     }
 
@@ -1509,6 +1511,7 @@ struct iPhone_DeviceNavigationView: View {
         lastOverlayStepIndex = nil
         routeInfoState.hide()
         stopAutoUpdate()
+        showChromeIfNeeded()
         // Disable navigation modes when navigation is stopped
         isNavigationMode = false
         isFollowDeviceHeadingMode = false
@@ -1544,7 +1547,7 @@ extension iPhone_DeviceNavigationView {
         if let cached = routeCache.get(
             for: self.device.DeviceID,
             transportType: transport,
-            isRouteReversed: isRouteReversed
+            isRouteReversed: isRouteFromDeviceToUser
         ) {
             if routeCache.isValid(
                 cached: cached,
@@ -1626,7 +1629,7 @@ extension iPhone_DeviceNavigationView {
             .compactMap { $0 }
             .removeDuplicates()
             .sink { symbol in
-                guard isViewActive, isRouteReversed, isNavigationMode else { return }
+                guard isViewActive, !isRouteFromDeviceToUser, isNavigationMode else { return }
                 playNavigationFeedback(for: symbol)
             }
             .store(in: &navigationOverlayCancellables)

@@ -29,7 +29,7 @@ struct RouteGhostCalculator {
     ///   - userTimestamp: The last known timestamp of the local device location.
     ///   - knownUserSpeed: Optional local device speed in meters per second.
     ///   - now: Reference time (defaults to Date()).
-    ///   - isRouteReversed: Whether the route is reversed (device → user). When false, route is user → device.
+    ///   - isRouteReversed: false = reversed route (user → device). true = non-reversed route (device → user).
     /// - Returns: (donePolyline, todoPolyline, ghostCoordinate, progress [0,1]) or nil if cannot compute.
     static func ghost(for route: MKRoute, deviceTimestamp: Date?, knownDeviceSpeed: Double?, userTimestamp: Date?, knownUserSpeed: Double?, now: Date = Date(), isRouteReversed: Bool = false) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
         guard route.distance > 0 else { return nil }
