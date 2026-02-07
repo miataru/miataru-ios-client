@@ -242,6 +242,7 @@ struct iPhone_AddDeviceView: View {
             do {
                 try await AllowedDeviceListManager.shared.syncAllowedDeviceListIfEnabled(trigger: .add)
                 Haptic.notifySuccess()
+                IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: deviceID)
                 isPresented = false
             } catch {
                 // Rollback on sync failure
@@ -252,6 +253,7 @@ struct iPhone_AddDeviceView: View {
             }
         } else {
             Haptic.notifySuccess()
+            IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: deviceID)
             isPresented = false
         }
         
