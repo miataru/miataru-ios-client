@@ -12,6 +12,9 @@ import Foundation
 #if canImport(AVFoundation)
 import AVFoundation
 #endif
+#if canImport(AudioToolbox)
+import AudioToolbox
+#endif
 
 final class SoundEffectPlayer {
     static let shared = SoundEffectPlayer()
@@ -37,6 +40,37 @@ final class SoundEffectPlayer {
 #endif
     }
 
+    /// Plays an iOS system sound (e.g. Tink 1103, Tock 1104). Respects the device silent switch.
+    /// Use for lightweight feedback when custom assets are not available.
+    func playSystemSound(_ systemSoundID: SystemSoundID) {
+#if canImport(AudioToolbox)
+        DispatchQueue.main.async {
+            AudioServicesPlaySystemSound(systemSoundID)
+        }
+#endif
+    }
+
+    /// Returns true if a sound resource with the given name and extension exists in the bundle (same search paths as `play(named:fileExtension:)`).
+    func hasResource(named name: String, fileExtension: String) -> Bool {
+        soundResourceURL(for: name, fileExtension: fileExtension) != nil
+    }
+
+    private func soundResourceURL(for name: String, fileExtension: String) -> URL? {
+        let subdirectories: [String?] = [nil, "sounds", "Assets/sounds"]
+        for subdirectory in subdirectories {
+            if let url = Bundle.main.url(forResource: name, withExtension: fileExtension, subdirectory: subdirectory) {
+                return url
+            }
+        }
+        let pathCandidates = ["sounds/\(name)", "Assets/sounds/\(name)"]
+        for path in pathCandidates {
+            if let url = Bundle.main.url(forResource: path, withExtension: fileExtension) {
+                return url
+            }
+        }
+        return nil
+    }
+
 #if canImport(AVFoundation)
     private func configureSessionIfNeeded() {
         guard !hasConfiguredSession else { return }
@@ -54,7 +88,7 @@ final class SoundEffectPlayer {
         if let cached = players[key] {
             return cached
         }
-        guard let url = resolveURL(for: name, fileExtension: fileExtension) else {
+        guard let url = soundResourceURL(for: name, fileExtension: fileExtension) else {
             debugLog("[SoundEffectPlayer] Missing sound resource: \(name).\(fileExtension)")
             return nil
         }
@@ -69,20 +103,5 @@ final class SoundEffectPlayer {
         }
     }
 
-    private func resolveURL(for name: String, fileExtension: String) -> URL? {
-        let subdirectories: [String?] = [nil, "sounds", "Assets/sounds"]
-        for subdirectory in subdirectories {
-            if let url = Bundle.main.url(forResource: name, withExtension: fileExtension, subdirectory: subdirectory) {
-                return url
-            }
-        }
-        let pathCandidates = ["sounds/\(name)", "Assets/sounds/\(name)"]
-        for path in pathCandidates {
-            if let url = Bundle.main.url(forResource: path, withExtension: fileExtension) {
-                return url
-            }
-        }
-        return nil
-    }
 #endif
 }

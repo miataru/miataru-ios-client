@@ -12,6 +12,7 @@ import MapKit
 import Combine
 import CoreLocation
 import Foundation
+import AudioToolbox
 import MiataruAPIClient
 import NavigationOverlayKit
 
@@ -76,6 +77,8 @@ struct iPhone_DeviceNavigationView: View {
     // Track mutual navigation state in @State to ensure Map content updates
     @State private var isMutualNavigation: Bool = false
     @State private var isViewActive: Bool = false
+    /// Reference type so the navigation feedback Combine sink always sees current values (not a snapshot from when the sink was created).
+    @State private var navigationFeedbackGate = NavigationFeedbackGate()
     @State private var navigationOverlayCancellables = Set<AnyCancellable>()
     @State private var pendingRouteRetryOnReconnect: Bool = false
     @State private var routeRetryTask: Task<Void, Never>? = nil
@@ -128,6 +131,9 @@ struct iPhone_DeviceNavigationView: View {
     private let navigationLeftSoundName = "nav_left"
     private let navigationRightSoundName = "nav_right"
     private let navigationStraightSoundName = "nav_straight"
+    // System sound IDs (AudioToolbox): Tink = light pling, Tock = short click; used until nav_left/nav_right.caf are added
+    private let navigationLeftSystemSoundID: SystemSoundID = 1103   // Tink.caf – KeyPressed
+    private let navigationRightSystemSoundID: SystemSoundID = 1104   // Tock.caf – KeyPressed
     private let leftNavigationHapticInterval: TimeInterval = 0.2
     private let rightNavigationHapticInterval: TimeInterval = 0.12
 
@@ -337,6 +343,9 @@ struct iPhone_DeviceNavigationView: View {
             )
             .onAppear {
                 isViewActive = true
+                navigationFeedbackGate.isViewActive = true
+                navigationFeedbackGate.isRouteFromDeviceToUser = isRouteFromDeviceToUser
+                navigationFeedbackGate.isNavigationMode = isNavigationMode
                 Haptic.impactMedium()
                 routeInfoState.isChromeVisible = isChromeVisible
                 // Initial wiring on appear: sync settings, set coordinates, try cache, then fetch
@@ -380,6 +389,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onDisappear {
                 isViewActive = false
+                navigationFeedbackGate.isViewActive = false
                 navigationOverlayCancellables.removeAll()
                 stopAutoUpdate()
                 routeRetryTask?.cancel()
@@ -408,7 +418,8 @@ struct iPhone_DeviceNavigationView: View {
                     calculateRoute()
                 }
             }
-            .onChange(of: isRouteFromDeviceToUser) { _, _ in
+            .onChange(of: isRouteFromDeviceToUser) { _, newValue in
+                navigationFeedbackGate.isRouteFromDeviceToUser = newValue
                 // Reversed route = user→device; non-reversed = device→user. Toggle swaps direction.
                 // Clear route and overlay immediately when route direction changes to prevent showing stale route data
                 // The route will be recalculated and overlay refreshed when the new route is calculated
@@ -428,6 +439,9 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: distanceText) { _, _ in
                 updateBottomAccessory()
+            }
+            .onChange(of: isNavigationMode) { _, newValue in
+                navigationFeedbackGate.isNavigationMode = newValue
             }
             .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, newValue in
                 isMutualNavigation = newValue
@@ -1625,11 +1639,13 @@ extension iPhone_DeviceNavigationView {
 
     private func bindNavigationOverlayFeedback(to viewModel: NavigationOverlayViewModel) {
         navigationOverlayCancellables.removeAll()
+        let gate = navigationFeedbackGate
         viewModel.$symbol
             .compactMap { $0 }
             .removeDuplicates()
             .sink { symbol in
-                guard isViewActive, !isRouteFromDeviceToUser, isNavigationMode else { return }
+                // Use gate (reference type) so we see current state; struct capture would keep isNavigationMode false after double-tap.
+                guard gate.isViewActive, !gate.isRouteFromDeviceToUser, gate.isNavigationMode else { return }
                 playNavigationFeedback(for: symbol)
             }
             .store(in: &navigationOverlayCancellables)
@@ -1639,14 +1655,25 @@ extension iPhone_DeviceNavigationView {
         let direction = navigationFeedbackDirection(for: symbol)
         switch direction {
         case .left:
-            SoundEffectPlayer.shared.play(named: navigationLeftSoundName, fileExtension: "caf")
+            playNavigationTurnSound(left: true)
             performNavigationHaptic(style: .light, count: 2, interval: leftNavigationHapticInterval)
         case .right:
-            SoundEffectPlayer.shared.play(named: navigationRightSoundName, fileExtension: "caf")
+            playNavigationTurnSound(left: false)
             performNavigationHaptic(style: .medium, count: 3, interval: rightNavigationHapticInterval)
         case .straight:
             // Straight feedback disabled for now
             break
+        }
+    }
+
+    /// Plays turn sound: custom .caf if present in bundle, otherwise system Tink (left) / Tock (right).
+    private func playNavigationTurnSound(left: Bool) {
+        let name = left ? navigationLeftSoundName : navigationRightSoundName
+        if SoundEffectPlayer.shared.hasResource(named: name, fileExtension: "caf") {
+            SoundEffectPlayer.shared.play(named: name, fileExtension: "caf")
+        } else {
+            let systemID = left ? navigationLeftSystemSoundID : navigationRightSystemSoundID
+            SoundEffectPlayer.shared.playSystemSound(systemID)
         }
     }
 
@@ -1802,8 +1829,13 @@ extension iPhone_DeviceNavigationView {
             )
         }
     }
-    
-    
 }
 
+/// Holds current view/mode state so the navigation feedback Combine sink reads live values
+/// instead of a struct snapshot (which would keep isNavigationMode false after double-tap).
+private final class NavigationFeedbackGate {
+    var isViewActive = false
+    var isRouteFromDeviceToUser = true
+    var isNavigationMode = false
+}
 
