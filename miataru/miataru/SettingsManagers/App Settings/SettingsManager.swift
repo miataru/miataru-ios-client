@@ -153,6 +153,10 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(navigationTransportType, forKey: Keys.navigationTransportType) }
     }
     
+    @Published var allowedDeviceListEnabled: Bool {
+        didSet { defaults.set(allowedDeviceListEnabled, forKey: Keys.allowedDeviceListEnabled) }
+    }
+    
     // MARK: - Keys
     private enum Keys {
         static let mapType = "map_type"
@@ -181,6 +185,7 @@ class SettingsManager: ObservableObject {
         static let deviceKeyLastChanged = "device_key_last_changed"
         static let deviceKeyAuthBlocked = "device_key_auth_blocked"
         static let deviceKeyAuthBlockedKey = "device_key_auth_blocked_key"
+        static let allowedDeviceListEnabled = "allowed_device_list_enabled"
     }
     
     // MARK: - Location Permission Management
@@ -220,6 +225,7 @@ class SettingsManager: ObservableObject {
         self.deviceKeyLastChanged = d.object(forKey: Keys.deviceKeyLastChanged) as? Date
         self.deviceKeyAuthBlocked = d.object(forKey: Keys.deviceKeyAuthBlocked) as? Bool ?? false
         self.deviceKeyAuthBlockedKey = d.string(forKey: Keys.deviceKeyAuthBlockedKey)
+        self.allowedDeviceListEnabled = d.object(forKey: Keys.allowedDeviceListEnabled) as? Bool ?? false
     }
     
     // MARK: - Synchronize

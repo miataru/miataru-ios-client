@@ -21,6 +21,11 @@ struct iPhone_AddDeviceView: View {
     @State private var showInvalidQRAlert = false
     @State private var showDuplicateAlert = false
     @State private var showColorPickerSheet = false
+    @State private var hasCurrentLocationAccess: Bool = true
+    @State private var hasHistoryAccess: Bool = false
+    @State private var isSaving = false
+    @State private var saveError: String? = nil
+    @ObservedObject private var settings = SettingsManager.shared
     
     // Returns a random vivid color from an extensive palette of visible colors
     private static func randomVividColor() -> Color {
@@ -86,6 +91,18 @@ struct iPhone_AddDeviceView: View {
                             .presentationDetents([.medium])
                     }
                 }
+                if settings.allowedDeviceListEnabled {
+                    Section(header: Text("allowed_device_list_access_controls")) {
+                        Toggle("allowed_device_list_current_location_access", isOn: $hasCurrentLocationAccess)
+                        Text("allowed_device_list_current_location_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Toggle("allowed_device_list_history_access", isOn: $hasHistoryAccess)
+                        Text("allowed_device_list_history_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .navigationTitle("new_device")
             .toolbar {
@@ -96,18 +113,11 @@ struct iPhone_AddDeviceView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("add") {
-                        let uiColor = UIColor(deviceColor)
-                        let newDevice = KnownDevice(name: deviceName, deviceID: deviceID, color: uiColor)
-                        let success = store.add(device: newDevice)
-                        if success {
-                            Haptic.notifySuccess()
-                            isPresented = false
-                        } else {
-                            Haptic.notifyWarning()
-                            showDuplicateAlert = true
+                        Task {
+                            await saveDevice()
                         }
                     }
-                    .disabled(deviceName.isEmpty || deviceID.isEmpty)
+                    .disabled(deviceName.isEmpty || deviceID.isEmpty || isSaving)
                 }
             }
         }
@@ -151,6 +161,101 @@ struct iPhone_AddDeviceView: View {
                 dismissButton: .default(Text("ok"))
             )
         }
+        .alert("Error", isPresented: .constant(saveError != nil), presenting: saveError) { _ in
+            Button("OK") {
+                saveError = nil
+            }
+        } message: { error in
+            Text(error)
+        }
+        .onAppear {
+            // Update deviceID from prefillDeviceID when view appears
+            // Check multiple times to handle timing issues
+            if let prefill = prefillDeviceID, !prefill.isEmpty {
+                deviceID = prefill
+            }
+            // Also check after a brief delay in case prefill wasn't set yet
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let prefill = self.prefillDeviceID, !prefill.isEmpty, self.deviceID.isEmpty {
+                    self.deviceID = prefill
+                }
+            }
+        }
+        .onChange(of: prefillDeviceID) { oldValue, newValue in
+            // Update deviceID when prefillDeviceID changes
+            if let prefill = newValue, !prefill.isEmpty {
+                deviceID = prefill
+            }
+        }
+        .onChange(of: isPresented) { oldValue, newValue in
+            // Reset form when sheet is dismissed
+            if !newValue {
+                deviceName = ""
+                deviceID = ""
+                deviceColor = Self.randomVividColor()
+                hasCurrentLocationAccess = true
+                hasHistoryAccess = false
+                saveError = nil
+            } else {
+                // When sheet appears, set deviceID from prefill if available
+                // Check immediately and also after a delay
+                if let prefill = prefillDeviceID, !prefill.isEmpty {
+                    deviceID = prefill
+                }
+                // Also check after a brief delay in case prefill wasn't set yet
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let prefill = self.prefillDeviceID, !prefill.isEmpty {
+                        self.deviceID = prefill
+                    }
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func saveDevice() async {
+        isSaving = true
+        saveError = nil
+        
+        // Capture snapshot for rollback
+        let snapshot = AllowedDeviceListManager.shared.captureSnapshot()
+        
+        let uiColor = UIColor(deviceColor)
+        let newDevice = KnownDevice(
+            name: deviceName,
+            deviceID: deviceID,
+            color: uiColor,
+            hasCurrentLocationAccess: hasCurrentLocationAccess,
+            hasHistoryAccess: hasHistoryAccess
+        )
+        
+        let success = store.add(device: newDevice)
+        if !success {
+            Haptic.notifyWarning()
+            showDuplicateAlert = true
+            isSaving = false
+            return
+        }
+        
+        // If feature is enabled, sync to server
+        if settings.allowedDeviceListEnabled {
+            do {
+                try await AllowedDeviceListManager.shared.syncAllowedDeviceListIfEnabled(trigger: .add)
+                Haptic.notifySuccess()
+                isPresented = false
+            } catch {
+                // Rollback on sync failure
+                AllowedDeviceListManager.shared.restoreSnapshot(snapshot)
+                saveError = error.localizedDescription
+                Haptic.notifyWarning()
+                debugLog("[AddDevice] Sync failed, rolled back: \(error)")
+            }
+        } else {
+            Haptic.notifySuccess()
+            isPresented = false
+        }
+        
+        isSaving = false
     }
 }
 

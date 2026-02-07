@@ -14,10 +14,13 @@ struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
+    @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
     @EnvironmentObject private var groupStore: DeviceGroupStore
     @State private var showingAddDevice = false
     @State private var showingAddGroup = false
     @State private var prefillDeviceID: String? = nil
+    @State private var pendingDeviceItem: DeviceIDItem? = nil
     @State private var editMode: EditMode = .inactive
     @State private var groupEditMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
@@ -30,10 +33,62 @@ struct iPhone_DevicesView: View {
     @State private var hasPerformedInitialAutoNavigate: Bool = false
     @State private var navigationTargetDevice: KnownDevice? = nil
     @Environment(\.scenePhase) private var scenePhase
+    
+    private var unknownVisitors: [MiataruVisitor] {
+        let knownDeviceIDs = Set(store.devices.map { $0.DeviceID.uppercased() })
+        let ignoredDeviceIDs = Set(ignoredStore.ignoredDeviceIDs.map { $0.uppercased() })
+        
+        // Get unique DeviceIDs from visitors, keeping the most recent visit for each
+        var uniqueVisitors: [String: MiataruVisitor] = [:]
+        for visitor in visitorHistoryViewModel.sortedVisitors {
+            let normalizedID = visitor.DeviceID.uppercased()
+            if !knownDeviceIDs.contains(normalizedID) && !ignoredDeviceIDs.contains(normalizedID) && !normalizedID.isEmpty {
+                if let existing = uniqueVisitors[normalizedID] {
+                    // Keep the most recent visit
+                    if visitor.TimeStampDate > existing.TimeStampDate {
+                        uniqueVisitors[normalizedID] = visitor
+                    }
+                } else {
+                    uniqueVisitors[normalizedID] = visitor
+                }
+            }
+        }
+        
+        return Array(uniqueVisitors.values).sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
             List {
+                if settings.allowedDeviceListEnabled && !unknownVisitors.isEmpty {
+                    Section(header: Text("unknown_visitors_section_title")) {
+                        ForEach(unknownVisitors, id: \.uniqueID) { visitor in
+                            UnknownVisitorRow(visitor: visitor) {
+                                // Allow action - set pendingDeviceItem to trigger sheet with prefill
+                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                            } onIgnore: {
+                                // Ignore action
+                                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    // Set pendingDeviceItem to trigger sheet with prefill
+                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                } label: {
+                                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                                }
+                                .tint(.green)
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                } label: {
+                                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                                }
+                            }
+                        }
+                    }
+                }
                 Section {
                     ForEach(store.devices) { device in
                         if editMode == .inactive {
@@ -43,7 +98,9 @@ struct iPhone_DevicesView: View {
                             .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
-                                    store.removeDevice(byID: device.DeviceID)
+                                    Task {
+                                        await removeDevice(deviceID: device.DeviceID)
+                                    }
                                 } label: {
                                     Label("delete_device", systemImage: "trash")
                                 }
@@ -74,7 +131,9 @@ struct iPhone_DevicesView: View {
                                 .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                     Button(role: .destructive) {
-                                        store.removeDevice(byID: device.DeviceID)
+                                        Task {
+                                            await removeDevice(deviceID: device.DeviceID)
+                                        }
                                     } label: {
                                         Label("delete_device", systemImage: "trash")
                                     }
@@ -101,8 +160,10 @@ struct iPhone_DevicesView: View {
                         store.devices.move(fromOffsets: indices, toOffset: newOffset)
                     }
                     .onDelete { indices in
-                        for index in indices {
-                            store.removeDevice(byID: store.devices[index].DeviceID)
+                        Task {
+                            for index in indices {
+                                await removeDevice(deviceID: store.devices[index].DeviceID)
+                            }
                         }
                     }
                 }
@@ -242,6 +303,16 @@ struct iPhone_DevicesView: View {
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)
             }
+            .sheet(item: $pendingDeviceItem) { item in
+                iPhone_AddDeviceView(
+                    store: store,
+                    isPresented: Binding(
+                        get: { pendingDeviceItem != nil },
+                        set: { if !$0 { pendingDeviceItem = nil } }
+                    ),
+                    prefillDeviceID: item.deviceID
+                )
+            }
             .sheet(isPresented: $showingAddGroup) {
                 iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
             }
@@ -279,6 +350,13 @@ struct iPhone_DevicesView: View {
                     didAutoNavigateFromSavedDevice = true
                 }
                 hasPerformedInitialAutoNavigate = true
+                
+                // Load visitor history if needed
+                if visitorHistoryViewModel.visitors.isEmpty {
+                    Task {
+                        await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
+                    }
+                }
             }
             .onDisappear {
                 isVisible = false
@@ -336,11 +414,71 @@ struct iPhone_DevicesView: View {
             // changes to lastOpenedDeviceID to avoid unintended re-pushes
         }
     }
+    
+    @MainActor
+    private func removeDevice(deviceID: String) async {
+        if settings.allowedDeviceListEnabled {
+            do {
+                try await AllowedDeviceListManager.shared.removeDeviceAndSync(deviceID: deviceID)
+                Haptic.notifySuccess()
+            } catch {
+                Haptic.notifyWarning()
+                debugLog("[DevicesView] Failed to remove device with sync: \(error)")
+                // Device removal will be rolled back by AllowedDeviceListManager
+            }
+        } else {
+            store.removeDevice(byID: deviceID)
+        }
+    }
 }
 
 private enum NavigationDestination: Hashable {
     case device(String)
     case group(String)
+}
+
+struct UnknownVisitorRow: View {
+    let visitor: MiataruVisitor
+    let onAllow: () -> Void
+    let onIgnore: () -> Void
+    
+    private var formattedDate: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: visitor.TimeStampDate, relativeTo: Date())
+    }
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(visitor.DeviceID)
+                    .font(.body)
+                    .fontWeight(.medium)
+                Text(formattedDate)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Menu {
+                Button(role: .none) {
+                    onAllow()
+                } label: {
+                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                }
+                
+                Button(role: .destructive) {
+                    onIgnore()
+                } label: {
+                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.title3)
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding(.vertical, 4)
+    }
 }
 
 #Preview {

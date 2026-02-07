@@ -39,13 +39,25 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
             objectWillChange.send()
         }
     }
+    @Published @objc var hasCurrentLocationAccess: Bool = true {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+    @Published @objc var hasHistoryAccess: Bool = true {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
     var id: String { DeviceID }
     
-    init(name: String, deviceID: String, color: UIColor? = nil) {
+    init(name: String, deviceID: String, color: UIColor? = nil, hasCurrentLocationAccess: Bool = true, hasHistoryAccess: Bool = true) {
         self.DeviceName = name
         self.DeviceID = deviceID
         self.DeviceColor = color
+        self.hasCurrentLocationAccess = hasCurrentLocationAccess
+        self.hasHistoryAccess = hasHistoryAccess
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -55,6 +67,17 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
         self.KnownDevicesTablePosition = aDecoder.decodeInteger(forKey: "KnownDevicesTablePosition")
         let decodedColor = aDecoder.decodeObject(forKey: "DeviceColor") as? UIColor
         self.DeviceColor = decodedColor
+        // Backward compatibility: default to true/true if keys are absent
+        if aDecoder.containsValue(forKey: "hasCurrentLocationAccess") {
+            self.hasCurrentLocationAccess = aDecoder.decodeBool(forKey: "hasCurrentLocationAccess")
+        } else {
+            self.hasCurrentLocationAccess = true
+        }
+        if aDecoder.containsValue(forKey: "hasHistoryAccess") {
+            self.hasHistoryAccess = aDecoder.decodeBool(forKey: "hasHistoryAccess")
+        } else {
+            self.hasHistoryAccess = true
+        }
         /*print(aDecoder.decodeObject(forKey: "DeviceName") as? String ?? "")
         print(aDecoder.decodeObject(forKey: "DeviceID") as? String ?? "")
         print(aDecoder.decodeBool(forKey: "DeviceIsInGroup"))
@@ -68,6 +91,8 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
         aCoder.encode(DeviceIsInGroup, forKey: "DeviceIsInGroup")
         aCoder.encode(KnownDevicesTablePosition, forKey: "KnownDevicesTablePosition")
         aCoder.encode(DeviceColor, forKey: "DeviceColor")
+        aCoder.encode(hasCurrentLocationAccess, forKey: "hasCurrentLocationAccess")
+        aCoder.encode(hasHistoryAccess, forKey: "hasHistoryAccess")
         //print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
 
     }

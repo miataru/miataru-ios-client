@@ -18,6 +18,11 @@ struct iPhone_EditDeviceView: View {
     @State private var tempDeviceName: String = ""
     @State private var tempDeviceColor: Color = .gray
     @State private var showColorPickerSheet = false
+    @State private var tempHasCurrentLocationAccess: Bool = true
+    @State private var tempHasHistoryAccess: Bool = true
+    @State private var isSaving = false
+    @State private var saveError: String? = nil
+    @ObservedObject private var settings = SettingsManager.shared
 
     var body: some View {
         NavigationView {
@@ -81,6 +86,18 @@ struct iPhone_EditDeviceView: View {
                         Spacer()
                     }
                 }
+                if settings.allowedDeviceListEnabled {
+                    Section(header: Text("allowed_device_list_access_controls")) {
+                        Toggle("allowed_device_list_current_location_access", isOn: $tempHasCurrentLocationAccess)
+                        Text("allowed_device_list_current_location_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Toggle("allowed_device_list_history_access", isOn: $tempHasHistoryAccess)
+                        Text("allowed_device_list_history_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .navigationTitle("edit_device")
             .toolbar {
@@ -91,14 +108,11 @@ struct iPhone_EditDeviceView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("save") {
-                        device.DeviceName = tempDeviceName
-                        if #available(iOS 14.0, *) {
-                            device.DeviceColor = UIColor(tempDeviceColor)
+                        Task {
+                            await saveDevice()
                         }
-                        Haptic.notifySuccess()
-                        isPresented = false
                     }
-                    .disabled(tempDeviceName.isEmpty)
+                    .disabled(tempDeviceName.isEmpty || isSaving)
                 }
             }
             .onAppear {
@@ -106,6 +120,15 @@ struct iPhone_EditDeviceView: View {
                 if #available(iOS 14.0, *) {
                     tempDeviceColor = Color(device.DeviceColor ?? UIColor.gray)
                 }
+                tempHasCurrentLocationAccess = device.hasCurrentLocationAccess
+                tempHasHistoryAccess = device.hasHistoryAccess
+            }
+            .alert("Error", isPresented: .constant(saveError != nil), presenting: saveError) { _ in
+                Button("OK") {
+                    saveError = nil
+                }
+            } message: { error in
+                Text(error)
             }
         }
         .overlay(
@@ -122,6 +145,57 @@ struct iPhone_EditDeviceView: View {
             }, alignment: .top
         )
         .animation(animationsAllowed ? .easeInOut : nil, value: copiedIDFeedback)
+    }
+    
+    @MainActor
+    private func saveDevice() async {
+        isSaving = true
+        saveError = nil
+        
+        // Capture snapshot for rollback
+        let snapshot = AllowedDeviceListManager.shared.captureSnapshot()
+        
+        // Store previous ACL values for rollback
+        let previousHasCurrentLocationAccess = device.hasCurrentLocationAccess
+        let previousHasHistoryAccess = device.hasHistoryAccess
+        
+        // Update device properties
+        device.DeviceName = tempDeviceName
+        if #available(iOS 14.0, *) {
+            device.DeviceColor = UIColor(tempDeviceColor)
+        }
+        device.hasCurrentLocationAccess = tempHasCurrentLocationAccess
+        device.hasHistoryAccess = tempHasHistoryAccess
+        
+        debugLog("[EditDevice] Updated device \(device.DeviceID): current=\(tempHasCurrentLocationAccess), history=\(tempHasHistoryAccess)")
+        debugLog("[EditDevice] Device object values after update: current=\(device.hasCurrentLocationAccess), history=\(device.hasHistoryAccess)")
+        
+        // Ensure property changes are propagated
+        await Task.yield()
+        
+        // If feature is enabled, sync to server
+        if settings.allowedDeviceListEnabled {
+            do {
+                // Verify device values before syncing
+                debugLog("[EditDevice] Before sync - device \(device.DeviceID): current=\(device.hasCurrentLocationAccess), history=\(device.hasHistoryAccess)")
+                try await AllowedDeviceListManager.shared.syncAllowedDeviceListIfEnabled(trigger: .edit)
+                Haptic.notifySuccess()
+                isPresented = false
+            } catch {
+                // Rollback on sync failure
+                device.hasCurrentLocationAccess = previousHasCurrentLocationAccess
+                device.hasHistoryAccess = previousHasHistoryAccess
+                AllowedDeviceListManager.shared.restoreSnapshot(snapshot)
+                saveError = error.localizedDescription
+                Haptic.notifyWarning()
+                debugLog("[EditDevice] Sync failed, rolled back: \(error)")
+            }
+        } else {
+            Haptic.notifySuccess()
+            isPresented = false
+        }
+        
+        isSaving = false
     }
 }
 

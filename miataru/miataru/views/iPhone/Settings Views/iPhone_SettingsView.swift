@@ -14,6 +14,8 @@ struct iPhone_SettingsView: View {
     @State private var showingLocationStatus = false
     @State private var showingLocationTest = false
     @State private var showingDeviceKeySheet = false
+    @State private var isActivatingAllowedDeviceList = false
+    @State private var activationError: String? = nil
     @EnvironmentObject var appState: AppState
     
     var body: some View {
@@ -44,6 +46,47 @@ struct iPhone_SettingsView: View {
                                 .foregroundColor(.blue)
                             Text("manage_your_devicekey")
                         }
+                    }
+                }
+                Section(header: Text("allowed_device_list_section_title")) {
+                    if settings.allowedDeviceListEnabled {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("allowed_device_list_enabled_status")
+                                .font(.body)
+                        }
+                        Text("allowed_device_list_enabled_explanation")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Button {
+                                Task {
+                                    await activateAllowedDeviceList()
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "lock.shield")
+                                        .foregroundColor(.blue)
+                                    Text("allowed_device_list_enable_button")
+                                    if isActivatingAllowedDeviceList {
+                                        Spacer()
+                                        ProgressView()
+                                    }
+                                }
+                            }
+                            .disabled(isActivatingAllowedDeviceList)
+                            
+                            if let error = activationError {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        Text("allowed_device_list_disabled_explanation")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
                 if settings.trackAndReportLocation {
@@ -220,6 +263,21 @@ struct iPhone_SettingsView: View {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
             }
         }
+    }
+    
+    @MainActor
+    private func activateAllowedDeviceList() async {
+        isActivatingAllowedDeviceList = true
+        activationError = nil
+        
+        do {
+            try await AllowedDeviceListManager.shared.activateAllowedDeviceList()
+        } catch {
+            activationError = error.localizedDescription
+            debugLog("[Settings] Failed to activate allowed device list: \(error)")
+        }
+        
+        isActivatingAllowedDeviceList = false
     }
 }
 

@@ -36,6 +36,9 @@ struct Mac_OnboardingContainerView: View {
             if settings.trackAndReportLocation {
                 pages.append(AnyView(iPhone_6_OnboardingDeviceKeyView()))
             }
+            if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_8_OnboardingAllowedDeviceListView()))
+            }
             pages.append(AnyView(iPhone_7_OnboardingDoneView()))
             return pages
         }

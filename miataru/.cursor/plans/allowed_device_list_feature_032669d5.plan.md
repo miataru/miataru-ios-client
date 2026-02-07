@@ -4,43 +4,43 @@ overview: Implement optional per-device access control (current location and his
 todos:
   - id: phase1-data-model
     content: Extend KnownDevice with ACL fields (hasCurrentLocationAccess, hasHistoryAccess) and update NSCoding for backward compatibility
-    status: pending
+    status: completed
   - id: phase1-settings
     content: Add allowedDeviceListEnabled flag to SettingsManager with UserDefaults persistence
-    status: pending
+    status: completed
   - id: phase1-ignored-store
     content: Create IgnoredVisitorDeviceStore singleton for dismissed unknown devices
-    status: pending
+    status: completed
   - id: phase1-manager
     content: Implement AllowedDeviceListManager with payload building, sync queue, and transactional rollback
-    status: pending
+    status: completed
   - id: phase2-onboarding
     content: Create iPhone_8_OnboardingAllowedDeviceListView and integrate into onboarding containers
-    status: pending
+    status: completed
   - id: phase2-settings-ui
     content: Add settings entry for allowed device list feature with status display
-    status: pending
+    status: completed
   - id: phase3-add-dialog
     content: Add conditional ACL toggles to iPhone_AddDeviceView and wire sync on save
-    status: pending
+    status: completed
   - id: phase3-edit-dialog
     content: Add conditional ACL toggles to iPhone_EditDeviceView and wire sync on save
-    status: pending
+    status: completed
   - id: phase3-remove-sync
     content: Wire device removal to sync full list when feature enabled
-    status: pending
+    status: completed
   - id: phase4-unknown-section
     content: Add unknown visitors section to iPhone_DevicesView with allow/ignore actions
-    status: pending
+    status: completed
   - id: phase5-localization
     content: Add all feature strings to Localizable.xcstrings and run export workflow
-    status: pending
+    status: completed
   - id: phase5-testing
     content: Write unit tests for payload mapping, backward compatibility, and sync queue
-    status: pending
+    status: completed
   - id: phase5-migration
     content: "Verify migration safety: first launch saves ACL defaults, no silent server calls"
-    status: pending
+    status: completed
 isProject: false
 ---
 

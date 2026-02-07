@@ -144,6 +144,7 @@ struct VisitorHistoryStateView<Content: View>: View {
 struct VisitorHistorySection: View {
     @ObservedObject var viewModel: VisitorHistoryViewModel
     @ObservedObject var deviceStore: KnownDeviceStore
+    @ObservedObject var ignoredStore = IgnoredVisitorDeviceStore.shared
     @Binding var pendingDeviceItem: DeviceIDItem?
     let isLandscape: Bool
     
@@ -161,8 +162,15 @@ struct VisitorHistorySection: View {
                         VisitorHistoryRow(
                             visitor: visitor,
                             knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
+                            isIgnored: ignoredStore.isIgnored(deviceID: visitor.DeviceID),
                             onAddDevice: {
                                 pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                            },
+                            onIgnore: {
+                                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                            },
+                            onUnignore: {
+                                ignoredStore.removeIgnored(deviceID: visitor.DeviceID)
                             }
                         )
                         if visitor.uniqueID != visitors.last?.uniqueID {
@@ -179,6 +187,7 @@ struct VisitorHistorySection: View {
 struct iPhone_VisitorHistoryView: View {
     @StateObject private var deviceStore = KnownDeviceStore.shared
     @StateObject private var viewModel = VisitorHistoryViewModel()
+    @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
     @State private var pendingDeviceItem: DeviceIDItem? = nil
     
     var body: some View {
@@ -188,8 +197,15 @@ struct iPhone_VisitorHistoryView: View {
                     VisitorHistoryRow(
                         visitor: visitor,
                         knownDevice: deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() },
+                        isIgnored: ignoredStore.isIgnored(deviceID: visitor.DeviceID),
                         onAddDevice: {
                             pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                        },
+                        onIgnore: {
+                            ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                        },
+                        onUnignore: {
+                            ignoredStore.removeIgnored(deviceID: visitor.DeviceID)
                         }
                     )
                 }
@@ -229,7 +245,10 @@ struct iPhone_VisitorHistoryView: View {
 struct VisitorHistoryRow: View {
     let visitor: MiataruVisitor
     let knownDevice: KnownDevice?
+    let isIgnored: Bool
     let onAddDevice: () -> Void
+    let onIgnore: () -> Void
+    let onUnignore: () -> Void
     
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -265,18 +284,27 @@ struct VisitorHistoryRow: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 // Device name
-                if let device = knownDevice {
-                    Text(device.DeviceName)
-                        .font(.headline)
-                        .foregroundColor(colorScheme == .light ? .black : .white)
-                } else {
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("unknown_device_label", comment: "Label for unknown/unrecognized device"))
+                HStack(spacing: 4) {
+                    if let device = knownDevice {
+                        Text(device.DeviceName)
                             .font(.headline)
                             .foregroundColor(colorScheme == .light ? .black : .white)
-                        Text(shortenedDeviceID(visitor.DeviceID))
-                            .font(.headline)
+                    } else {
+                        HStack(spacing: 4) {
+                            Text(NSLocalizedString("unknown_device_label", comment: "Label for unknown/unrecognized device"))
+                                .font(.headline)
+                                .foregroundColor(colorScheme == .light ? .black : .white)
+                            Text(shortenedDeviceID(visitor.DeviceID))
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    if isIgnored {
+                        Image(systemName: "eye.slash.fill")
+                            .font(.caption)
                             .foregroundColor(.secondary)
+                            .accessibilityLabel(Text("visitor_history_ignored_indicator"))
                     }
                 }
                 
@@ -314,12 +342,31 @@ struct VisitorHistoryRow: View {
             Spacer()
             
             if knownDevice == nil {
-                Button(action: onAddDevice) {
-                    Text(NSLocalizedString("add_device_action", comment: "Button label to add an unknown device"))
+                Menu {
+                    Button(role: .none) {
+                        onAddDevice()
+                    } label: {
+                        Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                    }
+                    
+                    if isIgnored {
+                        Button(role: .none) {
+                            onUnignore()
+                        } label: {
+                            Label("visitor_history_unignore", systemImage: "eye")
+                        }
+                    } else {
+                        Button(role: .destructive) {
+                            onIgnore()
+                        } label: {
+                            Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.title3)
+                        .foregroundColor(.blue)
                 }
-                .buttonStyle(.bordered)
-                .accessibilityLabel(NSLocalizedString("add_device_action", comment: "Button label to add an unknown device"))
-                .accessibilityHint(NSLocalizedString("add_device_accessibility_hint", comment: "Accessibility hint for add device button"))
             }
         }
         .padding(.vertical, 4)
