@@ -88,11 +88,21 @@ struct iPhone_EditDeviceView: View {
                 }
                 if settings.allowedDeviceListEnabled {
                     Section(header: Text("allowed_device_list_access_controls")) {
-                        Toggle("allowed_device_list_current_location_access", isOn: $tempHasCurrentLocationAccess)
+                        Toggle("allowed_device_list_current_location_access", isOn: Binding(
+                            get: { tempHasCurrentLocationAccess },
+                            set: { newValue in
+                                tempHasCurrentLocationAccess = newValue
+                                // If current location access is disabled, also disable history access
+                                if !newValue {
+                                    tempHasHistoryAccess = false
+                                }
+                            }
+                        ))
                         Text("allowed_device_list_current_location_access_description")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Toggle("allowed_device_list_history_access", isOn: $tempHasHistoryAccess)
+                            .disabled(!tempHasCurrentLocationAccess)
                         Text("allowed_device_list_history_access_description")
                             .font(.caption)
                             .foregroundColor(.secondary)
