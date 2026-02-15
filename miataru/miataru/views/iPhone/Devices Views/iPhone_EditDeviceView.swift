@@ -62,6 +62,29 @@ struct iPhone_EditDeviceView: View {
                             .presentationDetents([.medium])
                     }
                 }
+                // Hide ACL controls for this device itself – ACLs are only relevant for *other* devices.
+                if settings.allowedDeviceListEnabled && device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                    Section(header: Text("allowed_device_list_access_controls")) {
+                        Toggle("allowed_device_list_current_location_access", isOn: Binding(
+                            get: { tempHasCurrentLocationAccess },
+                            set: { newValue in
+                                tempHasCurrentLocationAccess = newValue
+                                // If current location access is disabled, also disable history access
+                                if !newValue {
+                                    tempHasHistoryAccess = false
+                                }
+                            }
+                        ))
+                        Text("allowed_device_list_current_location_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Toggle("allowed_device_list_history_access", isOn: $tempHasHistoryAccess)
+                            .disabled(!tempHasCurrentLocationAccess)
+                        Text("allowed_device_list_history_access_description")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 Section(header: Text("device_qr_code")) {
                     let qrContent = QRCodeShape(
                         data: ("miataru://" + device.DeviceID).data(using: .utf8) ?? Data(),
@@ -84,28 +107,6 @@ struct iPhone_EditDeviceView: View {
                         .frame(width: 200, height: 200)
                         .padding()
                         Spacer()
-                    }
-                }
-                if settings.allowedDeviceListEnabled {
-                    Section(header: Text("allowed_device_list_access_controls")) {
-                        Toggle("allowed_device_list_current_location_access", isOn: Binding(
-                            get: { tempHasCurrentLocationAccess },
-                            set: { newValue in
-                                tempHasCurrentLocationAccess = newValue
-                                // If current location access is disabled, also disable history access
-                                if !newValue {
-                                    tempHasHistoryAccess = false
-                                }
-                            }
-                        ))
-                        Text("allowed_device_list_current_location_access_description")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Toggle("allowed_device_list_history_access", isOn: $tempHasHistoryAccess)
-                            .disabled(!tempHasCurrentLocationAccess)
-                        Text("allowed_device_list_history_access_description")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
                     }
                 }
             }

@@ -3453,6 +3453,71 @@
         }
       }
     },
+    "allowed_device_list_sync_failed" : {
+      "comment" : "Generic error when syncing the allowed device list fails",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke synkronisere enhedsadgangskontrollen. Prøv igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Gerätezugriffskontrolle konnte nicht synchronisiert werden. Bitte versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to sync device access control. Please try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo sincronizar el control de acceso de dispositivos. Inténtalo de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laitteiden käyttöoikeuksien synkronointi epäonnistui. Yritä uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La synchronisation du contrôle d’accès des appareils a échoué. Réessaie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sincronizzazione del controllo di accesso dei dispositivi non è riuscita. Riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのアクセス制御の同期に失敗しました。もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het synchroniseren van de apparaattoegangscontrole is mislukt. Probeer het opnieuw."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步设备访问控制失败。请重试。"
+          }
+        }
+      }
+    },
     "allowed_device_list_title" : {
       "comment" : "Title for allowed device list onboarding screen",
       "localizations" : {
@@ -6368,7 +6433,7 @@
       }
     },
     "device_key_auth_required_message" : {
-      "comment" : "Message when device key authentication is required",
+      "comment" : "Error shown when trying to enable access control without a DeviceKey\nMessage when device key authentication is required",
       "localizations" : {
         "da" : {
           "stringUnit" : {

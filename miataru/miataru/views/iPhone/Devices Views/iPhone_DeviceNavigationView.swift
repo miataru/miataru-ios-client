@@ -241,6 +241,8 @@ struct iPhone_DeviceNavigationView: View {
                     }()
                     if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
                         for: route,
+                        deviceCoordinate: deviceCoordinate,
+                        userCoordinate: userCoordinate,
                         deviceTimestamp: deviceTimestamp,
                         knownDeviceSpeed: knownSpeed,
                         userTimestamp: userTimestamp,
