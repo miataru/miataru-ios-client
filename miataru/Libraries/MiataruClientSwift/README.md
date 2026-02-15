@@ -50,3 +50,27 @@ let locations = try await MiataruAPIClient.getLocation(
     requestingDeviceKey: ownDeviceKey
 )
 ```
+
+## Device Slogan API
+
+Die Library unterstützt jetzt auch die neuen Endpunkte `setDeviceSlogan` und `getDeviceSlogan`.
+
+```swift
+let setResponse = try await MiataruAPIClient.setDeviceSlogan(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    deviceKey: ownDeviceKey,
+    slogan: "Find me if you can"
+)
+
+let slogan = try await MiataruAPIClient.getDeviceSlogan(
+    serverURL: serverURL,
+    forDeviceID: targetDeviceID,
+    requestingDeviceID: ownDeviceID,
+    requestingDeviceKey: ownDeviceKey
+)
+
+print(setResponse.MiataruResponse)         // "ACK"
+print(slogan.DeviceID)                     // targetDeviceID
+print(slogan.Slogan ?? "(kein Slogan)")
+```

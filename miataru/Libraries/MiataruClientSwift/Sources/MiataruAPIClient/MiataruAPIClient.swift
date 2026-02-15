@@ -138,6 +138,34 @@ private struct SetAllowedDeviceListRequestBody: Encodable {
     }
 }
 
+/// Strongly typed request body for the SetDeviceSlogan endpoint.
+private struct SetDeviceSloganRequestBody: Encodable {
+    var MiataruSetDeviceSlogan: SetDeviceSloganPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruSetDeviceSlogan
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruSetDeviceSlogan, forKey: .MiataruSetDeviceSlogan)
+    }
+}
+
+/// Strongly typed request body for the GetDeviceSlogan endpoint.
+private struct GetDeviceSloganRequestBody: Encodable {
+    var MiataruGetDeviceSlogan: GetDeviceSloganPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruGetDeviceSlogan
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruGetDeviceSlogan, forKey: .MiataruGetDeviceSlogan)
+    }
+}
+
 /// Payload for GetLocation request.
 public struct GetLocationPayload: Codable {
     public let Device: String
@@ -234,6 +262,32 @@ public struct SetAllowedDeviceListPayload: Codable {
         self.DeviceID = DeviceID
         self.DeviceKey = DeviceKey
         self.allowedDevices = allowedDevices
+    }
+}
+
+/// Payload for the SetDeviceSlogan request.
+public struct SetDeviceSloganPayload: Codable {
+    public let DeviceID: String
+    public let DeviceKey: String
+    public let Slogan: String
+
+    public init(DeviceID: String, DeviceKey: String, Slogan: String) {
+        self.DeviceID = DeviceID
+        self.DeviceKey = DeviceKey
+        self.Slogan = Slogan
+    }
+}
+
+/// Payload for the GetDeviceSlogan request.
+public struct GetDeviceSloganPayload: Codable {
+    public let DeviceID: String
+    public let RequestDeviceID: String
+    public let RequestDeviceKey: String
+
+    public init(DeviceID: String, RequestDeviceID: String, RequestDeviceKey: String) {
+        self.DeviceID = DeviceID
+        self.RequestDeviceID = RequestDeviceID
+        self.RequestDeviceKey = RequestDeviceKey
     }
 }
 
@@ -699,6 +753,20 @@ public struct MiataruSetAllowedDeviceListResponse: Codable {
     let MiataruVerboseResponse: String
 }
 
+public struct MiataruSetDeviceSloganResponse: Codable {
+    public let MiataruResponse: String
+    public let MiataruVerboseResponse: String
+}
+
+public struct MiataruDeviceSlogan: Codable {
+    public let DeviceID: String
+    public let Slogan: String?
+}
+
+public struct MiataruGetDeviceSloganResponse: Codable {
+    public let MiataruDeviceSlogan: MiataruDeviceSlogan
+}
+
 public struct MiataruAllowedDevice: Codable {
     public let DeviceID: String
     public let hasCurrentLocationAccess: Bool
@@ -1061,6 +1129,69 @@ public enum MiataruAPIClient {
 
         do {
             return try jsonDecoder.decode(MiataruSetAllowedDeviceListResponse.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Sets or updates the slogan for a device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The ID of the device to update.
+    ///   - deviceKey: The DeviceKey for authentication.
+    ///   - slogan: The slogan text (max 40 characters).
+    /// - Returns: The response from the server.
+    /// - Throws: An `APIError` if the request fails.
+    public static func setDeviceSlogan(serverURL: URL,
+                                       deviceID: String,
+                                       deviceKey: String,
+                                       slogan: String) async throws -> MiataruSetDeviceSloganResponse {
+        let url = serverURL.appendingPathComponent("v1/setDeviceSlogan")
+        let requestBody = SetDeviceSloganRequestBody(
+            MiataruSetDeviceSlogan: SetDeviceSloganPayload(DeviceID: deviceID,
+                                                           DeviceKey: deviceKey,
+                                                           Slogan: slogan)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Setting device slogan for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            return try jsonDecoder.decode(MiataruSetDeviceSloganResponse.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Fetches the slogan for a specific device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The target device ID whose slogan should be fetched.
+    ///   - requestingDeviceID: The requesting device ID for authentication.
+    ///   - requestingDeviceKey: The requesting device key for authentication.
+    /// - Returns: The slogan payload for the target device.
+    /// - Throws: An `APIError` if the request fails.
+    public static func getDeviceSlogan(serverURL: URL,
+                                       forDeviceID deviceID: String,
+                                       requestingDeviceID: String,
+                                       requestingDeviceKey: String) async throws -> MiataruDeviceSlogan {
+        let url = serverURL.appendingPathComponent("v1/getDeviceSlogan")
+        let requestBody = GetDeviceSloganRequestBody(
+            MiataruGetDeviceSlogan: GetDeviceSloganPayload(DeviceID: deviceID,
+                                                           RequestDeviceID: requestingDeviceID,
+                                                           RequestDeviceKey: requestingDeviceKey)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Requesting slogan for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            let response = try jsonDecoder.decode(MiataruGetDeviceSloganResponse.self, from: data)
+            return response.MiataruDeviceSlogan
         } catch {
             throw APIError.decodingError(error)
         }
