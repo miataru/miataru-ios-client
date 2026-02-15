@@ -345,7 +345,7 @@ struct iPhone_EditDeviceView: View {
         var errorDescription: String? {
             switch self {
             case .invalidServerURL:
-                return "Invalid server URL."
+                return NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
             case .missingDeviceKey:
                 return NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
             }

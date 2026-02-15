@@ -454,7 +454,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     }
 
     private var displayedSloganText: String {
-        ownDeviceSlogan.isEmpty ? "Tap to set a slogan" : ownDeviceSlogan
+        ownDeviceSlogan.isEmpty ? NSLocalizedString("Device slogan", comment: "Placeholder for the editable device info text.") : ownDeviceSlogan
     }
 
     private var sloganEditorSheet: some View {
@@ -515,7 +515,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @MainActor
     private func loadOwnDeviceSloganIfNeeded() async {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
-            sloganErrorMessage = "Invalid server URL."
+            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
             return
         }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
@@ -555,7 +555,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @MainActor
     private func saveOwnDeviceSlogan() async {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
-            sloganErrorMessage = "Invalid server URL."
+            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
             return
         }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else {
