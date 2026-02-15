@@ -1,0 +1,23 @@
+---
+description: Update CHANGELOG.md when committing, using marketing version from main app
+alwaysApply: true
+---
+
+# Changelog on Commit
+
+Whenever you create or amend a commit that includes code or project changes:
+
+1. **Get the current marketing version** from the main app (miataru) target:
+   - In `miataru/miataru.xcodeproj/project.pbxproj`, find `MARKETING_VERSION = X.Y;` in the main app target’s build settings (the miataru target; its `MARKETING_VERSION` is the one that is not `1.0` — widgets and other targets use 1.0).
+
+2. **Check CHANGELOG.md** at `miataru/CHANGELOG.md`:
+   - If the **top** section already starts with `version X.Y` (matching that marketing version), do **not** add a duplicate. Optionally append a bullet under that section summarizing the changes in this commit.
+
+3. **If that version is not yet at the top** of CHANGELOG.md:
+   - **Prepend** a new section at the very top:
+     - First line: `version X.Y` (no extra blank line above it).
+     - Next lines: bullet points summarizing the changes in this commit (e.g. “- Fixed …”, “- Added …”).
+     - Then one blank line before the previous content.
+   - Keep existing formatting (e.g. “version 2.9” style) and write all new bullets in English.
+
+4. **Commit** CHANGELOG.md together with the rest of the changes (same commit), so the changelog always reflects the commit for that version.

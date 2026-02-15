@@ -239,6 +239,9 @@ withAnimation(.easeInOut(duration: 0.5)) {
 ### Commit Message Language
 - The user prefers commit messages to be written in English.
 
+### Changelog on Commit
+- When you commit code or project changes, extend `miataru/CHANGELOG.md` at the top with the version from the main app’s `MARKETING_VERSION` (in `miataru.xcodeproj/project.pbxproj`; use the value for the miataru target, not 1.0). If that version is not yet at the top of the changelog, add a new “version X.Y” section at the top and list bullet-point summaries of the changes below it. Include the CHANGELOG update in the same commit.
+
 ### String Localization
 - The user prefers that all strings be implemented as NSLocalizedString with correct English descriptions.
 

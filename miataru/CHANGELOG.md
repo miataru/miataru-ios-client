@@ -1,4 +1,7 @@
-v2.9
+version 3.0
+- Extended Cursor rules: added changelog-on-commit rule and memory so CHANGELOG.md is updated at the top with the main app marketing version when committing, with a short summary of changes.
+
+version 2.9
 - Added DeviceKey authentication and key management with generate, reset and restore
 - Added a separate update interval for any non-map device refreshes in settings.
 - Added an optional toggle to show current device speed above map markers.
