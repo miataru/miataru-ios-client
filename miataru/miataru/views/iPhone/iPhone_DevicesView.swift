@@ -32,6 +32,7 @@ struct iPhone_DevicesView: View {
     @State private var didAutoNavigateFromSavedDevice: Bool = false
     @State private var hasPerformedInitialAutoNavigate: Bool = false
     @State private var navigationTargetDevice: KnownDevice? = nil
+    @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
     @Environment(\.scenePhase) private var scenePhase
     
     private var unknownVisitors: [MiataruVisitor] {
@@ -338,6 +339,8 @@ struct iPhone_DevicesView: View {
             }
             .refreshable {
                 let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
+                await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
+                await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 if success { Haptic.notifySuccess() }
             }
             .onAppear {
@@ -350,12 +353,10 @@ struct iPhone_DevicesView: View {
                     didAutoNavigateFromSavedDevice = true
                 }
                 hasPerformedInitialAutoNavigate = true
-                
-                // Load visitor history if needed
-                if visitorHistoryViewModel.visitors.isEmpty {
-                    Task {
-                        await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
-                    }
+
+                Task {
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 }
             }
             .onDisappear {
@@ -364,12 +365,16 @@ struct iPhone_DevicesView: View {
             .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
                 Task {
                     _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
             }
             
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 Task {
                     _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
 
                 // Re-assert deep link navigation after activation to beat any restored navigation stack state.
@@ -430,6 +435,104 @@ struct iPhone_DevicesView: View {
             store.removeDevice(byID: deviceID)
         }
     }
+
+    @MainActor
+    private func refreshUnknownVisitorSupplementalDataIfNeeded(force: Bool = false) async {
+        guard shouldRefreshUnknownVisitorSupplementalData(force: force) else { return }
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+
+        let unknownDeviceIDs = Array(Set(unknownVisitors.map { $0.DeviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() }))
+            .filter { !$0.isEmpty }
+        guard !unknownDeviceIDs.isEmpty else {
+            lastUnknownVisitorSupplementalRefresh = Date()
+            return
+        }
+
+        await refreshUnknownVisitorLocations(
+            deviceIDs: unknownDeviceIDs,
+            serverURL: serverURL
+        )
+
+        let sloganRefreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
+        await refreshUnknownVisitorSlogans(
+            deviceIDs: unknownDeviceIDs,
+            serverURL: serverURL,
+            minimumRefreshInterval: sloganRefreshInterval,
+            force: force
+        )
+
+        lastUnknownVisitorSupplementalRefresh = Date()
+    }
+
+    @MainActor
+    private func shouldRefreshUnknownVisitorSupplementalData(force: Bool) -> Bool {
+        if force {
+            return true
+        }
+
+        guard settings.autoRefreshDeviceList, isVisible else { return false }
+        guard UIApplication.shared.applicationState == .active else { return false }
+
+        let interval = max(1.0, Double(settings.outsideMapUpdateInterval))
+        if let lastUnknownVisitorSupplementalRefresh,
+           Date().timeIntervalSince(lastUnknownVisitorSupplementalRefresh) < interval {
+            return false
+        }
+
+        return true
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorLocations(deviceIDs: [String], serverURL: URL) async {
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            let locations = try await MiataruAPIClient.getLocation(
+                serverURL: serverURL,
+                forDeviceIDs: deviceIDs,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: settings.deviceKey
+            )
+
+            let foundIDs = Set(locations.map { $0.Device })
+            for location in locations {
+                cache.setLocation(
+                    for: location.Device,
+                    latitude: location.Latitude,
+                    longitude: location.Longitude,
+                    accuracy: location.HorizontalAccuracy,
+                    timestamp: location.TimestampDate,
+                    batteryLevel: location.BatteryLevel,
+                    altitude: location.Altitude
+                )
+            }
+
+            let missingIDs = Set(deviceIDs).subtracting(foundIDs)
+            for missingID in missingIDs {
+                cache.removeLocation(for: missingID)
+            }
+        } catch {
+            debugLog("[DevicesView] Failed refreshing unknown visitor locations: \(error)")
+        }
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorSlogans(deviceIDs: [String],
+                                              serverURL: URL,
+                                              minimumRefreshInterval: TimeInterval,
+                                              force: Bool) async {
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+
+        for deviceID in deviceIDs {
+            await DeviceSloganCacheStore.shared.refreshSloganIfStale(
+                for: deviceID,
+                serverURL: serverURL,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey,
+                minimumRefreshInterval: minimumRefreshInterval,
+                force: force
+            )
+        }
+    }
 }
 
 private enum NavigationDestination: Hashable {
@@ -442,10 +545,55 @@ struct UnknownVisitorRow: View {
     let onAllow: () -> Void
     let onIgnore: () -> Void
     
+    @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
+    @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
+    
     private var formattedDate: String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: visitor.TimeStampDate, relativeTo: Date())
+    }
+
+    private var sloganText: String? {
+        guard let slogan = sloganCache.slogan(for: visitor.DeviceID), !slogan.isEmpty else { return nil }
+        return slogan
+    }
+
+    private var locationText: String? {
+        if let cached = locationCache.getLocation(for: visitor.DeviceID) {
+            if let locality = cached.locality, let country = cached.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = cached.locality {
+                return locality
+            }
+            if let country = cached.country {
+                return country
+            }
+        }
+
+        if let placemark = locationCache.getPlacemark(for: visitor.DeviceID) {
+            if let locality = placemark.locality, let country = placemark.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = placemark.locality {
+                return locality
+            }
+            if let country = placemark.country {
+                return country
+            }
+        }
+        return nil
+    }
+
+    private var primarySubtitleText: String? {
+        sloganText ?? locationText
+    }
+
+    private var secondaryLocationText: String? {
+        guard sloganText != nil else { return nil }
+        return locationText
     }
     
     var body: some View {
@@ -454,9 +602,32 @@ struct UnknownVisitorRow: View {
                 Text(visitor.DeviceID)
                     .font(.body)
                     .fontWeight(.medium)
+
+                if let primarySubtitleText {
+                    Text(primarySubtitleText)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+
+                if let secondaryLocationText {
+                    Text(secondaryLocationText)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+
                 Text(formattedDate)
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundColor(.secondary)
+            }
+            .onAppear {
+                locationCache.enqueueGeocodingIfNeeded(for: visitor.DeviceID)
+                Task {
+                    await fetchSloganIfNeeded()
+                }
             }
             Spacer()
             Menu {
@@ -478,6 +649,21 @@ struct UnknownVisitorRow: View {
             }
         }
         .padding(.vertical, 4)
+    }
+
+    @MainActor
+    private func fetchSloganIfNeeded() async {
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+        let refreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
+
+        await sloganCache.refreshSloganIfStale(
+            for: visitor.DeviceID,
+            serverURL: serverURL,
+            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+            requestingDeviceKey: deviceKey,
+            minimumRefreshInterval: refreshInterval
+        )
     }
 }
 

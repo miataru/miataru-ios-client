@@ -11,6 +11,7 @@ import SwiftUI
 import QRCode
 import MessageUI
 import UIKit
+import MiataruAPIClient
 
 struct iPhone_MyDeviceQRCodeView: View {
     @Environment(\.animationsAllowed) private var animationsAllowed
@@ -36,10 +37,20 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State private var showShareFallback = false
     @State private var showDeviceKeySheet = false
     @State private var qrImage: UIImage? = nil
+    @StateObject private var settings = SettingsManager.shared
     @StateObject private var deviceStore = KnownDeviceStore.shared
+    @StateObject private var deviceSloganCacheStore = DeviceSloganCacheStore.shared
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
     @State private var pendingDeviceItem: DeviceIDItem? = nil
     @State private var isVisible: Bool = false
+    @State private var showSloganEditor = false
+    @State private var ownDeviceSlogan = ""
+    @State private var sloganDraft = ""
+    @State private var isLoadingSlogan = false
+    @State private var isSavingSlogan = false
+    @State private var sloganErrorMessage: String? = nil
+
+    private let maxSloganLength = 40
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -61,10 +72,14 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
                 .onAppear {
                     isVisible = true
+                    hydrateSloganFromCache()
                     if visitorHistoryViewModel.visitors.isEmpty {
                         Task {
                             await visitorHistoryViewModel.loadVisitorHistory(showLoading: true)
                         }
+                    }
+                    Task {
+                        await loadOwnDeviceSloganIfNeeded()
                     }
                 }
                 .onDisappear {
@@ -78,6 +93,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                     Task {
                         await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                        await loadOwnDeviceSloganIfNeeded()
                     }
                 }
                 .navigationTitle("my_device")
@@ -144,6 +160,9 @@ struct iPhone_MyDeviceQRCodeView: View {
                 .sheet(isPresented: $showDeviceKeySheet) {
                     iPhone_DeviceKeySheetView(showsMismatchWarning: false)
                 }
+                .sheet(isPresented: $showSloganEditor) {
+                    sloganEditorSheet
+                }
                 .sheet(item: $pendingDeviceItem) { item in
                     iPhone_AddDeviceView(
                         store: deviceStore,
@@ -186,7 +205,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                     alignment: .center
                 )
                 .padding(.horizontal, isLandscape ? 20 : 16)
-                .padding(.vertical, isLandscape ? 12 : 16)
+                .padding(.vertical, isLandscape ? 6 : 8)
                 
                 // Title and explanation
                 VStack(spacing: isLandscape ? 8 : 12) {
@@ -201,7 +220,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                         .padding(.horizontal, isLandscape ? 40 : 20)
                 }
             }
-            .padding(.top, isLandscape ? 20 : 30)
+            .padding(.top, isLandscape ? 12 : 16)
             
             // Device ID Section
             VStack(spacing: isLandscape ? 12 : 16) {
@@ -345,7 +364,54 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
             }
             .padding(.horizontal, isLandscape ? 20 : 16)
-            .padding(.top, isLandscape ? 16 : 20)
+            .padding(.top, isLandscape ? 10 : 12)
+
+            VStack(spacing: isLandscape ? 10 : 12) {
+                Text("Device Slogan")
+                    .font(isLandscape ? .subheadline : .headline)
+                    .foregroundColor(.secondary)
+
+                Button {
+                    sloganDraft = ownDeviceSlogan
+                    showSloganEditor = true
+                } label: {
+                    ZStack(alignment: .trailing) {
+                        Text(displayedSloganText)
+                            .font(.caption2)
+                            .foregroundColor(ownDeviceSlogan.isEmpty ? .secondary : .primary)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .center)
+
+                        if isLoadingSlogan || isSavingSlogan {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.blue)
+                                .font(.caption2)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, isLandscape ? 8 : 10)
+                    .frame(maxWidth: isLandscape ? 280 : 300)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .disabled(isSavingSlogan)
+
+                if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
+                    Text(sloganErrorMessage)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.horizontal, isLandscape ? 20 : 16)
+            .padding(.top, isLandscape ? 12 : 14)
             
             VisitorHistorySection(
                 viewModel: visitorHistoryViewModel,
@@ -381,6 +447,145 @@ struct iPhone_MyDeviceQRCodeView: View {
             thisDeviceIDManager.shared.deviceID,
             "miataru://\(thisDeviceIDManager.shared.deviceID)"
         )
+    }
+
+    private var ownDeviceID: String {
+        thisDeviceIDManager.shared.deviceID
+    }
+
+    private var displayedSloganText: String {
+        ownDeviceSlogan.isEmpty ? "Tap to set a slogan" : ownDeviceSlogan
+    }
+
+    private var sloganEditorSheet: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Device slogan", text: $sloganDraft)
+                        .onChange(of: sloganDraft) { _, newValue in
+                            if newValue.count > maxSloganLength {
+                                sloganDraft = String(newValue.prefix(maxSloganLength))
+                            }
+                        }
+
+                    HStack {
+                        Spacer()
+                        Text("\(sloganDraft.count)/\(maxSloganLength)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } footer: {
+                    Text("Max 40 characters")
+                }
+
+                if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
+                    Section {
+                        Text(sloganErrorMessage)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+            .navigationTitle("Device Slogan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel") {
+                        showSloganEditor = false
+                        sloganDraft = ownDeviceSlogan
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("save") {
+                        Task {
+                            await saveOwnDeviceSlogan()
+                        }
+                    }
+                    .disabled(isSavingSlogan)
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func hydrateSloganFromCache() {
+        ownDeviceSlogan = deviceSloganCacheStore.slogan(for: ownDeviceID) ?? ""
+        sloganDraft = ownDeviceSlogan
+    }
+
+    @MainActor
+    private func loadOwnDeviceSloganIfNeeded() async {
+        guard let serverURL = URL(string: settings.miataruServerURL) else {
+            sloganErrorMessage = "Invalid server URL."
+            return
+        }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+
+        isLoadingSlogan = true
+        defer { isLoadingSlogan = false }
+
+        let fetchError: Error?
+        if deviceSloganCacheStore.isKnown(for: ownDeviceID) {
+            fetchError = await deviceSloganCacheStore.refreshSloganIfStale(
+                for: ownDeviceID,
+                serverURL: serverURL,
+                requestingDeviceID: ownDeviceID,
+                requestingDeviceKey: deviceKey,
+                minimumRefreshInterval: 300
+            )
+        } else {
+            fetchError = await deviceSloganCacheStore.fetchSloganIfNeeded(
+                for: ownDeviceID,
+                serverURL: serverURL,
+                requestingDeviceID: ownDeviceID,
+                requestingDeviceKey: deviceKey
+            )
+        }
+        hydrateSloganFromCache()
+        if let fetchError {
+            if let authMessage = DeviceKeyAuthHandler.handle(error: fetchError) {
+                sloganErrorMessage = authMessage
+            } else {
+                sloganErrorMessage = fetchError.localizedDescription
+            }
+        } else {
+            sloganErrorMessage = nil
+        }
+    }
+
+    @MainActor
+    private func saveOwnDeviceSlogan() async {
+        guard let serverURL = URL(string: settings.miataruServerURL) else {
+            sloganErrorMessage = "Invalid server URL."
+            return
+        }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else {
+            sloganErrorMessage = NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
+            return
+        }
+
+        let normalizedSlogan = String(sloganDraft.trimmingCharacters(in: .whitespacesAndNewlines).prefix(maxSloganLength))
+        isSavingSlogan = true
+        defer { isSavingSlogan = false }
+
+        do {
+            _ = try await MiataruAPIClient.setDeviceSlogan(
+                serverURL: serverURL,
+                deviceID: ownDeviceID,
+                deviceKey: deviceKey,
+                slogan: normalizedSlogan
+            )
+            deviceSloganCacheStore.cacheSlogan(normalizedSlogan, for: ownDeviceID)
+            deviceSloganCacheStore.markFreshNow(for: ownDeviceID)
+            hydrateSloganFromCache()
+            sloganErrorMessage = nil
+            showSloganEditor = false
+        } catch {
+            if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
+                sloganErrorMessage = authMessage
+            } else {
+                sloganErrorMessage = error.localizedDescription
+            }
+        }
     }
 }
 

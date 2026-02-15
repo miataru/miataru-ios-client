@@ -251,6 +251,8 @@ struct VisitorHistoryRow: View {
     let onUnignore: () -> Void
     
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
+    @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
@@ -290,14 +292,9 @@ struct VisitorHistoryRow: View {
                             .font(.headline)
                             .foregroundColor(colorScheme == .light ? .black : .white)
                     } else {
-                        HStack(spacing: 4) {
-                            Text(NSLocalizedString("unknown_device_label", comment: "Label for unknown/unrecognized device"))
-                                .font(.headline)
-                                .foregroundColor(colorScheme == .light ? .black : .white)
-                            Text(shortenedDeviceID(visitor.DeviceID))
-                                .font(.headline)
-                                .foregroundColor(.secondary)
-                        }
+                        Text(visitor.DeviceID)
+                            .font(.body)
+                            .fontWeight(.medium)
                     }
                     
                     if isIgnored {
@@ -308,35 +305,66 @@ struct VisitorHistoryRow: View {
                     }
                 }
                 
-                // Subtitle: Last seen with timezone (like DeviceRowView)
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    let subtitle = subtitleText(now: context.date)
-                    Text(subtitle)
+                if knownDevice != nil {
+                    // Subtitle: Last seen with timezone (like DeviceRowView)
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        let subtitle = subtitleText(now: context.date)
+                        Text(subtitle)
+                            .font(.caption2)
+                            .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                }
+
+                if knownDevice == nil {
+                    if let primaryUnknownSubtitleText {
+                        Text(primaryUnknownSubtitleText)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+
+                    if let secondaryUnknownLocationText {
+                        Text(secondaryUnknownLocationText)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+
+                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                        Text(unknownVisitAgeText(now: context.date))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                } else {
+                    // Distance (separate line)
+                    let distance = distanceText()
+                    Text(distance)
+                        .font(.caption2)
+                        .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    
+                    // Placemark (like DeviceRowView)
+                    let place = placemarkText()
+                    Text(place)
                         .font(.caption2)
                         .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
-                
-                // Distance (separate line)
-                let distance = distanceText()
-                Text(distance)
-                    .font(.caption2)
-                    .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                
-                // Placemark (like DeviceRowView)
-                let place = placemarkText()
-                Text(place)
-                    .font(.caption2)
-                    .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
             }
             .onAppear {
                 // Trigger geocoding if needed
                 cache.enqueueGeocodingIfNeeded(for: visitor.DeviceID)
+                Task {
+                    await fetchSloganIfNeeded()
+                }
             }
             
             Spacer()
@@ -370,14 +398,49 @@ struct VisitorHistoryRow: View {
             }
         }
         .padding(.vertical, 4)
-        .frame(height: 56)
+        .frame(minHeight: knownDevice == nil ? 84 : 56)
     }
     
-    private func shortenedDeviceID(_ deviceID: String) -> String {
-        guard deviceID.count > 10 else { return deviceID }
-        let start = String(deviceID.prefix(6))
-        let end = String(deviceID.suffix(4))
-        return "\(start)...\(end)"
+    private var visitorSlogan: String? {
+        guard let slogan = sloganCache.slogan(for: visitor.DeviceID), !slogan.isEmpty else { return nil }
+        return slogan
+    }
+
+    private var visitorLocationText: String? {
+        if let cached = cache.getLocation(for: visitor.DeviceID) {
+            if let locality = cached.locality, let country = cached.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = cached.locality {
+                return locality
+            }
+            if let country = cached.country {
+                return country
+            }
+        }
+
+        if let placemark = cache.getPlacemark(for: visitor.DeviceID) {
+            if let locality = placemark.locality, let country = placemark.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = placemark.locality {
+                return locality
+            }
+            if let country = placemark.country {
+                return country
+            }
+        }
+
+        return nil
+    }
+
+    private var primaryUnknownSubtitleText: String? {
+        visitorSlogan ?? visitorLocationText
+    }
+
+    private var secondaryUnknownLocationText: String? {
+        guard visitorSlogan != nil else { return nil }
+        return visitorLocationText
     }
     
     /// Returns the subtitle string for the visitor row: last seen with timezone and exact date/time
@@ -419,6 +482,12 @@ struct VisitorHistoryRow: View {
         let exactDateTime = "\(timeString) \(separator) \(dateString)"
         
         return "\(lastSeen): \(relativeTimeWithOffset) (\(exactDateTime))"
+    }
+
+    private func unknownVisitAgeText(now: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: visitor.TimeStampDate, relativeTo: now)
     }
     
     /// Returns the distance text for the visitor row (separate line)
@@ -527,5 +596,20 @@ struct VisitorHistoryRow: View {
             let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
             return (altitudeValue, altitudeUnit)
         }
+    }
+
+    @MainActor
+    private func fetchSloganIfNeeded() async {
+        guard knownDevice == nil else { return }
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+
+        await sloganCache.refreshSloganIfStale(
+            for: visitor.DeviceID,
+            serverURL: serverURL,
+            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+            requestingDeviceKey: deviceKey,
+            minimumRefreshInterval: 300
+        )
     }
 }

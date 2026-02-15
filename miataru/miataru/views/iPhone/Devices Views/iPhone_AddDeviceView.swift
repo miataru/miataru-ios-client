@@ -25,7 +25,11 @@ struct iPhone_AddDeviceView: View {
     @State private var hasHistoryAccess: Bool = false
     @State private var isSaving = false
     @State private var saveError: String? = nil
+    @State private var fetchedSlogan: String = ""
+    @State private var isLoadingSlogan = false
+    @State private var sloganLookupTask: Task<Void, Never>? = nil
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     
     // Returns a random vivid color from an extensive palette of visible colors
     private static func randomVividColor() -> Color {
@@ -72,6 +76,20 @@ struct iPhone_AddDeviceView: View {
             Form {
                 Section(header: Text("device_name")) {
                     TextField("device_name2", text: $deviceName)
+
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Text("Info")
+                        Spacer()
+                        if isLoadingSlogan {
+                            ProgressView()
+                                .scaleEffect(0.9)
+                        } else {
+                            Text(fetchedSlogan.isEmpty ? "-" : fetchedSlogan)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.trailing)
+                                .lineLimit(2)
+                        }
+                    }
                 }
                 Section(header: Text("device_id")) {
                     Button(action: { isShowingScanner = true }) {
@@ -180,12 +198,16 @@ struct iPhone_AddDeviceView: View {
                     self.deviceID = prefill
                 }
             }
+            scheduleSloganLookup(for: deviceID)
         }
         .onChange(of: prefillDeviceID) { oldValue, newValue in
             // Update deviceID when prefillDeviceID changes
             if let prefill = newValue, !prefill.isEmpty {
                 deviceID = prefill
             }
+        }
+        .onChange(of: deviceID) { _, newValue in
+            scheduleSloganLookup(for: newValue)
         }
         .onChange(of: isPresented) { oldValue, newValue in
             // Reset form when sheet is dismissed
@@ -196,6 +218,9 @@ struct iPhone_AddDeviceView: View {
                 hasCurrentLocationAccess = true
                 hasHistoryAccess = false
                 saveError = nil
+                fetchedSlogan = ""
+                sloganLookupTask?.cancel()
+                sloganLookupTask = nil
             } else {
                 // When sheet appears, set deviceID from prefill if available
                 // Check immediately and also after a delay
@@ -208,6 +233,7 @@ struct iPhone_AddDeviceView: View {
                         self.deviceID = prefill
                     }
                 }
+                scheduleSloganLookup(for: deviceID)
             }
         }
     }
@@ -258,6 +284,44 @@ struct iPhone_AddDeviceView: View {
         }
         
         isSaving = false
+    }
+
+    @MainActor
+    private func scheduleSloganLookup(for rawDeviceID: String) {
+        sloganLookupTask?.cancel()
+        sloganLookupTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            if Task.isCancelled { return }
+            await refreshSlogan(for: rawDeviceID)
+        }
+    }
+
+    @MainActor
+    private func refreshSlogan(for rawDeviceID: String) async {
+        let normalizedDeviceID = rawDeviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !normalizedDeviceID.isEmpty else {
+            fetchedSlogan = ""
+            return
+        }
+
+        fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
+        guard normalizedDeviceID.count >= 8 else { return }
+
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+
+        isLoadingSlogan = true
+        defer { isLoadingSlogan = false }
+
+        await sloganCache.refreshSloganIfStale(
+            for: normalizedDeviceID,
+            serverURL: serverURL,
+            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+            requestingDeviceKey: deviceKey,
+            minimumRefreshInterval: 300,
+            force: true
+        )
+        fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
     }
 }
 
