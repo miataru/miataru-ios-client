@@ -1,9 +1,9 @@
 ---
-description: Update CHANGELOG.md when committing, using marketing version from main app
+description: Update CHANGELOG.md and add .specstory history when committing
 alwaysApply: true
 ---
 
-# Changelog on Commit
+# Changelog and SpecStory on Commit
 
 Whenever you create or amend a commit that includes code or project changes:
 
@@ -21,3 +21,8 @@ Whenever you create or amend a commit that includes code or project changes:
    - Keep existing formatting (e.g. “version 2.9” style) and write all new bullets in English.
 
 4. **Commit** CHANGELOG.md together with the rest of the changes (same commit), so the changelog always reflects the commit for that version.
+
+5. **Before committing, create and add a `.specstory` history file** for the current chat:
+   - Save it under `miataru/.specstory/history/` using the same timestamped naming style as existing files.
+   - Keep the same general markdown format used by existing `.specstory` entries (header, title, user input, agent response/summary).
+   - Stage this `.specstory` file and include it in the same commit.
