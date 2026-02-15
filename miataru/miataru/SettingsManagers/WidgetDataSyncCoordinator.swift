@@ -31,6 +31,7 @@ enum WidgetDataSyncCoordinator {
             serverURL: SettingsManager.shared.miataruServerURL,
             deviceIDs: devices.map { $0.DeviceID },
             ownDeviceID: ownDeviceID,
+            ownDeviceKey: SettingsManager.shared.deviceKey,
             shouldReloadTimelines: false
         )
 
@@ -40,11 +41,16 @@ enum WidgetDataSyncCoordinator {
     }
 
     /// Sync only the widget configuration (server + device IDs) into the shared container.
-    static func syncWidgetConfig(serverURL: String, deviceIDs: [String], ownDeviceID: String, shouldReloadTimelines: Bool = true) {
+    static func syncWidgetConfig(serverURL: String,
+                                 deviceIDs: [String],
+                                 ownDeviceID: String,
+                                 ownDeviceKey: String? = nil,
+                                 shouldReloadTimelines: Bool = true) {
         let config = SharedWidgetConfig(
             miataruServerURL: serverURL,
             deviceIDs: deviceIDs,
             ownDeviceID: ownDeviceID,
+            ownDeviceKey: ownDeviceKey,
             authorizationToken: nil
         )
         SharedWidgetConfigManager.write(config)
@@ -107,4 +113,3 @@ private enum WidgetColorFactory {
         return WidgetColor(red: Double(r), green: Double(g), blue: Double(b), alpha: Double(a))
     }
 }
-

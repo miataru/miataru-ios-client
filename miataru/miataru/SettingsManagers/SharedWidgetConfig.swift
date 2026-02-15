@@ -14,6 +14,7 @@ struct SharedWidgetConfig: Codable {
     let miataruServerURL: String
     let deviceIDs: [String]
     let ownDeviceID: String?
+    let ownDeviceKey: String?
     let authorizationToken: String?
 }
 
@@ -49,4 +50,3 @@ enum SharedWidgetConfigManager {
         }
     }
 }
-

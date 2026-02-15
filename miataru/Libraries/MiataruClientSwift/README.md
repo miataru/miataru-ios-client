@@ -35,4 +35,18 @@ docker run -it --rm miataru-testapp
 ## Hinweise
 - Die Beispielapplikation sendet und liest Testdaten von https://service.miataru.com.
 - Passe ggf. die Device-IDs in `main.swift` an.
-- Die Library kann in eigenen Swift-Projekten verwendet werden. 
+- Die Library kann in eigenen Swift-Projekten verwendet werden.
+
+## GetLocation mit DeviceKey des anfragenden Geräts
+
+Die `getLocation`-Methode unterstützt optional den DeviceKey des anfragenden Geräts.
+Dadurch kann der Server eine Kombination aus `RequestMiataruDeviceID` und `RequestMiataruDeviceKey` validieren.
+
+```swift
+let locations = try await MiataruAPIClient.getLocation(
+    serverURL: serverURL,
+    forDeviceIDs: [targetDeviceID],
+    requestingDeviceID: ownDeviceID,
+    requestingDeviceKey: ownDeviceKey
+)
+```

@@ -84,7 +84,8 @@ final class DeviceLocationRefresher {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: deviceIDs,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: settings.deviceKey
             )
             
             // Update cache on main thread to ensure @Published properties are updated safely

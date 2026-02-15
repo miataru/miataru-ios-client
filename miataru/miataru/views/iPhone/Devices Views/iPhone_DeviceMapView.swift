@@ -844,7 +844,8 @@ struct iPhone_DeviceMapView: View {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: [deviceID],
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: settings.deviceKey
             )
             if let loc = locations.first {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)

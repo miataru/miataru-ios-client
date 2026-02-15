@@ -1,5 +1,6 @@
 version 3.0
 - Extended Cursor rules: added changelog-on-commit rule and memory so CHANGELOG.md is updated at the top with the main app marketing version when committing, with a short summary of changes.
+- Extended GetLocation requests to send the requesting device key (`RequestMiataruDeviceKey`) from app and widgets, enabling server-side deviceID/deviceKey validation.
 
 version 2.9
 - Added DeviceKey authentication and key management with generate, reset and restore

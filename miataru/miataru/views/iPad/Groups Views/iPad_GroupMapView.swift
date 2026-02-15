@@ -713,7 +713,8 @@ struct iPad_GroupMapView: View {
             let locations = try await MiataruAPIClient.getLocation(
                 serverURL: url,
                 forDeviceIDs: groupDeviceIDs,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: settings.deviceKey
             )
             // Update device locations
             for location in locations {
@@ -755,7 +756,8 @@ struct iPad_GroupMapView: View {
                     let locations = try await MiataruAPIClient.getLocation(
                         serverURL: url,
                         forDeviceIDs: [deviceID],
-                        requestingDeviceID: thisDeviceIDManager.shared.deviceID
+                        requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                        requestingDeviceKey: settings.deviceKey
                     )
                     if let location = locations.first {
                         let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)

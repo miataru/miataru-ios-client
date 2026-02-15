@@ -29,7 +29,8 @@ class SettingsManager: ObservableObject {
             WidgetDataSyncCoordinator.syncWidgetConfig(
                 serverURL: miataruServerURL,
                 deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },
-                ownDeviceID: thisDeviceIDManager.shared.deviceID
+                ownDeviceID: thisDeviceIDManager.shared.deviceID,
+                ownDeviceKey: deviceKey
             )
         }
     }
@@ -100,6 +101,12 @@ class SettingsManager: ObservableObject {
             } else {
                 defaults.removeObject(forKey: Keys.deviceKey)
             }
+            WidgetDataSyncCoordinator.syncWidgetConfig(
+                serverURL: miataruServerURL,
+                deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },
+                ownDeviceID: thisDeviceIDManager.shared.deviceID,
+                ownDeviceKey: deviceKey
+            )
             if deviceKeyAuthBlocked,
                let blockedKey = deviceKeyAuthBlockedKey,
                let currentKey = deviceKey,

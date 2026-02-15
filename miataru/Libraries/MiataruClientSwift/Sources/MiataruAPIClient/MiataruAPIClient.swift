@@ -20,7 +20,47 @@ private func debugLog(_ message: @autoclosure () -> String) {
 
 /// Configuration part of the Miataru request.
 public struct MiataruConfig: Codable {
-    let RequestMiataruDeviceID: String
+    let RequestMiataruDeviceID: String?
+    let RequestMiataruDeviceKey: String?
+
+    public init(RequestMiataruDeviceID: String?, RequestMiataruDeviceKey: String? = nil) {
+        self.RequestMiataruDeviceID = RequestMiataruDeviceID
+        self.RequestMiataruDeviceKey = RequestMiataruDeviceKey
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case RequestMiataruDeviceID
+        case RequestMiataruDeviceKey
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let id = RequestMiataruDeviceID, !id.isEmpty {
+            try container.encode(id, forKey: .RequestMiataruDeviceID)
+        }
+        if let key = RequestMiataruDeviceKey, !key.isEmpty {
+            try container.encode(key, forKey: .RequestMiataruDeviceKey)
+        }
+    }
+}
+
+/// Strongly typed request body for the GetLocation endpoint.
+private struct GetLocationRequestBody: Encodable {
+    var MiataruConfig: MiataruConfig?
+    var MiataruGetLocation: [GetLocationPayload]
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruConfig
+        case MiataruGetLocation
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let config = MiataruConfig {
+            try container.encode(config, forKey: .MiataruConfig)
+        }
+        try container.encode(MiataruGetLocation, forKey: .MiataruGetLocation)
+    }
 }
 
 /// Strongly typed request body for the GetLocationHistory endpoint.
@@ -101,8 +141,24 @@ private struct SetAllowedDeviceListRequestBody: Encodable {
 /// Payload for GetLocation request.
 public struct GetLocationPayload: Codable {
     public let Device: String
-    public init(Device: String) {
+    public let DeviceKey: String?
+
+    public init(Device: String, DeviceKey: String? = nil) {
         self.Device = Device
+        self.DeviceKey = DeviceKey
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case Device
+        case DeviceKey
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(Device, forKey: .Device)
+        if let deviceKey = DeviceKey, !deviceKey.isEmpty {
+            try container.encode(deviceKey, forKey: .DeviceKey)
+        }
     }
 }
 
@@ -683,21 +739,29 @@ public enum MiataruAPIClient {
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceIDs: The IDs of the devices to fetch the location for.
     ///   - requestingDeviceID: The ID of the device making the request.
+    ///   - requestingDeviceKey: The optional DeviceKey for the requesting device.
     /// - Returns: An array of location data objects.
     /// - Throws: An `APIError` if the request fails.
     public static func getLocation(serverURL: URL,
                            forDeviceIDs deviceIDs: [String],
-                           requestingDeviceID: String) async throws -> [MiataruLocationData] {
+                           requestingDeviceID: String? = nil,
+                           requestingDeviceKey: String? = nil) async throws -> [MiataruLocationData] {
         
         let url = serverURL.appendingPathComponent("v1/GetLocation")
-        
-        let devicesPayload = deviceIDs.map { ["Device": $0] }
-        let jsonPayload: [String: Any] = [
-            "MiataruGetLocation": devicesPayload,
-            "MiataruConfig": ["RequestMiataruDeviceID": requestingDeviceID]
-        ]
-        
-        let data = try await performPostRequest(url: url, jsonPayload: jsonPayload)
+
+        let hasRequestDeviceID = !(requestingDeviceID?.isEmpty ?? true)
+        let hasRequestDeviceKey = !(requestingDeviceKey?.isEmpty ?? true)
+        let requestBody = GetLocationRequestBody(
+            MiataruConfig: (hasRequestDeviceID || hasRequestDeviceKey)
+                ? MiataruConfig(
+                    RequestMiataruDeviceID: requestingDeviceID,
+                    RequestMiataruDeviceKey: requestingDeviceKey
+                )
+                : nil,
+            MiataruGetLocation: deviceIDs.map { GetLocationPayload(Device: $0) }
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody)
         
         do {
             //print("Data: ",data);

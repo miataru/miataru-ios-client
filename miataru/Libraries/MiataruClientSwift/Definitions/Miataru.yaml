@@ -214,6 +214,10 @@ definitions:
             type: string
             description:  RequestMiataruDeviceID should be the ID of the device the request is sent from (or an identifier like an URL).
             default: "6140c3c0-4a7d-40d2-99ab-39414cac3509"
+          RequestMiataruDeviceKey:
+            type: string
+            description: Optional DeviceKey for the requesting device. Can be used by the server to validate RequestMiataruDeviceID + DeviceKey.
+            default: "my-device-key"
       MiataruGetLocationHistory:
         type: object
         description: one device id for which the location history should be retrieved.
