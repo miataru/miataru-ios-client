@@ -10,3 +10,2455 @@ extend the cursor rules: Everytime you commit something the changelog should be 
 
 ---
 
+_**Agent (model default, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+
+The user wants to extend the Cursor rules so that whenever a commit is made, the CHANGELOG.md should be updated at the top with:
+1. The version number from marketing_version of the main scheme
+2. If the version is not yet in CHANGELOG.md, add it to the top and summarize the changes below
+
+I need to:
+1. Find the existing Cursor rules in the project
+2. Find where marketing_version is defined (likely in the Xcode project or an Info.plist)
+3. Create or update a rule that instructs the AI/developer to update CHANGELOG.md on commit with the version and a summary
+
+Let me first check the create-rule skill since the user asked to "extend the cursor rules" - that might have the format and location for rules. I'll also look at the project structure for CHANGELOG.md and where marketing_version lives.
+</details></think>
+
+---
+
+
+Cursor-Regeln erweitern, damit bei jedem Commit das CHANGELOG aktualisiert wird. Zuerst prüfen wir die bestehenden Regeln und wo die Marketing-Version definiert ist.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/.cursor/skills-cursor/create-rule/SKILL.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "undefined" • **1** result in **1** directory</summary>
+
+Directory: **/Users/bietiekay/code/miataru-ios-app** (1 file)
+
+| File |
+|------|
+| `miataru/.cursorrules` |
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "undefined" • **0** result in **1** directory</summary>
+
+Directory: **/Users/bietiekay/code/miataru-ios-app** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "MARKETING_VERSION|marketing_version",
+  "path": "/Users/bietiekay/code/miataru-ios-app",
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "MARKETING_VERSION|marketing_version",
+    "path": "/Users/bietiekay/code/miataru-ios-app",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "../miataru/.specstory/history/2026-02-15_11-29Z-changelog-update-rules.md",
+              "matches": [
+                {
+                  "lineNumber": 9,
+                  "content": "extend the cursor rules: Everytime you commit something the changelog should be extended at the top with the version number from marketing_version of the main scheme. if the version is not yet in @CHANGELOG.md  add it to the top and summarize the changes below"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/miataru.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 467,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 531,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 625,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 644,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 661,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 678,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/miataruWidgets/Info.plist",
+              "matches": [
+                {
+                  "lineNumber": 10,
+                  "content": "\t&lt;string&gt;$(MARKETING_VERSION)&lt;/string&gt;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/NavigationOverlayKit-master/Sample/NavigationRouteInstructionExtractor/NavigationRouteInstructionExtractor.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 421,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 453,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 475,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 497,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 517,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 537,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_14-24Z-rename-project-to-better-reflect-purpose.md",
+              "matches": [
+                {
+                  "lineNumber": 387,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 400,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 413,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 439,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 465,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 491,
+                  "content": "  \t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-02-07_18-21Z-visitor-history-slide-actions.md",
+              "matches": [
+                {
+                  "lineNumber": 9250,
+                  "content": "                  \"content\": \"+        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.8;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentCo [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9283,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.8;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentCol [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9308,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMARKETING_VERSION = 2.8;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_FAST_MATH = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSDKROOT = iphoneos;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tVALIDATE_PRODUCT = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\tname = Release;\\\\\\\\n\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9320,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMARKETING_VERSION = 2.7.6;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_FAST_MATH = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSDKROOT = iphoneos;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tVALIDATE_PRODUCT = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\tname = Release;\\\\\\\\n\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t8BA62D0A2E057D1A00F54650 /* Debug  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9328,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMARKETING_VERSION = 2.8;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_FAST_MATH = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSDKROOT = iphoneos;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tVALIDATE_PRODUCT = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\tname = Release;\\\\\\\\n\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9340,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"contents\\\\\\\": \\\\\\\"\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMARKETING_VERSION = 2.7.6;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tMTL_FAST_MATH = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSDKROOT = iphoneos;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tVALIDATE_PRODUCT = YES;\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t\\\\\\\\tname = Release;\\\\\\\\n\\\\\\\\t\\\\\\\\t};\\\\\\\\n\\\\\\\\t\\\\\\\\t8BA62D0A2E057D1A00F54650 /* Debug  [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9353,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.8;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentCol [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9387,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.7.6;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentC [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9561,
+                  "content": "                  \"content\": \"                  \\\"content\\\": \\\"        \\\\\\\"diffString\\\\\\\": \\\\\\\"  \\\\\\\\t\\\\\\\\t\\\\\\\\tname = Release;\\\\\\\\n  \\\\\\\\t\\\\\\\\t};\\\\\\\\n+ \\\\\\\\t\\\\\\\\t8C0000083E00000100000001 /* Debug */ = {\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\tisa = XCBuildConfiguration;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\tbuildSettings = {\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tAPPLICATION_EXTENSION_API_ONLY = YES;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tCODE_SIGN_ENTITLEMENTS = miataruWidgets/miataruWidgets.entitlements;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tCODE_SIGN_STYLE = Automatic;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tCURRENT_PROJECT_VERSION = 1;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tDEVELOPMENT_TEAM = X7H5D9Q5T4;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tGENERATE_INFOPLIST_FILE = NO;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tINFOPLIST_FILE = miataruWidgets/Info.plist;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\tLD_RUNPATH_SEARCH_PATHS = (\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\\\\\\\\"$(inherited)\\\\\\\\\\\\\\\",\\\\\\\\n+ \\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\t\\\\\\\\\\\\\\\"@executable_path/Frameworks\\\\\\\\\\\\\\\",\\\\\\\\n [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9975,
+                  "content": "                  \"content\": \"        \\\"diffString\\\": \\\"  \\\\t\\\\t\\\\tname = Release;\\\\n  \\\\t\\\\t};\\\\n+ \\\\t\\\\t8C0000083E00000100000001 /* Debug */ = {\\\\n+ \\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n+ \\\\t\\\\t\\\\tbuildSettings = {\\\\n+ \\\\t\\\\t\\\\t\\\\tAPPLICATION_EXTENSION_API_ONLY = YES;\\\\n+ \\\\t\\\\t\\\\t\\\\tCODE_SIGN_ENTITLEMENTS = miataruWidgets/miataruWidgets.entitlements;\\\\n+ \\\\t\\\\t\\\\t\\\\tCODE_SIGN_STYLE = Automatic;\\\\n+ \\\\t\\\\t\\\\t\\\\tCURRENT_PROJECT_VERSION = 1;\\\\n+ \\\\t\\\\t\\\\t\\\\tDEVELOPMENT_TEAM = X7H5D9Q5T4;\\\\n+ \\\\t\\\\t\\\\t\\\\tGENERATE_INFOPLIST_FILE = NO;\\\\n+ \\\\t\\\\t\\\\t\\\\tINFOPLIST_FILE = miataruWidgets/Info.plist;\\\\n+ \\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\\\n+ \\\\t\\\\t\\\\t\\\\tLD_RUNPATH_SEARCH_PATHS = (\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"$(inherited)\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"@executable_path/Frameworks\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"@executable_path/../../Frameworks\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t);\\\\n+ \\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 1.0;\\\\n+ \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\\\n+ \\\\t\\\\ [... omitted end of long line]"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-24_19-38Z-show-current-speed-on-map-toggle.md",
+              "matches": [
+                {
+                  "lineNumber": 1944,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.8;"
+                },
+                {
+                  "lineNumber": 1945,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.9;"
+                },
+                {
+                  "lineNumber": 1962,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.8;"
+                },
+                {
+                  "lineNumber": 1963,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.9;"
+                },
+                {
+                  "lineNumber": 2510,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.8;"
+                },
+                {
+                  "lineNumber": 2511,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.9;"
+                },
+                {
+                  "lineNumber": 2528,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.8;"
+                },
+                {
+                  "lineNumber": 2529,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.9;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-22_17-08Z-changes-description-and-commit.md",
+              "matches": [
+                {
+                  "lineNumber": 9149,
+                  "content": "+        \"contents\": \"\\t\\t\\t\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\n\\t\\t\\t\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_FUNCTION = YES;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_VARIABLE = YES;\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\n\\t\\t\\t\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\n\\t\\t\\t\\tMARKETING_VERSION = 2.8;\\n\\t\\t\\t\\tMTL_ENABLE_DEBUG_INFO = NO;\\n\\t\\t\\t\\tMTL_FAST_MATH = YES;\\n\\t\\t\\t\\tSDKROOT = iphoneos;\\n\\t\\t\\t\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\n\\t\\t\\t\\tSWIFT_COMPILATION_MODE = wholemodule;\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tVALIDATE_PRODUCT = YES;\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\n\\t\\t\\tisa = XCBuildConfiguration;\\n\\t\\t\\tbuildSettings = {\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;\\n\\t\\t\\t\\tCODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements;\\ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9177,
+                  "content": "+            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.8;\","
+                },
+                {
+                  "lineNumber": 9862,
+                  "content": "+        \"contents\": \"\\t\\t\\t\\tINFOPLIST_KEY_NSLocationWhenInUseUsageDescription = \\\"We use your location to show your position and share with your devices.\\\";\\n\\t\\t\\t\\tINFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UILaunchScreen_Generation = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UISupportedInterfaceOrientations = \\\"UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown\\\";\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\n\\t\\t\\t\\tLD_RUNPATH_SEARCH_PATHS = (\\n\\t\\t\\t\\t\\t\\\"$(inherited)\\\",\\n\\t\\t\\t\\t\\t\\\"@executable_path/Frameworks\\\",\\n\\t\\t\\t\\t);\\n\\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;\\n\\t\\t\\t\\tPRODUCT_NAME = \\\"$(TARGET_NAME)\\\";\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tSWIFT_VERSION = 5.0;\\n\\t\\t\\t\\tTARGETED_DEVICE_FAMILY = \\\"1,2\\\";\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0D2E057D1A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9974,
+                  "content": "+            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\","
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-22_16-03Z-anrede-konsistenz-in-app-übersetzungen.md",
+              "matches": [
+                {
+                  "lineNumber": 8974,
+                  "content": "        \"contents\": \"\\t\\t\\t\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\n\\t\\t\\t\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_FUNCTION = YES;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_VARIABLE = YES;\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\n\\t\\t\\t\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\n\\t\\t\\t\\tMARKETING_VERSION = 2.8;\\n\\t\\t\\t\\tMTL_ENABLE_DEBUG_INFO = NO;\\n\\t\\t\\t\\tMTL_FAST_MATH = YES;\\n\\t\\t\\t\\tSDKROOT = iphoneos;\\n\\t\\t\\t\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\n\\t\\t\\t\\tSWIFT_COMPILATION_MODE = wholemodule;\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tVALIDATE_PRODUCT = YES;\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\n\\t\\t\\tisa = XCBuildConfiguration;\\n\\t\\t\\tbuildSettings = {\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;\\n\\t\\t\\t\\tCODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements;\\n [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9002,
+                  "content": "            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.8;\","
+                },
+                {
+                  "lineNumber": 9687,
+                  "content": "        \"contents\": \"\\t\\t\\t\\tINFOPLIST_KEY_NSLocationWhenInUseUsageDescription = \\\"We use your location to show your position and share with your devices.\\\";\\n\\t\\t\\t\\tINFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UILaunchScreen_Generation = YES;\\n\\t\\t\\t\\tINFOPLIST_KEY_UISupportedInterfaceOrientations = \\\"UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown\\\";\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\n\\t\\t\\t\\tLD_RUNPATH_SEARCH_PATHS = (\\n\\t\\t\\t\\t\\t\\\"$(inherited)\\\",\\n\\t\\t\\t\\t\\t\\\"@executable_path/Frameworks\\\",\\n\\t\\t\\t\\t);\\n\\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;\\n\\t\\t\\t\\tPRODUCT_NAME = \\\"$(TARGET_NAME)\\\";\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tSWIFT_VERSION = 5.0;\\n\\t\\t\\t\\tTARGETED_DEVICE_FAMILY = \\\"1,2\\\";\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0D2E057D1A0 [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 9799,
+                  "content": "            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\","
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-21_17-25Z-qr-code-tab-name-change.md",
+              "matches": [
+                {
+                  "lineNumber": 294,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.8;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentCol [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 375,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.7.6;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentC [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2644,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.8;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentCol [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3022,
+                  "content": "                  \"content\": \"        \\\"contents\\\": \\\"\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_FUNCTION = YES;\\\\n\\\\t\\\\t\\\\t\\\\tGCC_WARN_UNUSED_VARIABLE = YES;\\\\n\\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\\\n\\\\t\\\\t\\\\t\\\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 2.7.6;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_ENABLE_DEBUG_INFO = NO;\\\\n\\\\t\\\\t\\\\t\\\\tMTL_FAST_MATH = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSDKROOT = iphoneos;\\\\n\\\\t\\\\t\\\\t\\\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_COMPILATION_MODE = wholemodule;\\\\n\\\\t\\\\t\\\\t\\\\tSWIFT_EMIT_LOC_STRINGS = YES;\\\\n\\\\t\\\\t\\\\t\\\\tVALIDATE_PRODUCT = YES;\\\\n\\\\t\\\\t\\\\t};\\\\n\\\\t\\\\t\\\\tname = Release;\\\\n\\\\t\\\\t};\\\\n\\\\t\\\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\\\n\\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n\\\\t\\\\t\\\\tbuildSettings = {\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\\\n\\\\t\\\\t\\\\t\\\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentC [... omitted end of long line]"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-18_15-32Z-app-store-description.md",
+              "matches": [
+                {
+                  "lineNumber": 388,
+                  "content": "        \"contents\": \"\\t\\t\\t\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\n\\t\\t\\t\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_FUNCTION = YES;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_VARIABLE = YES;\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\n\\t\\t\\t\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\n\\t\\t\\t\\tMARKETING_VERSION = 2.8;\\n\\t\\t\\t\\tMTL_ENABLE_DEBUG_INFO = NO;\\n\\t\\t\\t\\tMTL_FAST_MATH = YES;\\n\\t\\t\\t\\tSDKROOT = iphoneos;\\n\\t\\t\\t\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\n\\t\\t\\t\\tSWIFT_COMPILATION_MODE = wholemodule;\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tVALIDATE_PRODUCT = YES;\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\n\\t\\t\\tisa = XCBuildConfiguration;\\n\\t\\t\\tbuildSettings = {\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;\\n\\t\\t\\t\\tCODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements;\\n [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 416,
+                  "content": "            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.8;\","
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-14_18-33Z-app-store-location-permission-rejection.md",
+              "matches": [
+                {
+                  "lineNumber": 5072,
+                  "content": "        \"contents\": \"\\t\\t\\t\\tGCC_WARN_UNDECLARED_SELECTOR = YES;\\n\\t\\t\\t\\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_FUNCTION = YES;\\n\\t\\t\\t\\tGCC_WARN_UNUSED_VARIABLE = YES;\\n\\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.5;\\n\\t\\t\\t\\tLOCALIZATION_PREFERS_STRING_CATALOGS = YES;\\n\\t\\t\\t\\tMARKETING_VERSION = 2.7.6;\\n\\t\\t\\t\\tMTL_ENABLE_DEBUG_INFO = NO;\\n\\t\\t\\t\\tMTL_FAST_MATH = YES;\\n\\t\\t\\t\\tSDKROOT = iphoneos;\\n\\t\\t\\t\\tSTRING_CATALOG_GENERATE_SYMBOLS = YES;\\n\\t\\t\\t\\tSWIFT_COMPILATION_MODE = wholemodule;\\n\\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n\\t\\t\\t\\tVALIDATE_PRODUCT = YES;\\n\\t\\t\\t};\\n\\t\\t\\tname = Release;\\n\\t\\t};\\n\\t\\t8BA62D0A2E057D1A00F54650 /* Debug */ = {\\n\\t\\t\\tisa = XCBuildConfiguration;\\n\\t\\t\\tbuildSettings = {\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;\\n\\t\\t\\t\\tASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;\\n\\t\\t\\t\\tCODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements; [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5100,
+                  "content": "            \"text\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.6;\","
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-12_11-46Z-map-widget-image-rendering-issues.md",
+              "matches": [
+                {
+                  "lineNumber": 8030,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.7.5;"
+                },
+                {
+                  "lineNumber": 8031,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.7.6;"
+                },
+                {
+                  "lineNumber": 8048,
+                  "content": "-\t\t\t\tMARKETING_VERSION = 2.7.5;"
+                },
+                {
+                  "lineNumber": 8049,
+                  "content": "+\t\t\t\tMARKETING_VERSION = 2.7.6;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-08_16-57Z-app-and-widget-version-synchronization.md",
+              "matches": [
+                {
+                  "lineNumber": 20,
+                  "content": "I'm considering checking the pbxproj build settings by using grep to look for the MARKETING_VERSION, CURRENT_PROJECT_VERSION, and CFBundleVersion. It seems like a parallel approach would work well—grepping in the pbxproj for MARKETING_VERSION and then reading .plist files. I'll definitely need to use absolute paths to ensure everything's accurate. This way, I can make sure I'm really covering all bases!&lt;/details&gt;&lt;/think&gt;"
+                },
+                {
+                  "lineNumber": 24,
+                  "content": "Got it. I’ll make the widget target **inherit the same marketing version + build number** as the main app by centralizing them (project-level or shared &#96;.xcconfig&#96;) and ensuring both Info.plists use &#96;$(MARKETING_VERSION)&#96; / &#96;$(CURRENT_PROJECT_VERSION)&#96; instead of hardcoded values. Next I’ll inspect your current &#96;Info.plist&#96; files + Xcode build settings and then apply the minimal change."
+                },
+                {
+                  "lineNumber": 37,
+                  "content": "  \"pattern\": \"MARKETING_VERSION|CURRENT_PROJECT_VERSION|CFBundleShortVersionString|CFBundleVersion\","
+                },
+                {
+                  "lineNumber": 49,
+                  "content": "    \"pattern\": \"MARKETING_VERSION|CURRENT_PROJECT_VERSION|CFBundleShortVersionString|CFBundleVersion\","
+                },
+                {
+                  "lineNumber": 65,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 73,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 81,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 89,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 97,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 105,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 113,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 121,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 134,
+                  "content": "                  \"content\": \"\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\""
+                },
+                {
+                  "lineNumber": 155,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 163,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 171,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 179,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 187,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 195,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 203,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 211,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 219,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 227,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 240,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 248,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 256,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 264,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 277,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 285,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 298,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 306,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 314,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 322,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 330,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 338,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 346,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 354,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 362,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 370,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 378,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 386,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 394,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 402,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 410,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 418,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 426,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 434,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 442,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 450,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 458,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 466,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 474,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 482,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 490,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 498,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 506,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 514,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 527,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 535,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 543,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 551,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 611,
+                  "content": "Nice: the widget &#96;Info.plist&#96; already references &#96;$(MARKETING_VERSION)&#96; and &#96;$(CURRENT_PROJECT_VERSION)&#96;. The mismatch is coming from **build settings**: the app target has &#96;2.7.5 (9)&#96; while the widget target still has &#96;1.0 (1)&#96;. Next I’ll update the project so the widget inherits the app/project values automatically."
+                },
+                {
+                  "lineNumber": 629,
+                  "content": "I see that the app target explicitly sets its versions. To streamline this, I plan to modify the PBXProject configs so that both the app and widget inherit settings. I should add &#96;MARKETING_VERSION = 2.7.5&#96; and &#96;CURRENT_PROJECT_VERSION = 9&#96; in project settings. "
+                },
+                {
+                  "lineNumber": 638,
+                  "content": "Good news: the widget already *uses* &#96;$(MARKETING_VERSION)&#96; / &#96;$(CURRENT_PROJECT_VERSION)&#96; in its plist, and right now the project file has matching values — the real improvement is to **stop setting version/build separately per target** and instead define them once at the project level so the widget always inherits automatically. I’m going to adjust &#96;project.pbxproj&#96; accordingly."
+                },
+                {
+                  "lineNumber": 650,
+                  "content": "I found why you have to “double update”: &#96;MARKETING_VERSION&#96; and &#96;CURRENT_PROJECT_VERSION&#96; are currently set **inside both targets’ build configs**. I’m going to move those two settings up to the **PBXProject** build configs and delete the per-target copies so the widget always inherits automatically."
+                },
+                {
+                  "lineNumber": 673,
+                  "content": "  \"pattern\": \"8BA62D0A2E057D1A00F54650|8BA62D0B2E057D1A00F54650|8C0000083E00000100000001|8C0000093E00000100000001|8BA62D072E057D1A00F54650|8BA62D082E057D1A00F54650|MARKETING_VERSION =|CURRENT_PROJECT_VERSION =\","
+                },
+                {
+                  "lineNumber": 684,
+                  "content": "    \"pattern\": \"8BA62D0A2E057D1A00F54650|8BA62D0B2E057D1A00F54650|8C0000083E00000100000001|8C0000093E00000100000001|8BA62D072E057D1A00F54650|8BA62D082E057D1A00F54650|MARKETING_VERSION =|CURRENT_PROJECT_VERSION =\","
+                },
+                {
+                  "lineNumber": 704,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 716,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 2.7.5;\""
+                },
+                {
+                  "lineNumber": 732,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 740,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 748,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 756,
+                  "content": "                  \"content\": \"\\t\\t\\t\\tMARKETING_VERSION = 1.0;\""
+                },
+                {
+                  "lineNumber": 845,
+                  "content": "I updated &#96;miataru.xcodeproj/project.pbxproj&#96; so **&#96;MARKETING_VERSION&#96; and &#96;CURRENT_PROJECT_VERSION&#96; are defined once at the project level**, and **removed those settings from the &#96;miataru&#96; (app) target and &#96;miataruWidgets&#96; target**."
+                },
+                {
+                  "lineNumber": 853,
+                  "content": "- **Marketing Version** (&#96;MARKETING_VERSION&#96;)"
+                },
+                {
+                  "lineNumber": 856,
+                  "content": "Those values will apply to both **miataru** and **miataruWidgets** automatically (the widget’s &#96;Info.plist&#96; already uses &#96;$(MARKETING_VERSION)&#96; / &#96;$(CURRENT_PROJECT_VERSION)&#96;)."
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-08_15-35Z-map-widget-device-view-conflict.md",
+              "matches": [
+                {
+                  "lineNumber": 5269,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5277,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5281,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5289,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5293,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5301,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6266,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6274,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6278,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6286,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6294,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6302,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6306,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6314,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6318,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6326,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6330,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6334,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6338,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6342,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6346,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6350,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6354,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6362,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6366,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6374,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6378,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6382,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6386,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6390,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6394,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6402,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6406,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6410,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6414,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6418,
+                  "content": "                  \"content\": \"        \\\"diffString\\\": \\\"  \\\\t\\\\t\\\\tname = Release;\\\\n  \\\\t\\\\t};\\\\n+ \\\\t\\\\t8C0000083E00000100000001 /* Debug */ = {\\\\n+ \\\\t\\\\t\\\\tisa = XCBuildConfiguration;\\\\n+ \\\\t\\\\t\\\\tbuildSettings = {\\\\n+ \\\\t\\\\t\\\\t\\\\tAPPLICATION_EXTENSION_API_ONLY = YES;\\\\n+ \\\\t\\\\t\\\\t\\\\tCODE_SIGN_ENTITLEMENTS = miataruWidgets/miataruWidgets.entitlements;\\\\n+ \\\\t\\\\t\\\\t\\\\tCODE_SIGN_STYLE = Automatic;\\\\n+ \\\\t\\\\t\\\\t\\\\tCURRENT_PROJECT_VERSION = 1;\\\\n+ \\\\t\\\\t\\\\t\\\\tDEVELOPMENT_TEAM = X7H5D9Q5T4;\\\\n+ \\\\t\\\\t\\\\t\\\\tGENERATE_INFOPLIST_FILE = NO;\\\\n+ \\\\t\\\\t\\\\t\\\\tINFOPLIST_FILE = miataruWidgets/Info.plist;\\\\n+ \\\\t\\\\t\\\\t\\\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\\\n+ \\\\t\\\\t\\\\t\\\\tLD_RUNPATH_SEARCH_PATHS = (\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"$(inherited)\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"@executable_path/Frameworks\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t\\\\t\\\\\\\"@executable_path/../../Frameworks\\\\\\\",\\\\n+ \\\\t\\\\t\\\\t\\\\t);\\\\n+ \\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 1.0;\\\\n+ \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\\\n+ \\\\t\\\\ [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6426,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6430,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6434,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6574,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6578,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6678,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6690,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6830,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6834,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6838,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6842,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6846,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6850,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7762,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7766,
+                  "content": "                  \"content\": \"        \\\"diffString\\\": \\\"  \\\\t\\\\t\\\\t\\\\t);\\\\n  \\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 1.0;\\\\n- \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\\\n+ \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgetsExtension;\\\\n  \\\\t\\\\t\\\\t\\\\tPRODUCT_NAME = \\\\\\\"$(TARGET_NAME)\\\\\\\";\\\\n  \\\\t\\\\t\\\\t\\\\tSKIP_INSTALL = YES;\\\",\""
+                },
+                {
+                  "lineNumber": 7770,
+                  "content": "                  \"content\": \"        \\\"diffString\\\": \\\"  \\\\t\\\\t\\\\t\\\\t);\\\\n  \\\\t\\\\t\\\\t\\\\tMARKETING_VERSION = 1.0;\\\\n- \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\\\n+ \\\\t\\\\t\\\\t\\\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgetsExtension;\\\\n  \\\\t\\\\t\\\\t\\\\tPRODUCT_NAME = \\\\\\\"$(TARGET_NAME)\\\\\\\";\\\\n  \\\\t\\\\t\\\\t\\\\tSKIP_INSTALL = YES;\\\",\""
+                },
+                {
+                  "lineNumber": 7774,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7862,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtension&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtensionPointIdentifier&amp;a [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7866,
+                  "content": "                  \"content\": \"        \\\"diffString\\\": \\\"  \\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n  \\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n+ \\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n+ \\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n+ \\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n+ \\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n  \\\\t&amp;amp;lt;key&amp;amp;gt;NSExtension&amp;amp;lt;/key&amp;amp;gt;\\\\n  \\\\t&amp;amp;lt;dict&amp;amp;gt;\\\",\""
+                },
+                {
+                  "lineNumber": 7874,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtension&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtensionPointIden [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7922,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtension&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtensionPointIdentifier&amp;a [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7934,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtension&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t\\\\t&amp;amp;lt;key&amp;amp;gt;NSExtensionPointIden [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7974,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleExecutable&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(EXECUTABLE_NAME)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7982,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleExecutable&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(EXECUTABLE_NAME)&amp;amp;lt;/string&amp;amp;g [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 8022,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleExecutable&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(EXECUTABLE_NAME)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 8030,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"&amp;amp;lt;?xml version=\\\\\\\"1.0\\\\\\\" encoding=\\\\\\\"UTF-8\\\\\\\"?&amp;amp;gt;\\\\n&amp;amp;lt;!DOCTYPE plist PUBLIC \\\\\\\"-//Apple//DTD PLIST 1.0//EN\\\\\\\" \\\\\\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;plist version=\\\\\\\"1.0\\\\\\\"&amp;amp;gt;\\\\n&amp;amp;lt;dict&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleIdentifier&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleDisplayName&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;miataru Widgets&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleShortVersionString&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(MARKETING_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleVersion&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(CURRENT_PROJECT_VERSION)&amp;amp;lt;/string&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;key&amp;amp;gt;CFBundleExecutable&amp;amp;lt;/key&amp;amp;gt;\\\\n\\\\t&amp;amp;lt;string&amp;amp;gt;$(EXECUTABLE_NAME)&amp;amp;lt;/string&amp;amp;g [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11977,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11981,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11985,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11989,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11993,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTE [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 11997,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {A [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12066,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12070,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12074,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12082,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12086,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12094,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12098,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12102,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12106,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12110,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12114,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12118,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12122,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12126,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12130,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12134,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12138,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12142,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12146,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12150,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12154,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12158,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12162,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12166,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12170,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12174,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12178,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12182,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12186,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12190,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12194,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12198,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12222,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12226,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12230,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12238,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12242,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12246,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12250,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12254,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12258,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12262,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12298,
+                  "content": "                  \"content\": \"    \\\"content\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemP [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 12302,
+                  "content": "                  \"content\": \"  \\\"contentsAfterEdit\\\": \\\"// !$*UTF8*$!\\\\n{\\\\n\\\\tarchiveVersion = 1;\\\\n\\\\tclasses = {\\\\n\\\\t};\\\\n\\\\tobjectVersion = 77;\\\\n\\\\tobjects = {\\\\n\\\\n/* Begin PBXBuildFile section */\\\\n\\\\t\\\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\\\n\\\\t\\\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\\\n\\\\t\\\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\\\n\\\\t\\\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\\\n/* End PBXBuildFile section */\\\\n\\\\n/* Begin PBXContainerItemProxy section */\\\\n\\\\t\\\\t8BA62CF62E057D1A00F54650 /* PBXContai [... omitted end of long line]"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-06_16-03Z-widget-location-fetching-implementation.md",
+              "matches": [
+                {
+                  "lineNumber": 1862,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile secti [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 1886,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 1935,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile secti [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 1959,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFi [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2006,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile secti [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2030,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks (Widgets) */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFi [... omitted end of long line]"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2026-01-05_19-42Z-iphone-ipad-app-device-location-widgets.md",
+              "matches": [
+                {
+                  "lineNumber": 2768,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2792,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2839,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2863,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2910,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2934,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 2981,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3005,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3052,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3076,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3123,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3147,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3194,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3218,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3265,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3289,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3338,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3362,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3411,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3435,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3484,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3508,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3555,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3579,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3628,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3652,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3701,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3725,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3774,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3786,
+                  "content": "        \"diffString\": \"  \\t\\t\\tname = Release;\\n  \\t\\t};\\n+ \\t\\t8C0000083E00000100000001 /* Debug */ = {\\n+ \\t\\t\\tisa = XCBuildConfiguration;\\n+ \\t\\t\\tbuildSettings = {\\n+ \\t\\t\\t\\tAPPLICATION_EXTENSION_API_ONLY = YES;\\n+ \\t\\t\\t\\tCODE_SIGN_ENTITLEMENTS = miataruWidgets/miataruWidgets.entitlements;\\n+ \\t\\t\\t\\tCODE_SIGN_STYLE = Automatic;\\n+ \\t\\t\\t\\tCURRENT_PROJECT_VERSION = 1;\\n+ \\t\\t\\t\\tDEVELOPMENT_TEAM = X7H5D9Q5T4;\\n+ \\t\\t\\t\\tGENERATE_INFOPLIST_FILE = NO;\\n+ \\t\\t\\t\\tINFOPLIST_FILE = miataruWidgets/Info.plist;\\n+ \\t\\t\\t\\tIPHONEOS_DEPLOYMENT_TARGET = 18.6;\\n+ \\t\\t\\t\\tLD_RUNPATH_SEARCH_PATHS = (\\n+ \\t\\t\\t\\t\\t\\\"$(inherited)\\\",\\n+ \\t\\t\\t\\t\\t\\\"@executable_path/Frameworks\\\",\\n+ \\t\\t\\t\\t\\t\\\"@executable_path/../../Frameworks\\\",\\n+ \\t\\t\\t\\t);\\n+ \\t\\t\\t\\tMARKETING_VERSION = 1.0;\\n+ \\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\n+ \\t\\t\\t\\tPRODUCT_NAME = \\\"$(TARGET_NAME)\\\";\\n+ \\t\\t\\t\\tSKIP_INSTALL = YES;\\n+ \\t\\t\\t\\tSWIFT_EMIT_LOC_STRINGS = YES;\\n+ \\t\\t\\t\\tSWIFT_VERSION = 5.0; [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3806,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3855,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 3887,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4483,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4507,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4820,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 4852,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5064,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5088,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5130,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5154,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5196,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 5220,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6860,
+                  "content": "    \"content\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tcontainer [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 6872,
+                  "content": "        \"diffString\": \"  \\t\\t\\t\\t);\\n  \\t\\t\\t\\tMARKETING_VERSION = 1.0;\\n- \\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\n+ \\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgetsExtension;\\n  \\t\\t\\t\\tPRODUCT_NAME = \\\"$(TARGET_NAME)\\\";\\n  \\t\\t\\t\\tSKIP_INSTALL = YES;\","
+                },
+                {
+                  "lineNumber": 6881,
+                  "content": "        \"diffString\": \"  \\t\\t\\t\\t);\\n  \\t\\t\\t\\tMARKETING_VERSION = 1.0;\\n- \\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgets;\\n+ \\t\\t\\t\\tPRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios.miataruWidgetsExtension;\\n  \\t\\t\\t\\tPRODUCT_NAME = \\\"$(TARGET_NAME)\\\";\\n  \\t\\t\\t\\tSKIP_INSTALL = YES;\","
+                },
+                {
+                  "lineNumber": 6894,
+                  "content": "  \"contentsAfterEdit\": \"// !$*UTF8*$!\\n{\\n\\tarchiveVersion = 1;\\n\\tclasses = {\\n\\t};\\n\\tobjectVersion = 77;\\n\\tobjects = {\\n\\n/* Begin PBXBuildFile section */\\n\\t\\t8B0556F62E0FFF31008B3C81 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };\\n\\t\\t8B3AFA8E2E0E900B0046E5B3 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = 8B3AFA8D2E0E900B0046E5B3 /* QRCode */; };\\n\\t\\t8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };\\n\\t\\t8C00000D3E00000100000001 /* miataruWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };\\n/* End PBXBuildFile section */\\n\\n/* Begin PBXContainerItemProxy section */\\n\\t\\t8BA62CF62E057D1A00F54650 /* PBXContainerItemProxy */ = {\\n\\t\\t\\tisa = PBXContainerItemProxy;\\n\\t\\t\\tc [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7224,
+                  "content": "    \"content\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPrincipalClass&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;$(PRODUCT_MODULE_NAME).MiataruWidgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\","
+                },
+                {
+                  "lineNumber": 7236,
+                  "content": "        \"diffString\": \"  \\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n  \\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n+ \\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n+ \\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n+ \\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n+ \\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n  \\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n  \\t&amp;lt;dict&amp;gt;\","
+                },
+                {
+                  "lineNumber": 7248,
+                  "content": "  \"contentsAfterEdit\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPrincipalClass&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;$(PRODUCT_MODULE_NAME).MiataruWidgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\""
+                },
+                {
+                  "lineNumber": 7281,
+                  "content": "  - Added &#96;CFBundleShortVersionString = $(MARKETING_VERSION)&#96;"
+                },
+                {
+                  "lineNumber": 7434,
+                  "content": "    \"content\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\","
+                },
+                {
+                  "lineNumber": 7458,
+                  "content": "  \"contentsAfterEdit\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\""
+                },
+                {
+                  "lineNumber": 7642,
+                  "content": "    \"content\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleExecutable&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(EXECUTABLE_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\","
+                },
+                {
+                  "lineNumber": 7666,
+                  "content": "  \"contentsAfterEdit\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleExecutable&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(EXECUTABLE_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp;gt;\\n&amp;lt;/dict&amp;gt;\\n&amp;lt;/plist&amp;gt;\\n\\n\""
+                },
+                {
+                  "lineNumber": 7844,
+                  "content": "    \"content\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleExecutable&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(EXECUTABLE_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;lt;/dict&amp; [... omitted end of long line]"
+                },
+                {
+                  "lineNumber": 7868,
+                  "content": "  \"contentsAfterEdit\": \"&amp;lt;?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?&amp;gt;\\n&amp;lt;!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"&amp;gt;\\n&amp;lt;plist version=\\\"1.0\\\"&amp;gt;\\n&amp;lt;dict&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleIdentifier&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_BUNDLE_IDENTIFIER)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleDisplayName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;miataru Widgets&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleShortVersionString&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(MARKETING_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleVersion&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(CURRENT_PROJECT_VERSION)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleExecutable&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(EXECUTABLE_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;CFBundleName&amp;lt;/key&amp;gt;\\n\\t&amp;lt;string&amp;gt;$(PRODUCT_NAME)&amp;lt;/string&amp;gt;\\n\\t&amp;lt;key&amp;gt;NSExtension&amp;lt;/key&amp;gt;\\n\\t&amp;lt;dict&amp;gt;\\n\\t\\t&amp;lt;key&amp;gt;NSExtensionPointIdentifier&amp;lt;/key&amp;gt;\\n\\t\\t&amp;lt;string&amp;gt;com.apple.widgetkit-extension&amp;lt;/string&amp;gt;\\n\\t&amp;l [... omitted end of long line]"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/.specstory/history/2025-09-10_07-09Z-positionierung-des-miatarumapmarkers-überprüfen.md",
+              "matches": [
+                {
+                  "lineNumber": 1618,
+                  "content": "I'll search for where the app version is defined (e.g., MARKETING_VERSION or CFBundleShortVersionString) to update it to 2.6, then stage and commit the changes with an English message as requested [[memory:8343537], [memory:8233527]]."
+                },
+                {
+                  "lineNumber": 1625,
+                  "content": "&lt;summary&gt;Grep for \"MARKETING_VERSION|CFBundleShortVersionString|CURRENT_PROJECT_VERSION\" in \"/Users/bietiekay/code/miataru-ios-app/miataru\" • 108 matches&lt;/summary&gt;"
+                },
+                {
+                  "lineNumber": 1633,
+                  "content": "| &#96;MARKETING_VERSION = 2.6;&#96; | L469 |"
+                },
+                {
+                  "lineNumber": 1635,
+                  "content": "| &#96;MARKETING_VERSION = 2.6;&#96; | L507 |"
+                },
+                {
+                  "lineNumber": 1637,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L525 |"
+                },
+                {
+                  "lineNumber": 1639,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L544 |"
+                },
+                {
+                  "lineNumber": 1641,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L561 |"
+                },
+                {
+                  "lineNumber": 1643,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L578 |"
+                },
+                {
+                  "lineNumber": 1645,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L584 |"
+                },
+                {
+                  "lineNumber": 1647,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L616 |"
+                },
+                {
+                  "lineNumber": 1649,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L641 |"
+                },
+                {
+                  "lineNumber": 1651,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L666 |"
+                },
+                {
+                  "lineNumber": 1653,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L684 |"
+                },
+                {
+                  "lineNumber": 1655,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L697 |"
+                },
+                {
+                  "lineNumber": 1657,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L713 |"
+                },
+                {
+                  "lineNumber": 1659,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L734 |"
+                },
+                {
+                  "lineNumber": 1661,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L753 |"
+                },
+                {
+                  "lineNumber": 1663,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L772 |"
+                },
+                {
+                  "lineNumber": 1665,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L253 |"
+                },
+                {
+                  "lineNumber": 1667,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L297 |"
+                },
+                {
+                  "lineNumber": 1669,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L445 |"
+                },
+                {
+                  "lineNumber": 1671,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L483 |"
+                },
+                {
+                  "lineNumber": 1673,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L278 |"
+                },
+                {
+                  "lineNumber": 1675,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L317 |"
+                },
+                {
+                  "lineNumber": 1677,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1701 |"
+                },
+                {
+                  "lineNumber": 1679,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1730 |"
+                },
+                {
+                  "lineNumber": 1681,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1748 |"
+                },
+                {
+                  "lineNumber": 1683,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1762 |"
+                },
+                {
+                  "lineNumber": 1685,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1784 |"
+                },
+                {
+                  "lineNumber": 1687,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1809 |"
+                },
+                {
+                  "lineNumber": 1689,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1842 |"
+                },
+                {
+                  "lineNumber": 1691,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1874 |"
+                },
+                {
+                  "lineNumber": 1693,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1913 |"
+                },
+                {
+                  "lineNumber": 1695,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L1948 |"
+                },
+                {
+                  "lineNumber": 1697,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2110 |"
+                },
+                {
+                  "lineNumber": 1699,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2139 |"
+                },
+                {
+                  "lineNumber": 1701,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2169 |"
+                },
+                {
+                  "lineNumber": 1703,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2202 |"
+                },
+                {
+                  "lineNumber": 1705,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2234 |"
+                },
+                {
+                  "lineNumber": 1707,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2264 |"
+                },
+                {
+                  "lineNumber": 1709,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2297 |"
+                },
+                {
+                  "lineNumber": 1711,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2328 |"
+                },
+                {
+                  "lineNumber": 1713,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2359 |"
+                },
+                {
+                  "lineNumber": 1715,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2389 |"
+                },
+                {
+                  "lineNumber": 1717,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2418 |"
+                },
+                {
+                  "lineNumber": 1719,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2449 |"
+                },
+                {
+                  "lineNumber": 1721,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2507 |"
+                },
+                {
+                  "lineNumber": 1723,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2546 |"
+                },
+                {
+                  "lineNumber": 1725,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2579 |"
+                },
+                {
+                  "lineNumber": 1727,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2609 |"
+                },
+                {
+                  "lineNumber": 1729,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2639 |"
+                },
+                {
+                  "lineNumber": 1731,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L2668 |"
+                },
+                {
+                  "lineNumber": 1733,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L483 |"
+                },
+                {
+                  "lineNumber": 1735,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L514 |"
+                },
+                {
+                  "lineNumber": 1737,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L544 |"
+                },
+                {
+                  "lineNumber": 1739,
+                  "content": "| &#96;MARKETING_VERSION = 1.0;&#96; | L574 |"
+                },
+                {
+                  "lineNumber": 1748,
+                  "content": "I’m planning to stage and commit using functions.run_terminal_cmd for both git add and git commit. If I need to bump the version, I might change \"1.0\" to \"2.6\" in project.pbxproj for the main targets, but not for third-party library versions in the Libraries. The grep results include demo files, so I won’t adjust those. It seems there are multiple MARKETING_VERSION entries in miataru.xcodeproj. I should inspect those lines to see if they relate to tests or something else!&lt;/details&gt;&lt;/think&gt;"
+                },
+                {
+                  "lineNumber": 1752,
+                  "content": "I'll check the Xcode project file around the MARKETING_VERSION entries to ensure the app's targets are set to 2.6, without touching third-party libraries. Then I'll stage and commit all changes with an English message referencing the 2.6 version bump."
+                },
+                {
+                  "lineNumber": 1764,
+                  "content": "The user has requested a version bump to 2.6 for iOS 26. Since they've explicitly asked for a commit, I can proceed with the git commands to stage the changes. I verified that the MARKETING_VERSION in the project file is already set to 2.6, both for Debug and Release targets. However, while checking the Info.plist file, it seems version keys are generated automatically from project settings. I’ll note the version bump in the commit message."
+                },
+                {
+                  "lineNumber": 1770,
+                  "content": "I’m planning to run the git commands sequentially: first 'git status', then 'git add', and finally 'git commit'. I noticed we only changed the Miataru app files and performance debug, not any third-party libraries. The version is already updated to 2.6 in pbxproj, with multiple MARKETING_VERSION lines confirmed as well. I’ll make sure the commands run non-interactively from the workspace root. The commit message will be concise and clear about the changes, including the version bump for iOS 26 support. Let's get this done!&lt;/details&gt;&lt;/think&gt;"
+                },
+                {
+                  "lineNumber": 1816,
+                  "content": "  - &#96;miataru.xcodeproj/project.pbxproj&#96; (MARKETING_VERSION=2.6)"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/QRCode-main/Demo/WatchQR/WatchQR.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 584,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 616,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 641,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 666,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 684,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 697,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 713,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 734,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 753,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 772,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/QRCode-main/Demo/SwiftUI Demos/SwiftUI Demos.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 253,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 297,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 445,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 483,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/QRCode-main/Demo/ShareLink Demo/ShareLink Demo.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 278,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 317,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/QRCode-main/Demo/QRCodeView Demo/QRCodeView Demo.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 1701,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1730,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1748,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1762,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1784,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1809,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1842,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1874,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1913,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 1948,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2110,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2139,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2169,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2202,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2234,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2264,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2297,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2328,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2359,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2389,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2418,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2449,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2507,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2546,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2579,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2609,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2639,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 2668,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            },
+            {
+              "file": "../miataru/Libraries/QRCode-main/Demo/Cocoapods Test/Cocoapods Test.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 483,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 514,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 544,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 574,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            }
+          ],
+          "totalLines": 418,
+          "totalMatchedLines": 418
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+I have a good picture now:
+
+1. **Cursor rules**: The project has `.cursorrules` in `miataru/` and no `.cursor/rules/` directory yet. The create-rule skill says rules go in `.cursor/rules/` as `.mdc` files. I'll create that directory and add a rule.
+
+2. **Marketing version**: In `miataru/miataru.xcodeproj/project.pbxproj`, the main app target (miataru) has `MARKETING_VERSION = 3.0` at lines 467 and 531. The main scheme's version would be the one for the main app target. I need to identify which build configuration is for the main scheme - typically it's the first Debug/Release for the main app. Let me check the project structure to see which target is "main" - the grep shows 467 and 531 have 3.0, and 625, 644, 661, 678 have 1.0 (likely widgets or other targets). So the main app uses 3.0.
+
+3. **CHANGELOG format**: Currently it's "version X.Y" at the top, then bullet points. The user wants: on each commit, extend CHANGELOG at the top with the version from marketing_version; if that version isn't in CHANGELOG yet, add it at the top and summarize the changes below.
+
+I'll create a Cursor rule that:
+- Applies when committing (so it should be alwaysApply or apply when CHANGELOG or git is involved - actually the user said "every time you commit" so the rule is for the AI: when you (the AI) commit something, update CHANGELOG). So the rule is for the agent's behavior when performing a commit.
+- Instructs: Before committing (or when committing), get MARKETING_VERSION from the main scheme. For Xcode, the main app's MARKETING_VERSION is in project.pbxproj (the miataru target, not widgets). Then check if that version is already at the top of CHANGELOG.md; if not, add a new "version X.Y" section at the top and list a summary of the changes being committed.
+
+I'll add this as an "always apply" or at least a rule that applies when working with CHANGELOG or when the user asks to commit. "Always apply" is safer so the agent always knows to update CHANGELOG on commit.
+
+Let me read the existing .cursorrules to see if I should extend that file or create a separate rule in .cursor/rules/.
+</details></think>
+
+---
+
+
+Bestehende `.cursorrules` lesen und die Haupt‑App‑Target‑Struktur im Projekt prüfen:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/.cursorrules</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "MARKETING_VERSION|productName|TARGET_NAME|miataru\\s+/\\*",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru.xcodeproj/project.pbxproj",
+  "contextBefore": 0,
+  "contextAfter": 0,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "MARKETING_VERSION|productName|TARGET_NAME|miataru\\s+/\\*",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru.xcodeproj/project.pbxproj",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "miataru.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 195,
+                  "content": "\t\t\tproductName = miataru;"
+                },
+                {
+                  "lineNumber": 218,
+                  "content": "\t\t\tproductName = miataruTests;"
+                },
+                {
+                  "lineNumber": 241,
+                  "content": "\t\t\tproductName = miataruUITests;"
+                },
+                {
+                  "lineNumber": 264,
+                  "content": "\t\t\tproductName = miataruWidgets;"
+                },
+                {
+                  "lineNumber": 467,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 531,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 572,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 609,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 625,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 627,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 644,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 646,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 661,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 663,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 678,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 680,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 705,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 730,
+                  "content": "\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";"
+                },
+                {
+                  "lineNumber": 817,
+                  "content": "\t\t\tproductName = MiataruAPIClient;"
+                },
+                {
+                  "lineNumber": 822,
+                  "content": "\t\t\tproductName = QRCode;"
+                },
+                {
+                  "lineNumber": 827,
+                  "content": "\t\t\tproductName = NavigationOverlayKit;"
+                },
+                {
+                  "lineNumber": 831,
+                  "content": "\t\t\tproductName = CodeScanner;"
+                }
+              ]
+            }
+          ],
+          "totalLines": 22,
+          "totalMatchedLines": 22
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+I have what I need. The main app target is "miataru" (productName = miataru) and its MARKETING_VERSION is at lines 467 and 531 (3.0). The project root for the workspace is /Users/bietiekay/code/miataru-ios-app and the app lives in miataru/ with CHANGELOG.md at miataru/CHANGELOG.md.
+
+I'll create a Cursor rule in `.cursor/rules/` that:
+1. Applies when committing (alwaysApply: true so the agent always knows this when doing commits)
+2. Says: When you commit, before committing:
+   - Read MARKETING_VERSION from the main app target in miataru.xcodeproj/project.pbxproj (the miataru target - grep for MARKETING_VERSION in the build configuration that belongs to the miataru target; the first occurrences 467 and 531 are for the main app).
+   - Check if CHANGELOG.md (at miataru/CHANGELOG.md) already has that version at the top (e.g. "version 3.0").
+   - If not, prepend a new section: "version X.Y" followed by bullet points summarizing the changes in the commit.
+
+I'll create the .cursor/rules directory and a new .mdc file for this. The rule should be concise and actionable.
+</details></think>
+
+---
+
+
+Erstelle die Regel in `.cursor/rules/` und ergänze die Commit-Anweisung in den Cursor Rules.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/miataru.xcodeproj/project.pbxproj</summary>
+
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+The project.pbxproj has MARKETING_VERSION in both project-level Debug (line 467) and Release (line 531) - but actually looking at the structure, the first "Debug" and "Release" blocks (467, 531) might be project-level. Let me check - 8BA62D072E057D1A00F54650 /* Debug */ and 8BA62D082E057D1A00F54650 /* Release */ - and 8BA62D0A2E057D1A00F54650 /* Debug */ at 541 is another target. So 467 and 531 are in the first two XCBuildConfiguration blocks. In Xcode project structure, the project has one set of build settings and each target has its own. So the 467/531 might be project-level. Let me check - in pbxproj, buildConfigurationList points to configurations. The native target "miataru" will have its own buildConfigurationList. So we need the MARKETING_VERSION from the **miataru app target** (the one with productName = miataru). That would be the build settings for the miataru target, which from the grep are at 467 and 531... Actually looking at the line numbers again:
+- 455-476: one block (Debug) - has MARKETING_VERSION = 3.0
+- 478-539: Release - has MARKETING_VERSION = 3.0
+- 541: 8BA62D0A2E057D1A00F54650 /* Debug */ - start of next
+
+So the first two configs (467, 531) could be project-level. Let me check - in Xcode, project-level build settings often don't have MARKETING_VERSION; each target has its own. So the 3.0 at 467 and 531 might be inherited by the miataru target. Either way, the rule can say: "Read MARKETING_VERSION from miataru.xcodeproj/project.pbxproj; use the value that appears in the main app target (the miataru target). You can grep for MARKETING_VERSION and use the first occurrence(s) which correspond to the miataru app (typically 3.0)." Actually the safest is: "Get MARKETING_VERSION from the miataru app target in miataru/miataru.xcodeproj/project.pbxproj. The main app target is named 'miataru' (productName); its MARKETING_VERSION is set in its build configurations." I'll write the rule to grep for MARKETING_VERSION in project.pbxproj and take the first value that is not 1.0 (since 1.0 is widgets/other), or we could say "in the same build configuration block as PRODUCT_NAME = miataru or the first MARKETING_VERSION that appears for the main target". Actually the simplest for the rule is: "The marketing version is defined in miataru/miataru.xcodeproj/project.pbxproj as MARKETING_VERSION. Use the value from the main app target (the first occurrence of MARKETING_VERSION = X.Y that is not 1.0, or the one in the miataru target's build settings)." I'll keep it simple: read project.pbxproj, find MARKETING_VERSION for the main scheme - the main app is the target "miataru"; in pbxproj the build configurations are listed per-target, so the agent can grep and use the first non-1.0 value or the one associated with the miataru target. I'll state: "Get the version from miataru.xcodeproj/project.pbxproj (grep MARKETING_VERSION; the main app target uses the value that is not 1.0)."
+</details></think>
+
+---
+
+
+Regel erstellen und `.cursorrules` um den Changelog‑Commit‑Hinweis ergänzen.
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: mkdir -p /Users/bietiekay/code/miataru-ios-app/miataru/.cursor/rules</summary>
+
+```bash
+mkdir -p /Users/bietiekay/code/miataru-ios-app/miataru/.cursor/rules
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+Good. Now create the .mdc rule file and update .cursorrules.
+</details></think>
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/.cursor/rules/changelog-on-commit.mdc</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/.cursorrules</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+Done. I created:
+1. `.cursor/rules/changelog-on-commit.mdc` – a dedicated rule that always applies, with step-by-step instructions for updating CHANGELOG on commit.
+2. Updated `.cursorrules` – added a “Changelog on Commit” memory so the behavior is also documented in the main rules file.
+
+I'll give a short summary to the user.
+</details></think>
+
+---
+
+
+Die Cursor-Regeln sind erweitert. Hier die Änderungen:
+
+**1. Neue Regel:** `miataru/.cursor/rules/changelog-on-commit.mdc`  
+- **alwaysApply: true**, damit sie bei jedem Commit-Kontext greift.  
+- Ablauf:
+  - **Marketing-Version** aus `miataru.xcodeproj/project.pbxproj` nehmen (Wert des miataru-Targets, nicht 1.0).
+  - **CHANGELOG.md** prüfen: Steht oben schon „version X.Y“ für diese Version?  
+    - Ja → optional weitere Bullet-Points für diesen Commit ergänzen.  
+    - Nein → **neuen Abschnitt oben einfügen**: erste Zeile `version X.Y`, darunter Bullet-Points mit kurzer Zusammenfassung der Änderungen, alles auf Englisch.
+  - CHANGELOG-Änderung **im gleichen Commit** wie die übrigen Änderungen committen.
+
+**2. Erweiterung in:** `miataru/.cursorrules`  
+- Unter „Memories“ einen Eintrag **Changelog on Commit** ergänzt, der dasselbe Verhalten beschreibt (Version aus `MARKETING_VERSION` des miataru-Targets, neue Version oben in CHANGELOG eintragen, wenn noch nicht vorhanden, sonst nur ergänzen).
+
+Die Version wird aus der Haupt-App (miataru) gelesen; in der `project.pbxproj` ist das der `MARKETING_VERSION`-Wert, der nicht `1.0` ist (1.0 wird von Widgets/anderen Targets verwendet).
+
+---
+
+_**User**_
+
+beschreibe und comitte
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+<think><details><summary>Thought Process</summary>
+
+The user wants me to describe the changes and commit them. I need to:
+1. Describe what was done (the cursor rules extension for changelog on commit)
+2. Update CHANGELOG.md according to the new rule - get MARKETING_VERSION from project.pbxproj, check if it's at top of CHANGELOG, add version section if needed with summary of changes
+3. Commit everything
+
+Let me first get the current MARKETING_VERSION and read CHANGELOG to see what's there.
+</details></think>
+
+---
+
+
+Änderungen prüfen, CHANGELOG gemäß Regel aktualisieren und alles committen.
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="ripgrep_raw_search">
+<details>
+<summary>Tool use: **ripgrep_raw_search**</summary>
+
+
+Parameters:
+
+```json
+{
+  "pattern": "MARKETING_VERSION",
+  "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru.xcodeproj/project.pbxproj",
+  "contextBefore": 0,
+  "contextAfter": 0,
+  "caseInsensitive": false
+}
+```
+Result:
+
+```json
+{
+  "success": {
+    "pattern": "MARKETING_VERSION",
+    "path": "/Users/bietiekay/code/miataru-ios-app/miataru/miataru.xcodeproj/project.pbxproj",
+    "outputMode": "content",
+    "workspaceResults": {
+      "/Users/bietiekay/code/miataru-ios-app/miataru": {
+        "content": {
+          "matches": [
+            {
+              "file": "miataru.xcodeproj/project.pbxproj",
+              "matches": [
+                {
+                  "lineNumber": 467,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 531,
+                  "content": "\t\t\t\tMARKETING_VERSION = 3.0;"
+                },
+                {
+                  "lineNumber": 625,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 644,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 661,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                },
+                {
+                  "lineNumber": 678,
+                  "content": "\t\t\t\tMARKETING_VERSION = 1.0;"
+                }
+              ]
+            }
+          ],
+          "totalLines": 6,
+          "totalMatchedLines": 6
+        }
+      }
+    }
+  }
+}
+```
+Status: **completed**
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file_v2">
+<details><summary>Tool use: **read_file_v2** • Read file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git status</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git status
+```
+
+```
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	deleted:    .specstory/.project.json
+	deleted:    .specstory/.what-is-this.md
+	modified:   miataru/.cursorrules
+	modified:   miataru/miataru.xcodeproj/project.pbxproj
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	miataru/.cursor/rules/
+	miataru/.specstory/history/2026-02-15_11-13Z-zusammenfassung-von-branch-3-commits.md
+	miataru/.specstory/history/2026-02-15_11-29Z-changelog-update-rules.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+The user asked me to "beschreibe und committe" (describe and commit). So I need to:
+
+1. **Describe** the changes: The cursor rules were extended so that on every commit the CHANGELOG should be updated at the top with the version from marketing_version of the main scheme; if the version isn't in CHANGELOG yet, add it at the top and summarize the changes below.
+
+2. **Commit**: I need to update CHANGELOG.md first according to the new rule. The marketing version for the main app is 3.0. The CHANGELOG currently has "version 2.9" at the top, so version 3.0 is NOT yet at the top. I need to add "version 3.0" at the top with a summary of the changes being committed.
+
+What are the changes in this commit?
+- Extended Cursor rules: new rule for changelog-on-commit (.cursor/rules/changelog-on-commit.mdc)
+- Updated .cursorrules with Changelog on Commit memory
+- Possibly the deleted .specstory files and modified project.pbxproj - but the user said "beschreibe und committe" referring to our previous work, so I'll focus on committing the cursor rules + CHANGELOG update. I should not include the .specstory deletions or project.pbxproj unless they're part of the same intent. Let me check - the git status shows:
+  - modified: miataru/.cursorrules
+  - modified: miataru/miataru.xcodeproj/project.pbxproj
+  - untracked: miataru/.cursor/rules/
+
+So the changes we made are: .cursorrules, .cursor/rules/ (new). The project.pbxproj was already modified before (maybe from another change). I'll add CHANGELOG.md with the new version 3.0 section describing the cursor rules extension, then stage and commit:
+- miataru/.cursorrules
+- miataru/.cursor/rules/changelog-on-commit.mdc
+- miataru/CHANGELOG.md
+
+I'll leave out the .specstory deletions and project.pbxproj unless the user wants everything - the user said "beschreibe und committe" which I interpret as "describe [the changes] and commit [them]" i.e. the cursor rules work we did. So I'll commit only the relevant files and add a CHANGELOG entry for it.
+
+CHANGELOG entry for this commit:
+version 3.0
+- Extended Cursor rules: changelog-on-commit rule and memory so CHANGELOG.md is updated at the top with the main app marketing version when committing, with change summary.
+
+Let me add that to CHANGELOG and then commit.
+</details></think>
+
+---
+
+
+CHANGELOG gemäß Regel aktualisieren (Marketing-Version 3.0, noch nicht im Changelog), dann die Änderungen beschreiben und committen.
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="edit_file_v2">
+
+<details><summary>Tool use: **edit_file_v2** • Edit file: /Users/bietiekay/code/miataru-ios-app/miataru/CHANGELOG.md</summary>
+
+</details>
+
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+Good. Now commit. I'll stage only the cursor rules and CHANGELOG changes (not .specstory or project.pbxproj unless they're part of this work). The user said "beschreibe und committe" - describe and commit. So:
+- Stage: miataru/.cursorrules, miataru/.cursor/rules/changelog-on-commit.mdc, miataru/CHANGELOG.md
+- Commit with a clear message in English
+</details></think>
+
+---
+
+
+
+
+
+---
+
+<tool-use data-tool-type="shell" data-tool-name="run_terminal_command_v2">
+<details><summary>Tool use: **run_terminal_command_v2** • Run command: cd /Users/bietiekay/code/miataru-ios-app && git add miataru/.cursorrules miataru/.cursor/rules/changelog-on-commit.mdc miataru/CHANGELOG.md && git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Extend Cursor rules: update CHANGELOG on commit with marketing version
+
+- Add .cursor/rules/changelog-on-commit.mdc: when committing, prepend
+  CHANGELOG.md with version from main app MARKETING_VERSION if not yet
+  at top, and summarize changes below.
+- Add Changelog on Commit memory to .cursorrules.
+- Add version 3.0 section to CHANGELOG.md for this change."</summary>
+
+```bash
+cd /Users/bietiekay/code/miataru-ios-app && git add miataru/.cursorrules miataru/.cursor/rules/changelog-on-commit.mdc miataru/CHANGELOG.md && git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Extend Cursor rules: update CHANGELOG on commit with marketing version
+
+- Add .cursor/rules/changelog-on-commit.mdc: when committing, prepend
+  CHANGELOG.md with version from main app MARKETING_VERSION if not yet
+  at top, and summarize changes below.
+- Add Changelog on Commit memory to .cursorrules.
+- Add version 3.0 section to CHANGELOG.md for this change."
+```
+
+```
+[master 09a01935] Extend Cursor rules: update CHANGELOG on commit with marketing version
+ 3 files changed, 30 insertions(+), 1 deletion(-)
+ create mode 100644 miataru/.cursor/rules/changelog-on-commit.mdc
+
+```
+</details>
+</tool-use>
+
+---
+
+<think><details><summary>Thought Process</summary>
+
+Done. I'll summarize for the user in German.
+</details></think>
+
+---
+
+
+**Beschreibung**
+
+- **Cursor-Regeln erweitert:** Neue Regel `.cursor/rules/changelog-on-commit.mdc` (alwaysApply) und Eintrag unter „Memories“ in `.cursorrules`.
+- **Verhalten:** Bei jedem Commit wird die Marketing-Version aus dem Haupt-App-Target in `project.pbxproj` gelesen. Steht diese Version noch nicht oben in `CHANGELOG.md`, wird oben ein neuer Abschnitt „version X.Y“ ergänzt und die Änderungen des Commits darunter in Stichpunkten zusammengefasst; die CHANGELOG-Änderung gehört in denselben Commit.
+- **CHANGELOG:** Oben wurde „version 3.0“ ergänzt mit dem Eintrag: Erweiterung der Cursor-Regeln (changelog-on-commit), damit das CHANGELOG beim Commit mit der Marketing-Version und einer kurzen Zusammenfassung aktualisiert wird.
+
+**Commit**
+
+- **Commit:** `09a01935` – „Extend Cursor rules: update CHANGELOG on commit with marketing version“
+- **Geänderte Dateien:**  
+  `miataru/.cursorrules`,  
+  `miataru/.cursor/rules/changelog-on-commit.mdc` (neu),  
+  `miataru/CHANGELOG.md` (version 3.0 ergänzt).
+
+Die übrigen Änderungen (z. B. `.specstory`, `project.pbxproj`) sind nicht Teil dieses Commits; du kannst sie separat committen oder verwerfen.
+
+---
+
