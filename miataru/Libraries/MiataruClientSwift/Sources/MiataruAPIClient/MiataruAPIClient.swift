@@ -851,18 +851,27 @@ public enum MiataruAPIClient {
     ///   - serverURL: The base URL of the Miataru server.
     ///   - deviceID: The ID of the device to fetch the history for.
     ///   - requestingDeviceID: The ID of the device making the request.
+    ///   - requestingDeviceKey: The optional DeviceKey for the requesting device.
     ///   - amount: The number of history entries to retrieve.
     /// - Returns: An array of location data objects.
     /// - Throws: An `APIError` if the request fails.
     public static func getLocationHistory(serverURL: URL,
                                   forDeviceID deviceID: String,
                                   requestingDeviceID: String,
+                                  requestingDeviceKey: String? = nil,
                                   amount: Int) async throws -> [MiataruLocationData] {
         
         let url = serverURL.appendingPathComponent("v1/GetLocationHistory")
 
+        let hasRequestDeviceID = !requestingDeviceID.isEmpty
+        let hasRequestDeviceKey = !(requestingDeviceKey?.isEmpty ?? true)
         let requestBody = GetLocationHistoryRequestBody(
-            MiataruConfig: MiataruConfig(RequestMiataruDeviceID: requestingDeviceID),
+            MiataruConfig: (hasRequestDeviceID || hasRequestDeviceKey)
+                ? MiataruConfig(
+                    RequestMiataruDeviceID: requestingDeviceID,
+                    RequestMiataruDeviceKey: requestingDeviceKey
+                )
+                : nil,
             MiataruGetLocationHistory: GetLocationHistoryPayload(Device: deviceID, Amount: String(amount))
         )
 

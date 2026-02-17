@@ -482,6 +482,7 @@ struct iPhone_DeviceHistoryMapView: View {
                 serverURL: url,
                 forDeviceID: device.DeviceID,
                 requestingDeviceID: requestingDeviceID,
+                requestingDeviceKey: SettingsManager.shared.deviceKey,
                 amount: 10000 // because we do not make it configurable by the user we just get 10k entries, which should be good for "all"
             )
             let normalized = normalizeHistoryEntries(from: data)

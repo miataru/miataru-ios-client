@@ -1124,6 +1124,7 @@ struct iPhone_DeviceMapView: View {
                 serverURL: url,
                 forDeviceID: device.DeviceID,
                 requestingDeviceID: requestingDeviceID,
+                requestingDeviceKey: settings.deviceKey,
                 amount: 10000
             )
             let normalized = normalizeHistoryEntries(from: data)
