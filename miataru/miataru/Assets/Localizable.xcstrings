@@ -10274,6 +10274,7 @@
     },
     "encoding_error" : {
       "comment" : "Error encoding the request.",
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -12995,7 +12996,7 @@
       }
     },
     "history_load_failed" : {
-      "comment" : "History load failed message",
+      "comment" : "Could not load history.\nHistory load failed message",
       "localizations" : {
         "da" : {
           "stringUnit" : {

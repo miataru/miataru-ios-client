@@ -90,6 +90,12 @@ struct iPhone_DeviceNavigationView: View {
     // Minimum route progress required before showing ghost/progress segmentation
     private let minimumProgressToShowGhost: Double = 0.05
 
+    /// Full-screen focused navigation mode (enabled via double-tap) uses a stable route rendering:
+    /// base route + optional mutual-navigation overlay, without ghost/progress segmentation.
+    private var shouldUseFocusedNavigationRouteRendering: Bool {
+        isNavigationMode
+    }
+
     private var offRouteThreshold: CLLocationDistance {
         switch settings.navigationTransportType {
         case 0: return 15
@@ -230,7 +236,14 @@ struct iPhone_DeviceNavigationView: View {
             if let route = route {
                 // Directly reference isMutualNavigation to ensure Map content observes the state change
                 // This allows the overlay polyline to be added/removed without reloading the entire map
-                if settings.showRouteProgress {
+                if shouldUseFocusedNavigationRouteRendering {
+                    MapPolyline(route.polyline)
+                        .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                    if isMutualNavigation {
+                        MapPolyline(route.polyline)
+                            .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                    }
+                } else if settings.showRouteProgress {
                     let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
                     let userSpeed = locationManager.currentLocation?.speed
                     // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
@@ -378,16 +391,19 @@ struct iPhone_DeviceNavigationView: View {
                 updateCoordinates()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
+                updateLiveNavigationRouteSummary()
                 hasLocationUpdateSinceLastAutoUpdate = true
             }
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
+                updateLiveNavigationRouteSummary()
                 hasLocationUpdateSinceLastAutoUpdate = true
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
+                updateLiveNavigationRouteSummary()
             }
             .onDisappear {
                 isViewActive = false
@@ -444,6 +460,11 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onChange(of: isNavigationMode) { _, newValue in
                 navigationFeedbackGate.isNavigationMode = newValue
+                if newValue {
+                    updateLiveNavigationRouteSummary()
+                } else {
+                    applyStaticRouteSummaryFromCurrentRoute()
+                }
             }
             .onChange(of: mutualNavigationDetector.isMutualNavigation) { _, newValue in
                 isMutualNavigation = newValue
@@ -836,10 +857,7 @@ struct iPhone_DeviceNavigationView: View {
                 let response = try await MKDirections(request: request).calculate()
                 if let first = response.routes.first {
                     route = first
-                    let formatter = DateComponentsFormatter()
-                    formatter.unitsStyle = .short
-                    travelTime = formatter.string(from: first.expectedTravelTime)
-                    distanceText = formattedDistance(first.distance)
+                    applyStaticRouteSummary(for: first)
                     // Refresh overlay with new route - this ensures overlay matches the route direction
                     refreshNavigationOverlayForCurrentRoute()
                     // Remember inputs used for this route calculation
@@ -1543,6 +1561,49 @@ struct iPhone_DeviceNavigationView: View {
         // Update bottom accessory to reflect that navigation is stopped
         updateBottomAccessory()
     }
+
+    private func updateLiveNavigationRouteSummary() {
+        // Keep ETA/distance continuously updated while focused navigation mode is active.
+        guard isNavigationMode, !isRouteFromDeviceToUser else { return }
+        guard let route, let currentLocation = locationManager.currentLocation else { return }
+        guard let remainingMeters = route.polyline.remainingDistance(toEndFrom: MKMapPoint(currentLocation.coordinate)) else { return }
+
+        let clampedRemainingMeters = max(0, min(remainingMeters, route.distance))
+        let remainingSeconds: TimeInterval? = {
+            guard route.distance > 0 else { return nil }
+            return route.expectedTravelTime * (clampedRemainingMeters / route.distance)
+        }()
+
+        let newTravelTime = formattedDuration(remainingSeconds)
+        let newDistanceText = formattedDistance(clampedRemainingMeters)
+
+        if travelTime != newTravelTime {
+            travelTime = newTravelTime
+        }
+        if distanceText != newDistanceText {
+            distanceText = newDistanceText
+        }
+    }
+
+    private func applyStaticRouteSummaryFromCurrentRoute() {
+        guard let route else { return }
+        applyStaticRouteSummary(for: route)
+    }
+
+    private func applyStaticRouteSummary(for route: MKRoute) {
+        travelTime = formattedDuration(route.expectedTravelTime)
+        distanceText = formattedDistance(route.distance)
+    }
+
+    private func formattedDuration(_ seconds: TimeInterval?) -> String? {
+        guard let seconds else { return nil }
+        let clampedSeconds = max(0, seconds)
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .short
+        formatter.allowedUnits = clampedSeconds >= 3600 ? [.hour, .minute] : [.minute, .second]
+        formatter.zeroFormattingBehavior = [.dropLeading]
+        return formatter.string(from: clampedSeconds)
+    }
 }
 
 // MARK: - Distance Formatting
@@ -1575,10 +1636,7 @@ extension iPhone_DeviceNavigationView {
             ) {
                 // Apply cached route and keep display fields in sync
                 route = cached.route
-                let formatter = DateComponentsFormatter()
-                formatter.unitsStyle = .short
-                travelTime = formatter.string(from: cached.route.expectedTravelTime)
-                distanceText = formattedDistance(cached.route.distance)
+                applyStaticRouteSummary(for: cached.route)
                 refreshNavigationOverlayForCurrentRoute()
                 // Align last-route inputs so existing change detection logic works
                 lastRouteUserCoordinate = cached.userCoordinate
@@ -1841,4 +1899,3 @@ private final class NavigationFeedbackGate {
     var isRouteFromDeviceToUser = true
     var isNavigationMode = false
 }
-
