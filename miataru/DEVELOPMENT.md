@@ -131,6 +131,15 @@ miataru/
 - **QR code not scanning**: Verify camera permissions
 - **Settings not persisting**: Check UserDefaults implementation
 - **Background location issues**: Verify background modes in Info.plist
+- **"Error while encoding the location update" shown unexpectedly**:
+  - This message is considered a technical/debug signal and should not be surfaced as a prominent user-facing overlay.
+  - Verify `MiataruAPIClient.performPostRequest<T: Encodable>` rethrows existing `APIError` values unchanged, so transient request failures are not mislabeled as encoding issues.
+  - For map/history fetch UI, log encoding failures via `debugLog` and avoid large red error overlays unless a user-actionable issue exists.
+
+### Network Retry Policy (Guideline)
+- Add retries only for transient failures (`URLError.timedOut`, `networkConnectionLost`, `cannotConnectToHost`, HTTP `408/429/5xx`).
+- Do not retry `encodingError`, `decodingError`, `invalidURL`, or auth/device-key validation failures.
+- Prefer a short exponential backoff with jitter (for example 1-2 retries) and keep `updateLocation` conservative to avoid duplicate history entries.
 
 ### Debug Commands
 - Enable location simulation in Xcode

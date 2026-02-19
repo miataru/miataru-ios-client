@@ -901,7 +901,7 @@ struct iPad_GroupMapView: View {
         case .invalidResponse(_):
             showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
         case .encodingError(let err):
-            showErrorOverlay("Encoding error: \(err.localizedDescription)", NSLocalizedString("encoding_error", comment: "Error encoding the request."))
+            debugLog("[iPad_GroupMapView] Suppressed encoding error overlay while fetching locations: \(err.localizedDescription)")
         case .decodingError(let err):
             showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
         case .requestFailed(let err):

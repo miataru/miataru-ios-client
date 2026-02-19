@@ -662,7 +662,8 @@ struct iPhone_DeviceHistoryMapView: View {
         case .invalidResponse(_):
             return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
         case .encodingError(let err):
-            return "\(NSLocalizedString("encoding_error", comment: "Error encoding the request.")) \(err.localizedDescription)"
+            debugLog("[DeviceHistoryMapView] Encoding error while loading history: \(err.localizedDescription)")
+            return NSLocalizedString("history_load_failed", comment: "Could not load history.")
         case .decodingError(let err):
             return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
