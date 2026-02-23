@@ -1,3 +1,7 @@
+version 3.1.1
+- Fixed navigation refresh after app background/foreground transitions so route, ETA, and distance update without manually restarting navigation.
+- Stabilized route rendering during mutual-navigation state changes by using a dedicated overlay polyline copy to prevent temporary truncation/flicker in focused reversed navigation mode.
+
 version 3.1
 - Stabilized full-screen focused navigation mode (double-tap) to always render the route reliably, including during mutual-navigation state changes.
 - Disabled route ghost/progress segmentation in focused navigation mode and render only the base route plus mutual-navigation overlay when active.

@@ -12,6 +12,7 @@ import MapKit
 import Combine
 import CoreLocation
 import Foundation
+import UIKit
 import AudioToolbox
 import MiataruAPIClient
 import NavigationOverlayKit
@@ -34,6 +35,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var animatedUserCoordinate: CLLocationCoordinate2D?
     @State private var animatedDeviceCoordinate: CLLocationCoordinate2D?
     @State private var route: MKRoute?
+    @State private var mutualRouteOverlayPolyline: MKPolyline?
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
     @State private var distanceText: String?
@@ -186,7 +188,7 @@ struct iPhone_DeviceNavigationView: View {
             deviceCoordinate = nil
             animatedUserCoordinate = nil
             animatedDeviceCoordinate = nil
-            route = nil
+            setRouteForRendering(nil)
             travelTime = nil
             distanceText = nil
             currentRegion = nil
@@ -239,8 +241,8 @@ struct iPhone_DeviceNavigationView: View {
                 if shouldUseFocusedNavigationRouteRendering {
                     MapPolyline(route.polyline)
                         .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                    if isMutualNavigation {
-                        MapPolyline(route.polyline)
+                    if isMutualNavigation, let mutualRouteOverlayPolyline {
+                        MapPolyline(mutualRouteOverlayPolyline)
                             .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                     }
                 } else if settings.showRouteProgress {
@@ -266,15 +268,15 @@ struct iPhone_DeviceNavigationView: View {
                         if progress <= minimumProgressToShowGhost {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
-                            if isMutualNavigation {
-                                MapPolyline(route.polyline)
+                            if isMutualNavigation, let mutualRouteOverlayPolyline {
+                                MapPolyline(mutualRouteOverlayPolyline)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else if progress >= 1 {
                             MapPolyline(route.polyline)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
-                            if isMutualNavigation {
-                                MapPolyline(route.polyline)
+                            if isMutualNavigation, let mutualRouteOverlayPolyline {
+                                MapPolyline(mutualRouteOverlayPolyline)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else {
@@ -311,16 +313,16 @@ struct iPhone_DeviceNavigationView: View {
                     } else {
                         MapPolyline(route.polyline)
                             .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                        if isMutualNavigation {
-                            MapPolyline(route.polyline)
+                        if isMutualNavigation, let mutualRouteOverlayPolyline {
+                            MapPolyline(mutualRouteOverlayPolyline)
                                 .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                         }
                     }
                 } else {
                     MapPolyline(route.polyline)
                         .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                    if isMutualNavigation {
-                        MapPolyline(route.polyline)
+                    if isMutualNavigation, let mutualRouteOverlayPolyline {
+                        MapPolyline(mutualRouteOverlayPolyline)
                             .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                     }
                 }
@@ -405,6 +407,10 @@ struct iPhone_DeviceNavigationView: View {
                 now = input
                 updateLiveNavigationRouteSummary()
             }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                guard isViewActive else { return }
+                Task { await refreshNavigationAfterAppBecomesActive() }
+            }
             .onDisappear {
                 isViewActive = false
                 navigationFeedbackGate.isViewActive = false
@@ -441,7 +447,7 @@ struct iPhone_DeviceNavigationView: View {
                 // Reversed route = user→device; non-reversed = device→user. Toggle swaps direction.
                 // Clear route and overlay immediately when route direction changes to prevent showing stale route data
                 // The route will be recalculated and overlay refreshed when the new route is calculated
-                route = nil
+                setRouteForRendering(nil)
                 travelTime = nil
                 distanceText = nil
                 navigationOverlayViewModel = nil
@@ -856,7 +862,7 @@ struct iPhone_DeviceNavigationView: View {
             do {
                 let response = try await MKDirections(request: request).calculate()
                 if let first = response.routes.first {
-                    route = first
+                    setRouteForRendering(first)
                     applyStaticRouteSummary(for: first)
                     // Refresh overlay with new route - this ensures overlay matches the route direction
                     refreshNavigationOverlayForCurrentRoute()
@@ -878,7 +884,7 @@ struct iPhone_DeviceNavigationView: View {
                         deviceTimestamp: deviceTimestamp
                     )
                 } else {
-                    route = nil
+                    setRouteForRendering(nil)
                     travelTime = nil
                     distanceText = nil
                     lastRouteTransportType = nil
@@ -886,7 +892,7 @@ struct iPhone_DeviceNavigationView: View {
                     handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
                 }
             } catch {
-                route = nil
+                setRouteForRendering(nil)
                 travelTime = nil
                 distanceText = nil
                 lastRouteTransportType = nil
@@ -1139,6 +1145,43 @@ struct iPhone_DeviceNavigationView: View {
     private func stopAutoUpdate() {
         timerCancellable?.cancel()
         timerCancellable = nil
+    }
+
+    private func setRouteForRendering(_ newRoute: MKRoute?) {
+        route = newRoute
+        guard let newRoute else {
+            mutualRouteOverlayPolyline = nil
+            return
+        }
+        let sourcePolyline = newRoute.polyline
+        guard sourcePolyline.pointCount > 0 else {
+            mutualRouteOverlayPolyline = nil
+            return
+        }
+        var coordinates = [CLLocationCoordinate2D](
+            repeating: kCLLocationCoordinate2DInvalid,
+            count: sourcePolyline.pointCount
+        )
+        sourcePolyline.getCoordinates(
+            &coordinates,
+            range: NSRange(location: 0, length: sourcePolyline.pointCount)
+        )
+        mutualRouteOverlayPolyline = MKPolyline(
+            coordinates: coordinates,
+            count: coordinates.count
+        )
+    }
+
+    @MainActor
+    private func refreshNavigationAfterAppBecomesActive() async {
+        // Ensure periodic updates are alive after background suspension and refresh once immediately.
+        restartAutoUpdate()
+        await fetchTargetDeviceLocation(resetAndRecenter: false)
+        // Do not resurrect navigation after automatic stop; keep map-only state as-is.
+        guard !navigationStopped else { return }
+        // Keep the last known route while offline; retry is handled elsewhere on reconnect.
+        guard locationManager.isNetworkAvailable else { return }
+        calculateRoute(ignoreCache: true)
     }
 
     private func restartAutoUpdate() {
@@ -1539,7 +1582,7 @@ struct iPhone_DeviceNavigationView: View {
     private func stopNavigation() {
         // Stop navigation without dismissing the view
         // Clear route and navigation info, but keep the map showing both devices
-        route = nil
+        setRouteForRendering(nil)
         travelTime = nil
         distanceText = nil
         navigationOverlayViewModel = nil
@@ -1635,7 +1678,7 @@ extension iPhone_DeviceNavigationView {
                 offRouteThreshold: offRouteThreshold
             ) {
                 // Apply cached route and keep display fields in sync
-                route = cached.route
+                setRouteForRendering(cached.route)
                 applyStaticRouteSummary(for: cached.route)
                 refreshNavigationOverlayForCurrentRoute()
                 // Align last-route inputs so existing change detection logic works
