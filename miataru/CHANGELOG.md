@@ -1,4 +1,8 @@
 version 3.1.2
+- Changed location-tracking statistics counters from rolling 24-hour windows to "today" (since local midnight) with daily reset semantics.
+- Replaced per-request timestamp storage with compact persisted daily counters for API and widget statistics, including migration from legacy timestamp data.
+- Updated location-tracking statistics labels and translations across supported languages from "last 24 hours" to "today".
+- Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 1 to 2.
 - Fixed focused double-tap navigation rendering so temporary route recalculation failures no longer clear the currently visible route.
 - Added speed-aware minimum camera distance in focused navigation mode to prevent over-zooming at higher travel speeds.
 - Improved focused navigation camera framing by shifting the camera center forward in travel direction so more route ahead remains visible.

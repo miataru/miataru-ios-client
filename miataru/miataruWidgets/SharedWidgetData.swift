@@ -44,8 +44,9 @@ enum SharedWidgetDataManager {
     // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.
     private static let snapshotPrefix = "WidgetMapSnapshot-"
     private static let snapshotExtension = "png"
-    private static let widgetRequestTimestampsKey = "miataru_widgetRequestTimestamps"
-    private static let maxStoredTimestamps = 1000
+    private static let widgetRequestCountKey = "miataru_widgetRequestCount"
+    private static let widgetRequestLastResetKey = "miataru_widgetRequestLastReset"
+    private static let legacyWidgetRequestTimestampsKey = "miataru_widgetRequestTimestamps"
 
     static var sharedContainerURL: URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
@@ -94,35 +95,47 @@ enum SharedWidgetDataManager {
         }
     }
     
-    /// Records a widget-initiated location request timestamp.
-    /// Uses seconds since 1970 so the main app's WidgetRequestCounter can compute "last 24 hours" reliably.
+    /// Records a widget-initiated location request for the current local calendar day.
     /// This can be called from the widget extension to track requests.
     static func recordWidgetRequest() {
         guard let userDefaults = UserDefaults(suiteName: appGroupIdentifier) else { return }
         let now = Date()
-        var timestamps: [Date] = loadWidgetRequestTimestamps(userDefaults: userDefaults)
-        timestamps.append(now)
-        let sevenDaysAgo = now.addingTimeInterval(-7 * 24 * 60 * 60)
-        timestamps = timestamps.filter { $0 > sevenDaysAgo }
-        if timestamps.count > maxStoredTimestamps {
-            timestamps = Array(timestamps.suffix(maxStoredTimestamps))
+        migrateLegacyWidgetRequestTimestampsIfNeeded(userDefaults: userDefaults, now: now)
+
+        let todayStart = Calendar.current.startOfDay(for: now)
+        let lastReset = userDefaults.object(forKey: widgetRequestLastResetKey) as? Date
+        let currentCount: Int
+        if let lastReset, lastReset >= todayStart {
+            currentCount = userDefaults.integer(forKey: widgetRequestCountKey)
+        } else {
+            currentCount = 0
         }
-        let seconds = timestamps.map { $0.timeIntervalSince1970 }
-        if let data = try? JSONEncoder().encode(seconds) {
-            userDefaults.set(data, forKey: widgetRequestTimestampsKey)
-        }
+        userDefaults.set(currentCount + 1, forKey: widgetRequestCountKey)
+        userDefaults.set(todayStart, forKey: widgetRequestLastResetKey)
     }
 
-    /// Loads widget request timestamps; supports both [Double] (seconds since 1970) and legacy [Date].
-    private static func loadWidgetRequestTimestamps(userDefaults: UserDefaults) -> [Date] {
-        guard let data = userDefaults.data(forKey: widgetRequestTimestampsKey) else { return [] }
+    private static func migrateLegacyWidgetRequestTimestampsIfNeeded(userDefaults: UserDefaults, now: Date) {
+        if userDefaults.object(forKey: widgetRequestCountKey) != nil {
+            return
+        }
+        guard let timestamps = loadLegacyWidgetRequestTimestamps(userDefaults: userDefaults) else { return }
+        let todayStart = Calendar.current.startOfDay(for: now)
+        let count = timestamps.filter { $0 >= todayStart }.count
+        userDefaults.set(count, forKey: widgetRequestCountKey)
+        userDefaults.set(todayStart, forKey: widgetRequestLastResetKey)
+        userDefaults.removeObject(forKey: legacyWidgetRequestTimestampsKey)
+    }
+
+    /// Loads legacy widget request timestamps; supports both [Double] (seconds since 1970) and [Date].
+    private static func loadLegacyWidgetRequestTimestamps(userDefaults: UserDefaults) -> [Date]? {
+        guard let data = userDefaults.data(forKey: legacyWidgetRequestTimestampsKey) else { return nil }
         if let seconds = try? JSONDecoder().decode([Double].self, from: data) {
-            return seconds.map { Date(timeIntervalSince1970: $0) }.filter { $0.timeIntervalSince1970 > 0 }
+            let timestamps = seconds.map { Date(timeIntervalSince1970: $0) }.filter { $0.timeIntervalSince1970 > 0 }
+            return timestamps.isEmpty ? nil : timestamps
         }
         if let dates = try? JSONDecoder().decode([Date].self, from: data) {
-            return dates
+            return dates.isEmpty ? nil : dates
         }
-        return []
+        return nil
     }
 }
-

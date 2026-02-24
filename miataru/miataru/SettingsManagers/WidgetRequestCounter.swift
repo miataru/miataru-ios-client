@@ -10,20 +10,18 @@
 import Foundation
 import Combine
 
-/// Centralized manager for counting widget-initiated location requests in the last 24 hours.
-/// Stores request timestamps in App Group UserDefaults and exposes a shared observable instance for UI.
-/// Uses seconds since 1970 for storage so counts reset correctly as time passes.
+/// Centralized manager for counting widget-initiated location requests since local midnight.
+/// Stores a daily counter in App Group UserDefaults and exposes a shared observable instance for UI.
 final class WidgetRequestCounter: ObservableObject {
     static let shared = WidgetRequestCounter()
 
-    @Published private(set) var countLast24Hours: Int = 0
+    @Published private(set) var countToday: Int = 0
 
     private let userDefaults: UserDefaults
-    private let timestampsKey = "miataru_widgetRequestTimestamps"
-    private let maxStoredTimestamps = 1000 // Limit stored timestamps to prevent excessive storage
+    private let countKey = "miataru_widgetRequestCount"
+    private let lastResetKey = "miataru_widgetRequestLastReset"
+    private let legacyTimestampsKey = "miataru_widgetRequestTimestamps"
     private static let appGroupIdentifier = "group.com.miataru.ios"
-    private static let sevenDaysSeconds: TimeInterval = 7 * 24 * 60 * 60
-    private static let twentyFourHoursSeconds: TimeInterval = 24 * 60 * 60
 
     private init(userDefaults: UserDefaults? = nil) {
         // Use App Group UserDefaults if available, otherwise fall back to standard UserDefaults
@@ -32,63 +30,75 @@ final class WidgetRequestCounter: ObservableObject {
         } else {
             self.userDefaults = userDefaults ?? .standard
         }
+        migrateLegacyTimestampsIfNeeded()
         updateCount()
     }
 
-    /// Records a widget-initiated location request with the current timestamp.
+    /// Records a widget-initiated location request for today.
     /// Note: Widget extensions call SharedWidgetDataManager.recordWidgetRequest() directly,
     /// but this method can also be used from the main app if needed.
     func recordRequest() {
         let now = Date()
-        var timestamps = loadTimestamps()
-        timestamps.append(now)
-        let pruned = pruneToRetention(timestamps, now: now)
-        saveTimestamps(pruned)
-        updateCount()
+        let currentCount = normalizedCount(now: now)
+        let updatedCount = currentCount + 1
+        saveCount(updatedCount, now: now)
+        publishCount(updatedCount)
     }
 
-    /// Updates the count of widget requests in the last 24 hours.
-    /// Prunes old timestamps from storage and persists so the count can decrease over time.
+    /// Updates the count of widget requests since local midnight.
     /// Call this when the view appears or periodically while the details screen is visible.
-    func updateCount() {
-        let now = Date()
-        let timestamps = loadTimestamps()
-        let twentyFourHoursAgo = now.addingTimeInterval(-Self.twentyFourHoursSeconds)
-        countLast24Hours = timestamps.filter { $0 > twentyFourHoursAgo }.count
-        // Prune and persist so storage does not keep thousands of old entries; ensures count can drop
-        let pruned = pruneToRetention(timestamps, now: now)
-        if pruned.count != timestamps.count {
-            saveTimestamps(pruned)
+    func updateCount(now: Date = Date()) {
+        let count = normalizedCount(now: now)
+        saveCount(count, now: now)
+        publishCount(count)
+    }
+
+    private func publishCount(_ count: Int) {
+        let updateBlock = {
+            self.countToday = count
+        }
+        if Thread.isMainThread {
+            updateBlock()
+        } else {
+            DispatchQueue.main.async(execute: updateBlock)
         }
     }
 
-    /// Keeps only timestamps within the last 7 days and caps total count.
-    private func pruneToRetention(_ timestamps: [Date], now: Date) -> [Date] {
-        let cutoff = now.addingTimeInterval(-Self.sevenDaysSeconds)
-        var recent = timestamps.filter { $0 > cutoff }
-        if recent.count > maxStoredTimestamps {
-            recent = Array(recent.suffix(maxStoredTimestamps))
+    private func normalizedCount(now: Date) -> Int {
+        let todayStart = Calendar.current.startOfDay(for: now)
+        let lastReset = userDefaults.object(forKey: lastResetKey) as? Date
+        guard let lastReset, lastReset >= todayStart else {
+            return 0
         }
-        return recent
+        return max(0, userDefaults.integer(forKey: countKey))
     }
 
-    /// Loads stored timestamps from UserDefaults. Supports both legacy [Date] and [Double] (seconds since 1970).
-    private func loadTimestamps() -> [Date] {
-        guard let data = userDefaults.data(forKey: timestampsKey) else { return [] }
-        // Prefer explicit seconds-since-1970 for reliable 24h rolloff
+    private func saveCount(_ count: Int, now: Date) {
+        userDefaults.set(count, forKey: countKey)
+        userDefaults.set(Calendar.current.startOfDay(for: now), forKey: lastResetKey)
+    }
+
+    private func migrateLegacyTimestampsIfNeeded(now: Date = Date()) {
+        if userDefaults.object(forKey: countKey) != nil {
+            return
+        }
+        guard let timestamps = loadLegacyTimestamps() else { return }
+        let todayStart = Calendar.current.startOfDay(for: now)
+        let count = timestamps.filter { $0 >= todayStart }.count
+        saveCount(count, now: now)
+        userDefaults.removeObject(forKey: legacyTimestampsKey)
+    }
+
+    /// Loads legacy timestamps from UserDefaults. Supports both [Double] (seconds since 1970) and [Date].
+    private func loadLegacyTimestamps() -> [Date]? {
+        guard let data = userDefaults.data(forKey: legacyTimestampsKey) else { return nil }
         if let seconds = try? JSONDecoder().decode([Double].self, from: data) {
-            return seconds.map { Date(timeIntervalSince1970: $0) }.filter { $0.timeIntervalSince1970 > 0 }
+            let timestamps = seconds.map { Date(timeIntervalSince1970: $0) }.filter { $0.timeIntervalSince1970 > 0 }
+            return timestamps.isEmpty ? nil : timestamps
         }
         if let dates = try? JSONDecoder().decode([Date].self, from: data) {
-            return dates
+            return dates.isEmpty ? nil : dates
         }
-        return []
-    }
-
-    /// Saves timestamps as seconds since 1970 for unambiguous decoding and correct 24h filtering.
-    private func saveTimestamps(_ timestamps: [Date]) {
-        let seconds = timestamps.map { $0.timeIntervalSince1970 }
-        guard let data = try? JSONEncoder().encode(seconds) else { return }
-        userDefaults.set(data, forKey: timestampsKey)
+        return nil
     }
 }

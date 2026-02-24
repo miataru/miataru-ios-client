@@ -103,32 +103,32 @@ struct iPhone_LocationStatusView: View {
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Widget requests (last 24 hours)", comment: "Number of widget-initiated requests in the last 24 hours in Location Tracking Details"),
-                            value: String(widgetRequestCounter.countLast24Hours),
+                            title: NSLocalizedString("Widget requests (today)", comment: "Number of widget-initiated requests today in Location Tracking Details"),
+                            value: String(widgetRequestCounter.countToday),
                             icon: "square.on.square"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Updated location calls (last 24 hours)", comment: "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details"),
-                            value: String(apiRequestCounter.updatedLocationCallsLast24Hours),
+                            title: NSLocalizedString("Updated location calls (today)", comment: "Number of UpdateLocation calls today in Location Tracking Details"),
+                            value: String(apiRequestCounter.updatedLocationCallsToday),
                             icon: "arrow.up.circle"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetVisitorHistory calls (last 24 hours)", comment: "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details"),
-                            value: String(apiRequestCounter.getVisitorHistoryCallsLast24Hours),
+                            title: NSLocalizedString("GetVisitorHistory calls (today)", comment: "Number of GetVisitorHistory calls today in Location Tracking Details"),
+                            value: String(apiRequestCounter.getVisitorHistoryCallsToday),
                             icon: "person.2"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetLocation calls (last 24 hours)", comment: "Number of GetLocation calls in the last 24 hours in Location Tracking Details"),
-                            value: String(apiRequestCounter.getLocationCallsLast24Hours),
+                            title: NSLocalizedString("GetLocation calls (today)", comment: "Number of GetLocation calls today in Location Tracking Details"),
+                            value: String(apiRequestCounter.getLocationCallsToday),
                             icon: "location"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetLocationHistory calls (last 24 hours)", comment: "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details"),
-                            value: String(apiRequestCounter.getLocationHistoryCallsLast24Hours),
+                            title: NSLocalizedString("GetLocationHistory calls (today)", comment: "Number of GetLocationHistory calls today in Location Tracking Details"),
+                            value: String(apiRequestCounter.getLocationHistoryCallsToday),
                             icon: "clock.arrow.circlepath"
                         )
 
@@ -214,7 +214,7 @@ struct iPhone_LocationStatusView: View {
         }
     }
     
-    /// Refreshes route (today), widget (last 24h), and API (last 24h) statistics so displayed counts stay correct.
+    /// Refreshes route, widget, and API statistics so displayed daily counts stay correct.
     private func refreshAllStatistics() {
         routeCounter.checkAndResetIfNeeded()
         widgetRequestCounter.updateCount()

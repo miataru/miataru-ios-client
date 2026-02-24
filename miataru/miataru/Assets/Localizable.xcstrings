@@ -11636,197 +11636,197 @@
         }
       }
     },
-    "GetLocation calls (last 24 hours)" : {
-      "comment" : "Number of GetLocation calls in the last 24 hours in Location Tracking Details",
+    "GetLocation calls (today)" : {
+      "comment" : "Number of GetLocation calls today in Location Tracking Details",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation-kald (seneste 24 timer)"
+            "value" : "GetLocation-kald (i dag)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation-Aufrufe (letzte 24 Stunden)"
+            "value" : "GetLocation-Aufrufe (heute)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation calls (last 24 hours)"
+            "value" : "GetLocation calls (today)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamadas GetLocation (últimas 24 horas)"
+            "value" : "Llamadas GetLocation (hoy)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation-kutsut (viimeiset 24 h)"
+            "value" : "GetLocation-kutsut (tänään)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appels GetLocation (24 dernières heures)"
+            "value" : "Appels GetLocation (aujourd’hui)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiamate GetLocation (ultime 24 ore)"
+            "value" : "Chiamate GetLocation (oggi)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation 呼び出し（過去24時間）"
+            "value" : "GetLocation 呼び出し（今日）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation-aanroepen (laatste 24 uur)"
+            "value" : "GetLocation-aanroepen (vandaag)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocation 调用（过去 24 小时）"
+            "value" : "GetLocation 调用（今天）"
           }
         }
       }
     },
-    "GetLocationHistory calls (last 24 hours)" : {
-      "comment" : "Number of GetLocationHistory calls in the last 24 hours in Location Tracking Details",
+    "GetLocationHistory calls (today)" : {
+      "comment" : "Number of GetLocationHistory calls today in Location Tracking Details",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory-kald (seneste 24 timer)"
+            "value" : "GetLocationHistory-kald (i dag)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory-Aufrufe (letzte 24 Stunden)"
+            "value" : "GetLocationHistory-Aufrufe (heute)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory calls (last 24 hours)"
+            "value" : "GetLocationHistory calls (today)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamadas GetLocationHistory (últimas 24 horas)"
+            "value" : "Llamadas GetLocationHistory (hoy)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory-kutsut (viimeiset 24 h)"
+            "value" : "GetLocationHistory-kutsut (tänään)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appels GetLocationHistory (24 dernières heures)"
+            "value" : "Appels GetLocationHistory (aujourd’hui)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiamate GetLocationHistory (ultime 24 ore)"
+            "value" : "Chiamate GetLocationHistory (oggi)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory 呼び出し（過去24時間）"
+            "value" : "GetLocationHistory 呼び出し（今日）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory-aanroepen (laatste 24 uur)"
+            "value" : "GetLocationHistory-aanroepen (vandaag)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetLocationHistory 调用（过去 24 小时）"
+            "value" : "GetLocationHistory 调用（今天）"
           }
         }
       }
     },
-    "GetVisitorHistory calls (last 24 hours)" : {
-      "comment" : "Number of GetVisitorHistory calls in the last 24 hours in Location Tracking Details",
+    "GetVisitorHistory calls (today)" : {
+      "comment" : "Number of GetVisitorHistory calls today in Location Tracking Details",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory-kald (seneste 24 timer)"
+            "value" : "GetVisitorHistory-kald (i dag)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory-Aufrufe (letzte 24 Stunden)"
+            "value" : "GetVisitorHistory-Aufrufe (heute)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory calls (last 24 hours)"
+            "value" : "GetVisitorHistory calls (today)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamadas GetVisitorHistory (últimas 24 horas)"
+            "value" : "Llamadas GetVisitorHistory (hoy)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory-kutsut (viimeiset 24 h)"
+            "value" : "GetVisitorHistory-kutsut (tänään)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appels GetVisitorHistory (24 dernières heures)"
+            "value" : "Appels GetVisitorHistory (aujourd’hui)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiamate GetVisitorHistory (ultime 24 ore)"
+            "value" : "Chiamate GetVisitorHistory (oggi)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory 呼び出し（過去24時間）"
+            "value" : "GetVisitorHistory 呼び出し（今日）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory-aanroepen (laatste 24 uur)"
+            "value" : "GetVisitorHistory-aanroepen (vandaag)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GetVisitorHistory 调用（过去 24 小时）"
+            "value" : "GetVisitorHistory 调用（今天）"
           }
         }
       }
@@ -23015,67 +23015,67 @@
         }
       }
     },
-    "Updated location calls (last 24 hours)" : {
-      "comment" : "Number of UpdateLocation calls in the last 24 hours in Location Tracking Details",
+    "Updated location calls (today)" : {
+      "comment" : "Number of UpdateLocation calls today in Location Tracking Details",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opdaterede lokationsopkald (seneste 24 timer)"
+            "value" : "Opdaterede lokationsopkald (i dag)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualisierte Standortaufrufe (letzte 24 Stunden)"
+            "value" : "Aktualisierte Standortaufrufe (heute)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Updated location calls (last 24 hours)"
+            "value" : "Updated location calls (today)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llamadas de ubicación actualizadas (últimas 24 horas)"
+            "value" : "Llamadas de ubicación actualizadas (hoy)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Päivitetyt sijaintikutsut (viimeiset 24 h)"
+            "value" : "Päivitetyt sijaintikutsut (tänään)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appels de position mis à jour (24 dernières heures)"
+            "value" : "Appels de position mis à jour (aujourd’hui)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiamate di posizione aggiornate (ultime 24 ore)"
+            "value" : "Chiamate di posizione aggiornate (oggi)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新された位置情報呼び出し（過去24時間）"
+            "value" : "更新された位置情報呼び出し（今日）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bijgewerkte locatie-aanroepen (laatste 24 uur)"
+            "value" : "Bijgewerkte locatie-aanroepen (vandaag)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已更新的位置调用（过去 24 小时）"
+            "value" : "已更新的位置调用（今天）"
           }
         }
       }
@@ -23663,67 +23663,67 @@
         }
       }
     },
-    "Widget requests (last 24 hours)" : {
-      "comment" : "Number of widget-initiated requests in the last 24 hours in Location Tracking Details",
+    "Widget requests (today)" : {
+      "comment" : "Number of widget-initiated requests today in Location Tracking Details",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget-anmodninger (sidste 24 timer)"
+            "value" : "Widget-anmodninger (i dag)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget-Anfragen (letzte 24 Stunden)"
+            "value" : "Widget-Anfragen (heute)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget requests (last 24 hours)"
+            "value" : "Widget requests (today)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solicitudes de widget (últimas 24 horas)"
+            "value" : "Solicitudes de widget (hoy)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget-pyynnöt (viimeiset 24 tuntia)"
+            "value" : "Widget-pyynnöt (tänään)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Requêtes de widget (24 dernières heures)"
+            "value" : "Requêtes de widget (aujourd’hui)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Richieste widget (ultime 24 ore)"
+            "value" : "Richieste widget (oggi)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウィジェットリクエスト（過去24時間）"
+            "value" : "ウィジェットリクエスト（今日）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget-verzoeken (laatste 24 uur)"
+            "value" : "Widget-verzoeken (vandaag)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小组件请求（过去24小时）"
+            "value" : "小组件请求（今天）"
           }
         }
       }
