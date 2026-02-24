@@ -1,3 +1,9 @@
+version 3.1.2
+- Fixed focused double-tap navigation rendering so temporary route recalculation failures no longer clear the currently visible route.
+- Added speed-aware minimum camera distance in focused navigation mode to prevent over-zooming at higher travel speeds.
+- Improved focused navigation camera framing by shifting the camera center forward in travel direction so more route ahead remains visible.
+- Stabilized programmatic follow-camera updates to avoid unintended disabling of auto-zoom during animated camera transitions.
+
 version 3.1.1
 - Fixed navigation refresh after app background/foreground transitions so route, ETA, and distance update without manually restarting navigation.
 - Stabilized route rendering during mutual-navigation state changes by using a dedicated overlay polyline copy to prevent temporary truncation/flicker in focused reversed navigation mode.

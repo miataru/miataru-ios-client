@@ -64,6 +64,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var lastFollowCameraUpdate: Date? = nil
     @State private var lastFollowCameraCenter: CLLocationCoordinate2D? = nil
     @State private var lastFollowCameraHeading: CLLocationDirection? = nil
+    @State private var lastFollowCameraDistance: CLLocationDistance? = nil
     @State private var followCameraDistanceOverride: CLLocationDistance? = nil
     @State private var isFollowAutoZoomEnabled: Bool = true
     @State private var currentMapHeadingDegrees: Double = 0
@@ -133,7 +134,13 @@ struct iPhone_DeviceNavigationView: View {
     private let followUpdateMinInterval: TimeInterval = 0.35
     private let followUpdateMinDistance: CLLocationDistance = 3
     private let followUpdateMinHeadingDelta: CLLocationDirection = 2
+    private let followUpdateMinDistanceDelta: CLLocationDistance = 40
     private let routeFitPaddingMultiplier: Double = 1.25
+    private let navigationSpeedZoomThresholdKmh: CLLocationSpeed = 20
+    private let navigationMediumSpeedMinCameraDistance: CLLocationDistance = 600
+    private let navigationHighSpeedMinCameraDistance: CLLocationDistance = 900
+    private let navigationLookAheadMinDistance: CLLocationDistance = 70
+    private let navigationLookAheadMaxDistance: CLLocationDistance = 360
     private let mutualNavigationOnSoundName = "confirm"
     private let mutualNavigationOffSoundName = "cancel"
     private let navigationLeftSoundName = "nav_left"
@@ -197,6 +204,7 @@ struct iPhone_DeviceNavigationView: View {
             currentMapCamera = nil
             userHasRotatedMap = false
             isProgrammaticCameraChange = false
+            suppressUserCameraChangeDetectionUntil = nil
             isAutoCenteringEnabled = true
             // Ensure auto-update lock state follows global setting for new navigation
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
@@ -487,9 +495,12 @@ struct iPhone_DeviceNavigationView: View {
                 // Track camera state changes to detect user rotation and keep a compass affordance
                 let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
                 if isProgrammaticCameraChange {
-                    // Ignore user interaction detection for programmatic updates
                     isProgrammaticCameraChange = false
-                } else {
+                }
+                let now = Date()
+                let isSuppressed = suppressUserCameraChangeDetectionUntil.map { now < $0 } ?? false
+                if !isSuppressed {
+                    suppressUserCameraChangeDetectionUntil = nil
                     if isFollowDeviceHeadingMode || isNavigationMode {
                         followCameraDistanceOverride = context.camera.distance
                         isFollowAutoZoomEnabled = false
@@ -786,7 +797,7 @@ struct iPhone_DeviceNavigationView: View {
                 return
             }
             let region = regionThatFits(user: user, dest: dest)
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraChangeSuppression()
             if animationsAllowed {
                 withAnimation {
                     mapPosition = .region(region)
@@ -858,6 +869,7 @@ struct iPhone_DeviceNavigationView: View {
             request.destination = MKMapItem(placemark: MKPlacemark(coordinate: device))
         }
         request.transportType = transportTypeFromSetting(settings.navigationTransportType)
+        let hadRouteBeforeRecalculation = route != nil
         Task {
             do {
                 let response = try await MKDirections(request: request).calculate()
@@ -884,19 +896,23 @@ struct iPhone_DeviceNavigationView: View {
                         deviceTimestamp: deviceTimestamp
                     )
                 } else {
+                    if !hadRouteBeforeRecalculation {
+                        setRouteForRendering(nil)
+                        travelTime = nil
+                        distanceText = nil
+                        lastRouteTransportType = nil
+                        refreshNavigationOverlayForCurrentRoute()
+                    }
+                    handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
+                }
+            } catch {
+                if !hadRouteBeforeRecalculation {
                     setRouteForRendering(nil)
                     travelTime = nil
                     distanceText = nil
                     lastRouteTransportType = nil
                     refreshNavigationOverlayForCurrentRoute()
-                    handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
                 }
-            } catch {
-                setRouteForRendering(nil)
-                travelTime = nil
-                distanceText = nil
-                lastRouteTransportType = nil
-                refreshNavigationOverlayForCurrentRoute()
                 handleRouteRetry(noRouteFound: false, error: error, ignoreCache: true, retryAttempt: retryAttempt)
             }
         }
@@ -1204,6 +1220,11 @@ struct iPhone_DeviceNavigationView: View {
         isAutoCenteringEnabled = false
     }
 
+    private func beginProgrammaticCameraChangeSuppression(duration: TimeInterval = 0.9) {
+        isProgrammaticCameraChange = true
+        suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(duration)
+    }
+
     private func hideChromeIfNeeded() {
         setChromeVisible(false)
     }
@@ -1281,7 +1302,7 @@ struct iPhone_DeviceNavigationView: View {
             heading: 0,
             pitch: currentCamera.pitch
         )
-        isProgrammaticCameraChange = true
+        beginProgrammaticCameraChangeSuppression()
         if animationsAllowed {
             withAnimation {
                 mapPosition = .camera(newCamera)
@@ -1297,7 +1318,7 @@ struct iPhone_DeviceNavigationView: View {
         // Smoothly zoom to a region that fits both user and device
         if let user = userCoordinate, let dest = deviceCoordinate {
             let region = regionThatFits(user: user, dest: dest)
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraChangeSuppression()
             if animationsAllowed {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     mapPosition = .region(region)
@@ -1310,7 +1331,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func resetZoomToFitRouteOrBoth() {
         if let routeRegion = regionThatFitsRoute() {
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraChangeSuppression()
             if animationsAllowed {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     mapPosition = .region(routeRegion)
@@ -1341,6 +1362,7 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
         lastFollowCameraHeading = nil
+        lastFollowCameraDistance = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         updateFollowCamera(animated: true, force: true)
@@ -1352,6 +1374,7 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
         lastFollowCameraHeading = nil
+        lastFollowCameraDistance = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         showChromeIfNeeded()
@@ -1364,10 +1387,11 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
         lastFollowCameraHeading = nil
+        lastFollowCameraDistance = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         if let routeRegion = regionThatFitsRoute() {
-            isProgrammaticCameraChange = true
+            beginProgrammaticCameraChangeSuppression()
             if animationsAllowed {
                 withAnimation(.easeInOut(duration: 0.35)) {
                     mapPosition = .region(routeRegion)
@@ -1396,6 +1420,7 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
         lastFollowCameraHeading = nil
+        lastFollowCameraDistance = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         shouldPerformInitialNavigationZoom = false
@@ -1408,20 +1433,23 @@ struct iPhone_DeviceNavigationView: View {
         guard let user = userCoordinate else { return }
         let currentDistance = currentMapCamera?.distance ?? followCameraDistance
         let desiredDistance = isFollowAutoZoomEnabled ? followCameraDistanceForNextStep() : nil
+        let speedKmh = currentSpeedKmh()
+        let minimumDistance = minimumFollowCameraDistance(speedKmh: speedKmh)
         let distance = max(
-            followCameraMinDistance,
+            minimumDistance,
             min(followCameraDistanceOverride ?? desiredDistance ?? currentDistance, followCameraMaxDistance)
         )
         let pitch = currentMapCamera?.pitch ?? 0
         let heading = currentFollowHeading()
-        guard shouldUpdateFollowCamera(center: user, heading: heading, force: force) else { return }
+        let center = followCameraCenter(for: user, heading: heading, cameraDistance: distance, speedKmh: speedKmh)
+        guard shouldUpdateFollowCamera(center: center, heading: heading, distance: distance, force: force) else { return }
         let newCamera = MapCamera(
-            centerCoordinate: user,
+            centerCoordinate: center,
             distance: distance,
             heading: heading,
             pitch: pitch
         )
-        isProgrammaticCameraChange = true
+        beginProgrammaticCameraChangeSuppression()
         if animated && animationsAllowed {
             withAnimation(.easeInOut(duration: 0.35)) {
                 mapPosition = .camera(newCamera)
@@ -1433,16 +1461,19 @@ struct iPhone_DeviceNavigationView: View {
 
     private func performInitialNavigationZoom() {
         guard let user = userCoordinate else { return }
-        let distance = followCameraDistanceForNextStep() ?? followCameraDistance
+        let speedKmh = currentSpeedKmh()
+        let minimumDistance = minimumFollowCameraDistance(speedKmh: speedKmh)
+        let distance = max(minimumDistance, followCameraDistanceForNextStep() ?? followCameraDistance)
         let pitch = currentMapCamera?.pitch ?? 0
         let heading = currentFollowHeading()
+        let center = followCameraCenter(for: user, heading: heading, cameraDistance: distance, speedKmh: speedKmh)
         let newCamera = MapCamera(
-            centerCoordinate: user,
+            centerCoordinate: center,
             distance: distance,
             heading: heading,
             pitch: pitch
         )
-        isProgrammaticCameraChange = true
+        beginProgrammaticCameraChangeSuppression()
         if animationsAllowed {
             withAnimation(.easeInOut(duration: 0.35)) {
                 mapPosition = .camera(newCamera)
@@ -1463,12 +1494,80 @@ struct iPhone_DeviceNavigationView: View {
         return currentMapCamera?.heading ?? 0
     }
 
-    private func shouldUpdateFollowCamera(center: CLLocationCoordinate2D, heading: CLLocationDirection, force: Bool) -> Bool {
+    private func currentSpeedKmh() -> CLLocationSpeed? {
+        guard let speed = locationManager.currentLocation?.speed, speed >= 0 else { return nil }
+        return speed * 3.6
+    }
+
+    private func minimumFollowCameraDistance(speedKmh: CLLocationSpeed?) -> CLLocationDistance {
+        guard isNavigationMode else { return followCameraMinDistance }
+        guard let speedKmh else { return followCameraMinDistance }
+        if speedKmh >= navigationSpeedZoomThresholdKmh {
+            return max(followCameraMinDistance, navigationHighSpeedMinCameraDistance)
+        }
+        if speedKmh >= 10 {
+            return max(followCameraMinDistance, navigationMediumSpeedMinCameraDistance)
+        }
+        return followCameraMinDistance
+    }
+
+    private func followCameraCenter(
+        for user: CLLocationCoordinate2D,
+        heading: CLLocationDirection,
+        cameraDistance: CLLocationDistance,
+        speedKmh: CLLocationSpeed?
+    ) -> CLLocationCoordinate2D {
+        guard isNavigationMode || isFollowDeviceHeadingMode else { return user }
+        let baseLookAhead = cameraDistance * 0.28
+        let speedBoost: CLLocationDistance
+        if let speedKmh, speedKmh >= navigationSpeedZoomThresholdKmh {
+            speedBoost = min(180, (speedKmh - navigationSpeedZoomThresholdKmh) * 6)
+        } else {
+            speedBoost = 0
+        }
+        let lookAhead = max(
+            navigationLookAheadMinDistance,
+            min(baseLookAhead + speedBoost, navigationLookAheadMaxDistance)
+        )
+        return coordinate(from: user, heading: heading, distanceMeters: lookAhead)
+    }
+
+    private func coordinate(
+        from origin: CLLocationCoordinate2D,
+        heading: CLLocationDirection,
+        distanceMeters: CLLocationDistance
+    ) -> CLLocationCoordinate2D {
+        guard distanceMeters > 0 else { return origin }
+        let earthRadiusMeters = 6_378_137.0
+        let angularDistance = distanceMeters / earthRadiusMeters
+        let bearing = heading * .pi / 180
+        let lat1 = origin.latitude * .pi / 180
+        let lon1 = origin.longitude * .pi / 180
+
+        let lat2 = asin(
+            sin(lat1) * cos(angularDistance)
+                + cos(lat1) * sin(angularDistance) * cos(bearing)
+        )
+        var lon2 = lon1 + atan2(
+            sin(bearing) * sin(angularDistance) * cos(lat1),
+            cos(angularDistance) - sin(lat1) * sin(lat2)
+        )
+        lon2 = (lon2 + 3 * .pi).truncatingRemainder(dividingBy: 2 * .pi) - .pi
+        return CLLocationCoordinate2D(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
+    }
+
+    private func shouldUpdateFollowCamera(
+        center: CLLocationCoordinate2D,
+        heading: CLLocationDirection,
+        distance: CLLocationDistance,
+        force: Bool
+    ) -> Bool {
         let now = Date()
         if force {
             lastFollowCameraUpdate = now
             lastFollowCameraCenter = center
             lastFollowCameraHeading = heading
+            lastFollowCameraDistance = distance
             return true
         }
         if let lastTime = lastFollowCameraUpdate, now.timeIntervalSince(lastTime) < followUpdateMinInterval {
@@ -1490,10 +1589,16 @@ struct iPhone_DeviceNavigationView: View {
         } else {
             shouldUpdate = true
         }
+        if let lastDistance = lastFollowCameraDistance {
+            shouldUpdate = shouldUpdate || abs(lastDistance - distance) >= followUpdateMinDistanceDelta
+        } else {
+            shouldUpdate = true
+        }
         if shouldUpdate {
             lastFollowCameraUpdate = now
             lastFollowCameraCenter = center
             lastFollowCameraHeading = heading
+            lastFollowCameraDistance = distance
         }
         return shouldUpdate
     }
@@ -1598,6 +1703,7 @@ struct iPhone_DeviceNavigationView: View {
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
         lastFollowCameraHeading = nil
+        lastFollowCameraDistance = nil
         followCameraDistanceOverride = nil
         isFollowAutoZoomEnabled = true
         isAutoCenteringEnabled = true
