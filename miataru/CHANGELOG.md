@@ -1,4 +1,5 @@
 version 3.1.2
+- Restored device speed display in standard navigation mode (route from selected device to user device) by persisting fetched target speed in the navigation cache update path.
 - Fixed UITest target-app binding in project settings (`TestTargetID`/`TEST_TARGET_NAME`) so UI tests no longer fail with missing `targetApplicationPath` and premature runner exit.
 - Fixed auto route refresh in active navigation to recalculate when the tracked target device moved significantly, even if the local user stays on-route.
 - Added `NavigationRouteRefreshPolicy` and dedicated unit tests to cover on-route target movement refresh behavior and guard conditions.
@@ -13,6 +14,7 @@ version 3.1.2
 - Added speed-aware minimum camera distance in focused navigation mode to prevent over-zooming at higher travel speeds.
 - Improved focused navigation camera framing by shifting the camera center forward in travel direction so more route ahead remains visible.
 - Stabilized programmatic follow-camera updates to avoid unintended disabling of auto-zoom during animated camera transitions.
+
 
 version 3.1.1
 - Fixed navigation refresh after app background/foreground transitions so route, ETA, and distance update without manually restarting navigation.
