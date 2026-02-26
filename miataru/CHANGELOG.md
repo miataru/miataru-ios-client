@@ -1,4 +1,5 @@
 version 3.1.2
+- Fixed UITest target-app binding in project settings (`TestTargetID`/`TEST_TARGET_NAME`) so UI tests no longer fail with missing `targetApplicationPath` and premature runner exit.
 - Fixed auto route refresh in active navigation to recalculate when the tracked target device moved significantly, even if the local user stays on-route.
 - Added `NavigationRouteRefreshPolicy` and dedicated unit tests to cover on-route target movement refresh behavior and guard conditions.
 - Fixed `VisitorHistoryViewModelTests` main-thread publishing warnings by running tests on `@MainActor` and stabilizing test isolation/cleanup.
