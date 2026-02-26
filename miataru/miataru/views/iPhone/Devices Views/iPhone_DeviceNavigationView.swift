@@ -1100,8 +1100,8 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func startAutoUpdate() {
-        // Start periodic refresh based on user settings. If auto-route updates are enabled
-        // and the user is off-route, we refresh the route, preferring cache.
+        // Start periodic refresh based on user settings. If auto-route updates are enabled,
+        // refresh when the user is off-route OR the target moved significantly.
         stopAutoUpdate()
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
@@ -1115,7 +1115,15 @@ struct iPhone_DeviceNavigationView: View {
                         return
                     }
                     hasLocationUpdateSinceLastAutoUpdate = false
-                    if isAutoRouteUpdateLocked && isUserOffRoute(threshold: offRouteThreshold) {
+                    let shouldRefreshRoute = NavigationRouteRefreshPolicy.shouldRefreshRoute(
+                        isAutoRouteUpdateEnabled: isAutoRouteUpdateLocked,
+                        hasRoute: route != nil,
+                        isUserOffRoute: isUserOffRoute(threshold: offRouteThreshold),
+                        currentDeviceCoordinate: deviceCoordinate,
+                        lastRouteDeviceCoordinate: lastRouteDeviceCoordinate,
+                        targetMovementThreshold: cacheReuseThreshold
+                    )
+                    if shouldRefreshRoute {
                         if !useCachedRouteIfValid() {
                             calculateRoute()
                         }

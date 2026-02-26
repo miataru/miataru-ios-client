@@ -1,4 +1,9 @@
 version 3.1.2
+- Fixed auto route refresh in active navigation to recalculate when the tracked target device moved significantly, even if the local user stays on-route.
+- Added `NavigationRouteRefreshPolicy` and dedicated unit tests to cover on-route target movement refresh behavior and guard conditions.
+- Fixed `VisitorHistoryViewModelTests` main-thread publishing warnings by running tests on `@MainActor` and stabilizing test isolation/cleanup.
+- Fixed timestamp-unit mismatches in visitor/mutual-navigation tests by consistently using millisecond timestamps expected by `MiataruVisitor.TimeStampDate`.
+- Updated project build settings for current toolchain compatibility (`IPHONEOS_DEPLOYMENT_TARGET` 18.6 for app/tests and `CURRENT_PROJECT_VERSION` 3).
 - Changed location-tracking statistics counters from rolling 24-hour windows to "today" (since local midnight) with daily reset semantics.
 - Replaced per-request timestamp storage with compact persisted daily counters for API and widget statistics, including migration from legacy timestamp data.
 - Updated location-tracking statistics labels and translations across supported languages from "last 24 hours" to "today".

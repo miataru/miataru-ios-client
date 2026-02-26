@@ -16,56 +16,45 @@ struct MutualNavigationDetectorTests {
     
     @Test("Hysteresis: Enter mutual state at 60s threshold")
     func testHysteresisEnter() async throws {
-        let detector = MutualNavigationDetector(
-            ourDeviceId: "TEST_OUR_DEVICE",
-            serverURL: "https://test.server.com"
-        )
-        
+        let referenceNow = Date(timeIntervalSince1970: 1_700_000_000)
         // Create a visitor entry that's 55 seconds ago (should enter)
-        let recentTimestamp = Date().addingTimeInterval(-55)
+        let recentTimestamp = referenceNow.addingTimeInterval(-55)
         let visitor = MiataruVisitor(
             DeviceID: "TARGET_DEVICE",
-            TimeStamp: String(Int64(recentTimestamp.timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: recentTimestamp)
         )
         
-        // Manually set visitor history to test hysteresis logic
-        // Since we can't easily mock the API, we'll test the logic directly
-        // by checking the time thresholds
-        
         // Age is 55s, which is <= 60s (T_enter), so should enter mutual state
-        let age = Date().timeIntervalSince(visitor.TimeStampDate)
+        let age = referenceNow.timeIntervalSince(visitor.TimeStampDate)
         #expect(age <= 60.0) // Should enter
     }
     
     @Test("Hysteresis: Exit mutual state at 90s threshold")
     func testHysteresisExit() async throws {
-        let detector = MutualNavigationDetector(
-            ourDeviceId: "TEST_OUR_DEVICE",
-            serverURL: "https://test.server.com"
-        )
-        
+        let referenceNow = Date(timeIntervalSince1970: 1_700_000_000)
         // Create a visitor entry that's 95 seconds ago (should exit)
-        let oldTimestamp = Date().addingTimeInterval(-95)
+        let oldTimestamp = referenceNow.addingTimeInterval(-95)
         let visitor = MiataruVisitor(
             DeviceID: "TARGET_DEVICE",
-            TimeStamp: String(Int64(oldTimestamp.timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: oldTimestamp)
         )
         
         // Age is 95s, which is > 90s (T_exit), so should exit mutual state
-        let age = Date().timeIntervalSince(visitor.TimeStampDate)
+        let age = referenceNow.timeIntervalSince(visitor.TimeStampDate)
         #expect(age > 90.0) // Should exit
     }
     
     @Test("Hysteresis: Stay in mutual state between 60s and 90s")
     func testHysteresisStayIn() async throws {
+        let referenceNow = Date(timeIntervalSince1970: 1_700_000_000)
         // When already in mutual state, should stay in if age <= 90s
-        let midTimestamp = Date().addingTimeInterval(-75)
+        let midTimestamp = referenceNow.addingTimeInterval(-75)
         let visitor = MiataruVisitor(
             DeviceID: "TARGET_DEVICE",
-            TimeStamp: String(Int64(midTimestamp.timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: midTimestamp)
         )
         
-        let age = Date().timeIntervalSince(visitor.TimeStampDate)
+        let age = referenceNow.timeIntervalSince(visitor.TimeStampDate)
         // Age is 75s, which is > 60s but <= 90s
         // If already mutual, should stay mutual (age <= 90s)
         #expect(age > 60.0)
@@ -74,15 +63,19 @@ struct MutualNavigationDetectorTests {
     
     @Test("Visitor timestamp parsing")
     func testVisitorTimestampParsing() async throws {
-        let timestamp = Date()
+        let timestamp = Date(timeIntervalSince1970: 1_700_000_000)
         let visitor = MiataruVisitor(
             DeviceID: "TEST_DEVICE",
-            TimeStamp: String(Int64(timestamp.timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: timestamp)
         )
         
         // Check that timestamp is parsed correctly
         let parsedDate = visitor.TimeStampDate
         let diff = abs(parsedDate.timeIntervalSince(timestamp))
-        #expect(diff < 1.0) // Should be within 1 second
+        #expect(diff < 0.001) // Should be within 1 millisecond
+    }
+
+    private func millisecondsTimestampString(for date: Date) -> String {
+        String(Int64((date.timeIntervalSince1970 * 1000.0).rounded()))
     }
 }

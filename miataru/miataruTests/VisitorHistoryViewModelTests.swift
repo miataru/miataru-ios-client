@@ -9,16 +9,20 @@
 
 import Testing
 import Foundation
+import UIKit
 @testable import miataru
 import MiataruAPIClient
 
+@MainActor
 struct VisitorHistoryViewModelTests {
     
     @Test("Known device resolution from visitor history")
     func testKnownDeviceResolution() async throws {
         let deviceStore = KnownDeviceStore.shared
-        let testDeviceID = "KNOWN_DEVICE_123"
+        let testDeviceID = "KNOWN_DEVICE_\(UUID().uuidString)"
         let testDeviceName = "Test Device"
+        deviceStore.removeDevice(byID: testDeviceID)
+        defer { deviceStore.removeDevice(byID: testDeviceID) }
         
         // Create a known device
         let knownDevice = KnownDevice(
@@ -32,7 +36,7 @@ struct VisitorHistoryViewModelTests {
         // Create a visitor entry with the same device ID
         let visitor = MiataruVisitor(
             DeviceID: testDeviceID,
-            TimeStamp: String(Int64(Date().timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: Date())
         )
         
         // Check that we can find the known device
@@ -40,19 +44,18 @@ struct VisitorHistoryViewModelTests {
         #expect(foundDevice != nil)
         #expect(foundDevice?.DeviceName == testDeviceName)
         
-        // Cleanup
-        deviceStore.removeDevice(byID: testDeviceID)
     }
     
     @Test("Unknown device resolution from visitor history")
     func testUnknownDeviceResolution() async throws {
         let deviceStore = KnownDeviceStore.shared
-        let unknownDeviceID = "UNKNOWN_DEVICE_456"
+        let unknownDeviceID = "UNKNOWN_DEVICE_\(UUID().uuidString)"
+        deviceStore.removeDevice(byID: unknownDeviceID)
         
         // Create a visitor entry with unknown device ID
         let visitor = MiataruVisitor(
             DeviceID: unknownDeviceID,
-            TimeStamp: String(Int64(Date().timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: Date())
         )
         
         // Check that device is not found in known devices
@@ -63,13 +66,15 @@ struct VisitorHistoryViewModelTests {
     @Test("Device resolution after adding unknown device")
     func testDeviceResolutionAfterAdd() async throws {
         let deviceStore = KnownDeviceStore.shared
-        let testDeviceID = "NEWLY_ADDED_DEVICE"
+        let testDeviceID = "NEWLY_ADDED_DEVICE_\(UUID().uuidString)"
         let testDeviceName = "Newly Added Device"
+        deviceStore.removeDevice(byID: testDeviceID)
+        defer { deviceStore.removeDevice(byID: testDeviceID) }
         
         // Initially, device should be unknown
         let visitor = MiataruVisitor(
             DeviceID: testDeviceID,
-            TimeStamp: String(Int64(Date().timeIntervalSince1970))
+            TimeStamp: millisecondsTimestampString(for: Date())
         )
         
         var foundDevice = deviceStore.devices.first { $0.DeviceID.uppercased() == visitor.DeviceID.uppercased() }
@@ -89,8 +94,6 @@ struct VisitorHistoryViewModelTests {
         #expect(foundDevice != nil)
         #expect(foundDevice?.DeviceName == testDeviceName)
         
-        // Cleanup
-        deviceStore.removeDevice(byID: testDeviceID)
     }
     
     @Test("Visitor history sorting by timestamp")
@@ -99,15 +102,15 @@ struct VisitorHistoryViewModelTests {
         let visitors = [
             MiataruVisitor(
                 DeviceID: "DEVICE_1",
-                TimeStamp: String(Int64(now.addingTimeInterval(-300).timeIntervalSince1970))
+                TimeStamp: millisecondsTimestampString(for: now.addingTimeInterval(-300))
             ),
             MiataruVisitor(
                 DeviceID: "DEVICE_2",
-                TimeStamp: String(Int64(now.addingTimeInterval(-60).timeIntervalSince1970))
+                TimeStamp: millisecondsTimestampString(for: now.addingTimeInterval(-60))
             ),
             MiataruVisitor(
                 DeviceID: "DEVICE_3",
-                TimeStamp: String(Int64(now.addingTimeInterval(-120).timeIntervalSince1970))
+                TimeStamp: millisecondsTimestampString(for: now.addingTimeInterval(-120))
             )
         ]
         
@@ -136,5 +139,9 @@ struct VisitorHistoryViewModelTests {
         let start = String(deviceID.prefix(6))
         let end = String(deviceID.suffix(4))
         return "\(start)...\(end)"
+    }
+
+    private func millisecondsTimestampString(for date: Date) -> String {
+        String(Int64((date.timeIntervalSince1970 * 1000.0).rounded()))
     }
 }
