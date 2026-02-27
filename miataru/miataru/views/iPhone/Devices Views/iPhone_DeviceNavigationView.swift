@@ -1102,7 +1102,8 @@ struct iPhone_DeviceNavigationView: View {
 
     private func startAutoUpdate() {
         // Start periodic refresh based on user settings. If auto-route updates are enabled,
-        // refresh when the user is off-route OR the target moved significantly.
+        // refresh when no route exists, user is off-route, or (in standard mode) the target
+        // moved significantly and is now off-route.
         stopAutoUpdate()
         let interval = Double(settings.mapUpdateInterval)
         guard interval > 0 else { return }
@@ -1116,10 +1117,13 @@ struct iPhone_DeviceNavigationView: View {
                         return
                     }
                     hasLocationUpdateSinceLastAutoUpdate = false
+                    let targetOffRouteNow = isTargetOffRoute(threshold: offRouteThreshold)
                     let shouldRefreshRoute = NavigationRouteRefreshPolicy.shouldRefreshRoute(
                         isAutoRouteUpdateEnabled: isAutoRouteUpdateLocked,
                         hasRoute: route != nil,
+                        isStandardNavigationMode: isRouteFromDeviceToUser,
                         isUserOffRoute: isUserOffRoute(threshold: offRouteThreshold),
+                        isTargetOffRoute: targetOffRouteNow,
                         currentDeviceCoordinate: deviceCoordinate,
                         lastRouteDeviceCoordinate: lastRouteDeviceCoordinate,
                         targetMovementThreshold: cacheReuseThreshold
@@ -1153,6 +1157,13 @@ struct iPhone_DeviceNavigationView: View {
             }
         }
         return minDistance > limit
+    }
+
+    private func isTargetOffRoute(threshold: CLLocationDistance? = nil) -> Bool {
+        guard let route, let target = deviceCoordinate else { return false }
+        let limit = threshold ?? offRouteThreshold
+        guard let closestDistance = route.polyline.closestDistance(to: MKMapPoint(target)) else { return false }
+        return closestDistance > limit
     }
 
     private func distanceFromPoint(_ point: MKMapPoint, toSegmentStart start: MKMapPoint, end: MKMapPoint) -> CLLocationDistance {

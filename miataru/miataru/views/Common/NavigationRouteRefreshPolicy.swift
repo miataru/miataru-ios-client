@@ -14,7 +14,9 @@ enum NavigationRouteRefreshPolicy {
     static func shouldRefreshRoute(
         isAutoRouteUpdateEnabled: Bool,
         hasRoute: Bool,
+        isStandardNavigationMode: Bool,
         isUserOffRoute: Bool,
+        isTargetOffRoute: Bool,
         currentDeviceCoordinate: CLLocationCoordinate2D?,
         lastRouteDeviceCoordinate: CLLocationCoordinate2D?,
         targetMovementThreshold: CLLocationDistance
@@ -22,11 +24,13 @@ enum NavigationRouteRefreshPolicy {
         guard isAutoRouteUpdateEnabled else { return false }
         if !hasRoute { return true }
         if isUserOffRoute { return true }
-        return hasTargetMovedSignificantly(
+        let targetMoved = hasTargetMovedSignificantly(
             currentDeviceCoordinate: currentDeviceCoordinate,
             lastRouteDeviceCoordinate: lastRouteDeviceCoordinate,
             threshold: targetMovementThreshold
         )
+        guard targetMoved else { return false }
+        return isStandardNavigationMode ? isTargetOffRoute : true
     }
 
     static func hasTargetMovedSignificantly(

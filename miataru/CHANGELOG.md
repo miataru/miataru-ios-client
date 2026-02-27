@@ -1,4 +1,7 @@
 version 3.1.2
+- Optimized standard navigation auto-route refresh for moving target devices: route recalculation now requires significant target movement **and** target off-route, reducing frequent MKDirections requests while the target remains on route.
+- Extended `NavigationRouteRefreshPolicy` and unit-test coverage to include standard-mode target off-route gating, reverse-mode compatibility, and missing-coordinate guard cases.
+- Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 5 to 6.
 - Added a new app behaviour toggle `Prevent screen rotation` (default `off`) directly below `Deactivate device lock`, including an explanatory text in settings.
 - Implemented app-wide orientation locking: when `Prevent screen rotation` is enabled, the app keeps the current orientation and stops rotating UI on device rotation.
 - Added full localization coverage for the new rotation-lock setting and explanation across all supported in-app languages and `Settings.bundle` language files.

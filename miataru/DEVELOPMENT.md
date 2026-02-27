@@ -74,6 +74,13 @@ miataru/
 - Verify privacy compliance
  - Test deep links: `miataru://<DEVICE_ID>` (Simulator: `xcrun simctl openurl booted miataru://ABCDEF...`)
 
+### Navigation Route Refresh Behavior
+- Auto-refresh route decisions are centralized in `views/Common/NavigationRouteRefreshPolicy.swift`.
+- Hard refresh triggers: auto-update enabled + missing route, or user off-route.
+- Standard navigation mode (`isRouteFromDeviceToUser == true`): target movement only triggers reroute when target moved significantly **and** is off the current route.
+- Reverse navigation mode keeps movement-trigger behavior compatible with prior logic after the significant-movement check.
+- Route reuse still goes through `RouteCacheStore` (`useCachedRouteIfValid`) before issuing new `MKDirections` requests.
+
 ## Common Development Tasks
 
 ### Adding New Features

@@ -12,12 +12,46 @@ import CoreLocation
 @testable import miataru
 
 struct NavigationRouteRefreshPolicyTests {
-    @Test("Refresh when target moved while user is on route")
-    func refreshWhenTargetMovedOnRoute() async throws {
+    @Test("No refresh in standard mode when target moved but remains on route")
+    func noRefreshWhenTargetMovedOnRouteInStandardMode() async throws {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: true,
             hasRoute: true,
+            isStandardNavigationMode: true,
             isUserOffRoute: false,
+            isTargetOffRoute: false,
+            currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.895, longitude: 11.020),
+            lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.893, longitude: 11.020),
+            targetMovementThreshold: 100
+        )
+
+        #expect(shouldRefresh == false)
+    }
+
+    @Test("Refresh in standard mode when target moved and is off route")
+    func refreshWhenTargetMovedOffRouteInStandardMode() async throws {
+        let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
+            isAutoRouteUpdateEnabled: true,
+            hasRoute: true,
+            isStandardNavigationMode: true,
+            isUserOffRoute: false,
+            isTargetOffRoute: true,
+            currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.895, longitude: 11.020),
+            lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.893, longitude: 11.020),
+            targetMovementThreshold: 100
+        )
+
+        #expect(shouldRefresh == true)
+    }
+
+    @Test("Refresh in reverse mode when target moved significantly")
+    func refreshWhenTargetMovedInReverseMode() async throws {
+        let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
+            isAutoRouteUpdateEnabled: true,
+            hasRoute: true,
+            isStandardNavigationMode: false,
+            isUserOffRoute: false,
+            isTargetOffRoute: false,
             currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.895, longitude: 11.020),
             lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.893, longitude: 11.020),
             targetMovementThreshold: 100
@@ -31,7 +65,9 @@ struct NavigationRouteRefreshPolicyTests {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: false,
             hasRoute: true,
+            isStandardNavigationMode: true,
             isUserOffRoute: true,
+            isTargetOffRoute: true,
             currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.895, longitude: 11.020),
             lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.893, longitude: 11.020),
             targetMovementThreshold: 100
@@ -45,7 +81,9 @@ struct NavigationRouteRefreshPolicyTests {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: true,
             hasRoute: false,
+            isStandardNavigationMode: true,
             isUserOffRoute: false,
+            isTargetOffRoute: false,
             currentDeviceCoordinate: nil,
             lastRouteDeviceCoordinate: nil,
             targetMovementThreshold: 100
@@ -59,7 +97,9 @@ struct NavigationRouteRefreshPolicyTests {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: true,
             hasRoute: true,
+            isStandardNavigationMode: true,
             isUserOffRoute: false,
+            isTargetOffRoute: true,
             currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.8931, longitude: 11.0200),
             lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.8930, longitude: 11.0200),
             targetMovementThreshold: 100
@@ -73,7 +113,9 @@ struct NavigationRouteRefreshPolicyTests {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: true,
             hasRoute: true,
+            isStandardNavigationMode: true,
             isUserOffRoute: true,
+            isTargetOffRoute: false,
             currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.0, longitude: 11.0),
             lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.0, longitude: 11.0),
             targetMovementThreshold: 100
@@ -86,10 +128,27 @@ struct NavigationRouteRefreshPolicyTests {
         let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
             isAutoRouteUpdateEnabled: true,
             hasRoute: true,
+            isStandardNavigationMode: true,
             isUserOffRoute: false,
+            isTargetOffRoute: true,
             currentDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.0001, longitude: 11.0001),
             lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.0000, longitude: 11.0000),
             targetMovementThreshold: 1000 // ~> small move should be below 1km
+        )
+        #expect(shouldRefresh == false)
+    }
+
+    @Test("No refresh when target coordinates are missing and user is on route")
+    func noRefreshWhenTargetCoordinatesMissing() async throws {
+        let shouldRefresh = NavigationRouteRefreshPolicy.shouldRefreshRoute(
+            isAutoRouteUpdateEnabled: true,
+            hasRoute: true,
+            isStandardNavigationMode: true,
+            isUserOffRoute: false,
+            isTargetOffRoute: false,
+            currentDeviceCoordinate: nil,
+            lastRouteDeviceCoordinate: CLLocationCoordinate2D(latitude: 49.0, longitude: 11.0),
+            targetMovementThreshold: 100
         )
         #expect(shouldRefresh == false)
     }
