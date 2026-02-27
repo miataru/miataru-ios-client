@@ -4,4 +4,16 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:MapHelpersTests.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ExtendedUITests.swift">
+   </FileRef>
+   <FileRef
+      location = "group:MKPolylineExtensionsTests.swift">
+   </FileRef>
+   <FileRef
+      location = "group:MapHelpersAdditionalTests.swift">
+   </FileRef>
 </Workspace>

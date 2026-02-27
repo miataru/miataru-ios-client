@@ -1,0 +1,114 @@
+import Testing
+import Foundation
+@testable import miataru
+
+@Suite("MapHelpers logic tests")
+struct MapHelpersTests {
+
+    @Test("relativeTimeString returns localized 'now' within threshold")
+    func testRelativeTimeStringNow() async throws {
+        // Fixed reference time
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let justNow = now.addingTimeInterval(-2) // within default timeConsideredNow = 10s
+        let result = relativeTimeString(from: justNow, to: now)
+        // Should equal the localized string for the explicit key used in MapHelpers
+        let expectedNow = NSLocalizedString("relative_time_now", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
+        #expect(result == expectedNow)
+    }
+
+    @Test("relativeTimeString returns a non-empty string for past times")
+    func testRelativeTimeStringPast() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let twoMinutesAgo = now.addingTimeInterval(-120)
+        let result = relativeTimeString(from: twoMinutesAgo, to: now)
+        // We can't assert exact wording due to localization; just ensure it's a non-placeholder, non-empty string
+        #expect(!result.isEmpty)
+        #expect(result != "–")
+    }
+
+    @Test("mapSpeedLabelText returns nil for values below default threshold")
+    func testMapSpeedLabelBelowThreshold() async throws {
+        // 2 m/s ≈ 7.2 km/h, below default minSpeedKmh = 10
+        let label = mapSpeedLabelText(speedMetersPerSecond: 2.0)
+        #expect(label == nil)
+    }
+
+    @Test("mapSpeedLabelText returns formatted value above threshold")
+    func testMapSpeedLabelAboveThreshold() async throws {
+        // 5 m/s ≈ 18 km/h, above default minSpeedKmh
+        let label = mapSpeedLabelText(speedMetersPerSecond: 5.0)
+        #expect(label != nil)
+        if let label {
+            // Locale dependent; assert common unit suffix presence
+            let hasUnit = label.contains("km/h") || label.contains("mph")
+            #expect(hasUnit)
+        }
+    }
+
+    @Test("timezoneOffsetString returns nil for same timezone")
+    func testTimezoneOffsetSame() async throws {
+        let result = timezoneOffsetString(deviceTimeZone: TimeZone.current)
+        #expect(result == nil)
+    }
+
+    @Test("timezoneOffsetString returns +2 for TZ two hours ahead")
+    func testTimezoneOffsetPositive() async throws {
+        // Create a timezone two hours ahead of the current
+        let now = Date()
+        let currentOffset = TimeZone.current.secondsFromGMT(for: now)
+        let twoHours = 2 * 3600
+        guard let tz = TimeZone(secondsFromGMT: currentOffset + twoHours) else {
+            Issue.record("Failed to construct test timezone")
+            return
+        }
+        let result = timezoneOffsetString(deviceTimeZone: tz)
+        #expect(result == "+2")
+    }
+    
+    @Test("spanForZoomLevel produces reasonable deltas and round-trips with currentZoomLevelFromSpan")
+    func testZoomSpanRoundTrip() async throws {
+        // Test a few representative zoom levels
+        for level in [1, 5, 25, 100] {
+            let span = spanForZoomLevel(level)
+            // Expect positive, finite deltas
+            #expect(span.latitudeDelta > 0 && span.longitudeDelta > 0)
+            #expect(span.latitudeDelta.isFinite && span.longitudeDelta.isFinite)
+            // Round-trip back to a zoom level (approximate)
+            let roundTrip = currentZoomLevelFromSpan(span)
+            // Allow small rounding differences
+            #expect(abs(roundTrip - level) <= 1)
+        }
+    }
+
+    @Test("relativeTimeString with future date returns 'now'")
+    func testRelativeTimeFutureIsNow() async throws {
+        let reference = Date(timeIntervalSince1970: 1_700_000_000)
+        let future = reference.addingTimeInterval(30)
+        let result = relativeTimeString(from: future, to: reference)
+        let expectedNow = NSLocalizedString("relative_time_now", comment: "Indicates now")
+        #expect(result == expectedNow)
+    }
+
+    @Test("timezoneOffsetString returns negative offset for behind timezones")
+    func testTimezoneOffsetNegative() async throws {
+        let now = Date()
+        let currentOffset = TimeZone.current.secondsFromGMT(for: now)
+        let threeHours = 3 * 3600
+        guard let tz = TimeZone(secondsFromGMT: currentOffset - threeHours) else {
+            Issue.record("Failed to construct test timezone")
+            return
+        }
+        let result = timezoneOffsetString(deviceTimeZone: tz)
+        #expect(result == "-3")
+    }
+
+    @Test("mapSpeedLabelText returns non-nil when min threshold is 0 and positive speed")
+    func testMapSpeedLabelWithZeroThreshold() async throws {
+        let label = mapSpeedLabelText(speedMetersPerSecond: 0.5, minSpeedKmh: 0)
+        #expect(label != nil)
+        if let label {
+            let hasUnit = label.contains("km/h") || label.contains("mph")
+            #expect(hasUnit)
+        }
+    }
+}

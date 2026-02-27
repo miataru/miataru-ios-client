@@ -1,4 +1,7 @@
 version 3.1.2
+- Added broad regression test coverage for map helpers, polyline geometry helpers, route ghost calculation, route-cache validation behavior, and route refresh policy edge cases.
+- Added a basic UI launch sanity test and increased the iOS app build number (`CURRENT_PROJECT_VERSION`) from 4 to 5.
+- Recorded additional workspace file references for new test source files used during test development.
 - Restored device speed display in standard navigation mode (route from selected device to user device) by persisting fetched target speed in the navigation cache update path.
 - Fixed UITest target-app binding in project settings (`TestTargetID`/`TEST_TARGET_NAME`) so UI tests no longer fail with missing `targetApplicationPath` and premature runner exit.
 - Fixed auto route refresh in active navigation to recalculate when the tracked target device moved significantly, even if the local user stays on-route.
