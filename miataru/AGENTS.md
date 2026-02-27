@@ -6,3 +6,8 @@
 - Stage and include that `.specstory` file in the same commit.
 - Update `CHANGELOG.md` in the same commit following the main app `MARKETING_VERSION` (`miataru.xcodeproj/project.pbxproj`, miataru target).
 - Write commit messages in English.
+
+## Test Documentation Memory
+
+- Whenever tests are added, changed, renamed, moved, or removed, update `documentation/test-gap-matrix.md` in the same work item.
+- In the same change, also update `documentation/test-katalog.md` so catalog and matrix stay consistent.

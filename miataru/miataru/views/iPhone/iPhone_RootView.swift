@@ -11,6 +11,7 @@ import SwiftUI
 
 struct iPhone_RootView: View {
     @ObservedObject private var settings = SettingsManager.shared
+    private let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
     @State private var selectedTab = 0
     @State private var showDeviceKeySheet = false
     @State private var showDeviceKeyBanner = false
@@ -20,21 +21,25 @@ struct iPhone_RootView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             iPhone_DevicesView()
+                .accessibilityIdentifier("screen_devices")
                 .tabItem {
                     Label("devices", systemImage: "iphone.gen3.badge.location")
                 }
                 .tag(0)
             iPhone_MyDeviceQRCodeView()
+                .accessibilityIdentifier("screen_qr")
                 .tabItem {
                     Label("qr", systemImage: "qrcode")
                 }
                 .tag(1)
             iPhone_SettingsView()
+                .accessibilityIdentifier("screen_settings")
                 .tabItem {
                     Label("settings", systemImage: "gear")
                 }
                 .tag(2)
         }
+        .accessibilityIdentifier("root_tab_view")
         .environmentObject(DeviceGroupStore.shared)
         .environmentObject(RouteInfoState.shared)
         .environmentObject(SettingsManager.shared)
@@ -44,7 +49,11 @@ struct iPhone_RootView: View {
             iPhone_DeviceKeySheetView(showsMismatchWarning: deviceKeySheetShowsMismatch)
         }
         .onAppear {
-            if settings.deviceKeyAuthBlocked {
+            if let initialTab = UserDefaults.standard.object(forKey: "ui_test_initial_tab") as? Int,
+               (0...2).contains(initialTab) {
+                selectedTab = initialTab
+            }
+            if !isUITesting, settings.deviceKeyAuthBlocked {
                 deviceKeyBannerMessage = NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showDeviceKeyBanner = true
@@ -54,6 +63,7 @@ struct iPhone_RootView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .deviceKeyAuthRequired)) { notification in
+            guard !isUITesting else { return }
             deviceKeyBannerMessage = (notification.userInfo?["message"] as? String)
                 ?? NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
             deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
@@ -63,6 +73,7 @@ struct iPhone_RootView: View {
             showDeviceKeySheet = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .deviceKeyAuthResolved)) { _ in
+            guard !isUITesting else { return }
             withAnimation(.easeInOut(duration: 0.25)) {
                 showDeviceKeyBanner = false
             }
@@ -80,7 +91,7 @@ struct iPhone_RootView: View {
             }
         }
         .onChange(of: settings.lastOpenedDeviceID) { _, newValue in
-            if newValue != nil {
+            if !isUITesting, newValue != nil {
                 selectedTab = 0
             }
         }

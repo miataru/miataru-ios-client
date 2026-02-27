@@ -67,6 +67,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                     alignment: isLandscape ? .center : .top
                 )
                 }
+                .accessibilityIdentifier("qr_scroll_content")
                 .refreshable {
                     await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
                 }
@@ -109,6 +110,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                         }
                         .accessibilityLabel(Text("device_key_button_label"))
                         .accessibilityHint(Text("device_key_button_hint"))
+                        .accessibilityIdentifier("qr_device_key_button")
                     }
                 }
                 .overlay(

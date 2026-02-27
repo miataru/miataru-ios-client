@@ -58,9 +58,11 @@ struct iPhone_OnboardingContainerView: View {
                         .tag(index)
                 }
             }
+            .accessibilityIdentifier("onboarding_pager")
             .tabViewStyle(PageTabViewStyle())
             .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
         }
+        .accessibilityIdentifier("onboarding_container")
         .background(Color(.systemBackground))
         .ignoresSafeArea()
         .background(Color(.systemBackground).ignoresSafeArea())

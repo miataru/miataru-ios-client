@@ -128,6 +128,7 @@ struct iPhone_AddDeviceView: View {
                     Button("cancel") {
                         isPresented = false
                     }
+                    .accessibilityIdentifier("add_device_cancel_button")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("add") {
@@ -136,9 +137,11 @@ struct iPhone_AddDeviceView: View {
                         }
                     }
                     .disabled(deviceName.isEmpty || deviceID.isEmpty || isSaving)
+                    .accessibilityIdentifier("add_device_confirm_button")
                 }
             }
         }
+        .accessibilityIdentifier("add_device_form")
         .sheet(isPresented: $isShowingScanner) {
             CodeScannerView(codeTypes: [.qr]) { result in
                 switch result {

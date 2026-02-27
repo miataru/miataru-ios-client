@@ -21,7 +21,7 @@ struct MKPolylineExtensionsTests {
         let half = total / 2
         let result = poly.split(at: half)
         #expect(result != nil)
-        if let (done, todo, ghost, progress) = result {
+        if let (done, todo, ghost) = result {
             // Done + todo should reconstruct the original length
             let doneLen = length(of: done)
             let todoLen = length(of: todo)
@@ -32,6 +32,7 @@ struct MKPolylineExtensionsTests {
             #expect(ghost.longitude >= min(a.longitude, b.longitude) - 1e-6)
             #expect(ghost.longitude <= max(a.longitude, b.longitude) + 1e-6)
             // Progress should be ~0.5
+            let progress = doneLen / max(1e-9, (doneLen + todoLen))
             #expect(abs(progress - 0.5) < 0.05)
         }
     }
@@ -44,11 +45,14 @@ struct MKPolylineExtensionsTests {
         let total = MKMapPoint(a).distance(to: MKMapPoint(b))
         let result = poly.split(at: 0)
         #expect(result != nil)
-        if let (done, todo, ghost, progress) = result {
-            #expect(abs(length(of: done)) < 1e-6)
-            #expect(abs(length(of: todo) - total) < 1e-3)
+        if let (done, todo, ghost) = result {
+            let doneLen = length(of: done)
+            let todoLen = length(of: todo)
+            #expect(abs(doneLen) < 1e-6)
+            #expect(abs(todoLen - total) < 1e-3)
             #expect(abs(ghost.latitude - a.latitude) < 1e-9)
             #expect(abs(ghost.longitude - a.longitude) < 1e-9)
+            let progress = doneLen / max(1e-9, (doneLen + todoLen))
             #expect(progress >= 0 && progress <= 0.01)
         }
     }
@@ -61,11 +65,14 @@ struct MKPolylineExtensionsTests {
         let total = MKMapPoint(a).distance(to: MKMapPoint(b))
         let result = poly.split(at: total)
         #expect(result != nil)
-        if let (done, todo, ghost, progress) = result {
-            #expect(abs(length(of: done) - total) < 1e-3)
-            #expect(abs(length(of: todo)) < 1e-6)
+        if let (done, todo, ghost) = result {
+            let doneLen = length(of: done)
+            let todoLen = length(of: todo)
+            #expect(abs(doneLen - total) < 1e-3)
+            #expect(abs(todoLen) < 1e-6)
             #expect(abs(ghost.latitude - b.latitude) < 1e-9)
             #expect(abs(ghost.longitude - b.longitude) < 1e-9)
+            let progress = doneLen / max(1e-9, (doneLen + todoLen))
             #expect(progress >= 0.99 && progress <= 1.0)
         }
     }
@@ -84,7 +91,7 @@ struct MKPolylineExtensionsTests {
         let splitAt = ab + bc / 2
         let result = poly.split(at: splitAt)
         #expect(result != nil)
-        if let (done, todo, ghost, progress) = result {
+        if let (done, todo, ghost) = result {
             let doneLen = length(of: done)
             let todoLen = length(of: todo)
             #expect(abs((doneLen + todoLen) - total) < 1e-3)
@@ -94,6 +101,7 @@ struct MKPolylineExtensionsTests {
             #expect(dGhost < 10) // within ~10 meters tolerance
             // Progress should be ~ (AB + 0.5*BC) / (AB + BC)
             let expectedProgress = splitAt / total
+            let progress = doneLen / max(1e-9, (doneLen + todoLen))
             #expect(abs(progress - expectedProgress) < 0.02)
         }
     }

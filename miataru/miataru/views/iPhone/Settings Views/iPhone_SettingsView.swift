@@ -260,6 +260,7 @@ struct iPhone_SettingsView: View {
                         UserDefaults.standard.hasCompletedOnboarding = false
                         appState.presentFullOnboarding(skipPostUpdate: true)
                     }
+                    .accessibilityIdentifier("settings_show_onboarding_again_button")
                 }
             }
             .navigationTitle("settings")
@@ -267,6 +268,7 @@ struct iPhone_SettingsView: View {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
             }
         }
+        .accessibilityIdentifier("settings_navigation_view")
     }
     
     @MainActor

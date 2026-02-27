@@ -42,6 +42,7 @@ struct iPhone_7_OnboardingDoneView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(.blue)
+            .accessibilityIdentifier("onboarding_finish_button")
             Spacer()
         }
         .padding()

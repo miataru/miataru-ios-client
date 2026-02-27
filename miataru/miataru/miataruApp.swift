@@ -11,6 +11,15 @@ import SwiftUI
 import Combine
 import UIKit
 
+private enum UITestLaunchArgument {
+    static let uiTesting = "-ui-testing"
+    static let resetUserDefaults = "-ui-reset-userdefaults"
+    static let onboardingCompleted = "-ui-onboarding-completed"
+    static let showOnboarding = "-ui-show-onboarding"
+    static let disableLocationTracking = "-ui-disable-location-tracking"
+    static let initialTab = "-ui-initial-tab"
+}
+
 extension UserDefaults {
     var hasCompletedOnboarding: Bool {
         get { bool(forKey: "hasCompletedOnboarding") }
@@ -155,6 +164,7 @@ struct miataruApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
+        Self.applyUITestLaunchConfiguration()
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
@@ -258,6 +268,39 @@ struct miataruApp: App {
                 pendingDeviceID = deviceID
                 showAddDeviceSheet = true
             }
+        }
+    }
+
+    private static func applyUITestLaunchConfiguration() {
+        let args = ProcessInfo.processInfo.arguments
+        guard args.contains(UITestLaunchArgument.uiTesting) else { return }
+
+        let defaults = UserDefaults.standard
+        if args.contains(UITestLaunchArgument.resetUserDefaults),
+           let bundleID = Bundle.main.bundleIdentifier {
+            defaults.removePersistentDomain(forName: bundleID)
+        }
+
+        if args.contains(UITestLaunchArgument.showOnboarding) {
+            defaults.hasCompletedOnboarding = false
+            defaults.hasShownPostUpdateOnboarding = false
+        }
+
+        if args.contains(UITestLaunchArgument.onboardingCompleted) {
+            defaults.hasCompletedOnboarding = true
+            defaults.hasShownPostUpdateOnboarding = true
+        }
+
+        if args.contains(UITestLaunchArgument.disableLocationTracking) {
+            defaults.set(false, forKey: "track_and_report_location")
+        }
+
+        if let initialTabIndex = args.firstIndex(of: UITestLaunchArgument.initialTab),
+           args.indices.contains(initialTabIndex + 1),
+           let tabValue = Int(args[initialTabIndex + 1]) {
+            defaults.set(tabValue, forKey: "ui_test_initial_tab")
+        } else {
+            defaults.removeObject(forKey: "ui_test_initial_tab")
         }
     }
 }

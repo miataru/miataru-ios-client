@@ -1,4 +1,9 @@
 version 3.1.2
+- Repaired test build/scheme wiring so both `miataruTests` and `miataruUITests` are enabled and consistently runnable from CLI and Xcode.
+- Stabilized UI-test integration by hardening launch behavior and test isolation for tab/navigation-driven flows.
+- Migrated map/helper test files from `miataru.xcodeproj` root into active test target folders (`miataruTests` / `miataruUITests`) and updated project synchronization.
+- Added and refined deterministic UI scenarios in `ExtendedUITests` for launch, add-device flow, QR action flow, and settings onboarding action reachability.
+- Updated test documentation artifacts (`documentation/test-katalog.md`, `documentation/test-gap-matrix.md`) to reflect current active tests and coverage.
 - Added macOS CLI test helper scripts under `scripts/` to run all tests, unit tests, or UI tests via `xcodebuild` with automatic iOS Simulator destination detection.
 - Optimized standard navigation auto-route refresh for moving target devices: route recalculation now requires significant target movement **and** target off-route, reducing frequent MKDirections requests while the target remains on route.
 - Extended `NavigationRouteRefreshPolicy` and unit-test coverage to include standard-mode target off-route gating, reverse-mode compatibility, and missing-coordinate guard cases.

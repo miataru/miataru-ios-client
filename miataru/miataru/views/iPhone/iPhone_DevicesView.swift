@@ -14,6 +14,7 @@ struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    private let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
     @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
     @EnvironmentObject private var groupStore: DeviceGroupStore
@@ -278,6 +279,7 @@ struct iPhone_DevicesView: View {
                             .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
                             .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
                     }
+                    .accessibilityIdentifier("devices_add_button")
                 }
             }
             .navigationDestination(for: NavigationDestination.self) { destination in
@@ -345,7 +347,8 @@ struct iPhone_DevicesView: View {
             }
             .onAppear {
                 isVisible = true
-                if !hasPerformedInitialAutoNavigate,
+                if !isUITesting,
+                   !hasPerformedInitialAutoNavigate,
                    navigationPath.isEmpty,
                    let lastID = settings.lastOpenedDeviceID,
                    store.devices.contains(where: { $0.DeviceID == lastID }) {
@@ -378,7 +381,8 @@ struct iPhone_DevicesView: View {
                 }
 
                 // Re-assert deep link navigation after activation to beat any restored navigation stack state.
-                if let requestedID = settings.lastOpenedDeviceID,
+                if !isUITesting,
+                   let requestedID = settings.lastOpenedDeviceID,
                    store.devices.contains(where: { $0.DeviceID == requestedID }),
                    navigationPath.last != .device(requestedID) {
                     Task { @MainActor in
@@ -396,6 +400,7 @@ struct iPhone_DevicesView: View {
                 }
             }
             .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
+                guard !isUITesting else { return }
                 guard let deviceID = newDeviceID,
                       store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
                 let requestedID = deviceID
