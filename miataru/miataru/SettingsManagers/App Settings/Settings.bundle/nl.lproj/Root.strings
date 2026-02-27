@@ -26,6 +26,7 @@
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-gedrag";
 "deactivate_device_lock" = "Apparaatvergrendeling uitschakelen";
+"prevent_screen_rotation" = "Schermrotatie voorkomen";
 "indicate_location_accuracy" = "Locatienauwkeurigheid aangeven";
 "show_offscreen_arrows_for_other_devices" = "Offscreen-pijlen voor andere apparaten tonen";
 "map_configuration" = "Kaartinstellingen";

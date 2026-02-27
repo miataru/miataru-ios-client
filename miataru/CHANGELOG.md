@@ -1,4 +1,9 @@
 version 3.1.2
+- Added a new app behaviour toggle `Prevent screen rotation` (default `off`) directly below `Deactivate device lock`, including an explanatory text in settings.
+- Implemented app-wide orientation locking: when `Prevent screen rotation` is enabled, the app keeps the current orientation and stops rotating UI on device rotation.
+- Added full localization coverage for the new rotation-lock setting and explanation across all supported in-app languages and `Settings.bundle` language files.
+- Updated `Settings.bundle/Root.plist` with the new `prevent_screen_rotation` preference key and default value.
+- Updated project metadata by removing the default UI test template source files and adding a shared `miataru` scheme file.
 - Added broad regression test coverage for map helpers, polyline geometry helpers, route ghost calculation, route-cache validation behavior, and route refresh policy edge cases.
 - Added a basic UI launch sanity test and increased the iOS app build number (`CURRENT_PROJECT_VERSION`) from 4 to 5.
 - Recorded additional workspace file references for new test source files used during test development.

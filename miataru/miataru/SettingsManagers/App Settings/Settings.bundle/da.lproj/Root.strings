@@ -26,6 +26,7 @@
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-adfærd";
 "deactivate_device_lock" = "Deaktiver enhedslås";
+"prevent_screen_rotation" = "Forhindr skærmrotation";
 "indicate_location_accuracy" = "Vis placeringsnøjagtighed";
 "show_offscreen_arrows_for_other_devices" = "Vis offscreen-pile for andre enheder";
 "map_configuration" = "Kortindstillinger";

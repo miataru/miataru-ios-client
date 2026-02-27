@@ -26,6 +26,7 @@
 "server_url" = "Miataru Server-URL";
 "app_behaviour" = "Anwendungsverhalten";
 "deactivate_device_lock" = "Gerätesperre deaktivieren";
+"prevent_screen_rotation" = "Bildschirmrotation verhindern";
 "indicate_location_accuracy" = "Genauigkeit anzeigen";
 "show_offscreen_arrows_for_other_devices" = "Offscreen-Pfeile für andere Geräte anzeigen";
 "map_configuration" = "Karteneinstellungen";

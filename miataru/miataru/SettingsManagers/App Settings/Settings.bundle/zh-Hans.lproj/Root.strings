@@ -26,6 +26,7 @@
 "server_url" = "Miataru 服务器 URL";
 "app_behaviour" = "应用行为";
 "deactivate_device_lock" = "禁用设备锁定";
+"prevent_screen_rotation" = "防止屏幕旋转";
 "indicate_location_accuracy" = "显示定位精度";
 "show_offscreen_arrows_for_other_devices" = "显示其他设备的屏幕外箭头";
 "map_configuration" = "地图设置";

@@ -84,11 +84,6 @@
 			path = miataruTests;
 			sourceTree = "<group>";
 		};
-		8BA62D022E057D1A00F54650 /* miataruUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = miataruUITests;
-			sourceTree = "<group>";
-		};
 		8C0000023E00000100000001 /* miataruWidgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -148,7 +143,6 @@
 			children = (
 				8BA62CEA2E057D1700F54650 /* miataru */,
 				8BA62CF82E057D1A00F54650 /* miataruTests */,
-				8BA62D022E057D1A00F54650 /* miataruUITests */,
 				8C0000023E00000100000001 /* miataruWidgets */,
 				8B3AFA8C2E0E900B0046E5B3 /* Frameworks */,
 				8BA62CE92E057D1700F54650 /* Products */,
@@ -231,9 +225,6 @@
 			);
 			dependencies = (
 				8BA62D012E057D1A00F54650 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				8BA62D022E057D1A00F54650 /* miataruUITests */,
 			);
 			name = miataruUITests;
 			packageProductDependencies = (

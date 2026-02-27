@@ -150,6 +150,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>prevent_screen_rotation</string>
+			<key>Key</key>
+			<string>prevent_screen_rotation</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>indicate_location_accuracy</string>
 			<key>Key</key>
 			<string>indicate_accuracy_on_map</string>

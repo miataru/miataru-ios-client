@@ -17,6 +17,9 @@ class SettingsManager: ObservableObject {
     @Published var disableDeviceAutolock: Bool {
         didSet { defaults.set(disableDeviceAutolock, forKey: Keys.disableDeviceAutolock) }
     }
+    @Published var preventScreenRotation: Bool {
+        didSet { defaults.set(preventScreenRotation, forKey: Keys.preventScreenRotation) }
+    }
     @Published var indicateAccuracyOnMap: Bool {
         didSet { defaults.set(indicateAccuracyOnMap, forKey: Keys.indicateAccuracyOnMap) }
     }
@@ -168,6 +171,7 @@ class SettingsManager: ObservableObject {
     private enum Keys {
         static let mapType = "map_type"
         static let disableDeviceAutolock = "disable_device_autolock_while_in_foreground"
+        static let preventScreenRotation = "prevent_screen_rotation"
         static let mapUpdateInterval = "map_update_interval"
         static let outsideMapUpdateInterval = "outside_map_update_interval"
         static let mapZoomLevel = "map_zoom_level"
@@ -205,6 +209,7 @@ class SettingsManager: ObservableObject {
     init() {
         let d = UserDefaults.standard
         self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false
+        self.preventScreenRotation = d.object(forKey: Keys.preventScreenRotation) as? Bool ?? false
         self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? true
         self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true
         self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? "https://service.miataru.com"

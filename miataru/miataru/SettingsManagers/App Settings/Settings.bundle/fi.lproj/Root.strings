@@ -26,6 +26,7 @@
 "server_url" = "Miataru-palvelimen URL";
 "app_behaviour" = "Sovelluksen toiminta";
 "deactivate_device_lock" = "Poista laitteen lukitus käytöstä";
+"prevent_screen_rotation" = "Estä näytön kierto";
 "indicate_location_accuracy" = "Näytä sijaintitarkkuus";
 "show_offscreen_arrows_for_other_devices" = "Näytä ruudun ulkopuoliset nuolet muille laitteille";
 "map_configuration" = "Kartta-asetukset";

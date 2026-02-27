@@ -63,11 +63,85 @@ fileprivate final class LaunchGuard {
     static var isFirstActivation: Bool = true
 }
 
+fileprivate final class RotationLockController {
+    static let shared = RotationLockController()
+
+    private var isRotationLocked = false
+    private var lockedOrientationMask: UIInterfaceOrientationMask = .portrait
+
+    private init() {}
+
+    func supportedInterfaceOrientations(for window: UIWindow?) -> UIInterfaceOrientationMask {
+        guard isRotationLocked else { return .all }
+        return lockedOrientationMask
+    }
+
+    func setRotationLockEnabled(_ enabled: Bool) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.setRotationLockEnabled(enabled)
+            }
+            return
+        }
+
+        isRotationLocked = enabled
+        if enabled {
+            lockedOrientationMask = currentInterfaceOrientationMask()
+        }
+
+        let targetMask = isRotationLocked ? lockedOrientationMask : .all
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+
+        for scene in scenes {
+            scene.windows.forEach { $0.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations() }
+            if #available(iOS 16.0, *) {
+                let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: targetMask)
+                scene.requestGeometryUpdate(preferences) { error in
+                    debugLog("Failed to update orientation preferences: \(error.localizedDescription)")
+                }
+            }
+        }
+
+        UIViewController.attemptRotationToDeviceOrientation()
+    }
+
+    private func currentInterfaceOrientationMask() -> UIInterfaceOrientationMask {
+        if let orientation = currentInterfaceOrientation() {
+            return mask(for: orientation)
+        }
+        return .portrait
+    }
+
+    private func currentInterfaceOrientation() -> UIInterfaceOrientation? {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        if let activeScene = scenes.first(where: { $0.activationState == .foregroundActive }) {
+            return activeScene.interfaceOrientation
+        }
+        return scenes.first?.interfaceOrientation
+    }
+
+    private func mask(for orientation: UIInterfaceOrientation) -> UIInterfaceOrientationMask {
+        switch orientation {
+        case .landscapeLeft:
+            return .landscapeLeft
+        case .landscapeRight:
+            return .landscapeRight
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .portrait
+        }
+    }
+}
+
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool { false }
     func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool { false }
     func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool { false }
     func application(_ application: UIApplication, shouldRestoreSecureApplicationState coder: NSCoder) -> Bool { false }
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        RotationLockController.shared.supportedInterfaceOrientations(for: window)
+    }
 }
 
 @main
@@ -75,6 +149,7 @@ struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState: AppState
     @State private var autolockCancellable: AnyCancellable? = nil
+    @State private var rotationLockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -127,6 +202,13 @@ struct miataruApp: App {
                     autolockCancellable = SettingsManager.shared.$disableDeviceAutolock.sink { value in
                         UIApplication.shared.isIdleTimerDisabled = value
                     }
+                    // Apply and observe app-wide rotation lock setting.
+                    rotationLockCancellable = SettingsManager.shared.$preventScreenRotation
+                        .receive(on: RunLoop.main)
+                        .removeDuplicates()
+                        .sink { isEnabled in
+                            RotationLockController.shared.setRotationLockEnabled(isEnabled)
+                        }
 #endif
                 }
                 .onOpenURL { url in

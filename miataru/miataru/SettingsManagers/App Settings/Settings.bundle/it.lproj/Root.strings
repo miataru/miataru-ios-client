@@ -26,6 +26,7 @@
 "server_url" = "URL server Miataru";
 "app_behaviour" = "Comportamento dell'applicazione";
 "deactivate_device_lock" = "Disattiva blocco dispositivo";
+"prevent_screen_rotation" = "Impedisci rotazione schermo";
 "indicate_location_accuracy" = "Indica la precisione della posizione";
 "show_offscreen_arrows_for_other_devices" = "Mostra frecce fuori schermo per altri dispositivi";
 "map_configuration" = "Impostazioni mappa";

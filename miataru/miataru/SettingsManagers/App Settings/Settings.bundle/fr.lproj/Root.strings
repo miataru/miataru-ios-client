@@ -26,6 +26,7 @@
 "server_url" = "URL du serveur Miataru";
 "app_behaviour" = "Comportement de l’application";
 "deactivate_device_lock" = "Désactiver le verrouillage de l'appareil";
+"prevent_screen_rotation" = "Empêcher la rotation de l’écran";
 "indicate_location_accuracy" = "Indiquer la précision de la position";
 "show_offscreen_arrows_for_other_devices" = "Afficher les flèches hors écran pour les autres appareils";
 "map_configuration" = "Paramètres de la carte";
