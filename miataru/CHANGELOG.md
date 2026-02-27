@@ -1,4 +1,5 @@
 version 3.1.2
+- Added macOS CLI test helper scripts under `scripts/` to run all tests, unit tests, or UI tests via `xcodebuild` with automatic iOS Simulator destination detection.
 - Optimized standard navigation auto-route refresh for moving target devices: route recalculation now requires significant target movement **and** target off-route, reducing frequent MKDirections requests while the target remains on route.
 - Extended `NavigationRouteRefreshPolicy` and unit-test coverage to include standard-mode target off-route gating, reverse-mode compatibility, and missing-coordinate guard cases.
 - Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 5 to 6.
