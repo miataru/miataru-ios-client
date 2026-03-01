@@ -78,8 +78,7 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
         XCTAssertTrue(onboardingVisible, "Onboarding container is not visible")
         guard onboardingVisible else { return }
 
-        advanceOnboardingPagerOneStep()
-        let reachedSecondPage = waitForOnboardingPage(target: 2, timeout: 6)
+        let reachedSecondPage = advanceOnboardingPager(to: 2, timeout: 8)
         XCTAssertTrue(reachedSecondPage, "Could not advance onboarding pager to page 2")
         guard reachedSecondPage else { return }
 
@@ -94,8 +93,7 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
         let totalPages = pageState.total
         while currentPage < totalPages {
             let nextPage = currentPage + 1
-            advanceOnboardingPagerOneStep()
-            let advanced = waitForOnboardingPage(target: nextPage, timeout: 6)
+            let advanced = advanceOnboardingPager(to: nextPage, timeout: 8)
             XCTAssertTrue(advanced, "Could not advance onboarding pager to page \(nextPage)")
             guard advanced else { break }
             currentPage = nextPage
@@ -193,14 +191,19 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
 
     @MainActor
     private func advanceOnboardingPagerOneStep() {
+        if let pager = onboardingPagerElement(timeout: 1) {
+            pager.swipeLeft()
+            return
+        }
+
         let iPhoneContainer = app.descendants(matching: .any)["onboarding_container"].firstMatch
-        if iPhoneContainer.exists {
+        if iPhoneContainer.waitForExistence(timeout: 1) {
             iPhoneContainer.swipeLeft()
             return
         }
 
         let iPadContainer = app.descendants(matching: .any)["onboarding_container_ipad"].firstMatch
-        if iPadContainer.exists {
+        if iPadContainer.waitForExistence(timeout: 1) {
             iPadContainer.swipeLeft()
         }
     }
@@ -245,12 +248,84 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
         return false
     }
 
+    @MainActor
+    private func onboardingPagerElement(timeout: TimeInterval) -> XCUIElement? {
+        let iPhonePager = app.descendants(matching: .any)["onboarding_pager"].firstMatch
+        if iPhonePager.waitForExistence(timeout: timeout) {
+            return iPhonePager
+        }
+
+        let iPadPager = app.descendants(matching: .any)["onboarding_pager_ipad"].firstMatch
+        if iPadPager.waitForExistence(timeout: timeout) {
+            return iPadPager
+        }
+
+        return nil
+    }
+
+    @MainActor
+    private func advanceOnboardingPager(to targetPage: Int, timeout: TimeInterval) -> Bool {
+        if waitForOnboardingPage(target: targetPage, timeout: 0.5) {
+            return true
+        }
+
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            advanceOnboardingPagerOneStep()
+            if waitForOnboardingPage(target: targetPage, timeout: 0.8) {
+                return true
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+
+        return false
+    }
+
     private func parsePageState(from indicator: XCUIElement) -> (current: Int, total: Int)? {
-        guard let value = indicator.value as? String else { return nil }
-        let numbers = value
-            .split(whereSeparator: { !$0.isNumber })
-            .compactMap { Int($0) }
-        guard numbers.count >= 2 else { return nil }
-        return (numbers[0], numbers[1])
+        let rawTexts = [
+            indicator.value as? String,
+            indicator.label,
+            indicator.identifier
+        ].compactMap { text -> String? in
+            guard let text else { return nil }
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+
+        for text in rawTexts {
+            let numbers = extractPageNumbers(from: text)
+            if numbers.count >= 2 {
+                let first = numbers[0]
+                let second = numbers[1]
+                if first > second {
+                    return (second, first)
+                }
+                return (first, second)
+            }
+        }
+
+        return nil
+    }
+
+    private func extractPageNumbers(from text: String) -> [Int] {
+        var numbers: [Int] = []
+        var currentDigits = ""
+
+        for character in text {
+            if let digit = character.wholeNumberValue {
+                currentDigits.append(String(digit))
+            } else if !currentDigits.isEmpty {
+                if let number = Int(currentDigits) {
+                    numbers.append(number)
+                }
+                currentDigits = ""
+            }
+        }
+
+        if !currentDigits.isEmpty, let number = Int(currentDigits) {
+            numbers.append(number)
+        }
+
+        return numbers
     }
 }
