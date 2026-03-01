@@ -44,3 +44,8 @@ DerivedData/
 *.lock
 Pods/
 Carthage/
+
+# Test artifacts
+artifacts/screenshots/
+artifacts/xcresult/
+miataru/artifacts/

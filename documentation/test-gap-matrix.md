@@ -27,7 +27,7 @@ Bewertungsskala:
 | Persistenz-Stores (`DeviceLocationCacheStore`, `DeviceHistoryCacheStore`, `DeviceGroupStore`, `DeviceSloganCacheStore`) | Hoch | Teilweise indirekt | Nein | Nein | Nein | Niedrig | Hoch | Serialization roundtrip, migrationssichere Loads, corruption handling, thread-safety. |
 | Widget Datenfluss (`WidgetDataSyncCoordinator`, `SharedWidgetData`, `WidgetMapSnapshotGenerator`) | Mittel-Hoch | Nein | Nein | Nein | Nein | Keine | Hoch | Contract-Tests fuer Payload-Formate, Datenfilterung und Snapshot-Fehlerfaelle. |
 | Device Key / Auth (`DeviceKeyAuthHandler`) | Hoch | Nein | Nein | Nein | Nein | Keine | Hoch | Unit-Tests fuer Signatur-/Formatvalidierung und harte Negativfaelle. |
-| Core UI Flows (Onboarding, Device/Group Listen, Navigation Screens) | Sehr hoch | Nein | Nein | Nein | Ja (4 deterministische Flows) | Mittel | Mittel-Hoch | Naechster Ausbau: Device-Map, Gruppen-Flow und Navigation start/stop inkl. Abbruchpfade. |
+| Core UI Flows (Onboarding, Device/Group Listen, Navigation Screens) | Sehr hoch | Nein | Nein | Nein | Ja (14 deterministische Flows inkl. Screenshot-Suite) | Mittel-Hoch | Mittel | Naechster Ausbau: Device-Map, Gruppen-Flow und Navigation start/stop inkl. Abbruchpfade. |
 | App Bootstrap (`miataruApp`, `AppState`, `AppDelegate`) | Mittel | Nein | Nein | Nein | Nein | Keine | Mittel-Hoch | Smoke Integration fuer App-Startzustand, Initial-Settings, Notification/permission branching. |
 
 ## Priorisierte Backlog-Liste
@@ -36,6 +36,7 @@ Bewertungsskala:
 |---|---|---|---|
 | P0 (erledigt 2026-02-27) | Vorhandene ausgelagerte Tests aktivieren | Erledigt: Unit/UI-Bestand ist jetzt in aktiven Targets verankert | Verschiebung in `miataruTests` und `miataruUITests` + Target-Synchronisierung abgeschlossen. |
 | P1 (erledigt 2026-02-27) | UI-Suite aus Smoke in stabile Kernfluesse ueberfuehren | Erledigt: deterministische UI-Grundpfade decken Start, Add-Device, Settings-Onboarding-Aktion und QR-Basisaktion ab | `ExtendedUITests` auf 4 robuste Szenarien erweitert. |
+| P1 (erledigt 2026-03-01) | Screenshot-/Functional-Laeufe in dedizierte Schemes trennen | Erledigt: serielle Ausfuehrung und explizit triggerbare Screenshot-Suite fuer 10 Sprachen + 2 Geraeteklassen | Neue Schemes `miataru-FunctionalUI`/`miataru-Screenshots`, Testplaene, `miataruScreenshotUITests`, Skripte und Artefakt-Export etabliert. |
 | P1 | Keine Integrations-Tests fuer Standort-/Routing-Pipeline | Kernfunktion der App, viele Abhaengigkeiten | Integrationstest-Setup mit Fake Location + Fake API fuer Route/Update Lifecycle. |
 | P1 | Keine Tests fuer AllowedDevice Sync | Datenkonsistenz und Zugriffslogik kritisch | Unit + Integration fuer SyncQueue, Konfliktbehandlung, Wiederholbarkeit. |
 | P2 | Persistenz-Stores kaum abgedeckt | Fehler zeigen sich oft erst bei Real-Daten | Roundtrip- und Fehlerfalltests fuer NSCoding/UserDefaults/FileStore. |

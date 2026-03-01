@@ -18,6 +18,8 @@ private enum UITestLaunchArgument {
     static let showOnboarding = "-ui-show-onboarding"
     static let disableLocationTracking = "-ui-disable-location-tracking"
     static let initialTab = "-ui-initial-tab"
+    static let screenshotMode = "-ui-screenshot-mode"
+    static let screenshotScenario = "-ui-screenshot-scenario"
 }
 
 extension UserDefaults {
@@ -295,12 +297,58 @@ struct miataruApp: App {
             defaults.set(false, forKey: "track_and_report_location")
         }
 
+        let hasExplicitInitialTab: Bool
         if let initialTabIndex = args.firstIndex(of: UITestLaunchArgument.initialTab),
            args.indices.contains(initialTabIndex + 1),
            let tabValue = Int(args[initialTabIndex + 1]) {
             defaults.set(tabValue, forKey: "ui_test_initial_tab")
+            hasExplicitInitialTab = true
         } else {
             defaults.removeObject(forKey: "ui_test_initial_tab")
+            hasExplicitInitialTab = false
+        }
+
+        let isScreenshotMode = args.contains(UITestLaunchArgument.screenshotMode)
+        defaults.set(isScreenshotMode, forKey: "ui_test_is_screenshot_mode")
+
+        var screenshotScenarioID: String?
+        if let scenarioIndex = args.firstIndex(of: UITestLaunchArgument.screenshotScenario),
+           args.indices.contains(scenarioIndex + 1) {
+            screenshotScenarioID = args[scenarioIndex + 1]
+            defaults.set(screenshotScenarioID, forKey: "ui_test_screenshot_scenario")
+        } else {
+            defaults.removeObject(forKey: "ui_test_screenshot_scenario")
+        }
+
+        if isScreenshotMode {
+            applyUIScreenshotDeterministicState(
+                defaults: defaults,
+                scenarioID: screenshotScenarioID,
+                hasExplicitInitialTab: hasExplicitInitialTab
+            )
+        }
+    }
+
+    private static func applyUIScreenshotDeterministicState(defaults: UserDefaults,
+                                                            scenarioID: String?,
+                                                            hasExplicitInitialTab: Bool) {
+        defaults.set(false, forKey: "track_and_report_location")
+        defaults.set(true, forKey: "hasShownPostUpdateOnboarding")
+        defaults.removeObject(forKey: "lastOpenedDeviceID")
+
+        guard !hasExplicitInitialTab, let scenarioID else { return }
+
+        switch scenarioID {
+        case "root-devices", "devices-add-sheet":
+            defaults.set(0, forKey: "ui_test_initial_tab")
+        case "root-qr", "qr-device-key":
+            defaults.set(1, forKey: "ui_test_initial_tab")
+        case "root-settings", "settings-show-onboarding", "settings-navigation":
+            defaults.set(2, forKey: "ui_test_initial_tab")
+        case "groups-tab":
+            defaults.set(1, forKey: "ui_test_initial_tab")
+        default:
+            break
         }
     }
 }

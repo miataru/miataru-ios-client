@@ -2,23 +2,33 @@
 
 ## 1) Scope und Einordnung
 
-Dieser Katalog trennt drei Bloecke:
+Dieser Katalog trennt vier Bloecke:
 
-1. **Aktiv eingebundene App-Tests** (`miataruTests` + `miataruUITests`)  
-2. **Historisch ausgelagerte Testdateien** (vormals unter `miataru.xcodeproj/*.swift`, inzwischen eingebunden)  
-3. **Third-Party-Testbestand** unter `miataru/Libraries/*` (nur inventarisiert, nicht im Detail katalogisiert)
+1. **Aktiv eingebundene App-Tests** (`miataruTests` + `miataruUITests` + `miataruScreenshotUITests`)  
+2. **Schema-kategorisierte Testausfuehrung** (`miataru-FunctionalUI` und `miataru-Screenshots`)  
+3. **Historisch ausgelagerte Testdateien** (vormals unter `miataru.xcodeproj/*.swift`, inzwischen eingebunden)  
+4. **Third-Party-Testbestand** unter `miataru/Libraries/*` (nur inventarisiert, nicht im Detail katalogisiert)
 
 Wichtige Projektbeobachtung:
 
 - `miataruTests` ist als `PBXFileSystemSynchronizedRootGroup` eingebunden (`miataruTests`-Ordner wird automatisch als Source fuer das Unit-Testtarget genutzt).
 - `miataruUITests` ist jetzt ebenfalls als synchronisierter Quellordner (`miataruUITests`) am UI-Testtarget angebunden.
+- `miataruScreenshotUITests` ist als eigenes UI-Testtarget fuer explizit getriggerte Screenshot-Captures angebunden.
 - Testdateien direkt in `miataru/miataru.xcodeproj/` sind nicht mehr der aktive Ablageort fuer App-Tests.
 
 ## 2) Inventar auf einen Blick
 
-- Aktiv eingebundene App-Testfaelle: **64** (Unit: 60, UI: 4)
+- Aktiv eingebundene App-Testfaelle: **74** (Unit: 60, UI: 14)
 - Vorhandene, nicht eingebundene App-Testfaelle: **0**
 - Third-Party-Testfunktionen in `Libraries`: **172**
+
+## 2.1) Kategorie-/Schema-Mapping
+
+| Kategorie | Ziel-Target(s) | Shared Scheme | Testplan | Trigger |
+|---|---|---|---|---|
+| `CORE_UNIT` | `miataruTests` | `miataru-FunctionalUI` | `FunctionalSerial.xctestplan` | `scripts/test-functional-ui-serial.sh` |
+| `FUNCTIONAL_UI` | `miataruUITests` | `miataru-FunctionalUI` | `FunctionalSerial.xctestplan` | `scripts/test-functional-ui-serial.sh` |
+| `SCREENSHOT_CAPTURE` | `miataruScreenshotUITests` | `miataru-Screenshots` | `Screenshots.xctestplan` | `scripts/test-screenshots.sh` |
 
 ## 3) Aktiver Testkatalog (`miataruTests`)
 
@@ -96,7 +106,30 @@ Diese Testfaelle lagen zuvor unter `miataru.xcodeproj/*.swift` und sind jetzt in
 | DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Settings-Onboarding-Aktion absichern | Settings-Aktion ist erreichbar/tappbar und fuehrt nicht zu unerwarteten Alerts | Settings / Onboarding | UI (XCTest) | Ja |
 | DT-UI-004 | testQRCodeTabShowsDeviceKeyAction | QR-Tab Kernaktion pruefen | QR-Tab oeffnen, Device-Key-Action vorhanden und tappbar | QR Screen / Device Key | UI (XCTest) | Ja |
 
-## 5) Third-Party Testbestand (`miataru/Libraries`)
+## 5) Screenshot-Testbestand (`miataruScreenshotUITests`)
+
+Diese Tests sind bewusst in ein eigenes, explizit zu triggerndes Schema ausgelagert:
+
+- Shared Scheme: `miataru-Screenshots`
+- Testplan: `Screenshots.xctestplan`
+- Skript: `miataru/scripts/test-screenshots.sh`
+
+Aktuelle Szenarien (maximal 10 PNGs pro Sprache/Geraet):
+
+| ID | Test-Case Name | Zweck | Inhalt (kurz) | Typ |
+|---|---|---|---|---|
+| ST-001 | test_01_root_devices | Root-Start Devices | Erfasst den Devices-Startzustand (iPhone/iPad) | UI Screenshot |
+| ST-002 | test_02_root_qr | Root-Start QR | Erfasst den QR-Tab im stabilen Startzustand | UI Screenshot |
+| ST-003 | test_03_root_settings | Root-Start Settings | Erfasst den Settings-Tab im stabilen Startzustand | UI Screenshot |
+| ST-004 | test_04_devices_add_sheet | Add-Device Dialog | Oeffnet Add-Device Sheet und nimmt Screenshot auf | UI Screenshot |
+| ST-005 | test_05_settings_show_onboarding_action | Settings-Aktion sichtbar | Navigiert/scrollt zur Onboarding-Aktion in Settings | UI Screenshot |
+| ST-006 | test_06_onboarding_start | Onboarding Einstieg | Startet App im Onboarding-Modus und erfasst Einstieg | UI Screenshot |
+| ST-007 | test_07_onboarding_pager | Onboarding Pager | Erfasst den Pager-Zustand im Onboarding | UI Screenshot |
+| ST-008 | test_08_qr_device_key_action | QR Aktion | Erfasst QR-Zustand mit Device-Key Aktion | UI Screenshot |
+| ST-009 | test_09_ipad_groups_tab_or_skip | iPad Groups | iPad-spezifischer Gruppen-Tab oder sauberer Skip | UI Screenshot |
+| ST-010 | test_10_settings_navigation_container | Settings Container | Erfasst Settings-Navigationszustand oder sauberer Skip | UI Screenshot |
+
+## 6) Third-Party Testbestand (`miataru/Libraries`)
 
 Diese Tests stammen aus eingebetteten Bibliotheken und sollten fuer App-Gap-Analysen separat betrachtet werden:
 
@@ -105,7 +138,7 @@ Diese Tests stammen aus eingebetteten Bibliotheken und sollten fuer App-Gap-Anal
 - `NavigationOverlayKit-master`: 4 Testfunktionen
 - `swift-qrcode-generator`: 1 Testfunktion
 
-## 6) Katalog-Metadaten fuer den naechsten Gap-Schritt
+## 7) Katalog-Metadaten fuer den naechsten Gap-Schritt
 
 Fuer die Lueckenanalyse sind in diesem Katalog bereits die wichtigsten Vergleichsdimensionen enthalten:
 
@@ -121,7 +154,7 @@ Praktische Ausgangslage fuer den naechsten Schritt:
 - Teilweise nur Logik-nahe Tests ohne Integration (UI-Target ist aktiv und um deterministische Kernfluesse erweitert).
 - Die vormals ausgelagerten Map-/UI-Tests sind aktiv eingebunden; naechster Schwerpunkt bleibt Integration/E2E fuer Navigation und Standortpipeline.
 
-## 7) Gap-Matrix Referenz
+## 8) Gap-Matrix Referenz
 
 Die priorisierte Lueckenanalyse und Bereichsbewertung liegt in:
 

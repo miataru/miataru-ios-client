@@ -1,0 +1,42 @@
+{
+  "configurations" : [
+    {
+      "id" : "C5F0D5F4-9D54-4A95-BD01-6E95C6EF2A01",
+      "name" : "Default Test Configuration",
+      "options" : {
+        "targetForVariableExpansion" : {
+          "containerPath" : "container:miataru.xcodeproj",
+          "identifier" : "8BA62CE72E057D1700F54650",
+          "name" : "miataru"
+        },
+        "testExecutionOrdering" : "lexical"
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:miataru.xcodeproj",
+      "identifier" : "8BA62CE72E057D1700F54650",
+      "name" : "miataru"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:miataru.xcodeproj",
+        "identifier" : "8BA62CF42E057D1A00F54650",
+        "name" : "miataruTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:miataru.xcodeproj",
+        "identifier" : "8BA62CFE2E057D1A00F54650",
+        "name" : "miataruUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
