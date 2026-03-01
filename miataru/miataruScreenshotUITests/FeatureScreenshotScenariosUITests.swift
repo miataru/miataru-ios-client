@@ -65,19 +65,45 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
     @MainActor
     func test_06_onboarding_start() throws {
         launchApp(onboardingCompleted: false, scenarioID: "onboarding-start")
-        let onboardingVisible = app.otherElements["onboarding_container"].waitForExistence(timeout: 10)
-            || app.otherElements["onboarding_container_ipad"].waitForExistence(timeout: 10)
-        try skipIfFalse(onboardingVisible, "Onboarding container is not visible")
-        captureScenarioScreenshot(index: 6, slug: "onboarding-start")
+        let onboardingVisible = ensureOnboardingVisibleOrPresentFromSettings()
+        XCTAssertTrue(onboardingVisible, "Onboarding container is not visible")
+        guard onboardingVisible else { return }
+        captureScenarioScreenshot(index: 6, slug: "onboarding-step-01")
     }
 
     @MainActor
     func test_07_onboarding_pager() throws {
         launchApp(onboardingCompleted: false, scenarioID: "onboarding-pager")
-        let pagerVisible = app.otherElements["onboarding_pager"].waitForExistence(timeout: 10)
-            || app.otherElements["onboarding_pager_ipad"].waitForExistence(timeout: 10)
-        try skipIfFalse(pagerVisible, "Onboarding pager is not visible")
-        captureScenarioScreenshot(index: 7, slug: "onboarding-pager")
+        let onboardingVisible = ensureOnboardingVisibleOrPresentFromSettings()
+        XCTAssertTrue(onboardingVisible, "Onboarding container is not visible")
+        guard onboardingVisible else { return }
+
+        advanceOnboardingPagerOneStep()
+        let reachedSecondPage = waitForOnboardingPage(target: 2, timeout: 6)
+        XCTAssertTrue(reachedSecondPage, "Could not advance onboarding pager to page 2")
+        guard reachedSecondPage else { return }
+
+        captureScenarioScreenshot(index: 72, slug: "onboarding-step-02")
+
+        guard let pageState = onboardingPageState() else {
+            XCTFail("Unable to determine onboarding page progress")
+            return
+        }
+
+        var currentPage = pageState.current
+        let totalPages = pageState.total
+        while currentPage < totalPages {
+            let nextPage = currentPage + 1
+            advanceOnboardingPagerOneStep()
+            let advanced = waitForOnboardingPage(target: nextPage, timeout: 6)
+            XCTAssertTrue(advanced, "Could not advance onboarding pager to page \(nextPage)")
+            guard advanced else { break }
+            currentPage = nextPage
+
+            let pageSlug = String(format: "onboarding-step-%02d", currentPage)
+            let pageIndex = 70 + currentPage
+            captureScenarioScreenshot(index: pageIndex, slug: pageSlug)
+        }
     }
 
     @MainActor
@@ -89,6 +115,10 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
 
         let deviceKeyButton = app.buttons["qr_device_key_button"]
         try skipIfFalse(deviceKeyButton.waitForExistence(timeout: 8), "Device key action not found")
+        deviceKeyButton.tap()
+        let sheetVisible = waitForAnyElement(identifier: "device_key_sheet", timeout: 8)
+        XCTAssertTrue(sheetVisible, "Device key sheet did not open")
+        guard sheetVisible else { return }
         captureScenarioScreenshot(index: 8, slug: "qr-device-key")
     }
 
@@ -108,13 +138,119 @@ final class FeatureScreenshotScenariosUITests: ScreenshotBaseUITestCase {
     func test_10_settings_navigation_container() throws {
         launchApp(onboardingCompleted: true, initialTab: 2, scenarioID: "settings-navigation")
 
-        if app.otherElements["settings_navigation_view"].waitForExistence(timeout: 10)
-            || app.otherElements["screen_settings_ipad"].waitForExistence(timeout: 10)
-            || selectTab(index: 3, expectedIdentifier: "screen_settings_ipad") {
-            captureScenarioScreenshot(index: 10, slug: "settings-navigation")
+        let settingsVisible = waitForAnyElement(identifier: "screen_settings", timeout: 10)
+            || waitForAnyElement(identifier: "screen_settings_ipad", timeout: 10)
+            || selectTab(index: 2, expectedIdentifier: "screen_settings")
+            || selectTab(index: 3, expectedIdentifier: "screen_settings_ipad")
+        XCTAssertTrue(settingsVisible, "Settings screen is not reachable")
+        guard settingsVisible else { return }
+
+        // Move down into the navigation section so this scenario is distinct from root settings.
+        app.swipeUp()
+        captureScenarioScreenshot(index: 10, slug: "settings-navigation")
+    }
+
+    @MainActor
+    func test_11_device_map_overview() throws {
+        launchApp(onboardingCompleted: true, initialTab: 0, scenarioID: "device-map-overview")
+        let devicesVisible = waitForAnyElement(identifier: "screen_devices", timeout: 10)
+            || waitForAnyElement(identifier: "screen_devices_ipad", timeout: 10)
+        try skipIfFalse(devicesVisible, "Devices screen is not available")
+
+        let thisDeviceRow = app.descendants(matching: .any)["devices_row_this_device"].firstMatch
+        try skipIfFalse(thisDeviceRow.waitForExistence(timeout: 8), "This device row not found")
+        thisDeviceRow.tap()
+
+        let mapVisible = waitForAnyElement(identifier: "device_map_overview", timeout: 10)
+        try skipIfFalse(mapVisible, "Device map overview is not visible")
+        captureScenarioScreenshot(index: 11, slug: "device-map-overview")
+    }
+
+    @MainActor
+    private func ensureOnboardingVisibleOrPresentFromSettings() -> Bool {
+        if waitForOnboardingContainer(timeout: 8) {
+            return true
+        }
+
+        let settingsVisible = waitForAnyElement(identifier: "screen_settings", timeout: 8)
+            || waitForAnyElement(identifier: "screen_settings_ipad", timeout: 8)
+            || selectTab(index: 2, expectedIdentifier: "screen_settings")
+            || selectTab(index: 3, expectedIdentifier: "screen_settings_ipad")
+        guard settingsVisible else { return false }
+
+        let showOnboardingButton = app.buttons["settings_show_onboarding_again_button"]
+        guard waitForElementByScrollingUp(in: app, element: showOnboardingButton, maxSwipes: 12) else { return false }
+        showOnboardingButton.tap()
+
+        return waitForOnboardingContainer(timeout: 10)
+    }
+
+    @MainActor
+    private func waitForOnboardingContainer(timeout: TimeInterval) -> Bool {
+        waitForAnyElement(identifier: "onboarding_container", timeout: timeout)
+            || waitForAnyElement(identifier: "onboarding_container_ipad", timeout: timeout)
+    }
+
+    @MainActor
+    private func advanceOnboardingPagerOneStep() {
+        let iPhoneContainer = app.descendants(matching: .any)["onboarding_container"].firstMatch
+        if iPhoneContainer.exists {
+            iPhoneContainer.swipeLeft()
             return
         }
 
-        throw XCTSkip("Settings navigation container is not reachable")
+        let iPadContainer = app.descendants(matching: .any)["onboarding_container_ipad"].firstMatch
+        if iPadContainer.exists {
+            iPadContainer.swipeLeft()
+        }
+    }
+
+    @MainActor
+    private func waitForAnyElement(identifier: String, timeout: TimeInterval) -> Bool {
+        app.descendants(matching: .any)[identifier].firstMatch.waitForExistence(timeout: timeout)
+    }
+
+    @MainActor
+    private func onboardingPageState(timeout: TimeInterval = 2) -> (current: Int, total: Int)? {
+        let iPhoneIndicator = app.pageIndicators["onboarding_container"]
+        if iPhoneIndicator.waitForExistence(timeout: timeout),
+           let parsed = parsePageState(from: iPhoneIndicator) {
+            return parsed
+        }
+
+        let iPadIndicator = app.pageIndicators["onboarding_container_ipad"]
+        if iPadIndicator.waitForExistence(timeout: timeout),
+           let parsed = parsePageState(from: iPadIndicator) {
+            return parsed
+        }
+
+        let fallback = app.pageIndicators.firstMatch
+        if fallback.waitForExistence(timeout: timeout),
+           let parsed = parsePageState(from: fallback) {
+            return parsed
+        }
+
+        return nil
+    }
+
+    @MainActor
+    private func waitForOnboardingPage(target: Int, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let state = onboardingPageState(timeout: 0.2), state.current == target {
+                return true
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        return false
+    }
+
+    private func parsePageState(from indicator: XCUIElement) -> (current: Int, total: Int)? {
+        guard let value = indicator.value as? String else { return nil }
+        let numbers = value
+            .split(whereSeparator: { !$0.isNumber })
+            .compactMap { Int($0) }
+        guard numbers.count >= 2 else { return nil }
+        return (numbers[0], numbers[1])
     }
 }

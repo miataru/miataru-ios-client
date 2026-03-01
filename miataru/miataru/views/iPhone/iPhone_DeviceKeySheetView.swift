@@ -52,6 +52,7 @@ struct iPhone_DeviceKeySheetView: View {
 
                 Spacer(minLength: 0)
             }
+            .accessibilityIdentifier("device_key_sheet")
             .padding(.top, 12)
             .navigationTitle("device_key_title")
             .navigationBarTitleDisplayMode(.inline)

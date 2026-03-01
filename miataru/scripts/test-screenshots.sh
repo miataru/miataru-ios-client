@@ -39,6 +39,7 @@ scenario_specs=(
   "qr-device-key|miataruScreenshotUITests/FeatureScreenshotScenariosUITests/test_08_qr_device_key_action|QR Device Key Aktion"
   "groups-tab|miataruScreenshotUITests/FeatureScreenshotScenariosUITests/test_09_ipad_groups_tab_or_skip|iPad Groups Tab (oder Skip)"
   "settings-navigation|miataruScreenshotUITests/FeatureScreenshotScenariosUITests/test_10_settings_navigation_container|Settings Navigation Container"
+  "device-map-overview|miataruScreenshotUITests/FeatureScreenshotScenariosUITests/test_11_device_map_overview|Karten-Uebersicht"
 )
 
 selected_inputs=()

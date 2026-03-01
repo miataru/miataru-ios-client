@@ -275,6 +275,7 @@ struct iPhone_DeviceMapView: View {
             // Compass in the top right corner
             compassView()
         }
+        .accessibilityIdentifier("device_map_overview")
         .modifier(NavigationTitleModifier(deviceName: device?.DeviceName ?? "Unknown Device"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

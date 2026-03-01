@@ -97,6 +97,11 @@ struct iPhone_DevicesView: View {
                             NavigationLink(value: NavigationDestination.device(device.DeviceID)) {
                                 DeviceRowView(device: device, cache: cache)
                             }
+                            .accessibilityIdentifier(
+                                device.DeviceID == thisDeviceIDManager.shared.deviceID
+                                    ? "devices_row_this_device"
+                                    : "devices_row_\(device.DeviceID)"
+                            )
                             .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
