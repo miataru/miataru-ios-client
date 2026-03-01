@@ -15,10 +15,8 @@ APP_VERSION=""
 APP_BUILD=""
 ARTIFACT_VERSION_TAG=""
 
-LANGUAGES=(en de ja fr es zh-Hans nl da it fi)
-if [[ -n "${LANGUAGES_CSV:-}" ]]; then
-  IFS=',' read -r -a LANGUAGES <<< "$LANGUAGES_CSV"
-fi
+SUPPORTED_LANGUAGES=(en de ja fr es zh-Hans nl da it fi)
+LANGUAGES=("${SUPPORTED_LANGUAGES[@]}")
 
 extra_xcodebuild_args=()
 if [[ "${XCODEBUILD_DRY_RUN:-0}" == "1" ]]; then
@@ -44,9 +42,16 @@ scenario_specs=(
 )
 
 selected_inputs=()
+selected_language_inputs=()
+selected_device_inputs=()
 selected_test_ids=()
 only_testing_args=()
 selected_count=0
+selected_languages=()
+selected_language_count=0
+selected_device_specs=()
+selected_device_count=0
+EFFECTIVE_DEVICE_SPECS=()
 list_only=0
 
 usage() {
@@ -56,6 +61,8 @@ Usage: ./scripts/test-screenshots.sh [options]
 Options:
   --list, -l            List available screenshot tests and exit
   --test, -t <selector> Run only selected screenshot test(s)
+  --languages, -L <csv> Limit languages (comma-separated, e.g. en,de)
+  --device, -d <name>   Limit device(s) (repeatable or comma-separated)
   --help, -h            Show help
 
 Selector forms for --test (repeatable, comma-separated also supported):
@@ -63,9 +70,15 @@ Selector forms for --test (repeatable, comma-separated also supported):
   - Test method name  (e.g. test_01_root_devices)
   - Full test ID      (e.g. miataruScreenshotUITests/FeatureScreenshotScenariosUITests/test_01_root_devices)
 
+Selector forms for --device:
+  - Full device name  (e.g. "iPhone 16 Pro Max")
+  - Device slug       (e.g. iphone-16-pro-max)
+  - List index        (e.g. 1 or 2, see --list)
+
 Environment:
   SCREENSHOT_TESTS_CSV   Optional comma-separated selectors (same forms as --test)
-  LANGUAGES_CSV          Optional comma-separated language list (e.g. en,de)
+  LANGUAGES_CSV          Optional comma-separated language list (same as --languages)
+  DEVICE_NAMES_CSV       Optional comma-separated device selectors (same as --device)
   XCODEBUILD_DRY_RUN=1   Build/test dry-run without attachment export
   APP_VERSION_OVERRIDE   Override app marketing version in artifact structure
   APP_BUILD_OVERRIDE     Override app build number in artifact structure
@@ -101,6 +114,69 @@ list_available_tests() {
     printf "%-3s %-24s %-34s %s\n" "$i" "$scenario_id" "$method" "$description"
     i=$((i + 1))
   done
+}
+
+list_supported_languages() {
+  echo
+  echo "Supported language selectors:"
+  local lang
+  for lang in "${SUPPORTED_LANGUAGES[@]}"; do
+    echo "  - $lang"
+  done
+}
+
+list_available_devices() {
+  echo
+  printf "%-3s %-26s %s\n" "Nr" "Device Slug" "Device Name"
+  printf "%-3s %-26s %s\n" "---" "--------------------------" "------------------------------"
+  local i=1
+  local spec device_name _ slug
+  for spec in "${device_specs[@]}"; do
+    IFS='|' read -r device_name _ <<< "$spec"
+    slug="$(sanitize_slug "$device_name")"
+    printf "%-3s %-26s %s\n" "$i" "$slug" "$device_name"
+    i=$((i + 1))
+  done
+}
+
+is_supported_language() {
+  local candidate="$1"
+  local candidate_lower
+  candidate_lower="$(printf '%s' "$candidate" | tr '[:upper:]' '[:lower:]')"
+  local lang
+  for lang in "${SUPPORTED_LANGUAGES[@]}"; do
+    local lang_lower
+    lang_lower="$(printf '%s' "$lang" | tr '[:upper:]' '[:lower:]')"
+    if [[ "$lang_lower" == "$candidate_lower" ]]; then
+      printf '%s' "$lang"
+      return
+    fi
+  done
+  printf ''
+}
+
+append_language_if_missing() {
+  local language="$1"
+  local existing
+  for existing in "${selected_languages[@]-}"; do
+    if [[ "$existing" == "$language" ]]; then
+      return
+    fi
+  done
+  selected_languages+=("$language")
+  selected_language_count=$((selected_language_count + 1))
+}
+
+append_device_spec_if_missing() {
+  local spec="$1"
+  local existing
+  for existing in "${selected_device_specs[@]-}"; do
+    if [[ "$existing" == "$spec" ]]; then
+      return
+    fi
+  done
+  selected_device_specs+=("$spec")
+  selected_device_count=$((selected_device_count + 1))
 }
 
 append_test_if_missing() {
@@ -146,6 +222,24 @@ parse_args() {
         selected_inputs+=("$2")
         shift 2
         ;;
+      --languages|-L)
+        if [[ $# -lt 2 ]]; then
+          echo "Missing value for $1" >&2
+          usage >&2
+          exit 1
+        fi
+        selected_language_inputs+=("$2")
+        shift 2
+        ;;
+      --device|-d)
+        if [[ $# -lt 2 ]]; then
+          echo "Missing value for $1" >&2
+          usage >&2
+          exit 1
+        fi
+        selected_device_inputs+=("$2")
+        shift 2
+        ;;
       --help|-h)
         usage
         exit 0
@@ -157,6 +251,27 @@ parse_args() {
         ;;
     esac
   done
+}
+
+resolve_device_selector() {
+  local selector="$1"
+  local selector_lower
+  selector_lower="$(printf '%s' "$selector" | tr '[:upper:]' '[:lower:]')"
+  local spec device_name device_type slug index=1
+
+  for spec in "${device_specs[@]}"; do
+    IFS='|' read -r device_name device_type <<< "$spec"
+    slug="$(sanitize_slug "$device_name")"
+    local slug_lower
+    slug_lower="$(printf '%s' "$slug" | tr '[:upper:]' '[:lower:]')"
+    if [[ "$selector" == "$device_name" || "$selector_lower" == "$slug_lower" || "$selector" == "$index" ]]; then
+      printf '%s' "$spec"
+      return
+    fi
+    index=$((index + 1))
+  done
+
+  printf ''
 }
 
 resolve_selected_tests() {
@@ -183,6 +298,64 @@ resolve_selected_tests() {
       append_test_if_missing "$resolved"
     done
   done
+}
+
+resolve_selected_languages() {
+  local input language_raw language normalized
+  if [[ -n "${LANGUAGES_CSV:-}" ]]; then
+    selected_language_inputs+=("$LANGUAGES_CSV")
+  fi
+
+  for input in "${selected_language_inputs[@]-}"; do
+    IFS=',' read -r -a parts <<< "$input"
+    for language_raw in "${parts[@]}"; do
+      language="$(trim_whitespace "$language_raw")"
+      if [[ -z "$language" ]]; then
+        continue
+      fi
+      normalized="$(is_supported_language "$language")"
+      if [[ -z "$normalized" ]]; then
+        echo "Unknown language selector: $language" >&2
+        list_supported_languages >&2
+        exit 1
+      fi
+      append_language_if_missing "$normalized"
+    done
+  done
+
+  if (( selected_language_count > 0 )); then
+    LANGUAGES=("${selected_languages[@]}")
+  fi
+}
+
+resolve_selected_devices() {
+  local input selector_raw selector resolved
+  if [[ -n "${DEVICE_NAMES_CSV:-}" ]]; then
+    selected_device_inputs+=("$DEVICE_NAMES_CSV")
+  fi
+
+  for input in "${selected_device_inputs[@]-}"; do
+    IFS=',' read -r -a parts <<< "$input"
+    for selector_raw in "${parts[@]}"; do
+      selector="$(trim_whitespace "$selector_raw")"
+      if [[ -z "$selector" ]]; then
+        continue
+      fi
+      resolved="$(resolve_device_selector "$selector")"
+      if [[ -z "$resolved" ]]; then
+        echo "Unknown device selector: $selector" >&2
+        list_available_devices >&2
+        exit 1
+      fi
+      append_device_spec_if_missing "$resolved"
+    done
+  done
+
+  if (( selected_device_count > 0 )); then
+    EFFECTIVE_DEVICE_SPECS=("${selected_device_specs[@]}")
+  else
+    EFFECTIVE_DEVICE_SPECS=("${device_specs[@]}")
+  fi
 }
 
 resolve_app_version_info() {
@@ -222,9 +395,13 @@ resolve_app_version_info() {
 parse_args "$@"
 if [[ $list_only -eq 1 ]]; then
   list_available_tests
+  list_supported_languages
+  list_available_devices
   exit 0
 fi
 resolve_selected_tests
+resolve_selected_languages
+resolve_selected_devices
 resolve_app_version_info
 
 region_for_language() {
@@ -241,6 +418,40 @@ region_for_language() {
     fi) echo "FI" ;;
     *) echo "US" ;;
   esac
+}
+
+apple_language_for_language() {
+  case "$1" in
+    zh-Hans) echo "zh-Hans" ;;
+    *) echo "${1%%-*}" ;;
+  esac
+}
+
+apple_locale_for_language_region() {
+  local language="$1"
+  local region="$2"
+  case "$language" in
+    zh-Hans) echo "zh_Hans_${region}" ;;
+    *) echo "${language//-/_}_${region}" ;;
+  esac
+}
+
+configure_simulator_locale() {
+  local udid="$1"
+  local language="$2"
+  local region="$3"
+  local apple_language
+  apple_language="$(apple_language_for_language "$language")"
+  local apple_locale
+  apple_locale="$(apple_locale_for_language_region "$language" "$region")"
+
+  echo "Configuring simulator locale: language=$apple_language locale=$apple_locale ($udid)" >&2
+
+  xcrun simctl boot "$udid" >/dev/null 2>&1 || true
+  xcrun simctl bootstatus "$udid" -b >/dev/null
+  xcrun simctl spawn "$udid" defaults write NSGlobalDomain AppleLanguages -array "$apple_language"
+  xcrun simctl spawn "$udid" defaults write NSGlobalDomain AppleLocale -string "$apple_locale"
+  xcrun simctl terminate "$udid" com.miataru.ios >/dev/null 2>&1 || true
 }
 
 latest_ios_runtime_id() {
@@ -314,6 +525,7 @@ run_single_capture() {
   mkdir -p "$export_dir" "$target_dir"
 
   echo "Running screenshot suite for language=$language region=$region device=$device_name ($udid)" >&2
+  configure_simulator_locale "$udid" "$language" "$region"
 
   local xcodebuild_args=(
     test
@@ -338,6 +550,7 @@ run_single_capture() {
   fi
 
   SCREENSHOT_LANG="$language" \
+  SCREENSHOT_REGION="$region" \
   SCREENSHOT_DEVICE_NAME="$device_name" \
   xcodebuild "${xcodebuild_args[@]}"
 
@@ -419,9 +632,22 @@ if (( selected_count > 0 )); then
   done
 fi
 
+if (( selected_language_count > 0 )); then
+  echo "Running selected languages only: ${LANGUAGES[*]}" >&2
+fi
+
+if (( selected_device_count > 0 )); then
+  echo "Running selected devices only:" >&2
+  selected_device_line=""
+  for selected_device_line in "${EFFECTIVE_DEVICE_SPECS[@]}"; do
+    IFS='|' read -r selected_device_name _ <<< "$selected_device_line"
+    echo "  - $selected_device_name" >&2
+  done
+fi
+
 for language in "${LANGUAGES[@]}"; do
   region="$(region_for_language "$language")"
-  for spec in "${device_specs[@]}"; do
+  for spec in "${EFFECTIVE_DEVICE_SPECS[@]}"; do
     IFS='|' read -r device_name type_id <<< "$spec"
     udid="$(ensure_simulator "$device_name" "$type_id")"
     run_single_capture "$language" "$region" "$device_name" "$udid"

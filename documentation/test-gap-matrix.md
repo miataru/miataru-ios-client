@@ -1,51 +1,51 @@
-# Test Gap Matrix (Stand: 2026-02-27)
+# Test Gap Matrix (as of 2026-02-27)
 
-## Zweck
+## Purpose
 
-Diese Matrix zeigt pro Kernbereich:
+This matrix shows, per core area:
 
-- Risiko bei Fehlern
-- Aktuelle Testabdeckung (aktiv vs. nur vorhanden)
-- Konkrete Luecken
-- Priorisierte naechste Testschritte
+- Risk impact
+- Current test coverage (active vs. only existing)
+- Concrete gaps
+- Prioritized next testing steps
 
-Bewertungsskala:
+Scale:
 
-- `Abdeckung`: Hoch / Mittel / Niedrig / Keine
-- `Gap`: Niedrig / Mittel / Hoch / Kritisch
+- `Coverage`: High / Medium / Low / None
+- `Gap`: Low / Medium / High / Critical
 
 ## Gap Matrix
 
-| Bereich / Komponente | Risiko | Aktive Unit-Tests | Vorhandene aber nicht eingebundene Tests | Aktive Integration | Aktive UI/E2E | Abdeckung | Gap | Naechster Schritt |
+| Area / Component | Risk | Active Unit Tests | Existing but Not Linked Tests | Active Integration | Active UI/E2E | Coverage | Gap | Next Step |
 |---|---|---|---|---|---|---|---|---|
-| Route Cache + Refresh + Ghost (`RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`) | Hoch | Ja (27) | Nein | Nein | Nein | Mittel-Hoch | Mittel | Integrations-Tests fuer End-to-End Recalc-Entscheidungen (Route vorhanden, stale, off-route, reverse). |
-| Mutual Navigation + Visitor-Timestamps (`MutualNavigationDetector`, `MiataruVisitor`) | Hoch | Ja (4) | Nein | Nein | Nein | Niedrig-Mittel | Hoch | Klassenverhalten testen (State-Transition enter/stay/exit), nicht nur Zeit-Differenzen. |
-| Visitor History + Known Device Aufloesung (`VisitorHistoryViewModel`, `KnownDeviceStore`) | Mittel | Ja (5) | Nein | Nein | Nein | Mittel | Mittel | Persistenz-/Nebenlaeufigkeits-Tests (duplicate IDs, case-insensitive merge, race-safe updates). |
-| Map Helper + Polyline Geometrie (`MapHelpers`, `MKPolyline` Extensions) | Hoch | Ja (23) | Nein | Nein | Nein | Mittel-Hoch | Mittel | Assert-Schaerfung fuer numerische Randfaelle und Regressionen bei Distanzprojektion. |
-| Standort-Update Pipeline (`LocationManager`, `DeviceLocationRefresher`) | Sehr hoch | Nein | Nein | Nein | Nein | Keine | Kritisch | Integrations-Tests fuer GPS-Update, Netzwerkfehler, Retry/Backoff, Hintergrundverhalten. |
-| Device Access / Sync (`AllowedDeviceListManager`, SyncQueue) | Hoch | Nein | Nein | Nein | Nein | Keine | Hoch | Tests fuer Sync-Triggers, Konfliktfaelle, Fehlerpfade, idempotentes Synchronisieren. |
-| Persistenz-Stores (`DeviceLocationCacheStore`, `DeviceHistoryCacheStore`, `DeviceGroupStore`, `DeviceSloganCacheStore`) | Hoch | Teilweise indirekt | Nein | Nein | Nein | Niedrig | Hoch | Serialization roundtrip, migrationssichere Loads, corruption handling, thread-safety. |
-| Widget Datenfluss (`WidgetDataSyncCoordinator`, `SharedWidgetData`, `WidgetMapSnapshotGenerator`) | Mittel-Hoch | Nein | Nein | Nein | Nein | Keine | Hoch | Contract-Tests fuer Payload-Formate, Datenfilterung und Snapshot-Fehlerfaelle. |
-| Device Key / Auth (`DeviceKeyAuthHandler`) | Hoch | Nein | Nein | Nein | Nein | Keine | Hoch | Unit-Tests fuer Signatur-/Formatvalidierung und harte Negativfaelle. |
-| Core UI Flows (Onboarding, Device/Group Listen, Navigation Screens) | Sehr hoch | Nein | Nein | Nein | Ja (14 deterministische Flows inkl. Screenshot-Suite) | Mittel-Hoch | Mittel | Naechster Ausbau: Device-Map, Gruppen-Flow und Navigation start/stop inkl. Abbruchpfade. |
-| App Bootstrap (`miataruApp`, `AppState`, `AppDelegate`) | Mittel | Nein | Nein | Nein | Nein | Keine | Mittel-Hoch | Smoke Integration fuer App-Startzustand, Initial-Settings, Notification/permission branching. |
+| Route Cache + Refresh + Ghost (`RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`) | High | Yes (27) | No | No | No | Medium-High | Medium | Add integration tests for end-to-end recalculation decisions (route exists, stale, off-route, reverse). |
+| Mutual Navigation + Visitor Timestamps (`MutualNavigationDetector`, `MiataruVisitor`) | High | Yes (4) | No | No | No | Low-Medium | High | Test full class behavior (state transitions enter/stay/exit), not only time deltas. |
+| Visitor History + Known Device Resolution (`VisitorHistoryViewModel`, `KnownDeviceStore`) | Medium | Yes (5) | No | No | No | Medium | Medium | Add persistence/concurrency tests (duplicate IDs, case-insensitive merge, race-safe updates). |
+| Map Helper + Polyline Geometry (`MapHelpers`, `MKPolyline` Extensions) | High | Yes (23) | No | No | No | Medium-High | Medium | Tighten assertions for numeric edge cases and distance projection regressions. |
+| Location Update Pipeline (`LocationManager`, `DeviceLocationRefresher`) | Very High | No | No | No | No | None | Critical | Add integration tests for GPS updates, network failures, retry/backoff, and background behavior. |
+| Device Access / Sync (`AllowedDeviceListManager`, SyncQueue) | High | No | No | No | No | None | High | Add tests for sync triggers, conflict cases, error paths, and idempotent sync behavior. |
+| Persistence Stores (`DeviceLocationCacheStore`, `DeviceHistoryCacheStore`, `DeviceGroupStore`, `DeviceSloganCacheStore`) | High | Partly indirect | No | No | No | Low | High | Add serialization roundtrip, migration-safe loading, corruption handling, and thread-safety tests. |
+| Widget Data Flow (`WidgetDataSyncCoordinator`, `SharedWidgetData`, `WidgetMapSnapshotGenerator`) | Medium-High | No | No | No | No | None | High | Add contract tests for payload formats, data filtering, and snapshot failure cases. |
+| Device Key / Auth (`DeviceKeyAuthHandler`) | High | No | No | No | No | None | High | Add unit tests for signature/format validation and strict negative cases. |
+| Core UI Flows (Onboarding, Device/Group Lists, Navigation Screens) | Very High | No | No | No | Yes (14 deterministic flows incl. screenshot suite) | Medium-High | Medium | Next expansion: device map, group flow, and navigation start/stop including abort paths. |
+| App Bootstrap (`miataruApp`, `AppState`, `AppDelegate`) | Medium | No | No | No | No | None | Medium-High | Add smoke integration tests for startup state, initial settings, and notification/permission branching. |
 
-## Priorisierte Backlog-Liste
+## Prioritized Backlog
 
-| Prio | Gap | Warum | Konkrete Testarbeit |
+| Priority | Gap | Why | Concrete Test Work |
 |---|---|---|---|
-| P0 (erledigt 2026-02-27) | Vorhandene ausgelagerte Tests aktivieren | Erledigt: Unit/UI-Bestand ist jetzt in aktiven Targets verankert | Verschiebung in `miataruTests` und `miataruUITests` + Target-Synchronisierung abgeschlossen. |
-| P1 (erledigt 2026-02-27) | UI-Suite aus Smoke in stabile Kernfluesse ueberfuehren | Erledigt: deterministische UI-Grundpfade decken Start, Add-Device, Settings-Onboarding-Aktion und QR-Basisaktion ab | `ExtendedUITests` auf 4 robuste Szenarien erweitert. |
-| P1 (erledigt 2026-03-01) | Screenshot-/Functional-Laeufe in dedizierte Schemes trennen | Erledigt: serielle Ausfuehrung und explizit triggerbare Screenshot-Suite fuer 10 Sprachen + 2 Geraeteklassen | Neue Schemes `miataru-FunctionalUI`/`miataru-Screenshots`, Testplaene, `miataruScreenshotUITests`, Skripte und Artefakt-Export etabliert. |
-| P1 | Keine Integrations-Tests fuer Standort-/Routing-Pipeline | Kernfunktion der App, viele Abhaengigkeiten | Integrationstest-Setup mit Fake Location + Fake API fuer Route/Update Lifecycle. |
-| P1 | Keine Tests fuer AllowedDevice Sync | Datenkonsistenz und Zugriffslogik kritisch | Unit + Integration fuer SyncQueue, Konfliktbehandlung, Wiederholbarkeit. |
-| P2 | Persistenz-Stores kaum abgedeckt | Fehler zeigen sich oft erst bei Real-Daten | Roundtrip- und Fehlerfalltests fuer NSCoding/UserDefaults/FileStore. |
-| P2 | Widget Pipeline ungetestet | Sichtbare Inkonsistenzen zwischen App/Widget moeglich | Contract-Tests fuer Shared payload und Snapshot-Generierung. |
+| P0 (done 2026-02-27) | Activate existing extracted tests | Done: Unit/UI inventory is now linked in active targets | Move files to `miataruTests` and `miataruUITests` + target synchronization completed. |
+| P1 (done 2026-02-27) | Move UI suite from smoke to stable core flows | Done: deterministic UI baseline covers launch, add-device, settings onboarding action, and QR baseline action | `ExtendedUITests` expanded to 4 robust scenarios. |
+| P1 (done 2026-03-01) | Split screenshot/functional runs into dedicated schemes | Done: serial execution and explicitly triggerable screenshot suite for 10 languages + 2 device classes | New schemes `miataru-FunctionalUI`/`miataru-Screenshots`, test plans, `miataruScreenshotUITests`, scripts, and artifact export established. |
+| P1 | No integration tests for location/routing pipeline | Core app function with many dependencies | Integration test setup with fake location + fake API for route/update lifecycle. |
+| P1 | No tests for AllowedDevice sync | Data consistency and access logic are critical | Unit + integration tests for SyncQueue, conflict handling, repeatability. |
+| P2 | Persistence stores barely covered | Failures often appear only with real data | Roundtrip and error-path tests for NSCoding/UserDefaults/FileStore. |
+| P2 | Widget pipeline untested | User-visible inconsistencies between app/widget possible | Contract tests for shared payload and snapshot generation. |
 
-## Pflege-Regel fuer diese Matrix
+## Maintenance Rule
 
-Bei jeder Aenderung an Tests (neu, geloescht, umbenannt, erweitert) muss diese Datei aktualisiert werden:
+Whenever tests are changed (added, removed, renamed, expanded), this file must be updated:
 
-1. Zaehler/Fakten in der Matrix korrigieren.
-2. Betroffenen Bereich in `Abdeckung` und `Gap` neu bewerten.
-3. Falls noetig Prioritaeten im Backlog anpassen.
+1. Update counters/facts in the matrix.
+2. Re-assess `Coverage` and `Gap` for impacted areas.
+3. Adjust backlog priorities if needed.

@@ -1,6 +1,8 @@
 import XCTest
 
 class ScreenshotBaseUITestCase: XCTestCase {
+    let supportedScreenshotLanguages = ["en", "de", "ja", "fr", "es", "zh-Hans", "nl", "da", "it", "fi"]
+
     let baseLaunchArguments = [
         "-ui-testing",
         "-ui-reset-userdefaults",
@@ -18,6 +20,12 @@ class ScreenshotBaseUITestCase: XCTestCase {
     @MainActor
     func launchApp(onboardingCompleted: Bool, initialTab: Int? = nil, scenarioID: String) -> XCUIApplication {
         var args = baseLaunchArguments + ["-ui-screenshot-scenario", scenarioID]
+        let languageCode = screenshotLanguageCode()
+        let regionCode = screenshotRegionCode()
+        args += [
+            "-AppleLanguages", "(\(appleLanguageIdentifier(for: languageCode)))",
+            "-AppleLocale", appleLocaleIdentifier(languageCode: languageCode, regionCode: regionCode)
+        ]
 
         if onboardingCompleted {
             args.append("-ui-onboarding-completed")
@@ -30,7 +38,8 @@ class ScreenshotBaseUITestCase: XCTestCase {
         }
 
         app.launchArguments = args
-        app.launchEnvironment["SCREENSHOT_LANG"] = screenshotLanguageCode()
+        app.launchEnvironment["SCREENSHOT_LANG"] = languageCode
+        app.launchEnvironment["SCREENSHOT_REGION"] = regionCode
         app.launchEnvironment["SCREENSHOT_DEVICE_NAME"] = screenshotDeviceName()
         app.launch()
         return app
@@ -46,12 +55,16 @@ class ScreenshotBaseUITestCase: XCTestCase {
 
     func screenshotLanguageCode() -> String {
         let envLang = ProcessInfo.processInfo.environment["SCREENSHOT_LANG"]
-        if let envLang, !envLang.isEmpty {
-            return envLang
+        if let envLang, !envLang.isEmpty, let normalized = normalizeLanguageCode(envLang) {
+            return normalized
+        }
+
+        if let appleLanguage = languageFromAppleLanguageSettings() {
+            return appleLanguage
         }
 
         let preferred = Locale.preferredLanguages.first ?? "en"
-        return preferred.components(separatedBy: "-").first ?? "en"
+        return normalizeLanguageCode(preferred) ?? "en"
     }
 
     func screenshotDeviceName() -> String {
@@ -61,6 +74,119 @@ class ScreenshotBaseUITestCase: XCTestCase {
         }
 
         return ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] ?? "unknown-device"
+    }
+
+    func screenshotRegionCode() -> String {
+        let envRegion = ProcessInfo.processInfo.environment["SCREENSHOT_REGION"]
+        if let envRegion, !envRegion.isEmpty {
+            return envRegion
+        }
+        if let regionFromAppleLocale = regionFromAppleLocaleSettings() {
+            return regionFromAppleLocale
+        }
+        return Locale.current.region?.identifier ?? "US"
+    }
+
+    func appleLanguageIdentifier(for languageCode: String) -> String {
+        if languageCode == "zh-Hans" {
+            return "zh-Hans"
+        }
+        return languageCode.components(separatedBy: "-").first ?? languageCode
+    }
+
+    func appleLocaleIdentifier(languageCode: String, regionCode: String) -> String {
+        if languageCode == "zh-Hans" {
+            return "zh_Hans_\(regionCode)"
+        }
+        let normalizedLanguage = languageCode.replacingOccurrences(of: "-", with: "_")
+        return "\(normalizedLanguage)_\(regionCode)"
+    }
+
+    func languageFromAppleLanguageSettings() -> String? {
+        let processInfo = ProcessInfo.processInfo
+
+        if let envAppleLanguages = processInfo.environment["AppleLanguages"],
+           let rawLanguage = firstLanguageToken(fromAppleLanguagesValue: envAppleLanguages),
+           let normalized = normalizeLanguageCode(rawLanguage) {
+            return normalized
+        }
+
+        if let argIndex = processInfo.arguments.firstIndex(of: "-AppleLanguages"),
+           processInfo.arguments.indices.contains(argIndex + 1),
+           let rawLanguage = firstLanguageToken(fromAppleLanguagesValue: processInfo.arguments[argIndex + 1]),
+           let normalized = normalizeLanguageCode(rawLanguage) {
+            return normalized
+        }
+
+        return nil
+    }
+
+    func regionFromAppleLocaleSettings() -> String? {
+        let processInfo = ProcessInfo.processInfo
+
+        if let envAppleLocale = processInfo.environment["AppleLocale"],
+           let region = parseRegionCode(fromAppleLocale: envAppleLocale) {
+            return region
+        }
+
+        if let argIndex = processInfo.arguments.firstIndex(of: "-AppleLocale"),
+           processInfo.arguments.indices.contains(argIndex + 1),
+           let region = parseRegionCode(fromAppleLocale: processInfo.arguments[argIndex + 1]) {
+            return region
+        }
+
+        return nil
+    }
+
+    func firstLanguageToken(fromAppleLanguagesValue value: String) -> String? {
+        var raw = value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+
+        if let separatorIndex = raw.firstIndex(where: { $0 == "," || $0 == ";" }) {
+            raw = String(raw[..<separatorIndex])
+        }
+
+        raw = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        return raw.isEmpty ? nil : raw
+    }
+
+    func normalizeLanguageCode(_ rawLanguageCode: String) -> String? {
+        let raw = rawLanguageCode.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !raw.isEmpty else { return nil }
+
+        let lowered = raw.lowercased()
+        if lowered.hasPrefix("zh-hans") || lowered.hasPrefix("zh_hans") || lowered == "zh" {
+            return "zh-Hans"
+        }
+
+        let primaryLanguage = lowered
+            .replacingOccurrences(of: "_", with: "-")
+            .components(separatedBy: "-")
+            .first ?? lowered
+
+        let normalizedPrimary = primaryLanguage.lowercased()
+        for language in supportedScreenshotLanguages where language.lowercased() == normalizedPrimary {
+            return language
+        }
+        return nil
+    }
+
+    func parseRegionCode(fromAppleLocale value: String) -> String? {
+        let cleaned = value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+
+        guard !cleaned.isEmpty else { return nil }
+        let parts = cleaned.components(separatedBy: CharacterSet(charactersIn: "-_"))
+        if let regionPart = parts.last, regionPart.count == 2 {
+            return regionPart.uppercased()
+        }
+        return nil
     }
 
     func screenshotFileName(index: Int, slug: String) -> String {

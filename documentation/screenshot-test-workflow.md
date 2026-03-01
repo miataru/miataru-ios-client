@@ -1,38 +1,38 @@
 # Screenshot Test Workflow
 
-## Ziel
+## Goal
 
-Deterministische, explizit getriggerte Screenshot-Captures fuer alle unterstuetzten Sprachen auf genau zwei Zielgeraeten:
+Deterministic, explicitly triggered screenshot captures for all supported languages on exactly two target devices:
 
 - `iPhone 16 Pro Max`
 - `iPad Pro 13-inch (M5)`
 
-Die Suite laeuft seriell (maximal 1 parallele Simulator-Instanz) und ist von regulaeren Testlaeufen getrennt.
+The suite runs serially (maximum 1 parallel simulator instance) and is separated from regular test runs.
 
-## Konfiguration
+## Configuration
 
-- Shared Scheme: `miataru-Screenshots`
-- Testplan: `Screenshots.xctestplan`
-- Testtarget: `miataruScreenshotUITests`
-- Trigger-Skript: `miataru/scripts/test-screenshots.sh`
+- Shared scheme: `miataru-Screenshots`
+- Test plan: `Screenshots.xctestplan`
+- Test target: `miataruScreenshotUITests`
+- Trigger script: `miataru/scripts/test-screenshots.sh`
 
 ## Trigger
 
-Screenshot-Suite explizit starten:
+Run the screenshot suite explicitly:
 
 ```bash
 cd miataru
 ./scripts/test-screenshots.sh
 ```
 
-Verfuegbare Screenshot-Tests anzeigen:
+Show available screenshot tests:
 
 ```bash
 cd miataru
 ./scripts/test-screenshots.sh --list
 ```
 
-Gezielt nur einen (oder mehrere) Screenshot-Tests ausfuehren:
+Run only one (or multiple) screenshot tests:
 
 ```bash
 cd miataru
@@ -41,16 +41,30 @@ cd miataru
 ./scripts/test-screenshots.sh --test root-qr --test settings-navigation
 ```
 
-Funktionale/UI-Serienlaeufe (Unit + Functional UI) starten:
+Run a single screenshot test on a single device in a single language:
+
+```bash
+cd miataru
+./scripts/test-screenshots.sh --test root-qr --device "iPhone 16 Pro Max" --languages en
+```
+
+Equivalent selector with device slug:
+
+```bash
+cd miataru
+./scripts/test-screenshots.sh --test root-qr --device iphone-16-pro-max --languages en
+```
+
+Run serial functional/UI suite (Unit + Functional UI):
 
 ```bash
 cd miataru
 ./scripts/test-functional-ui-serial.sh
 ```
 
-## Sprachen und Regionen
+## Languages and Regions
 
-Der Lauf verwendet standardmaessig:
+Default run set:
 
 - `en`/`US`
 - `de`/`DE`
@@ -63,51 +77,73 @@ Der Lauf verwendet standardmaessig:
 - `it`/`IT`
 - `fi`/`FI`
 
-Optional kannst du den Sprachumfang eingrenzen:
+Limit language scope optionally:
 
 ```bash
 cd miataru
-LANGUAGES_CSV="en,de" ./scripts/test-screenshots.sh --test root-qr
+./scripts/test-screenshots.sh --languages en,de --test root-qr
 ```
 
-Version/Build optional manuell ueberschreiben:
+Device scope can also be limited via parameter (repeatable):
+
+```bash
+cd miataru
+./scripts/test-screenshots.sh --device "iPhone 16 Pro Max" --device "iPad Pro 13-inch (M5)" --languages en
+```
+
+Optionally override version/build manually:
 
 ```bash
 cd miataru
 APP_VERSION_OVERRIDE="3.1.2" APP_BUILD_OVERRIDE="6" ./scripts/test-screenshots.sh --test root-qr
 ```
 
-## Simulator-Regeln
+## Simulator Rules
 
-Das Skript prueft pro Geraet, ob eine exakt benannte Simulator-Instanz vorhanden ist. Falls nicht, wird sie automatisch mit dem passenden Device-Type und der neuesten verfuegbaren iOS-Runtime erzeugt.
+The script checks whether an exactly named simulator instance exists for each target device. If not, it creates one automatically using the matching device type and the newest available iOS runtime.
 
-## Artefaktstruktur
+Before each capture run, the script enforces simulator language and locale on the target UDID:
 
-Alle PNGs und Metadaten landen unter:
+- `AppleLanguages` is written via `simctl spawn ... defaults write NSGlobalDomain AppleLanguages ...`
+- `AppleLocale` is written via `simctl spawn ... defaults write NSGlobalDomain AppleLocale ...`
+
+In addition, the UI test launch passes explicit app arguments:
+
+- `-AppleLanguages (...)`
+- `-AppleLocale ...`
+
+This ensures screenshot language follows `--languages` even when the simulator itself was previously configured in a different language.
+
+## Artifact Structure
+
+All PNGs and metadata are written to:
 
 - `miataru/artifacts/screenshots/<version-build-tag>/<language>/<device>/*.png`
 - `miataru/artifacts/screenshots/<version-build-tag>/<language>/<device>/manifest.json`
-- `miataru/artifacts/screenshots/<version-build-tag>/manifest.json` (aggregiert)
-- `miataru/artifacts/xcresult/<version-build-tag>/*` (Result Bundles und Exportdaten)
+- `miataru/artifacts/screenshots/<version-build-tag>/manifest.json` (aggregated)
+- `miataru/artifacts/xcresult/<version-build-tag>/*` (result bundles and exported data)
 
-`<version-build-tag>` wird standardmaessig aus dem App-Target gelesen:
+`<version-build-tag>` is resolved from the app target by default:
 
-- `MARKETING_VERSION` (Version)
-- `CURRENT_PROJECT_VERSION` (Build)
+- `MARKETING_VERSION` (version)
+- `CURRENT_PROJECT_VERSION` (build)
 
-Beispiel: `v3-1-2-b6`
+Example: `v3-1-2-b6`
 
-## Skip-Verhalten ("bis zu 10")
+## Skip Behavior ("up to 10")
 
-Die Testklasse umfasst 10 deterministische Szenarien. Nicht erreichbare Szenarien werden per `XCTSkip` protokolliert, damit der Gesamtlauf robust bleibt und trotzdem verwertbare PNGs erzeugt.
+The test class contains 10 deterministic scenarios. Unreachable scenarios are recorded via `XCTSkip` so the overall run remains stable while still producing usable PNG output.
 
 ## Troubleshooting
 
-- Fehlende iOS-Runtime:
-  - Pruefe `xcrun simctl list runtimes available`.
-  - Installiere eine iOS-Simulator-Runtime in Xcode Settings.
-- Leere PNG-Ausgabe:
-  - Pruefe, ob Tests als Skip liefen.
-  - Pruefe `*.xcresult` in `artifacts/xcresult`.
-- Unerwartete UI-Ueberlagerungen:
-  - Screenshot-Lauf nutzt `-ui-testing` und `-ui-screenshot-mode` fuer deterministischere Zustaende.
+- Missing iOS runtime:
+  - Check `xcrun simctl list runtimes available`.
+  - Install an iOS simulator runtime in Xcode settings.
+- Empty PNG output:
+  - Check whether tests were skipped.
+  - Check `*.xcresult` under `artifacts/xcresult`.
+- Unexpected UI overlays:
+  - Screenshot runs use `-ui-testing` and `-ui-screenshot-mode` for more deterministic states.
+- Screenshot language does not match `--languages`:
+  - Re-run once with the same command. The script now configures `AppleLanguages` and `AppleLocale` on the simulator before test execution.
+  - Verify command output contains `Configuring simulator locale: language=... locale=...`.

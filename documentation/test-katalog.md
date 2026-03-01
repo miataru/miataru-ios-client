@@ -1,165 +1,166 @@
-# Test-Katalog (Stand: 2026-02-27)
+# Test Catalog (as of 2026-02-27)
 
-## 1) Scope und Einordnung
+## 1) Scope and Classification
 
-Dieser Katalog trennt vier Bloecke:
+This catalog is split into four blocks:
 
-1. **Aktiv eingebundene App-Tests** (`miataruTests` + `miataruUITests` + `miataruScreenshotUITests`)  
-2. **Schema-kategorisierte Testausfuehrung** (`miataru-FunctionalUI` und `miataru-Screenshots`)  
-3. **Historisch ausgelagerte Testdateien** (vormals unter `miataru.xcodeproj/*.swift`, inzwischen eingebunden)  
-4. **Third-Party-Testbestand** unter `miataru/Libraries/*` (nur inventarisiert, nicht im Detail katalogisiert)
+1. **Actively linked app tests** (`miataruTests` + `miataruUITests` + `miataruScreenshotUITests`)
+2. **Scheme-categorized test execution** (`miataru-FunctionalUI` and `miataru-Screenshots`)
+3. **Historically extracted test files** (formerly under `miataru.xcodeproj/*.swift`, now linked)
+4. **Third-party test inventory** under `miataru/Libraries/*` (inventory only, not fully cataloged)
 
-Wichtige Projektbeobachtung:
+Important project observations:
 
-- `miataruTests` ist als `PBXFileSystemSynchronizedRootGroup` eingebunden (`miataruTests`-Ordner wird automatisch als Source fuer das Unit-Testtarget genutzt).
-- `miataruUITests` ist jetzt ebenfalls als synchronisierter Quellordner (`miataruUITests`) am UI-Testtarget angebunden.
-- `miataruScreenshotUITests` ist als eigenes UI-Testtarget fuer explizit getriggerte Screenshot-Captures angebunden.
-- Testdateien direkt in `miataru/miataru.xcodeproj/` sind nicht mehr der aktive Ablageort fuer App-Tests.
+- `miataruTests` is linked as a `PBXFileSystemSynchronizedRootGroup` (`miataruTests` folder is automatically used as source for the unit test target).
+- `miataruUITests` is also linked as a synchronized source folder (`miataruUITests`) to the UI test target.
+- `miataruScreenshotUITests` is linked as a dedicated UI test target for explicitly triggered screenshot captures.
+- Test files directly in `miataru/miataru.xcodeproj/` are no longer the active storage location for app tests.
 
-## 2) Inventar auf einen Blick
+## 2) Inventory at a Glance
 
-- Aktiv eingebundene App-Testfaelle: **74** (Unit: 60, UI: 14)
-- Vorhandene, nicht eingebundene App-Testfaelle: **0**
-- Third-Party-Testfunktionen in `Libraries`: **172**
+- Actively linked app test cases: **74** (Unit: 60, UI: 14)
+- Existing but not linked app test cases: **0**
+- Third-party test functions in `Libraries`: **172**
 
-## 2.1) Kategorie-/Schema-Mapping
+## 2.1) Category/Scheme Mapping
 
-| Kategorie | Ziel-Target(s) | Shared Scheme | Testplan | Trigger |
+| Category | Target(s) | Shared Scheme | Test Plan | Trigger |
 |---|---|---|---|---|
 | `CORE_UNIT` | `miataruTests` | `miataru-FunctionalUI` | `FunctionalSerial.xctestplan` | `scripts/test-functional-ui-serial.sh` |
 | `FUNCTIONAL_UI` | `miataruUITests` | `miataru-FunctionalUI` | `FunctionalSerial.xctestplan` | `scripts/test-functional-ui-serial.sh` |
 | `SCREENSHOT_CAPTURE` | `miataruScreenshotUITests` | `miataru-Screenshots` | `Screenshots.xctestplan` | `scripts/test-screenshots.sh` |
 
-## 3) Aktiver Testkatalog (`miataruTests`)
+## 3) Active Test Catalog (`miataruTests`)
 
-| ID | Test-Case Name | Zweck | Inhalt (kurz) | Komponente | Typ | Daten/Mocks | Prioritaet |
+| ID | Test-Case Name | Purpose | Content (short) | Component | Type | Data/Mocks | Priority |
 |---|---|---|---|---|---|---|---|
-| UT-MND-001 | Hysteresis: Enter mutual state at 60s threshold | Eintrittsgrenze pruefen | Visitor mit Alter 55s, Erwartung: <= 60s | MutualNavigationDetector / Zeitlogik | Unit | Feste Referenzzeit, MiataruVisitor | Hoch |
-| UT-MND-002 | Hysteresis: Exit mutual state at 90s threshold | Austrittsgrenze pruefen | Visitor mit Alter 95s, Erwartung: > 90s | MutualNavigationDetector / Zeitlogik | Unit | Feste Referenzzeit, MiataruVisitor | Hoch |
-| UT-MND-003 | Hysteresis: Stay in mutual state between 60s and 90s | Hysterese-Zwischenbereich pruefen | Visitor mit Alter 75s, Erwartung: >60 und <=90 | MutualNavigationDetector / Zeitlogik | Unit | Feste Referenzzeit, MiataruVisitor | Hoch |
-| UT-MND-004 | Visitor timestamp parsing | Timestamp-Parsing validieren | Millisekunden-String -> Date, Abweichung < 1ms | MiataruVisitor | Unit | Deterministischer Timestamp | Mittel |
-| UT-NRP-001 | No refresh in standard mode when target moved but remains on route | Kein unnoetiger Refresh | Standardmodus, Ziel bewegt, nicht off-route -> false | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | Hoch |
-| UT-NRP-002 | Refresh in standard mode when target moved and is off route | Refresh bei Off-Route Ziel | Standardmodus + target off-route -> true | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | Hoch |
-| UT-NRP-003 | Refresh in reverse mode when target moved significantly | Reverse-Modus Verhalten | Reverse-Modus + signifikante Bewegung -> true | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | Hoch |
-| UT-NRP-004 | No refresh when auto update is disabled | Feature-Flag pruefen | Auto-Update aus -> immer false | NavigationRouteRefreshPolicy | Unit | Bool-Flags + Koordinaten | Hoch |
-| UT-NRP-005 | Refresh when no route exists | Initialfall ohne Route | hasRoute=false -> true | NavigationRouteRefreshPolicy | Unit | nil-Koordinaten | Hoch |
-| UT-NRP-006 | No refresh when on route and target movement is below threshold | Schwellwert unten pruefen | Zielbewegung unter Schwellwert -> false | NavigationRouteRefreshPolicy | Unit | Kleine Koordinatendifferenz | Hoch |
-| UT-NRP-007 | Refresh when user is off route regardless of target movement | User-Off-Route priorisieren | isUserOffRoute=true -> true | NavigationRouteRefreshPolicy | Unit | Identische Start/Ziel-Koordinaten | Hoch |
-| UT-NRP-008 | No refresh if target did not move beyond threshold | Kein Refresh ohne relevante Zielbewegung | Sehr hoher Threshold, kleine Bewegung -> false | NavigationRouteRefreshPolicy | Unit | Threshold 1000m | Mittel |
-| UT-NRP-009 | No refresh when target coordinates are missing and user is on route | Missing-Data Verhalten | currentDeviceCoordinate=nil, user on route -> false | NavigationRouteRefreshPolicy | Unit | nil + lastRouteCoordinate | Mittel |
-| UT-NRP-010 | hasTargetMovedSignificantly returns false for missing coordinates | Helper-Robustheit | Missing current/last -> jeweils false | NavigationRouteRefreshPolicy | Unit | Nil-Parameter | Mittel |
-| UT-RGC-001 | Ghost progresses with primary speed and timestamp (non-reversed: user primary) | Ghost-Fortschritt Standardmodus | user speed/timestamp als Primarquelle, progress in (0,1] | RouteGhostCalculator | Unit | FakeRoute (MKRoute Shim), feste Zeit | Hoch |
-| UT-RGC-002 | Ghost uses expectedTravelTime fallback when speeds are below threshold | Fallback-Pfad pruefen | Geringe Geschwindigkeiten -> expectedTravelTime genutzt | RouteGhostCalculator | Unit | FakeRoute, Threshold-nahe Geschw. | Hoch |
-| UT-RGC-003 | Ghost bases from device when reversed route | Richtungsabhaengige Quelle | isRouteReversed=true -> device als Basis | RouteGhostCalculator | Unit | FakeRoute, feste Zeit | Hoch |
-| UT-RCS-001 | Set and get cached route by key | Grundfunktion Cache | set/get ueber Key liefert Route | RouteCacheStore | Unit | `RouteCacheStore.shared`, FakeRoute | Hoch |
-| UT-RCS-002 | isValid returns true when both endpoints moved less than threshold and on-route | Validitaet im Normalfall | Kleine Endpoint-Bewegung + on-route -> true | RouteCacheStore | Unit | Threshold + offRouteThreshold | Hoch |
-| UT-RCS-003 | isValid returns false when either endpoint moved beyond threshold | Invalidation bei grosser Bewegung | Endpoint weit bewegt -> false | RouteCacheStore | Unit | Bewegungsdelta > 100m | Hoch |
-| UT-RCS-004 | isValid returns false when user is off route beyond offRouteThreshold | Off-Route Invalidation | User ~200m neben Route -> false | RouteCacheStore | Unit | offRouteThreshold=25 | Hoch |
-| UT-RCS-005 | Keys are isolated by transportType | Key-Segmentierung Transport | Gleiche Device-ID, verschiedene transportType getrennt | RouteCacheStore | Unit | Zwei Routenvarianten | Hoch |
-| UT-RCS-006 | Keys are isolated by isRouteReversed | Key-Segmentierung Richtung | Forward/Reverse getrennt abrufbar | RouteCacheStore | Unit | Zwei Richtungsvarianten | Hoch |
-| UT-RCS-007 | clear(for:) removes only the specified device's entries | Selektives Loeschen | clear(Device A) entfernt A, behaelt B | RouteCacheStore | Unit | Zwei Device-IDs | Hoch |
-| UT-RCS-008 | clear(for:) removes all variants (transport and direction) for a device | Vollstaendiges Device-Clear | Alle Varianten fuer ein Device verschwinden | RouteCacheStore | Unit | 4 Key-Varianten pro Device | Hoch |
-| UT-RCS-009 | isValid returns false at the boundary when movement equals threshold | Boundary-Case Gleichheit | Bewegung == threshold -> false | RouteCacheStore | Unit | Dynamisch berechneter Threshold | Hoch |
-| UT-RCS-010 | Default validity ignores off-route when offRouteThreshold is nil | Default-Verhalten bei nil Schwelle | Off-route ignoriert, wenn offRouteThreshold=nil | RouteCacheStore | Unit | Route + weit entfernter User | Mittel |
-| UT-RCS-011 | Single-point route is never considered off-route in validity check | Degenerierte Route robust behandeln | Ein-Punkt-Route invalidiert nicht ueber Off-Route | RouteCacheStore | Unit | Single-point MKPolyline | Mittel |
-| UT-RCS-012 | get returns nil for missing key or mismatched parameters | Negativpfad get() | Unknown device / falscher transportType / direction -> nil | RouteCacheStore | Unit | Variierende Key-Parameter | Mittel |
-| UT-RCS-013 | Setting the same key twice overwrites the cached route | Overwrite-Semantik | Zweites set gleicher Key ersetzt Route | RouteCacheStore | Unit | Zwei verschiedene Routen | Mittel |
-| UT-RCS-014 | isValid returns true with very large threshold despite large movement | Threshold-Einfluss pruefen | Sehr grosser Threshold -> trotz grosser Bewegung true | RouteCacheStore | Unit | Threshold=1_000_000 | Niedrig |
-| UT-VHV-001 | Known device resolution from visitor history | KnownDevice-Aufloesung pruefen | KnownDevice anlegen, Visitor mit gleicher ID findet Name | VisitorHistory / KnownDeviceStore | Unit | Shared Store, cleanup per defer | Hoch |
-| UT-VHV-002 | Unknown device resolution from visitor history | Unknown-Fall pruefen | Visitor mit unbekannter ID -> kein Treffer | VisitorHistory / KnownDeviceStore | Unit | Shared Store | Mittel |
-| UT-VHV-003 | Device resolution after adding unknown device | Uebergang unknown->known | Erst nil, nach add() Treffer mit Name | VisitorHistory / KnownDeviceStore | Unit | Shared Store, cleanup per defer | Hoch |
-| UT-VHV-004 | Visitor history sorting by timestamp | Sortierlogik pruefen | 3 Besucher nach TimeStampDate absteigend sortieren | VisitorHistory | Unit | Fixierte Zeitabstaende | Mittel |
-| UT-VHV-005 | Shortened device ID format | Anzeigeformat pruefen | Lange ID wird zu `prefix...suffix` | VisitorHistory (UI-Helfer) | Unit | Statische String-ID | Niedrig |
-| UT-GEN-001 | example | Platzhalter/Template | Leerer Beispieltest ohne Assertions | Grundgeruest | Unit | Keine | Niedrig |
+| UT-MND-001 | Hysteresis: Enter mutual state at 60s threshold | Validate enter threshold | Visitor age 55s, expected: <= 60s | MutualNavigationDetector / time logic | Unit | Fixed reference time, MiataruVisitor | High |
+| UT-MND-002 | Hysteresis: Exit mutual state at 90s threshold | Validate exit threshold | Visitor age 95s, expected: > 90s | MutualNavigationDetector / time logic | Unit | Fixed reference time, MiataruVisitor | High |
+| UT-MND-003 | Hysteresis: Stay in mutual state between 60s and 90s | Validate hysteresis middle range | Visitor age 75s, expected: >60 and <=90 | MutualNavigationDetector / time logic | Unit | Fixed reference time, MiataruVisitor | High |
+| UT-MND-004 | Visitor timestamp parsing | Validate timestamp parsing | Millisecond string -> Date, deviation < 1ms | MiataruVisitor | Unit | Deterministic timestamp | Medium |
+| UT-NRP-001 | No refresh in standard mode when target moved but remains on route | Avoid unnecessary refresh | Standard mode, target moved, not off-route -> false | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | High |
+| UT-NRP-002 | Refresh in standard mode when target moved and is off route | Refresh on off-route target | Standard mode + target off-route -> true | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | High |
+| UT-NRP-003 | Refresh in reverse mode when target moved significantly | Reverse mode behavior | Reverse mode + significant movement -> true | NavigationRouteRefreshPolicy | Unit | CLLocationCoordinate2D | High |
+| UT-NRP-004 | No refresh when auto update is disabled | Validate feature flag | Auto update off -> always false | NavigationRouteRefreshPolicy | Unit | Bool flags + coordinates | High |
+| UT-NRP-005 | Refresh when no route exists | Initial no-route case | hasRoute=false -> true | NavigationRouteRefreshPolicy | Unit | nil coordinates | High |
+| UT-NRP-006 | No refresh when on route and target movement is below threshold | Validate lower threshold bound | Target movement below threshold -> false | NavigationRouteRefreshPolicy | Unit | Small coordinate delta | High |
+| UT-NRP-007 | Refresh when user is off route regardless of target movement | Prioritize user off-route | isUserOffRoute=true -> true | NavigationRouteRefreshPolicy | Unit | Identical start/target coordinates | High |
+| UT-NRP-008 | No refresh if target did not move beyond threshold | No refresh without relevant movement | Very high threshold, small movement -> false | NavigationRouteRefreshPolicy | Unit | Threshold 1000m | Medium |
+| UT-NRP-009 | No refresh when target coordinates are missing and user is on route | Missing-data behavior | currentDeviceCoordinate=nil, user on route -> false | NavigationRouteRefreshPolicy | Unit | nil + lastRouteCoordinate | Medium |
+| UT-NRP-010 | hasTargetMovedSignificantly returns false for missing coordinates | Helper robustness | Missing current/last -> false | NavigationRouteRefreshPolicy | Unit | Nil parameters | Medium |
+| UT-RGC-001 | Ghost progresses with primary speed and timestamp (non-reversed: user primary) | Ghost progress standard mode | user speed/timestamp as primary source, progress in (0,1] | RouteGhostCalculator | Unit | FakeRoute (MKRoute shim), fixed time | High |
+| UT-RGC-002 | Ghost uses expectedTravelTime fallback when speeds are below threshold | Validate fallback path | Low speeds -> expectedTravelTime used | RouteGhostCalculator | Unit | FakeRoute, near-threshold speeds | High |
+| UT-RGC-003 | Ghost bases from device when reversed route | Direction-dependent source | isRouteReversed=true -> device is base | RouteGhostCalculator | Unit | FakeRoute, fixed time | High |
+| UT-RCS-001 | Set and get cached route by key | Cache baseline behavior | set/get by key returns route | RouteCacheStore | Unit | `RouteCacheStore.shared`, FakeRoute | High |
+| UT-RCS-002 | isValid returns true when both endpoints moved less than threshold and on-route | Normal validity behavior | Small endpoint movement + on-route -> true | RouteCacheStore | Unit | Threshold + offRouteThreshold | High |
+| UT-RCS-003 | isValid returns false when either endpoint moved beyond threshold | Invalidate on large movement | Endpoint moved far -> false | RouteCacheStore | Unit | Movement delta > 100m | High |
+| UT-RCS-004 | isValid returns false when user is off route beyond offRouteThreshold | Off-route invalidation | User ~200m off route -> false | RouteCacheStore | Unit | offRouteThreshold=25 | High |
+| UT-RCS-005 | Keys are isolated by transportType | Key isolation by transport | Same device ID, different transportType separated | RouteCacheStore | Unit | Two route variants | High |
+| UT-RCS-006 | Keys are isolated by isRouteReversed | Key isolation by direction | Forward/reverse separable | RouteCacheStore | Unit | Two direction variants | High |
+| UT-RCS-007 | clear(for:) removes only the specified device's entries | Selective clear | clear(Device A) removes A, keeps B | RouteCacheStore | Unit | Two device IDs | High |
+| UT-RCS-008 | clear(for:) removes all variants (transport and direction) for a device | Full device clear | All variants for one device are removed | RouteCacheStore | Unit | 4 key variants per device | High |
+| UT-RCS-009 | isValid returns false at the boundary when movement equals threshold | Boundary equality case | movement == threshold -> false | RouteCacheStore | Unit | Dynamically computed threshold | High |
+| UT-RCS-010 | Default validity ignores off-route when offRouteThreshold is nil | Default with nil threshold | Off-route ignored when offRouteThreshold=nil | RouteCacheStore | Unit | Route + far user point | Medium |
+| UT-RCS-011 | Single-point route is never considered off-route in validity check | Robust degenerate route handling | Single-point route not invalidated by off-route logic | RouteCacheStore | Unit | Single-point MKPolyline | Medium |
+| UT-RCS-012 | get returns nil for missing key or mismatched parameters | Negative get() path | Unknown device / wrong transportType / direction -> nil | RouteCacheStore | Unit | Varying key params | Medium |
+| UT-RCS-013 | Setting the same key twice overwrites the cached route | Overwrite semantics | Second set on same key replaces route | RouteCacheStore | Unit | Two different routes | Medium |
+| UT-RCS-014 | isValid returns true with very large threshold despite large movement | Validate threshold influence | Very large threshold -> still true despite large movement | RouteCacheStore | Unit | Threshold=1_000_000 | Low |
+| UT-VHV-001 | Known device resolution from visitor history | Validate known-device resolution | Create known device, visitor with same ID resolves name | VisitorHistory / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
+| UT-VHV-002 | Unknown device resolution from visitor history | Validate unknown case | Visitor with unknown ID -> no match | VisitorHistory / KnownDeviceStore | Unit | Shared store | Medium |
+| UT-VHV-003 | Device resolution after adding unknown device | unknown->known transition | First nil, after add() name resolves | VisitorHistory / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
+| UT-VHV-004 | Visitor history sorting by timestamp | Validate sorting logic | 3 visitors sorted descending by TimeStampDate | VisitorHistory | Unit | Fixed time offsets | Medium |
+| UT-VHV-005 | Shortened device ID format | Validate display format | Long ID becomes `prefix...suffix` | VisitorHistory (UI helper) | Unit | Static string ID | Low |
+| UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
-## 4) Ehemals nicht eingebundene, jetzt aktive Testfaelle
+## 4) Previously Unlinked, Now Active Test Cases
 
-Diese Testfaelle lagen zuvor unter `miataru.xcodeproj/*.swift` und sind jetzt in aktive Targets uebernommen (`miataruTests` bzw. `miataruUITests`).
+These cases were previously located under `miataru.xcodeproj/*.swift` and are now linked into active targets (`miataruTests` / `miataruUITests`).
 
-| ID | Test-Case Name | Zweck | Inhalt (kurz) | Komponente | Typ | Aktiv im Testtarget |
+| ID | Test-Case Name | Purpose | Content (short) | Component | Type | Active in Target |
 |---|---|---|---|---|---|---|
-| DT-MH-001 | relativeTimeString returns localized 'now' within threshold | relativeTime now-Schwelle | 2s alt -> lokalisierter now-String | MapHelpers | Unit | Ja |
-| DT-MH-002 | relativeTimeString returns a non-empty string for past times | Relative Zeit fuer Vergangenheitswerte | 120s alt -> nicht leer / nicht Platzhalter | MapHelpers | Unit | Ja |
-| DT-MH-003 | mapSpeedLabelText returns nil for values below default threshold | Geschwindigkeit unter Schwellwert | 2 m/s -> nil | MapHelpers | Unit | Ja |
-| DT-MH-004 | mapSpeedLabelText returns formatted value above threshold | Geschwindigkeit ueber Schwellwert | 5 m/s -> Label mit km/h oder mph | MapHelpers | Unit | Ja |
-| DT-MH-005 | timezoneOffsetString returns nil for same timezone | Zeitzonenoffset Gleichheit | Device-TZ = current TZ -> nil | MapHelpers | Unit | Ja |
-| DT-MH-006 | timezoneOffsetString returns +2 for TZ two hours ahead | Positiver TZ-Offset | +2h gegenueber local -> "+2" | MapHelpers | Unit | Ja |
-| DT-MH-007 | spanForZoomLevel produces reasonable deltas and round-trips with currentZoomLevelFromSpan | Zoom Roundtrip | spanForZoomLevel <-> currentZoomLevelFromSpan | MapHelpers | Unit | Ja |
-| DT-MH-008 | relativeTimeString with future date returns 'now' | Future-Date Behandlung | Zukunftsdatum -> now-String | MapHelpers | Unit | Ja |
-| DT-MH-009 | timezoneOffsetString returns negative offset for behind timezones | Negativer TZ-Offset | -3h gegenueber local -> "-3" | MapHelpers | Unit | Ja |
-| DT-MH-010 | mapSpeedLabelText returns non-nil when min threshold is 0 and positive speed | Konfigurierbarer Schwellwert | minSpeedKmh=0 + positive speed -> Label | MapHelpers | Unit | Ja |
-| DT-MHA-001 | mapSpeedLabelText returns nil for nil or zero/negative speeds | Guard-Pfade mapSpeedLabelText | nil/0/<0 -> nil | MapHelpers | Unit | Ja |
-| DT-MHA-002 | relativeTimeString respects custom timeConsideredNow threshold | Parametrisierte now-Schwelle | 2s alt bei threshold=1 -> nicht now | MapHelpers | Unit | Ja |
-| DT-MKP-001 | split(at:) splits a simple horizontal segment correctly | split Grundfall | Halbierung Segment, Laengenkonsistenz, progress ~0.5 | MKPolyline Extension | Unit | Ja |
-| DT-MKP-002 | split(at:) at distance 0 yields start interpolation and zero done length | split Distanz 0 | done=0, ghost=start | MKPolyline Extension | Unit | Ja |
-| DT-MKP-003 | split(at:) at total length yields end interpolation and zero todo length | split Distanz total | todo=0, ghost=end | MKPolyline Extension | Unit | Ja |
-| DT-MKP-004 | split(at:) works across multiple segments | split Multi-Segment | Split in Segment 2, Progress-Pruefung | MKPolyline Extension | Unit | Ja |
-| DT-MKP-005 | closestDistance(to:) finds zero for a point on the polyline | Distanz auf Linie | Punkt auf Linie -> Abstand ~0 | MKPolyline Extension | Unit | Ja |
-| DT-MKP-006 | closestDistance(to:) returns perpendicular distance when projection falls within segment | Orthogonaler Abstand | Punkt neben Linie -> Abstand ~perpendicular | MKPolyline Extension | Unit | Ja |
-| DT-MKP-007 | closestDistance(to:) works for single-point polyline | Distanz Single-Point | same->0, far->>0 | MKPolyline Extension | Unit | Ja |
-| DT-MKP-008 | remainingDistance(toEndFrom:) decreases as point moves along the polyline | Monotonie Restdistanz | start > mid > end | MKPolyline Extension | Unit | Ja |
-| DT-MKP-009 | remainingDistance(toEndFrom:) equals total when point is before start of polyline | Vor-Start Verhalten | Punkt vor Start -> Rest ~total | MKPolyline Extension | Unit | Ja |
-| DT-MKP-010 | remainingDistance(toEndFrom:) works for single-point polyline | Restdistanz Single-Point | Single-Point -> direkte Distanz | MKPolyline Extension | Unit | Ja |
-| DT-MKP-011 | split(at:) returns nil for degenerate (single-point) polyline | Degenerierter Split | Single-Point split -> nil | MKPolyline Extension | Unit | Ja |
-| DT-UI-001 | testLaunchWithCompletedOnboardingShowsRootTabs | App-Start in stabilem Zustand | Launch mit abgeschlossenem Onboarding, Tab-Root sichtbar, kein Alert | App Bootstrap / Tab Root | UI (XCTest) | Ja |
-| DT-UI-002 | testDevicesAddSheetCanOpenAndCancel | Device-Flow Basisvalidierung | Add-Device-Sheet oeffnen und via Cancel sauber schliessen | Device List / Add Device | UI (XCTest) | Ja |
-| DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Settings-Onboarding-Aktion absichern | Settings-Aktion ist erreichbar/tappbar und fuehrt nicht zu unerwarteten Alerts | Settings / Onboarding | UI (XCTest) | Ja |
-| DT-UI-004 | testQRCodeTabShowsDeviceKeyAction | QR-Tab Kernaktion pruefen | QR-Tab oeffnen, Device-Key-Action vorhanden und tappbar | QR Screen / Device Key | UI (XCTest) | Ja |
+| DT-MH-001 | relativeTimeString returns localized 'now' within threshold | relativeTime now threshold | 2s old -> localized now string | MapHelpers | Unit | Yes |
+| DT-MH-002 | relativeTimeString returns a non-empty string for past times | Relative time for past values | 120s old -> non-empty / non-placeholder | MapHelpers | Unit | Yes |
+| DT-MH-003 | mapSpeedLabelText returns nil for values below default threshold | Speed below threshold | 2 m/s -> nil | MapHelpers | Unit | Yes |
+| DT-MH-004 | mapSpeedLabelText returns formatted value above threshold | Speed above threshold | 5 m/s -> label with km/h or mph | MapHelpers | Unit | Yes |
+| DT-MH-005 | timezoneOffsetString returns nil for same timezone | Equal timezone offset | Device TZ = current TZ -> nil | MapHelpers | Unit | Yes |
+| DT-MH-006 | timezoneOffsetString returns +2 for TZ two hours ahead | Positive timezone offset | +2h vs local -> "+2" | MapHelpers | Unit | Yes |
+| DT-MH-007 | spanForZoomLevel produces reasonable deltas and round-trips with currentZoomLevelFromSpan | Zoom roundtrip | spanForZoomLevel <-> currentZoomLevelFromSpan | MapHelpers | Unit | Yes |
+| DT-MH-008 | relativeTimeString with future date returns 'now' | Future-date handling | Future date -> now string | MapHelpers | Unit | Yes |
+| DT-MH-009 | timezoneOffsetString returns negative offset for behind timezones | Negative timezone offset | -3h vs local -> "-3" | MapHelpers | Unit | Yes |
+| DT-MH-010 | mapSpeedLabelText returns non-nil when min threshold is 0 and positive speed | Configurable threshold | minSpeedKmh=0 + positive speed -> label | MapHelpers | Unit | Yes |
+| DT-MHA-001 | mapSpeedLabelText returns nil for nil or zero/negative speeds | Guard paths in mapSpeedLabelText | nil/0/<0 -> nil | MapHelpers | Unit | Yes |
+| DT-MHA-002 | relativeTimeString respects custom timeConsideredNow threshold | Parameterized now threshold | 2s old with threshold=1 -> not now | MapHelpers | Unit | Yes |
+| DT-MKP-001 | split(at:) splits a simple horizontal segment correctly | Basic split case | Half segment, length consistency, progress ~0.5 | MKPolyline Extension | Unit | Yes |
+| DT-MKP-002 | split(at:) at distance 0 yields start interpolation and zero done length | Split at distance 0 | done=0, ghost=start | MKPolyline Extension | Unit | Yes |
+| DT-MKP-003 | split(at:) at total length yields end interpolation and zero todo length | Split at total distance | todo=0, ghost=end | MKPolyline Extension | Unit | Yes |
+| DT-MKP-004 | split(at:) works across multiple segments | Multi-segment split | Split in segment 2, progress check | MKPolyline Extension | Unit | Yes |
+| DT-MKP-005 | closestDistance(to:) finds zero for a point on the polyline | Distance on line | Point on line -> distance ~0 | MKPolyline Extension | Unit | Yes |
+| DT-MKP-006 | closestDistance(to:) returns perpendicular distance when projection falls within segment | Perpendicular distance | Point next to line -> perpendicular distance | MKPolyline Extension | Unit | Yes |
+| DT-MKP-007 | closestDistance(to:) works for single-point polyline | Single-point distance | same->0, far->>0 | MKPolyline Extension | Unit | Yes |
+| DT-MKP-008 | remainingDistance(toEndFrom:) decreases as point moves along the polyline | Remaining distance monotonicity | start > mid > end | MKPolyline Extension | Unit | Yes |
+| DT-MKP-009 | remainingDistance(toEndFrom:) equals total when point is before start of polyline | Before-start behavior | Point before start -> remaining ~total | MKPolyline Extension | Unit | Yes |
+| DT-MKP-010 | remainingDistance(toEndFrom:) works for single-point polyline | Single-point remaining distance | Single point -> direct distance | MKPolyline Extension | Unit | Yes |
+| DT-MKP-011 | split(at:) returns nil for degenerate (single-point) polyline | Degenerate split | Single-point split -> nil | MKPolyline Extension | Unit | Yes |
+| DT-UI-001 | testLaunchWithCompletedOnboardingShowsRootTabs | Stable launch state | Launch with completed onboarding, tab root visible, no alert | App Bootstrap / Tab Root | UI (XCTest) | Yes |
+| DT-UI-002 | testDevicesAddSheetCanOpenAndCancel | Basic device flow validation | Open add-device sheet and close via cancel | Device List / Add Device | UI (XCTest) | Yes |
+| DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Protect settings onboarding action | Settings action reachable/tappable and no unexpected alerts | Settings / Onboarding | UI (XCTest) | Yes |
+| DT-UI-004 | testQRCodeTabShowsDeviceKeyAction | Validate QR core action | Open QR tab, device key action available and tappable | QR Screen / Device Key | UI (XCTest) | Yes |
 
-## 5) Screenshot-Testbestand (`miataruScreenshotUITests`)
+## 5) Screenshot Test Inventory (`miataruScreenshotUITests`)
 
-Diese Tests sind bewusst in ein eigenes, explizit zu triggerndes Schema ausgelagert:
+These tests are intentionally isolated in a dedicated, explicitly triggered scheme:
 
-- Shared Scheme: `miataru-Screenshots`
-- Testplan: `Screenshots.xctestplan`
-- Skript: `miataru/scripts/test-screenshots.sh`
+- Shared scheme: `miataru-Screenshots`
+- Test plan: `Screenshots.xctestplan`
+- Script: `miataru/scripts/test-screenshots.sh`
+- Language/locale enforcement: the script and UI test launch explicitly set Apple language/locale so captures follow the selected `--languages` values independently from simulator default language.
 
-Aktuelle Szenarien (maximal 10 PNGs pro Sprache/Geraet):
+Current scenarios (maximum 10 PNGs per language/device):
 
-| ID | Test-Case Name | Zweck | Inhalt (kurz) | Typ |
+| ID | Test-Case Name | Purpose | Content (short) | Type |
 |---|---|---|---|---|
-| ST-001 | test_01_root_devices | Root-Start Devices | Erfasst den Devices-Startzustand (iPhone/iPad) | UI Screenshot |
-| ST-002 | test_02_root_qr | Root-Start QR | Erfasst den QR-Tab im stabilen Startzustand | UI Screenshot |
-| ST-003 | test_03_root_settings | Root-Start Settings | Erfasst den Settings-Tab im stabilen Startzustand | UI Screenshot |
-| ST-004 | test_04_devices_add_sheet | Add-Device Dialog | Oeffnet Add-Device Sheet und nimmt Screenshot auf | UI Screenshot |
-| ST-005 | test_05_settings_show_onboarding_action | Settings-Aktion sichtbar | Navigiert/scrollt zur Onboarding-Aktion in Settings | UI Screenshot |
-| ST-006 | test_06_onboarding_start | Onboarding Einstieg | Startet App im Onboarding-Modus und erfasst Einstieg | UI Screenshot |
-| ST-007 | test_07_onboarding_pager | Onboarding Pager | Erfasst den Pager-Zustand im Onboarding | UI Screenshot |
-| ST-008 | test_08_qr_device_key_action | QR Aktion | Erfasst QR-Zustand mit Device-Key Aktion | UI Screenshot |
-| ST-009 | test_09_ipad_groups_tab_or_skip | iPad Groups | iPad-spezifischer Gruppen-Tab oder sauberer Skip | UI Screenshot |
-| ST-010 | test_10_settings_navigation_container | Settings Container | Erfasst Settings-Navigationszustand oder sauberer Skip | UI Screenshot |
+| ST-001 | test_01_root_devices | Root devices start | Captures devices start state (iPhone/iPad) | UI Screenshot |
+| ST-002 | test_02_root_qr | Root QR start | Captures QR tab in stable start state | UI Screenshot |
+| ST-003 | test_03_root_settings | Root settings start | Captures settings tab in stable start state | UI Screenshot |
+| ST-004 | test_04_devices_add_sheet | Add-device dialog | Opens add-device sheet and captures screenshot | UI Screenshot |
+| ST-005 | test_05_settings_show_onboarding_action | Settings action visible | Navigates/scrolls to onboarding action in settings | UI Screenshot |
+| ST-006 | test_06_onboarding_start | Onboarding entry | Starts app in onboarding mode and captures entry state | UI Screenshot |
+| ST-007 | test_07_onboarding_pager | Onboarding pager | Captures pager state in onboarding | UI Screenshot |
+| ST-008 | test_08_qr_device_key_action | QR action | Captures QR state with device-key action | UI Screenshot |
+| ST-009 | test_09_ipad_groups_tab_or_skip | iPad groups | iPad-specific groups tab or clean skip | UI Screenshot |
+| ST-010 | test_10_settings_navigation_container | Settings container | Captures settings navigation state or clean skip | UI Screenshot |
 
-## 6) Third-Party Testbestand (`miataru/Libraries`)
+## 6) Third-Party Test Inventory (`miataru/Libraries`)
 
-Diese Tests stammen aus eingebetteten Bibliotheken und sollten fuer App-Gap-Analysen separat betrachtet werden:
+These tests come from embedded libraries and should be evaluated separately for app-level gap analysis:
 
-- `QRCode-main`: 155 Testfunktionen
-- `SwiftImageReadWrite`: 12 Testfunktionen
-- `NavigationOverlayKit-master`: 4 Testfunktionen
-- `swift-qrcode-generator`: 1 Testfunktion
+- `QRCode-main`: 155 test functions
+- `SwiftImageReadWrite`: 12 test functions
+- `NavigationOverlayKit-master`: 4 test functions
+- `swift-qrcode-generator`: 1 test function
 
-## 7) Katalog-Metadaten fuer den naechsten Gap-Schritt
+## 7) Catalog Metadata for Next Gap Step
 
-Fuer die Lueckenanalyse sind in diesem Katalog bereits die wichtigsten Vergleichsdimensionen enthalten:
+For gap analysis, this catalog already includes key comparison dimensions:
 
-- Testtyp (`Unit`/`UI`)
-- Aktivierungsstatus im Target (`ja/nein`)
-- Komponentenzuordnung (Policy, Cache, Geometry, UI-Helfer)
-- Randfallabdeckung (Boundary, nil, Single-Point, Schwellwerte)
-- Abhaengigkeiten (`Shared` Stores, FakeRoute/MKRoute-Shim, Zeitsimulation)
+- Test type (`Unit` / `UI`)
+- Activation status in target (`yes/no`)
+- Component mapping (policy, cache, geometry, UI helper)
+- Edge-case coverage (boundary, nil, single-point, thresholds)
+- Dependencies (`Shared` stores, FakeRoute/MKRoute shim, time simulation)
 
-Praktische Ausgangslage fuer den naechsten Schritt:
+Practical baseline for the next step:
 
-- Starke Abdeckung bei `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Teilweise nur Logik-nahe Tests ohne Integration (UI-Target ist aktiv und um deterministische Kernfluesse erweitert).
-- Die vormals ausgelagerten Map-/UI-Tests sind aktiv eingebunden; naechster Schwerpunkt bleibt Integration/E2E fuer Navigation und Standortpipeline.
+- Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
+- Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows).
+- Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
 
-## 8) Gap-Matrix Referenz
+## 8) Gap Matrix Reference
 
-Die priorisierte Lueckenanalyse und Bereichsbewertung liegt in:
+Prioritized gap analysis and area scoring is maintained in:
 
 - `documentation/test-gap-matrix.md`
 
-Pflegehinweis:
+Maintenance note:
 
-- Bei jeder Testaenderung muessen **Test-Katalog** und **Gap-Matrix** gemeinsam aktualisiert werden.
+- On every test change, **Test Catalog** and **Gap Matrix** must be updated together.
