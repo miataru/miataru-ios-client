@@ -280,10 +280,11 @@ resolve_selected_tests() {
     selected_inputs+=("$SCREENSHOT_TESTS_CSV")
   fi
 
-  for input in "${selected_inputs[@]}"; do
+  # Keep loops nounset-safe across Bash variants when the array is empty.
+  for input in "${selected_inputs[@]-}"; do
     IFS=',' read -r -a parts <<< "$input"
     local selector_raw
-    for selector_raw in "${parts[@]}"; do
+    for selector_raw in "${parts[@]-}"; do
       selector="$(trim_whitespace "$selector_raw")"
       if [[ -z "$selector" ]]; then
         continue
@@ -308,7 +309,7 @@ resolve_selected_languages() {
 
   for input in "${selected_language_inputs[@]-}"; do
     IFS=',' read -r -a parts <<< "$input"
-    for language_raw in "${parts[@]}"; do
+    for language_raw in "${parts[@]-}"; do
       language="$(trim_whitespace "$language_raw")"
       if [[ -z "$language" ]]; then
         continue
@@ -336,7 +337,7 @@ resolve_selected_devices() {
 
   for input in "${selected_device_inputs[@]-}"; do
     IFS=',' read -r -a parts <<< "$input"
-    for selector_raw in "${parts[@]}"; do
+    for selector_raw in "${parts[@]-}"; do
       selector="$(trim_whitespace "$selector_raw")"
       if [[ -z "$selector" ]]; then
         continue

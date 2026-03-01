@@ -1,4 +1,5 @@
 version 3.1.2
+- Fixed `scripts/test-screenshots.sh` selector parsing for `set -u` shells by making empty-array loops nounset-safe (`"${array[@]-}"`), preventing crashes like `selected_inputs[@]: unbound variable` when no `--test` selectors are passed.
 - Repaired test build/scheme wiring so both `miataruTests` and `miataruUITests` are enabled and consistently runnable from CLI and Xcode.
 - Stabilized UI-test integration by hardening launch behavior and test isolation for tab/navigation-driven flows.
 - Migrated map/helper test files from `miataru.xcodeproj` root into active test target folders (`miataruTests` / `miataruUITests`) and updated project synchronization.
