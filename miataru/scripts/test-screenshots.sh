@@ -103,6 +103,53 @@ sanitize_slug() {
   printf '%s' "$value"
 }
 
+strip_xcresult_attachment_suffix() {
+  local value="$1"
+  # xcresult may append "_<repetition>_<UUID>" to suggested names.
+  printf '%s' "$value" | sed -E 's/_[0-9]+_[0-9A-Fa-f-]{36}(\.[[:alnum:]]+)$/\1/'
+}
+
+method_name_from_test_identifier() {
+  local test_identifier="$1"
+  local method="${test_identifier##*/}"
+  method="${method%%(*}"
+  printf '%s' "$method"
+}
+
+sanitize_filename_preserving_extension() {
+  local filename="$1"
+  local extension=""
+  local stem="$filename"
+  if [[ "$filename" == *.* ]]; then
+    extension=".${filename##*.}"
+    stem="${filename%.*}"
+  fi
+  stem="$(sanitize_slug "$stem")"
+  if [[ -z "$stem" ]]; then
+    stem="screenshot"
+  fi
+  printf '%s%s' "$stem" "$extension"
+}
+
+build_screenshot_filename_from_attachment() {
+  local suggested_name="$1"
+  local test_identifier="$2"
+
+  local cleaned_name
+  cleaned_name="$(strip_xcresult_attachment_suffix "$suggested_name")"
+  if [[ -z "$cleaned_name" || "$cleaned_name" == "null" ]]; then
+    cleaned_name="screenshot.png"
+  fi
+
+  local method_name
+  method_name="$(method_name_from_test_identifier "$test_identifier")"
+  if [[ -n "$method_name" ]]; then
+    cleaned_name="$(sanitize_slug "$method_name")__$cleaned_name"
+  fi
+
+  sanitize_filename_preserving_extension "$cleaned_name"
+}
+
 list_available_tests() {
   printf "%-3s %-24s %-34s %s\n" "Nr" "Scenario ID" "Testmethode" "Beschreibung"
   printf "%-3s %-24s %-34s %s\n" "---" "------------------------" "----------------------------------" "------------------------------"
@@ -576,12 +623,58 @@ EOF
     --output-path "$export_dir"
 
   local copied=0
-  while IFS= read -r -d '' png_path; do
-    local filename
-    filename="$(basename "$png_path")"
-    cp "$png_path" "$target_dir/$filename"
-    copied=$((copied + 1))
-  done < <(find "$export_dir" -type f -name '*.png' -print0 | sort -z)
+  local export_manifest
+  export_manifest="$export_dir/manifest.json"
+  if [[ -f "$export_manifest" ]] && command -v jq >/dev/null 2>&1; then
+    local exported_file suggested_name test_identifier source_path destination_file destination_path unique_index stem extension
+    while IFS=$'\t' read -r exported_file suggested_name test_identifier; do
+      [[ -z "$exported_file" ]] && continue
+      case "$exported_file" in
+        *.png|*.PNG) ;;
+        *) continue ;;
+      esac
+
+      source_path="$export_dir/$exported_file"
+      if [[ ! -f "$source_path" ]]; then
+        source_path="$(find "$export_dir" -type f -name "$exported_file" -print -quit)"
+      fi
+      if [[ -z "$source_path" || ! -f "$source_path" ]]; then
+        echo "Warning: exported attachment file not found: $exported_file" >&2
+        continue
+      fi
+
+      if [[ -z "$suggested_name" || "$suggested_name" == "null" ]]; then
+        suggested_name="$exported_file"
+      fi
+      destination_file="$(build_screenshot_filename_from_attachment "$suggested_name" "$test_identifier")"
+      destination_path="$target_dir/$destination_file"
+      unique_index=2
+      while [[ -e "$destination_path" ]]; do
+        if [[ "$destination_file" == *.* ]]; then
+          stem="${destination_file%.*}"
+          extension=".${destination_file##*.}"
+        else
+          stem="$destination_file"
+          extension=""
+        fi
+        destination_path="$target_dir/${stem}-${unique_index}${extension}"
+        unique_index=$((unique_index + 1))
+      done
+
+      cp "$source_path" "$destination_path"
+      copied=$((copied + 1))
+    done < <(jq -r '.[] | .testIdentifier as $test_id | .attachments[] | [.exportedFileName, .suggestedHumanReadableName, $test_id] | @tsv' "$export_manifest")
+  else
+    if [[ -f "$export_manifest" ]]; then
+      echo "Warning: jq not found, falling back to exported attachment GUID names." >&2
+    fi
+    while IFS= read -r -d '' png_path; do
+      local filename
+      filename="$(basename "$png_path")"
+      cp "$png_path" "$target_dir/$filename"
+      copied=$((copied + 1))
+    done < <(find "$export_dir" -type f -name '*.png' -print0 | sort -z)
+  fi
 
   echo "Exported $copied PNG attachments to $target_dir" >&2
 
