@@ -140,8 +140,8 @@ struct iPhone_DeviceNavigationView: View {
     private let navigationSpeedZoomThresholdKmh: CLLocationSpeed = 20
     private let navigationMediumSpeedMinCameraDistance: CLLocationDistance = 600
     private let navigationHighSpeedMinCameraDistance: CLLocationDistance = 900
-    private let navigationLookAheadMinDistance: CLLocationDistance = 70
-    private let navigationLookAheadMaxDistance: CLLocationDistance = 360
+    private let navigationLookAheadMinDistance: CLLocationDistance = 50
+    private let navigationLookAheadMaxDistance: CLLocationDistance = 320
     private let mutualNavigationOnSoundName = "confirm"
     private let mutualNavigationOffSoundName = "cancel"
     private let navigationLeftSoundName = "nav_left"
@@ -1519,11 +1519,22 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func currentFollowHeading() -> CLLocationDirection {
-        if isNavigationMode, let heading = locationManager.userHeading {
-            return heading
+        if isNavigationMode {
+            if locationManager.isHeadingValid, let heading = locationManager.userHeading {
+                return heading
+            }
+            if let course = locationManager.currentLocation?.course,
+               let speed = locationManager.currentLocation?.speed,
+               course >= 0,
+               speed >= 1.0 {
+                return course
+            }
         }
         if let course = locationManager.currentLocation?.course, course >= 0 {
             return course
+        }
+        if locationManager.isHeadingValid, let heading = locationManager.userHeading {
+            return heading
         }
         return currentMapCamera?.heading ?? 0
     }
@@ -1552,16 +1563,26 @@ struct iPhone_DeviceNavigationView: View {
         speedKmh: CLLocationSpeed?
     ) -> CLLocationCoordinate2D {
         guard isNavigationMode || isFollowDeviceHeadingMode else { return user }
-        let baseLookAhead = cameraDistance * 0.28
+        let hasReliableHeading = locationManager.isHeadingValid
+            || ((locationManager.currentLocation?.course ?? -1) >= 0
+                && (locationManager.currentLocation?.speed ?? -1) >= 1.0)
+        let baseLookAheadRatio: CLLocationDistance = hasReliableHeading ? 0.2 : 0.12
+        let baseLookAhead = cameraDistance * baseLookAheadRatio
         let speedBoost: CLLocationDistance
         if let speedKmh, speedKmh >= navigationSpeedZoomThresholdKmh {
             speedBoost = min(180, (speedKmh - navigationSpeedZoomThresholdKmh) * 6)
         } else {
             speedBoost = 0
         }
+        let effectiveMinLookAhead = hasReliableHeading
+            ? navigationLookAheadMinDistance
+            : max(20, navigationLookAheadMinDistance * 0.5)
+        let effectiveMaxLookAhead = hasReliableHeading
+            ? navigationLookAheadMaxDistance
+            : navigationLookAheadMaxDistance * 0.6
         let lookAhead = max(
-            navigationLookAheadMinDistance,
-            min(baseLookAhead + speedBoost, navigationLookAheadMaxDistance)
+            effectiveMinLookAhead,
+            min(baseLookAhead + speedBoost, effectiveMaxLookAhead)
         )
         return coordinate(from: user, heading: heading, distanceMeters: lookAhead)
     }

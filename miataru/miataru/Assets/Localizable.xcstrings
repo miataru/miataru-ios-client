@@ -5604,70 +5604,6 @@
         }
       }
     },
-    "prevent_screen_rotation" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forhindr skærmrotation"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildschirmrotation verhindern"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prevent screen rotation"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Evitar rotación de pantalla"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estä näytön kierto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empêcher la rotation de l’écran"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Impedisci rotazione schermo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画面の回転を防止"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schermrotatie voorkomen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "防止屏幕旋转"
-          }
-        }
-      }
-    },
     "debug_marker_device_alt_name" : {
       "comment" : "Alternate sample device name used in the marker debug view.",
       "localizations" : {
@@ -10661,71 +10597,6 @@
         }
       }
     },
-    "explanation_prevent_screen_rotation" : {
-      "comment" : "Explanation for prevent screen rotation toggle",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hvis aktiveret låser appen den aktuelle skærmretning og roterer ikke ved drejning af enheden."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn aktiviert, behält die App die aktuelle Bildschirmausrichtung bei und rotiert nicht beim Drehen des Geräts."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "If enabled, the app keeps the current screen orientation and does not rotate when the device is turned."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si está activado, la app mantiene la orientación actual de la pantalla y no rota al girar el dispositivo."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kun käytössä, sovellus säilyttää nykyisen näytön suunnan eikä kierry, vaikka laitetta käännetään."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si activé, l’app conserve l’orientation actuelle de l’écran et ne pivote pas lorsque l’appareil est tourné."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se abilitato, l'app mantiene l'orientamento attuale dello schermo e non ruota quando il dispositivo viene girato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効にすると、アプリは現在の画面向きを維持し、端末を回転しても画面は回転しません。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indien ingeschakeld behoudt de app de huidige schermoriëntatie en draait niet mee wanneer het apparaat wordt gedraaid."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启用后，应用将保持当前屏幕方向，即使旋转设备也不会旋转界面。"
-          }
-        }
-      }
-    },
     "explanation_indicate_location_accuracy" : {
       "comment" : "Explanation for indicate location accuracy toggle",
       "localizations" : {
@@ -11177,6 +11048,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置在地图之外从服务器更新设备数据的频率。"
+          }
+        }
+      }
+    },
+    "explanation_prevent_screen_rotation" : {
+      "comment" : "Explanation for prevent screen rotation toggle",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvis aktiveret låser appen den aktuelle skærmretning og roterer ikke ved drejning af enheden."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, behält die App die aktuelle Bildschirmausrichtung bei und rotiert nicht beim Drehen des Geräts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If enabled, the app keeps the current screen orientation and does not rotate when the device is turned."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si está activado, la app mantiene la orientación actual de la pantalla y no rota al girar el dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kun käytössä, sovellus säilyttää nykyisen näytön suunnan eikä kierry, vaikka laitetta käännetään."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si activé, l’app conserve l’orientation actuelle de l’écran et ne pivote pas lorsque l’appareil est tourné."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se abilitato, l'app mantiene l'orientamento attuale dello schermo e non ruota quando il dispositivo viene girato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、アプリは現在の画面向きを維持し、端末を回転しても画面は回転しません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indien ingeschakeld behoudt de app de huidige schermoriëntatie en draait niet mee wanneer het apparaat wordt gedraaid."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用后，应用将保持当前屏幕方向，即使旋转设备也不会旋转界面。"
           }
         }
       }
@@ -17074,7 +17010,7 @@
       }
     },
     "navigation_arrival_prefix" : {
-      "comment" : "Prefix shown before arrival clock time in route info (for example, 'ETA: 14:30')",
+      "comment" : "Prefix for arrival clock time in the bottom navigation accessory",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -18621,6 +18557,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请输入有效的 https 服务器 URL。"
+          }
+        }
+      }
+    },
+    "prevent_screen_rotation" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forhindr skærmrotation"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildschirmrotation verhindern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prevent screen rotation"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evitar rotación de pantalla"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estä näytön kierto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empêcher la rotation de l’écran"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impedisci rotazione schermo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画面の回転を防止"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schermrotatie voorkomen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "防止屏幕旋转"
           }
         }
       }
