@@ -55,7 +55,7 @@ struct BottomAccessoryModifier: ViewModifier {
         HStack(spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
-                let baseText = "\(routeInfoState.distanceText) • \(routeInfoState.etaText)"
+                let baseText = routeSummaryText()
                 let mutualSuffix = routeInfoState.isMutualNavigation ? " - \(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other"))" : ""
                 Text(baseText + mutualSuffix)
                     .font(.system(size: 14, weight: .regular))
@@ -84,6 +84,21 @@ struct BottomAccessoryModifier: ViewModifier {
         .padding(.vertical, 8)
         .foregroundColor(.primary)
         .id(colorScheme)
+    }
+
+    private func routeSummaryText() -> String {
+        var segments: [String] = []
+        if !routeInfoState.distanceText.isEmpty {
+            segments.append(routeInfoState.distanceText)
+        }
+        if !routeInfoState.etaText.isEmpty {
+            segments.append(routeInfoState.etaText)
+        }
+        if !routeInfoState.arrivalTimeText.isEmpty {
+            let arrivalPrefix = NSLocalizedString("navigation_arrival_prefix", comment: "Prefix for arrival clock time in the bottom navigation accessory")
+            segments.append("\(arrivalPrefix): \(routeInfoState.arrivalTimeText)")
+        }
+        return segments.joined(separator: " • ")
     }
 
     private func strokeOverlay(cornerRadius: CGFloat) -> some View {
@@ -118,5 +133,3 @@ extension View {
         modifier(BottomAccessoryModifier(onAccessoryTap: onTap))
     }
 }
-
-

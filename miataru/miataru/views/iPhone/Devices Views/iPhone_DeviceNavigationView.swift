@@ -39,6 +39,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
     @State private var distanceText: String?
+    @State private var arrivalTimeText: String?
     @State private var currentRegion: MKCoordinateRegion?
     @State private var hasSetInitialRegion = false
     @State private var userHasInteractedWithMap = false
@@ -151,6 +152,12 @@ struct iPhone_DeviceNavigationView: View {
     private let navigationRightSystemSoundID: SystemSoundID = 1104   // Tock.caf – KeyPressed
     private let leftNavigationHapticInterval: TimeInterval = 0.2
     private let rightNavigationHapticInterval: TimeInterval = 0.12
+    private static let arrivalTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
 
     var body: some View {
         VStack {
@@ -198,6 +205,7 @@ struct iPhone_DeviceNavigationView: View {
             setRouteForRendering(nil)
             travelTime = nil
             distanceText = nil
+            arrivalTimeText = nil
             currentRegion = nil
             hasSetInitialRegion = false
             userHasInteractedWithMap = false
@@ -458,6 +466,7 @@ struct iPhone_DeviceNavigationView: View {
                 setRouteForRendering(nil)
                 travelTime = nil
                 distanceText = nil
+                arrivalTimeText = nil
                 navigationOverlayViewModel = nil
                 navigationOverlayCancellables.removeAll()
                 lastOverlayStepIndex = nil
@@ -470,6 +479,9 @@ struct iPhone_DeviceNavigationView: View {
                 updateBottomAccessory()
             }
             .onChange(of: distanceText) { _, _ in
+                updateBottomAccessory()
+            }
+            .onChange(of: arrivalTimeText) { _, _ in
                 updateBottomAccessory()
             }
             .onChange(of: isNavigationMode) { _, newValue in
@@ -900,6 +912,7 @@ struct iPhone_DeviceNavigationView: View {
                         setRouteForRendering(nil)
                         travelTime = nil
                         distanceText = nil
+                        arrivalTimeText = nil
                         lastRouteTransportType = nil
                         refreshNavigationOverlayForCurrentRoute()
                     }
@@ -910,6 +923,7 @@ struct iPhone_DeviceNavigationView: View {
                     setRouteForRendering(nil)
                     travelTime = nil
                     distanceText = nil
+                    arrivalTimeText = nil
                     lastRouteTransportType = nil
                     refreshNavigationOverlayForCurrentRoute()
                 }
@@ -1710,6 +1724,7 @@ struct iPhone_DeviceNavigationView: View {
         setRouteForRendering(nil)
         travelTime = nil
         distanceText = nil
+        arrivalTimeText = nil
         navigationOverlayViewModel = nil
         lastOverlayStepIndex = nil
         routeInfoState.hide()
@@ -1745,12 +1760,16 @@ struct iPhone_DeviceNavigationView: View {
 
         let newTravelTime = formattedDuration(remainingSeconds)
         let newDistanceText = formattedDistance(clampedRemainingMeters)
+        let newArrivalTimeText = formattedArrivalTime(after: remainingSeconds)
 
         if travelTime != newTravelTime {
             travelTime = newTravelTime
         }
         if distanceText != newDistanceText {
             distanceText = newDistanceText
+        }
+        if arrivalTimeText != newArrivalTimeText {
+            arrivalTimeText = newArrivalTimeText
         }
     }
 
@@ -1762,6 +1781,7 @@ struct iPhone_DeviceNavigationView: View {
     private func applyStaticRouteSummary(for route: MKRoute) {
         travelTime = formattedDuration(route.expectedTravelTime)
         distanceText = formattedDistance(route.distance)
+        arrivalTimeText = formattedArrivalTime(after: route.expectedTravelTime)
     }
 
     private func formattedDuration(_ seconds: TimeInterval?) -> String? {
@@ -1772,6 +1792,13 @@ struct iPhone_DeviceNavigationView: View {
         formatter.allowedUnits = clampedSeconds >= 3600 ? [.hour, .minute] : [.minute, .second]
         formatter.zeroFormattingBehavior = [.dropLeading]
         return formatter.string(from: clampedSeconds)
+    }
+
+    private func formattedArrivalTime(after seconds: TimeInterval?) -> String? {
+        guard let seconds else { return nil }
+        let clampedSeconds = max(0, seconds)
+        let arrivalDate = Date().addingTimeInterval(clampedSeconds)
+        return Self.arrivalTimeFormatter.string(from: arrivalDate)
     }
 }
 
@@ -2053,6 +2080,7 @@ extension iPhone_DeviceNavigationView {
             routeInfoState.update(
                 etaText: travelTime,
                 distanceText: distanceText,
+                arrivalTimeText: arrivalTimeText,
                 transportSymbolName: transportSymbolName(),
                 visible: visible,
                 isMutualNavigation: mutualNavigationDetector.isMutualNavigation

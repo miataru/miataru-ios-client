@@ -16,6 +16,7 @@ final class RouteInfoState: ObservableObject {
     @Published var isVisible: Bool = false
     @Published var etaText: String = ""
     @Published var distanceText: String = ""
+    @Published var arrivalTimeText: String = ""
     @Published var transportSymbolName: String = "car"
     @Published var isMutualNavigation: Bool = false
     @Published var isChromeVisible: Bool = true
@@ -23,19 +24,27 @@ final class RouteInfoState: ObservableObject {
     // Optional handler to cancel the current navigation/session
     var onCancel: (() -> Void)?
 
-    func update(etaText: String?, distanceText: String?, transportSymbolName: String?, visible: Bool, isMutualNavigation: Bool = false) {
+    func update(
+        etaText: String?,
+        distanceText: String?,
+        arrivalTimeText: String?,
+        transportSymbolName: String?,
+        visible: Bool,
+        isMutualNavigation: Bool = false
+    ) {
         self.etaText = etaText ?? ""
         self.distanceText = distanceText ?? ""
+        self.arrivalTimeText = arrivalTimeText ?? ""
         self.transportSymbolName = transportSymbolName ?? self.transportSymbolName
         self.isMutualNavigation = isMutualNavigation
-        self.isVisible = visible && ((etaText?.isEmpty == false) || (distanceText?.isEmpty == false))
+        self.isVisible = visible && ((etaText?.isEmpty == false) || (distanceText?.isEmpty == false) || (arrivalTimeText?.isEmpty == false))
     }
 
     func hide() {
         isVisible = false
         etaText = ""
         distanceText = ""
+        arrivalTimeText = ""
     }
 }
-
 
