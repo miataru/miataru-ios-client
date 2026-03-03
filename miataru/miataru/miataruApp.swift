@@ -113,7 +113,6 @@ fileprivate final class RotationLockController {
             }
         }
 
-        UIViewController.attemptRotationToDeviceOrientation()
     }
 
     private func currentInterfaceOrientationMask() -> UIInterfaceOrientationMask {
