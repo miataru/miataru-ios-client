@@ -20,6 +20,9 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Published Properties
     @Published var currentLocation: CLLocation?
+    /// Most recent CLLocation update without sensitivity filtering.
+    /// Use for UI that needs immediate local-device movement feedback.
+    @Published private(set) var latestRawLocation: CLLocation?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var lastUpdateTime: Date?
     @Published var isTracking: Bool = false
@@ -595,6 +598,7 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         Task { @MainActor in
             guard let location = locations.last else { return }
+            self.latestRawLocation = location
             let mode = UIApplication.shared.applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
             // Record update arrival whenever app is not active (background or inactive)
             if UIApplication.shared.applicationState != .active {
@@ -627,16 +631,16 @@ extension LocationManager: CLLocationManagerDelegate {
                 shouldAcceptUpdate = true
                 debugLog("[LocationManager] First location update accepted.")
             }
-            
-            guard shouldAcceptUpdate else { return }
-            self.currentLocation = location
-            self.lastUpdateTime = Date()
+
             if (userHeading == nil || !isHeadingValid),
                location.course >= 0,
                location.speed >= headingMinSpeedThreshold {
                 userHeading = smoothHeading(normalizedHeading(location.course))
-                isHeadingValid = true
             }
+            
+            guard shouldAcceptUpdate else { return }
+            self.currentLocation = location
+            self.lastUpdateTime = Date()
             // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
             let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : nil
             let speedValue: Double? = (location.speed >= 0) ? location.speed : nil
@@ -665,13 +669,22 @@ extension LocationManager: CLLocationManagerDelegate {
                 return
             }
             isHeadingValid = accuracy <= headingAccuracyThreshold
-            let rawHeading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
-            let blended = blendedHeading(
-                compass: rawHeading,
-                course: currentLocation?.course,
-                speed: currentLocation?.speed
-            )
-            userHeading = smoothHeading(blended)
+            let headingReferenceLocation = latestRawLocation ?? currentLocation
+            if isHeadingValid {
+                let rawHeading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+                let blended = blendedHeading(
+                    compass: rawHeading,
+                    course: headingReferenceLocation?.course,
+                    speed: headingReferenceLocation?.speed
+                )
+                userHeading = smoothHeading(blended)
+            } else if let course = headingReferenceLocation?.course,
+                      let speed = headingReferenceLocation?.speed,
+                      course >= 0,
+                      speed >= headingMinSpeedThreshold {
+                // Fallback to smoothed course when compass quality is poor.
+                userHeading = smoothHeading(normalizedHeading(course))
+            }
         }
     }
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

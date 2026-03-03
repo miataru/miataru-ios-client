@@ -263,7 +263,7 @@ struct iPhone_DeviceNavigationView: View {
                     }
                 } else if settings.showRouteProgress {
                     let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                    let userSpeed = locationManager.currentLocation?.speed
+                    let userSpeed = effectiveUserLocation?.speed
                     // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
                     let routeStartTimestamp = isRouteFromDeviceToUser ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
                     let etaHasPassed: Bool = {
@@ -406,6 +406,13 @@ struct iPhone_DeviceNavigationView: View {
                 isMutualNavigation = mutualNavigationDetector.isMutualNavigation
             }
             .onReceive(locationManager.$currentLocation) { _ in
+                updateCoordinates()
+                checkAutoStopCondition()
+                updateNavigationOverlayStep()
+                updateLiveNavigationRouteSummary()
+                hasLocationUpdateSinceLastAutoUpdate = true
+            }
+            .onReceive(locationManager.$latestRawLocation) { _ in
                 updateCoordinates()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
@@ -599,8 +606,8 @@ struct iPhone_DeviceNavigationView: View {
         // User heading only when reversed route (user→device) and in focussed navigation.
         if !isRouteFromDeviceToUser && (isNavigationMode || isFollowDeviceHeadingMode) {
             UserHeadingAnnotationView(
-                heading: locationManager.userHeading,
-                isHeadingValid: locationManager.isHeadingValid,
+                heading: currentFollowHeading(),
+                isHeadingValid: hasReliableFollowHeading(),
                 mapHeading: currentMapHeadingDegrees
             )
         } else {
@@ -769,7 +776,7 @@ struct iPhone_DeviceNavigationView: View {
     private func updateCoordinates(recenter: Bool = false) {
         // Update user and device coordinates from current sources (LocationManager + cache)
         // Optionally recenter the map if auto-centering is enabled or explicitly requested
-        if let loc = locationManager.currentLocation {
+        if let loc = effectiveUserLocation {
             let coord = loc.coordinate
             let changed = userCoordinate?.latitude != coord.latitude || userCoordinate?.longitude != coord.longitude
             userCoordinate = coord
@@ -1518,29 +1525,40 @@ struct iPhone_DeviceNavigationView: View {
         shouldPerformInitialNavigationZoom = false
     }
 
+    private var effectiveUserLocation: CLLocation? {
+        locationManager.latestRawLocation ?? locationManager.currentLocation
+    }
+
+    private func hasReliableFollowHeading() -> Bool {
+        locationManager.isHeadingValid
+            || ((effectiveUserLocation?.course ?? -1) >= 0
+                && (effectiveUserLocation?.speed ?? -1) >= 1.0)
+    }
+
     private func currentFollowHeading() -> CLLocationDirection {
+        let followLocation = effectiveUserLocation
         if isNavigationMode {
-            if locationManager.isHeadingValid, let heading = locationManager.userHeading {
+            if let heading = locationManager.userHeading {
                 return heading
             }
-            if let course = locationManager.currentLocation?.course,
-               let speed = locationManager.currentLocation?.speed,
+            if let course = followLocation?.course,
+               let speed = followLocation?.speed,
                course >= 0,
                speed >= 1.0 {
                 return course
             }
         }
-        if let course = locationManager.currentLocation?.course, course >= 0 {
-            return course
-        }
-        if locationManager.isHeadingValid, let heading = locationManager.userHeading {
+        if let heading = locationManager.userHeading {
             return heading
+        }
+        if let course = followLocation?.course, course >= 0 {
+            return course
         }
         return currentMapCamera?.heading ?? 0
     }
 
     private func currentSpeedKmh() -> CLLocationSpeed? {
-        guard let speed = locationManager.currentLocation?.speed, speed >= 0 else { return nil }
+        guard let speed = effectiveUserLocation?.speed, speed >= 0 else { return nil }
         return speed * 3.6
     }
 
@@ -1564,8 +1582,8 @@ struct iPhone_DeviceNavigationView: View {
     ) -> CLLocationCoordinate2D {
         guard isNavigationMode || isFollowDeviceHeadingMode else { return user }
         let hasReliableHeading = locationManager.isHeadingValid
-            || ((locationManager.currentLocation?.course ?? -1) >= 0
-                && (locationManager.currentLocation?.speed ?? -1) >= 1.0)
+            || ((effectiveUserLocation?.course ?? -1) >= 0
+                && (effectiveUserLocation?.speed ?? -1) >= 1.0)
         let baseLookAheadRatio: CLLocationDistance = hasReliableHeading ? 0.2 : 0.12
         let baseLookAhead = cameraDistance * baseLookAheadRatio
         let speedBoost: CLLocationDistance
@@ -1660,7 +1678,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func followCameraDistanceForNextStep() -> CLLocationDistance? {
         guard let route,
-              let location = locationManager.currentLocation,
+              let location = effectiveUserLocation,
               let stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return nil }
         let nextIndex = min(stepIndex + 1, route.steps.count - 1)
         let step = route.steps[nextIndex]
@@ -1770,7 +1788,7 @@ struct iPhone_DeviceNavigationView: View {
     private func updateLiveNavigationRouteSummary() {
         // Keep ETA/distance continuously updated while focused navigation mode is active.
         guard isNavigationMode, !isRouteFromDeviceToUser else { return }
-        guard let route, let currentLocation = locationManager.currentLocation else { return }
+        guard let route, let currentLocation = effectiveUserLocation else { return }
         guard let remainingMeters = route.polyline.remainingDistance(toEndFrom: MKMapPoint(currentLocation.coordinate)) else { return }
 
         let clampedRemainingMeters = max(0, min(remainingMeters, route.distance))
@@ -1994,7 +2012,7 @@ extension iPhone_DeviceNavigationView {
         // the kit's default step (e.g. "Arrive at destination") for a frame when switching route
         let newViewModel = NavigationOverlayViewModel(route: route, unit: navigationOverlayUnit())
         let effectiveStepIndex: Int
-        if let location = locationManager.currentLocation,
+        if let location = effectiveUserLocation,
            let rawStepIndex = closestStepIndex(for: route, to: location.coordinate) {
             // Never show "Arrive at destination" unless user is actually near the destination:
             // if closest step is the last step, check distance to route end; if far, use step 0
@@ -2041,7 +2059,7 @@ extension iPhone_DeviceNavigationView {
     private func updateNavigationOverlayStep() {
         guard let route,
               let navigationOverlayViewModel,
-              let location = locationManager.currentLocation else { return }
+              let location = effectiveUserLocation else { return }
         guard var stepIndex = closestStepIndex(for: route, to: location.coordinate) else { return }
         // Never show "Arrive at destination" unless user is actually near the destination
         let lastIndex = route.steps.count - 1

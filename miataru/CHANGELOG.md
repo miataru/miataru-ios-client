@@ -1,4 +1,8 @@
 version 3.1.2
+- Prioritized local on-device position updates in focused double-tap navigation by introducing an unfiltered raw location stream for immediate camera/overlay updates instead of waiting on sensitivity-filtered location acceptance.
+- Fixed focused-navigation heading arrow update cadence by subscribing the navigation view to raw local location updates, reducing situations where the arrow appeared to follow stale/server-driven movement.
+- Reduced heading-arrow jitter in simulator/low-quality heading scenarios by preferring smoothed heading values and only falling back to smoothed course data when compass accuracy is not reliable.
+- Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 7 to 8.
 - Stabilized focused double-tap navigation camera framing so the own device marker remains visible in the lower screen area at low speed/standstill instead of drifting to or below the bottom edge.
 - Reduced follow-camera look-ahead aggressiveness and made heading fallback logic more defensive in reversed navigation mode to avoid premature off-screen positioning before movement speed increases.
 - Added arrival clock time to the active-navigation route info accessory (`… • <ETA> • <localized prefix>: <time>`), derived from remaining route duration.
