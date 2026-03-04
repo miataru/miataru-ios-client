@@ -61,8 +61,13 @@ actor LocationUpdateOutboxStore {
         self.maxItems = max(1, maxItems)
         self.ttl = max(1, ttl)
         self.nowProvider = nowProvider
-        self.items = loadItems()
-        pruneExpiredEntriesIfNeeded()
+
+        let loadedItems = Self.loadItems(from: self.fileURL, decoder: self.decoder)
+        let prunedItems = Self.prunedItems(loadedItems, now: self.nowProvider(), ttl: self.ttl)
+        self.items = prunedItems
+        if prunedItems.count != loadedItems.count {
+            Self.persist(prunedItems, to: self.fileURL, encoder: self.encoder)
+        }
     }
 
     func enqueue(
@@ -139,6 +144,28 @@ actor LocationUpdateOutboxStore {
     }
 
     private func loadItems() -> [LocationUpdateOutboxItem] {
+        Self.loadItems(from: fileURL, decoder: decoder)
+    }
+
+    private func persist() {
+        Self.persist(items, to: fileURL, encoder: encoder)
+    }
+
+    private static func defaultFileURL() -> URL {
+        let fileManager = FileManager.default
+        let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? fileManager.temporaryDirectory
+        let appContainerName = Bundle.main.bundleIdentifier ?? "miataru"
+        return appSupportDirectory
+            .appendingPathComponent(appContainerName, isDirectory: true)
+            .appendingPathComponent("locationUpdateOutbox.json")
+    }
+
+    private static func prunedItems(_ items: [LocationUpdateOutboxItem], now: Date, ttl: TimeInterval) -> [LocationUpdateOutboxItem] {
+        items.filter { now.timeIntervalSince($0.enqueuedAt) <= ttl }
+    }
+
+    private static func loadItems(from fileURL: URL, decoder: JSONDecoder) -> [LocationUpdateOutboxItem] {
         guard let data = try? Data(contentsOf: fileURL) else {
             return []
         }
@@ -150,7 +177,7 @@ actor LocationUpdateOutboxStore {
         }
     }
 
-    private func persist() {
+    private static func persist(_ items: [LocationUpdateOutboxItem], to fileURL: URL, encoder: JSONEncoder) {
         do {
             let directory = fileURL.deletingLastPathComponent()
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
@@ -159,15 +186,5 @@ actor LocationUpdateOutboxStore {
         } catch {
             debugLog("[LocationUpdateOutboxStore] Failed persisting outbox: \(error)")
         }
-    }
-
-    private static func defaultFileURL() -> URL {
-        let fileManager = FileManager.default
-        let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            ?? fileManager.temporaryDirectory
-        let appContainerName = Bundle.main.bundleIdentifier ?? "miataru"
-        return appSupportDirectory
-            .appendingPathComponent(appContainerName, isDirectory: true)
-            .appendingPathComponent("locationUpdateOutbox.json")
     }
 }
