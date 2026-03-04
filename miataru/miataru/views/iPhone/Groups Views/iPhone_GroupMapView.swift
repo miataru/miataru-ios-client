@@ -698,7 +698,7 @@ struct iPhone_GroupMapView: View {
         do {
             // First attempt: Multi-device call
             APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAPIClient.getLocation(
+            let locations = try await MiataruAppAPI.getLocation(
                 serverURL: url,
                 forDeviceIDs: groupDeviceIDs,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
@@ -741,7 +741,7 @@ struct iPhone_GroupMapView: View {
             for deviceID in groupDeviceIDs {
                 do {
                     APIRequestCounter.shared.record(.getLocation)
-                    let locations = try await MiataruAPIClient.getLocation(
+                    let locations = try await MiataruAppAPI.getLocation(
                         serverURL: url,
                         forDeviceIDs: [deviceID],
                         requestingDeviceID: thisDeviceIDManager.shared.deviceID,

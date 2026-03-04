@@ -89,8 +89,7 @@ class AllowedDeviceListManager {
                 serverURL: serverURL,
                 deviceKey: deviceKey,
                 payload: payload,
-                trigger: .activation,
-                maxRetries: 3
+                trigger: .activation
             )
         }
         
@@ -127,8 +126,7 @@ class AllowedDeviceListManager {
                 serverURL: serverURL,
                 deviceKey: deviceKey,
                 payload: payload,
-                trigger: trigger,
-                maxRetries: 3
+                trigger: trigger
             )
         }
     }
@@ -224,45 +222,26 @@ class AllowedDeviceListManager {
         serverURL: URL,
         deviceKey: String,
         payload: [MiataruAllowedDevice],
-        trigger: SyncTrigger,
-        maxRetries: Int
+        trigger: SyncTrigger
     ) async throws {
-        var lastError: Error?
-        var retryCount = 0
-        
-        while retryCount <= maxRetries {
-            do {
-                _ = try await MiataruAPIClient.setAllowedDeviceList(
-                    serverURL: serverURL,
-                    deviceID: thisDeviceID,
-                    deviceKey: deviceKey,
-                    allowedDevices: payload
-                )
-                
-                debugLog("[AllowedDeviceListManager] Sync successful (trigger: \(trigger.rawValue), retries: \(retryCount))")
-                return // Success
-                
-            } catch {
-                lastError = error
-                retryCount += 1
-                
-                if retryCount <= maxRetries {
-                    // Exponential backoff: 1s, 2s, 4s
-                    let delay = pow(2.0, Double(retryCount - 1))
-                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    debugLog("[AllowedDeviceListManager] Retry \(retryCount)/\(maxRetries) after \(delay)s (trigger: \(trigger.rawValue))")
-                } else {
-                    debugLog("[AllowedDeviceListManager] Sync failed after \(maxRetries) retries (trigger: \(trigger.rawValue)): \(error)")
-                }
-            }
+        do {
+            _ = try await MiataruAppAPI.setAllowedDeviceList(
+                serverURL: serverURL,
+                deviceID: thisDeviceID,
+                deviceKey: deviceKey,
+                allowedDevices: payload
+            )
+
+            debugLog("[AllowedDeviceListManager] Sync successful (trigger: \(trigger.rawValue))")
+        } catch {
+            let retriesUsed = MiataruRetryClassifier.isRetryable(error) ? MiataruRetryPolicy.write.maxRetries : 0
+            debugLog("[AllowedDeviceListManager] Sync failed (trigger: \(trigger.rawValue), retries: \(retriesUsed)): \(error)")
+            throw AllowedDeviceListError.syncFailed(
+                underlying: error,
+                trigger: trigger,
+                retryCount: retriesUsed
+            )
         }
-        
-        // All retries exhausted
-        throw AllowedDeviceListError.syncFailed(
-            underlying: lastError ?? NSError(domain: "AllowedDeviceListManager", code: -1),
-            trigger: trigger,
-            retryCount: retryCount - 1
-        )
     }
 }
 

@@ -1064,7 +1064,7 @@ struct iPhone_DeviceNavigationView: View {
             isLoading = true
             defer { isLoading = false }
             APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAPIClient.getLocation(
+            let locations = try await MiataruAppAPI.getLocation(
                 serverURL: url,
                 forDeviceIDs: [device.DeviceID],
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,

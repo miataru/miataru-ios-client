@@ -478,7 +478,7 @@ struct iPhone_DeviceHistoryMapView: View {
         do {
             debugLog("[DeviceHistoryMapView] Fetching history for device \(device.DeviceID)")
             APIRequestCounter.shared.record(.getLocationHistory)
-            let data = try await MiataruAPIClient.getLocationHistory(
+            let data = try await MiataruAppAPI.getLocationHistory(
                 serverURL: url,
                 forDeviceID: device.DeviceID,
                 requestingDeviceID: requestingDeviceID,

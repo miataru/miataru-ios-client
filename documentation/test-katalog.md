@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-02-27)
+# Test Catalog (as of 2026-03-04)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **74** (Unit: 60, UI: 14)
+- Actively linked app test cases: **85** (Unit: 71, UI: 14)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -70,6 +70,17 @@ Important project observations:
 | UT-VHV-003 | Device resolution after adding unknown device | unknown->known transition | First nil, after add() name resolves | VisitorHistory / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
 | UT-VHV-004 | Visitor history sorting by timestamp | Validate sorting logic | 3 visitors sorted descending by TimeStampDate | VisitorHistory | Unit | Fixed time offsets | Medium |
 | UT-VHV-005 | Shortened device ID format | Validate display format | Long ID becomes `prefix...suffix` | VisitorHistory (UI helper) | Unit | Static string ID | Low |
+| UT-MRE-001 | Retries once for transient network error and succeeds | Validate retry path | first timedOut fails, second succeeds, 1 sleep recorded | MiataruRequestExecutor | Unit | injected sleep + deterministic jitter | High |
+| UT-MRE-002 | Does not retry for non-retryable auth error | Validate non-retry path | `401` serverError throws without retry | MiataruRequestExecutor | Unit | APIError simulation | High |
+| UT-MRE-003 | Classifier marks transient statuses and URL errors as retryable | Validate classification table | 408/429/5xx + transient URLError are retryable; auth/invalid/decoding are not | MiataruRetryClassifier | Unit | APIError + URLError cases | High |
+| UT-MRE-004 | Retries are exhausted and final error is thrown | Validate retry ceiling | transient error repeats and throws after max retry | MiataruRequestExecutor | Unit | APIError simulation | High |
+| UT-OUT-001 | FIFO order and max-cap enforcement | Validate queue semantics | cap overflow drops oldest, keeps order | LocationUpdateOutboxStore | Unit | temp outbox file + deterministic payloads | High |
+| UT-OUT-002 | TTL pruning before enqueue and read | Validate expiry handling | expired entries removed before appending/reading | LocationUpdateOutboxStore | Unit | mutable clock + temp outbox file | High |
+| UT-OUT-003 | Dedupe by Device+Timestamp+Latitude+Longitude | Validate dedupe key behavior | identical payload not enqueued twice | LocationUpdateOutboxStore | Unit | temp outbox file + duplicate payload | High |
+| UT-LDC-001 | Submit queues update after transient failure | Validate submit fallback | transient send failure leads to outbox enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
+| UT-LDC-002 | Flush stops on transient head error and keeps queue order | Validate head-stop semantics | transient head failure increments attempt and stops cycle | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
+| UT-LDC-003 | Flush drops non-retryable head and continues with next item | Validate non-retryable discard behavior | non-retryable head removed, next item processed | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
+| UT-LDC-004 | Submit returns failed for non-retryable error without queueing | Validate immediate failure behavior | non-retryable submit error does not enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases

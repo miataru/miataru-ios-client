@@ -148,10 +148,26 @@ miataru/
   - Verify `MiataruAPIClient.performPostRequest<T: Encodable>` rethrows existing `APIError` values unchanged, so transient request failures are not mislabeled as encoding issues.
   - For map/history fetch UI, log encoding failures via `debugLog` and avoid large red error overlays unless a user-actionable issue exists.
 
-### Network Retry Policy (Guideline)
-- Add retries only for transient failures (`URLError.timedOut`, `networkConnectionLost`, `cannotConnectToHost`, HTTP `408/429/5xx`).
-- Do not retry `encodingError`, `decodingError`, `invalidURL`, or auth/device-key validation failures.
-- Prefer a short exponential backoff with jitter (for example 1-2 retries) and keep `updateLocation` conservative to avoid duplicate history entries.
+### Network Retry Policy (Implemented)
+- Miataru API retries are centralized in app code:
+  - `miataru/Networking/MiataruRetryPolicy.swift`
+  - `miataru/Networking/MiataruRequestExecutor.swift`
+  - `miataru/Networking/MiataruAppAPI.swift`
+- Retryable failures:
+  - transient `URLError` (`timedOut`, `networkConnectionLost`, `notConnectedToInternet`, `cannotConnectToHost`, `cannotFindHost`, `dnsLookupFailed`)
+  - HTTP `408`, `429`, and `5xx`
+- Non-retryable failures:
+  - `invalidURL`, `encodingError`, `decodingError`
+  - auth/ACL failures (`401`, `403`) and other functional `4xx`
+- Profiles:
+  - Reads: `1` retry, `0.8s` backoff, `±25%` jitter
+  - Writes: `1` retry, `1.0s` backoff, `±25%` jitter
+  - `updateLocation`: `1` retry, `1.2s` backoff, `±25%` jitter, then persistent outbox
+- `updateLocation` outbox:
+  - persisted in App Support (`locationUpdateOutbox.json`)
+  - FIFO, cap `500`, TTL `24h`, dedupe by `Device+Timestamp+Latitude+Longitude`
+  - flush triggers: app active, network recovery, periodic timer (`60s`) while pending items exist
+- Widget extension intentionally keeps direct client calls without retries.
 
 ### Debug Commands
 - Enable location simulation in Xcode

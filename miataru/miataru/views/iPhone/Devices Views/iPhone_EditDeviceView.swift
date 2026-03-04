@@ -322,7 +322,7 @@ struct iPhone_EditDeviceView: View {
             throw EditDeviceSloganError.missingDeviceKey
         }
 
-        _ = try await MiataruAPIClient.setDeviceSlogan(
+        _ = try await MiataruAppAPI.setDeviceSlogan(
             serverURL: serverURL,
             deviceID: device.DeviceID,
             deviceKey: deviceKey,

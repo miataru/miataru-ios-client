@@ -46,6 +46,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var foregroundLocationTimer: Timer?
     private var foregroundLocationUpdateTimerTimeframe: Double = 30
     private let networkMonitor = NWPathMonitor()
+    private let locationUpdateDeliveryCoordinator = LocationUpdateDeliveryCoordinator.shared
     @Published private(set) var isNetworkAvailable: Bool = true
     private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
     private var lastSmoothedHeading: Double?
@@ -89,11 +90,22 @@ final class LocationManager: NSObject, ObservableObject {
         observeActivityType()
         networkMonitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
-                self?.isNetworkAvailable = (path.status == .satisfied)
+                guard let self else { return }
+                let networkIsAvailable = (path.status == .satisfied)
+                let didRecover = !self.isNetworkAvailable && networkIsAvailable
+                self.isNetworkAvailable = networkIsAvailable
+                if didRecover {
+                    Task {
+                        await self.locationUpdateDeliveryCoordinator.networkBecameAvailable()
+                    }
+                }
             }
         }
         let queue = DispatchQueue(label: "NetworkMonitor")
         networkMonitor.start(queue: queue)
+        Task {
+            await locationUpdateDeliveryCoordinator.start()
+        }
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
         // Load persisted background update metrics
@@ -136,6 +148,9 @@ final class LocationManager: NSObject, ObservableObject {
         }
         if isTracking {
             startHighAccuracyUpdates()
+        }
+        Task {
+            await locationUpdateDeliveryCoordinator.appDidBecomeActive()
         }
     }
     
@@ -350,11 +365,6 @@ final class LocationManager: NSObject, ObservableObject {
             )
             return
         }
-        guard isNetworkAvailable else {
-            debugLog("No network available, skipping server update.")
-            self.serverUpdateStatus = .failed("No network connection")
-            return
-        }
         guard !settings.miataruServerURL.isEmpty,
               let serverURL = URL(string: settings.miataruServerURL) else {
             self.serverUpdateStatus = .failed("Invalid server configuration")
@@ -367,24 +377,24 @@ final class LocationManager: NSObject, ObservableObject {
         }
         self.serverUpdateStatus = .updating
         Task {
-            do {
-                APIRequestCounter.shared.record(.updateLocation)
-                let success = try await MiataruAPIClient.updateLocation(
-                    serverURL: serverURL,
-                    locationData: payload,
-                    enableHistory: settings.saveLocationHistoryOnServer,
-                    retentionTime: settings.locationDataRetentionTime
-                )
-                if success {
-                    self.serverUpdateStatus = .success
-                    let updateDate = Date()
-                    self.lastServerUpdate = updateDate
-                    self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
-                    NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
-                } else {
-                    self.serverUpdateStatus = .failed("Server response was not successful")
-                }
-            } catch {
+            let result = await locationUpdateDeliveryCoordinator.submit(
+                serverURL: serverURL,
+                payload: payload,
+                enableHistory: settings.saveLocationHistoryOnServer,
+                retentionTime: settings.locationDataRetentionTime
+            )
+
+            switch result {
+            case .sent:
+                self.serverUpdateStatus = .success
+                let updateDate = Date()
+                self.lastServerUpdate = updateDate
+                self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
+                NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
+            case .queued:
+                debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
+                self.serverUpdateStatus = .idle
+            case .failed(let error):
                 if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                     settings.deviceKeyAuthBlocked = true
                     settings.deviceKeyAuthBlockedKey = settings.deviceKey

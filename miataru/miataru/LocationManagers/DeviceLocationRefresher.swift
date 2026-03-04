@@ -81,7 +81,7 @@ final class DeviceLocationRefresher {
         do {
             debugLog("[DeviceLocationRefresher] refreshAllDeviceLocations")
             APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAPIClient.getLocation(
+            let locations = try await MiataruAppAPI.getLocation(
                 serverURL: url,
                 forDeviceIDs: deviceIDs,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
@@ -140,7 +140,7 @@ final class DeviceLocationRefresher {
             // Request a reasonable amount of visitor history entries (enough to cover 90 seconds)
             // Assuming updates happen every few seconds, requesting 50 entries should be sufficient
             APIRequestCounter.shared.record(.getVisitorHistory)
-            let visitors = try await MiataruAPIClient.getVisitorHistory(
+            let visitors = try await MiataruAppAPI.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: currentDeviceID,
                 deviceKey: settings.deviceKey,

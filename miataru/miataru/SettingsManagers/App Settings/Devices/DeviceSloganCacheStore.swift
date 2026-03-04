@@ -76,7 +76,7 @@ final class DeviceSloganCacheStore: ObservableObject {
         defer { fetchingDeviceIDs.remove(normalizedID) }
 
         do {
-            let slogan = try await MiataruAPIClient.getDeviceSlogan(
+            let slogan = try await MiataruAppAPI.getDeviceSlogan(
                 serverURL: serverURL,
                 forDeviceID: normalizedID,
                 requestingDeviceID: requestingDeviceID,
@@ -113,7 +113,7 @@ final class DeviceSloganCacheStore: ObservableObject {
         defer { fetchingDeviceIDs.remove(normalizedID) }
 
         do {
-            let slogan = try await MiataruAPIClient.getDeviceSlogan(
+            let slogan = try await MiataruAppAPI.getDeviceSlogan(
                 serverURL: serverURL,
                 forDeviceID: normalizedID,
                 requestingDeviceID: requestingDeviceID,

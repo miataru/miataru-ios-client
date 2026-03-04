@@ -317,7 +317,7 @@ struct iPhone_DeviceKeySheetView: View {
         isBusy = true
         defer { isBusy = false }
         do {
-            _ = try await MiataruAPIClient.setDeviceKey(
+            _ = try await MiataruAppAPI.setDeviceKey(
                 serverURL: url,
                 deviceID: thisDeviceIDManager.shared.deviceID,
                 currentDeviceKey: currentKey,
@@ -362,7 +362,7 @@ struct iPhone_DeviceKeySheetView: View {
         isBusy = true
         defer { isBusy = false }
         do {
-            _ = try await MiataruAPIClient.setDeviceKey(
+            _ = try await MiataruAppAPI.setDeviceKey(
                 serverURL: url,
                 deviceID: thisDeviceIDManager.shared.deviceID,
                 currentDeviceKey: currentKey,

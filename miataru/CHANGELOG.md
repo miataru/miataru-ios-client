@@ -1,4 +1,10 @@
 version 3.1.2
+- Centralized Miataru API retry handling in app code (`MiataruRetryPolicy`, `MiataruRetryClassifier`, `MiataruRequestExecutor`, `MiataruAppAPI`) without modifying `MiataruClientSwift`.
+- Migrated app-target Miataru callsites from direct `MiataruAPIClient` usage to `MiataruAppAPI` wrappers for uniform read/write retry behavior.
+- Added persistent `updateLocation` outbox delivery pipeline (`LocationUpdateOutboxStore`, `LocationUpdateDeliveryCoordinator`) with FIFO queue, cap 500, TTL 24h, and dedupe by `Device+Timestamp+Latitude+Longitude`.
+- Wired outbox flush triggers for app activation, network recovery, and periodic timer cadence while pending items exist.
+- Replaced legacy custom ACL sync retry loop in `AllowedDeviceListManager` with centralized retry behavior via `MiataruAppAPI`.
+- Added new unit tests for retry execution/classification, outbox persistence semantics, and delivery coordinator flush/queue behavior.
 - Re-established route polyline rendering in focused double-tap navigation mode on a short cadence (~6s) to prevent occasional map overlay disappearance; this refresh re-renders the existing route and does not trigger additional `MKDirections` requests.
 - Ensured focused double-tap navigation consistently suppresses ghost/progress visuals (including residual green progress segments) and renders only the base route plus optional mutual-navigation overlay.
 - Changed widget intent `parameterSummary` to key-path form (`Summary { \.$device }`) and removed obsolete `"Show ${device}"` localization content to prevent stale string-catalog entries in `miataruWidgets/Localizable.xcstrings`.

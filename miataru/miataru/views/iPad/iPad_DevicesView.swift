@@ -446,7 +446,7 @@ struct iPad_DevicesView: View {
     private func refreshUnknownVisitorLocations(deviceIDs: [String], serverURL: URL) async {
         do {
             APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAPIClient.getLocation(
+            let locations = try await MiataruAppAPI.getLocation(
                 serverURL: serverURL,
                 forDeviceIDs: deviceIDs,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,

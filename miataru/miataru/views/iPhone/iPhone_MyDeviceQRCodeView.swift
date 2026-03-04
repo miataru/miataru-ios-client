@@ -580,7 +580,7 @@ struct iPhone_MyDeviceQRCodeView: View {
         defer { isSavingSlogan = false }
 
         do {
-            _ = try await MiataruAPIClient.setDeviceSlogan(
+            _ = try await MiataruAppAPI.setDeviceSlogan(
                 serverURL: serverURL,
                 deviceID: ownDeviceID,
                 deviceKey: deviceKey,
