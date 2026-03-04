@@ -80,6 +80,11 @@ miataru/
 - Standard navigation mode (`isRouteFromDeviceToUser == true`): target movement only triggers reroute when target moved significantly **and** is off the current route.
 - Reverse navigation mode keeps movement-trigger behavior compatible with prior logic after the significant-movement check.
 - Route reuse still goes through `RouteCacheStore` (`useCachedRouteIfValid`) before issuing new `MKDirections` requests.
+- Focused double-tap navigation mode (`isNavigationMode == true`) intentionally renders a stable base route (plus optional mutual-navigation overlay) without ghost/progress segmentation.
+- Focused mode periodically re-establishes the already-available route polyline on the map (~6s cadence) to prevent transient disappearing overlays; this is a render refresh and does **not** trigger additional `MKDirections` API calls.
+
+### Widget Intent String Extraction
+- `DeviceSelectionIntent.parameterSummary` uses key-path summary syntax (`Summary { \.$device }`) to avoid generating a fragile interpolated key (`"Show ${device}"`) that can become stale in `miataruWidgets/Localizable.xcstrings`.
 
 ## Common Development Tasks
 

@@ -67,6 +67,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 - When enabled, other known devices that would be visible at the current zoom level are shown on a device’s map for better context.
 - Navigation includes a scale bar and custom compass; auto‑centering pauses while you interact and resumes automatically once idle.
 - Route progress can be visualized using completed vs. remaining segments with a moving ghost marker (shown after at least 5% estimated progress).
+- In focused double-tap navigation mode, ghost/progress segmentation is intentionally disabled; the app renders the stable base route (and optional mutual-navigation overlay) and periodically re-establishes that overlay locally without extra route API requests.
 - Routes are recalculated when transport mode changes or after significant movement; route requests are rate‑limited daily, and the reload action can force a fresh calculation ignoring caches.
 - Start navigation by long‑pressing a device pin on the map or swiping right on a device row. Your own device never offers navigation. Apple Maps handoff uses proper destination names.
 - When you switch navigation to route from your device toward a selected device, a top overlay displays turn‑by‑turn instructions.

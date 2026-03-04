@@ -35,6 +35,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var animatedUserCoordinate: CLLocationCoordinate2D?
     @State private var animatedDeviceCoordinate: CLLocationCoordinate2D?
     @State private var route: MKRoute?
+    @State private var routeDisplayPolyline: MKPolyline?
     @State private var mutualRouteOverlayPolyline: MKPolyline?
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
@@ -93,6 +94,8 @@ struct iPhone_DeviceNavigationView: View {
     private let fitMinimumSpan = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
     // Minimum route progress required before showing ghost/progress segmentation
     private let minimumProgressToShowGhost: Double = 0.05
+    private let focusedRouteOverlayRefreshInterval: TimeInterval = 6
+    @State private var lastFocusedRouteOverlayRefreshAt: Date = .distantPast
 
     /// Full-screen focused navigation mode (enabled via double-tap) uses a stable route rendering:
     /// base route + optional mutual-navigation overlay, without ghost/progress segmentation.
@@ -252,10 +255,11 @@ struct iPhone_DeviceNavigationView: View {
                 }
             }
             if let route = route {
+                let baseRoutePolyline = routeDisplayPolyline ?? route.polyline
                 // Directly reference isMutualNavigation to ensure Map content observes the state change
                 // This allows the overlay polyline to be added/removed without reloading the entire map
                 if shouldUseFocusedNavigationRouteRendering {
-                    MapPolyline(route.polyline)
+                    MapPolyline(baseRoutePolyline)
                         .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                     if isMutualNavigation, let mutualRouteOverlayPolyline {
                         MapPolyline(mutualRouteOverlayPolyline)
@@ -282,14 +286,14 @@ struct iPhone_DeviceNavigationView: View {
                         isRouteReversed: isRouteFromDeviceToUser
                     ) {
                         if progress <= minimumProgressToShowGhost {
-                            MapPolyline(route.polyline)
+                            MapPolyline(baseRoutePolyline)
                                 .stroke(RouteStyle.remaining, lineWidth: 4)
                             if isMutualNavigation, let mutualRouteOverlayPolyline {
                                 MapPolyline(mutualRouteOverlayPolyline)
                                     .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         } else if progress >= 1 {
-                            MapPolyline(route.polyline)
+                            MapPolyline(baseRoutePolyline)
                                 .stroke(RouteStyle.completed, lineWidth: 4)
                             if isMutualNavigation, let mutualRouteOverlayPolyline {
                                 MapPolyline(mutualRouteOverlayPolyline)
@@ -327,7 +331,7 @@ struct iPhone_DeviceNavigationView: View {
                             }
                         }
                     } else {
-                        MapPolyline(route.polyline)
+                        MapPolyline(baseRoutePolyline)
                             .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                         if isMutualNavigation, let mutualRouteOverlayPolyline {
                             MapPolyline(mutualRouteOverlayPolyline)
@@ -335,7 +339,7 @@ struct iPhone_DeviceNavigationView: View {
                         }
                     }
                 } else {
-                    MapPolyline(route.polyline)
+                    MapPolyline(baseRoutePolyline)
                         .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
                     if isMutualNavigation, let mutualRouteOverlayPolyline {
                         MapPolyline(mutualRouteOverlayPolyline)
@@ -429,6 +433,7 @@ struct iPhone_DeviceNavigationView: View {
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
                 updateLiveNavigationRouteSummary()
+                refreshFocusedNavigationRouteOverlayIfNeeded(currentTime: input)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 guard isViewActive else { return }
@@ -495,6 +500,7 @@ struct iPhone_DeviceNavigationView: View {
                 navigationFeedbackGate.isNavigationMode = newValue
                 if newValue {
                     updateLiveNavigationRouteSummary()
+                    refreshFocusedNavigationRouteOverlayIfNeeded(force: true)
                 } else {
                     applyStaticRouteSummaryFromCurrentRoute()
                 }
@@ -1204,17 +1210,8 @@ struct iPhone_DeviceNavigationView: View {
         timerCancellable = nil
     }
 
-    private func setRouteForRendering(_ newRoute: MKRoute?) {
-        route = newRoute
-        guard let newRoute else {
-            mutualRouteOverlayPolyline = nil
-            return
-        }
-        let sourcePolyline = newRoute.polyline
-        guard sourcePolyline.pointCount > 0 else {
-            mutualRouteOverlayPolyline = nil
-            return
-        }
+    private func copiedPolyline(from sourcePolyline: MKPolyline) -> MKPolyline? {
+        guard sourcePolyline.pointCount > 0 else { return nil }
         var coordinates = [CLLocationCoordinate2D](
             repeating: kCLLocationCoordinate2DInvalid,
             count: sourcePolyline.pointCount
@@ -1223,10 +1220,36 @@ struct iPhone_DeviceNavigationView: View {
             &coordinates,
             range: NSRange(location: 0, length: sourcePolyline.pointCount)
         )
-        mutualRouteOverlayPolyline = MKPolyline(
-            coordinates: coordinates,
-            count: coordinates.count
-        )
+        return MKPolyline(coordinates: coordinates, count: coordinates.count)
+    }
+
+    private func refreshFocusedNavigationRouteOverlayIfNeeded(
+        currentTime: Date = Date(),
+        force: Bool = false
+    ) {
+        guard shouldUseFocusedNavigationRouteRendering, let route else { return }
+        if !force, currentTime.timeIntervalSince(lastFocusedRouteOverlayRefreshAt) < focusedRouteOverlayRefreshInterval {
+            return
+        }
+        setRouteForRendering(route)
+        lastFocusedRouteOverlayRefreshAt = currentTime
+    }
+
+    private func setRouteForRendering(_ newRoute: MKRoute?) {
+        route = newRoute
+        guard let newRoute else {
+            routeDisplayPolyline = nil
+            mutualRouteOverlayPolyline = nil
+            return
+        }
+        let sourcePolyline = newRoute.polyline
+        guard let routePolylineCopy = copiedPolyline(from: sourcePolyline) else {
+            routeDisplayPolyline = nil
+            mutualRouteOverlayPolyline = nil
+            return
+        }
+        routeDisplayPolyline = routePolylineCopy
+        mutualRouteOverlayPolyline = copiedPolyline(from: sourcePolyline)
     }
 
     @MainActor

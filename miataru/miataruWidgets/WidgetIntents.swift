@@ -21,7 +21,9 @@ struct DeviceSelectionIntent: WidgetConfigurationIntent {
     var device: DeviceEntity?
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Show \(\.$device)")
+        Summary {
+            \.$device
+        }
     }
 
     func perform() async throws -> some IntentResult {
