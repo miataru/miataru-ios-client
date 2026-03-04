@@ -37,6 +37,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var route: MKRoute?
     @State private var routeDisplayPolyline: MKPolyline?
     @State private var mutualRouteOverlayPolyline: MKPolyline?
+    @State private var routeOverlayRenderRevision: UInt64 = 0
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
     @State private var distanceText: String?
@@ -238,7 +239,7 @@ struct iPhone_DeviceNavigationView: View {
             // Restart mutual navigation detection for new device
             mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
             // Fetch and recenter for the new device
-            Task { await fetchTargetDeviceLocation(resetAndRecenter: true) }
+            Task { await fetchTargetDeviceLocation(resetAndRecenter: true, ignoreRouteCache: true) }
         }
     }
 
@@ -258,76 +259,85 @@ struct iPhone_DeviceNavigationView: View {
                 let baseRoutePolyline = routeDisplayPolyline ?? route.polyline
                 // Directly reference isMutualNavigation to ensure Map content observes the state change
                 // This allows the overlay polyline to be added/removed without reloading the entire map
-                if shouldUseFocusedNavigationRouteRendering {
-                    MapPolyline(baseRoutePolyline)
-                        .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                    if isMutualNavigation, let mutualRouteOverlayPolyline {
-                        MapPolyline(mutualRouteOverlayPolyline)
-                            .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
-                    }
-                } else if settings.showRouteProgress {
-                    let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                    let userSpeed = effectiveUserLocation?.speed
-                    // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
-                    let routeStartTimestamp = isRouteFromDeviceToUser ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
-                    let etaHasPassed: Bool = {
-                        guard route.expectedTravelTime > 0, let start = routeStartTimestamp else { return false }
-                        return now.timeIntervalSince(start) >= route.expectedTravelTime
-                    }()
-                    if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
-                        for: route,
-                        deviceCoordinate: deviceCoordinate,
-                        userCoordinate: userCoordinate,
-                        deviceTimestamp: deviceTimestamp,
-                        knownDeviceSpeed: knownSpeed,
-                        userTimestamp: userTimestamp,
-                        knownUserSpeed: userSpeed,
-                        now: now,
-                        isRouteReversed: isRouteFromDeviceToUser
-                    ) {
-                        if progress <= minimumProgressToShowGhost {
-                            MapPolyline(baseRoutePolyline)
-                                .stroke(RouteStyle.remaining, lineWidth: 4)
-                            if isMutualNavigation, let mutualRouteOverlayPolyline {
-                                MapPolyline(mutualRouteOverlayPolyline)
-                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
-                            }
-                        } else if progress >= 1 {
-                            MapPolyline(baseRoutePolyline)
-                                .stroke(RouteStyle.completed, lineWidth: 4)
-                            if isMutualNavigation, let mutualRouteOverlayPolyline {
-                                MapPolyline(mutualRouteOverlayPolyline)
-                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
-                            }
-                        } else {
-                            MapPolyline(done)
-                                .stroke(RouteStyle.completed, lineWidth: 4)
-                            MapPolyline(todo)
-                                .stroke(RouteStyle.remaining, lineWidth: 4)
-                            if isMutualNavigation {
+                ForEach([routeOverlayRenderRevision], id: \.self) { _ in
+                    if shouldUseFocusedNavigationRouteRendering {
+                        MapPolyline(baseRoutePolyline)
+                            .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                        if isMutualNavigation, let mutualRouteOverlayPolyline {
+                            MapPolyline(mutualRouteOverlayPolyline)
+                                .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                        }
+                    } else if settings.showRouteProgress {
+                        let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
+                        let userSpeed = effectiveUserLocation?.speed
+                        // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
+                        let routeStartTimestamp = isRouteFromDeviceToUser ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
+                        let etaHasPassed: Bool = {
+                            guard route.expectedTravelTime > 0, let start = routeStartTimestamp else { return false }
+                            return now.timeIntervalSince(start) >= route.expectedTravelTime
+                        }()
+                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
+                            for: route,
+                            deviceCoordinate: deviceCoordinate,
+                            userCoordinate: userCoordinate,
+                            deviceTimestamp: deviceTimestamp,
+                            knownDeviceSpeed: knownSpeed,
+                            userTimestamp: userTimestamp,
+                            knownUserSpeed: userSpeed,
+                            now: now,
+                            isRouteReversed: isRouteFromDeviceToUser
+                        ) {
+                            if progress <= minimumProgressToShowGhost {
+                                MapPolyline(baseRoutePolyline)
+                                    .stroke(RouteStyle.remaining, lineWidth: 4)
+                                if isMutualNavigation, let mutualRouteOverlayPolyline {
+                                    MapPolyline(mutualRouteOverlayPolyline)
+                                        .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                                }
+                            } else if progress >= 1 {
+                                MapPolyline(baseRoutePolyline)
+                                    .stroke(RouteStyle.completed, lineWidth: 4)
+                                if isMutualNavigation, let mutualRouteOverlayPolyline {
+                                    MapPolyline(mutualRouteOverlayPolyline)
+                                        .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                                }
+                            } else {
                                 MapPolyline(done)
-                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                                    .stroke(RouteStyle.completed, lineWidth: 4)
                                 MapPolyline(todo)
-                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
-                            }
-                            // Ghost is shown when: route is non-reversed (device→user), progress is in (0.05, 1), and ETA has not passed.
-                            if isRouteFromDeviceToUser, !etaHasPassed {
-                                MapCircle(center: ghost, radius: 50)
-                                    .foregroundStyle(RouteStyle.completed.opacity(0.5))
-                                Annotation("", coordinate: ghost) {
-                                    VStack(spacing: 2) {
-                                        Image(systemName: transportSymbolName())
-                                            .font(.system(size: 16))
-                                            .foregroundColor(Color.primary.opacity(0.9))
-                                            .shadow(radius: 4)
-                                        DeviceNameLabel(
-                                            deviceName: device.DeviceName,
-                                            deviceID: device.DeviceID,
-                                            font: .caption2,
-                                            opacity: 0.8
-                                        )
+                                    .stroke(RouteStyle.remaining, lineWidth: 4)
+                                if isMutualNavigation {
+                                    MapPolyline(done)
+                                        .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                                    MapPolyline(todo)
+                                        .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
+                                }
+                                // Ghost is shown when: route is non-reversed (device→user), progress is in (0.05, 1), and ETA has not passed.
+                                if isRouteFromDeviceToUser, !etaHasPassed {
+                                    MapCircle(center: ghost, radius: 50)
+                                        .foregroundStyle(RouteStyle.completed.opacity(0.5))
+                                    Annotation("", coordinate: ghost) {
+                                        VStack(spacing: 2) {
+                                            Image(systemName: transportSymbolName())
+                                                .font(.system(size: 16))
+                                                .foregroundColor(Color.primary.opacity(0.9))
+                                                .shadow(radius: 4)
+                                            DeviceNameLabel(
+                                                deviceName: device.DeviceName,
+                                                deviceID: device.DeviceID,
+                                                font: .caption2,
+                                                opacity: 0.8
+                                            )
+                                        }
                                     }
                                 }
+                            }
+                        } else {
+                            MapPolyline(baseRoutePolyline)
+                                .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
+                            if isMutualNavigation, let mutualRouteOverlayPolyline {
+                                MapPolyline(mutualRouteOverlayPolyline)
+                                    .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                             }
                         }
                     } else {
@@ -337,13 +347,6 @@ struct iPhone_DeviceNavigationView: View {
                             MapPolyline(mutualRouteOverlayPolyline)
                                 .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                         }
-                    }
-                } else {
-                    MapPolyline(baseRoutePolyline)
-                        .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
-                    if isMutualNavigation, let mutualRouteOverlayPolyline {
-                        MapPolyline(mutualRouteOverlayPolyline)
-                            .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                     }
                 }
             }
@@ -1239,6 +1242,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func setRouteForRendering(_ newRoute: MKRoute?) {
+        routeOverlayRenderRevision &+= 1
         route = newRoute
         guard let newRoute else {
             routeDisplayPolyline = nil
