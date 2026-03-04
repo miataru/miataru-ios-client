@@ -14,8 +14,12 @@ struct iPad_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
+    @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
+
     @State private var selection: String? = nil // DeviceID
     @State private var showingAddDevice = false
+    @State private var pendingDeviceItem: DeviceIDItem? = nil
     @State private var editingDevice: KnownDevice? = nil
     @State private var editMode: EditMode = .inactive
     @State private var isVisible: Bool = false
@@ -23,16 +27,71 @@ struct iPad_DevicesView: View {
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
     @State private var navigationTargetDevice: KnownDevice? = nil
     @State private var isUpdatingFromDeepLink = false // Track if we're updating selection from deep link (to prevent circular updates)
+    @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
+
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openWindow) private var openWindow
+
+    private var unknownVisitors: [MiataruVisitor] {
+        let knownDeviceIDs = Set(store.devices.map { $0.DeviceID.uppercased() })
+        let ignoredDeviceIDs = Set(ignoredStore.ignoredDeviceIDs.map { $0.uppercased() })
+
+        var uniqueVisitors: [String: MiataruVisitor] = [:]
+        for visitor in visitorHistoryViewModel.sortedVisitors {
+            let normalizedID = visitor.DeviceID.uppercased()
+            if !knownDeviceIDs.contains(normalizedID) && !ignoredDeviceIDs.contains(normalizedID) && !normalizedID.isEmpty {
+                if let existing = uniqueVisitors[normalizedID] {
+                    if visitor.TimeStampDate > existing.TimeStampDate {
+                        uniqueVisitors[normalizedID] = visitor
+                    }
+                } else {
+                    uniqueVisitors[normalizedID] = visitor
+                }
+            }
+        }
+
+        return Array(uniqueVisitors.values).sorted { $0.TimeStampDate > $1.TimeStampDate }
+    }
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
+                if settings.allowedDeviceListEnabled && !unknownVisitors.isEmpty {
+                    Section(header: Text("unknown_visitors_section_title")) {
+                        ForEach(unknownVisitors, id: \.uniqueID) { visitor in
+                            UnknownVisitorRow(visitor: visitor) {
+                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                            } onIgnore: {
+                                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                } label: {
+                                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                                }
+                                .tint(.green)
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button(role: .destructive) {
+                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                } label: {
+                                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         if cache.getLocation(for: device.DeviceID) != nil {
                             DeviceRowView(device: device, cache: cache)
+                                .accessibilityIdentifier(
+                                    device.DeviceID == thisDeviceIDManager.shared.deviceID
+                                        ? "devices_row_this_device"
+                                        : "devices_row_\(device.DeviceID)"
+                                )
                                 .tag(device.DeviceID)
                                 .tint(.primary)
                                 .draggable(device.DeviceID)
@@ -58,7 +117,9 @@ struct iPad_DevicesView: View {
                                             .labelStyle(.titleAndIcon)
                                     }
                                     Button(role: .destructive) {
-                                        store.removeDevice(byID: device.DeviceID)
+                                        Task {
+                                            await removeDevice(deviceID: device.DeviceID)
+                                        }
                                     } label: {
                                         Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
                                     }
@@ -81,6 +142,11 @@ struct iPad_DevicesView: View {
                                 }
                         } else {
                             DeviceRowView(device: device, cache: cache)
+                                .accessibilityIdentifier(
+                                    device.DeviceID == thisDeviceIDManager.shared.deviceID
+                                        ? "devices_row_this_device"
+                                        : "devices_row_\(device.DeviceID)"
+                                )
                                 .tag(device.DeviceID)
                                 .tint(.primary)
                                 .contextMenu {
@@ -91,7 +157,9 @@ struct iPad_DevicesView: View {
                                             .labelStyle(.titleAndIcon)
                                     }
                                     Button(role: .destructive) {
-                                        store.removeDevice(byID: device.DeviceID)
+                                        Task {
+                                            await removeDevice(deviceID: device.DeviceID)
+                                        }
                                     } label: {
                                         Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
                                     }
@@ -107,7 +175,12 @@ struct iPad_DevicesView: View {
                         }
                     }
                     .onDelete { indices in
-                        store.removeDevice(byID: store.devices[indices.first!].DeviceID)
+                        let deviceIDs = indices.map { store.devices[$0].DeviceID }
+                        Task {
+                            for deviceID in deviceIDs {
+                                await removeDevice(deviceID: deviceID)
+                            }
+                        }
                     }
                     .onMove { indices, newOffset in
                         store.move(fromOffsets: indices, toOffset: newOffset)
@@ -124,8 +197,6 @@ struct iPad_DevicesView: View {
                             Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
                         } else {
                             Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list"))
-                            //Image(systemName: "pencil")
-                            //    .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
                         }
                     }
                 }
@@ -135,16 +206,18 @@ struct iPad_DevicesView: View {
                             .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
                             .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
                     }
+                    .accessibilityIdentifier("devices_add_button")
                 }
             }
             .environment(\.editMode, $editMode)
             .refreshable {
                 let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
+                await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
+                await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 if success { Haptic.notifySuccess() }
             }
             .onAppear {
                 isVisible = true
-                // Automatically select the first device if no selection is made yet
                 if selection == nil && !store.devices.isEmpty {
                     if let lastID = settings.lastOpenedDeviceID,
                        store.devices.contains(where: { $0.DeviceID == lastID }) {
@@ -156,6 +229,11 @@ struct iPad_DevicesView: View {
                         lastSelectedDeviceID = firstID
                     }
                 }
+
+                Task {
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
+                }
             }
             .onDisappear {
                 isVisible = false
@@ -163,12 +241,15 @@ struct iPad_DevicesView: View {
             .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
                 Task {
                     _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
             }
-            
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 Task {
                     _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
 
                 // Re-assert deep link selection after activation to beat any restored split-view state.
@@ -184,42 +265,51 @@ struct iPad_DevicesView: View {
                     }
                 }
             }
+            .task(id: "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)") {
+                let seconds = max(5.0, Double(settings.outsideMapUpdateInterval))
+                let interval = UInt64(seconds * 1_000_000_000)
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: interval)
+                    guard isVisible,
+                          UIApplication.shared.applicationState == .active else { continue }
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
+                }
+            }
         } detail: {
             NavigationStack {
                 if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
                     iPad_DeviceMapView(
                         deviceID: device.DeviceID,
                         onNavigateToDevice: { newDeviceID in
-                            // Navigate to the new device in the split view
                             selection = newDeviceID
                         },
-                        // Only update lastOpenedDeviceID for deep links, not for local selections
-                        // This prevents cross-window synchronization when user selects a device locally
+                        // Only update lastOpenedDeviceID for deep links, not for local selections.
                         shouldUpdateLastOpenedDeviceID: isUpdatingFromDeepLink
                     )
-                        .id(device.DeviceID) // Force view refresh when device changes
-                        .navigationDestination(item: $navigationTargetDevice) { device in
-                            iPhone_DeviceNavigationView(device: device)
-                        }
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button(action: { editingDevice = device }) {
-                                    Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
-                                        .labelStyle(.titleAndIcon)
-                                }
+                    .id(mapViewKey)
+                    .navigationDestination(item: $navigationTargetDevice) { device in
+                        iPhone_DeviceNavigationView(device: device)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: { editingDevice = device }) {
+                                Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
+                                    .labelStyle(.titleAndIcon)
                             }
                         }
-                        .sheet(item: $editingDevice) { device in
-                            if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
-                                iPhone_EditDeviceView(
-                                    device: $store.devices[index],
-                                    isPresented: Binding(
-                                        get: { editingDevice != nil },
-                                        set: { if !$0 { editingDevice = nil } }
-                                    )
+                    }
+                    .sheet(item: $editingDevice) { device in
+                        if let index = store.devices.firstIndex(where: { $0.id == device.id }) {
+                            iPhone_EditDeviceView(
+                                device: $store.devices[index],
+                                isPresented: Binding(
+                                    get: { editingDevice != nil },
+                                    set: { if !$0 { editingDevice = nil } }
                                 )
-                            }
+                            )
                         }
+                    }
                 } else {
                     Text("Select a device to view details")
                         .foregroundColor(.secondary)
@@ -230,6 +320,16 @@ struct iPad_DevicesView: View {
         .ignoresSafeArea(.container, edges: .top)
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
+        }
+        .sheet(item: $pendingDeviceItem) { item in
+            iPhone_AddDeviceView(
+                store: store,
+                isPresented: Binding(
+                    get: { pendingDeviceItem != nil },
+                    set: { if !$0 { pendingDeviceItem = nil } }
+                ),
+                prefillDeviceID: item.deviceID
+            )
         }
         .dropDestination(for: String.self) { items, _ in
             if let deviceID = items.first, cache.getLocation(for: deviceID) != nil {
@@ -248,7 +348,6 @@ struct iPad_DevicesView: View {
                   store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
             let requestedID = deviceID
             Task { @MainActor in
-                // If we’re already showing the requested device, do nothing to avoid flicker.
                 if selection == requestedID {
                     return
                 }
@@ -258,40 +357,144 @@ struct iPad_DevicesView: View {
                     isUpdatingFromDeepLink = false
                     return
                 }
-                // Mark that we're updating from deep link to prevent onChange(of: selection) from updating lastOpenedDeviceID
                 isUpdatingFromDeepLink = true
-                // Update selection from deep link - this will trigger onChange(of: selection)
                 selection = requestedID
                 lastSelectedDeviceID = requestedID
-                // Reset flag after a delay to allow onChange(of: selection) to complete
                 Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+                    try? await Task.sleep(nanoseconds: 200_000_000)
                     isUpdatingFromDeepLink = false
                 }
             }
         }
-        .onChange(of: selection) { oldSelection, newSelection in
-            // Only refresh map when the selected device actually changes to a different ID
+        .onChange(of: selection) { _, newSelection in
             if let newSelection = newSelection, newSelection != lastSelectedDeviceID {
-                // Reset any active navigation push so only the newly selected device is shown
                 navigationTargetDevice = nil
                 lastSelectedDeviceID = newSelection
                 mapViewKey = UUID()
-                // Do NOT update settings.lastOpenedDeviceID here - this prevents cross-window sync
-                // settings.lastOpenedDeviceID will only be updated for deep links
             }
         }
         .onChange(of: editMode) { _, newMode in
-            // Preserve and restore selection in edit mode to avoid detail reset
-            if newMode == .active {
-                if selection == nil, let last = lastSelectedDeviceID {
-                    selection = last
-                }
+            if newMode == .active, selection == nil, let last = lastSelectedDeviceID {
+                selection = last
             }
+        }
+    }
+
+    @MainActor
+    private func removeDevice(deviceID: String) async {
+        if settings.allowedDeviceListEnabled {
+            do {
+                try await AllowedDeviceListManager.shared.removeDeviceAndSync(deviceID: deviceID)
+                Haptic.notifySuccess()
+            } catch {
+                Haptic.notifyWarning()
+                debugLog("[iPad_DevicesView] Failed to remove device with sync: \(error)")
+                // Device removal will be rolled back by AllowedDeviceListManager.
+            }
+        } else {
+            store.removeDevice(byID: deviceID)
+        }
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorSupplementalDataIfNeeded(force: Bool = false) async {
+        guard shouldRefreshUnknownVisitorSupplementalData(force: force) else { return }
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+
+        let unknownDeviceIDs = Array(Set(unknownVisitors.map { $0.DeviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() }))
+            .filter { !$0.isEmpty }
+        guard !unknownDeviceIDs.isEmpty else {
+            lastUnknownVisitorSupplementalRefresh = Date()
+            return
+        }
+
+        await refreshUnknownVisitorLocations(
+            deviceIDs: unknownDeviceIDs,
+            serverURL: serverURL
+        )
+
+        let sloganRefreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
+        await refreshUnknownVisitorSlogans(
+            deviceIDs: unknownDeviceIDs,
+            serverURL: serverURL,
+            minimumRefreshInterval: sloganRefreshInterval,
+            force: force
+        )
+
+        lastUnknownVisitorSupplementalRefresh = Date()
+    }
+
+    @MainActor
+    private func shouldRefreshUnknownVisitorSupplementalData(force: Bool) -> Bool {
+        if force {
+            return true
+        }
+
+        guard settings.autoRefreshDeviceList, isVisible else { return false }
+        guard UIApplication.shared.applicationState == .active else { return false }
+
+        let interval = max(1.0, Double(settings.outsideMapUpdateInterval))
+        if let lastUnknownVisitorSupplementalRefresh,
+           Date().timeIntervalSince(lastUnknownVisitorSupplementalRefresh) < interval {
+            return false
+        }
+
+        return true
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorLocations(deviceIDs: [String], serverURL: URL) async {
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            let locations = try await MiataruAPIClient.getLocation(
+                serverURL: serverURL,
+                forDeviceIDs: deviceIDs,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: settings.deviceKey
+            )
+
+            let foundIDs = Set(locations.map { $0.Device })
+            for location in locations {
+                cache.setLocation(
+                    for: location.Device,
+                    latitude: location.Latitude,
+                    longitude: location.Longitude,
+                    accuracy: location.HorizontalAccuracy,
+                    timestamp: location.TimestampDate,
+                    batteryLevel: location.BatteryLevel,
+                    altitude: location.Altitude
+                )
+            }
+
+            let missingIDs = Set(deviceIDs).subtracting(foundIDs)
+            for missingID in missingIDs {
+                cache.removeLocation(for: missingID)
+            }
+        } catch {
+            debugLog("[iPad_DevicesView] Failed refreshing unknown visitor locations: \(error)")
+        }
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorSlogans(deviceIDs: [String],
+                                              serverURL: URL,
+                                              minimumRefreshInterval: TimeInterval,
+                                              force: Bool) async {
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+
+        for deviceID in deviceIDs {
+            await DeviceSloganCacheStore.shared.refreshSloganIfStale(
+                for: deviceID,
+                serverURL: serverURL,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey,
+                minimumRefreshInterval: minimumRefreshInterval,
+                force: force
+            )
         }
     }
 }
 
 #Preview {
     iPad_DevicesView()
-} 
+}

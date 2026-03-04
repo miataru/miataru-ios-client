@@ -33,8 +33,10 @@ final class VisitorHistoryViewModel: ObservableObject {
 
     func refreshIfNeeded(isVisible: Bool, force: Bool = false) async {
         if force {
-            lastRefresh = Date()
-            await loadVisitorHistory(showLoading: false)
+            let didRefresh = await loadVisitorHistory(showLoading: false)
+            if didRefresh {
+                lastRefresh = Date()
+            }
             return
         }
 
@@ -42,14 +44,17 @@ final class VisitorHistoryViewModel: ObservableObject {
             return
         }
 
-        lastRefresh = Date()
-        await loadVisitorHistory(showLoading: false)
+        let didRefresh = await loadVisitorHistory(showLoading: false)
+        if didRefresh {
+            lastRefresh = Date()
+        }
     }
     
-    func loadVisitorHistory(showLoading: Bool = true) async {
+    @discardableResult
+    func loadVisitorHistory(showLoading: Bool = true) async -> Bool {
         guard let url = URL(string: settings.miataruServerURL) else {
             errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
-            return
+            return false
         }
         
         if showLoading {
@@ -69,6 +74,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             )
             self.visitors = response.MiataruVisitors
             self.isLoading = false
+            return true
         } catch {
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 self.errorMessage = authMessage
@@ -77,6 +83,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             }
             self.isLoading = false
             debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
+            return false
         }
     }
 

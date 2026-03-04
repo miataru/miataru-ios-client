@@ -97,6 +97,16 @@ struct iPhone_MyDeviceQRCodeView: View {
                         await loadOwnDeviceSloganIfNeeded()
                     }
                 }
+                .task(id: "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)") {
+                    let seconds = max(5.0, Double(settings.outsideMapUpdateInterval))
+                    let interval = UInt64(seconds * 1_000_000_000)
+                    while !Task.isCancelled {
+                        try? await Task.sleep(nanoseconds: interval)
+                        guard isVisible,
+                              UIApplication.shared.applicationState == .active else { continue }
+                        await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
+                    }
+                }
                 .navigationTitle("my_device")
                 .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
                 .toolbar {

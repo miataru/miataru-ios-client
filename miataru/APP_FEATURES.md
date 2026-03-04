@@ -4,13 +4,13 @@ This document lists all features offered by the miataru iOS app. Each item is de
 
 ## App Navigation and Views
 **For users:**
-- The app launches to a tab bar with **Devices**, **Groups**, **QR**, and **Settings** tabs. Each tab retains its own navigation stack, so returning to a tab restores where you left off.
+- iPhone launches with **Devices**, **QR**, and **Settings** tabs. Group management is embedded in the Devices flow.
+- iPad launches with **Devices**, **Groups**, **QR**, and **Settings** tabs and uses split navigation for large-screen workflows.
 - Tapping a device or group drills into dedicated map screens, while the QR tab always displays your personal code for quick sharing.
-
 - On iPad, you can open a device in a new window from the list or map via context menu, or by dragging the item toward the screen edge.
 
 **For developers:**
-- `iPhone_RootView` constructs the `TabView` and hosts `iPhone_DevicesView`, `iPhone_GroupsView`, `iPhone_MyDeviceQRCodeView`, and `iPhone_SettingsView`.
+- `iPhone_RootView` constructs the compact-width tab structure (`iPhone_DevicesView`, `iPhone_MyDeviceQRCodeView`, `iPhone_SettingsView`), while iPad uses `iPad_RootView` with a dedicated groups tab.
 - `MiataruRootView` selects platform‑specific root containers so iPad and Mac can embed their own navigation styles.
 - iPad supports opening device detail windows using a value‑based `WindowGroup(for: String)` and context menu/drag interactions.
 
@@ -40,7 +40,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 
 **For developers:**
 - `KnownDeviceStore` persists devices in `Application Support` and ensures the current device is always present.
-- `iPhone_DevicesView` uses a `NavigationStack` with `refreshable` and notification hooks to update cached locations and remember the last opened device.
+- `iPhone_DevicesView` (stack layout) and `iPad_DevicesView` (split layout) both support refresh hooks, deep-link re-selection, Unknown Visitors allow/ignore flows, and allowlist-aware delete synchronization.
 - `iPhone_AddDeviceView` integrates `CodeScanner` to scan `miataru://` QR codes, offers a color picker, and prevents duplicate IDs.
 - `DeviceRowView` (shared) replaces `iPhone_DeviceRowView`, displays battery/altitude/speed when available, and uses `MeasurementFormatter` with the system `measurementSystem` for localized units.
 - `DeviceNameLabel` and static parts of markers are rasterized and cached to improve scrolling/rendering performance.
@@ -48,13 +48,13 @@ This document lists all features offered by the miataru iOS app. Each item is de
 ## Group Management
 **For users:**
 - Create named groups, add or remove devices, reorder groups, and view devices by group. Empty states guide first‑time use, and swiping a group row reveals delete or edit actions.
-
+- iPhone keeps group access integrated in the Devices flow, while iPad intentionally keeps a dedicated Groups tab with split navigation.
 - Group detail lists show each device’s last update, distance, and battery status where available. On iPad, the group detail sheet shows a proper Cancel/Save toolbar.
 
 **For developers:**
-- `DeviceGroup` and `DeviceGroupStore` provide persistence for sets of device IDs. Group editing sheets reuse `iPhone_GroupDetailView` and `GroupEditSheetContainer`.
-- `iPhone_GroupsView` presents the list inside a `NavigationStack` and navigates to `iPhone_GroupMapView`, which displays all group members with off‑screen arrows and optional navigation sheets per device.
-- Group detail uses the shared `DeviceRowView`; altitude formatting and labels are aligned with the device list implementation. On iPad, `GroupDetailView` is wrapped in a `NavigationStack` to surface Cancel/Save buttons with localization.
+- `DeviceGroup` and `DeviceGroupStore` provide persistence for sets of device IDs.
+- iPhone group editing uses `iPhone_GroupDetailView` + `GroupEditSheetContainer`; iPad uses `iPad_GroupsView` + `iPad_GroupDetailView` in split/detail presentation.
+- Group maps (`iPhone_GroupMapView` / `iPad_GroupMapView`) share core behavior (markers, off-screen arrows, navigation/history actions), while keeping platform-tailored navigation chrome.
 
 ## Map Views and Navigation
 **For users:**
@@ -92,6 +92,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 **For developers:**
 - `iPhone_MyDeviceQRCodeView` renders customizable QR codes using the `QRCode` package and supports `ShareLink` and `MFMailComposeViewController`.
 - `VisitorHistoryViewModel` and `VisitorHistorySection` power inline visitor history within the QR tab, while `iPhone_VisitorHistoryView` reuses the same data loader.
+- Visitor auto-refresh on iPad Devices and QR-based visitor surfaces uses periodic foreground tasks keyed to `outsideMapUpdateInterval`; refresh throttling only updates `lastRefresh` after successful loads to avoid stale lockout after transient errors.
 - `iPhone_AddDeviceView` validates the `miataru://` prefix from scanned codes before accepting an ID and allows manual entry with color selection.
 
 ## Onboarding Flow
@@ -151,12 +152,26 @@ This document lists all features offered by the miataru iOS app. Each item is de
 
 ## Multi‑platform Support
 **For users:**
-- The interface adapts to iPhone, iPad, and Mac, with platform‑specific root views and onboarding flows. iPhone uses a tab bar, iPad presents split views, and Mac currently mirrors the iPhone experience in a resizable window.
+- The interface adapts to iPhone, iPad, and Mac, with platform‑specific root views and onboarding flows. iPhone uses a compact tab flow (groups inside Devices), iPad presents split views with a dedicated Groups tab, and Mac currently mirrors the iPhone experience in a resizable window.
 
 - On iPad, you can open device details in separate windows for multitasking.
 
 **For developers:**
 - `MiataruRootView` selects the appropriate root view using size classes and platform checks. Dedicated onboarding containers exist for each platform, and many components in `views/Common` are platform agnostic.
+
+## Platform Drift Decisions (Audit 2026-03-04)
+**For users:**
+- Device deletion with allowlist enabled now behaves consistently on iPhone and iPad.
+- Device history on iPad now validates availability before opening the history map and shows in-map feedback if no data exists.
+- Unknown Visitors are available in the iPad devices flow, matching the iPhone allow/ignore workflow.
+- Visitor sections on iPad now auto-refresh in the foreground with the same retry behavior as iPhone.
+- Group placement remains intentionally different: iPhone keeps groups in the Devices flow, iPad keeps a dedicated Groups tab.
+
+**For developers:**
+- Unified behavior: allowlist delete sync, history preload guard before navigation, and test-critical accessibility identifiers (`devices_add_button`, `devices_row_this_device`, `device_map_overview`) now align across iPhone/iPad.
+- Visitor refresh parity: periodic foreground refresh and successful-load throttling are now aligned across iPad/iPhone visitor flows.
+- Intentional difference: iPhone compact navigation integrates groups, while iPad keeps split-view group navigation as a product decision.
+- Decision matrix and evidence are documented in `documentation/audits/ipad-iphone-audit-2026-03-04.md`.
 
 ## Localization and Accessibility
 **For users:**
