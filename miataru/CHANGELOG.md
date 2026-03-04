@@ -11,6 +11,7 @@ version 3.1.2
 - Reduced follow-camera look-ahead aggressiveness and made heading fallback logic more defensive in reversed navigation mode to avoid premature off-screen positioning before movement speed increases.
 - Added arrival clock time to the active-navigation route info accessory (`… • <ETA> • <localized prefix>: <time>`), derived from remaining route duration.
 - Added full localization for the arrival prefix across all supported app languages (`de`: `Ankunft`, `en`: `ETA`, plus da/es/fi/fr/it/ja/nl/zh-Hans).
+- Replaced the textual mutual-navigation suffix in route overlays with a compact SF Symbol indicator (`person.line.dotted.person.fill`) while preserving the localized accessibility label (`mutual_navigation_active`).
 - Fixed `scripts/test-screenshots.sh` selector parsing for `set -u` shells by making empty-array loops nounset-safe (`"${array[@]-}"`), preventing crashes like `selected_inputs[@]: unbound variable` when no `--test` selectors are passed.
 - Repaired test build/scheme wiring so both `miataruTests` and `miataruUITests` are enabled and consistently runnable from CLI and Xcode.
 - Stabilized UI-test integration by hardening launch behavior and test isolation for tab/navigation-driven flows.

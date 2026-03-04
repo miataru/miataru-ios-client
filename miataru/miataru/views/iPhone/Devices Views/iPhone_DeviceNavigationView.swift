@@ -591,9 +591,12 @@ struct iPhone_DeviceNavigationView: View {
                             .accessibilityHidden(true)
                     }
                     if let distanceText {
-                        let baseText = distanceText
-                        let mutualSuffix = mutualNavigationDetector.isMutualNavigation ? " - \(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other"))" : ""
-                        Text(baseText + mutualSuffix)
+                        Text(distanceText)
+                        if mutualNavigationDetector.isMutualNavigation {
+                            Image(systemName: "person.line.dotted.person.fill")
+                                .imageScale(.small)
+                                .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
+                        }
                     }
                 }
                 .font(.callout.monospacedDigit())

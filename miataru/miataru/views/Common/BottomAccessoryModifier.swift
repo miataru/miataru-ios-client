@@ -56,10 +56,16 @@ struct BottomAccessoryModifier: ViewModifier {
             HStack(spacing: 8) {
                 Image(systemName: settings.navigationTransportType == 0 ? "figure.walk" : routeInfoState.transportSymbolName)
                 let baseText = routeSummaryText()
-                let mutualSuffix = routeInfoState.isMutualNavigation ? " - \(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other"))" : ""
-                Text(baseText + mutualSuffix)
-                    .font(.system(size: 14, weight: .regular))
-                    .lineLimit(1)
+                HStack(spacing: 4) {
+                    Text(baseText)
+                        .lineLimit(1)
+                    if routeInfoState.isMutualNavigation {
+                        Image(systemName: "person.line.dotted.person.fill")
+                            .imageScale(.small)
+                            .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
+                    }
+                }
+                .font(.system(size: 14, weight: .regular))
                 Spacer(minLength: 0)
             }
             .contentShape(Rectangle())
