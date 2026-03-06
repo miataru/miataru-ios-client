@@ -21,6 +21,8 @@ struct iPhone_EditDeviceView: View {
     @State private var showColorPickerSheet = false
     @State private var tempHasCurrentLocationAccess: Bool = true
     @State private var tempHasHistoryAccess: Bool = true
+    @State private var isSyncingACL = false
+    @State private var aclSyncToken: Int = 0
     @State private var isSaving = false
     @State private var saveError: String? = nil
     @State private var fetchedSlogan: String = ""
@@ -118,21 +120,55 @@ struct iPhone_EditDeviceView: View {
                         Toggle("allowed_device_list_current_location_access", isOn: Binding(
                             get: { tempHasCurrentLocationAccess },
                             set: { newValue in
+                                let previousCurrentLocationAccess = tempHasCurrentLocationAccess
+                                let previousHistoryAccess = tempHasHistoryAccess
+                                let historyWasForcedOff = !newValue && tempHasHistoryAccess
+                                guard previousCurrentLocationAccess != newValue || historyWasForcedOff else { return }
+
                                 tempHasCurrentLocationAccess = newValue
                                 // If current location access is disabled, also disable history access
                                 if !newValue {
                                     tempHasHistoryAccess = false
                                 }
+                                device.hasCurrentLocationAccess = tempHasCurrentLocationAccess
+                                device.hasHistoryAccess = tempHasHistoryAccess
+                                syncACLImmediately(
+                                    previousCurrentLocationAccess: previousCurrentLocationAccess,
+                                    previousHistoryAccess: previousHistoryAccess
+                                )
                             }
                         ))
+                        .disabled(isSyncingACL)
                         Text("allowed_device_list_current_location_access_description")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Toggle("allowed_device_list_history_access", isOn: $tempHasHistoryAccess)
-                            .disabled(!tempHasCurrentLocationAccess)
+                        Toggle("allowed_device_list_history_access", isOn: Binding(
+                            get: { tempHasHistoryAccess },
+                            set: { newValue in
+                                let previousCurrentLocationAccess = tempHasCurrentLocationAccess
+                                let previousHistoryAccess = tempHasHistoryAccess
+                                guard previousHistoryAccess != newValue else { return }
+
+                                tempHasHistoryAccess = newValue
+                                device.hasHistoryAccess = tempHasHistoryAccess
+                                syncACLImmediately(
+                                    previousCurrentLocationAccess: previousCurrentLocationAccess,
+                                    previousHistoryAccess: previousHistoryAccess
+                                )
+                            }
+                        ))
+                            .disabled(!tempHasCurrentLocationAccess || isSyncingACL)
                         Text("allowed_device_list_history_access_description")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                        if isSyncingACL {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .scaleEffect(0.9)
+                                Spacer()
+                            }
+                        }
                     }
                 }
                 Section(header: Text("device_qr_code")) {
@@ -162,18 +198,13 @@ struct iPhone_EditDeviceView: View {
             }
             .navigationTitle("edit_device")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
-                        isPresented = false
-                    }
-                }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("save") {
+                    Button("close_button_label") {
                         Task {
                             await saveDevice()
                         }
                     }
-                    .disabled(tempDeviceName.isEmpty || isSaving)
+                    .disabled(isSaving || isSyncingACL)
                 }
             }
             .onAppear {
@@ -216,46 +247,17 @@ struct iPhone_EditDeviceView: View {
     private func saveDevice() async {
         isSaving = true
         saveError = nil
-        
-        // Capture snapshot for rollback
-        let snapshot = AllowedDeviceListManager.shared.captureSnapshot()
-        
-        // Store previous ACL values for rollback
-        let previousHasCurrentLocationAccess = device.hasCurrentLocationAccess
-        let previousHasHistoryAccess = device.hasHistoryAccess
-        
+
         // Update device properties
-        device.DeviceName = tempDeviceName
+        let trimmedName = tempDeviceName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedName.isEmpty {
+            device.DeviceName = trimmedName
+        }
         if #available(iOS 14.0, *) {
             device.DeviceColor = UIColor(tempDeviceColor)
         }
         device.hasCurrentLocationAccess = tempHasCurrentLocationAccess
         device.hasHistoryAccess = tempHasHistoryAccess
-        
-        debugLog("[EditDevice] Updated device \(device.DeviceID): current=\(tempHasCurrentLocationAccess), history=\(tempHasHistoryAccess)")
-        debugLog("[EditDevice] Device object values after update: current=\(device.hasCurrentLocationAccess), history=\(device.hasHistoryAccess)")
-        
-        // Ensure property changes are propagated
-        await Task.yield()
-        
-        // If feature is enabled, sync to server
-        if settings.allowedDeviceListEnabled {
-            do {
-                // Verify device values before syncing
-                debugLog("[EditDevice] Before sync - device \(device.DeviceID): current=\(device.hasCurrentLocationAccess), history=\(device.hasHistoryAccess)")
-                try await AllowedDeviceListManager.shared.syncAllowedDeviceListIfEnabled(trigger: .edit)
-            } catch {
-                // Rollback on sync failure
-                device.hasCurrentLocationAccess = previousHasCurrentLocationAccess
-                device.hasHistoryAccess = previousHasHistoryAccess
-                AllowedDeviceListManager.shared.restoreSnapshot(snapshot)
-                saveError = error.localizedDescription
-                Haptic.notifyWarning()
-                debugLog("[EditDevice] Sync failed, rolled back: \(error)")
-                isSaving = false
-                return
-            }
-        }
 
         if isCurrentDevice {
             do {
@@ -275,6 +277,47 @@ struct iPhone_EditDeviceView: View {
         Haptic.notifySuccess()
         isPresented = false
         isSaving = false
+    }
+
+    @MainActor
+    private func syncACLImmediately(previousCurrentLocationAccess: Bool, previousHistoryAccess: Bool) {
+        guard settings.allowedDeviceListEnabled, !isCurrentDevice else { return }
+
+        let token = aclSyncToken + 1
+        aclSyncToken = token
+        isSyncingACL = true
+        let deviceID = device.DeviceID
+        let hasCurrentLocationAccess = tempHasCurrentLocationAccess
+        let hasHistoryAccess = tempHasHistoryAccess
+
+        Task {
+            do {
+                try await AllowedDeviceListManager.shared.upsertDeviceACL(
+                    deviceID: deviceID,
+                    hasCurrentLocationAccess: hasCurrentLocationAccess,
+                    hasHistoryAccess: hasHistoryAccess
+                )
+                await MainActor.run {
+                    guard token == aclSyncToken else { return }
+                    isSyncingACL = false
+                }
+            } catch {
+                await MainActor.run {
+                    guard token == aclSyncToken else { return }
+                    tempHasCurrentLocationAccess = previousCurrentLocationAccess
+                    tempHasHistoryAccess = previousHistoryAccess
+                    device.hasCurrentLocationAccess = previousCurrentLocationAccess
+                    device.hasHistoryAccess = previousHistoryAccess
+                    if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
+                        saveError = authMessage
+                    } else {
+                        saveError = error.localizedDescription
+                    }
+                    isSyncingACL = false
+                    Haptic.notifyWarning()
+                }
+            }
+        }
     }
 
     @MainActor
