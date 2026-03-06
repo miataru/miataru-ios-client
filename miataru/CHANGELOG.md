@@ -1,4 +1,5 @@
 version 3.1.2
+- Refined device history caching and refresh behavior: opening history now fetches fresh server data, active history views reuse cache only briefly, and in-view refresh is triggered when new device locations arrive (throttled), while empty server history clears local cache entries.
 - Changed Edit Device ACL behavior to immediate server sync on toggle changes (no deferred ACL write on Save), removed the Cancel action, and renamed the primary action to localized "Close" (`close_button_label`).
 - Added pulsing animation for the mutual-navigation indicator symbol in both route info overlays (top overlay and iOS 26 bottom accessory), gated by global animation allowance and the existing pulsing marker setting.
 - Fixed missing route-info separator in the iOS 26 bottom navigation accessory when mutual navigation is active (`… ETA • [mutual symbol]`), using the localized `device_row_separator` consistently between all segments and before the mutual-navigation icon.

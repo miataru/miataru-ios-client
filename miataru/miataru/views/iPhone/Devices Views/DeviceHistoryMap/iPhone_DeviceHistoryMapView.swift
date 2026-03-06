@@ -9,6 +9,7 @@
 
 import SwiftUI
 import MapKit
+import Combine
 import MiataruAPIClient
 #if canImport(UIKit)
 import UIKit
@@ -33,6 +34,9 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var isLoading = false
     @State private var loadError: String? = nil
     @ObservedObject private var cache = DeviceHistoryCacheStore.shared
+    @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
+    @State private var lastObservedDeviceLocationTimestamp: Date? = nil
+    @State private var lastLocationTriggeredRefreshAt: Date? = nil
     // Timeline state
     @State private var selectedRange: ClosedRange<Double>? = nil
     /// The committed range used for map rendering - only updates when dragging ends
@@ -54,6 +58,8 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var pendingFocusAfterScrub = false
     @State private var isSelectionDragging = false
     private let playbackContextPadding = 50
+    private let activeHistoryCacheReuseWindow: TimeInterval = 3
+    private let locationTriggeredRefreshThrottle: TimeInterval = 10
 
     /// Uses displayRange (committed range) for map rendering to avoid constant updates during dragging
     private var visibleHistory: [MiataruLocationData] {
@@ -89,6 +95,15 @@ struct iPhone_DeviceHistoryMapView: View {
     private var selectedTimelineEntry: MiataruLocationData? {
         guard let scrubTimestamp else { return nil }
         return viewModel.closest(to: scrubTimestamp, in: selectedRange)
+    }
+
+    private var deviceLocationTimestampPublisher: AnyPublisher<Date?, Never> {
+        locationCache.$locations
+            .map { locations in
+                locations.first(where: { $0.deviceID == device.DeviceID })?.timestamp
+            }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
     }
 
     static let timelineDateFormatter: DateFormatter = {
@@ -323,6 +338,20 @@ struct iPhone_DeviceHistoryMapView: View {
             updateRegion(animated: false)
             stopPlayback()
         }
+        .onReceive(deviceLocationTimestampPublisher) { newTimestamp in
+            guard let newTimestamp else { return }
+            if lastObservedDeviceLocationTimestamp == nil {
+                lastObservedDeviceLocationTimestamp = newTimestamp
+                return
+            }
+            guard newTimestamp > (lastObservedDeviceLocationTimestamp ?? .distantPast) else { return }
+            lastObservedDeviceLocationTimestamp = newTimestamp
+            guard shouldRefreshHistoryForNewLocationTimestamp(newTimestamp) else { return }
+            lastLocationTriggeredRefreshAt = Date()
+            Task {
+                await loadHistory(forceRefresh: true, preserveCurrentDataOnFailure: true)
+            }
+        }
         .onChange(of: selectedRange) { _, newValue in
             clampScrubToRange()
             // Only update displayRange (and thus the map) when not dragging
@@ -454,16 +483,27 @@ struct iPhone_DeviceHistoryMapView: View {
         }
     }
 
-    private func loadHistory() async {
-        // Prefer cached history for snappy resume
+    private func loadHistory(forceRefresh: Bool = false, preserveCurrentDataOnFailure: Bool = false) async {
+        if let knownTimestamp = locationCache.getLocation(for: device.DeviceID)?.timestamp {
+            lastObservedDeviceLocationTimestamp = knownTimestamp
+        }
+
         if let cached = cache.getHistory(for: device.DeviceID) {
             debugLog("[DeviceHistoryMapView] Using cached history for device \(device.DeviceID) entries=\(cached.count)")
             await MainActor.run {
                 viewModel.setHistory(cached)
                 initializeTimelineIfNeeded()
             }
-            return
         }
+
+        let latestKnownLocationTimestamp = locationCache.getLocation(for: device.DeviceID)?.timestamp
+        let shouldRefresh = forceRefresh || cache.shouldRefreshHistory(
+            for: device.DeviceID,
+            latestKnownLocationTimestamp: latestKnownLocationTimestamp,
+            maxAge: activeHistoryCacheReuseWindow
+        )
+        guard shouldRefresh else { return }
+
         guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {
             await MainActor.run {
                 loadError = NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
@@ -489,7 +529,11 @@ struct iPhone_DeviceHistoryMapView: View {
             let sorted = normalized.sorted { $0.TimestampDate < $1.TimestampDate }
             await MainActor.run {
                 viewModel.setHistory(sorted)
-                cache.setHistory(sorted, for: device.DeviceID)
+                if sorted.isEmpty {
+                    cache.removeHistory(for: device.DeviceID)
+                } else {
+                    cache.setHistory(sorted, for: device.DeviceID)
+                }
                 isLoading = false
                 debugLog("[DeviceHistoryMapView] Loaded history entries=\(sorted.count) for device \(device.DeviceID)")
                 if sorted.isEmpty {
@@ -502,16 +546,35 @@ struct iPhone_DeviceHistoryMapView: View {
             await MainActor.run {
                 isLoading = false
                 loadError = mapAPIError(apiError)
-                viewModel.setHistory([])
+                if !preserveCurrentDataOnFailure {
+                    viewModel.setHistory([])
+                }
             }
         } catch {
             debugLog("[DeviceHistoryMapView] Failed to load history for device \(device.DeviceID): \(error.localizedDescription)")
             await MainActor.run {
                 loadError = error.localizedDescription
                 isLoading = false
-                viewModel.setHistory([])
+                if !preserveCurrentDataOnFailure {
+                    viewModel.setHistory([])
+                }
             }
         }
+    }
+
+    private func shouldRefreshHistoryForNewLocationTimestamp(_ timestamp: Date) -> Bool {
+        guard !isLoading else { return false }
+
+        if let lastLocationTriggeredRefreshAt,
+           Date().timeIntervalSince(lastLocationTriggeredRefreshAt) < locationTriggeredRefreshThrottle {
+            return false
+        }
+
+        if let newestHistoryTimestamp = viewModel.history.last?.TimestampDate {
+            return timestamp.timeIntervalSince(newestHistoryTimestamp) > 1
+        }
+
+        return true
     }
 
     @MainActor

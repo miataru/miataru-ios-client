@@ -947,23 +947,6 @@ struct iPad_DeviceMapView: View {
 
     // Fetches history and navigates only when entries are available. Shows an overlay on the current map if empty or failed.
     private func fetchHistoryBeforeNavigation(for device: KnownDevice) async {
-        // Prefer cached history; do not navigate if cache is empty.
-        if let cachedHistory = DeviceHistoryCacheStore.shared.getHistory(for: device.DeviceID) {
-            if cachedHistory.isEmpty {
-                await MainActor.run {
-                    errorOverlayManager.show(
-                        message: NSLocalizedString("history_no_data", comment: "No history available placeholder"),
-                        animationsAllowed: animationsAllowed
-                    )
-                }
-            } else {
-                await MainActor.run {
-                    showHistoryView = true
-                }
-            }
-            return
-        }
-
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
             await MainActor.run {
                 errorOverlayManager.show(
@@ -990,6 +973,7 @@ struct iPad_DeviceMapView: View {
 
             guard !sorted.isEmpty else {
                 await MainActor.run {
+                    DeviceHistoryCacheStore.shared.removeHistory(for: device.DeviceID)
                     errorOverlayManager.show(
                         message: NSLocalizedString("history_no_data", comment: "No history available placeholder"),
                         animationsAllowed: animationsAllowed
