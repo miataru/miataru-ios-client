@@ -9366,7 +9366,7 @@
       }
     },
     "device_row_separator" : {
-      "comment" : "Separator between last seen and distance in device row subtitle",
+      "comment" : "Separator between last seen and distance in device row subtitle\nSeparator between route info segments in bottom navigation accessory",
       "localizations" : {
         "da" : {
           "stringUnit" : {
