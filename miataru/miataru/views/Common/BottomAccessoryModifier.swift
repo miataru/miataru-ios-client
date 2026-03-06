@@ -14,6 +14,7 @@ struct BottomAccessoryModifier: ViewModifier {
     @EnvironmentObject private var routeInfoState: RouteInfoState
     @EnvironmentObject private var settings: SettingsManager
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.animationsAllowed) private var animationsAllowed
 
     let onAccessoryTap: (() -> Void)?
 
@@ -60,8 +61,11 @@ struct BottomAccessoryModifier: ViewModifier {
                     Text(baseText)
                         .lineLimit(1)
                     if routeInfoState.isMutualNavigation {
+                        Text(routeInfoSeparator)
+                            .accessibilityHidden(true)
                         Image(systemName: "person.line.dotted.person.fill")
                             .imageScale(.small)
+                            .symbolEffect(.pulse, options: .repeating, isActive: shouldAnimateMutualNavigationSymbol)
                             .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
                     }
                 }
@@ -104,7 +108,15 @@ struct BottomAccessoryModifier: ViewModifier {
             let arrivalPrefix = NSLocalizedString("navigation_arrival_prefix", comment: "Prefix for arrival clock time in the bottom navigation accessory")
             segments.append("\(arrivalPrefix): \(routeInfoState.arrivalTimeText)")
         }
-        return segments.joined(separator: " • ")
+        return segments.joined(separator: " \(routeInfoSeparator) ")
+    }
+
+    private var routeInfoSeparator: String {
+        NSLocalizedString("device_row_separator", comment: "Separator between route info segments in bottom navigation accessory")
+    }
+
+    private var shouldAnimateMutualNavigationSymbol: Bool {
+        animationsAllowed && settings.pulsingMapMarkers
     }
 
     private func strokeOverlay(cornerRadius: CGFloat) -> some View {

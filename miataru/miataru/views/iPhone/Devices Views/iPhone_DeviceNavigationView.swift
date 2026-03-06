@@ -118,6 +118,11 @@ struct iPhone_DeviceNavigationView: View {
         default: return 100
         }
     }
+
+    private var shouldAnimateMutualNavigationSymbol: Bool {
+        animationsAllowed && settings.pulsingMapMarkers
+    }
+
     // Distance threshold (meters) for automatically stopping navigation when devices are close
     private let autoStopDistanceThreshold: CLLocationDistance = 50
     // Track the initial distance when navigation started to determine if auto-stop should be enabled
@@ -598,6 +603,7 @@ struct iPhone_DeviceNavigationView: View {
                         if mutualNavigationDetector.isMutualNavigation {
                             Image(systemName: "person.line.dotted.person.fill")
                                 .imageScale(.small)
+                                .symbolEffect(.pulse, options: .repeating, isActive: shouldAnimateMutualNavigationSymbol)
                                 .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
                         }
                     }

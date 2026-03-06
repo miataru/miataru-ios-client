@@ -1,4 +1,6 @@
 version 3.1.2
+- Added pulsing animation for the mutual-navigation indicator symbol in both route info overlays (top overlay and iOS 26 bottom accessory), gated by global animation allowance and the existing pulsing marker setting.
+- Fixed missing route-info separator in the iOS 26 bottom navigation accessory when mutual navigation is active (`… ETA • [mutual symbol]`), using the localized `device_row_separator` consistently between all segments and before the mutual-navigation icon.
 - Improved focused/double-tap navigation robustness by forcing route overlay re-instantiation on each route render update (including periodic refresh), reducing cases where the blue route line appeared truncated until app reactivation.
 - Changed device-switch behavior in navigation to fetch route data with route-cache bypass for the initial recenter/update cycle, ensuring the displayed route is recalculated immediately for the newly selected device.
 - Centralized Miataru API retry handling in app code (`MiataruRetryPolicy`, `MiataruRetryClassifier`, `MiataruRequestExecutor`, `MiataruAppAPI`) without modifying `MiataruClientSwift`.
