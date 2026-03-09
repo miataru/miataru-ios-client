@@ -37,6 +37,9 @@ struct iPhone_OnboardingContainerView: View {
                 pages.append(AnyView(iPhone_4_OnboardingLocationHistoryView()))
             }
             if settings.trackAndReportLocation {
+                pages.append(AnyView(iPhone_9_OnboardingUnknownVisitorAlertsView()))
+            }
+            if settings.trackAndReportLocation {
                 pages.append(AnyView(iPhone_6_OnboardingDeviceKeyView()))
             }
             if settings.trackAndReportLocation {

@@ -15,6 +15,7 @@ struct iPhone_SettingsView: View {
     @State private var showingLocationTest = false
     @State private var showingDeviceKeySheet = false
     @State private var isActivatingAllowedDeviceList = false
+    @State private var isUpdatingUnknownVisitorAlerts = false
     @State private var activationError: String? = nil
     @EnvironmentObject var appState: AppState
     
@@ -25,6 +26,31 @@ struct iPhone_SettingsView: View {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
                     if settings.trackAndReportLocation {
                         Toggle("save_location_history_to_server", isOn: $settings.saveLocationHistoryOnServer)
+                        Toggle(
+                            "unknown_visitor_alerts_toggle",
+                            isOn: Binding(
+                                get: { settings.unknownVisitorAlertsEnabled },
+                                set: { newValue in
+                                    updateUnknownVisitorAlerts(newValue)
+                                }
+                            )
+                        )
+                        .disabled(isUpdatingUnknownVisitorAlerts)
+                        Text("explanation_unknown_visitor_alerts_toggle")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        if settings.unknownVisitorAlertsPermissionDenied {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("unknown_visitor_alerts_permission_denied_message")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                                Button("unknown_visitor_alerts_open_settings_button") {
+                                    LocationManager.shared.openAppSettings()
+                                }
+                                .font(.caption)
+                            }
+                        }
 
                         if !settings.saveLocationHistoryOnServer {
                             Picker("store_history_before_autoremove", selection: $settings.locationDataRetentionTime) {
@@ -284,6 +310,14 @@ struct iPhone_SettingsView: View {
         }
         
         isActivatingAllowedDeviceList = false
+    }
+
+    private func updateUnknownVisitorAlerts(_ newValue: Bool) {
+        isUpdatingUnknownVisitorAlerts = true
+        Task { @MainActor in
+            await settings.setUnknownVisitorAlertsEnabledFromUser(newValue)
+            isUpdatingUnknownVisitorAlerts = false
+        }
     }
 }
 

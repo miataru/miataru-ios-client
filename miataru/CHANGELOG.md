@@ -1,3 +1,14 @@
+version 3.1.3
+- Added an opt-in unknown-visitor alert feature (`unknownVisitorAlertsEnabled`, default `off`) with a centralized notification permission flow that is reused by Settings and Onboarding.
+- Added a new full-onboarding step `iPhone_9_OnboardingUnknownVisitorAlertsView` (shown only when location tracking is enabled) with feature explanation, example notification text, live toggle, denied-state hint, and app-settings shortcut.
+- Integrated unknown-visitor evaluation after successful location delivery for both direct `submit(...).sent` and outbox flush paths.
+- Added `UnknownVisitorAlertService` as a central alert engine with watermark-based incremental processing, own/known/ignored-device filtering, per-device 24-hour cooldown, and in-flight coalescing.
+- Implemented start-at-enable behavior for alert evaluation (no retroactive notifications before activation timestamp).
+- Implemented best-effort enrichment for notification text (device slogan + city), including resilient fallback message when enrichment data is unavailable.
+- Added local notification foreground presentation handling through `UNUserNotificationCenterDelegate` so unknown-visitor alerts can appear with banner/list/sound while the app is active.
+- Added complete localization coverage for all new unknown-visitor onboarding/settings/notification strings across all supported app languages (`da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`).
+- Added unit tests for unknown-visitor evaluator logic (selection/filtering/cooldown) and permission-flow behavior, plus a localization completeness test for required keys/locales.
+
 version 3.1.2
 - Refined device history caching and refresh behavior: opening history now fetches fresh server data, active history views reuse cache only briefly, and in-view refresh is triggered when new device locations arrive (throttled), while empty server history clears local cache entries.
 - Changed Edit Device ACL behavior to immediate server sync on toggle changes (no deferred ACL write on Save), removed the Cancel action, and renamed the primary action to localized "Close" (`close_button_label`).

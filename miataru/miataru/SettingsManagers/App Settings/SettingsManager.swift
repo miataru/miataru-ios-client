@@ -76,6 +76,10 @@ class SettingsManager: ObservableObject {
     @Published var autoRefreshDeviceList: Bool {
         didSet { defaults.set(autoRefreshDeviceList, forKey: Keys.autoRefreshDeviceList) }
     }
+    @Published var unknownVisitorAlertsEnabled: Bool {
+        didSet { defaults.set(unknownVisitorAlertsEnabled, forKey: Keys.unknownVisitorAlertsEnabled) }
+    }
+    @Published var unknownVisitorAlertsPermissionDenied: Bool = false
     @Published var showCurrentSpeedOnMap: Bool {
         didSet { defaults.set(showCurrentSpeedOnMap, forKey: Keys.showCurrentSpeedOnMap) }
     }
@@ -184,6 +188,7 @@ class SettingsManager: ObservableObject {
         static let locationActivityType = "location_activity_type"
         static let locationSensitivityLevel = "location_sensitivity_level"
         static let autoRefreshDeviceList = "auto_refresh_device_list"
+        static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
         static let showCurrentSpeedOnMap = "show_current_speed_on_map"
         static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
         static let showRouteProgress = "show_route_progress"
@@ -224,6 +229,7 @@ class SettingsManager: ObservableObject {
         self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
         self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
         self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
+        self.unknownVisitorAlertsEnabled = d.object(forKey: Keys.unknownVisitorAlertsEnabled) as? Bool ?? false
         self.showCurrentSpeedOnMap = d.object(forKey: Keys.showCurrentSpeedOnMap) as? Bool ?? true
         self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
         self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false
@@ -243,6 +249,22 @@ class SettingsManager: ObservableObject {
     // MARK: - Synchronize
     func synchronize() {
         defaults.synchronize()
+    }
+
+    @MainActor
+    func setUnknownVisitorAlertsEnabledFromUser(_ enabled: Bool) async {
+        let result = await UnknownVisitorAlertService.shared.setFeatureEnabled(enabled)
+        switch result {
+        case .enabled:
+            unknownVisitorAlertsEnabled = true
+            unknownVisitorAlertsPermissionDenied = false
+        case .disabled:
+            unknownVisitorAlertsEnabled = false
+            unknownVisitorAlertsPermissionDenied = false
+        case .denied:
+            unknownVisitorAlertsEnabled = false
+            unknownVisitorAlertsPermissionDenied = true
+        }
     }
     
     // MARK: - Default-Werte aus Settings.bundle laden

@@ -11507,6 +11507,70 @@
         }
       }
     },
+    "explanation_unknown_visitor_alerts_toggle" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når funktionen er aktiveret, sender Miataru en notifikation, når en ukendt enhed anmoder om din position. Den samme ukendte enhed udløser højst én notifikation hver 24. time."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn aktiviert, sendet Miataru eine Benachrichtigung, sobald ein unbekanntes Gerät deine Position anfragt. Für dasselbe unbekannte Gerät erfolgt höchstens alle 24 Stunden eine Benachrichtigung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, Miataru sends a notification when an unknown device requests your position. The same unknown device is notified at most once every 24 hours."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando está activado, Miataru envía una notificación cuando un dispositivo desconocido solicita tu posición. El mismo dispositivo desconocido se notifica como máximo una vez cada 24 horas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kun tämä on käytössä, Miataru lähettää ilmoituksen, kun tuntematon laite pyytää sijaintiasi. Samasta tuntemattomasta laitteesta ilmoitetaan enintään kerran 24 tunnissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsqu'elle est activée, Miataru envoie une notification lorsqu'un appareil inconnu demande votre position. Le même appareil inconnu ne déclenche au maximum qu'une notification toutes les 24 heures."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando è attiva, Miataru invia una notifica quando un dispositivo sconosciuto richiede la tua posizione. Lo stesso dispositivo sconosciuto genera al massimo una notifica ogni 24 ore."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、不明なデバイスがあなたの位置情報を要求したときに Miataru が通知します。同じ不明デバイスへの通知は 24 時間に最大 1 回です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als dit is ingeschakeld, stuurt Miataru een melding wanneer een onbekend apparaat je positie opvraagt. Voor hetzelfde onbekende apparaat ontvang je maximaal één melding per 24 uur."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用后，当未知设备请求你的位置时，Miataru 会发送通知。同一未知设备最多每 24 小时通知一次。"
+          }
+        }
+      }
+    },
     "explanation_zoom_to_fit_for_groups" : {
       "comment" : "Explanation for zoom to fit for groups toggle",
       "localizations" : {
@@ -17721,6 +17785,262 @@
         }
       }
     },
+    "onboarding_unknown_visitor_alerts_example_message" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"En ukendt enhed (Marias iPhone) fra Berlin har anmodet om din position\""
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Ein unbekanntes Gerät (Marias iPhone) aus Berlin hat deine Position angefragt“"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"An unknown device (Maria's iPhone) from Berlin requested your position\""
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Un dispositivo desconocido (iPhone de María) de Berlín solicitó tu posición\""
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Tuntematon laite (Marian iPhone) Berliinistä pyysi sijaintiasi\""
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Un appareil inconnu (l'iPhone de Maria) de Berlin a demandé votre position\""
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Un dispositivo sconosciuto (iPhone di Maria) da Berlino ha richiesto la tua posizione\""
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「不明なデバイス（Maria の iPhone）がベルリンからあなたの位置情報を要求しました」"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Een onbekend apparaat (Maria's iPhone) uit Berlijn heeft je positie opgevraagd\""
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“来自柏林的未知设备（Maria 的 iPhone）请求了你的位置”"
+          }
+        }
+      }
+    },
+    "onboarding_unknown_visitor_alerts_example_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eksempel på notifikation"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benachrichtigungsbeispiel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notification example"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejemplo de notificación"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmoitusesimerkki"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exemple de notification"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esempio di notifica"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知の例"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorbeeldmelding"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知示例"
+          }
+        }
+      }
+    },
+    "onboarding_unknown_visitor_alerts_intro_text" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru kan advare dig, når en ukendt enhed anmoder om din position."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru kann dich benachrichtigen, wenn ein unbekanntes Gerät deine Position anfragt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru can alert you when an unknown device requests your position."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru puede avisarte cuando un dispositivo desconocido solicite tu posición."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru voi hälyttää, kun tuntematon laite pyytää sijaintiasi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru peut vous avertir lorsqu'un appareil inconnu demande votre position."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru può avvisarti quando un dispositivo sconosciuto richiede la tua posizione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイスがあなたの位置情報を要求したときに、Miataru が通知できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru kan je waarschuwen wanneer een onbekend apparaat je positie opvraagt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当未知设备请求你的位置时，Miataru 可以提醒你。"
+          }
+        }
+      }
+    },
+    "onboarding_unknown_visitor_alerts_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advarsler om ukendte besøgende"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarm bei unbekannten Besuchern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown Visitor Alerts"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alertas de visitantes desconocidos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hälytykset tuntemattomista kävijöistä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alertes visiteurs inconnus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvisi visitatori sconosciuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明な訪問デバイスの通知"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarschuwingen voor onbekende bezoekers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知访客提醒"
+          }
+        }
+      }
+    },
     "Only allowed when app in foregrond" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
@@ -23140,6 +23460,393 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加并允许"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alert_notification_body_fallback" : {
+      "comment" : "Fallback notification body when no supplemental details are available for an unknown visitor alert",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ukendt enhed har anmodet om din position"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein unbekanntes Gerät hat deine Position angefragt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown device requested your position"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo desconocido solicitó tu posición"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon laite pyysi sijaintiasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un appareil inconnu a demandé votre position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo sconosciuto ha richiesto la tua posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイスがあなたの位置情報を要求しました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een onbekend apparaat heeft je positie opgevraagd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知设备请求了你的位置"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alert_notification_body_with_details" : {
+      "comment" : "Notification body when slogan and city are available for an unknown visitor alert",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ukendt enhed (%@) fra %@ har anmodet om din position"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein unbekanntes Gerät (%@) aus %@ hat deine Position angefragt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown device (%@) from %@ requested your position"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo desconocido (%@) de %@ solicitó tu posición"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon laite (%@) paikasta %@ pyysi sijaintiasi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un appareil inconnu (%@) depuis %@ a demandé votre position"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo sconosciuto (%@) da %@ ha richiesto la tua posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイス（%@）が %@ からあなたの位置情報を要求しました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een onbekend apparaat (%@) uit %@ heeft je positie opgevraagd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来自 %@ 的未知设备（%@）请求了你的位置"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alert_notification_title" : {
+      "comment" : "Notification title for unknown visitor alert",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukendt besøgende"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannter Besucher"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown visitor"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitante desconocido"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon kävijä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visiteur inconnu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitatore sconosciuto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明な訪問者"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onbekende bezoeker"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知访客"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alerts_open_settings_button" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn Indstillinger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa asetukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri Impostazioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Instellingen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alerts_permission_denied_message" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifikationer er slået fra for Miataru. Aktivér notifikationer i iOS-indstillinger for at bruge funktionen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen sind für Miataru deaktiviert. Aktiviere Mitteilungen in den iOS-Einstellungen, um diese Funktion zu nutzen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are disabled for Miataru. Enable notifications in iOS Settings to use this feature."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones están desactivadas para Miataru. Activa las notificaciones en los ajustes de iOS para usar esta función."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmoitukset on poistettu käytöstä Miatarulle. Ota ilmoitukset käyttöön iOS-asetuksissa, jotta voit käyttää tätä toimintoa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notifications sont désactivées pour Miataru. Activez-les dans les réglages iOS pour utiliser cette fonctionnalité."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le notifiche sono disattivate per Miataru. Abilita le notifiche nelle impostazioni iOS per usare questa funzione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru の通知が無効です。この機能を使うには iOS の設定で通知を有効にしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meldingen zijn voor Miataru uitgeschakeld. Schakel meldingen in via iOS-instellingen om deze functie te gebruiken."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 的通知已关闭。请在 iOS 设置中开启通知以使用此功能。"
+          }
+        }
+      }
+    },
+    "unknown_visitor_alerts_toggle" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifikation om ukendte besøgende"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei unbekannten Besuchern benachrichtigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notify about unknown visitors"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificar sobre visitantes desconocidos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmoita tuntemattomista kävijöistä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifier les visiteurs inconnus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifica visitatori sconosciuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明な訪問デバイスを通知"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meld onbekende bezoekers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知访客通知"
           }
         }
       }

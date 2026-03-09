@@ -391,6 +391,9 @@ final class LocationManager: NSObject, ObservableObject {
                 self.lastServerUpdate = updateDate
                 self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
                 NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
+                Task {
+                    await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
+                }
             case .queued:
                 debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
                 self.serverUpdateStatus = .idle

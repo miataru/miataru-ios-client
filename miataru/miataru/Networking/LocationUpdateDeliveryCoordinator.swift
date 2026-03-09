@@ -140,6 +140,9 @@ actor LocationUpdateDeliveryCoordinator {
                 if success {
                     await outboxStore.removeHead()
                     processedCount += 1
+                    Task {
+                        await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
+                    }
                     continue
                 }
 

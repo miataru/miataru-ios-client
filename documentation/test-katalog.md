@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-03-04)
+# Test Catalog (as of 2026-03-09)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **85** (Unit: 71, UI: 14)
+- Actively linked app test cases: **92** (Unit: 78, UI: 14)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -81,6 +81,13 @@ Important project observations:
 | UT-LDC-002 | Flush stops on transient head error and keeps queue order | Validate head-stop semantics | transient head failure increments attempt and stops cycle | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-LDC-003 | Flush drops non-retryable head and continues with next item | Validate non-retryable discard behavior | non-retryable head removed, next item processed | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-LDC-004 | Submit returns failed for non-retryable error without queueing | Validate immediate failure behavior | non-retryable submit error does not enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
+| UT-UVA-001 | Unknown visitor with new timestamp is selected | Validate unknown-device candidate selection | New visitor after watermark produces one candidate | UnknownVisitorAlertEvaluator | Unit | MiataruVisitor fixture + fixed timestamp | High |
+| UT-UVA-002 | Cooldown suppresses repeated notifications within 24h | Validate 24h dedupe window | Already-notified device within cooldown produces no candidate | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |
+| UT-UVA-003 | Visitor is re-notified after 24h cooldown | Validate re-notify path after cooldown | Same device after >24h produces candidate again | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |
+| UT-UVA-004 | Known, ignored, and own device IDs are excluded | Validate filtering rules | own/known/ignored are excluded, only unknown remains | UnknownVisitorAlertEvaluator | Unit | mixed visitor fixtures | High |
+| UT-UVA-005 | Permission request enables feature when authorization is granted | Validate activation permission flow | `.notDetermined` + grant returns `.enabled` | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
+| UT-UVA-006 | Denied authorization disables feature activation | Validate denied permission behavior | `.denied` returns `.denied` and no prompt is re-requested | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
+| UT-UVA-007 | Unknown visitor alert localization keys exist for all app locales | Localization completeness gate | Required keys present and non-empty for all 10 locales | Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases
@@ -163,6 +170,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
+- Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
 
