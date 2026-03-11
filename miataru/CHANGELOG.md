@@ -1,4 +1,6 @@
 version 3.1.4
+- Added optional slogan rendering in the Devices tab list rows (iPhone + iPad): when a device slogan exists, it is shown directly below the device name.
+- Matched device-list slogan styling to Visitor History by using secondary text color for a consistent, slightly darker subtitle appearance.
 - Extended reversed-route live summary updates to normal (non-double-tap) navigation mode, so ETA/distance/arrival stay continuously in sync outside focused mode as well.
 - Simplified navigation duration formatting to hour+minute granularity only (removed seconds) for more compact route info on smaller devices.
 - Simplified the iOS 26 bottom accessory arrival segment to show only the arrival clock time, removing the localized `ETA:`/`Ankunft:` prefix.

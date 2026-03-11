@@ -18,8 +18,10 @@ import Combine
 struct DeviceRowView: View {
     @ObservedObject var device: KnownDevice
     @ObservedObject var cache: DeviceLocationCacheStore
+    var showsSlogan: Bool = false
     @State private var isGeocoding = false
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @State private var displayedCachedLocation: CachedDeviceLocation? = nil
     @State private var locationUpdateCancellable: AnyCancellable? = nil
     // For live updates, you could use @ObservedObject for the cache, but for now, fetch on render
@@ -59,6 +61,15 @@ struct DeviceRowView: View {
                 Text(device.DeviceName)
                     .font(.headline)
                     .foregroundColor(colorScheme == .light ? .black : .white)
+
+                if let slogan = sloganText {
+                    Text(slogan)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+
                 // Subtitle: last seen + distance (always render)
                 let subtitle = subtitleText(from: displayedCachedLocation)
                 Text(subtitle)
@@ -85,6 +96,9 @@ struct DeviceRowView: View {
                 }
                 setupThrottledLocationSubscription()
                 DeviceLocationCacheStore.shared.enqueueGeocodingIfNeeded(for: device.DeviceID)
+                Task {
+                    await refreshSloganIfNeeded()
+                }
             }
             .onDisappear {
                 locationUpdateCancellable?.cancel()
@@ -92,6 +106,9 @@ struct DeviceRowView: View {
             }
             .onChange(of: settings.outsideMapUpdateInterval) { _, _ in
                 setupThrottledLocationSubscription()
+                Task {
+                    await refreshSloganIfNeeded()
+                }
             }
             .onChange(of: displayedCachedLocation?.timestamp) { _, _ in
                 DeviceLocationCacheStore.shared.enqueueGeocodingIfNeeded(for: device.DeviceID)
@@ -99,10 +116,16 @@ struct DeviceRowView: View {
             Spacer()
         }
         .padding(.vertical, 4)
-        .frame(height: 56)
+        .frame(minHeight: 56)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))
         .accessibilityValue(Text(subtitleText(from: displayedCachedLocation)))
+    }
+
+    private var sloganText: String? {
+        guard showsSlogan else { return nil }
+        guard let slogan = sloganCache.slogan(for: device.DeviceID), !slogan.isEmpty else { return nil }
+        return slogan
     }
     
     /// Returns the subtitle string for the device row: last seen + distance
@@ -259,6 +282,22 @@ struct DeviceRowView: View {
                 self.displayedCachedLocation = newValue
             }
         locationUpdateCancellable = publisher
+    }
+
+    @MainActor
+    private func refreshSloganIfNeeded() async {
+        guard showsSlogan else { return }
+        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+        let refreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
+
+        await sloganCache.refreshSloganIfStale(
+            for: device.DeviceID,
+            serverURL: serverURL,
+            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+            requestingDeviceKey: deviceKey,
+            minimumRefreshInterval: refreshInterval
+        )
     }
 }
 

@@ -86,7 +86,7 @@ struct iPad_DevicesView: View {
                 Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         if cache.getLocation(for: device.DeviceID) != nil {
-                            DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
                                 .accessibilityIdentifier(
                                     device.DeviceID == thisDeviceIDManager.shared.deviceID
                                         ? "devices_row_this_device"
@@ -141,7 +141,7 @@ struct iPad_DevicesView: View {
                                     .tint(.blue)
                                 }
                         } else {
-                            DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
                                 .accessibilityIdentifier(
                                     device.DeviceID == thisDeviceIDManager.shared.deviceID
                                         ? "devices_row_this_device"

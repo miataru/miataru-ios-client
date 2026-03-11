@@ -95,7 +95,7 @@ struct iPhone_DevicesView: View {
                     ForEach(store.devices) { device in
                         if editMode == .inactive {
                             NavigationLink(value: NavigationDestination.device(device.DeviceID)) {
-                                DeviceRowView(device: device, cache: cache)
+                                DeviceRowView(device: device, cache: cache, showsSlogan: true)
                             }
                             .accessibilityIdentifier(
                                 device.DeviceID == thisDeviceIDManager.shared.deviceID
@@ -129,7 +129,7 @@ struct iPhone_DevicesView: View {
                                 .tint(.blue)
                             }
                         } else {
-                            DeviceRowView(device: device, cache: cache)
+                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     editingDevice = device
