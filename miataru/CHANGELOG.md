@@ -3,6 +3,9 @@ version 3.1.4
 - Added `MiataruAPIClient.getDeviceSecurityStatus(...)` for authenticated security-status checks against `v1/getDeviceSecurityStatus`.
 - Added app-level wrapper `MiataruAppAPI.getDeviceSecurityStatus(...)` so app callsites can use the centralized request executor and read retry policy.
 - Updated `MiataruClientSwift` README with usage documentation and example code for `getDeviceSecurityStatus`.
+- Added a new first security-status row in Edit Device `Access Permissions` that loads on open via `getDeviceSecurityStatus` and shows DeviceKey + ACL status text with symbols.
+- Added status color coding in that row: active (`green`), inactive (`red`), unknown/loading (`secondary`) with unknown fallback on missing credentials or API/auth/network errors.
+- Added full localization coverage for the new Edit Device security-status texts across all supported app languages (`da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`).
 
 version 3.1.3
 - Added an opt-in unknown-visitor alert feature (`unknownVisitorAlertsEnabled`, default `off`) with a centralized notification permission flow that is reused by Settings and Onboarding.

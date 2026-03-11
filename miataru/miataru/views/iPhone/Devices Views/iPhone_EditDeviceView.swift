@@ -28,9 +28,18 @@ struct iPhone_EditDeviceView: View {
     @State private var fetchedSlogan: String = ""
     @State private var sloganDraft: String = ""
     @State private var isLoadingSlogan = false
+    @State private var isLoadingSecurityStatus = false
+    @State private var deviceKeySecurityStatus: DeviceSecurityStatus = .unknown
+    @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     private let maxSloganLength = 40
+
+    private enum DeviceSecurityStatus {
+        case active
+        case inactive
+        case unknown
+    }
 
     private var isCurrentDevice: Bool {
         device.DeviceID == thisDeviceIDManager.shared.deviceID
@@ -117,6 +126,31 @@ struct iPhone_EditDeviceView: View {
                 // Hide ACL controls for this device itself – ACLs are only relevant for *other* devices.
                 if settings.allowedDeviceListEnabled && device.DeviceID != thisDeviceIDManager.shared.deviceID {
                     Section(header: Text("allowed_device_list_access_controls")) {
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("allowed_device_list_security_overview_label")
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 6) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: deviceKeySecurityStatusIcon)
+                                    Text(deviceKeySecurityStatusText)
+                                }
+                                .foregroundColor(deviceKeySecurityStatusColor)
+                                HStack(spacing: 6) {
+                                    Image(systemName: aclSecurityStatusIcon)
+                                    Text(aclSecurityStatusText)
+                                }
+                                .foregroundColor(aclSecurityStatusColor)
+                                if isLoadingSecurityStatus {
+                                    HStack(spacing: 6) {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                        Text(verbatim: "...")
+                                    }
+                                    .foregroundColor(.secondary)
+                                }
+                            }
+                            .font(.caption)
+                        }
                         Toggle("allowed_device_list_current_location_access", isOn: Binding(
                             get: { tempHasCurrentLocationAccess },
                             set: { newValue in
@@ -218,6 +252,9 @@ struct iPhone_EditDeviceView: View {
                 Task {
                     await refreshSlogan()
                 }
+                Task {
+                    await refreshDeviceSecurityStatus()
+                }
             }
             .alert(NSLocalizedString("Error", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
                 Button(NSLocalizedString("ok", comment: "OK button")) {
@@ -277,6 +314,72 @@ struct iPhone_EditDeviceView: View {
         Haptic.notifySuccess()
         isPresented = false
         isSaving = false
+    }
+
+    private var deviceKeySecurityStatusText: String {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return NSLocalizedString("allowed_device_list_security_devicekey_active", comment: "DeviceKey security status active")
+        case .inactive:
+            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", comment: "DeviceKey security status inactive")
+        case .unknown:
+            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", comment: "DeviceKey security status unknown")
+        }
+    }
+
+    private var aclSecurityStatusText: String {
+        switch aclSecurityStatus {
+        case .active:
+            return NSLocalizedString("allowed_device_list_security_acl_active", comment: "ACL security status active")
+        case .inactive:
+            return NSLocalizedString("allowed_device_list_security_acl_inactive", comment: "ACL security status inactive")
+        case .unknown:
+            return NSLocalizedString("allowed_device_list_security_acl_unknown", comment: "ACL security status unknown")
+        }
+    }
+
+    private var deviceKeySecurityStatusIcon: String {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return "key.fill"
+        case .inactive:
+            return "key.slash.fill"
+        case .unknown:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    private var aclSecurityStatusIcon: String {
+        switch aclSecurityStatus {
+        case .active:
+            return "lock.fill"
+        case .inactive:
+            return "lock.open.fill"
+        case .unknown:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    private var deviceKeySecurityStatusColor: Color {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return .green
+        case .inactive:
+            return .red
+        case .unknown:
+            return .secondary
+        }
+    }
+
+    private var aclSecurityStatusColor: Color {
+        switch aclSecurityStatus {
+        case .active:
+            return .green
+        case .inactive:
+            return .red
+        case .unknown:
+            return .secondary
+        }
     }
 
     @MainActor
@@ -347,6 +450,51 @@ struct iPhone_EditDeviceView: View {
         fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
         if isCurrentDevice {
             sloganDraft = fetchedSlogan
+        }
+    }
+
+    @MainActor
+    private func refreshDeviceSecurityStatus() async {
+        guard settings.allowedDeviceListEnabled, !isCurrentDevice else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            isLoadingSecurityStatus = false
+            return
+        }
+
+        let normalizedDeviceID = device.DeviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !normalizedDeviceID.isEmpty else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+        guard let serverURL = URL(string: settings.miataruServerURL) else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+
+        isLoadingSecurityStatus = true
+        defer { isLoadingSecurityStatus = false }
+
+        do {
+            let securityStatus = try await MiataruAppAPI.getDeviceSecurityStatus(
+                serverURL: serverURL,
+                forDeviceID: normalizedDeviceID,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey
+            )
+            deviceKeySecurityStatus = securityStatus.HasDeviceKey ? .active : .inactive
+            aclSecurityStatus = securityStatus.IsAllowedDeviceListEnabled ? .active : .inactive
+        } catch {
+            _ = DeviceKeyAuthHandler.handle(error: error)
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
         }
     }
 
