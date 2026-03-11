@@ -313,6 +313,14 @@ struct VisitorHistoryRow: View {
                 }
                 
                 if knownDevice != nil {
+                    if let visitorSlogan {
+                        Text(visitorSlogan)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+
                     // Subtitle: Last seen with timezone (like DeviceRowView)
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let subtitle = subtitleText(now: context.date)
@@ -607,7 +615,6 @@ struct VisitorHistoryRow: View {
 
     @MainActor
     private func fetchSloganIfNeeded() async {
-        guard knownDevice == nil else { return }
         guard let serverURL = URL(string: settings.miataruServerURL) else { return }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
 
