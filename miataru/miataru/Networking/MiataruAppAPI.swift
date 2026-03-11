@@ -95,6 +95,22 @@ enum MiataruAppAPI {
         }
     }
 
+    static func getDeviceSecurityStatus(
+        serverURL: URL,
+        forDeviceID deviceID: String,
+        requestingDeviceID: String,
+        requestingDeviceKey: String
+    ) async throws -> MiataruDeviceSecurityStatus {
+        try await executor.execute(policy: .read, operationName: "getDeviceSecurityStatus") {
+            try await MiataruAPIClient.getDeviceSecurityStatus(
+                serverURL: serverURL,
+                forDeviceID: deviceID,
+                requestingDeviceID: requestingDeviceID,
+                requestingDeviceKey: requestingDeviceKey
+            )
+        }
+    }
+
     static func setAllowedDeviceList(
         serverURL: URL,
         deviceID: String,

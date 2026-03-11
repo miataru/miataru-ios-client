@@ -166,6 +166,20 @@ private struct GetDeviceSloganRequestBody: Encodable {
     }
 }
 
+/// Strongly typed request body for the GetDeviceSecurityStatus endpoint.
+private struct GetDeviceSecurityStatusRequestBody: Encodable {
+    var MiataruGetDeviceSecurityStatus: GetDeviceSecurityStatusPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruGetDeviceSecurityStatus
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruGetDeviceSecurityStatus, forKey: .MiataruGetDeviceSecurityStatus)
+    }
+}
+
 /// Payload for GetLocation request.
 public struct GetLocationPayload: Codable {
     public let Device: String
@@ -280,6 +294,19 @@ public struct SetDeviceSloganPayload: Codable {
 
 /// Payload for the GetDeviceSlogan request.
 public struct GetDeviceSloganPayload: Codable {
+    public let DeviceID: String
+    public let RequestDeviceID: String
+    public let RequestDeviceKey: String
+
+    public init(DeviceID: String, RequestDeviceID: String, RequestDeviceKey: String) {
+        self.DeviceID = DeviceID
+        self.RequestDeviceID = RequestDeviceID
+        self.RequestDeviceKey = RequestDeviceKey
+    }
+}
+
+/// Payload for the GetDeviceSecurityStatus request.
+public struct GetDeviceSecurityStatusPayload: Codable {
     public let DeviceID: String
     public let RequestDeviceID: String
     public let RequestDeviceKey: String
@@ -767,6 +794,16 @@ public struct MiataruGetDeviceSloganResponse: Codable {
     public let MiataruDeviceSlogan: MiataruDeviceSlogan
 }
 
+public struct MiataruDeviceSecurityStatus: Codable {
+    public let DeviceID: String
+    public let HasDeviceKey: Bool
+    public let IsAllowedDeviceListEnabled: Bool
+}
+
+public struct MiataruGetDeviceSecurityStatusResponse: Codable {
+    public let MiataruDeviceSecurityStatus: MiataruDeviceSecurityStatus
+}
+
 public struct MiataruAllowedDevice: Codable {
     public let DeviceID: String
     public let hasCurrentLocationAccess: Bool
@@ -1201,6 +1238,38 @@ public enum MiataruAPIClient {
         do {
             let response = try jsonDecoder.decode(MiataruGetDeviceSloganResponse.self, from: data)
             return response.MiataruDeviceSlogan
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Fetches security status metadata for a specific device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The target device ID whose security status should be fetched.
+    ///   - requestingDeviceID: The requesting device ID for authentication.
+    ///   - requestingDeviceKey: The requesting device key for authentication.
+    /// - Returns: Security status payload for the target device.
+    /// - Throws: An `APIError` if the request fails.
+    public static func getDeviceSecurityStatus(serverURL: URL,
+                                               forDeviceID deviceID: String,
+                                               requestingDeviceID: String,
+                                               requestingDeviceKey: String) async throws -> MiataruDeviceSecurityStatus {
+        let url = serverURL.appendingPathComponent("v1/getDeviceSecurityStatus")
+        let requestBody = GetDeviceSecurityStatusRequestBody(
+            MiataruGetDeviceSecurityStatus: GetDeviceSecurityStatusPayload(DeviceID: deviceID,
+                                                                           RequestDeviceID: requestingDeviceID,
+                                                                           RequestDeviceKey: requestingDeviceKey)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Requesting security status for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            let response = try jsonDecoder.decode(MiataruGetDeviceSecurityStatusResponse.self, from: data)
+            return response.MiataruDeviceSecurityStatus
         } catch {
             throw APIError.decodingError(error)
         }

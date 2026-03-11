@@ -1,3 +1,9 @@
+version 3.1.4
+- Extended `MiataruClientSwift` with typed support for `getDeviceSecurityStatus` (`MiataruGetDeviceSecurityStatus` request and `MiataruDeviceSecurityStatus` response model).
+- Added `MiataruAPIClient.getDeviceSecurityStatus(...)` for authenticated security-status checks against `v1/getDeviceSecurityStatus`.
+- Added app-level wrapper `MiataruAppAPI.getDeviceSecurityStatus(...)` so app callsites can use the centralized request executor and read retry policy.
+- Updated `MiataruClientSwift` README with usage documentation and example code for `getDeviceSecurityStatus`.
+
 version 3.1.3
 - Added an opt-in unknown-visitor alert feature (`unknownVisitorAlertsEnabled`, default `off`) with a centralized notification permission flow that is reused by Settings and Onboarding.
 - Added a new full-onboarding step `iPhone_9_OnboardingUnknownVisitorAlertsView` (shown only when location tracking is enabled) with feature explanation, example notification text, live toggle, denied-state hint, and app-settings shortcut.
