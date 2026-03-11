@@ -1822,8 +1822,9 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func updateLiveNavigationRouteSummary() {
-        // Keep ETA/distance continuously updated while focused navigation mode is active.
-        guard isNavigationMode, !isRouteFromDeviceToUser else { return }
+        // Keep ETA/distance continuously updated for reversed (user -> device) navigation,
+        // including non-focused mode.
+        guard !isRouteFromDeviceToUser else { return }
         guard let route, let currentLocation = effectiveUserLocation else { return }
         guard let remainingMeters = route.polyline.remainingDistance(toEndFrom: MKMapPoint(currentLocation.coordinate)) else { return }
 
@@ -1864,7 +1865,7 @@ struct iPhone_DeviceNavigationView: View {
         let clampedSeconds = max(0, seconds)
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .short
-        formatter.allowedUnits = clampedSeconds >= 3600 ? [.hour, .minute] : [.minute, .second]
+        formatter.allowedUnits = [.hour, .minute]
         formatter.zeroFormattingBehavior = [.dropLeading]
         return formatter.string(from: clampedSeconds)
     }

@@ -1,4 +1,7 @@
 version 3.1.4
+- Extended reversed-route live summary updates to normal (non-double-tap) navigation mode, so ETA/distance/arrival stay continuously in sync outside focused mode as well.
+- Simplified navigation duration formatting to hour+minute granularity only (removed seconds) for more compact route info on smaller devices.
+- Simplified the iOS 26 bottom accessory arrival segment to show only the arrival clock time, removing the localized `ETA:`/`Ankunft:` prefix.
 - Extended `MiataruClientSwift` with typed support for `getDeviceSecurityStatus` (`MiataruGetDeviceSecurityStatus` request and `MiataruDeviceSecurityStatus` response model).
 - Added `MiataruAPIClient.getDeviceSecurityStatus(...)` for authenticated security-status checks against `v1/getDeviceSecurityStatus`.
 - Added app-level wrapper `MiataruAppAPI.getDeviceSecurityStatus(...)` so app callsites can use the centralized request executor and read retry policy.

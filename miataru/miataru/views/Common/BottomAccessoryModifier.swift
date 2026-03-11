@@ -105,8 +105,7 @@ struct BottomAccessoryModifier: ViewModifier {
             segments.append(routeInfoState.etaText)
         }
         if !routeInfoState.arrivalTimeText.isEmpty {
-            let arrivalPrefix = NSLocalizedString("navigation_arrival_prefix", comment: "Prefix for arrival clock time in the bottom navigation accessory")
-            segments.append("\(arrivalPrefix): \(routeInfoState.arrivalTimeText)")
+            segments.append(routeInfoState.arrivalTimeText)
         }
         return segments.joined(separator: " \(routeInfoSeparator) ")
     }
