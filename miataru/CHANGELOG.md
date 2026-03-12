@@ -1,4 +1,6 @@
 version 3.1.4
+- Added centralized device-slogan cleansing before every `setDeviceSlogan` request (remove control characters, trim outer whitespace, enforce max length 40) so invalid special/control characters are not sent to the server.
+- Replaced raw server error text in slogan-save UI with a user-friendly localized fallback message ("Beim Setzen des Device Slogans ist etwas schief gelaufen. Probier es später noch einmal.") across all supported app languages.
 - Added optional slogan rendering in the Devices tab list rows (iPhone + iPad): when a device slogan exists, it is shown directly below the device name.
 - Matched device-list slogan styling to Visitor History by using secondary text color for a consistent, slightly darker subtitle appearance.
 - Extended reversed-route live summary updates to normal (non-double-tap) navigation mode, so ETA/distance/arrival stay continuously in sync outside focused mode as well.

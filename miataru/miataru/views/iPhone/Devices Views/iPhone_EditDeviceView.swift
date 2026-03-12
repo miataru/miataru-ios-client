@@ -33,7 +33,7 @@ struct iPhone_EditDeviceView: View {
     @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
-    private let maxSloganLength = 40
+    private let maxSloganLength = MiataruAppAPI.maxDeviceSloganLength
 
     private enum DeviceSecurityStatus {
         case active
@@ -58,8 +58,9 @@ struct iPhone_EditDeviceView: View {
 
                             TextField("Info", text: $sloganDraft)
                                 .onChange(of: sloganDraft) { _, newValue in
-                                    if newValue.count > maxSloganLength {
-                                        sloganDraft = String(newValue.prefix(maxSloganLength))
+                                    let cleansedSlogan = MiataruAppAPI.cleanseDeviceSlogan(newValue, maxLength: maxSloganLength)
+                                    if cleansedSlogan != newValue {
+                                        sloganDraft = cleansedSlogan
                                     }
                                 }
 
@@ -302,8 +303,14 @@ struct iPhone_EditDeviceView: View {
             } catch {
                 if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                     saveError = authMessage
+                } else if let editDeviceError = error as? EditDeviceSloganError,
+                          let message = editDeviceError.errorDescription {
+                    saveError = message
                 } else {
-                    saveError = error.localizedDescription
+                    saveError = NSLocalizedString(
+                        "device_slogan_set_failed_try_again_later",
+                        comment: "Fallback error when setting the device slogan failed."
+                    )
                 }
                 Haptic.notifyWarning()
                 isSaving = false
@@ -526,7 +533,7 @@ struct iPhone_EditDeviceView: View {
     }
 
     private func normalizeSlogan(_ slogan: String) -> String {
-        String(slogan.trimmingCharacters(in: .whitespacesAndNewlines).prefix(maxSloganLength))
+        MiataruAppAPI.cleanseDeviceSlogan(slogan, maxLength: maxSloganLength)
     }
 
     private enum EditDeviceSloganError: LocalizedError {

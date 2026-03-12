@@ -8783,6 +8783,71 @@
         }
       }
     },
+    "device_slogan_set_failed_try_again_later" : {
+      "comment" : "Fallback error when setting the device slogan failed.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der gik noget galt, da enhedens slogan blev sat. Prøv igen senere."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beim Setzen des Device Slogans ist etwas schief gelaufen. Probier es später noch einmal."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong while setting the device slogan. Please try again later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo salió mal al establecer el eslogan del dispositivo. Inténtalo de nuevo más tarde."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laitteen iskulauseen asettaminen epäonnistui. Yritä myöhemmin uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un problème est survenu lors de la définition du slogan de l'appareil. Réessaie plus tard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si è verificato un problema durante l'impostazione dello slogan del dispositivo. Riprova più tardi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのスローガン設定中に問題が発生しました。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er ging iets mis bij het instellen van de apparaatslogan. Probeer het later opnieuw."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置设备标语时出了点问题。请稍后再试。"
+          }
+        }
+      }
+    },
     "device_key_error_too_long" : {
       "comment" : "Error when device key exceeds max length",
       "localizations" : {

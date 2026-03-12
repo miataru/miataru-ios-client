@@ -176,8 +176,8 @@ final class DeviceSloganCacheStore: ObservableObject {
 
     private func normalizedSloganValue(_ slogan: String?) -> String? {
         guard let slogan else { return nil }
-        let trimmed = slogan.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        return String(trimmed.prefix(40))
+        let cleansed = MiataruAppAPI.cleanseDeviceSlogan(slogan)
+        guard !cleansed.isEmpty else { return nil }
+        return cleansed
     }
 }

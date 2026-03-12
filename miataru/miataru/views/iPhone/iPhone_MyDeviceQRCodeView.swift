@@ -51,7 +51,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State private var isSavingSlogan = false
     @State private var sloganErrorMessage: String? = nil
 
-    private let maxSloganLength = 40
+    private let maxSloganLength = MiataruAppAPI.maxDeviceSloganLength
 
     let gradient = Gradient(colors: [.black, .pink])
     
@@ -487,8 +487,9 @@ struct iPhone_MyDeviceQRCodeView: View {
                 Section {
                     TextField("Device slogan", text: $sloganDraft)
                         .onChange(of: sloganDraft) { _, newValue in
-                            if newValue.count > maxSloganLength {
-                                sloganDraft = String(newValue.prefix(maxSloganLength))
+                            let cleansedSlogan = MiataruAppAPI.cleanseDeviceSlogan(newValue, maxLength: maxSloganLength)
+                            if cleansedSlogan != newValue {
+                                sloganDraft = cleansedSlogan
                             }
                         }
 
@@ -589,7 +590,8 @@ struct iPhone_MyDeviceQRCodeView: View {
             return
         }
 
-        let normalizedSlogan = String(sloganDraft.trimmingCharacters(in: .whitespacesAndNewlines).prefix(maxSloganLength))
+        let normalizedSlogan = MiataruAppAPI.cleanseDeviceSlogan(sloganDraft, maxLength: maxSloganLength)
+        sloganDraft = normalizedSlogan
         isSavingSlogan = true
         defer { isSavingSlogan = false }
 
@@ -609,7 +611,10 @@ struct iPhone_MyDeviceQRCodeView: View {
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 sloganErrorMessage = authMessage
             } else {
-                sloganErrorMessage = error.localizedDescription
+                sloganErrorMessage = NSLocalizedString(
+                    "device_slogan_set_failed_try_again_later",
+                    comment: "Fallback error when setting the device slogan failed."
+                )
             }
         }
     }

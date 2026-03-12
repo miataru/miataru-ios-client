@@ -12,6 +12,14 @@ import MiataruAPIClient
 
 enum MiataruAppAPI {
     private static let executor = MiataruRequestExecutor.shared
+    static let maxDeviceSloganLength = 40
+
+    static func cleanseDeviceSlogan(_ slogan: String, maxLength: Int = maxDeviceSloganLength) -> String {
+        let sanitizedScalars = slogan.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }
+        let withoutControlCharacters = String(String.UnicodeScalarView(sanitizedScalars))
+        let trimmed = withoutControlCharacters.trimmingCharacters(in: .whitespacesAndNewlines)
+        return String(trimmed.prefix(maxLength))
+    }
 
     static func getLocation(
         serverURL: URL,
@@ -149,12 +157,13 @@ enum MiataruAppAPI {
         deviceKey: String,
         slogan: String
     ) async throws -> MiataruSetDeviceSloganResponse {
-        try await executor.execute(policy: .write, operationName: "setDeviceSlogan") {
+        let cleansedSlogan = cleanseDeviceSlogan(slogan)
+        return try await executor.execute(policy: .write, operationName: "setDeviceSlogan") {
             try await MiataruAPIClient.setDeviceSlogan(
                 serverURL: serverURL,
                 deviceID: deviceID,
                 deviceKey: deviceKey,
-                slogan: slogan
+                slogan: cleansedSlogan
             )
         }
     }
