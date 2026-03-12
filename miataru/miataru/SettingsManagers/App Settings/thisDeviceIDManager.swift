@@ -9,6 +9,10 @@
 
 import Foundation
 
+extension Notification.Name {
+    static let thisDeviceIDDidChange = Notification.Name("thisDeviceIDDidChange")
+}
+
 class thisDeviceIDManager {
     static let shared = thisDeviceIDManager()
     private let legacyFileName = "deviceID.plist"
@@ -34,6 +38,38 @@ class thisDeviceIDManager {
         }
         cachedDeviceID = loaded
         return loaded
+    }
+
+    /// Persists and activates a specific deviceID value for this app install.
+    func setDeviceID(_ id: String) {
+        let trimmed = id.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            debugLog("[DEBUG] Ignoring empty deviceID set request.")
+            return
+        }
+        let oldID = cachedDeviceID
+        saveDeviceID(trimmed)
+        cachedDeviceID = trimmed
+        if oldID?.uppercased() != trimmed.uppercased() {
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(
+                    name: .thisDeviceIDDidChange,
+                    object: nil,
+                    userInfo: [
+                        "oldDeviceID": oldID ?? "",
+                        "newDeviceID": trimmed
+                    ]
+                )
+            }
+        }
+    }
+
+    /// Generates, persists and activates a brand new deviceID.
+    @discardableResult
+    func regenerateDeviceID() -> String {
+        let newID = UUID().uuidString
+        setDeviceID(newID)
+        return newID
     }
 
     private var appDirectory: URL? {

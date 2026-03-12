@@ -46,6 +46,9 @@ class SettingsManager: ObservableObject {
             }
         }
     }
+    @Published var trackAndReportLocationDisabledByDeviceKeyAuth: Bool {
+        didSet { defaults.set(trackAndReportLocationDisabledByDeviceKeyAuth, forKey: Keys.trackAndReportLocationDisabledByDeviceKeyAuth) }
+    }
     @Published var saveLocationHistoryOnServer: Bool {
         didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }
     }
@@ -183,6 +186,7 @@ class SettingsManager: ObservableObject {
         static let groupsZoomToFit = "groups_zoom_to_fit"
         static let miataruServerURL = "miataru_server_url"
         static let trackAndReportLocation = "track_and_report_location"
+        static let trackAndReportLocationDisabledByDeviceKeyAuth = "track_and_report_location_disabled_by_device_key_auth"
         static let saveLocationHistoryOnServer = "save_location_history_on_server"
         static let historyNumberOfDays = "history_number_of_days"
         static let locationActivityType = "location_activity_type"
@@ -219,6 +223,7 @@ class SettingsManager: ObservableObject {
         self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true
         self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? "https://service.miataru.com"
         self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false
+        self.trackAndReportLocationDisabledByDeviceKeyAuth = d.object(forKey: Keys.trackAndReportLocationDisabledByDeviceKeyAuth) as? Bool ?? false
         self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false
         self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "1440") ?? 1440
         self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1

@@ -7093,6 +7093,71 @@
         }
       }
     },
+    "device_key_auth_runtime_error_message" : {
+      "comment" : "Runtime auth error when stored DeviceKey is missing or invalid",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey-fejl: Den aktuelt gemte DeviceKey mangler eller accepteres ikke af serveren. Indstil eller gendan din DeviceKey."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey-Fehler: Der aktuell gespeicherte DeviceKey fehlt oder wird vom Server nicht akzeptiert. Bitte DeviceKey setzen oder wiederherstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey error: The currently stored DeviceKey is missing or not accepted by the server. Please set or restore your DeviceKey."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de DeviceKey: el DeviceKey almacenado actualmente falta o no es aceptado por el servidor. Configura o restaura tu DeviceKey."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey-virhe: nykyinen tallennettu DeviceKey puuttuu tai palvelin ei hyväksy sitä. Aseta tai palauta DeviceKey."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur DeviceKey : le DeviceKey actuellement enregistré est manquant ou non accepté par le serveur. Définis ou restaure ton DeviceKey."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore DeviceKey: il DeviceKey attualmente salvato manca o non è accettato dal server. Imposta o ripristina il tuo DeviceKey."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey エラー: 現在保存されている DeviceKey がないか、サーバーに受け付けられていません。DeviceKey を設定または復元してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey-fout: de momenteel opgeslagen DeviceKey ontbreekt of wordt niet geaccepteerd door de server. Stel je DeviceKey in of herstel deze."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey 错误：当前保存的 DeviceKey 缺失或不被服务器接受。请设置或恢复你的 DeviceKey。"
+          }
+        }
+      }
+    },
     "device_key_banner_configure_button" : {
       "comment" : "Button label to change DeviceKey when already set",
       "localizations" : {
@@ -7743,6 +7808,331 @@
         }
       }
     },
+    "device_key_custom_emergency_button" : {
+      "comment" : "Button label to start emergency identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opret ny DeviceID og DeviceKey"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue DeviceID und DeviceKey erzeugen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create new DeviceID and DeviceKey"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear nueva DeviceID y DeviceKey"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo uusi DeviceID ja DeviceKey"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un nouveau DeviceID et DeviceKey"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea nuovo DeviceID e DeviceKey"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい DeviceID と DeviceKey を作成"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe DeviceID en DeviceKey maken"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建新的 DeviceID 和 DeviceKey"
+          }
+        }
+      }
+    },
+    "device_key_custom_emergency_confirm_action" : {
+      "comment" : "Destructive confirmation action for emergency identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opret ny identitet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Identität erzeugen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create New Identity"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear nueva identidad"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo uusi identiteetti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une nouvelle identité"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea nuova identità"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい識別情報を作成"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe identiteit maken"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建新身份"
+          }
+        }
+      }
+    },
+    "device_key_custom_emergency_confirm_message" : {
+      "comment" : "Confirmation message for emergency identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dette opretter en ny DeviceID og DeviceKey for denne app-installation. Kendte enheder med adgangskontrol skal godkende denne enhed igen. Fortsæt?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dadurch wird für diese App-Installation eine neue DeviceID und ein neuer DeviceKey erzeugt. Bereits bekannte Geräte mit Zugriffskontrolle müssen dieses Gerät erneut authentifizieren. Fortfahren?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This creates a new DeviceID and DeviceKey for this app install. Known devices using access control must authenticate this device again. Continue?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto crea una nueva DeviceID y un nuevo DeviceKey para esta instalación. Los dispositivos conocidos que usan control de acceso deberán autenticar este dispositivo de nuevo. ¿Continuar?"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä luo uuden DeviceID:n ja DeviceKeyn tälle asennukselle. Tunnettujen laitteiden, jotka käyttävät pääsynhallintaa, täytyy todentaa tämä laite uudelleen. Jatketaanko?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cela crée un nouveau DeviceID et un nouveau DeviceKey pour cette installation. Les appareils connus qui utilisent le contrôle d’accès devront authentifier à nouveau cet appareil. Continuer ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo crea un nuovo DeviceID e un nuovo DeviceKey per questa installazione. I dispositivi noti che usano il controllo accessi dovranno autenticare di nuovo questo dispositivo. Continuare?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この操作で、このアプリのインストールに新しい DeviceID と DeviceKey が作成されます。アクセス制御を使用している既知のデバイスでは、このデバイスの再認証が必要になります。続行しますか？"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit maakt een nieuwe DeviceID en DeviceKey voor deze app-installatie. Bekende apparaten met toegangscontrole moeten dit apparaat opnieuw authenticeren. Doorgaan?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这将为当前安装创建新的 DeviceID 和 DeviceKey。已知设备中使用访问控制的设备需要重新认证此设备。要继续吗？"
+          }
+        }
+      }
+    },
+    "device_key_custom_emergency_confirm_title" : {
+      "comment" : "Confirmation title for emergency identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opret ny identitet?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Geräte-Identität erzeugen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create New Device Identity?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Crear nueva identidad del dispositivo?"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luodaanko uusi laite-identiteetti?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une nouvelle identité d’appareil ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creare una nuova identità del dispositivo?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいデバイス識別情報を作成しますか？"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwe apparaatidentiteit maken?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建新的设备身份？"
+          }
+        }
+      }
+    },
+    "device_key_custom_emergency_explanation" : {
+      "comment" : "Warning text for emergency identity reset in custom key sheet",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvis din DeviceKey ikke kan gendannes, kan du oprette en ny DeviceID med en ny DeviceKey. Vigtigt: Kendte enheder, der bruger adgangskontrol, skal godkende denne enhed igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn dein DeviceKey nicht wiederhergestellt werden kann, kannst du eine neue DeviceID mit neuem DeviceKey erzeugen. Wichtig: Alle bekannten Geräte mit Zugriffskontrolle müssen dieses Gerät danach erneut authentifizieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If your DeviceKey cannot be restored, you can create a new DeviceID with a new DeviceKey. Important: all known devices using access control must authenticate this device again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si tu DeviceKey no puede restaurarse, puedes crear una nueva DeviceID con un nuevo DeviceKey. Importante: todos los dispositivos conocidos que usen control de acceso deberán autenticar este dispositivo de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jos DeviceKeytä ei voi palauttaa, voit luoda uuden DeviceID:n uudella DeviceKeyllä. Tärkeää: kaikki tunnetut laitteet, jotka käyttävät pääsynhallintaa, joutuvat todentamaan tämän laitteen uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si ton DeviceKey ne peut pas être restauré, tu peux créer un nouveau DeviceID avec un nouveau DeviceKey. Important : tous les appareils connus utilisant le contrôle d’accès devront authentifier à nouveau cet appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se il tuo DeviceKey non può essere ripristinato, puoi creare una nuova DeviceID con un nuovo DeviceKey. Importante: tutti i dispositivi noti che usano il controllo accessi dovranno autenticare nuovamente questo dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey を復元できない場合は、新しい DeviceID と新しい DeviceKey を作成できます。重要: アクセス制御を使用している既知のデバイスは、このデバイスを再認証する必要があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als je DeviceKey niet kan worden hersteld, kun je een nieuwe DeviceID met een nieuwe DeviceKey aanmaken. Belangrijk: alle bekende apparaten die toegangscontrole gebruiken, moeten dit apparaat opnieuw authenticeren."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果无法恢复你的 DeviceKey，你可以创建新的 DeviceID 和新的 DeviceKey。重要：所有使用访问控制的已知设备都需要重新认证此设备。"
+          }
+        }
+      }
+    },
     "device_key_custom_message" : {
       "comment" : "Message for custom device key entry",
       "localizations" : {
@@ -7869,6 +8259,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自定义 DeviceKey"
+          }
+        }
+      }
+    },
+    "device_key_emergency_server_side_hint" : {
+      "comment" : "Hint explaining that a newly created server identity might still exist",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokal tilbagerulning er gennemført. En nyoprettet DeviceID kan stadig eksistere på serveren."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der lokale Rollback wurde durchgeführt. Eine neu erzeugte DeviceID kann serverseitig trotzdem bereits existieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local rollback completed. A newly created DeviceID may still exist on the server."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La reversión local se completó. Una DeviceID recién creada puede seguir existiendo en el servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paikallinen palautus onnistui. Uusi DeviceID voi silti olla jo palvelimella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le rollback local a été effectué. Un DeviceID nouvellement créé peut encore exister côté serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rollback locale completato. Un DeviceID appena creato potrebbe comunque esistere sul server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ローカルのロールバックは完了しました。新しく作成された DeviceID がサーバー側に残っている可能性があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale rollback voltooid. Een nieuw aangemaakte DeviceID kan nog op de server bestaan."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地回滚已完成。新创建的 DeviceID 仍可能存在于服务器上。"
           }
         }
       }
@@ -8718,8 +9173,139 @@
         }
       }
     },
+    "device_key_old_device_suffix" : {
+      "comment" : "Suffix for keeping the previous own device entry after identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Gammel)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Alt)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Old)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Antiguo)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Vanha)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Ancien)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Vecchio)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(旧)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Oud)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "（旧）"
+          }
+        }
+      }
+    },
+    "device_key_old_device_suffix_numbered" : {
+      "comment" : "Numbered suffix for keeping multiple previous own device entries after identity reset",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Gammel %d)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Alt %d)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Old %d)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Antiguo %d)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Vanha %d)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Ancien %d)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Vecchio %d)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(旧 %d)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(Oud %d)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "（旧 %d）"
+          }
+        }
+      }
+    },
     "device_key_regenerate_button" : {
       "comment" : "Button to regenerate device key",
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {

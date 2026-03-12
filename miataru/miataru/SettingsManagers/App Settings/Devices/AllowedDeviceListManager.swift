@@ -45,7 +45,6 @@ class AllowedDeviceListManager {
     
     private let settings = SettingsManager.shared
     private let deviceStore = KnownDeviceStore.shared
-    private let thisDeviceID = thisDeviceIDManager.shared.deviceID
     
     // Serialized sync queue using an actor
     private actor SyncQueue {
@@ -224,10 +223,11 @@ class AllowedDeviceListManager {
         payload: [MiataruAllowedDevice],
         trigger: SyncTrigger
     ) async throws {
+        let currentDeviceID = thisDeviceIDManager.shared.deviceID
         do {
             _ = try await MiataruAppAPI.setAllowedDeviceList(
                 serverURL: serverURL,
-                deviceID: thisDeviceID,
+                deviceID: currentDeviceID,
                 deviceKey: deviceKey,
                 allowedDevices: payload
             )

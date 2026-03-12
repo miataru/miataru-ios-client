@@ -54,18 +54,18 @@ struct iPhone_RootView: View {
                 selectedTab = initialTab
             }
             if !isUITesting, settings.deviceKeyAuthBlocked {
-                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showDeviceKeyBanner = true
                 }
-                deviceKeySheetShowsMismatch = true
+                deviceKeySheetShowsMismatch = false
                 showDeviceKeySheet = true
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .deviceKeyAuthRequired)) { notification in
             guard !isUITesting else { return }
             deviceKeyBannerMessage = (notification.userInfo?["message"] as? String)
-                ?? NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
+                ?? NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
             deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
             withAnimation(.easeInOut(duration: 0.25)) {
                 showDeviceKeyBanner = true
@@ -78,6 +78,10 @@ struct iPhone_RootView: View {
                 showDeviceKeyBanner = false
             }
             deviceKeySheetShowsMismatch = false
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .deviceIdentityDidReset)) { _ in
+            guard !isUITesting else { return }
+            selectedTab = 1
         }
         .overlay(alignment: .top) {
             if showDeviceKeyBanner {

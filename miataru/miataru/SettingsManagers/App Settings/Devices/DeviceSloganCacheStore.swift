@@ -135,6 +135,27 @@ final class DeviceSloganCacheStore: ObservableObject {
         markFetchAttempt(for: normalizedID, at: Date())
     }
 
+    func migrateCachedEntry(from oldDeviceID: String, to newDeviceID: String) {
+        let normalizedOldID = normalizedDeviceID(oldDeviceID)
+        let normalizedNewID = normalizedDeviceID(newDeviceID)
+
+        guard !normalizedOldID.isEmpty, !normalizedNewID.isEmpty, normalizedOldID != normalizedNewID else {
+            return
+        }
+
+        if let cachedSlogan = slogansByDeviceID[normalizedOldID] {
+            slogansByDeviceID[normalizedNewID] = cachedSlogan
+        }
+        if let lastFetch = lastFetchByDeviceID[normalizedOldID] {
+            lastFetchByDeviceID[normalizedNewID] = lastFetch
+        }
+        if knownDeviceIDs.contains(normalizedOldID) {
+            knownDeviceIDs.insert(normalizedNewID)
+        }
+
+        persist()
+    }
+
     private func persist() {
         defaults.set(slogansByDeviceID, forKey: Keys.slogansByDeviceID)
         defaults.set(Array(knownDeviceIDs).sorted(), forKey: Keys.knownDeviceIDs)

@@ -17,6 +17,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @Environment(\.animationsAllowed) private var animationsAllowed
 
     @State var content: String = "miataru://" + thisDeviceIDManager.shared.deviceID
+    @State private var currentDeviceID = thisDeviceIDManager.shared.deviceID
     @State var correction: QRCode.ErrorCorrection = .low
 
     @State var dataColor: Color = .primary
@@ -73,6 +74,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
                 .onAppear {
                     isVisible = true
+                    _ = synchronizeCurrentDeviceIdentity()
                     hydrateSloganFromCache()
                     if visitorHistoryViewModel.visitors.isEmpty {
                         Task {
@@ -93,8 +95,18 @@ struct iPhone_MyDeviceQRCodeView: View {
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                     Task {
+                        _ = synchronizeCurrentDeviceIdentity()
                         await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
                         await loadOwnDeviceSloganIfNeeded()
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .thisDeviceIDDidChange)) { _ in
+                    Task { @MainActor in
+                        let didChange = synchronizeCurrentDeviceIdentity()
+                        if didChange {
+                            hydrateSloganFromCache()
+                            await loadOwnDeviceSloganIfNeeded(forceRefresh: true)
+                        }
                     }
                 }
                 .task(id: "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)") {
@@ -157,7 +169,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 )
                 .sheet(isPresented: $showMailComposer, onDismiss: { qrImage = nil }) {
                     MailView(
-                        deviceID: thisDeviceIDManager.shared.deviceID,
+                        deviceID: currentDeviceID,
                         qrImage: qrImage ?? (generateQRCodeImage() ?? UIImage())
                     )
                 }
@@ -242,7 +254,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 
                 if isLandscape {
                     HStack(spacing: 6) {
-                        Text(thisDeviceIDManager.shared.deviceID)
+                        Text(currentDeviceID)
                             .font(.system(.caption, design: .monospaced))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 6)
@@ -252,7 +264,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                             .minimumScaleFactor(0.8)
 
                         Button(action: {
-                            UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+                            UIPasteboard.general.string = currentDeviceID
                             if animationsAllowed {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showCopiedAlert = true
@@ -307,7 +319,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 } else {
                     // Portrait: device id + copy on first row
                     HStack(spacing: 8) {
-                        Text(thisDeviceIDManager.shared.deviceID)
+                        Text(currentDeviceID)
                             .font(.system(.footnote, design: .monospaced))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -317,7 +329,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                             .minimumScaleFactor(0.8)
 
                         Button(action: {
-                            UIPasteboard.general.string = thisDeviceIDManager.shared.deviceID
+                            UIPasteboard.general.string = currentDeviceID
                             if animationsAllowed {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showCopiedAlert = true
@@ -456,13 +468,13 @@ struct iPhone_MyDeviceQRCodeView: View {
     private var shareText: String {
         String(
             format: NSLocalizedString("share_device_email_body", comment: "Body for sharing a device link via email or share sheet"),
-            thisDeviceIDManager.shared.deviceID,
-            "miataru://\(thisDeviceIDManager.shared.deviceID)"
+            currentDeviceID,
+            "miataru://\(currentDeviceID)"
         )
     }
 
     private var ownDeviceID: String {
-        thisDeviceIDManager.shared.deviceID
+        currentDeviceID
     }
 
     private var displayedSloganText: String {
@@ -525,30 +537,32 @@ struct iPhone_MyDeviceQRCodeView: View {
     }
 
     @MainActor
-    private func loadOwnDeviceSloganIfNeeded() async {
+    private func loadOwnDeviceSloganIfNeeded(forceRefresh: Bool = false) async {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
             sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
             return
         }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+        let deviceID = ownDeviceID
 
         isLoadingSlogan = true
         defer { isLoadingSlogan = false }
 
         let fetchError: Error?
-        if deviceSloganCacheStore.isKnown(for: ownDeviceID) {
+        if deviceSloganCacheStore.isKnown(for: deviceID) {
             fetchError = await deviceSloganCacheStore.refreshSloganIfStale(
-                for: ownDeviceID,
+                for: deviceID,
                 serverURL: serverURL,
-                requestingDeviceID: ownDeviceID,
+                requestingDeviceID: deviceID,
                 requestingDeviceKey: deviceKey,
-                minimumRefreshInterval: 300
+                minimumRefreshInterval: 300,
+                force: forceRefresh
             )
         } else {
             fetchError = await deviceSloganCacheStore.fetchSloganIfNeeded(
-                for: ownDeviceID,
+                for: deviceID,
                 serverURL: serverURL,
-                requestingDeviceID: ownDeviceID,
+                requestingDeviceID: deviceID,
                 requestingDeviceKey: deviceKey
             )
         }
@@ -598,6 +612,17 @@ struct iPhone_MyDeviceQRCodeView: View {
                 sloganErrorMessage = error.localizedDescription
             }
         }
+    }
+
+    @MainActor
+    private func synchronizeCurrentDeviceIdentity() -> Bool {
+        let latestDeviceID = thisDeviceIDManager.shared.deviceID
+        guard latestDeviceID.uppercased() != currentDeviceID.uppercased() else {
+            return false
+        }
+        currentDeviceID = latestDeviceID
+        content = "miataru://\(latestDeviceID)"
+        return true
     }
 }
 
