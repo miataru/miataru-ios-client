@@ -1822,17 +1822,37 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func updateLiveNavigationRouteSummary() {
-        // Keep ETA/distance continuously updated for reversed (user -> device) navigation,
-        // including non-focused mode.
-        guard !isRouteFromDeviceToUser else { return }
-        guard let route, let currentLocation = effectiveUserLocation else { return }
-        guard let remainingMeters = route.polyline.remainingDistance(toEndFrom: MKMapPoint(currentLocation.coordinate)) else { return }
+        guard let route else { return }
 
-        let clampedRemainingMeters = max(0, min(remainingMeters, route.distance))
-        let remainingSeconds: TimeInterval? = {
-            guard route.distance > 0 else { return nil }
-            return route.expectedTravelTime * (clampedRemainingMeters / route.distance)
-        }()
+        let clampedRemainingMeters: CLLocationDistance
+        let remainingSeconds: TimeInterval?
+
+        if isRouteFromDeviceToUser {
+            // Standard mode (device -> user): estimate route progress from elapsed time
+            // since the location timestamp that seeded the last route calculation.
+            let routeStartTimestamp = lastRouteDeviceTimestamp ?? lastRouteUserTimestamp
+            guard let routeStartTimestamp else { return }
+            let expectedTravelTime = max(0, route.expectedTravelTime)
+            let elapsed = max(0, now.timeIntervalSince(routeStartTimestamp))
+            let estimatedRemainingSeconds = max(0, expectedTravelTime - elapsed)
+            let estimatedRemainingMeters: CLLocationDistance = {
+                guard expectedTravelTime > 0 else { return 0 }
+                let remainingRatio = estimatedRemainingSeconds / expectedTravelTime
+                return route.distance * remainingRatio
+            }()
+
+            clampedRemainingMeters = max(0, min(estimatedRemainingMeters, route.distance))
+            remainingSeconds = estimatedRemainingSeconds
+        } else {
+            // Reversed mode (user -> device): derive remaining distance from the live user position.
+            guard let currentLocation = effectiveUserLocation else { return }
+            guard let remainingMeters = route.polyline.remainingDistance(toEndFrom: MKMapPoint(currentLocation.coordinate)) else { return }
+            clampedRemainingMeters = max(0, min(remainingMeters, route.distance))
+            remainingSeconds = {
+                guard route.distance > 0 else { return nil }
+                return route.expectedTravelTime * (clampedRemainingMeters / route.distance)
+            }()
+        }
 
         let newTravelTime = formattedDuration(remainingSeconds)
         let newDistanceText = formattedDistance(clampedRemainingMeters)

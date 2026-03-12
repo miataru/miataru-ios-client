@@ -78,6 +78,7 @@ miataru/
 - Auto-refresh route decisions are centralized in `views/Common/NavigationRouteRefreshPolicy.swift`.
 - Hard refresh triggers: auto-update enabled + missing route, or user off-route.
 - Standard navigation mode (`isRouteFromDeviceToUser == true`): target movement only triggers reroute when target moved significantly **and** is off the current route.
+- In standard navigation mode, bottom accessory ETA/arrival values are continuously updated from elapsed time since the route seed timestamp, so the displayed route time does not appear frozen between route recalculations.
 - Reverse navigation mode keeps movement-trigger behavior compatible with prior logic after the significant-movement check.
 - Route reuse still goes through `RouteCacheStore` (`useCachedRouteIfValid`) before issuing new `MKDirections` requests.
 - Focused double-tap navigation mode (`isNavigationMode == true`) intentionally renders a stable base route (plus optional mutual-navigation overlay) without ghost/progress segmentation.
