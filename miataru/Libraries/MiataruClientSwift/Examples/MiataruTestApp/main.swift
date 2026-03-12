@@ -24,9 +24,9 @@ struct MiataruTestApp {
 
         while !shouldTerminate {
             // Zufällige Location erzeugen
-            let longitude = String(format: "%.6f", Double.random(in: -180...180))
-            let latitude = String(format: "%.6f", Double.random(in: -90...90))
-            let accuracy = String(format: "%.1f", Double.random(in: 5...100))
+            let longitude = Double.random(in: -180...180)
+            let latitude = Double.random(in: -90...90)
+            let accuracy = Double.random(in: 5...100)
             let timestamp = String(Int(Date().timeIntervalSince1970))
             let updatePayload = UpdateLocationPayload(
                 Device: testPostDeviceID,
@@ -36,7 +36,7 @@ struct MiataruTestApp {
                 HorizontalAccuracy: accuracy
             )
             do {
-                print("Sende zufällige Location: \(latitude), \(longitude) (Genauigkeit: \(accuracy))")
+                print("Sende zufällige Location: \(String(format: "%.6f", latitude)), \(String(format: "%.6f", longitude)) (Genauigkeit: \(String(format: "%.1f", accuracy)))")
                 fflush(stdout)
                 let ack = try await MiataruAPIClient.updateLocation(
                     serverURL: serverURL,

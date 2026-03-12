@@ -272,6 +272,7 @@ struct iPad_DevicesView: View {
                     try? await Task.sleep(nanoseconds: interval)
                     guard isVisible,
                           UIApplication.shared.applicationState == .active else { continue }
+                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: true)
                     await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
                     await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
@@ -413,14 +414,6 @@ struct iPad_DevicesView: View {
             serverURL: serverURL
         )
 
-        let sloganRefreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
-        await refreshUnknownVisitorSlogans(
-            deviceIDs: unknownDeviceIDs,
-            serverURL: serverURL,
-            minimumRefreshInterval: sloganRefreshInterval,
-            force: force
-        )
-
         lastUnknownVisitorSupplementalRefresh = Date()
     }
 
@@ -475,24 +468,6 @@ struct iPad_DevicesView: View {
         }
     }
 
-    @MainActor
-    private func refreshUnknownVisitorSlogans(deviceIDs: [String],
-                                              serverURL: URL,
-                                              minimumRefreshInterval: TimeInterval,
-                                              force: Bool) async {
-        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
-
-        for deviceID in deviceIDs {
-            await DeviceSloganCacheStore.shared.refreshSloganIfStale(
-                for: deviceID,
-                serverURL: serverURL,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-                requestingDeviceKey: deviceKey,
-                minimumRefreshInterval: minimumRefreshInterval,
-                force: force
-            )
-        }
-    }
 }
 
 #Preview {

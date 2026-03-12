@@ -399,6 +399,18 @@ struct iPhone_DevicesView: View {
                     }
                 }
             }
+            .task(id: "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)") {
+                let seconds = max(5.0, Double(settings.outsideMapUpdateInterval))
+                let interval = UInt64(seconds * 1_000_000_000)
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: interval)
+                    guard isVisible,
+                          UIApplication.shared.applicationState == .active else { continue }
+                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: true)
+                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded()
+                }
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
                     settings.lastOpenedDeviceID = nil
@@ -463,14 +475,6 @@ struct iPhone_DevicesView: View {
             serverURL: serverURL
         )
 
-        let sloganRefreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
-        await refreshUnknownVisitorSlogans(
-            deviceIDs: unknownDeviceIDs,
-            serverURL: serverURL,
-            minimumRefreshInterval: sloganRefreshInterval,
-            force: force
-        )
-
         lastUnknownVisitorSupplementalRefresh = Date()
     }
 
@@ -525,24 +529,6 @@ struct iPhone_DevicesView: View {
         }
     }
 
-    @MainActor
-    private func refreshUnknownVisitorSlogans(deviceIDs: [String],
-                                              serverURL: URL,
-                                              minimumRefreshInterval: TimeInterval,
-                                              force: Bool) async {
-        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
-
-        for deviceID in deviceIDs {
-            await DeviceSloganCacheStore.shared.refreshSloganIfStale(
-                for: deviceID,
-                serverURL: serverURL,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-                requestingDeviceKey: deviceKey,
-                minimumRefreshInterval: minimumRefreshInterval,
-                force: force
-            )
-        }
-    }
 }
 
 private enum NavigationDestination: Hashable {
@@ -555,7 +541,6 @@ struct UnknownVisitorRow: View {
     let onAllow: () -> Void
     let onIgnore: () -> Void
     
-    @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
     
@@ -635,9 +620,6 @@ struct UnknownVisitorRow: View {
             }
             .onAppear {
                 locationCache.enqueueGeocodingIfNeeded(for: visitor.DeviceID)
-                Task {
-                    await fetchSloganIfNeeded()
-                }
             }
             Spacer()
             Menu {
@@ -659,21 +641,6 @@ struct UnknownVisitorRow: View {
             }
         }
         .padding(.vertical, 4)
-    }
-
-    @MainActor
-    private func fetchSloganIfNeeded() async {
-        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
-        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
-        let refreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
-
-        await sloganCache.refreshSloganIfStale(
-            for: visitor.DeviceID,
-            serverURL: serverURL,
-            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-            requestingDeviceKey: deviceKey,
-            minimumRefreshInterval: refreshInterval
-        )
     }
 }
 

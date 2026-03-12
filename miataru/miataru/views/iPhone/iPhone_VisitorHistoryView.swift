@@ -258,7 +258,6 @@ struct VisitorHistoryRow: View {
     let onUnignore: () -> Void
     
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
-    @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @Environment(\.colorScheme) private var colorScheme
     
@@ -377,9 +376,6 @@ struct VisitorHistoryRow: View {
             .onAppear {
                 // Trigger geocoding if needed
                 cache.enqueueGeocodingIfNeeded(for: visitor.DeviceID)
-                Task {
-                    await fetchSloganIfNeeded()
-                }
             }
             
             Spacer()
@@ -611,19 +607,5 @@ struct VisitorHistoryRow: View {
             let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
             return (altitudeValue, altitudeUnit)
         }
-    }
-
-    @MainActor
-    private func fetchSloganIfNeeded() async {
-        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
-        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
-
-        await sloganCache.refreshSloganIfStale(
-            for: visitor.DeviceID,
-            serverURL: serverURL,
-            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-            requestingDeviceKey: deviceKey,
-            minimumRefreshInterval: 300
-        )
     }
 }

@@ -49,6 +49,11 @@ let locations = try await MiataruAPIClient.getLocation(
     requestingDeviceID: ownDeviceID,
     requestingDeviceKey: ownDeviceKey
 )
+
+if let first = locations.first {
+    print(first.Device)                  // targetDeviceID
+    print(first.DeviceSlogan ?? "(kein Slogan)")
+}
 ```
 
 ## GetLocationHistory mit DeviceKey des anfragenden Geräts

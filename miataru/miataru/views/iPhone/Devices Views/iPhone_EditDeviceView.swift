@@ -446,14 +446,17 @@ struct iPhone_EditDeviceView: View {
         isLoadingSlogan = true
         defer { isLoadingSlogan = false }
 
-        await sloganCache.refreshSloganIfStale(
-            for: normalizedDeviceID,
-            serverURL: serverURL,
-            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-            requestingDeviceKey: deviceKey,
-            minimumRefreshInterval: 300,
-            force: true
-        )
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            _ = try await MiataruAppAPI.getLocation(
+                serverURL: serverURL,
+                forDeviceIDs: [normalizedDeviceID],
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey
+            )
+        } catch {
+            debugLog("[EditDevice] Failed loading slogan via GetLocation for \(normalizedDeviceID): \(error)")
+        }
         fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
         if isCurrentDevice {
             sloganDraft = fetchedSlogan

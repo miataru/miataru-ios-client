@@ -546,36 +546,36 @@ struct iPhone_MyDeviceQRCodeView: View {
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
         let deviceID = ownDeviceID
 
+        let shouldRefresh = deviceSloganCacheStore.shouldRefresh(
+            for: deviceID,
+            minimumRefreshInterval: 300,
+            force: forceRefresh
+        )
+        if !shouldRefresh {
+            hydrateSloganFromCache()
+            return
+        }
+
         isLoadingSlogan = true
         defer { isLoadingSlogan = false }
 
-        let fetchError: Error?
-        if deviceSloganCacheStore.isKnown(for: deviceID) {
-            fetchError = await deviceSloganCacheStore.refreshSloganIfStale(
-                for: deviceID,
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            _ = try await MiataruAppAPI.getLocation(
                 serverURL: serverURL,
-                requestingDeviceID: deviceID,
-                requestingDeviceKey: deviceKey,
-                minimumRefreshInterval: 300,
-                force: forceRefresh
-            )
-        } else {
-            fetchError = await deviceSloganCacheStore.fetchSloganIfNeeded(
-                for: deviceID,
-                serverURL: serverURL,
+                forDeviceIDs: [deviceID],
                 requestingDeviceID: deviceID,
                 requestingDeviceKey: deviceKey
             )
-        }
-        hydrateSloganFromCache()
-        if let fetchError {
-            if let authMessage = DeviceKeyAuthHandler.handle(error: fetchError) {
+            hydrateSloganFromCache()
+            sloganErrorMessage = nil
+        } catch {
+            hydrateSloganFromCache()
+            if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 sloganErrorMessage = authMessage
             } else {
-                sloganErrorMessage = fetchError.localizedDescription
+                sloganErrorMessage = error.localizedDescription
             }
-        } else {
-            sloganErrorMessage = nil
         }
     }
 

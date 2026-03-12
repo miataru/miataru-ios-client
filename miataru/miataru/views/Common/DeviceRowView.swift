@@ -96,9 +96,6 @@ struct DeviceRowView: View {
                 }
                 setupThrottledLocationSubscription()
                 DeviceLocationCacheStore.shared.enqueueGeocodingIfNeeded(for: device.DeviceID)
-                Task {
-                    await refreshSloganIfNeeded()
-                }
             }
             .onDisappear {
                 locationUpdateCancellable?.cancel()
@@ -106,9 +103,6 @@ struct DeviceRowView: View {
             }
             .onChange(of: settings.outsideMapUpdateInterval) { _, _ in
                 setupThrottledLocationSubscription()
-                Task {
-                    await refreshSloganIfNeeded()
-                }
             }
             .onChange(of: displayedCachedLocation?.timestamp) { _, _ in
                 DeviceLocationCacheStore.shared.enqueueGeocodingIfNeeded(for: device.DeviceID)
@@ -282,22 +276,6 @@ struct DeviceRowView: View {
                 self.displayedCachedLocation = newValue
             }
         locationUpdateCancellable = publisher
-    }
-
-    @MainActor
-    private func refreshSloganIfNeeded() async {
-        guard showsSlogan else { return }
-        guard let serverURL = URL(string: settings.miataruServerURL) else { return }
-        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
-        let refreshInterval = max(1.0, Double(settings.outsideMapUpdateInterval))
-
-        await sloganCache.refreshSloganIfStale(
-            for: device.DeviceID,
-            serverURL: serverURL,
-            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-            requestingDeviceKey: deviceKey,
-            minimumRefreshInterval: refreshInterval
-        )
     }
 }
 

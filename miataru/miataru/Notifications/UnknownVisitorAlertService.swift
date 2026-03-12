@@ -410,14 +410,17 @@ actor UnknownVisitorAlertService {
             return cachedSlogan
         }
 
-        _ = await DeviceSloganCacheStore.shared.refreshSloganIfStale(
-            for: deviceID,
-            serverURL: serverURL,
-            requestingDeviceID: requestingDeviceID,
-            requestingDeviceKey: requestingDeviceKey,
-            minimumRefreshInterval: 60,
-            force: false
-        )
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            _ = try await MiataruAppAPI.getLocation(
+                serverURL: serverURL,
+                forDeviceIDs: [deviceID],
+                requestingDeviceID: requestingDeviceID,
+                requestingDeviceKey: requestingDeviceKey
+            )
+        } catch {
+            debugLog("[UnknownVisitorAlertService] Failed best-effort slogan lookup via GetLocation: \(error)")
+        }
 
         let refreshedSlogan = await MainActor.run {
             DeviceSloganCacheStore.shared.slogan(for: deviceID)

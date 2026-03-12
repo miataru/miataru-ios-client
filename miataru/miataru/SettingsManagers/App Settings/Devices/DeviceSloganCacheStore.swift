@@ -17,7 +17,6 @@ final class DeviceSloganCacheStore: ObservableObject {
     @Published private(set) var slogansByDeviceID: [String: String]
     @Published private(set) var knownDeviceIDs: Set<String>
 
-    private var fetchingDeviceIDs: Set<String> = []
     private var lastFetchByDeviceID: [String: Date]
     private let defaults = UserDefaults.standard
 
@@ -49,6 +48,7 @@ final class DeviceSloganCacheStore: ObservableObject {
 
     func cacheSlogan(_ slogan: String?, for deviceID: String) {
         let normalizedID = normalizedDeviceID(deviceID)
+        guard !normalizedID.isEmpty else { return }
         let normalizedSlogan = normalizedSloganValue(slogan)
 
         knownDeviceIDs.insert(normalizedID)
@@ -62,71 +62,46 @@ final class DeviceSloganCacheStore: ObservableObject {
         persist()
     }
 
-    @discardableResult
-    func fetchSloganIfNeeded(for deviceID: String,
-                             serverURL: URL,
-                             requestingDeviceID: String,
-                             requestingDeviceKey: String) async -> Error? {
+    func shouldRefresh(for deviceID: String,
+                       minimumRefreshInterval: TimeInterval = 300,
+                       force: Bool = false) -> Bool {
         let normalizedID = normalizedDeviceID(deviceID)
-        guard !normalizedID.isEmpty else { return nil }
-        guard !isKnown(for: normalizedID) else { return nil }
-        guard !fetchingDeviceIDs.contains(normalizedID) else { return nil }
-
-        fetchingDeviceIDs.insert(normalizedID)
-        defer { fetchingDeviceIDs.remove(normalizedID) }
-
-        do {
-            let slogan = try await MiataruAppAPI.getDeviceSlogan(
-                serverURL: serverURL,
-                forDeviceID: normalizedID,
-                requestingDeviceID: requestingDeviceID,
-                requestingDeviceKey: requestingDeviceKey
-            )
-            cacheSlogan(slogan.Slogan, for: normalizedID)
-            markFetchAttempt(for: normalizedID, at: Date())
-            return nil
-        } catch {
-            markFetchAttempt(for: normalizedID, at: Date())
-            debugLog("[DeviceSloganCacheStore] Failed fetching slogan for \(normalizedID): \(error)")
-            return error
+        guard !normalizedID.isEmpty else { return false }
+        if force {
+            return true
         }
+        guard let lastFetch = lastFetchByDeviceID[normalizedID] else {
+            return true
+        }
+        return Date().timeIntervalSince(lastFetch) >= minimumRefreshInterval
     }
 
-    @discardableResult
-    func refreshSloganIfStale(for deviceID: String,
-                              serverURL: URL,
-                              requestingDeviceID: String,
-                              requestingDeviceKey: String,
-                              minimumRefreshInterval: TimeInterval = 300,
-                              force: Bool = false) async -> Error? {
-        let normalizedID = normalizedDeviceID(deviceID)
-        guard !normalizedID.isEmpty else { return nil }
-        guard !fetchingDeviceIDs.contains(normalizedID) else { return nil }
+    func ingestGetLocationResults(_ locations: [MiataruLocationData], requestedDeviceIDs: [String]) {
+        let normalizedRequestedIDs = Set(requestedDeviceIDs.map(normalizedDeviceID).filter { !$0.isEmpty })
+        let locationsByDeviceID = locations.reduce(into: [String: MiataruLocationData]()) { partialResult, location in
+            let normalizedID = normalizedDeviceID(location.Device)
+            guard !normalizedID.isEmpty else { return }
+            partialResult[normalizedID] = location
+        }
+        let now = Date()
 
-        if !force,
-           let lastFetch = lastFetchByDeviceID[normalizedID],
-           Date().timeIntervalSince(lastFetch) < minimumRefreshInterval {
-            return nil
+        for requestedID in normalizedRequestedIDs {
+            lastFetchByDeviceID[requestedID] = now
+
+            guard let location = locationsByDeviceID[requestedID] else {
+                continue
+            }
+
+            knownDeviceIDs.insert(requestedID)
+            let normalizedSlogan = normalizedSloganValue(location.DeviceSlogan)
+            if let normalizedSlogan {
+                slogansByDeviceID[requestedID] = normalizedSlogan
+            } else {
+                slogansByDeviceID.removeValue(forKey: requestedID)
+            }
         }
 
-        fetchingDeviceIDs.insert(normalizedID)
-        defer { fetchingDeviceIDs.remove(normalizedID) }
-
-        do {
-            let slogan = try await MiataruAppAPI.getDeviceSlogan(
-                serverURL: serverURL,
-                forDeviceID: normalizedID,
-                requestingDeviceID: requestingDeviceID,
-                requestingDeviceKey: requestingDeviceKey
-            )
-            cacheSlogan(slogan.Slogan, for: normalizedID)
-            markFetchAttempt(for: normalizedID, at: Date())
-            return nil
-        } catch {
-            markFetchAttempt(for: normalizedID, at: Date())
-            debugLog("[DeviceSloganCacheStore] Failed refreshing slogan for \(normalizedID): \(error)")
-            return error
-        }
+        persist()
     }
 
     func markFreshNow(for deviceID: String) {

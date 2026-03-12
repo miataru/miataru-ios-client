@@ -28,8 +28,18 @@ struct iPhone_AddDeviceView: View {
     @State private var fetchedSlogan: String = ""
     @State private var isLoadingSlogan = false
     @State private var sloganLookupTask: Task<Void, Never>? = nil
+    @State private var isLoadingSecurityStatus = false
+    @State private var securityStatusLookupTask: Task<Void, Never>? = nil
+    @State private var deviceKeySecurityStatus: DeviceSecurityStatus = .unknown
+    @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
+
+    private enum DeviceSecurityStatus {
+        case active
+        case inactive
+        case unknown
+    }
     
     // Returns a random vivid color from an extensive palette of visible colors
     private static func randomVividColor() -> Color {
@@ -90,6 +100,10 @@ struct iPhone_AddDeviceView: View {
                                 .lineLimit(2)
                         }
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        adoptSloganAsDeviceNameIfNeeded()
+                    }
                 }
                 Section(header: Text("device_id")) {
                     Button(action: { isShowingScanner = true }) {
@@ -111,6 +125,31 @@ struct iPhone_AddDeviceView: View {
                 }
                 if settings.allowedDeviceListEnabled {
                     Section(header: Text("allowed_device_list_access_controls")) {
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("allowed_device_list_security_overview_label")
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 6) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: deviceKeySecurityStatusIcon)
+                                    Text(deviceKeySecurityStatusText)
+                                }
+                                .foregroundColor(deviceKeySecurityStatusColor)
+                                HStack(spacing: 6) {
+                                    Image(systemName: aclSecurityStatusIcon)
+                                    Text(aclSecurityStatusText)
+                                }
+                                .foregroundColor(aclSecurityStatusColor)
+                                if isLoadingSecurityStatus {
+                                    HStack(spacing: 6) {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                        Text(verbatim: "...")
+                                    }
+                                    .foregroundColor(.secondary)
+                                }
+                            }
+                            .font(.caption)
+                        }
                         Toggle("allowed_device_list_current_location_access", isOn: $hasCurrentLocationAccess)
                         Text("allowed_device_list_current_location_access_description")
                             .font(.caption)
@@ -202,6 +241,7 @@ struct iPhone_AddDeviceView: View {
                 }
             }
             scheduleSloganLookup(for: deviceID)
+            scheduleSecurityStatusLookup(for: deviceID)
         }
         .onChange(of: prefillDeviceID) { oldValue, newValue in
             // Update deviceID when prefillDeviceID changes
@@ -211,6 +251,7 @@ struct iPhone_AddDeviceView: View {
         }
         .onChange(of: deviceID) { _, newValue in
             scheduleSloganLookup(for: newValue)
+            scheduleSecurityStatusLookup(for: newValue)
         }
         .onChange(of: isPresented) { oldValue, newValue in
             // Reset form when sheet is dismissed
@@ -224,6 +265,11 @@ struct iPhone_AddDeviceView: View {
                 fetchedSlogan = ""
                 sloganLookupTask?.cancel()
                 sloganLookupTask = nil
+                securityStatusLookupTask?.cancel()
+                securityStatusLookupTask = nil
+                isLoadingSecurityStatus = false
+                deviceKeySecurityStatus = .unknown
+                aclSecurityStatus = .unknown
             } else {
                 // When sheet appears, set deviceID from prefill if available
                 // Check immediately and also after a delay
@@ -237,6 +283,7 @@ struct iPhone_AddDeviceView: View {
                     }
                 }
                 scheduleSloganLookup(for: deviceID)
+                scheduleSecurityStatusLookup(for: deviceID)
             }
         }
     }
@@ -289,6 +336,89 @@ struct iPhone_AddDeviceView: View {
         isSaving = false
     }
 
+    private var deviceKeySecurityStatusText: String {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return NSLocalizedString("allowed_device_list_security_devicekey_active", comment: "DeviceKey security status active")
+        case .inactive:
+            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", comment: "DeviceKey security status inactive")
+        case .unknown:
+            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", comment: "DeviceKey security status unknown")
+        }
+    }
+
+    private var aclSecurityStatusText: String {
+        switch aclSecurityStatus {
+        case .active:
+            return NSLocalizedString("allowed_device_list_security_acl_active", comment: "ACL security status active")
+        case .inactive:
+            return NSLocalizedString("allowed_device_list_security_acl_inactive", comment: "ACL security status inactive")
+        case .unknown:
+            return NSLocalizedString("allowed_device_list_security_acl_unknown", comment: "ACL security status unknown")
+        }
+    }
+
+    private var deviceKeySecurityStatusIcon: String {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return "key.fill"
+        case .inactive:
+            return "key.slash.fill"
+        case .unknown:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    private var aclSecurityStatusIcon: String {
+        switch aclSecurityStatus {
+        case .active:
+            return "lock.fill"
+        case .inactive:
+            return "lock.open.fill"
+        case .unknown:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    private var deviceKeySecurityStatusColor: Color {
+        switch deviceKeySecurityStatus {
+        case .active:
+            return .green
+        case .inactive:
+            return .red
+        case .unknown:
+            return .secondary
+        }
+    }
+
+    private var aclSecurityStatusColor: Color {
+        switch aclSecurityStatus {
+        case .active:
+            return .green
+        case .inactive:
+            return .red
+        case .unknown:
+            return .secondary
+        }
+    }
+
+    private func adoptSloganAsDeviceNameIfNeeded() {
+        let trimmedDeviceName = deviceName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedSlogan = fetchedSlogan.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedDeviceName.isEmpty, !trimmedSlogan.isEmpty else { return }
+        deviceName = trimmedSlogan
+    }
+
+    @MainActor
+    private func scheduleSecurityStatusLookup(for rawDeviceID: String) {
+        securityStatusLookupTask?.cancel()
+        securityStatusLookupTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            if Task.isCancelled { return }
+            await refreshDeviceSecurityStatus(for: rawDeviceID)
+        }
+    }
+
     @MainActor
     private func scheduleSloganLookup(for rawDeviceID: String) {
         sloganLookupTask?.cancel()
@@ -316,15 +446,71 @@ struct iPhone_AddDeviceView: View {
         isLoadingSlogan = true
         defer { isLoadingSlogan = false }
 
-        await sloganCache.refreshSloganIfStale(
-            for: normalizedDeviceID,
-            serverURL: serverURL,
-            requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-            requestingDeviceKey: deviceKey,
-            minimumRefreshInterval: 300,
-            force: true
-        )
+        do {
+            APIRequestCounter.shared.record(.getLocation)
+            _ = try await MiataruAppAPI.getLocation(
+                serverURL: serverURL,
+                forDeviceIDs: [normalizedDeviceID],
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey
+            )
+        } catch {
+            debugLog("[AddDevice] Failed loading slogan via GetLocation for \(normalizedDeviceID): \(error)")
+        }
         fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
+    }
+
+    @MainActor
+    private func refreshDeviceSecurityStatus(for rawDeviceID: String) async {
+        guard settings.allowedDeviceListEnabled else {
+            isLoadingSecurityStatus = false
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+
+        let normalizedDeviceID = rawDeviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !normalizedDeviceID.isEmpty else {
+            isLoadingSecurityStatus = false
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+        guard normalizedDeviceID.count >= 8 else {
+            isLoadingSecurityStatus = false
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+        guard let serverURL = URL(string: settings.miataruServerURL) else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else {
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+            return
+        }
+
+        isLoadingSecurityStatus = true
+        defer { isLoadingSecurityStatus = false }
+
+        do {
+            let securityStatus = try await MiataruAppAPI.getDeviceSecurityStatus(
+                serverURL: serverURL,
+                forDeviceID: normalizedDeviceID,
+                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                requestingDeviceKey: deviceKey
+            )
+            deviceKeySecurityStatus = securityStatus.HasDeviceKey ? .active : .inactive
+            aclSecurityStatus = securityStatus.IsAllowedDeviceListEnabled ? .active : .inactive
+        } catch {
+            _ = DeviceKeyAuthHandler.handle(error: error)
+            debugLog("[AddDevice] Failed loading security status for \(normalizedDeviceID): \(error)")
+            deviceKeySecurityStatus = .unknown
+            aclSecurityStatus = .unknown
+        }
     }
 }
 

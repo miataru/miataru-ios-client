@@ -454,6 +454,13 @@ public struct MiataruLocationData: Codable {
     public var BatteryLevel: Double?
     /// Altitude above mean sea level in meters
     public var Altitude: Double?
+    /// Optional device slogan returned by GetLocation responses.
+    public var DeviceSlogan: String?
+
+    /// Backward-compatible alias for older naming in API definitions.
+    public var Slogan: String? {
+        DeviceSlogan
+    }
 
     /// Computed property für den Zugriff als Date
     public var TimestampDate: Date {
@@ -465,10 +472,10 @@ public struct MiataruLocationData: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude
+        case Device, Timestamp, Longitude, Latitude, HorizontalAccuracy, Speed, BatteryLevel, Altitude, DeviceSlogan, Slogan
     }
 
-    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil) {
+    public init(Device: String, Timestamp: String, Longitude: Double, Latitude: Double, HorizontalAccuracy: Double, Speed: Double? = nil, BatteryLevel: Double? = nil, Altitude: Double? = nil, DeviceSlogan: String? = nil) {
         self.Device = Device
         self.Timestamp = Timestamp
         self.Longitude = Longitude
@@ -477,6 +484,7 @@ public struct MiataruLocationData: Codable {
         self.Speed = Speed
         self.BatteryLevel = BatteryLevel
         self.Altitude = Altitude
+        self.DeviceSlogan = DeviceSlogan
     }
 
     public init(from decoder: Decoder) throws {
@@ -500,6 +508,11 @@ public struct MiataruLocationData: Codable {
         Speed = try? Self.decodeDoubleStringOrNumber(container: container, key: .Speed)
         BatteryLevel = try? Self.decodeDoubleStringOrNumber(container: container, key: .BatteryLevel)
         Altitude = try? Self.decodeDoubleStringOrNumber(container: container, key: .Altitude)
+        if let slogan = try? container.decodeIfPresent(String.self, forKey: .DeviceSlogan) {
+            DeviceSlogan = slogan
+        } else {
+            DeviceSlogan = try? container.decodeIfPresent(String.self, forKey: .Slogan)
+        }
     }
     
     private static func decodeDoubleStringOrNumber(container: KeyedDecodingContainer<CodingKeys>, key: CodingKeys) throws -> Double {
@@ -822,7 +835,7 @@ private struct ErrorResponse: Decodable {
 
 public enum MiataruAPIClient {
 
-    public static let packageVersion = "1.1.0"
+    public static let packageVersion = "1.1.1"
 
     private static let session = URLSession.shared
     private static let jsonDecoder = JSONDecoder()

@@ -27,7 +27,7 @@ enum MiataruAppAPI {
         requestingDeviceID: String? = nil,
         requestingDeviceKey: String? = nil
     ) async throws -> [MiataruLocationData] {
-        try await executor.execute(policy: .read, operationName: "getLocation") {
+        let locations = try await executor.execute(policy: .read, operationName: "getLocation") {
             try await MiataruAPIClient.getLocation(
                 serverURL: serverURL,
                 forDeviceIDs: deviceIDs,
@@ -35,6 +35,8 @@ enum MiataruAppAPI {
                 requestingDeviceKey: requestingDeviceKey
             )
         }
+        await DeviceSloganCacheStore.shared.ingestGetLocationResults(locations, requestedDeviceIDs: deviceIDs)
+        return locations
     }
 
     static func getLocationHistory(
