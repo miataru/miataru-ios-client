@@ -8978,6 +8978,71 @@
         }
       }
     },
+    "device_key_long_press_admin_hint" : {
+      "comment" : "Hint explaining that a long press on the keycard reveals administrative options",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk og hold på nøglekortet for at låse de administrative muligheder op."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drücke lange auf die Schlüsselkarte, um die administrativen Optionen freizuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press the Keycard to unlock the administrative options."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsada la tarjeta de clave para desbloquear las opciones administrativas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paina avainkorttia pitkään avataksesi hallinnolliset asetukset."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuie longuement sur la carte-clé pour déverrouiller les options administratives."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tieni premuta la scheda chiave per sbloccare le opzioni amministrative."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理者向けオプションを表示するには、キーカードを長押ししてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Houd de sleutelkaart ingedrukt om de beheerdersopties te ontgrendelen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长按密钥卡以解锁管理选项。"
+          }
+        }
+      }
+    },
     "device_key_last_changed" : {
       "comment" : "Label for last changed device key date",
       "localizations" : {

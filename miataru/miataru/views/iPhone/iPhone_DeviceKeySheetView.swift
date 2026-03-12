@@ -157,6 +157,12 @@ struct iPhone_DeviceKeySheetView: View {
                     .padding(.horizontal, 16)
             }
 
+            Text("device_key_long_press_admin_hint")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
+
             Text("device_key_intro_text")
                 .font(.body)
                 .foregroundColor(.secondary)
@@ -199,6 +205,12 @@ struct iPhone_DeviceKeySheetView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
             }
+
+            Text("device_key_long_press_admin_hint")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 16)
 
             VStack(spacing: 8) {
                 Text("device_key_current_label")
