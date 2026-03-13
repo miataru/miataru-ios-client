@@ -8783,71 +8783,6 @@
         }
       }
     },
-    "device_slogan_set_failed_try_again_later" : {
-      "comment" : "Fallback error when setting the device slogan failed.",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der gik noget galt, da enhedens slogan blev sat. Prøv igen senere."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beim Setzen des Device Slogans ist etwas schief gelaufen. Probier es später noch einmal."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Something went wrong while setting the device slogan. Please try again later."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Algo salió mal al establecer el eslogan del dispositivo. Inténtalo de nuevo más tarde."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Laitteen iskulauseen asettaminen epäonnistui. Yritä myöhemmin uudelleen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un problème est survenu lors de la définition du slogan de l'appareil. Réessaie plus tard."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si è verificato un problema durante l'impostazione dello slogan del dispositivo. Riprova più tardi."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイスのスローガン設定中に問題が発生しました。しばらくしてからもう一度お試しください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Er ging iets mis bij het instellen van de apparaatslogan. Probeer het later opnieuw."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "设置设备标语时出了点问题。请稍后再试。"
-          }
-        }
-      }
-    },
     "device_key_error_too_long" : {
       "comment" : "Error when device key exceeds max length",
       "localizations" : {
@@ -9043,71 +8978,6 @@
         }
       }
     },
-    "device_key_long_press_admin_hint" : {
-      "comment" : "Hint explaining that a long press on the keycard reveals administrative options",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tryk og hold på nøglekortet for at låse de administrative muligheder op."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Drücke lange auf die Schlüsselkarte, um die administrativen Optionen freizuschalten."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long press the Keycard to unlock the administrative options."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantén pulsada la tarjeta de clave para desbloquear las opciones administrativas."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paina avainkorttia pitkään avataksesi hallinnolliset asetukset."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appuie longuement sur la carte-clé pour déverrouiller les options administratives."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tieni premuta la scheda chiave per sbloccare le opzioni amministrative."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "管理者向けオプションを表示するには、キーカードを長押ししてください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Houd de sleutelkaart ingedrukt om de beheerdersopties te ontgrendelen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "长按密钥卡以解锁管理选项。"
-          }
-        }
-      }
-    },
     "device_key_last_changed" : {
       "comment" : "Label for last changed device key date",
       "localizations" : {
@@ -9169,6 +9039,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上次更改: %@"
+          }
+        }
+      }
+    },
+    "device_key_long_press_admin_hint" : {
+      "comment" : "Hint explaining that a long press on the keycard reveals administrative options",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk og hold på nøglekortet for at låse de administrative muligheder op."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drücke lange auf die Schlüsselkarte, um die administrativen Optionen freizuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long press the Keycard to unlock the administrative options."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsada la tarjeta de clave para desbloquear las opciones administrativas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paina avainkorttia pitkään avataksesi hallinnolliset asetukset."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuie longuement sur la carte-clé pour déverrouiller les options administratives."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tieni premuta la scheda chiave per sbloccare le opzioni amministrative."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理者向けオプションを表示するには、キーカードを長押ししてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Houd de sleutelkaart ingedrukt om de beheerdersopties te ontgrendelen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长按密钥卡以解锁管理选项。"
           }
         }
       }
@@ -10662,6 +10597,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
+          }
+        }
+      }
+    },
+    "device_slogan_set_failed_try_again_later" : {
+      "comment" : "Fallback error when setting the device slogan failed.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der gik noget galt, da enhedens slogan blev sat. Prøv igen senere."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beim Setzen des Device Slogans ist etwas schief gelaufen. Probier es später noch einmal."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong while setting the device slogan. Please try again later."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo salió mal al establecer el eslogan del dispositivo. Inténtalo de nuevo más tarde."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laitteen iskulauseen asettaminen epäonnistui. Yritä myöhemmin uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un problème est survenu lors de la définition du slogan de l'appareil. Réessaie plus tard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si è verificato un problema durante l'impostazione dello slogan del dispositivo. Riprova più tardi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのスローガン設定中に問題が発生しました。しばらくしてからもう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er ging iets mis bij het instellen van de apparaatslogan. Probeer het later opnieuw."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置设备标语时出了点问题。请稍后再试。"
           }
         }
       }
@@ -14161,6 +14161,72 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "群组"
+          }
+        }
+      }
+    },
+    "Hide DeviceKey" : {
+      "comment" : "A label that describes the action of showing or hiding the device key.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skjul DeviceKey"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey ausblenden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide DeviceKey"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar DeviceKey"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piilota DeviceKey"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer la DeviceKey"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascondi DeviceKey"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKeyを非表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey verbergen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏 DeviceKey"
           }
         }
       }
@@ -22957,6 +23023,72 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享 Miataru URL"
+          }
+        }
+      }
+    },
+    "Show DeviceKey" : {
+      "comment" : "A description of the button that toggles the visibility of the sensitive value.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis DeviceKey"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show DeviceKey"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar DeviceKey"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä DeviceKey"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher la DeviceKey"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra DeviceKey"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKeyを表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey tonen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示 DeviceKey"
           }
         }
       }

@@ -17,8 +17,7 @@ struct iPhone_SettingsView: View {
     @State private var isActivatingAllowedDeviceList = false
     @State private var isUpdatingUnknownVisitorAlerts = false
     @State private var activationError: String? = nil
-    @EnvironmentObject var appState: AppState
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -280,13 +279,6 @@ struct iPhone_SettingsView: View {
                             Text("Location Tracking Details")
                         }
                     }
-                }
-                Section {
-                    Button("Show Onboarding Wizard Again") {
-                        UserDefaults.standard.hasCompletedOnboarding = false
-                        appState.presentFullOnboarding(skipPostUpdate: true)
-                    }
-                    .accessibilityIdentifier("settings_show_onboarding_again_button")
                 }
             }
             .navigationTitle("settings")

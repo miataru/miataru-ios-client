@@ -218,14 +218,7 @@ struct iPhone_DeviceKeySheetView: View {
                     .foregroundColor(.secondary)
 
                 HStack(spacing: 8) {
-                    Text(settings.deviceKey ?? "")
-                        .font(.system(.caption, design: .monospaced))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
+                    RevealableSensitiveValueField(value: settings.deviceKey ?? "")
 
                     Button(action: copyDeviceKey) {
                         Image(systemName: "doc.on.doc")
@@ -953,9 +946,10 @@ private struct DeviceKeyEntrySheet: View {
                 }
 
                 Section {
-                    TextField("device_key_entry_placeholder", text: $inputValue)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    RevealableSensitiveInputField(
+                        text: $inputValue,
+                        placeholder: String(localized: "device_key_entry_placeholder")
+                    )
                 }
 
                 Section {
@@ -1045,6 +1039,73 @@ private struct DeviceKeyEntrySheet: View {
             isSubmitting = false
         } else {
             dismiss()
+        }
+    }
+}
+
+private struct RevealableSensitiveValueField: View {
+    let value: String
+
+    @State private var isRevealed = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(displayValue)
+                .font(.system(.caption, design: .monospaced))
+                .privacySensitive()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                isRevealed.toggle()
+            } label: {
+                Image(systemName: isRevealed ? "eye.slash" : "eye")
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(isRevealed ? "Hide DeviceKey" : "Show DeviceKey"))
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+    }
+
+    private var displayValue: String {
+        guard !value.isEmpty else { return "" }
+        return isRevealed ? value : String(repeating: "•", count: max(value.count, 8))
+    }
+}
+
+private struct RevealableSensitiveInputField: View {
+    @Binding var text: String
+    let placeholder: String
+
+    @State private var isRevealed = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Group {
+                if isRevealed {
+                    TextField(placeholder, text: $text)
+                } else {
+                    SecureField(placeholder, text: $text)
+                }
+            }
+            .font(.system(.body, design: .monospaced))
+            .privacySensitive()
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled(true)
+
+            Button {
+                isRevealed.toggle()
+            } label: {
+                Image(systemName: isRevealed ? "eye.slash" : "eye")
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(isRevealed ? "Hide DeviceKey" : "Show DeviceKey"))
         }
     }
 }

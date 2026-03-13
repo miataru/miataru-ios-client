@@ -13,6 +13,7 @@ import UIKit
 
 struct iPhone_LocationStatusView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var appState: AppState
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var backgroundManager = LocationManager.shared
     @ObservedObject private var routeCounter = RouteRequestCounter.shared
@@ -195,6 +196,18 @@ struct iPhone_LocationStatusView: View {
                 .background(Color(.systemGray5))
                 .cornerRadius(8)
             }
+
+            Button {
+                UserDefaults.standard.hasCompletedOnboarding = false
+                appState.presentFullOnboarding(skipPostUpdate: true)
+            } label: {
+                Text("Show Onboarding Wizard Again")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .tint(.blue)
+            .accessibilityIdentifier("settings_show_onboarding_again_button")
             }
             .padding()
         }

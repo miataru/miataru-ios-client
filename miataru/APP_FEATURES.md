@@ -106,7 +106,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 ## Settings and Configuration
 **For users:**
 - Control tracking, data retention, server URL, device autolock, accuracy indicators, map type, zoom level, update interval, group zoom‑to‑fit, off‑screen arrows, auto‑refresh, reverse geocoding threshold, navigation mode, and route progress.
-- View location tracking details or replay the onboarding wizard.
+- View location tracking details or replay the onboarding wizard directly from the tracking details page.
 - Settings are grouped into tracking, app behavior, map configuration, and navigation sections for easier discovery.
 
 - All app preferences are also available in the system Settings app.
@@ -126,6 +126,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 - Map screens additionally display a network-error icon when the server cannot be reached.
 
 - The status view lists speed and battery (when available) and tracks route‑request statistics over the last 24 hours.
+- The status view now also hosts the prominent action to reopen onboarding, keeping tracking diagnostics and recovery/help actions together.
 
 **For developers:**
 - `LocationManager` posts `didSendOwnLocationUpdate` notifications; `ErrorOverlayManager` and `ErrorOverlay` provide reusable alert UIs, and map views toggle a network icon via `showNetworkErrorIcon` flags.
@@ -178,6 +179,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 - Available in English, German, and Japanese, with dynamic type and accessibility labels and hints applied to buttons, tab items, and swipe actions.
 
 - VoiceOver support has been improved across lists and map controls. Alerts and route‑limit messages are localized.
+- Sensitive DeviceKey values are hidden by default and can be revealed temporarily with a dedicated show/hide control.
 
 **For developers:**
 - Localizations reside in `en.lproj`, `de.lproj`, and `ja.lproj`. Most text uses `NSLocalizedString` and SwiftUI accessibility modifiers to provide labels, hints, and traits.
