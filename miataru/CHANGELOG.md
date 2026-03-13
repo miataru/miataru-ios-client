@@ -1,4 +1,6 @@
 version 3.1.4
+- Fixed standard navigation summary countdown on iPhone and iPad so ETA/distance no longer jump from the initially correct route values to `0 km / 0 min` right after route calculation.
+- Standard `device -> user` navigation now seeds live summary updates from the moment the active route is applied (including cached routes), instead of reusing potentially stale device sample timestamps.
 - Added centralized device-slogan cleansing before every `setDeviceSlogan` request (remove control characters, trim outer whitespace, enforce max length 40) so invalid special/control characters are not sent to the server.
 - Replaced raw server error text in slogan-save UI with a user-friendly localized fallback message ("Beim Setzen des Device Slogans ist etwas schief gelaufen. Probier es später noch einmal.") across all supported app languages.
 - Added optional slogan rendering in the Devices tab list rows (iPhone + iPad): when a device slogan exists, it is shown directly below the device name.

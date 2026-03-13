@@ -58,6 +58,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isAutoRouteUpdateLocked: Bool = false
     /// true = non-reversed route (standard: selected device → user). false = reversed route (user → selected device, "reverse route" button).
     @State private var isRouteFromDeviceToUser: Bool = true
+    @State private var routeSummarySeedDate: Date? = nil
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
     @State private var hasLocationUpdateSinceLastAutoUpdate: Bool = false
     @State private var lastOverlayStepIndex: Int? = nil
@@ -215,6 +216,7 @@ struct iPhone_DeviceNavigationView: View {
             travelTime = nil
             distanceText = nil
             arrivalTimeText = nil
+            routeSummarySeedDate = nil
             currentRegion = nil
             hasSetInitialRegion = false
             userHasInteractedWithMap = false
@@ -487,6 +489,7 @@ struct iPhone_DeviceNavigationView: View {
                 travelTime = nil
                 distanceText = nil
                 arrivalTimeText = nil
+                routeSummarySeedDate = nil
                 navigationOverlayViewModel = nil
                 navigationOverlayCancellables.removeAll()
                 lastOverlayStepIndex = nil
@@ -912,6 +915,7 @@ struct iPhone_DeviceNavigationView: View {
                 let response = try await MKDirections(request: request).calculate()
                 if let first = response.routes.first {
                     setRouteForRendering(first)
+                    routeSummarySeedDate = Date()
                     applyStaticRouteSummary(for: first)
                     // Refresh overlay with new route - this ensures overlay matches the route direction
                     refreshNavigationOverlayForCurrentRoute()
@@ -938,6 +942,7 @@ struct iPhone_DeviceNavigationView: View {
                         travelTime = nil
                         distanceText = nil
                         arrivalTimeText = nil
+                        routeSummarySeedDate = nil
                         lastRouteTransportType = nil
                         refreshNavigationOverlayForCurrentRoute()
                     }
@@ -949,6 +954,7 @@ struct iPhone_DeviceNavigationView: View {
                     travelTime = nil
                     distanceText = nil
                     arrivalTimeText = nil
+                    routeSummarySeedDate = nil
                     lastRouteTransportType = nil
                     refreshNavigationOverlayForCurrentRoute()
                 }
@@ -1800,6 +1806,7 @@ struct iPhone_DeviceNavigationView: View {
         travelTime = nil
         distanceText = nil
         arrivalTimeText = nil
+        routeSummarySeedDate = nil
         navigationOverlayViewModel = nil
         lastOverlayStepIndex = nil
         routeInfoState.hide()
@@ -1828,9 +1835,10 @@ struct iPhone_DeviceNavigationView: View {
         let remainingSeconds: TimeInterval?
 
         if isRouteFromDeviceToUser {
-            // Standard mode (device -> user): estimate route progress from elapsed time
-            // since the location timestamp that seeded the last route calculation.
-            let routeStartTimestamp = lastRouteDeviceTimestamp ?? lastRouteUserTimestamp
+            // Standard mode (device -> user): count down from when the currently shown
+            // route was actually applied. The device sample timestamp can be much older
+            // than the route request and would otherwise collapse the summary to zero.
+            let routeStartTimestamp = routeSummarySeedDate ?? lastRouteDeviceTimestamp ?? lastRouteUserTimestamp
             guard let routeStartTimestamp else { return }
             let expectedTravelTime = max(0, route.expectedTravelTime)
             let elapsed = max(0, now.timeIntervalSince(routeStartTimestamp))
@@ -1928,6 +1936,7 @@ extension iPhone_DeviceNavigationView {
             ) {
                 // Apply cached route and keep display fields in sync
                 setRouteForRendering(cached.route)
+                routeSummarySeedDate = Date()
                 applyStaticRouteSummary(for: cached.route)
                 refreshNavigationOverlayForCurrentRoute()
                 // Align last-route inputs so existing change detection logic works
