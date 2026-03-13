@@ -1,4 +1,7 @@
 version 3.1.4
+- Fixed intermittent Devices-list refresh flicker where rows briefly dropped all supplemental information and showed only the device name during active polling.
+- Coalesced overlapping device-list refresh requests into a single in-flight fetch and now apply refreshed device-location cache data as one consolidated snapshot instead of publishing per-device partial states.
+- Kept the last successful device-location cache visible on transient refresh failures, avoiding the short-lived blank/half-empty list state during network hiccups.
 - Fixed standard navigation summary countdown on iPhone and iPad so ETA/distance no longer jump from the initially correct route values to `0 km / 0 min` right after route calculation.
 - Standard `device -> user` navigation now seeds live summary updates from the moment the active route is applied (including cached routes), instead of reusing potentially stale device sample timestamps.
 - Added centralized device-slogan cleansing before every `setDeviceSlogan` request (remove control characters, trim outer whitespace, enforce max length 40) so invalid special/control characters are not sent to the server.

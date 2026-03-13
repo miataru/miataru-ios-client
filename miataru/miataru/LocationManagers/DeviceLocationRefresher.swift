@@ -12,11 +12,13 @@ import UIKit
 import MiataruAPIClient
 
 /// DeviceLocationRefresher handles refreshing device locations from the server with throttling support.
+@MainActor
 final class DeviceLocationRefresher {
     static let shared = DeviceLocationRefresher()
     
     // MARK: - Private Properties
     private var lastRefresh: Date?
+    private var inFlightRefreshTask: Task<Bool, Never>?
     private let settings = SettingsManager.shared
     private let store = KnownDeviceStore.shared
     private let cache = DeviceLocationCacheStore.shared
@@ -72,62 +74,62 @@ final class DeviceLocationRefresher {
     /// - Parameter forceGeocoding: Whether to force geocoding for all devices (typically used for manual refresh)
     /// - Returns: `true` if refresh succeeded, `false` otherwise
     func refreshAllDeviceLocations(forceGeocoding: Bool = false) async -> Bool {
+        if let inFlightRefreshTask {
+            return await inFlightRefreshTask.value
+        }
+
         guard let url = URL(string: settings.miataruServerURL), !store.devices.isEmpty else {
             return false
         }
         
         let deviceIDs = store.devices.map { $0.DeviceID }
-        
-        do {
-            debugLog("[DeviceLocationRefresher] refreshAllDeviceLocations")
-            APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAppAPI.getLocation(
-                serverURL: url,
-                forDeviceIDs: deviceIDs,
-                requestingDeviceID: thisDeviceIDManager.shared.deviceID,
-                requestingDeviceKey: settings.deviceKey
-            )
-            
-            // Update cache on main thread to ensure @Published properties are updated safely
-            await MainActor.run {
-                for location in locations {
-                    cache.setLocation(
-                        for: location.Device,
-                        latitude: location.Latitude,
-                        longitude: location.Longitude,
-                        accuracy: location.HorizontalAccuracy,
-                        timestamp: location.TimestampDate,
-                        batteryLevel: location.BatteryLevel,
-                        altitude: location.Altitude
+
+        let refreshTask = Task<Bool, Never> {
+            do {
+                debugLog("[DeviceLocationRefresher] refreshAllDeviceLocations")
+                APIRequestCounter.shared.record(.getLocation)
+                let locations = try await MiataruAppAPI.getLocation(
+                    serverURL: url,
+                    forDeviceIDs: deviceIDs,
+                    requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                    requestingDeviceKey: settings.deviceKey
+                )
+
+                let snapshots = locations.map {
+                    DeviceLocationSnapshot(
+                        deviceID: $0.Device,
+                        latitude: $0.Latitude,
+                        longitude: $0.Longitude,
+                        accuracy: $0.HorizontalAccuracy,
+                        timestamp: $0.TimestampDate,
+                        batteryLevel: $0.BatteryLevel,
+                        altitude: $0.Altitude,
+                        speed: nil
                     )
                 }
-                
-                // Remove cache entry for devices without location
                 let foundIDs = Set(locations.map { $0.Device })
                 let missingIDs = Set(deviceIDs).subtracting(foundIDs)
-                for missingID in missingIDs {
-                    cache.removeLocation(for: missingID)
-                }
-                
-                // Force geocoding only if explicitly requested (e.g., manual refresh)
-                if forceGeocoding {
-                    cache.forceGeocodingForAllDevices()
-                }
+
+                cache.applyLocationSnapshots(
+                    snapshots,
+                    removingMissingDeviceIDs: missingIDs,
+                    forceGeocoding: forceGeocoding
+                )
+
+                // Fetch visitor history for current user's device after locations are retrieved
+                await refreshVisitorHistory(serverURL: url)
+                return true
+            } catch {
+                debugLog("Error refreshing device locations: \(error)")
+                // Keep the last successful snapshot on transient refresh errors to avoid list flicker.
+                return false
             }
-            
-            // Fetch visitor history for current user's device after locations are retrieved
-            await refreshVisitorHistory(serverURL: url)
-            return true
-        } catch {
-            debugLog("Error refreshing device locations: \(error)")
-            // Remove all device locations from cache if download fails (on main thread)
-            await MainActor.run {
-                for deviceID in deviceIDs {
-                    cache.removeLocation(for: deviceID)
-                }
-            }
-            return false
         }
+
+        inFlightRefreshTask = refreshTask
+        let result = await refreshTask.value
+        inFlightRefreshTask = nil
+        return result
     }
     
     /// Fetches visitor history for the current user's device and updates cache with devices that have looked for the user in the past 90 seconds.

@@ -12,6 +12,17 @@ import UIKit
 import Combine
 import CoreLocation
 
+struct DeviceLocationSnapshot {
+    let deviceID: String
+    let latitude: Double
+    let longitude: Double
+    let accuracy: Double
+    let timestamp: Date
+    let batteryLevel: Double?
+    let altitude: Double?
+    let speed: Double?
+}
+
 @objc(CachedDeviceLocation)
 class CachedDeviceLocation: NSObject, NSCoding, NSSecureCoding, Identifiable {
     @objc var deviceID: String
@@ -176,6 +187,80 @@ class DeviceLocationCacheStore: ObservableObject {
         // (Intentionally no app-side snapshot generation here.)
     }
 
+    func applyLocationSnapshots(
+        _ snapshots: [DeviceLocationSnapshot],
+        removingMissingDeviceIDs missingDeviceIDs: Set<String> = [],
+        forceGeocoding: Bool = false
+    ) {
+        let snapshotsByID = Dictionary(uniqueKeysWithValues: snapshots.map { ($0.deviceID, $0) })
+        var remainingSnapshotIDs = Set(snapshotsByID.keys)
+        var nextLocations: [CachedDeviceLocation] = []
+        nextLocations.reserveCapacity(max(locations.count, snapshots.count))
+        var deviceIDsNeedingGeocoding: [String] = []
+
+        for existing in locations {
+            if let snapshot = snapshotsByID[existing.deviceID] {
+                let updated = CachedDeviceLocation(
+                    deviceID: snapshot.deviceID,
+                    latitude: snapshot.latitude,
+                    longitude: snapshot.longitude,
+                    accuracy: snapshot.accuracy,
+                    timestamp: snapshot.timestamp,
+                    country: existing.country,
+                    locality: existing.locality,
+                    timeZone: existing.timeZone,
+                    batteryLevel: snapshot.batteryLevel,
+                    altitude: snapshot.altitude,
+                    speed: snapshot.speed ?? existing.speed
+                )
+                nextLocations.append(updated)
+                remainingSnapshotIDs.remove(existing.deviceID)
+
+                let moved = existing.latitude != snapshot.latitude || existing.longitude != snapshot.longitude
+                if moved {
+                    let hasPlacemark = (existing.country != nil) || (existing.locality != nil)
+                    let oldLocation = CLLocation(latitude: existing.latitude, longitude: existing.longitude)
+                    let newLocation = CLLocation(latitude: snapshot.latitude, longitude: snapshot.longitude)
+                    let distance = oldLocation.distance(from: newLocation)
+                    if !hasPlacemark || distance >= geocodeDistanceThresholdMeters {
+                        deviceIDsNeedingGeocoding.append(existing.deviceID)
+                    }
+                }
+            } else if !missingDeviceIDs.contains(existing.deviceID) {
+                nextLocations.append(existing)
+            }
+        }
+
+        for snapshot in snapshots where remainingSnapshotIDs.contains(snapshot.deviceID) {
+            let newLocation = CachedDeviceLocation(
+                deviceID: snapshot.deviceID,
+                latitude: snapshot.latitude,
+                longitude: snapshot.longitude,
+                accuracy: snapshot.accuracy,
+                timestamp: snapshot.timestamp,
+                batteryLevel: snapshot.batteryLevel,
+                altitude: snapshot.altitude,
+                speed: snapshot.speed
+            )
+            nextLocations.append(newLocation)
+            deviceIDsNeedingGeocoding.append(snapshot.deviceID)
+        }
+
+        locations = nextLocations
+
+        if forceGeocoding {
+            for location in nextLocations {
+                enqueueGeocodingIfNeeded(for: location.deviceID, force: true)
+            }
+        } else {
+            for deviceID in deviceIDsNeedingGeocoding {
+                enqueueGeocodingIfNeeded(for: deviceID, force: true)
+            }
+        }
+
+        WidgetDataSyncCoordinator.syncAllDevices()
+    }
+
     func getLocation(for deviceID: String) -> CachedDeviceLocation? {
         return locations.first(where: { $0.deviceID == deviceID })
     }
@@ -198,7 +283,8 @@ class DeviceLocationCacheStore: ObservableObject {
                 locality: locality,
                 timeZone: timeZone ?? loc.timeZone,
                 batteryLevel: loc.batteryLevel,
-                altitude: loc.altitude
+                altitude: loc.altitude,
+                speed: loc.speed
             )
             locations[idx] = updated
             WidgetDataSyncCoordinator.syncAllDevices()
