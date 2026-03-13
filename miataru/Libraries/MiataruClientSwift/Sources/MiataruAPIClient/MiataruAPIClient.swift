@@ -138,6 +138,20 @@ private struct SetAllowedDeviceListRequestBody: Encodable {
     }
 }
 
+/// Strongly typed request body for the GetAllowedDeviceList endpoint.
+private struct GetAllowedDeviceListRequestBody: Encodable {
+    var MiataruGetAllowedDeviceList: GetAllowedDeviceListPayload
+
+    enum CodingKeys: String, CodingKey {
+        case MiataruGetAllowedDeviceList
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(MiataruGetAllowedDeviceList, forKey: .MiataruGetAllowedDeviceList)
+    }
+}
+
 /// Strongly typed request body for the SetDeviceSlogan endpoint.
 private struct SetDeviceSloganRequestBody: Encodable {
     var MiataruSetDeviceSlogan: SetDeviceSloganPayload
@@ -276,6 +290,17 @@ public struct SetAllowedDeviceListPayload: Codable {
         self.DeviceID = DeviceID
         self.DeviceKey = DeviceKey
         self.allowedDevices = allowedDevices
+    }
+}
+
+/// Payload for the GetAllowedDeviceList request.
+public struct GetAllowedDeviceListPayload: Codable {
+    public let DeviceID: String
+    public let DeviceKey: String
+
+    public init(DeviceID: String, DeviceKey: String) {
+        self.DeviceID = DeviceID
+        self.DeviceKey = DeviceKey
     }
 }
 
@@ -744,7 +769,7 @@ private struct SkipDecodable: Decodable {
             while !unkeyed.isAtEnd {
                 _ = try? unkeyed.decode(SkipDecodable.self)
             }
-        } else if var keyed = try? decoder.container(keyedBy: AnyCodingKey.self) {
+        } else if let keyed = try? decoder.container(keyedBy: AnyCodingKey.self) {
             for key in keyed.allKeys {
                 _ = try? keyed.decode(SkipDecodable.self, forKey: key)
             }
@@ -793,6 +818,16 @@ public struct MiataruSetAllowedDeviceListResponse: Codable {
     let MiataruVerboseResponse: String
 }
 
+public struct MiataruAllowedDeviceList: Codable {
+    public let DeviceID: String
+    public let IsAllowedDeviceListEnabled: Bool
+    public let allowedDevices: [MiataruAllowedDevice]
+}
+
+public struct MiataruGetAllowedDeviceListResponse: Codable {
+    public let MiataruAllowedDeviceList: MiataruAllowedDeviceList
+}
+
 public struct MiataruSetDeviceSloganResponse: Codable {
     public let MiataruResponse: String
     public let MiataruVerboseResponse: String
@@ -835,7 +870,7 @@ private struct ErrorResponse: Decodable {
 
 public enum MiataruAPIClient {
 
-    public static let packageVersion = "1.1.1"
+    public static let packageVersion = "1.1.2"
 
     private static let session = URLSession.shared
     private static let jsonDecoder = JSONDecoder()
@@ -1188,6 +1223,35 @@ public enum MiataruAPIClient {
 
         do {
             return try jsonDecoder.decode(MiataruSetAllowedDeviceListResponse.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+
+    /// Fetches the stored allowed devices list for a specific device.
+    ///
+    /// - Parameters:
+    ///   - serverURL: The base URL of the Miataru server.
+    ///   - deviceID: The owner device ID whose allowlist should be fetched.
+    ///   - deviceKey: The DeviceKey for owner authentication.
+    /// - Returns: The stored allowlist payload including the enabled flag.
+    /// - Throws: An `APIError` if the request fails.
+    public static func getAllowedDeviceList(serverURL: URL,
+                                            deviceID: String,
+                                            deviceKey: String) async throws -> MiataruAllowedDeviceList {
+        let url = serverURL.appendingPathComponent("v1/getAllowedDeviceList")
+        let requestBody = GetAllowedDeviceListRequestBody(
+            MiataruGetAllowedDeviceList: GetAllowedDeviceListPayload(DeviceID: deviceID,
+                                                                     DeviceKey: deviceKey)
+        )
+
+        let data = try await performPostRequest(url: url, encodablePayload: requestBody) {
+            "[MiataruAPIClient] Requesting allowed devices list for device \(deviceID) payload=\($0)"
+        }
+
+        do {
+            let response = try jsonDecoder.decode(MiataruGetAllowedDeviceListResponse.self, from: data)
+            return response.MiataruAllowedDeviceList
         } catch {
             throw APIError.decodingError(error)
         }

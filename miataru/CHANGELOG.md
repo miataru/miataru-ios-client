@@ -1,4 +1,7 @@
 version 3.1.4
+- Extended `MiataruClientSwift` with typed support for `getAllowedDeviceList` (`MiataruGetAllowedDeviceList` request and `MiataruAllowedDeviceList` response model).
+- Added `MiataruAPIClient.getAllowedDeviceList(...)` for authenticated owner reads against `v1/getAllowedDeviceList`.
+- Updated `MiataruClientSwift` README with usage documentation and example code for `getAllowedDeviceList`.
 - Fixed intermittent Devices-list refresh flicker where rows briefly dropped all supplemental information and showed only the device name during active polling.
 - Coalesced overlapping device-list refresh requests into a single in-flight fetch and now apply refreshed device-location cache data as one consolidated snapshot instead of publishing per-device partial states.
 - Kept the last successful device-location cache visible on transient refresh failures, avoiding the short-lived blank/half-empty list state during network hiccups.

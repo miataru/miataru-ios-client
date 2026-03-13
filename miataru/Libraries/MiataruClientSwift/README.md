@@ -112,3 +112,20 @@ print(securityStatus.DeviceID)                  // targetDeviceID
 print(securityStatus.HasDeviceKey)              // true/false
 print(securityStatus.IsAllowedDeviceListEnabled) // true/false
 ```
+
+## Allowed Device List Read API
+
+Die Library unterstützt außerdem den Endpunkt `getAllowedDeviceList` zum Auslesen der gespeicherten ACL eines Geräts.
+Der Call verwendet Owner-Authentifizierung über `DeviceID` und `DeviceKey`.
+
+```swift
+let allowedDeviceList = try await MiataruAPIClient.getAllowedDeviceList(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    deviceKey: ownDeviceKey
+)
+
+print(allowedDeviceList.DeviceID)                    // ownDeviceID
+print(allowedDeviceList.IsAllowedDeviceListEnabled)  // true/false
+print(allowedDeviceList.allowedDevices.count)        // Anzahl ACL-Einträge
+```
