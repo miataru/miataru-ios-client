@@ -184,6 +184,11 @@ struct miataruApp: App {
     
     init() {
         Self.applyUITestLaunchConfiguration()
+        let shouldSkipExistingInstallMigration = ProcessInfo.processInfo.arguments.contains(UITestLaunchArgument.resetUserDefaults)
+        SettingsMigration.applyExistingInstallDefaultsIfNeeded(
+            defaults: UserDefaults.standard,
+            skipForFreshUITestReset: shouldSkipExistingInstallMigration
+        )
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")

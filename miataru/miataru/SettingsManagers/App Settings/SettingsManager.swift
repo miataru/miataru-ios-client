@@ -15,20 +15,20 @@ class SettingsManager: ObservableObject {
     
     // MARK: - Properties
     @Published var disableDeviceAutolock: Bool {
-        didSet { defaults.set(disableDeviceAutolock, forKey: Keys.disableDeviceAutolock) }
+        didSet { defaults.set(disableDeviceAutolock, forKey: SettingsKeys.disableDeviceAutolock) }
     }
     @Published var preventScreenRotation: Bool {
-        didSet { defaults.set(preventScreenRotation, forKey: Keys.preventScreenRotation) }
+        didSet { defaults.set(preventScreenRotation, forKey: SettingsKeys.preventScreenRotation) }
     }
     @Published var indicateAccuracyOnMap: Bool {
-        didSet { defaults.set(indicateAccuracyOnMap, forKey: Keys.indicateAccuracyOnMap) }
+        didSet { defaults.set(indicateAccuracyOnMap, forKey: SettingsKeys.indicateAccuracyOnMap) }
     }
     @Published var groupsZoomToFit: Bool {
-        didSet { defaults.set(groupsZoomToFit, forKey: Keys.groupsZoomToFit) }
+        didSet { defaults.set(groupsZoomToFit, forKey: SettingsKeys.groupsZoomToFit) }
     }
     @Published var miataruServerURL: String {
         didSet {
-            defaults.set(miataruServerURL, forKey: Keys.miataruServerURL)
+            defaults.set(miataruServerURL, forKey: SettingsKeys.miataruServerURL)
             WidgetDataSyncCoordinator.syncWidgetConfig(
                 serverURL: miataruServerURL,
                 deviceIDs: KnownDeviceStore.shared.devices.map { $0.DeviceID },
@@ -39,7 +39,7 @@ class SettingsManager: ObservableObject {
     }
     @Published var trackAndReportLocation: Bool {
         didSet { 
-            defaults.set(trackAndReportLocation, forKey: Keys.trackAndReportLocation)
+            defaults.set(trackAndReportLocation, forKey: SettingsKeys.trackAndReportLocation)
             // Check location permissions when tracking is enabled
             if trackAndReportLocation {
                 checkAndRequestLocationPermissions()
@@ -47,69 +47,69 @@ class SettingsManager: ObservableObject {
         }
     }
     @Published var trackAndReportLocationDisabledByDeviceKeyAuth: Bool {
-        didSet { defaults.set(trackAndReportLocationDisabledByDeviceKeyAuth, forKey: Keys.trackAndReportLocationDisabledByDeviceKeyAuth) }
+        didSet { defaults.set(trackAndReportLocationDisabledByDeviceKeyAuth, forKey: SettingsKeys.trackAndReportLocationDisabledByDeviceKeyAuth) }
     }
     @Published var saveLocationHistoryOnServer: Bool {
-        didSet { defaults.set(saveLocationHistoryOnServer, forKey: Keys.saveLocationHistoryOnServer) }
+        didSet { defaults.set(saveLocationHistoryOnServer, forKey: SettingsKeys.saveLocationHistoryOnServer) }
     }
     @Published var locationDataRetentionTime: Int {
-        didSet { defaults.set(String(locationDataRetentionTime), forKey: "location_data_retention_time") }
+        didSet { defaults.set(String(locationDataRetentionTime), forKey: SettingsKeys.locationDataRetentionTime) }
     }
     @Published var mapType: Int {
-        didSet { defaults.set(String(mapType), forKey: Keys.mapType) }
+        didSet { defaults.set(String(mapType), forKey: SettingsKeys.mapType) }
     }
     @Published var mapUpdateInterval: Int {
-        didSet { defaults.set(String(mapUpdateInterval), forKey: Keys.mapUpdateInterval) }
+        didSet { defaults.set(String(mapUpdateInterval), forKey: SettingsKeys.mapUpdateInterval) }
     }
     @Published var outsideMapUpdateInterval: Int {
-        didSet { defaults.set(String(outsideMapUpdateInterval), forKey: Keys.outsideMapUpdateInterval) }
+        didSet { defaults.set(String(outsideMapUpdateInterval), forKey: SettingsKeys.outsideMapUpdateInterval) }
     }
     @Published var mapZoomLevel: Int {
-        didSet { defaults.set(String(mapZoomLevel), forKey: Keys.mapZoomLevel) }
+        didSet { defaults.set(String(mapZoomLevel), forKey: SettingsKeys.mapZoomLevel) }
     }
     @Published var historyNumberOfDays: Int {
-        didSet { defaults.set(String(historyNumberOfDays), forKey: Keys.historyNumberOfDays) }
+        didSet { defaults.set(String(historyNumberOfDays), forKey: SettingsKeys.historyNumberOfDays) }
     }
     @Published var locationActivityType: Int {
-        didSet { defaults.set(locationActivityType, forKey: Keys.locationActivityType) }
+        didSet { defaults.set(locationActivityType, forKey: SettingsKeys.locationActivityType) }
     }
     @Published var locationSensitivityLevel: Int {
-        didSet { defaults.set(locationSensitivityLevel, forKey: Keys.locationSensitivityLevel) }
+        didSet { defaults.set(locationSensitivityLevel, forKey: SettingsKeys.locationSensitivityLevel) }
     }
     @Published var autoRefreshDeviceList: Bool {
-        didSet { defaults.set(autoRefreshDeviceList, forKey: Keys.autoRefreshDeviceList) }
+        didSet { defaults.set(autoRefreshDeviceList, forKey: SettingsKeys.autoRefreshDeviceList) }
     }
     @Published var unknownVisitorAlertsEnabled: Bool {
-        didSet { defaults.set(unknownVisitorAlertsEnabled, forKey: Keys.unknownVisitorAlertsEnabled) }
+        didSet { defaults.set(unknownVisitorAlertsEnabled, forKey: SettingsKeys.unknownVisitorAlertsEnabled) }
     }
     @Published var unknownVisitorAlertsPermissionDenied: Bool = false
     @Published var showCurrentSpeedOnMap: Bool {
-        didSet { defaults.set(showCurrentSpeedOnMap, forKey: Keys.showCurrentSpeedOnMap) }
+        didSet { defaults.set(showCurrentSpeedOnMap, forKey: SettingsKeys.showCurrentSpeedOnMap) }
     }
     @Published var showOffscreenArrowsForOtherDevices: Bool {
-        didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: Keys.showOffscreenArrowsForOtherDevices) }
+        didSet { defaults.set(showOffscreenArrowsForOtherDevices, forKey: SettingsKeys.showOffscreenArrowsForOtherDevices) }
     }
     // Removed: showOtherDevicesOnMap
     @Published var showRouteProgress: Bool {
-        didSet { defaults.set(showRouteProgress, forKey: Keys.showRouteProgress) }
+        didSet { defaults.set(showRouteProgress, forKey: SettingsKeys.showRouteProgress) }
     }
 
     // Global toggle for pulsing animation on map markers
     @Published var pulsingMapMarkers: Bool {
-        didSet { defaults.set(pulsingMapMarkers, forKey: Keys.pulsingMapMarkers) }
+        didSet { defaults.set(pulsingMapMarkers, forKey: SettingsKeys.pulsingMapMarkers) }
     }
 
     // Automatically recalculate the route during navigation
     @Published var automaticRouteUpdateDuringNavigation: Bool {
-        didSet { defaults.set(automaticRouteUpdateDuringNavigation, forKey: Keys.automaticRouteUpdateDuringNavigation) }
+        didSet { defaults.set(automaticRouteUpdateDuringNavigation, forKey: SettingsKeys.automaticRouteUpdateDuringNavigation) }
     }
 
     @Published var deviceKey: String? {
         didSet {
             if let key = deviceKey, !key.isEmpty {
-                defaults.set(key, forKey: Keys.deviceKey)
+                defaults.set(key, forKey: SettingsKeys.deviceKey)
             } else {
-                defaults.removeObject(forKey: Keys.deviceKey)
+                defaults.removeObject(forKey: SettingsKeys.deviceKey)
             }
             WidgetDataSyncCoordinator.syncWidgetConfig(
                 serverURL: miataruServerURL,
@@ -131,23 +131,23 @@ class SettingsManager: ObservableObject {
     @Published var deviceKeyLastChanged: Date? {
         didSet {
             if let date = deviceKeyLastChanged {
-                defaults.set(date, forKey: Keys.deviceKeyLastChanged)
+                defaults.set(date, forKey: SettingsKeys.deviceKeyLastChanged)
             } else {
-                defaults.removeObject(forKey: Keys.deviceKeyLastChanged)
+                defaults.removeObject(forKey: SettingsKeys.deviceKeyLastChanged)
             }
         }
     }
 
     @Published var deviceKeyAuthBlocked: Bool {
-        didSet { defaults.set(deviceKeyAuthBlocked, forKey: Keys.deviceKeyAuthBlocked) }
+        didSet { defaults.set(deviceKeyAuthBlocked, forKey: SettingsKeys.deviceKeyAuthBlocked) }
     }
 
     @Published var deviceKeyAuthBlockedKey: String? {
         didSet {
             if let key = deviceKeyAuthBlockedKey, !key.isEmpty {
-                defaults.set(key, forKey: Keys.deviceKeyAuthBlockedKey)
+                defaults.set(key, forKey: SettingsKeys.deviceKeyAuthBlockedKey)
             } else {
-                defaults.removeObject(forKey: Keys.deviceKeyAuthBlockedKey)
+                defaults.removeObject(forKey: SettingsKeys.deviceKeyAuthBlockedKey)
             }
         }
     }
@@ -155,57 +155,23 @@ class SettingsManager: ObservableObject {
     @Published var lastOpenedDeviceID: String? {
         didSet {
             if let id = lastOpenedDeviceID {
-                defaults.set(id, forKey: Keys.lastOpenedDeviceID)
+                defaults.set(id, forKey: SettingsKeys.lastOpenedDeviceID)
             } else {
-                defaults.removeObject(forKey: Keys.lastOpenedDeviceID)
+                defaults.removeObject(forKey: SettingsKeys.lastOpenedDeviceID)
             }
         }
     }
     
     @Published var reverseGeocodingThresholdMeters: Int {
-        didSet { defaults.set(String(reverseGeocodingThresholdMeters), forKey: Keys.reverseGeocodingThresholdMeters) }
+        didSet { defaults.set(String(reverseGeocodingThresholdMeters), forKey: SettingsKeys.reverseGeocodingThresholdMeters) }
     }
     
     @Published var navigationTransportType: Int {
-        didSet { defaults.set(navigationTransportType, forKey: Keys.navigationTransportType) }
+        didSet { defaults.set(navigationTransportType, forKey: SettingsKeys.navigationTransportType) }
     }
     
     @Published var allowedDeviceListEnabled: Bool {
-        didSet { defaults.set(allowedDeviceListEnabled, forKey: Keys.allowedDeviceListEnabled) }
-    }
-    
-    // MARK: - Keys
-    private enum Keys {
-        static let mapType = "map_type"
-        static let disableDeviceAutolock = "disable_device_autolock_while_in_foreground"
-        static let preventScreenRotation = "prevent_screen_rotation"
-        static let mapUpdateInterval = "map_update_interval"
-        static let outsideMapUpdateInterval = "outside_map_update_interval"
-        static let mapZoomLevel = "map_zoom_level"
-        static let indicateAccuracyOnMap = "indicate_accuracy_on_map"
-        static let groupsZoomToFit = "groups_zoom_to_fit"
-        static let miataruServerURL = "miataru_server_url"
-        static let trackAndReportLocation = "track_and_report_location"
-        static let trackAndReportLocationDisabledByDeviceKeyAuth = "track_and_report_location_disabled_by_device_key_auth"
-        static let saveLocationHistoryOnServer = "save_location_history_on_server"
-        static let historyNumberOfDays = "history_number_of_days"
-        static let locationActivityType = "location_activity_type"
-        static let locationSensitivityLevel = "location_sensitivity_level"
-        static let autoRefreshDeviceList = "auto_refresh_device_list"
-        static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
-        static let showCurrentSpeedOnMap = "show_current_speed_on_map"
-        static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
-        static let showRouteProgress = "show_route_progress"
-        static let lastOpenedDeviceID = "last_opened_device_id"
-        static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
-        static let navigationTransportType = "navigation_transport_type"
-        static let pulsingMapMarkers = "pulsating_map_markers"
-        static let automaticRouteUpdateDuringNavigation = "automatic_route_update_during_navigation"
-        static let deviceKey = "device_key"
-        static let deviceKeyLastChanged = "device_key_last_changed"
-        static let deviceKeyAuthBlocked = "device_key_auth_blocked"
-        static let deviceKeyAuthBlockedKey = "device_key_auth_blocked_key"
-        static let allowedDeviceListEnabled = "allowed_device_list_enabled"
+        didSet { defaults.set(allowedDeviceListEnabled, forKey: SettingsKeys.allowedDeviceListEnabled) }
     }
     
     // MARK: - Location Permission Management
@@ -213,42 +179,57 @@ class SettingsManager: ObservableObject {
         // Reuse the existing LocationManager instance instead of creating a duplicate
         LocationManager.shared.requestLocationPermission()
     }
+
+    private static func persistedInt(forKey key: String,
+                                     defaults: UserDefaults,
+                                     defaultValue: Int) -> Int {
+        if let stringValue = defaults.string(forKey: key),
+           let parsedValue = Int(stringValue) {
+            return parsedValue
+        }
+
+        if let numericValue = defaults.object(forKey: key) as? NSNumber {
+            return numericValue.intValue
+        }
+
+        return defaultValue
+    }
     
     // MARK: - Initialwerte laden
     init() {
         let d = UserDefaults.standard
-        self.disableDeviceAutolock = d.object(forKey: Keys.disableDeviceAutolock) as? Bool ?? false
-        self.preventScreenRotation = d.object(forKey: Keys.preventScreenRotation) as? Bool ?? false
-        self.indicateAccuracyOnMap = d.object(forKey: Keys.indicateAccuracyOnMap) as? Bool ?? true
-        self.groupsZoomToFit = d.object(forKey: Keys.groupsZoomToFit) as? Bool ?? true
-        self.miataruServerURL = d.string(forKey: Keys.miataruServerURL) ?? "https://service.miataru.com"
-        self.trackAndReportLocation = d.object(forKey: Keys.trackAndReportLocation) as? Bool ?? false
-        self.trackAndReportLocationDisabledByDeviceKeyAuth = d.object(forKey: Keys.trackAndReportLocationDisabledByDeviceKeyAuth) as? Bool ?? false
-        self.saveLocationHistoryOnServer = d.object(forKey: Keys.saveLocationHistoryOnServer) as? Bool ?? false
-        self.locationDataRetentionTime = Int(d.string(forKey: "location_data_retention_time") ?? "1440") ?? 1440
-        self.mapType = Int(d.string(forKey: Keys.mapType) ?? "1") ?? 1
-        self.mapUpdateInterval = Int(d.string(forKey: Keys.mapUpdateInterval) ?? "30") ?? 30
-        self.outsideMapUpdateInterval = Int(d.string(forKey: Keys.outsideMapUpdateInterval) ?? "30") ?? 30
-        self.mapZoomLevel = Int(d.string(forKey: Keys.mapZoomLevel) ?? "1") ?? 1
-        self.historyNumberOfDays = Int(d.string(forKey: Keys.historyNumberOfDays) ?? "10000000") ?? 10000000
-        self.locationActivityType = Int(d.string(forKey: Keys.locationActivityType) ?? "0") ?? 0
-        self.locationSensitivityLevel = Int(d.string(forKey: Keys.locationSensitivityLevel) ?? "2") ?? 2
-        self.autoRefreshDeviceList = d.object(forKey: Keys.autoRefreshDeviceList) as? Bool ?? true
-        self.unknownVisitorAlertsEnabled = d.object(forKey: Keys.unknownVisitorAlertsEnabled) as? Bool ?? false
-        self.showCurrentSpeedOnMap = d.object(forKey: Keys.showCurrentSpeedOnMap) as? Bool ?? true
-        self.showOffscreenArrowsForOtherDevices = d.object(forKey: Keys.showOffscreenArrowsForOtherDevices) as? Bool ?? false
-        self.showRouteProgress = d.object(forKey: Keys.showRouteProgress) as? Bool ?? false
-        self.lastOpenedDeviceID = d.string(forKey: Keys.lastOpenedDeviceID)
-        // Default: 1000m, Off=0, 100m=100, 10km=10000
-        self.reverseGeocodingThresholdMeters = Int(d.string(forKey: Keys.reverseGeocodingThresholdMeters) ?? "1000") ?? 1000
-        self.navigationTransportType = Int(d.string(forKey: Keys.navigationTransportType) ?? "2") ?? 2
-        self.pulsingMapMarkers = d.object(forKey: Keys.pulsingMapMarkers) as? Bool ?? true
-        self.automaticRouteUpdateDuringNavigation = d.object(forKey: Keys.automaticRouteUpdateDuringNavigation) as? Bool ?? true
-        self.deviceKey = d.string(forKey: Keys.deviceKey)
-        self.deviceKeyLastChanged = d.object(forKey: Keys.deviceKeyLastChanged) as? Date
-        self.deviceKeyAuthBlocked = d.object(forKey: Keys.deviceKeyAuthBlocked) as? Bool ?? false
-        self.deviceKeyAuthBlockedKey = d.string(forKey: Keys.deviceKeyAuthBlockedKey)
-        self.allowedDeviceListEnabled = d.object(forKey: Keys.allowedDeviceListEnabled) as? Bool ?? false
+        d.register(defaults: SettingsDefaultValues.registrations)
+        self.disableDeviceAutolock = d.bool(forKey: SettingsKeys.disableDeviceAutolock)
+        self.preventScreenRotation = d.bool(forKey: SettingsKeys.preventScreenRotation)
+        self.indicateAccuracyOnMap = d.bool(forKey: SettingsKeys.indicateAccuracyOnMap)
+        self.groupsZoomToFit = d.bool(forKey: SettingsKeys.groupsZoomToFit)
+        self.miataruServerURL = d.string(forKey: SettingsKeys.miataruServerURL) ?? SettingsDefaultValues.miataruServerURL
+        self.trackAndReportLocation = d.bool(forKey: SettingsKeys.trackAndReportLocation)
+        self.trackAndReportLocationDisabledByDeviceKeyAuth = d.bool(forKey: SettingsKeys.trackAndReportLocationDisabledByDeviceKeyAuth)
+        self.saveLocationHistoryOnServer = d.bool(forKey: SettingsKeys.saveLocationHistoryOnServer)
+        self.locationDataRetentionTime = Self.persistedInt(forKey: SettingsKeys.locationDataRetentionTime, defaults: d, defaultValue: SettingsDefaultValues.locationDataRetentionTime)
+        self.mapType = Self.persistedInt(forKey: SettingsKeys.mapType, defaults: d, defaultValue: SettingsDefaultValues.mapType)
+        self.mapUpdateInterval = Self.persistedInt(forKey: SettingsKeys.mapUpdateInterval, defaults: d, defaultValue: SettingsDefaultValues.mapUpdateInterval)
+        self.outsideMapUpdateInterval = Self.persistedInt(forKey: SettingsKeys.outsideMapUpdateInterval, defaults: d, defaultValue: SettingsDefaultValues.outsideMapUpdateInterval)
+        self.mapZoomLevel = Self.persistedInt(forKey: SettingsKeys.mapZoomLevel, defaults: d, defaultValue: SettingsDefaultValues.mapZoomLevel)
+        self.historyNumberOfDays = Self.persistedInt(forKey: SettingsKeys.historyNumberOfDays, defaults: d, defaultValue: SettingsDefaultValues.historyNumberOfDays)
+        self.locationActivityType = Self.persistedInt(forKey: SettingsKeys.locationActivityType, defaults: d, defaultValue: SettingsDefaultValues.locationActivityType)
+        self.locationSensitivityLevel = Self.persistedInt(forKey: SettingsKeys.locationSensitivityLevel, defaults: d, defaultValue: SettingsDefaultValues.locationSensitivityLevel)
+        self.autoRefreshDeviceList = d.bool(forKey: SettingsKeys.autoRefreshDeviceList)
+        self.unknownVisitorAlertsEnabled = d.bool(forKey: SettingsKeys.unknownVisitorAlertsEnabled)
+        self.showCurrentSpeedOnMap = d.bool(forKey: SettingsKeys.showCurrentSpeedOnMap)
+        self.showOffscreenArrowsForOtherDevices = d.bool(forKey: SettingsKeys.showOffscreenArrowsForOtherDevices)
+        self.showRouteProgress = d.bool(forKey: SettingsKeys.showRouteProgress)
+        self.lastOpenedDeviceID = d.string(forKey: SettingsKeys.lastOpenedDeviceID)
+        self.reverseGeocodingThresholdMeters = Self.persistedInt(forKey: SettingsKeys.reverseGeocodingThresholdMeters, defaults: d, defaultValue: SettingsDefaultValues.reverseGeocodingThresholdMeters)
+        self.navigationTransportType = Self.persistedInt(forKey: SettingsKeys.navigationTransportType, defaults: d, defaultValue: SettingsDefaultValues.navigationTransportType)
+        self.pulsingMapMarkers = d.bool(forKey: SettingsKeys.pulsingMapMarkers)
+        self.automaticRouteUpdateDuringNavigation = d.bool(forKey: SettingsKeys.automaticRouteUpdateDuringNavigation)
+        self.deviceKey = d.string(forKey: SettingsKeys.deviceKey)
+        self.deviceKeyLastChanged = d.object(forKey: SettingsKeys.deviceKeyLastChanged) as? Date
+        self.deviceKeyAuthBlocked = d.bool(forKey: SettingsKeys.deviceKeyAuthBlocked)
+        self.deviceKeyAuthBlockedKey = d.string(forKey: SettingsKeys.deviceKeyAuthBlockedKey)
+        self.allowedDeviceListEnabled = d.bool(forKey: SettingsKeys.allowedDeviceListEnabled)
     }
     
     // MARK: - Synchronize
@@ -272,30 +253,11 @@ class SettingsManager: ObservableObject {
         }
     }
     
-    // MARK: - Default-Werte aus Settings.bundle laden
+    // MARK: - Laufzeit-Defaults registrieren
     func registerDefaultsFromSettingsBundle() {
-        if let settingsBundle = Bundle.main.path(forResource: "Settings", ofType: "bundle"),
-           let settings = Bundle(path: settingsBundle),
-           let plistPath = settings.path(forResource: "Root", ofType: "plist"),
-           let dict = NSDictionary(contentsOfFile: plistPath) as? [String: Any],
-           let preferences = dict["PreferenceSpecifiers"] as? [[String: Any]] {
-            //print("Settings.bundle gefunden: \(settingsBundle)")
-            //print("Root.plist gefunden: \(plistPath)")
-            //print("PreferenceSpecifiers: \(preferences)")
-            var defaultsToRegister: [String: Any] = [:]
-            for item in preferences {
-                if let key = item["Key"] as? String, let defaultValue = item["DefaultValue"] {
-                    //print("Key: \(key), DefaultValue: \(defaultValue)")
-                    if defaults.object(forKey: key) == nil {
-                        defaultsToRegister[key] = defaultValue
-                    }
-                }
-            }
-            defaults.register(defaults: defaultsToRegister)
-            //print("Registrierte Defaults: \(defaultsToRegister)")
-        } else {
-            debugLog("Settings.bundle oder Root.plist nicht gefunden!")
-        }
+        // Runtime defaults live centrally in Swift so fresh installs and tests stay
+        // deterministic. Settings.bundle mirrors the same values for iOS Settings.
+        defaults.register(defaults: SettingsDefaultValues.registrations)
     }
     
     static let shared = SettingsManager()

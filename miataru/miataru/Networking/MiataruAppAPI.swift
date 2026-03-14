@@ -14,11 +14,15 @@ enum MiataruAppAPI {
     private static let executor = MiataruRequestExecutor.shared
     static let maxDeviceSloganLength = 40
 
-    static func cleanseDeviceSlogan(_ slogan: String, maxLength: Int = maxDeviceSloganLength) -> String {
+    static func sanitizeDeviceSloganDraft(_ slogan: String, maxLength: Int = maxDeviceSloganLength) -> String {
         let sanitizedScalars = slogan.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }
         let withoutControlCharacters = String(String.UnicodeScalarView(sanitizedScalars))
-        let trimmed = withoutControlCharacters.trimmingCharacters(in: .whitespacesAndNewlines)
-        return String(trimmed.prefix(maxLength))
+        return String(withoutControlCharacters.prefix(maxLength))
+    }
+
+    static func cleanseDeviceSlogan(_ slogan: String, maxLength: Int = maxDeviceSloganLength) -> String {
+        let sanitizedDraft = sanitizeDeviceSloganDraft(slogan, maxLength: maxLength)
+        return sanitizedDraft.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     static func getLocation(
@@ -102,6 +106,25 @@ enum MiataruAppAPI {
                 requestingDeviceID: requestingDeviceID,
                 requestingDeviceKey: requestingDeviceKey
             )
+        }
+    }
+
+    static func fetchAndCacheDeviceSlogan(
+        serverURL: URL,
+        forDeviceID deviceID: String,
+        requestingDeviceID: String,
+        requestingDeviceKey: String
+    ) async throws -> String? {
+        let sloganPayload = try await getDeviceSlogan(
+            serverURL: serverURL,
+            forDeviceID: deviceID,
+            requestingDeviceID: requestingDeviceID,
+            requestingDeviceKey: requestingDeviceKey
+        )
+        return await MainActor.run {
+            DeviceSloganCacheStore.shared.cacheSlogan(sloganPayload.Slogan, for: deviceID)
+            DeviceSloganCacheStore.shared.markFreshNow(for: deviceID)
+            return DeviceSloganCacheStore.shared.slogan(for: deviceID)
         }
     }
 

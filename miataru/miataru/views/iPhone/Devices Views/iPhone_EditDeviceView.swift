@@ -58,9 +58,9 @@ struct iPhone_EditDeviceView: View {
 
                             TextField("Info", text: $sloganDraft)
                                 .onChange(of: sloganDraft) { _, newValue in
-                                    let cleansedSlogan = MiataruAppAPI.cleanseDeviceSlogan(newValue, maxLength: maxSloganLength)
-                                    if cleansedSlogan != newValue {
-                                        sloganDraft = cleansedSlogan
+                                    let sanitizedDraft = MiataruAppAPI.sanitizeDeviceSloganDraft(newValue, maxLength: maxSloganLength)
+                                    if sanitizedDraft != newValue {
+                                        sloganDraft = sanitizedDraft
                                     }
                                 }
 
@@ -447,15 +447,14 @@ struct iPhone_EditDeviceView: View {
         defer { isLoadingSlogan = false }
 
         do {
-            APIRequestCounter.shared.record(.getLocation)
-            _ = try await MiataruAppAPI.getLocation(
+            _ = try await MiataruAppAPI.fetchAndCacheDeviceSlogan(
                 serverURL: serverURL,
-                forDeviceIDs: [normalizedDeviceID],
+                forDeviceID: normalizedDeviceID,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
                 requestingDeviceKey: deviceKey
             )
         } catch {
-            debugLog("[EditDevice] Failed loading slogan via GetLocation for \(normalizedDeviceID): \(error)")
+            debugLog("[EditDevice] Failed loading slogan for \(normalizedDeviceID): \(error)")
         }
         fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
         if isCurrentDevice {

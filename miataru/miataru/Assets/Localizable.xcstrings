@@ -1848,61 +1848,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du kan vælge, hvor ofte din placering opdateres, når appen er i forgrunden. Standard anbefales til de fleste og sparer batteri."
+            "value" : "Styrer, hvor aktivt positionsopdateringer anmodes om, mens Miataru er åben i forgrunden. Standard anbefales til daglig brug."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du kannst die Aktualisierungsfrequenz deines Standorts im Hintergrund auswählen. Standard wird den meisten Nutzern empfohlen und spart Akku."
+            "value" : "Steuert, wie aktiv Standortaktualisierungen angefordert werden, solange Miataru im Vordergrund geöffnet ist. Standard wird für den alltäglichen Einsatz empfohlen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can choose the update frequency of your location when the app is used in the foreground. Standard is recommended for most users and saves battery."
+            "value" : "Controls how actively location updates are requested while Miataru is open in the foreground. Standard is recommended for everyday use."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Puedes elegir la frecuencia de actualización de tu ubicación cuando la app está en primer plano. Se recomienda Estándar para la mayoría de usuarios y ahorra batería."
+            "value" : "Controla con qué intensidad se solicitan actualizaciones de ubicación mientras Miataru está abierto en primer plano. Estándar se recomienda para el uso diario."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voit valita, kuinka usein sijaintia päivitetään etualalla. Suositus on Standard, joka säästää akkua."
+            "value" : "Määrittää, kuinka aktiivisesti sijaintipäivityksiä pyydetään, kun Miataru on avoinna etualalla. Vakio on suositeltu päivittäiseen käyttöön."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu peux choisir la fréquence de mise à jour de ta position lorsque l’app est au premier plan. Standard est recommandé pour la plupart des utilisateurs et économise la batterie."
+            "value" : "Contrôle l’intensité des demandes de mise à jour de position lorsque Miataru est ouvert au premier plan. Le mode standard est recommandé pour l’usage quotidien."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Puoi scegliere la frequenza di aggiornamento della posizione quando l'app è in primo piano. Standard è consigliato e risparmia batteria."
+            "value" : "Controlla con quale intensità vengono richiesti gli aggiornamenti di posizione mentre Miataru è aperta in primo piano. Standard è consigliato per l’uso quotidiano."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アプリがバックグラウンドにある際の位置情報更新頻度を選択できます。標準がほとんどのユーザーに推奨され、バッテリーを節約します。"
+            "value" : "Miataru が前面で開いている間に、どの程度積極的に位置情報更新を要求するかを制御します。日常利用には標準が推奨されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je kunt kiezen hoe vaak je locatie wordt bijgewerkt als de app op de voorgrond staat. Standaard wordt aanbevolen voor de meeste gebruikers en bespaart batterij."
+            "value" : "Bepaalt hoe actief locatie-updates worden aangevraagd terwijl Miataru op de voorgrond is geopend. Standaard wordt aanbevolen voor dagelijks gebruik."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以选择在前台使用时的位置更新频率。推荐标准模式，适合多数用户并节省电量。"
+            "value" : "控制 Miataru 在前台打开时请求位置更新的积极程度。标准适合日常使用。"
           }
         }
       }
@@ -2173,61 +2173,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hvor aggressivt skal din enheds placering opdateres?"
+            "value" : "Tilstand for positionsopdatering"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wie aggressiv sollen die Standortaktualisierungen deines Geräts sein?"
+            "value" : "Modus für Standortaktualisierungen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "how aggressive should your device location be updated?"
+            "value" : "Location update mode"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Con qué agresividad debe actualizarse la ubicación de tu dispositivo?"
+            "value" : "Modo de actualización de ubicación"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kuinka usein laitteen sijainti päivitetään?"
+            "value" : "Sijainnin päivitystila"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "À quelle fréquence la position de ton appareil doit-elle être mise à jour ?"
+            "value" : "Mode de mise à jour de la position"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Con quale frequenza aggiornare la posizione del dispositivo?"
+            "value" : "Modalità di aggiornamento della posizione"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイスの位置情報更新のアグレッシブさはどの程度にしますか？"
+            "value" : "位置情報更新モード"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hoe vaak moet de locatie van je apparaat worden bijgewerkt?"
+            "value" : "Modus voor locatie-updates"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设备位置应多频繁更新？"
+            "value" : "位置更新模式"
           }
         }
       }
@@ -2486,6 +2486,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重复的设备"
+          }
+        }
+      }
+    },
+    "advanced_options" : {
+      "comment" : "Title for the advanced settings screen",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancerede indstillinger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweiterte Optionen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced options"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones avanzadas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisäasetukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options avancées"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opzioni avanzate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高度なオプション"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geavanceerde opties"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高级选项"
+          }
+        }
+      }
+    },
+    "advanced_options_and_tracking_status" : {
+      "comment" : "Header for the root settings section that links to advanced options and tracking details",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancerede indstillinger og sporingsstatus"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweiterte Optionen und Tracking-Status"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced options and tracking status"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones avanzadas y estado del seguimiento"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisäasetukset ja seurannan tila"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options avancées et état du suivi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opzioni avanzate e stato del tracciamento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高度なオプションと追跡ステータス"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geavanceerde opties en trackingstatus"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高级选项与跟踪状态"
           }
         }
       }
@@ -2820,61 +2950,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiver adgangskontrol for at administrere, hvilke enheder der kan få adgang til dine positionsdata. Kræver en DeviceKey og kan ikke deaktiveres, når den er aktiveret."
+            "value" : "Adgangskontrol begrænser, hvilke enheder der kan læse aktuelle positions- og historikdata. En DeviceKey er påkrævet, og funktionen forbliver aktiveret efter aktivering."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktivieren Sie die Zugriffskontrolle, um zu verwalten, welche Geräte auf Ihre Positionsdaten zugreifen können. Erfordert einen DeviceKey und kann nach der Aktivierung nicht deaktiviert werden."
+            "value" : "Die Zugriffskontrolle begrenzt, welche Geräte aktuelle Standort- und Verlaufsdaten lesen dürfen. Ein DeviceKey ist erforderlich, und die Funktion bleibt nach der Aktivierung eingeschaltet."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enable access control to manage which devices can access your location data. Requires a DeviceKey and cannot be disabled once enabled."
+            "value" : "Access control limits which devices can read current-location and history data. A DeviceKey is required, and the feature stays enabled once activated."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Habilita el control de acceso para gestionar qué dispositivos pueden acceder a tus datos de ubicación. Requiere un DeviceKey y no se puede desactivar una vez habilitado."
+            "value" : "El control de acceso limita qué dispositivos pueden leer los datos de ubicación actual y del historial. Se requiere una DeviceKey y la función permanece activada una vez habilitada."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ota käyttöoikeuksien hallinta käyttöön hallitsemaan, mitkä laitteet voivat käyttää sijaintitietojasi. Vaatii DeviceKeyn ja sitä ei voi poistaa käytöstä, kun se on otettu käyttöön."
+            "value" : "Käyttöoikeuksien hallinta rajoittaa, mitkä laitteet voivat lukea nykyisen sijainnin ja historiatiedot. DeviceKey vaaditaan, ja toiminto pysyy käytössä aktivoinnin jälkeen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez le contrôle d'accès pour gérer quels appareils peuvent accéder à vos données de localisation. Nécessite un DeviceKey et ne peut pas être désactivé une fois activé."
+            "value" : "Le contrôle d’accès limite les appareils pouvant lire la position actuelle et l’historique. Une DeviceKey est requise et la fonction reste activée après son activation."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abilita il controllo di accesso per gestire quali dispositivi possono accedere ai tuoi dati di posizione. Richiede un DeviceKey e non può essere disabilitato una volta abilitato."
+            "value" : "Il controllo accessi limita quali dispositivi possono leggere la posizione attuale e la cronologia. È richiesta una DeviceKey e la funzione resta attiva dopo l’attivazione."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アクセス制御を有効にして、どのデバイスが位置情報にアクセスできるかを管理します。DeviceKeyが必要で、一度有効にすると無効にできません。"
+            "value" : "アクセス制御により、現在地と履歴データを読めるデバイスが制限されます。DeviceKey が必要で、一度有効にすると機能は有効のままです。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Schakel toegangscontrole in om te beheren welke apparaten toegang hebben tot uw locatiegegevens. Vereist een DeviceKey en kan niet worden uitgeschakeld zodra het is ingeschakeld."
+            "value" : "Toegangscontrole beperkt welke apparaten huidige locatie- en geschiedenisgegevens kunnen lezen. Een DeviceKey is vereist en de functie blijft ingeschakeld nadat deze is geactiveerd."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用访问控制以管理哪些设备可以访问您的位置数据。需要设备密钥，一旦启用后无法禁用。"
+            "value" : "访问控制可限制哪些设备能够读取当前位置和历史数据。此功能需要 DeviceKey，并且启用后会保持开启。"
           }
         }
       }
@@ -2950,61 +3080,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du kan administrere, hvilke enheder der har adgang til din nuværende position og positionshistorik på skærmen Enheder."
+            "value" : "Adgang til aktuel position og historik kan administreres for hver kendt enhed på skærmen Enheder."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sie können im Bildschirm Geräte verwalten, welche Geräte Zugriff auf Ihre aktuelle Position und Positionsverlauf haben."
+            "value" : "Der Zugriff auf aktuellen Standort und Standortverlauf kann für jedes bekannte Gerät im Bildschirm „Geräte“ verwaltet werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can manage which devices have access to your current location and location history in the Devices screen."
+            "value" : "Current-location and history access can be managed for each known device in the Devices screen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Puedes gestionar qué dispositivos tienen acceso a tu ubicación actual y al historial de ubicaciones en la pantalla Dispositivos."
+            "value" : "El acceso a la ubicación actual y al historial puede gestionarse para cada dispositivo conocido en la pantalla Dispositivos."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voit hallita, mitkä laitteet voivat käyttää nykyistä sijaintiasi ja sijaintihistoriaa Laitteet-näytössä."
+            "value" : "Nykyisen sijainnin ja historian käyttöoikeuksia voidaan hallita jokaiselle tunnetulle laitteelle Laitteet-näytössä."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous pouvez gérer quels appareils ont accès à votre position actuelle et à l'historique des positions dans l'écran Appareils."
+            "value" : "L’accès à la position actuelle et à l’historique peut être géré pour chaque appareil connu dans l’écran Appareils."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Puoi gestire quali dispositivi hanno accesso alla tua posizione corrente e alla cronologia delle posizioni nella schermata Dispositivi."
+            "value" : "L’accesso alla posizione attuale e alla cronologia può essere gestito per ogni dispositivo conosciuto nella schermata Dispositivi."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイス画面で、現在地と位置履歴にアクセスできるデバイスを管理できます。"
+            "value" : "現在地と履歴へのアクセスは、デバイス画面で既知の各デバイスごとに管理できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U kunt beheren welke apparaten toegang hebben tot uw huidige locatie en locatiegeschiedenis in het scherm Apparaten."
+            "value" : "Toegang tot huidige locatie en geschiedenis kan per bekend apparaat worden beheerd in het scherm Apparaten."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您可以在设备屏幕中管理哪些设备可以访问您的当前位置和位置历史记录。"
+            "value" : "可在设备页面为每个已知设备管理当前位置和历史记录的访问权限。"
           }
         }
       }
@@ -4326,7 +4456,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Application behaviour"
+            "value" : "App behavior"
           }
         },
         "es" : {
@@ -6271,7 +6401,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "default map"
+            "value" : "Default map"
           }
         },
         "es" : {
@@ -11767,67 +11897,132 @@
         }
       }
     },
+    "explanation_location_track" : {
+      "comment" : "Explanation for track device location toggle",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiverer positionssporing og positionsopdateringer for denne enhed i Miataru."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviert die Standortverfolgung und Standortaktualisierungen für dieses Gerät in Miataru."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enables location tracking and location updates for this device in Miataru."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa el seguimiento y las actualizaciones de ubicación de este dispositivo en Miataru."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottaa käyttöön tämän laitteen sijainninseurannan ja sijaintipäivitykset Miatarussa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active le suivi de position et les mises à jour de position pour cet appareil dans Miataru."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva il tracciamento e gli aggiornamenti di posizione per questo dispositivo in Miataru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru でこのデバイスの位置追跡と位置情報更新を有効にします。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakelt locatietracking en locatie-updates voor dit apparaat in Miataru in."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为此设备启用 Miataru 中的位置跟踪和位置更新。"
+          }
+        }
+      }
+    },
     "explanation_map_type" : {
       "comment" : "Explanation for map type picker",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg kortets udseende: standard, hybrid eller satellit."
+            "value" : "Ændrer kortets grundstil mellem standard-, hybrid- og satellitvisning."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle das Erscheinungsbild der Karte: Standard-, Hybrid- oder Satellitenansicht."
+            "value" : "Ändert den Grundstil der Karte zwischen Standard-, Hybrid- und Satellitenansicht."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose the appearance of the map: standard, hybrid, or satellite view."
+            "value" : "Changes the base map style between default, hybrid, and satellite views."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige la apariencia del mapa: estándar, híbrida o satélite."
+            "value" : "Cambia el estilo base del mapa entre las vistas predeterminada, híbrida y satelital."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse kartan ulkoasu: vakio, hybridi tai satelliitti."
+            "value" : "Vaihtaa kartan perusnäkymän oletus-, hybridi- ja satelliittinäkymän välillä."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez l’apparence de la carte : standard, hybride ou satellite."
+            "value" : "Change le style de base de la carte entre les vues standard, hybride et satellite."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli l'aspetto della mappa: standard, ibrida o satellitare."
+            "value" : "Cambia lo stile base della mappa tra vista predefinita, ibrida e satellitare."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地図の表示スタイルを選択してください：標準、ハイブリッド、または衛星ビュー。"
+            "value" : "地図の基本スタイルを標準、ハイブリッド、衛星表示の間で切り替えます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kies het kaarttype: standaard, hybride of satelliet."
+            "value" : "Wijzigt de basiskaartstijl tussen standaard-, hybride- en satellietweergave."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择地图外观：标准、混合或卫星。"
+            "value" : "在默认、混合和卫星视图之间切换基础地图样式。"
           }
         }
       }
@@ -11838,61 +12033,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angiv hvor ofte kortet skal opdateres og opdaterede placeringer vises."
+            "value" : "Styrer, hvor ofte positioner opdateres, mens et enheds- eller gruppekort er synligt."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lege fest, wie oft die Karte aktualisiert und die angezeigten Standorte erneuert werden sollen."
+            "value" : "Steuert, wie oft Standorte aktualisiert werden, während eine Geräte- oder Gruppenkarte sichtbar ist."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Set how often the map should refresh and update the displayed locations."
+            "value" : "Controls how often locations are refreshed while a device or group map is visible."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Define con qué frecuencia debe actualizarse el mapa y las ubicaciones mostradas."
+            "value" : "Controla la frecuencia con la que se actualizan las ubicaciones mientras un mapa de dispositivo o grupo está visible."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Määritä, kuinka usein kartta päivittyy ja sijainnit päivittyvät."
+            "value" : "Määrittää, kuinka usein sijainteja päivitetään, kun laite- tai ryhmäkartta on näkyvissä."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Définissez la fréquence de rafraîchissement de la carte et de mise à jour des positions affichées."
+            "value" : "Contrôle la fréquence d’actualisation des positions lorsqu’une carte d’appareil ou de groupe est visible."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imposta la frequenza con cui la mappa si aggiorna e aggiorna le posizioni mostrate."
+            "value" : "Controlla la frequenza con cui le posizioni vengono aggiornate quando è visibile una mappa di dispositivo o di gruppo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地図をどの頻度で更新して位置情報を表示し直すかを設定してください。"
+            "value" : "デバイスマップまたはグループマップが表示されている間の位置更新頻度を制御します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stel in hoe vaak de kaart moet verversen en locaties bijwerken."
+            "value" : "Bepaalt hoe vaak locaties worden vernieuwd terwijl een apparaat- of groepskaart zichtbaar is."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置地图刷新和更新显示位置的频率。"
+            "value" : "控制设备地图或群组地图可见时刷新位置的频率。"
           }
         }
       }
@@ -11903,61 +12098,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg kortets standardzoomniveau, som afgør hvor stort område der vises."
+            "value" : "Angiver standard-zoomafstanden, når et kort åbnes."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle den Standard-Zoomfaktor der Karte, um festzulegen, wie viel Fläche sichtbar ist."
+            "value" : "Legt die Standard-Zoomdistanz beim Öffnen einer Karte fest."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select the default zoom level for the map, determining how much area is visible."
+            "value" : "Defines the default zoom distance when a map is opened."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selecciona el nivel de zoom predeterminado del mapa, que determina cuánta área se ve."
+            "value" : "Define la distancia de zoom predeterminada al abrir un mapa."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse kartan oletuszoomaustaso, joka määrää näkyvän alueen."
+            "value" : "Määrittää oletuszoomausetäisyyden karttaa avattaessa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionnez le niveau de zoom par défaut de la carte, qui détermine la zone visible."
+            "value" : "Définit la distance de zoom par défaut à l’ouverture d’une carte."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seleziona il livello di zoom predefinito della mappa, che determina l'area visibile."
+            "value" : "Definisce la distanza di zoom predefinita quando viene aperta una mappa."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地図のデフォルトのズームレベルを選択して、どの範囲が表示されるかを決定します。"
+            "value" : "地図を開いたときのデフォルトのズーム距離を定義します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kies het standaardzoomniveau van de kaart, bepaalt hoeveel gebied zichtbaar is."
+            "value" : "Bepaalt de standaard zoomafstand wanneer een kaart wordt geopend."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择地图的默认缩放级别，决定可见范围。"
+            "value" : "定义打开地图时的默认缩放距离。"
           }
         }
       }
@@ -12033,61 +12228,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg transportmåde for at beregne ruten mellem enheder. Aktiver ved at langtrykke på en enhedspin på kortet for at starte navigation."
+            "value" : "Angiver den transportform, der bruges til ruteberegning og rutevejledning."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein Transportmittel wählen, um die Route zwischen Geräten zu berechnen. Durch langes Drücken eines Geräte-Pins auf der Karte die Navigation starten."
+            "value" : "Legt das Transportmittel für die Routenberechnung und Routenführung fest."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose a travel mode to calculate the route between devices. Activate by long-press a device pin on the map to start navigation."
+            "value" : "Sets the transport mode used for route calculation and route guidance."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige un modo de viaje para calcular la ruta entre dispositivos. Actívalo manteniendo pulsado un pin de dispositivo en el mapa para iniciar la navegación."
+            "value" : "Define el modo de transporte utilizado para calcular y guiar la ruta."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse matkustustapa laskeaksesi reitin laitteiden välillä. Käynnistä pitkäpainamalla kartan laiteneulaa."
+            "value" : "Määrittää kulkutavan, jota käytetään reitin laskentaan ja reittiohjaukseen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez un mode de déplacement pour calculer l’itinéraire entre les appareils. Activez-le en appuyant longuement sur une épingle d’appareil sur la carte pour démarrer la navigation."
+            "value" : "Définit le mode de transport utilisé pour le calcul d’itinéraire et le guidage."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli una modalità di viaggio per calcolare il percorso tra dispositivi. Attiva tenendo premuto un pin del dispositivo sulla mappa per avviare la navigazione."
+            "value" : "Imposta la modalità di trasporto usata per il calcolo del percorso e la guida."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移動手段を選択してデバイス間のルートを計算します。マップ上のデバイスピンを長押しするとナビゲーションが開始されます。"
+            "value" : "ルート計算と案内に使用する移動手段を設定します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kies een vervoersmodus om de route tussen apparaten te berekenen. Activeer door lang op een pin te drukken om te navigeren."
+            "value" : "Bepaalt de vervoerswijze die wordt gebruikt voor routeberekening en routebegeleiding."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择出行方式以计算设备之间的路线。长按地图上的设备标记开始导航。"
+            "value" : "设置用于路线计算和路线引导的出行方式。"
           }
         }
       }
@@ -12098,61 +12293,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angiv hvor ofte enhedsdata opdateres fra serveren uden for kortet."
+            "value" : "Styrer, hvor ofte enhedsdata opdateres uden for kortskærme."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lege fest, wie oft Gerätedaten außerhalb der Karte vom Server aktualisiert werden."
+            "value" : "Steuert, wie oft Gerätedaten außerhalb von Kartenansichten aktualisiert werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Set how often the device data is being updated from the server outside of map."
+            "value" : "Controls how often device data is refreshed outside map screens."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Define con qué frecuencia se actualizan los datos del dispositivo desde el servidor fuera del mapa."
+            "value" : "Controla la frecuencia con la que se actualizan los datos de los dispositivos fuera de las pantallas de mapas."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Määritä, kuinka usein laitetiedot päivitetään palvelimelta kartan ulkopuolella."
+            "value" : "Määrittää, kuinka usein laitetiedot päivitetään karttanäkymien ulkopuolella."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Définissez la fréquence à laquelle les données de l’appareil sont mises à jour depuis le serveur en dehors de la carte."
+            "value" : "Contrôle la fréquence d’actualisation des données des appareils en dehors des écrans cartographiques."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Imposta con quale frequenza i dati del dispositivo vengono aggiornati dal server al di fuori della mappa."
+            "value" : "Controlla la frequenza con cui i dati dei dispositivi vengono aggiornati fuori dalle schermate della mappa."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "マップ以外でデバイスデータをサーバーから更新する頻度を設定します。"
+            "value" : "地図画面以外でデバイスデータを更新する頻度を制御します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stel in hoe vaak de apparaatgegevens buiten de kaart vanaf de server worden bijgewerkt."
+            "value" : "Bepaalt hoe vaak apparaatgegevens buiten kaartschermen worden vernieuwd."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置在地图之外从服务器更新设备数据的频率。"
+            "value" : "控制在地图界面之外刷新设备数据的频率。"
           }
         }
       }
@@ -12352,6 +12547,136 @@
         }
       }
     },
+    "explanation_save_location_history_to_server" : {
+      "comment" : "Explanation for saving location history on the server",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemmer positionshistorik på Miataru-serveren, så tidligere positioner fortsat er tilgængelige."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichert den Standortverlauf auf dem Miataru-Server, damit frühere Positionen verfügbar bleiben."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stores location history on the Miataru server so earlier positions remain available."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guarda el historial de ubicaciones en el servidor de Miataru para que las posiciones anteriores sigan disponibles."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tallentaa sijaintihistorian Miataru-palvelimelle, jotta aiemmat sijainnit pysyvät saatavilla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistre l’historique de position sur le serveur Miataru afin que les positions précédentes restent disponibles."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memorizza la cronologia delle posizioni sul server Miataru, così le posizioni precedenti restano disponibili."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以前の位置を利用できるように、位置履歴を Miataru サーバーに保存します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slaat locatiegeschiedenis op de Miataru-server op zodat eerdere posities beschikbaar blijven."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将位置历史保存到 Miataru 服务器，以便较早的位置仍可用。"
+          }
+        }
+      }
+    },
+    "explanation_server_url" : {
+      "comment" : "Explanation for the Miataru server URL setting",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angiver Miataru-serverendepunktet, der bruges til positionsopdateringer og enhedsopslag."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legt den Miataru-Server-Endpunkt für Standortaktualisierungen und Geräteabfragen fest."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defines the Miataru server endpoint used for location updates and device lookups."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Define el punto final del servidor Miataru que se usa para las actualizaciones de ubicación y la búsqueda de dispositivos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Määrittää Miataru-palvelimen päätepisteen, jota käytetään sijaintipäivityksiin ja laitehakuihin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définit le point de terminaison du serveur Miataru utilisé pour les mises à jour de position et la recherche d’appareils."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Definisce l’endpoint del server Miataru usato per gli aggiornamenti di posizione e la ricerca dei dispositivi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報更新とデバイス検索に使用する Miataru サーバーのエンドポイントを定義します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bepaalt het Miataru-serverendpoint dat wordt gebruikt voor locatie-updates en apparaatopvragingen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定义用于位置更新和设备查询的 Miataru 服务器端点。"
+          }
+        }
+      }
+    },
     "explanation_show_current_speed_on_map" : {
       "comment" : "Explanation for showing current speed on the map toggle",
       "localizations" : {
@@ -12419,6 +12744,7 @@
     },
     "explanation_show_history_days" : {
       "comment" : "Explanation for show history days picker",
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -12612,66 +12938,131 @@
         }
       }
     },
-    "explanation_unknown_visitor_alerts_toggle" : {
+    "explanation_store_history_before_autoremove" : {
+      "comment" : "Explanation for automatic location history removal",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Når funktionen er aktiveret, sender Miataru en notifikation, når en ukendt enhed anmoder om din position. Den samme ukendte enhed udløser højst én notifikation hver 24. time."
+            "value" : "Angiver, hvor længe positionshistorik beholdes før automatisk fjernelse."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn aktiviert, sendet Miataru eine Benachrichtigung, sobald ein unbekanntes Gerät deine Position anfragt. Für dasselbe unbekannte Gerät erfolgt höchstens alle 24 Stunden eine Benachrichtigung."
+            "value" : "Legt fest, wie lange der Standortverlauf vor der automatischen Entfernung gespeichert bleibt."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When enabled, Miataru sends a notification when an unknown device requests your position. The same unknown device is notified at most once every 24 hours."
+            "value" : "Defines how long location history is kept before automatic removal."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando está activado, Miataru envía una notificación cuando un dispositivo desconocido solicita tu posición. El mismo dispositivo desconocido se notifica como máximo una vez cada 24 horas."
+            "value" : "Define cuánto tiempo se conserva el historial de ubicaciones antes de eliminarse automáticamente."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kun tämä on käytössä, Miataru lähettää ilmoituksen, kun tuntematon laite pyytää sijaintiasi. Samasta tuntemattomasta laitteesta ilmoitetaan enintään kerran 24 tunnissa."
+            "value" : "Määrittää, kuinka kauan sijaintihistoria säilytetään ennen automaattista poistamista."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lorsqu'elle est activée, Miataru envoie une notification lorsqu'un appareil inconnu demande votre position. Le même appareil inconnu ne déclenche au maximum qu'une notification toutes les 24 heures."
+            "value" : "Définit combien de temps l’historique de position est conservé avant sa suppression automatique."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando è attiva, Miataru invia una notifica quando un dispositivo sconosciuto richiede la tua posizione. Lo stesso dispositivo sconosciuto genera al massimo una notifica ogni 24 ore."
+            "value" : "Definisce per quanto tempo la cronologia delle posizioni viene conservata prima della rimozione automatica."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効にすると、不明なデバイスがあなたの位置情報を要求したときに Miataru が通知します。同じ不明デバイスへの通知は 24 時間に最大 1 回です。"
+            "value" : "位置履歴を自動的に削除するまでの保持期間を定義します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Als dit is ingeschakeld, stuurt Miataru een melding wanneer een onbekend apparaat je positie opvraagt. Voor hetzelfde onbekende apparaat ontvang je maximaal één melding per 24 uur."
+            "value" : "Bepaalt hoe lang locatiegeschiedenis wordt bewaard voordat deze automatisch wordt verwijderd."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用后，当未知设备请求你的位置时，Miataru 会发送通知。同一未知设备最多每 24 小时通知一次。"
+            "value" : "定义位置历史在自动删除前保留多长时间。"
+          }
+        }
+      }
+    },
+    "explanation_unknown_visitor_alerts_toggle" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sender en notifikation, når en ukendt enhed anmoder om den aktuelle position. Den samme ukendte enhed udløser højst én notifikation hver 24. time."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sendet eine Benachrichtigung, wenn ein unbekanntes Gerät die aktuelle Position anfragt. Dasselbe unbekannte Gerät löst höchstens alle 24 Stunden eine Benachrichtigung aus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sends a notification when an unknown device requests the current position. The same unknown device triggers at most one notification every 24 hours."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envía una notificación cuando un dispositivo desconocido solicita la posición actual. El mismo dispositivo desconocido activa como máximo una notificación cada 24 horas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lähettää ilmoituksen, kun tuntematon laite pyytää nykyistä sijaintia. Sama tuntematon laite laukaisee enintään yhden ilmoituksen 24 tunnissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoie une notification lorsqu’un appareil inconnu demande la position actuelle. Le même appareil inconnu déclenche au maximum une notification toutes les 24 heures."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invia una notifica quando un dispositivo sconosciuto richiede la posizione attuale. Lo stesso dispositivo sconosciuto attiva al massimo una notifica ogni 24 ore."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイスが現在地を要求したときに通知を送信します。同じ不明デバイスによる通知は 24 時間ごとに最大 1 回です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stuurt een melding wanneer een onbekend apparaat de huidige locatie opvraagt. Hetzelfde onbekende apparaat activeert maximaal één melding per 24 uur."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当未知设备请求当前位置时发送通知。同一未知设备最多每 24 小时触发一次通知。"
           }
         }
       }
@@ -20898,61 +21289,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tærskel for opdatering af adressenavn"
+            "value" : "Tærskel for adresseopdatering"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "minimale Adress-Namensauflösungs-Radius"
+            "value" : "Schwelle für Adressaktualisierung"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Address name update threshold"
+            "value" : "Address update threshold"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Umbral de actualización del nombre de la dirección"
+            "value" : "Umbral de actualización de direcciones"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Osoitteen päivityskynnys"
+            "value" : "Osoitepäivityksen kynnys"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seuil de mise à jour du nom d’adresse"
+            "value" : "Seuil d’actualisation de l’adresse"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Soglia aggiornamento nome indirizzo"
+            "value" : "Soglia di aggiornamento dell’indirizzo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アドレス解決"
+            "value" : "住所更新のしきい値"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drempel voor adresnaam-update"
+            "value" : "Drempel voor adresupdates"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "地址名称更新阈值"
+            "value" : "地址更新阈值"
           }
         }
       }
@@ -21364,7 +21755,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "satelite map"
+            "value" : "Satellite map"
           }
         },
         "es" : {
@@ -24319,7 +24710,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "transportmåde"
+            "value" : "Transportform"
           }
         },
         "de" : {
@@ -24331,31 +24722,31 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mode of transport"
+            "value" : "Mode of transport"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "modo de transporte"
+            "value" : "Modo de transporte"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "liikkumistapa"
+            "value" : "Liikkumistapa"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mode de transport"
+            "value" : "Mode de transport"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "modalità di trasporto"
+            "value" : "Modalità di trasporto"
           }
         },
         "ja" : {
@@ -24367,7 +24758,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "vervoerswijze"
+            "value" : "Vervoerswijze"
           }
         },
         "zh-Hans" : {
@@ -24395,7 +24786,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "transit"
+            "value" : "Transit"
           }
         },
         "es" : {
@@ -24459,7 +24850,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "walking"
+            "value" : "Walking"
           }
         },
         "es" : {

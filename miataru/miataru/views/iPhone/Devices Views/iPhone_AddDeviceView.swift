@@ -447,15 +447,14 @@ struct iPhone_AddDeviceView: View {
         defer { isLoadingSlogan = false }
 
         do {
-            APIRequestCounter.shared.record(.getLocation)
-            _ = try await MiataruAppAPI.getLocation(
+            _ = try await MiataruAppAPI.fetchAndCacheDeviceSlogan(
                 serverURL: serverURL,
-                forDeviceIDs: [normalizedDeviceID],
+                forDeviceID: normalizedDeviceID,
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
                 requestingDeviceKey: deviceKey
             )
         } catch {
-            debugLog("[AddDevice] Failed loading slogan via GetLocation for \(normalizedDeviceID): \(error)")
+            debugLog("[AddDevice] Failed loading slogan for \(normalizedDeviceID): \(error)")
         }
         fetchedSlogan = sloganCache.slogan(for: normalizedDeviceID) ?? ""
     }

@@ -18,7 +18,7 @@
 			<key>Key</key>
 			<string>track_and_report_location</string>
             <key>DefaultValue</key>
-            <true/>
+            <false/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -78,14 +78,14 @@
 			<key>Titles</key>
 			<array>
 				<string>activity_type_other</string>
-				<string>activity_type_automotive</string>
 				<string>activity_type_fitness</string>
+				<string>activity_type_automotive</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<string>0</string>
-				<string>1</string>
 				<string>2</string>
+				<string>1</string>
 			</array>
 		</dict>
 		<dict>
@@ -174,7 +174,7 @@
 			<key>Key</key>
 			<string>show_offscreen_arrows_for_other_devices</string>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -254,11 +254,37 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>outside_map_update_interval</string>
+			<key>Key</key>
+			<string>outside_map_update_interval</string>
+			<key>DefaultValue</key>
+			<string>60</string>
+			<key>Titles</key>
+			<array>
+				<string>5s</string>
+				<string>10s</string>
+				<string>15s</string>
+				<string>30s</string>
+				<string>60s</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>5</string>
+				<string>10</string>
+				<string>15</string>
+				<string>30</string>
+				<string>60</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>map_zoom_level</string>
 			<key>Key</key>
 			<string>map_zoom_level</string>
 			<key>DefaultValue</key>
-			<string>1</string>
+			<string>5</string>
 			<key>Titles</key>
 			<array>
 				<string>1km</string>
@@ -326,13 +352,13 @@
 			<key>Key</key>
 			<string>show_route_progress</string>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>advanced_map_features</string>
+			<string>advanced_options</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -342,7 +368,7 @@
 			<key>Key</key>
 			<string>pulsating_map_markers</string>
 			<key>DefaultValue</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>

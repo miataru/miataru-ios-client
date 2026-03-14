@@ -1,3 +1,10 @@
+version 3.1.5
+- Refactored the iOS settings flow: centralized runtime defaults and one-time existing-install migrations, shortened the root settings screen, added a dedicated `Advanced Options` page, and moved ACL/status content to the intended destinations.
+- Synchronized settings defaults, labels, picker options, and explanatory copy across `Localizable.xcstrings` and all supported `Settings.bundle` locales.
+- Added regression coverage for settings defaults, settings localization completeness, `Settings.bundle` parity, and the advanced-options navigation path, with updated test documentation.
+- Fixed device-slogan editing so normal spaces remain typeable while final save cleansing still trims outer whitespace and removes control characters.
+- Changed the device-slogan fetch strategy: `Add Device` and `Edit Device` use `getDeviceSlogan`, unknown devices in the iPhone/iPad device lists only fetch missing slogans individually after the normal `getLocation` refresh, and all other slogan reads continue to rely on `getLocation`.
+
 version 3.1.4
 - Extended `MiataruClientSwift` with typed support for `getAllowedDeviceList` (`MiataruGetAllowedDeviceList` request and `MiataruAllowedDeviceList` response model).
 - Added `MiataruAPIClient.getAllowedDeviceList(...)` for authenticated owner reads against `v1/getAllowedDeviceList`.

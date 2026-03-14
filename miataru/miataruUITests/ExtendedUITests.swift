@@ -47,10 +47,33 @@ final class ExtendedUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
         XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
 
+        let locationDetailsLink = app.descendants(matching: .any)["settings_location_tracking_details_link"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: locationDetailsLink, maxSwipes: 10), "Location tracking details link should be reachable")
+        tapElement(locationDetailsLink)
+
         let showOnboardingButton = app.buttons["settings_show_onboarding_again_button"]
-        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: showOnboardingButton, maxSwipes: 10), "Settings action for onboarding should be available")
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: showOnboardingButton, maxSwipes: 4), "Onboarding action should be available on the tracking details screen")
         showOnboardingButton.tap()
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert after tapping onboarding action")
+    }
+
+    @MainActor
+    func testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
+
+        let advancedOptionsLink = app.descendants(matching: .any)["settings_advanced_options_link"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: advancedOptionsLink, maxSwipes: 6), "Advanced options link should be reachable")
+
+        let pulsingToggle = app.descendants(matching: .any)["settings_pulsing_map_markers_toggle"].firstMatch
+        XCTAssertFalse(pulsingToggle.exists, "Advanced-only toggle should not be visible on the root settings screen")
+
+        tapElement(advancedOptionsLink)
+
+        XCTAssertTrue(pulsingToggle.waitForExistence(timeout: 10), "Moved advanced toggle should be visible on the advanced options screen")
+        XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert after opening advanced options")
     }
 
     @MainActor
@@ -99,6 +122,18 @@ final class ExtendedUITests: XCTestCase {
     }
 
     @MainActor
+    private func tapElement(_ element: XCUIElement) {
+        XCTAssertTrue(element.waitForExistence(timeout: 5), "Element should exist before tapping")
+
+        if element.waitForHittable(timeout: 2) {
+            element.tap()
+            return
+        }
+
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    @MainActor
     private func selectTab(in app: XCUIApplication, index: Int, expectedScreenIdentifier: String) -> Bool {
         let tabBar = app.tabBars.firstMatch
         guard tabBar.waitForExistence(timeout: 10) else { return false }
@@ -111,5 +146,13 @@ final class ExtendedUITests: XCTestCase {
         }
 
         return app.otherElements[expectedScreenIdentifier].waitForExistence(timeout: 10)
+    }
+}
+
+private extension XCUIElement {
+    func waitForHittable(timeout: TimeInterval) -> Bool {
+        let predicate = NSPredicate(format: "hittable == true")
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
+        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
     }
 }

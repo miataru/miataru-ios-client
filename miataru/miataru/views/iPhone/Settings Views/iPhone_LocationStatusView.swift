@@ -63,6 +63,10 @@ struct iPhone_LocationStatusView: View {
             .padding()
             .background(Color(.systemGray6))
             .cornerRadius(12)
+
+            if settings.allowedDeviceListEnabled {
+                AllowedDeviceListStatusCard()
+            }
             
             // Hinweistext für Hintergrund-Tracking
             if isInBackground {
@@ -214,6 +218,7 @@ struct iPhone_LocationStatusView: View {
         .safeAreaInset(edge: .top) {
             Color.clear.frame(height: 10)
         }
+        .accessibilityIdentifier("screen_location_tracking_details")
         .onAppear {
             refreshAllStatistics()
         }

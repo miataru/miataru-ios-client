@@ -413,6 +413,11 @@ struct iPad_DevicesView: View {
             deviceIDs: unknownDeviceIDs,
             serverURL: serverURL
         )
+        await refreshUnknownVisitorMissingSlogans(
+            deviceIDs: unknownDeviceIDs,
+            serverURL: serverURL,
+            force: force
+        )
 
         lastUnknownVisitorSupplementalRefresh = Date()
     }
@@ -465,6 +470,37 @@ struct iPad_DevicesView: View {
             }
         } catch {
             debugLog("[iPad_DevicesView] Failed refreshing unknown visitor locations: \(error)")
+        }
+    }
+
+    @MainActor
+    private func refreshUnknownVisitorMissingSlogans(deviceIDs: [String], serverURL: URL, force: Bool) async {
+        guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
+        let minimumRefreshInterval = max(5.0, Double(settings.outsideMapUpdateInterval))
+
+        for deviceID in deviceIDs {
+            if let cachedSlogan = DeviceSloganCacheStore.shared.slogan(for: deviceID),
+               !cachedSlogan.isEmpty {
+                continue
+            }
+            if !DeviceSloganCacheStore.shared.shouldRefresh(
+                for: deviceID,
+                minimumRefreshInterval: minimumRefreshInterval,
+                force: force
+            ) {
+                continue
+            }
+
+            do {
+                _ = try await MiataruAppAPI.fetchAndCacheDeviceSlogan(
+                    serverURL: serverURL,
+                    forDeviceID: deviceID,
+                    requestingDeviceID: thisDeviceIDManager.shared.deviceID,
+                    requestingDeviceKey: deviceKey
+                )
+            } catch {
+                debugLog("[iPad_DevicesView] Failed refreshing unknown visitor slogan for \(deviceID): \(error)")
+            }
         }
     }
 

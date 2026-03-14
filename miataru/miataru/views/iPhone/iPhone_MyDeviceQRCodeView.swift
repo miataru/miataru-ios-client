@@ -487,9 +487,9 @@ struct iPhone_MyDeviceQRCodeView: View {
                 Section {
                     TextField("Device slogan", text: $sloganDraft)
                         .onChange(of: sloganDraft) { _, newValue in
-                            let cleansedSlogan = MiataruAppAPI.cleanseDeviceSlogan(newValue, maxLength: maxSloganLength)
-                            if cleansedSlogan != newValue {
-                                sloganDraft = cleansedSlogan
+                            let sanitizedDraft = MiataruAppAPI.sanitizeDeviceSloganDraft(newValue, maxLength: maxSloganLength)
+                            if sanitizedDraft != newValue {
+                                sloganDraft = sanitizedDraft
                             }
                         }
 

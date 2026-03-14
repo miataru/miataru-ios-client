@@ -1,7 +1,6 @@
 /* Lokalisierte Strings für Settings.bundle Root.plist (Deutsch) */
 
 "track_and_history" = "Verfolgung & Sicherheit";
-"manage_your_devicekey" = "DeviceKey verwalten";
 "location_track" = "Standort des Geräts verfolgen";
 "save_location_history_to_server" = "Standortverlauf auf dem Server speichern";
 "store_history_before_autoremove" = "Standortdaten automatisch entfernen nach …";
@@ -13,10 +12,10 @@
 "24hours" = "24 Stunden";
 "7days" = "7 Tage";
 "activity_type_accuracy_settings_title" = "Empfindlichkeit der Standortverfolgung (Vordergrund)";
-"activity_type_tracking_accuracy_title" = "Wie aggressiv sollen die Standortaktualisierungen deines Geräts sein?";
+"activity_type_tracking_accuracy_title" = "Modus für Standortaktualisierungen";
 "activity_type_other" = "Standard (Voreinstellung)";
-"activity_type_automotive" = "Höchste (Navigation)";
 "activity_type_fitness" = "Mittel (Radfahren, Laufen)";
+"activity_type_automotive" = "Höchste (Navigation)";
 "location_sensitivity_title" = "Empfindlichkeit der Standort-Updates";
 "location_tracking_update_sensitivity_very_sensitive_short" = "Sehr empfindlich (3 m/2 m)";
 "location_tracking_update_sensitivity_default_short" = "Standard (5 m/5 m)";
@@ -28,14 +27,16 @@
 "deactivate_device_lock" = "Gerätesperre deaktivieren";
 "prevent_screen_rotation" = "Bildschirmrotation verhindern";
 "indicate_location_accuracy" = "Genauigkeit anzeigen";
-"show_offscreen_arrows_for_other_devices" = "Offscreen-Pfeile für andere Geräte anzeigen";
+"show_offscreen_arrows_for_other_devices" = "Andere Geräte auf der Gerätekarte anzeigen";
+"auto_refresh_device_list" = "Geräteliste automatisch aktualisieren";
+"show_current_speed_on_map" = "Aktuelle Geschwindigkeit auf der Karte anzeigen";
 "map_configuration" = "Karteneinstellungen";
 "map_type" = "Kartentyp";
 "default_map" = "Standardkarte";
 "hybrid_map" = "Hybridkarte";
 "sat_map" = "Satellitenkarte";
 "map_update_interval" = "Aktualisierungsintervall für Devices";
-"outside_map_update_interval" = "Aktualisierungsintervall für andere Ansichten";
+"outside_map_update_interval" = "Aktualisierungsintervall überall sonst";
 "5s" = "5 Sekunden";
 "10s" = "10 Sekunden";
 "15s" = "15 Sekunden";
@@ -50,18 +51,14 @@
 "50km" = "50 km";
 "100km" = "100 km";
 "zoom_to_fit_for_groups" = "Zoom für Gruppen anpassen";
-"auto_refresh_device_list" = "Geräteliste automatisch aktualisieren";
-"show_current_speed_on_map" = "Aktuelle Geschwindigkeit auf der Karte anzeigen";
-"explanation_auto_refresh_device_list" = "Wenn aktiviert, wird die Geräteliste automatisch aktualisiert, sobald ein Standort-Update gesendet wird oder das Gerät in den Vordergrund kommt."; 
-"navigation" = "Navigation";
+"navigation" = "Navigieren";
 "transport_mode" = "Transportmittel";
 "transport_walk" = "Zu Fuß";
-"transport_bike" = "Fahrrad";
 "transport_car" = "Auto";
-"transport_transit" = "ÖPNV";
+"transport_transit" = "Öffentliche Verkehrsmittel";
 "show_route_progress" = "Routenfortschritt anzeigen";
-"advanced_map_features" = "Erweiterte Kartenfunktionen";
+"advanced_options" = "Erweiterte Optionen";
 "pulsating_map_markers" = "Pulsierende und schimmernde Kartenmarkierungen";
-"reverse_geocoding_threshold" = "Schwelle für Reverse Geocoding";
+"reverse_geocoding_threshold" = "Schwelle für Adressaktualisierung";
 "reverse_geocode_every_update" = "Bei jedem Update";
-"navigation_auto_route_update" = "Route während der Navigation automatisch aktualisieren";
+"navigation_auto_route_update" = "Automatisches Routen-Update";

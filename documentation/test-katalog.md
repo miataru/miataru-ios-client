@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-03-09)
+# Test Catalog (as of 2026-03-14)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **92** (Unit: 78, UI: 14)
+- Actively linked app test cases: **101** (Unit: 86, UI: 15 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -88,6 +88,12 @@ Important project observations:
 | UT-UVA-005 | Permission request enables feature when authorization is granted | Validate activation permission flow | `.notDetermined` + grant returns `.enabled` | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
 | UT-UVA-006 | Denied authorization disables feature activation | Validate denied permission behavior | `.denied` returns `.denied` and no prompt is re-requested | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
 | UT-UVA-007 | Unknown visitor alert localization keys exist for all app locales | Localization completeness gate | Required keys present and non-empty for all 10 locales | Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
+| UT-DSL-001 | Device slogan draft sanitization preserves regular spaces while typing | Protect editable slogan input | Draft sanitization keeps normal spaces so multi-word info text remains typeable | MiataruAppAPI slogan input handling | Unit | Plain strings | High |
+| UT-DSL-002 | Device slogan cleansing trims surrounding whitespace on save | Keep saved slogan normalized | Save sanitization removes leading/trailing whitespace but preserves inner spaces | MiataruAppAPI slogan save handling | Unit | Plain strings | High |
+| UT-SET-001 | Existing-install settings migration applies once and only to targeted keys | Guard one-time upgrade behavior | Migration enables only the targeted booleans and does not reapply after marker is set | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
+| UT-SET-002 | Settings localization keys exist for all app locales | Enforce localization completeness | Required settings labels/explanations are present and non-empty for all 10 locales | Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
+| UT-SET-003 | Settings.bundle strings contain renamed labels and picker options for all locales | Keep in-app and bundle copy aligned | Every localized `Root.strings` file contains the renamed settings labels and picker values | Settings.bundle localization QA | Unit | plist/strings parsing from bundle resources | High |
+| UT-SET-004 | Settings.bundle plist defaults match the runtime settings defaults | Prevent fresh-install default drift | `Root.plist` defaults stay in sync with the centralized runtime registration table | Settings defaults QA | Unit | plist parsing + `SettingsDefaultValues` | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases
@@ -121,8 +127,9 @@ These cases were previously located under `miataru.xcodeproj/*.swift` and are no
 | DT-MKP-011 | split(at:) returns nil for degenerate (single-point) polyline | Degenerate split | Single-point split -> nil | MKPolyline Extension | Unit | Yes |
 | DT-UI-001 | testLaunchWithCompletedOnboardingShowsRootTabs | Stable launch state | Launch with completed onboarding, tab root visible, no alert | App Bootstrap / Tab Root | UI (XCTest) | Yes |
 | DT-UI-002 | testDevicesAddSheetCanOpenAndCancel | Basic device flow validation | Open add-device sheet and close via cancel | Device List / Add Device | UI (XCTest) | Yes |
-| DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Protect settings onboarding action | Settings action reachable/tappable and no unexpected alerts | Settings / Onboarding | UI (XCTest) | Yes |
-| DT-UI-004 | testQRCodeTabShowsDeviceKeyAction | Validate QR core action | Open QR tab, device key action available and tappable | QR Screen / Device Key | UI (XCTest) | Yes |
+| DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Protect settings onboarding action | Opens tracking details from settings and verifies the onboarding action remains reachable without alerts | Settings / Tracking Details | UI (XCTest) | Yes |
+| DT-UI-004 | testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen | Protect settings reorganization | Verifies Advanced Options is reachable and advanced-only controls no longer appear on the root settings screen | Settings / Advanced Options | UI (XCTest) | Yes |
+| DT-UI-005 | testQRCodeTabShowsDeviceKeyAction | Validate QR core action | Open QR tab, device key action available and tappable | QR Screen / Device Key | UI (XCTest) | Yes |
 
 ## 5) Screenshot Test Inventory (`miataruScreenshotUITests`)
 
@@ -171,7 +178,7 @@ Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
-- Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows).
+- Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
 
 ## 8) Gap Matrix Reference
