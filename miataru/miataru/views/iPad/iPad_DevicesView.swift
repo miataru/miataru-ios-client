@@ -56,19 +56,31 @@ struct iPad_DevicesView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                if settings.allowedDeviceListEnabled && !unknownVisitors.isEmpty {
+                if !unknownVisitors.isEmpty {
                     Section(header: Text("unknown_visitors_section_title")) {
                         ForEach(unknownVisitors, id: \.uniqueID) { visitor in
-                            UnknownVisitorRow(visitor: visitor) {
-                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
-                            } onIgnore: {
-                                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                            }
+                            UnknownVisitorRow(
+                                visitor: visitor,
+                                onAllow: {
+                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                },
+                                onIgnore: {
+                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                },
+                                addActionTitleKey: settings.allowedDeviceListEnabled
+                                    ? "unknown_visitor_add_and_allow"
+                                    : "add"
+                            )
                             .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                 Button {
                                     pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
                                 } label: {
-                                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                                    Label(
+                                        settings.allowedDeviceListEnabled
+                                            ? "unknown_visitor_add_and_allow"
+                                            : "add",
+                                        systemImage: "plus.circle"
+                                    )
                                 }
                                 .tint(.green)
                             }

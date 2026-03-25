@@ -31,6 +31,8 @@ struct iPhone_EditDeviceView: View {
     @State private var isLoadingSecurityStatus = false
     @State private var deviceKeySecurityStatus: DeviceSecurityStatus = .unknown
     @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
+    @State private var isActivatingAllowedDeviceList = false
+    @State private var activationError: String? = nil
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     private let maxSloganLength = MiataruAppAPI.maxDeviceSloganLength
@@ -125,7 +127,37 @@ struct iPhone_EditDeviceView: View {
                     }
                 }
                 // Hide ACL controls for this device itself – ACLs are only relevant for *other* devices.
-                if settings.allowedDeviceListEnabled && device.DeviceID != thisDeviceIDManager.shared.deviceID {
+                if !settings.allowedDeviceListEnabled {
+                    Section(header: Text("allowed_device_list_access_controls")) {
+                        Button {
+                            Task {
+                                await activateAllowedDeviceList()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "lock.shield")
+                                    .foregroundColor(.blue)
+                                Text("allowed_device_list_enable_button")
+
+                                if isActivatingAllowedDeviceList {
+                                    Spacer()
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isActivatingAllowedDeviceList || isSaving)
+
+                        if let activationError {
+                            Text(activationError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+
+                        Text("allowed_device_list_disabled_explanation")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } else if device.DeviceID != thisDeviceIDManager.shared.deviceID {
                     Section(header: Text("allowed_device_list_access_controls")) {
                         HStack(alignment: .top, spacing: 12) {
                             Text("allowed_device_list_security_overview_label")
@@ -239,7 +271,7 @@ struct iPhone_EditDeviceView: View {
                             await saveDevice()
                         }
                     }
-                    .disabled(isSaving || isSyncingACL)
+                    .disabled(isSaving || isSyncingACL || isActivatingAllowedDeviceList)
                 }
             }
             .onAppear {
@@ -253,6 +285,11 @@ struct iPhone_EditDeviceView: View {
                 Task {
                     await refreshSlogan()
                 }
+                Task {
+                    await refreshDeviceSecurityStatus()
+                }
+            }
+            .onChange(of: settings.allowedDeviceListEnabled) { _, _ in
                 Task {
                     await refreshDeviceSecurityStatus()
                 }
@@ -321,6 +358,22 @@ struct iPhone_EditDeviceView: View {
         Haptic.notifySuccess()
         isPresented = false
         isSaving = false
+    }
+
+    @MainActor
+    private func activateAllowedDeviceList() async {
+        isActivatingAllowedDeviceList = true
+        activationError = nil
+
+        do {
+            try await AllowedDeviceListManager.shared.activateAllowedDeviceList()
+            await refreshDeviceSecurityStatus()
+        } catch {
+            activationError = error.localizedDescription
+            debugLog("[EditDevice] Failed to activate allowed device list: \(error)")
+        }
+
+        isActivatingAllowedDeviceList = false
     }
 
     private var deviceKeySecurityStatusText: String {

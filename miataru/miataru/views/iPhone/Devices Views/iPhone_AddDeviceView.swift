@@ -32,6 +32,8 @@ struct iPhone_AddDeviceView: View {
     @State private var securityStatusLookupTask: Task<Void, Never>? = nil
     @State private var deviceKeySecurityStatus: DeviceSecurityStatus = .unknown
     @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
+    @State private var isActivatingAllowedDeviceList = false
+    @State private var activationError: String? = nil
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
 
@@ -159,6 +161,36 @@ struct iPhone_AddDeviceView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
+                } else {
+                    Section(header: Text("allowed_device_list_access_controls")) {
+                        Button {
+                            Task {
+                                await activateAllowedDeviceList()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "lock.shield")
+                                    .foregroundColor(.blue)
+                                Text("allowed_device_list_enable_button")
+
+                                if isActivatingAllowedDeviceList {
+                                    Spacer()
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .disabled(isActivatingAllowedDeviceList || isSaving)
+
+                        if let activationError {
+                            Text(activationError)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+
+                        Text("allowed_device_list_disabled_explanation")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             .navigationTitle("new_device")
@@ -175,7 +207,7 @@ struct iPhone_AddDeviceView: View {
                             await saveDevice()
                         }
                     }
-                    .disabled(deviceName.isEmpty || deviceID.isEmpty || isSaving)
+                    .disabled(deviceName.isEmpty || deviceID.isEmpty || isSaving || isActivatingAllowedDeviceList)
                     .accessibilityIdentifier("add_device_confirm_button")
                 }
             }
@@ -253,6 +285,9 @@ struct iPhone_AddDeviceView: View {
             scheduleSloganLookup(for: newValue)
             scheduleSecurityStatusLookup(for: newValue)
         }
+        .onChange(of: settings.allowedDeviceListEnabled) { _, _ in
+            scheduleSecurityStatusLookup(for: deviceID)
+        }
         .onChange(of: isPresented) { oldValue, newValue in
             // Reset form when sheet is dismissed
             if !newValue {
@@ -270,6 +305,8 @@ struct iPhone_AddDeviceView: View {
                 isLoadingSecurityStatus = false
                 deviceKeySecurityStatus = .unknown
                 aclSecurityStatus = .unknown
+                isActivatingAllowedDeviceList = false
+                activationError = nil
             } else {
                 // When sheet appears, set deviceID from prefill if available
                 // Check immediately and also after a delay
@@ -334,6 +371,22 @@ struct iPhone_AddDeviceView: View {
         }
         
         isSaving = false
+    }
+
+    @MainActor
+    private func activateAllowedDeviceList() async {
+        isActivatingAllowedDeviceList = true
+        activationError = nil
+
+        do {
+            try await AllowedDeviceListManager.shared.activateAllowedDeviceList()
+            await refreshDeviceSecurityStatus(for: deviceID)
+        } catch {
+            activationError = error.localizedDescription
+            debugLog("[AddDevice] Failed to activate allowed device list: \(error)")
+        }
+
+        isActivatingAllowedDeviceList = false
     }
 
     private var deviceKeySecurityStatusText: String {

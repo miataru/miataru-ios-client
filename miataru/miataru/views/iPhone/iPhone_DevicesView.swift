@@ -62,22 +62,34 @@ struct iPhone_DevicesView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             List {
-                if settings.allowedDeviceListEnabled && !unknownVisitors.isEmpty {
+                if !unknownVisitors.isEmpty {
                     Section(header: Text("unknown_visitors_section_title")) {
                         ForEach(unknownVisitors, id: \.uniqueID) { visitor in
-                            UnknownVisitorRow(visitor: visitor) {
-                                // Allow action - set pendingDeviceItem to trigger sheet with prefill
-                                pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
-                            } onIgnore: {
-                                // Ignore action
-                                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                            }
+                            UnknownVisitorRow(
+                                visitor: visitor,
+                                onAllow: {
+                                    // Allow action - set pendingDeviceItem to trigger sheet with prefill
+                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                },
+                                onIgnore: {
+                                    // Ignore action
+                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                },
+                                addActionTitleKey: settings.allowedDeviceListEnabled
+                                    ? "unknown_visitor_add_and_allow"
+                                    : "add"
+                            )
                             .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                 Button {
                                     // Set pendingDeviceItem to trigger sheet with prefill
                                     pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
                                 } label: {
-                                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                                    Label(
+                                        settings.allowedDeviceListEnabled
+                                            ? "unknown_visitor_add_and_allow"
+                                            : "add",
+                                        systemImage: "plus.circle"
+                                    )
                                 }
                                 .tint(.green)
                             }
@@ -576,6 +588,7 @@ struct UnknownVisitorRow: View {
     let visitor: MiataruVisitor
     let onAllow: () -> Void
     let onIgnore: () -> Void
+    let addActionTitleKey: LocalizedStringKey
     
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
@@ -662,7 +675,7 @@ struct UnknownVisitorRow: View {
                 Button(role: .none) {
                     onAllow()
                 } label: {
-                    Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                    Label(addActionTitleKey, systemImage: "plus.circle")
                 }
                 
                 Button(role: .destructive) {
