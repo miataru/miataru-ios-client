@@ -185,6 +185,11 @@ struct iPad_DeviceMapView: View {
     private var selectedActionDevice: KnownDevice? {
         deviceStore.devices.first { $0.DeviceID == (selectedActionDeviceID ?? deviceID) }
     }
+
+    private var selectedActionDeviceDisplayName: String? {
+        guard let selectedActionDevice else { return nil }
+        return selectedActionDevice.DeviceName.isEmpty ? selectedActionDevice.DeviceID : selectedActionDevice.DeviceName
+    }
     
     // Computed property to get the best available location for map initialization
     private var bestAvailableLocation: CLLocationCoordinate2D {
@@ -277,6 +282,8 @@ struct iPad_DeviceMapView: View {
             scaleBarView()
             // Compass in the top right corner
             compassView()
+
+            historyPreloadOverlay()
             
         }
         .accessibilityIdentifier("device_map_overview")
@@ -595,6 +602,51 @@ struct iPad_DeviceMapView: View {
             }
         }
         .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
+    }
+
+    @ViewBuilder
+    private func historyPreloadOverlay() -> some View {
+        if isHistoryPreloading {
+            ZStack {
+                Color.black.opacity(0.18)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 10) {
+                    ProgressView()
+                        .controlSize(.large)
+
+                    VStack(spacing: 4) {
+                        Text(NSLocalizedString("history_loading", comment: "History loading indicator"))
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+
+                        if let selectedActionDeviceDisplayName {
+                            Text(selectedActionDeviceDisplayName)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .frame(maxWidth: 260)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                )
+                .shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 8)
+                .padding(24)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .zIndex(30)
+            .transition(animationsAllowed ? .opacity : .identity)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(Text(NSLocalizedString("history_loading", comment: "History loading indicator")))
+        }
     }
     
     @ViewBuilder
@@ -949,10 +1001,7 @@ struct iPad_DeviceMapView: View {
     private func fetchHistoryBeforeNavigation(for device: KnownDevice) async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
             await MainActor.run {
-                errorOverlayManager.show(
-                    message: NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"),
-                    animationsAllowed: animationsAllowed
-                )
+                showHistoryLoadErrorOverlay(NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
             }
             return
         }
@@ -990,12 +1039,12 @@ struct iPad_DeviceMapView: View {
             let message = mapHistoryAPIError(apiError)
             await MainActor.run {
                 if let message {
-                    errorOverlayManager.show(message: message, animationsAllowed: animationsAllowed)
+                    showHistoryLoadErrorOverlay(message)
                 }
             }
         } catch {
             await MainActor.run {
-                errorOverlayManager.show(message: error.localizedDescription, animationsAllowed: animationsAllowed)
+                showHistoryLoadErrorOverlay("\(NSLocalizedString("history_load_failed", comment: "Could not load history.")) \(error.localizedDescription)")
             }
         }
     }
@@ -1007,8 +1056,8 @@ struct iPad_DeviceMapView: View {
         case .invalidResponse(_):
             return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
         case .encodingError(let err):
-            debugLog("[iPad_DeviceMapView] Suppressed encoding error overlay while loading history: \(err.localizedDescription)")
-            return nil
+            debugLog("[iPad_DeviceMapView] Encoding error while loading history: \(err.localizedDescription)")
+            return NSLocalizedString("history_load_failed", comment: "Could not load history.")
         case .decodingError(let err):
             return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
@@ -1016,6 +1065,10 @@ struct iPad_DeviceMapView: View {
         case .serverError(_, let message):
             return String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
         }
+    }
+
+    private func showHistoryLoadErrorOverlay(_ message: String) {
+        errorOverlayManager.show(message: message, duration: 5.0, animationsAllowed: animationsAllowed)
     }
 
     private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -> [MiataruLocationData] {

@@ -31,7 +31,8 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var playbackLockedSpan: MKCoordinateSpan? = nil
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
     // Loading & data
-    @State private var isLoading = false
+    @State private var isLoading = true
+    @State private var hasResolvedInitialHistoryLoad = false
     @State private var loadError: String? = nil
     @ObservedObject private var cache = DeviceHistoryCacheStore.shared
     @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
@@ -229,7 +230,7 @@ struct iPhone_DeviceHistoryMapView: View {
             }
         }
         .overlay {
-            if !isLoading, loadError == nil {
+            if hasResolvedInitialHistoryLoad, !isLoading, loadError == nil {
                 if viewModel.history.isEmpty {
                     VStack(spacing: 8) {
                         Image(systemName: "clock.arrow.circlepath")
@@ -492,6 +493,9 @@ struct iPhone_DeviceHistoryMapView: View {
             debugLog("[DeviceHistoryMapView] Using cached history for device \(device.DeviceID) entries=\(cached.count)")
             await MainActor.run {
                 viewModel.setHistory(cached)
+                if !cached.isEmpty {
+                    hasResolvedInitialHistoryLoad = true
+                }
                 initializeTimelineIfNeeded()
             }
         }
@@ -502,10 +506,18 @@ struct iPhone_DeviceHistoryMapView: View {
             latestKnownLocationTimestamp: latestKnownLocationTimestamp,
             maxAge: activeHistoryCacheReuseWindow
         )
-        guard shouldRefresh else { return }
+        guard shouldRefresh else {
+            await MainActor.run {
+                isLoading = false
+                hasResolvedInitialHistoryLoad = true
+            }
+            return
+        }
 
         guard let url = URL(string: SettingsManager.shared.miataruServerURL) else {
             await MainActor.run {
+                isLoading = false
+                hasResolvedInitialHistoryLoad = true
                 loadError = NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
             }
             return
@@ -513,6 +525,9 @@ struct iPhone_DeviceHistoryMapView: View {
         let requestingDeviceID = thisDeviceIDManager.shared.deviceID
         await MainActor.run {
             isLoading = true
+            if viewModel.history.isEmpty {
+                hasResolvedInitialHistoryLoad = false
+            }
             loadError = nil
         }
         do {
@@ -535,6 +550,7 @@ struct iPhone_DeviceHistoryMapView: View {
                     cache.setHistory(sorted, for: device.DeviceID)
                 }
                 isLoading = false
+                hasResolvedInitialHistoryLoad = true
                 debugLog("[DeviceHistoryMapView] Loaded history entries=\(sorted.count) for device \(device.DeviceID)")
                 if sorted.isEmpty {
                     loadError = NSLocalizedString("history_no_data", comment: "No history available placeholder")
@@ -545,6 +561,7 @@ struct iPhone_DeviceHistoryMapView: View {
         } catch let apiError as MiataruAPIClient.APIError {
             await MainActor.run {
                 isLoading = false
+                hasResolvedInitialHistoryLoad = true
                 loadError = mapAPIError(apiError)
                 if !preserveCurrentDataOnFailure {
                     viewModel.setHistory([])
@@ -555,6 +572,7 @@ struct iPhone_DeviceHistoryMapView: View {
             await MainActor.run {
                 loadError = error.localizedDescription
                 isLoading = false
+                hasResolvedInitialHistoryLoad = true
                 if !preserveCurrentDataOnFailure {
                     viewModel.setHistory([])
                 }

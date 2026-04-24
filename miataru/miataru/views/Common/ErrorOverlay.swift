@@ -24,6 +24,8 @@ struct ErrorOverlay: View {
                     Spacer()
                     Text(message)
                         .padding(16)
+                        .frame(maxWidth: 340)
+                        .fixedSize(horizontal: false, vertical: true)
                         .background(Color.red.opacity(0.85))
                         .foregroundColor(.white)
                         .cornerRadius(12)

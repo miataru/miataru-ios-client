@@ -1,3 +1,10 @@
+version 3.1.7
+- Added visible loading feedback when opening a device's location history on iPhone and iPad, including the selected device name/ID while history data is being preloaded.
+- Prevented the history map from briefly showing the "no location history" fallback before cached or freshly loaded history entries have been applied.
+- Improved history-load error handling so invalid configuration, server/response failures, encoding/decoding failures, network failures, and unknown failures produce readable user-facing messages.
+- Added full localization coverage for the new history loading text across all supported app languages.
+- Made common error overlays wrap long messages more reliably and kept history preload errors visible longer.
+
 version 3.1.5
 - Refactored the iOS settings flow: centralized runtime defaults and one-time existing-install migrations, shortened the root settings screen, added a dedicated `Advanced Options` page, and moved ACL/status content to the intended destinations.
 - Synchronized settings defaults, labels, picker options, and explanatory copy across `Localizable.xcstrings` and all supported `Settings.bundle` locales.
