@@ -62,6 +62,22 @@ struct iPhone_AdvancedOptionsView: View {
 
                 Toggle("show_current_speed_on_map", isOn: $settings.showCurrentSpeedOnMap)
                 SettingsDescriptionText("explanation_show_current_speed_on_map")
+
+                Picker("location_update_outbox_retention_title", selection: $settings.locationUpdateOutboxRetentionMode) {
+                    Text("location_update_outbox_retention_24h").tag(LocationUpdateOutboxRetentionMode.twentyFourHours.rawValue)
+                    Text("location_update_outbox_retention_7d").tag(LocationUpdateOutboxRetentionMode.sevenDays.rawValue)
+                    Text("location_update_outbox_retention_30d").tag(LocationUpdateOutboxRetentionMode.thirtyDays.rawValue)
+                    Text("location_update_outbox_retention_unlimited").tag(LocationUpdateOutboxRetentionMode.unlimited.rawValue)
+                }
+
+                Picker("location_update_outbox_max_items_title", selection: $settings.locationUpdateOutboxMaxItems) {
+                    Text("500").tag(500)
+                    Text("1000").tag(1000)
+                    Text("2500").tag(2500)
+                    Text("5000").tag(5000)
+                    Text("10000").tag(10_000)
+                }
+                SettingsDescriptionText("explanation_location_update_outbox_policy")
             }
 
             Section(header: Text("map_configuration")) {

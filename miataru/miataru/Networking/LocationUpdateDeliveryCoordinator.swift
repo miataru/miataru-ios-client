@@ -30,7 +30,12 @@ actor LocationUpdateDeliveryCoordinator {
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
 
-    static let shared = LocationUpdateDeliveryCoordinator()
+    static let shared = LocationUpdateDeliveryCoordinator(
+        outboxStore: LocationUpdateOutboxStore(
+            maxItems: SettingsManager.shared.locationUpdateOutboxMaxItems,
+            ttl: SettingsManager.shared.locationUpdateOutboxRetentionTimeToLive
+        )
+    )
 
     private let outboxStore: LocationUpdateOutboxStore
     private let updateSender: UpdateSender
@@ -85,6 +90,17 @@ actor LocationUpdateDeliveryCoordinator {
         enableHistory: Bool,
         retentionTime: Int
     ) async -> SubmitResult {
+        if !(await outboxStore.isEmpty()) {
+            await outboxStore.enqueue(
+                serverURL: serverURL,
+                payload: payload,
+                enableHistory: enableHistory,
+                retentionTime: retentionTime
+            )
+            await notifyOutboxDidChange()
+            return .queued
+        }
+
         do {
             let success = try await updateSender(serverURL, payload, enableHistory, retentionTime)
             return success ? .sent : .failed(LocationUpdateDeliveryError.serverDidNotAcknowledge)
@@ -98,6 +114,7 @@ actor LocationUpdateDeliveryCoordinator {
                 enableHistory: enableHistory,
                 retentionTime: retentionTime
             )
+            await notifyOutboxDidChange()
             return .queued
         }
     }
@@ -118,6 +135,11 @@ actor LocationUpdateDeliveryCoordinator {
         await outboxStore.count()
     }
 
+    func updateOutboxPolicy(maxItems: Int, ttl: TimeInterval?) async {
+        await outboxStore.updatePolicy(maxItems: maxItems, ttl: ttl)
+        await notifyOutboxDidChange()
+    }
+
     private func flushOutbox(trigger: String) async {
         guard !isFlushing else { return }
         isFlushing = true
@@ -131,6 +153,7 @@ actor LocationUpdateDeliveryCoordinator {
             guard let serverURL = URL(string: head.serverURLString) else {
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item with invalid URL: \(head.serverURLString)")
                 await outboxStore.removeHead()
+                await notifyOutboxDidChange()
                 processedCount += 1
                 continue
             }
@@ -139,7 +162,9 @@ actor LocationUpdateDeliveryCoordinator {
                 let success = try await updateSender(serverURL, head.payload, head.enableHistory, head.retentionTime)
                 if success {
                     await outboxStore.removeHead()
+                    await notifyOutboxDidChange()
                     processedCount += 1
+                    await notifyOwnLocationUpdateDidSend()
                     Task {
                         await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
                     }
@@ -148,6 +173,7 @@ actor LocationUpdateDeliveryCoordinator {
 
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item because server did not ACK")
                 await outboxStore.removeHead()
+                await notifyOutboxDidChange()
                 processedCount += 1
             } catch {
                 if MiataruRetryClassifier.isRetryable(error) {
@@ -158,8 +184,25 @@ actor LocationUpdateDeliveryCoordinator {
 
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping non-retryable outbox item error: \(error)")
                 await outboxStore.removeHead()
+                await notifyOutboxDidChange()
                 processedCount += 1
             }
         }
     }
+
+    private func notifyOutboxDidChange() async {
+        await MainActor.run {
+            NotificationCenter.default.post(name: .locationUpdateOutboxDidChange, object: nil)
+        }
+    }
+
+    private func notifyOwnLocationUpdateDidSend() async {
+        await MainActor.run {
+            NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let locationUpdateOutboxDidChange = Notification.Name("locationUpdateOutboxDidChange")
 }

@@ -198,6 +198,56 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>location_update_outbox_retention_title</string>
+			<key>Key</key>
+			<string>location_update_outbox_retention_mode</string>
+			<key>DefaultValue</key>
+			<string>0</string>
+			<key>Titles</key>
+			<array>
+				<string>location_update_outbox_retention_24h</string>
+				<string>location_update_outbox_retention_7d</string>
+				<string>location_update_outbox_retention_30d</string>
+				<string>location_update_outbox_retention_unlimited</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>0</string>
+				<string>1</string>
+				<string>2</string>
+				<string>3</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>location_update_outbox_max_items_title</string>
+			<key>Key</key>
+			<string>location_update_outbox_max_items</string>
+			<key>DefaultValue</key>
+			<string>500</string>
+			<key>Titles</key>
+			<array>
+				<string>500</string>
+				<string>1000</string>
+				<string>2500</string>
+				<string>5000</string>
+				<string>10000</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>500</string>
+				<string>1000</string>
+				<string>2500</string>
+				<string>5000</string>
+				<string>10000</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>map_configuration</string>

@@ -82,6 +82,29 @@ struct LocationUpdateOutboxStoreTests {
         #expect(snapshot[1].payload.Timestamp == "124")
     }
 
+    @Test("Runtime policy can keep aged items and raise max cap")
+    func runtimePolicyCanKeepAgedItemsAndRaiseCap() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let clock = MutableClock(now: Date(timeIntervalSince1970: 100))
+        let store = LocationUpdateOutboxStore(
+            fileURL: tempURL,
+            maxItems: 1,
+            ttl: 10,
+            nowProvider: { clock.now }
+        )
+
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+        clock.now = Date(timeIntervalSince1970: 111)
+        await store.updatePolicy(maxItems: 3, ttl: nil)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "new-1"), enableHistory: true, retentionTime: 60)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "new-2"), enableHistory: true, retentionTime: 60)
+
+        let snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["old", "new-1", "new-2"])
+    }
+
     private func payload(
         timestamp: String,
         latitude: Double = 50.0,

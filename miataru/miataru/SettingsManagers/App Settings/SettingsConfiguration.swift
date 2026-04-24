@@ -31,6 +31,8 @@ enum SettingsKeys {
     static let showCurrentSpeedOnMap = "show_current_speed_on_map"
     static let showOffscreenArrowsForOtherDevices = "show_offscreen_arrows_for_other_devices"
     static let showRouteProgress = "show_route_progress"
+    static let locationUpdateOutboxRetentionMode = "location_update_outbox_retention_mode"
+    static let locationUpdateOutboxMaxItems = "location_update_outbox_max_items"
     static let lastOpenedDeviceID = "last_opened_device_id"
     static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
     static let navigationTransportType = "navigation_transport_type"
@@ -65,6 +67,8 @@ enum SettingsDefaultValues {
     static let showCurrentSpeedOnMap = true
     static let showOffscreenArrowsForOtherDevices = true
     static let showRouteProgress = true
+    static let locationUpdateOutboxRetentionMode = LocationUpdateOutboxRetentionMode.twentyFourHours.rawValue
+    static let locationUpdateOutboxMaxItems = 500
     static let reverseGeocodingThresholdMeters = 1000
     static let navigationTransportType = 2
     static let pulsingMapMarkers = true
@@ -93,12 +97,34 @@ enum SettingsDefaultValues {
         SettingsKeys.showCurrentSpeedOnMap: showCurrentSpeedOnMap,
         SettingsKeys.showOffscreenArrowsForOtherDevices: showOffscreenArrowsForOtherDevices,
         SettingsKeys.showRouteProgress: showRouteProgress,
+        SettingsKeys.locationUpdateOutboxRetentionMode: String(locationUpdateOutboxRetentionMode),
+        SettingsKeys.locationUpdateOutboxMaxItems: String(locationUpdateOutboxMaxItems),
         SettingsKeys.reverseGeocodingThresholdMeters: String(reverseGeocodingThresholdMeters),
         SettingsKeys.navigationTransportType: String(navigationTransportType),
         SettingsKeys.pulsingMapMarkers: pulsingMapMarkers,
         SettingsKeys.automaticRouteUpdateDuringNavigation: automaticRouteUpdateDuringNavigation,
         SettingsKeys.allowedDeviceListEnabled: allowedDeviceListEnabled,
     ]
+}
+
+enum LocationUpdateOutboxRetentionMode: Int {
+    case twentyFourHours = 0
+    case sevenDays = 1
+    case thirtyDays = 2
+    case unlimited = 3
+
+    var timeToLive: TimeInterval? {
+        switch self {
+        case .twentyFourHours:
+            return 24 * 60 * 60
+        case .sevenDays:
+            return 7 * 24 * 60 * 60
+        case .thirtyDays:
+            return 30 * 24 * 60 * 60
+        case .unlimited:
+            return nil
+        }
+    }
 }
 
 enum SettingsMigration {

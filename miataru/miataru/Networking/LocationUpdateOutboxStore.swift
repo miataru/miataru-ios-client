@@ -45,8 +45,8 @@ actor LocationUpdateOutboxStore {
     private var items: [LocationUpdateOutboxItem] = []
 
     private let fileURL: URL
-    private let maxItems: Int
-    private let ttl: TimeInterval
+    private var maxItems: Int
+    private var ttl: TimeInterval?
     private let nowProvider: () -> Date
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
@@ -54,20 +54,28 @@ actor LocationUpdateOutboxStore {
     init(
         fileURL: URL? = nil,
         maxItems: Int = 500,
-        ttl: TimeInterval = 24 * 60 * 60,
+        ttl: TimeInterval? = 24 * 60 * 60,
         nowProvider: @escaping () -> Date = Date.init
     ) {
         self.fileURL = fileURL ?? Self.defaultFileURL()
         self.maxItems = max(1, maxItems)
-        self.ttl = max(1, ttl)
+        self.ttl = ttl.map { max(1, $0) }
         self.nowProvider = nowProvider
 
         let loadedItems = Self.loadItems(from: self.fileURL, decoder: self.decoder)
         let prunedItems = Self.prunedItems(loadedItems, now: self.nowProvider(), ttl: self.ttl)
-        self.items = prunedItems
-        if prunedItems.count != loadedItems.count {
-            Self.persist(prunedItems, to: self.fileURL, encoder: self.encoder)
+        let limitedItems = Self.limitedItems(prunedItems, maxItems: self.maxItems)
+        self.items = limitedItems
+        if limitedItems.count != loadedItems.count {
+            Self.persist(limitedItems, to: self.fileURL, encoder: self.encoder)
         }
+    }
+
+    func updatePolicy(maxItems: Int, ttl: TimeInterval?) {
+        self.maxItems = max(1, maxItems)
+        self.ttl = ttl.map { max(1, $0) }
+        pruneExpiredEntriesIfNeeded()
+        enforceMaximumItemCountIfNeeded()
     }
 
     func enqueue(
@@ -135,12 +143,20 @@ actor LocationUpdateOutboxStore {
     }
 
     private func pruneExpiredEntriesIfNeeded() {
+        guard let ttl else { return }
         let now = nowProvider()
         let originalCount = items.count
         items.removeAll { now.timeIntervalSince($0.enqueuedAt) > ttl }
         if items.count != originalCount {
             persist()
         }
+    }
+
+    private func enforceMaximumItemCountIfNeeded() {
+        guard items.count > maxItems else { return }
+        let overflow = items.count - maxItems
+        items.removeFirst(overflow)
+        persist()
     }
 
     private func loadItems() -> [LocationUpdateOutboxItem] {
@@ -161,8 +177,14 @@ actor LocationUpdateOutboxStore {
             .appendingPathComponent("locationUpdateOutbox.json")
     }
 
-    private static func prunedItems(_ items: [LocationUpdateOutboxItem], now: Date, ttl: TimeInterval) -> [LocationUpdateOutboxItem] {
-        items.filter { now.timeIntervalSince($0.enqueuedAt) <= ttl }
+    private static func prunedItems(_ items: [LocationUpdateOutboxItem], now: Date, ttl: TimeInterval?) -> [LocationUpdateOutboxItem] {
+        guard let ttl else { return items }
+        return items.filter { now.timeIntervalSince($0.enqueuedAt) <= ttl }
+    }
+
+    private static func limitedItems(_ items: [LocationUpdateOutboxItem], maxItems: Int) -> [LocationUpdateOutboxItem] {
+        guard items.count > maxItems else { return items }
+        return Array(items.suffix(maxItems))
     }
 
     private static func loadItems(from fileURL: URL, decoder: JSONDecoder) -> [LocationUpdateOutboxItem] {

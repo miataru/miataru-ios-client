@@ -30,6 +30,12 @@
 "show_offscreen_arrows_for_other_devices" = "在设备地图上显示其他设备";
 "auto_refresh_device_list" = "设备列表自动刷新";
 "show_current_speed_on_map" = "在地图上显示当前速度";
+"location_update_outbox_retention_title" = "未发送更新队列保留时间";
+"location_update_outbox_retention_24h" = "24 小时（默认）";
+"location_update_outbox_retention_7d" = "7 天";
+"location_update_outbox_retention_30d" = "30 天";
+"location_update_outbox_retention_unlimited" = "无限制";
+"location_update_outbox_max_items_title" = "最大保存更新数";
 "map_configuration" = "地图设置";
 "map_type" = "地图类型";
 "default_map" = "默认地图";

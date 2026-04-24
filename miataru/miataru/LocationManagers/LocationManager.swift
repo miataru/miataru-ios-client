@@ -48,6 +48,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let networkMonitor = NWPathMonitor()
     private let locationUpdateDeliveryCoordinator = LocationUpdateDeliveryCoordinator.shared
     @Published private(set) var isNetworkAvailable: Bool = true
+    @Published private(set) var pendingLocationUpdateCount: Int = 0
     private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
@@ -87,6 +88,8 @@ final class LocationManager: NSObject, ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(locationUpdateOutboxDidChange), name: .locationUpdateOutboxDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ownLocationUpdateDidSend), name: .didSendOwnLocationUpdate, object: nil)
         observeActivityType()
         networkMonitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
@@ -106,6 +109,8 @@ final class LocationManager: NSObject, ObservableObject {
         Task {
             await locationUpdateDeliveryCoordinator.start()
         }
+        refreshPendingLocationUpdateCount()
+        applyLocationUpdateOutboxPolicy()
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
         // Load persisted background update metrics
@@ -152,6 +157,17 @@ final class LocationManager: NSObject, ObservableObject {
         Task {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
         }
+        refreshPendingLocationUpdateCount()
+    }
+
+    @objc private func locationUpdateOutboxDidChange() {
+        refreshPendingLocationUpdateCount()
+    }
+
+    @objc private func ownLocationUpdateDidSend() {
+        Task { @MainActor in
+            self.markServerUpdateSucceeded()
+        }
     }
     
     // MARK: - Settings Observer
@@ -167,6 +183,24 @@ final class LocationManager: NSObject, ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        Publishers.CombineLatest(
+            settings.$locationUpdateOutboxRetentionMode.removeDuplicates(),
+            settings.$locationUpdateOutboxMaxItems.removeDuplicates()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _, _ in
+            self?.applyLocationUpdateOutboxPolicy()
+        }
+        .store(in: &cancellables)
+    }
+
+    private func applyLocationUpdateOutboxPolicy() {
+        let maxItems = settings.locationUpdateOutboxMaxItems
+        let ttl = settings.locationUpdateOutboxRetentionTimeToLive
+        Task {
+            await locationUpdateDeliveryCoordinator.updateOutboxPolicy(maxItems: maxItems, ttl: ttl)
+        }
     }
     
     private func observeActivityType() {
@@ -386,10 +420,7 @@ final class LocationManager: NSObject, ObservableObject {
 
             switch result {
             case .sent:
-                self.serverUpdateStatus = .success
-                let updateDate = Date()
-                self.lastServerUpdate = updateDate
-                self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
+                self.markServerUpdateSucceeded()
                 NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
                 Task {
                     await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
@@ -397,6 +428,7 @@ final class LocationManager: NSObject, ObservableObject {
             case .queued:
                 debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
                 self.serverUpdateStatus = .idle
+                self.refreshPendingLocationUpdateCount()
             case .failed(let error):
                 if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                     settings.deviceKeyAuthBlocked = true
@@ -406,6 +438,23 @@ final class LocationManager: NSObject, ObservableObject {
                 } else {
                     self.serverUpdateStatus = .failed(error.localizedDescription)
                 }
+            }
+        }
+    }
+
+    @MainActor
+    private func markServerUpdateSucceeded() {
+        self.serverUpdateStatus = .success
+        let updateDate = Date()
+        self.lastServerUpdate = updateDate
+        self.userDefaults.set(updateDate, forKey: self.lastServerUpdateKey)
+    }
+
+    private func refreshPendingLocationUpdateCount() {
+        Task {
+            let pendingCount = await locationUpdateDeliveryCoordinator.pendingOutboxCount()
+            await MainActor.run {
+                self.pendingLocationUpdateCount = pendingCount
             }
         }
     }

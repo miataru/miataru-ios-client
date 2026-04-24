@@ -94,6 +94,19 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(showRouteProgress, forKey: SettingsKeys.showRouteProgress) }
     }
 
+    @Published var locationUpdateOutboxRetentionMode: Int {
+        didSet { defaults.set(String(locationUpdateOutboxRetentionMode), forKey: SettingsKeys.locationUpdateOutboxRetentionMode) }
+    }
+
+    @Published var locationUpdateOutboxMaxItems: Int {
+        didSet { defaults.set(String(locationUpdateOutboxMaxItems), forKey: SettingsKeys.locationUpdateOutboxMaxItems) }
+    }
+
+    var locationUpdateOutboxRetentionTimeToLive: TimeInterval? {
+        let mode = LocationUpdateOutboxRetentionMode(rawValue: locationUpdateOutboxRetentionMode) ?? .twentyFourHours
+        return mode.timeToLive
+    }
+
     // Global toggle for pulsing animation on map markers
     @Published var pulsingMapMarkers: Bool {
         didSet { defaults.set(pulsingMapMarkers, forKey: SettingsKeys.pulsingMapMarkers) }
@@ -220,6 +233,8 @@ class SettingsManager: ObservableObject {
         self.showCurrentSpeedOnMap = d.bool(forKey: SettingsKeys.showCurrentSpeedOnMap)
         self.showOffscreenArrowsForOtherDevices = d.bool(forKey: SettingsKeys.showOffscreenArrowsForOtherDevices)
         self.showRouteProgress = d.bool(forKey: SettingsKeys.showRouteProgress)
+        self.locationUpdateOutboxRetentionMode = Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxRetentionMode, defaults: d, defaultValue: SettingsDefaultValues.locationUpdateOutboxRetentionMode)
+        self.locationUpdateOutboxMaxItems = Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxMaxItems, defaults: d, defaultValue: SettingsDefaultValues.locationUpdateOutboxMaxItems)
         self.lastOpenedDeviceID = d.string(forKey: SettingsKeys.lastOpenedDeviceID)
         self.reverseGeocodingThresholdMeters = Self.persistedInt(forKey: SettingsKeys.reverseGeocodingThresholdMeters, defaults: d, defaultValue: SettingsDefaultValues.reverseGeocodingThresholdMeters)
         self.navigationTransportType = Self.persistedInt(forKey: SettingsKeys.navigationTransportType, defaults: d, defaultValue: SettingsDefaultValues.navigationTransportType)
