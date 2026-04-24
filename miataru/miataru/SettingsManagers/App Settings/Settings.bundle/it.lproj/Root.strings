@@ -30,6 +30,12 @@
 "show_offscreen_arrows_for_other_devices" = "Mostra altri dispositivi sulla mappa";
 "auto_refresh_device_list" = "La lista dispositivi si aggiorna automaticamente";
 "show_current_speed_on_map" = "Mostra velocità attuale sulla mappa";
+"location_update_outbox_retention_title" = "Conservazione della coda degli aggiornamenti non inviati";
+"location_update_outbox_retention_24h" = "24 ore (predefinito)";
+"location_update_outbox_retention_7d" = "7 giorni";
+"location_update_outbox_retention_30d" = "30 giorni";
+"location_update_outbox_retention_unlimited" = "Illimitato";
+"location_update_outbox_max_items_title" = "Aggiornamenti conservati al massimo";
 "map_configuration" = "Impostazioni mappa";
 "map_type" = "Tipo di mappa";
 "default_map" = "mappa predefinita";

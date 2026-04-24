@@ -30,6 +30,12 @@
 "show_offscreen_arrows_for_other_devices" = "Afficher les autres appareils sur la carte de l’appareil";
 "auto_refresh_device_list" = "Liste des appareils mise à jour automatiquement";
 "show_current_speed_on_map" = "Afficher la vitesse actuelle sur la carte";
+"location_update_outbox_retention_title" = "Conservation de la file des mises à jour non envoyées";
+"location_update_outbox_retention_24h" = "24 heures (par défaut)";
+"location_update_outbox_retention_7d" = "7 jours";
+"location_update_outbox_retention_30d" = "30 jours";
+"location_update_outbox_retention_unlimited" = "Illimité";
+"location_update_outbox_max_items_title" = "Nombre maximal de mises à jour gardées";
 "map_configuration" = "Réglages de la carte";
 "map_type" = "Type de carte";
 "default_map" = "carte par défaut";

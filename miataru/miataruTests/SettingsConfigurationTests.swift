@@ -86,6 +86,13 @@ struct SettingsConfigurationTests {
             "explanation_auto_refresh_device_list",
             "show_current_speed_on_map",
             "explanation_show_current_speed_on_map",
+            "location_update_outbox_retention_title",
+            "location_update_outbox_retention_24h",
+            "location_update_outbox_retention_7d",
+            "location_update_outbox_retention_30d",
+            "location_update_outbox_retention_unlimited",
+            "location_update_outbox_max_items_title",
+            "explanation_location_update_outbox_policy",
             "map_configuration",
             "map_type",
             "explanation_map_type",
@@ -150,6 +157,12 @@ struct SettingsConfigurationTests {
             "show_offscreen_arrows_for_other_devices",
             "auto_refresh_device_list",
             "show_current_speed_on_map",
+            "location_update_outbox_retention_title",
+            "location_update_outbox_retention_24h",
+            "location_update_outbox_retention_7d",
+            "location_update_outbox_retention_30d",
+            "location_update_outbox_retention_unlimited",
+            "location_update_outbox_max_items_title",
             "map_configuration",
             "map_type",
             "default_map",
@@ -203,6 +216,8 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.showOffscreenArrowsForOtherDevices] as? Bool == true)
         #expect(defaultsByKey[SettingsKeys.autoRefreshDeviceList] as? Bool == true)
         #expect(defaultsByKey[SettingsKeys.showCurrentSpeedOnMap] as? Bool == true)
+        #expect(defaultsByKey[SettingsKeys.locationUpdateOutboxRetentionMode] as? String == "0")
+        #expect(defaultsByKey[SettingsKeys.locationUpdateOutboxMaxItems] as? String == "500")
         #expect(defaultsByKey[SettingsKeys.mapType] as? String == "1")
         #expect(defaultsByKey[SettingsKeys.mapUpdateInterval] as? String == "30")
         #expect(defaultsByKey[SettingsKeys.outsideMapUpdateInterval] as? String == "60")

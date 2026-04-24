@@ -149,6 +149,12 @@ struct iPhone_LocationStatusView: View {
                             icon: "battery.100"
                         )
                     }
+
+                    LocationInfoRow(
+                        title: NSLocalizedString("Queued location updates", comment: "Number of locally queued UpdateLocation records waiting to be sent"),
+                        value: String(locationManager.pendingLocationUpdateCount),
+                        icon: "tray.and.arrow.up"
+                    )
                     
                     // Letzte Updates
                     if let lastUpdate = locationManager.lastUpdateTime {

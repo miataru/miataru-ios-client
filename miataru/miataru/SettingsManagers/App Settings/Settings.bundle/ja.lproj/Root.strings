@@ -30,6 +30,12 @@
 "show_offscreen_arrows_for_other_devices" = "デバイスマップに他のデバイスを表示";
 "auto_refresh_device_list" = "デバイスリストを自動的に更新する";
 "show_current_speed_on_map" = "地図に現在の速度を表示";
+"location_update_outbox_retention_title" = "未送信アップデートキューの保持期間";
+"location_update_outbox_retention_24h" = "24時間（デフォルト）";
+"location_update_outbox_retention_7d" = "7日";
+"location_update_outbox_retention_30d" = "30日";
+"location_update_outbox_retention_unlimited" = "無制限";
+"location_update_outbox_max_items_title" = "保存するアップデートの最大数";
 "map_configuration" = "マップ設定";
 "map_type" = "マップタイプ";
 "default_map" = "デフォルトマップ";

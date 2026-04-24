@@ -166,7 +166,11 @@ miataru/
   - `updateLocation`: `1` retry, `1.2s` backoff, `±25%` jitter, then persistent outbox
 - `updateLocation` outbox:
   - persisted in App Support (`locationUpdateOutbox.json`)
-  - FIFO, cap `500`, TTL `24h`, dedupe by `Device+Timestamp+Latitude+Longitude`
+  - FIFO, default cap `500`, default TTL `24h`, user-configurable up to higher caps and unlimited TTL, dedupe by `Device+Timestamp+Latitude+Longitude`
+  - while pending items exist, new `updateLocation` submissions are appended to the outbox instead of being sent ahead of older updates
+  - queued items keep the original `UpdateLocationPayload`, including the event timestamp from the location update; retry sends must not rewrite metadata to the later send time
+  - user controls live in Advanced Options > App behavior and are persisted via `location_update_outbox_retention_mode` and `location_update_outbox_max_items`
+  - Settings > location status shows the current pending outbox count as "Queued location updates"
   - flush triggers: app active, network recovery, periodic timer (`60s`) while pending items exist
 - Widget extension intentionally keeps direct client calls without retries.
 

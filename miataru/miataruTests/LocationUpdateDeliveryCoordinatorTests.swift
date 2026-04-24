@@ -48,7 +48,60 @@ struct LocationUpdateDeliveryCoordinatorTests {
 
         let pendingCount = await coordinator.pendingOutboxCount()
         #expect(pendingCount == 1)
+        let snapshot = await store.itemsSnapshot()
+        #expect(snapshot.first?.payload.Timestamp == "1")
+        #expect(snapshot.first?.enableHistory == true)
+        #expect(snapshot.first?.retentionTime == 60)
         #expect(await sender.callCount == 1)
+    }
+
+    @Test("Submit appends behind pending outbox instead of bypassing order")
+    func submitAppendsBehindPendingOutbox() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+
+        let sender = MockUpdateSender(outcomes: [
+            .success(true),
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "new"),
+            enableHistory: false,
+            retentionTime: 90
+        )
+
+        switch result {
+        case .queued:
+            break
+        default:
+            Issue.record("Expected queued result when older outbox entries exist")
+        }
+
+        var snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["old", "new"])
+        #expect(snapshot[1].enableHistory == false)
+        #expect(snapshot[1].retentionTime == 90)
+        #expect(await sender.callCount == 0)
+
+        await coordinator.flushOutboxNow()
+
+        snapshot = await store.itemsSnapshot()
+        #expect(snapshot.isEmpty)
+        #expect(await sender.sentTimestamps == ["old", "new"])
     }
 
     @Test("Flush stops on transient head error and keeps queue order")
@@ -181,6 +234,7 @@ private actor MockUpdateSender {
     }
 
     private(set) var callCount: Int = 0
+    private(set) var sentTimestamps: [String] = []
     private var outcomes: [Outcome]
 
     init(outcomes: [Outcome]) {
@@ -199,6 +253,7 @@ private actor MockUpdateSender {
         _ = retentionTime
 
         callCount += 1
+        sentTimestamps.append(payload.Timestamp)
         guard !outcomes.isEmpty else {
             return true
         }

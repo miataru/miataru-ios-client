@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **101** (Unit: 86, UI: 15 incl. 10 screenshot captures)
+- Actively linked app test cases: **102** (Unit: 87, UI: 15 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -77,10 +77,12 @@ Important project observations:
 | UT-OUT-001 | FIFO order and max-cap enforcement | Validate queue semantics | cap overflow drops oldest, keeps order | LocationUpdateOutboxStore | Unit | temp outbox file + deterministic payloads | High |
 | UT-OUT-002 | TTL pruning before enqueue and read | Validate expiry handling | expired entries removed before appending/reading | LocationUpdateOutboxStore | Unit | mutable clock + temp outbox file | High |
 | UT-OUT-003 | Dedupe by Device+Timestamp+Latitude+Longitude | Validate dedupe key behavior | identical payload not enqueued twice | LocationUpdateOutboxStore | Unit | temp outbox file + duplicate payload | High |
+| UT-OUT-004 | Runtime policy can keep aged items and raise max cap | Validate user-configurable queue policy | switching to unlimited TTL and higher cap keeps aged entries in FIFO order | LocationUpdateOutboxStore | Unit | mutable clock + temp outbox file | High |
 | UT-LDC-001 | Submit queues update after transient failure | Validate submit fallback | transient send failure leads to outbox enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
 | UT-LDC-002 | Flush stops on transient head error and keeps queue order | Validate head-stop semantics | transient head failure increments attempt and stops cycle | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-LDC-003 | Flush drops non-retryable head and continues with next item | Validate non-retryable discard behavior | non-retryable head removed, next item processed | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-LDC-004 | Submit returns failed for non-retryable error without queueing | Validate immediate failure behavior | non-retryable submit error does not enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
+| UT-LDC-005 | Submit appends behind pending outbox | Validate end-to-end FIFO delivery | existing outbox item is sent before newly submitted update, preserving metadata | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-UVA-001 | Unknown visitor with new timestamp is selected | Validate unknown-device candidate selection | New visitor after watermark produces one candidate | UnknownVisitorAlertEvaluator | Unit | MiataruVisitor fixture + fixed timestamp | High |
 | UT-UVA-002 | Cooldown suppresses repeated notifications within 24h | Validate 24h dedupe window | Already-notified device within cooldown produces no candidate | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |
 | UT-UVA-003 | Visitor is re-notified after 24h cooldown | Validate re-notify path after cooldown | Same device after >24h produces candidate again | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |
