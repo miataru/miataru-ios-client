@@ -4,6 +4,7 @@ version 3.1.7
 - Improved history-load error handling so invalid configuration, server/response failures, encoding/decoding failures, network failures, and unknown failures produce readable user-facing messages.
 - Added full localization coverage for the new history loading text across all supported app languages.
 - Made common error overlays wrap long messages more reliably and kept history preload errors visible longer.
+- Kept manual pan/zoom interaction on the device history map authoritative during live history refreshes, so newly recorded positions no longer force the map to refit after the user has adjusted the camera.
 
 version 3.1.5
 - Refactored the iOS settings flow: centralized runtime defaults and one-time existing-install migrations, shortened the root settings screen, added a dedicated `Advanced Options` page, and moved ACL/status content to the intended destinations.

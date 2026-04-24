@@ -30,6 +30,7 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var currentRegion: MKCoordinateRegion? = nil
     @State private var playbackLockedSpan: MKCoordinateSpan? = nil
     @State private var suppressUserCameraChangeDetectionUntil: Date? = nil
+    @State private var hasUserAdjustedMapCamera = false
     // Loading & data
     @State private var isLoading = true
     @State private var hasResolvedInitialHistoryLoad = false
@@ -216,6 +217,19 @@ struct iPhone_DeviceHistoryMapView: View {
                 zoomChanged = false
             }
 
+            let centerChanged: Bool
+            if let previousCenter = previousRegion?.center {
+                let latDiff = abs(previousCenter.latitude - context.region.center.latitude)
+                let lonDiff = abs(previousCenter.longitude - context.region.center.longitude)
+                centerChanged = latDiff > 0.00005 || lonDiff > 0.00005
+            } else {
+                centerChanged = false
+            }
+
+            if (zoomChanged || centerChanged) && !suppressed {
+                hasUserAdjustedMapCamera = true
+            }
+
             if isPlaying && zoomChanged && !suppressed {
                 playbackLockedSpan = context.region.span
             }
@@ -336,7 +350,7 @@ struct iPhone_DeviceHistoryMapView: View {
         }
         .onReceive(viewModel.$history) { _ in
             initializeTimelineIfNeeded()
-            updateRegion(animated: false)
+            updateRegionIfUserCameraAllows(animated: false)
             stopPlayback()
         }
         .onReceive(deviceLocationTimestampPublisher) { newTimestamp in
@@ -556,7 +570,7 @@ struct iPhone_DeviceHistoryMapView: View {
                     loadError = NSLocalizedString("history_no_data", comment: "No history available placeholder")
                 }
                 initializeTimelineIfNeeded()
-                updateRegion(animated: false)
+                updateRegionIfUserCameraAllows(animated: false)
             }
         } catch let apiError as MiataruAPIClient.APIError {
             await MainActor.run {
@@ -653,6 +667,12 @@ struct iPhone_DeviceHistoryMapView: View {
         }
 
         setCameraRegion(region, animated: animated)
+    }
+
+    @MainActor
+    private func updateRegionIfUserCameraAllows(animated: Bool) {
+        guard !hasUserAdjustedMapCamera else { return }
+        updateRegion(animated: animated)
     }
 
     @MainActor
@@ -762,6 +782,7 @@ struct iPhone_DeviceHistoryMapView: View {
         displayRange = newRange
         scrubTimestamp = upper
         hasUserScrubbed = false
+        hasUserAdjustedMapCamera = false
         scheduleRegionUpdate(animated: true)
     }
 
