@@ -12,6 +12,11 @@ import SwiftUI
 struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
     @State private var showingDeviceKeySheet = false
+    @State private var serverURLDraft = SettingsManager.shared.miataruServerURL
+    @State private var pendingServerURLChange: String?
+    @State private var pendingServerURLQueuedCount = 0
+    @State private var showingServerURLQueueDialog = false
+    @FocusState private var isServerURLFieldFocused: Bool
 
     var body: some View {
         NavigationView {
@@ -117,10 +122,14 @@ struct iPhone_SettingsView: View {
                 }
 
                 Section(header: Text("server_url")) {
-                    TextField("server_url", text: $settings.miataruServerURL)
+                    TextField("server_url", text: $serverURLDraft)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .keyboardType(.URL)
+                        .focused($isServerURLFieldFocused)
+                        .onSubmit {
+                            commitServerURLDraft()
+                        }
                     SettingsDescriptionText("explanation_server_url")
                 }
 
@@ -150,8 +159,40 @@ struct iPhone_SettingsView: View {
             .sheet(isPresented: $showingDeviceKeySheet) {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
             }
+            .confirmationDialog(
+                "location_update_outbox_server_change_title",
+                isPresented: $showingServerURLQueueDialog,
+                titleVisibility: .visible
+            ) {
+                Button("location_update_outbox_send_to_new_server_button") {
+                    confirmPendingServerURLChange(sendQueuedUpdates: true)
+                }
+                Button("location_update_outbox_discard_pending_button", role: .destructive) {
+                    confirmPendingServerURLChange(sendQueuedUpdates: false)
+                }
+                Button("cancel", role: .cancel) {
+                    cancelPendingServerURLChange()
+                }
+            } message: {
+                Text(serverURLQueueDialogMessage)
+            }
         }
         .accessibilityIdentifier("settings_navigation_view")
+        .onChange(of: isServerURLFieldFocused) { _, isFocused in
+            if !isFocused {
+                commitServerURLDraft()
+            }
+        }
+        .onChange(of: showingServerURLQueueDialog) { _, isShowing in
+            if !isShowing && pendingServerURLChange != nil {
+                cancelPendingServerURLChange()
+            }
+        }
+        .onReceive(settings.$miataruServerURL.removeDuplicates()) { newValue in
+            if !isServerURLFieldFocused && pendingServerURLChange == nil {
+                serverURLDraft = newValue
+            }
+        }
     }
 
     @State private var isUpdatingUnknownVisitorAlerts = false
@@ -162,6 +203,71 @@ struct iPhone_SettingsView: View {
             await settings.setUnknownVisitorAlertsEnabledFromUser(newValue)
             isUpdatingUnknownVisitorAlerts = false
         }
+    }
+
+    private var serverURLQueueDialogMessage: String {
+        String(
+            format: NSLocalizedString(
+                "location_update_outbox_server_change_message",
+                comment: "Message shown when changing the server URL while location updates are queued"
+            ),
+            pendingServerURLQueuedCount
+        )
+    }
+
+    private func commitServerURLDraft() {
+        let newServerURL = serverURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        serverURLDraft = newServerURL
+
+        guard newServerURL != settings.miataruServerURL else { return }
+
+        Task {
+            let pendingCount = await LocationManager.shared.pendingLocationUpdateOutboxCount()
+            await MainActor.run {
+                guard newServerURL != settings.miataruServerURL else { return }
+
+                if pendingCount > 0 {
+                    pendingServerURLChange = newServerURL
+                    pendingServerURLQueuedCount = pendingCount
+                    showingServerURLQueueDialog = true
+                } else {
+                    settings.miataruServerURL = newServerURL
+                }
+            }
+        }
+    }
+
+    private func confirmPendingServerURLChange(sendQueuedUpdates: Bool) {
+        guard let newServerURL = pendingServerURLChange else { return }
+
+        pendingServerURLChange = nil
+        pendingServerURLQueuedCount = 0
+        serverURLDraft = newServerURL
+        settings.miataruServerURL = newServerURL
+
+        Task {
+            if sendQueuedUpdates,
+               let serverURL = Self.validServerURL(from: newServerURL) {
+                await LocationManager.shared.sendPendingLocationUpdates(to: serverURL)
+            } else if !sendQueuedUpdates {
+                await LocationManager.shared.discardPendingLocationUpdates()
+            }
+        }
+    }
+
+    private func cancelPendingServerURLChange() {
+        pendingServerURLChange = nil
+        pendingServerURLQueuedCount = 0
+        serverURLDraft = settings.miataruServerURL
+    }
+
+    private static func validServerURL(from string: String) -> URL? {
+        guard let url = URL(string: string),
+              url.scheme != nil,
+              url.host != nil else {
+            return nil
+        }
+        return url
     }
 }
 

@@ -20,6 +20,7 @@ struct iPhone_LocationStatusView: View {
     @ObservedObject private var widgetRequestCounter = WidgetRequestCounter.shared
     @ObservedObject private var apiRequestCounter = APIRequestCounter.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @State private var isFlushingQueuedLocationUpdates = false
     // Legacy @AppStorage fields removed in favor of RouteRequestCounter
     
     var body: some View {
@@ -155,6 +156,22 @@ struct iPhone_LocationStatusView: View {
                         value: String(locationManager.pendingLocationUpdateCount),
                         icon: "tray.and.arrow.up"
                     )
+
+                    if locationManager.pendingLocationUpdateCount > 1 {
+                        Button {
+                            flushQueuedLocationUpdates()
+                        } label: {
+                            Label(
+                                "location_update_outbox_flush_button",
+                                systemImage: isFlushingQueuedLocationUpdates ? "arrow.clockwise" : "paperplane"
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .disabled(isFlushingQueuedLocationUpdates)
+                        .accessibilityIdentifier("location_status_flush_outbox_button")
+                    }
                     
                     // Letzte Updates
                     if let lastUpdate = locationManager.lastUpdateTime {
@@ -243,6 +260,18 @@ struct iPhone_LocationStatusView: View {
         routeCounter.checkAndResetIfNeeded()
         widgetRequestCounter.updateCount()
         apiRequestCounter.updateCounts()
+    }
+
+    private func flushQueuedLocationUpdates() {
+        guard !isFlushingQueuedLocationUpdates else { return }
+        isFlushingQueuedLocationUpdates = true
+        Task {
+            await LocationManager.shared.flushPendingLocationUpdatesNow()
+            await MainActor.run {
+                refreshAllStatistics()
+                isFlushingQueuedLocationUpdates = false
+            }
+        }
     }
     
     // MARK: - Computed Properties

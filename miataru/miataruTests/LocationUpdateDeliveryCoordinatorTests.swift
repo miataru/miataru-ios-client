@@ -104,6 +104,81 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.sentTimestamps == ["old", "new"])
     }
 
+    @Test("Submit with pending outbox schedules deferred drain")
+    func submitWithPendingOutboxSchedulesDeferredDrain() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+
+        let sender = MockUpdateSender(outcomes: [
+            .success(true),
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "new"),
+            enableHistory: false,
+            retentionTime: 90
+        )
+
+        switch result {
+        case .queued:
+            break
+        default:
+            Issue.record("Expected queued result when older outbox entries exist")
+        }
+
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentTimestamps == ["old", "new"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Manual full flush drains more than one batch")
+    func manualFullFlushDrainsMoreThanOneBatch() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "1"), enableHistory: true, retentionTime: 60)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "2"), enableHistory: true, retentionTime: 60)
+        await store.enqueue(serverURL: URL(string: "https://example.org")!, payload: payload(timestamp: "3"), enableHistory: true, retentionTime: 60)
+
+        let sender = MockUpdateSender(outcomes: [
+            .success(true),
+            .success(true),
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 2,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        await coordinator.flushOutboxCompletelyNow()
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentTimestamps == ["1", "2", "3"])
+    }
+
     @Test("Flush stops on transient head error and keeps queue order")
     func flushStopsOnTransientHeadError() async throws {
         let tempURL = temporaryOutboxURL()
@@ -203,6 +278,106 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 1)
     }
 
+    @Test("Pending outbox can be sent to changed server URL")
+    func pendingOutboxCanBeSentToChangedServerURL() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let oldServerURL = URL(string: "https://old.example.org")!
+        let olderServerURL = URL(string: "https://older.example.org")!
+        let newServerURL = URL(string: "https://new.example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: oldServerURL, payload: payload(timestamp: "queued-1"), enableHistory: true, retentionTime: 60)
+        await store.enqueue(serverURL: olderServerURL, payload: payload(timestamp: "queued-2"), enableHistory: true, retentionTime: 60)
+
+        let sender = MockUpdateSender(outcomes: [
+            .success(true),
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        await coordinator.sendPendingOutbox(to: newServerURL)
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentURLs == [newServerURL.absoluteString, newServerURL.absoluteString])
+        #expect(await sender.sentTimestamps == ["queued-1", "queued-2"])
+    }
+
+    @Test("Server URL retarget keeps in-flight old URL item queued for new URL")
+    func serverURLRetargetKeepsInFlightOldURLItemQueuedForNewURL() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let oldServerURL = URL(string: "https://old.example.org")!
+        let newServerURL = URL(string: "https://new.example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: oldServerURL, payload: payload(timestamp: "queued"), enableHistory: true, retentionTime: 60)
+
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        let flushTask = Task {
+            await coordinator.flushOutboxNow()
+        }
+        await sender.waitForFirstCall()
+
+        let retargetTask = Task {
+            await coordinator.sendPendingOutbox(to: newServerURL)
+        }
+        try await Task.sleep(nanoseconds: 50_000_000)
+        await sender.releaseFirstCall()
+        await flushTask.value
+        await retargetTask.value
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentURLs == [oldServerURL.absoluteString, newServerURL.absoluteString])
+        #expect(await sender.sentTimestamps == ["queued", "queued"])
+    }
+
+    @Test("Pending outbox can be discarded after server URL change")
+    func pendingOutboxCanBeDiscardedAfterServerURLChange() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: URL(string: "https://old.example.org")!, payload: payload(timestamp: "queued"), enableHistory: true, retentionTime: 60)
+
+        let sender = MockUpdateSender(outcomes: [
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        await coordinator.discardPendingOutbox()
+
+        #expect(await store.count() == 0)
+        #expect(await sender.callCount == 0)
+    }
+
     private func payload(
         timestamp: String,
         latitude: Double = 50.0,
@@ -235,6 +410,7 @@ private actor MockUpdateSender {
 
     private(set) var callCount: Int = 0
     private(set) var sentTimestamps: [String] = []
+    private(set) var sentURLs: [String] = []
     private var outcomes: [Outcome]
 
     init(outcomes: [Outcome]) {
@@ -247,13 +423,12 @@ private actor MockUpdateSender {
         enableHistory: Bool,
         retentionTime: Int
     ) async throws -> Bool {
-        _ = url
-        _ = payload
         _ = enableHistory
         _ = retentionTime
 
         callCount += 1
         sentTimestamps.append(payload.Timestamp)
+        sentURLs.append(url.absoluteString)
         guard !outcomes.isEmpty else {
             return true
         }
@@ -265,5 +440,47 @@ private actor MockUpdateSender {
         case .failure(let error):
             throw error
         }
+    }
+}
+
+private actor BlockingFirstUpdateSender {
+    private(set) var sentTimestamps: [String] = []
+    private(set) var sentURLs: [String] = []
+    private var firstCallContinuation: CheckedContinuation<Void, Never>?
+    private var firstCallWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func send(
+        url: URL,
+        payload: UpdateLocationPayload,
+        enableHistory: Bool,
+        retentionTime: Int
+    ) async throws -> Bool {
+        _ = enableHistory
+        _ = retentionTime
+
+        sentTimestamps.append(payload.Timestamp)
+        sentURLs.append(url.absoluteString)
+
+        if sentURLs.count == 1 {
+            firstCallWaiters.forEach { $0.resume() }
+            firstCallWaiters.removeAll()
+            await withCheckedContinuation { continuation in
+                firstCallContinuation = continuation
+            }
+        }
+
+        return true
+    }
+
+    func waitForFirstCall() async {
+        guard sentURLs.isEmpty else { return }
+        await withCheckedContinuation { continuation in
+            firstCallWaiters.append(continuation)
+        }
+    }
+
+    func releaseFirstCall() {
+        firstCallContinuation?.resume()
+        firstCallContinuation = nil
     }
 }

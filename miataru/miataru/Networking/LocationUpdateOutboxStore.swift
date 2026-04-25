@@ -12,7 +12,7 @@ import MiataruAPIClient
 
 struct LocationUpdateOutboxItem: Codable {
     let dedupeKey: String
-    let serverURLString: String
+    var serverURLString: String
     let enqueuedAt: Date
     var attemptCount: Int
     let payload: UpdateLocationPayload
@@ -78,6 +78,22 @@ actor LocationUpdateOutboxStore {
         enforceMaximumItemCountIfNeeded()
     }
 
+    func updateServerURLForPendingItems(_ serverURL: URL) -> Bool {
+        pruneExpiredEntriesIfNeeded()
+
+        let serverURLString = serverURL.absoluteString
+        var didChange = false
+        for index in items.indices where items[index].serverURLString != serverURLString {
+            items[index].serverURLString = serverURLString
+            didChange = true
+        }
+
+        if didChange {
+            persist()
+        }
+        return didChange
+    }
+
     func enqueue(
         serverURL: URL,
         payload: UpdateLocationPayload,
@@ -122,10 +138,36 @@ actor LocationUpdateOutboxStore {
         persist()
     }
 
+    func removeHead(matching item: LocationUpdateOutboxItem) -> Bool {
+        guard let head = items.first,
+              Self.isSameQueuedRecord(head, item) else {
+            return false
+        }
+        items.removeFirst()
+        persist()
+        return true
+    }
+
+    func removeAll() {
+        guard !items.isEmpty else { return }
+        items.removeAll()
+        persist()
+    }
+
     func incrementHeadAttemptCount() {
         guard !items.isEmpty else { return }
         items[0].attemptCount += 1
         persist()
+    }
+
+    func incrementHeadAttemptCount(matching item: LocationUpdateOutboxItem) -> Bool {
+        guard let head = items.first,
+              Self.isSameQueuedRecord(head, item) else {
+            return false
+        }
+        items[0].attemptCount += 1
+        persist()
+        return true
     }
 
     func count() -> Int {
@@ -185,6 +227,12 @@ actor LocationUpdateOutboxStore {
     private static func limitedItems(_ items: [LocationUpdateOutboxItem], maxItems: Int) -> [LocationUpdateOutboxItem] {
         guard items.count > maxItems else { return items }
         return Array(items.suffix(maxItems))
+    }
+
+    private static func isSameQueuedRecord(_ lhs: LocationUpdateOutboxItem, _ rhs: LocationUpdateOutboxItem) -> Bool {
+        lhs.dedupeKey == rhs.dedupeKey
+            && lhs.enqueuedAt == rhs.enqueuedAt
+            && lhs.serverURLString == rhs.serverURLString
     }
 
     private static func loadItems(from fileURL: URL, decoder: JSONDecoder) -> [LocationUpdateOutboxItem] {

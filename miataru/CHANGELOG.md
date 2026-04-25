@@ -2,7 +2,10 @@ version 3.1.7
 - Fixed offline `UpdateLocation` delivery so new updates are queued behind already pending outbox items and retried in FIFO order without replacing the original event payload metadata.
 - Added a location-status statistic for queued location updates that still need to be sent.
 - Added Advanced Options controls for the unsent location-update queue retention and capacity, keeping the default at 24 hours / 500 updates while allowing longer retention, unlimited retention, and higher caps.
-- Added regression coverage for queued-update ordering, configurable outbox policy changes, and settings/localization parity.
+- Added a confirmation step when changing the Miataru server URL while location updates are queued, allowing the user to send queued updates to the new server or discard them.
+- Improved queued-update draining so active tracking schedules near-term FIFO flushes, full batches continue automatically, and the location-status view can manually flush all currently deliverable queued updates.
+- Hardened queued-update server URL retargeting so already queued items are consistently rewritten to the chosen new server and in-flight old-URL sends cannot remove retargeted queue records.
+- Added regression coverage for queued-update ordering, configurable outbox policy changes, server URL retargeting, full queue flushes, and settings/localization parity.
 - Added visible loading feedback when opening a device's location history on iPhone and iPad, including the selected device name/ID while history data is being preloaded.
 - Prevented the history map from briefly showing the "no location history" fallback before cached or freshly loaded history entries have been applied.
 - Improved history-load error handling so invalid configuration, server/response failures, encoding/decoding failures, network failures, and unknown failures produce readable user-facing messages.

@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **102** (Unit: 87, UI: 15 incl. 10 screenshot captures)
+- Actively linked app test cases: **107** (Unit: 92, UI: 15 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -83,6 +83,11 @@ Important project observations:
 | UT-LDC-003 | Flush drops non-retryable head and continues with next item | Validate non-retryable discard behavior | non-retryable head removed, next item processed | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
 | UT-LDC-004 | Submit returns failed for non-retryable error without queueing | Validate immediate failure behavior | non-retryable submit error does not enqueue | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + temp outbox | High |
 | UT-LDC-005 | Submit appends behind pending outbox | Validate end-to-end FIFO delivery | existing outbox item is sent before newly submitted update, preserving metadata | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
+| UT-LDC-006 | Pending outbox can be sent to changed server URL | Validate user-selected retarget behavior | queued item is sent to the corrected server URL after server change confirmation | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
+| UT-LDC-007 | Pending outbox can be discarded after server URL change | Validate user-selected discard behavior | queued item is removed without sending after discard confirmation | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox | High |
+| UT-LDC-008 | Submit with pending outbox schedules deferred drain | Validate active tracking drain trigger | appending a new update behind pending items schedules a near-term FIFO flush | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + prefilled outbox + short deferred delay | High |
+| UT-LDC-009 | Manual full flush drains more than one batch | Validate user-triggered full drain | manual flush continues past the configured batch size until the queue is empty | LocationUpdateDeliveryCoordinator | Unit | mock sender actor + small batch size | High |
+| UT-LDC-010 | Server URL retarget keeps in-flight old URL item queued for new URL | Validate retarget race safety | an in-flight old-URL send cannot remove a queued record after the queue was retargeted | LocationUpdateDeliveryCoordinator | Unit | blocking sender actor + retarget during flush | High |
 | UT-UVA-001 | Unknown visitor with new timestamp is selected | Validate unknown-device candidate selection | New visitor after watermark produces one candidate | UnknownVisitorAlertEvaluator | Unit | MiataruVisitor fixture + fixed timestamp | High |
 | UT-UVA-002 | Cooldown suppresses repeated notifications within 24h | Validate 24h dedupe window | Already-notified device within cooldown produces no candidate | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |
 | UT-UVA-003 | Visitor is re-notified after 24h cooldown | Validate re-notify path after cooldown | Same device after >24h produces candidate again | UnknownVisitorAlertEvaluator | Unit | fixed notification/visit times | High |

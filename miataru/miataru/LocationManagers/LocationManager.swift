@@ -202,6 +202,25 @@ final class LocationManager: NSObject, ObservableObject {
             await locationUpdateDeliveryCoordinator.updateOutboxPolicy(maxItems: maxItems, ttl: ttl)
         }
     }
+
+    func pendingLocationUpdateOutboxCount() async -> Int {
+        await locationUpdateDeliveryCoordinator.pendingOutboxCount()
+    }
+
+    func sendPendingLocationUpdates(to serverURL: URL) async {
+        await locationUpdateDeliveryCoordinator.sendPendingOutbox(to: serverURL)
+        refreshPendingLocationUpdateCount()
+    }
+
+    func flushPendingLocationUpdatesNow() async {
+        await locationUpdateDeliveryCoordinator.flushOutboxCompletelyNow()
+        refreshPendingLocationUpdateCount()
+    }
+
+    func discardPendingLocationUpdates() async {
+        await locationUpdateDeliveryCoordinator.discardPendingOutbox()
+        refreshPendingLocationUpdateCount()
+    }
     
     private func observeActivityType() {
         settings.$locationActivityType

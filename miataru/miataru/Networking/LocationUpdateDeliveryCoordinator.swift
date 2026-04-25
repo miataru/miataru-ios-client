@@ -30,6 +30,12 @@ actor LocationUpdateDeliveryCoordinator {
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
 
+    private struct FlushResult {
+        let didReachBatchLimit: Bool
+        let stoppedOnRetryableError: Bool
+        let hasPendingItems: Bool
+    }
+
     static let shared = LocationUpdateDeliveryCoordinator(
         outboxStore: LocationUpdateOutboxStore(
             maxItems: SettingsManager.shared.locationUpdateOutboxMaxItems,
@@ -41,19 +47,23 @@ actor LocationUpdateDeliveryCoordinator {
     private let updateSender: UpdateSender
     private let flushBatchSize: Int
     private let flushInterval: TimeInterval
+    private let deferredFlushDelay: TimeInterval
 
     private var periodicFlushTask: Task<Void, Never>?
+    private var deferredFlushTask: Task<Void, Never>?
     private var isFlushing = false
 
     init(
         outboxStore: LocationUpdateOutboxStore = LocationUpdateOutboxStore(),
         flushBatchSize: Int = 25,
         flushInterval: TimeInterval = 60,
+        deferredFlushDelay: TimeInterval = 1,
         updateSender: UpdateSender? = nil
     ) {
         self.outboxStore = outboxStore
         self.flushBatchSize = max(1, flushBatchSize)
         self.flushInterval = max(1, flushInterval)
+        self.deferredFlushDelay = max(0.05, deferredFlushDelay)
         self.updateSender = updateSender ?? { serverURL, payload, enableHistory, retentionTime in
             APIRequestCounter.shared.record(.updateLocation)
             return try await MiataruAppAPI.updateLocation(
@@ -74,7 +84,7 @@ actor LocationUpdateDeliveryCoordinator {
                 try? await Task.sleep(nanoseconds: sleepNanoseconds)
                 let pendingCount = await self.outboxStore.count()
                 guard pendingCount > 0 else { continue }
-                await self.flushOutbox(trigger: "timer")
+                _ = await self.flushOutbox(trigger: "timer")
             }
         }
     }
@@ -82,6 +92,8 @@ actor LocationUpdateDeliveryCoordinator {
     func stopPeriodicFlushTaskForTesting() {
         periodicFlushTask?.cancel()
         periodicFlushTask = nil
+        deferredFlushTask?.cancel()
+        deferredFlushTask = nil
     }
 
     func submit(
@@ -98,6 +110,7 @@ actor LocationUpdateDeliveryCoordinator {
                 retentionTime: retentionTime
             )
             await notifyOutboxDidChange()
+            scheduleFlushSoon(trigger: "submitWithPendingOutbox")
             return .queued
         }
 
@@ -120,15 +133,28 @@ actor LocationUpdateDeliveryCoordinator {
     }
 
     func appDidBecomeActive() async {
-        await flushOutbox(trigger: "appDidBecomeActive")
+        _ = await flushOutbox(trigger: "appDidBecomeActive")
     }
 
     func networkBecameAvailable() async {
-        await flushOutbox(trigger: "networkBecameAvailable")
+        _ = await flushOutbox(trigger: "networkBecameAvailable")
     }
 
     func flushOutboxNow() async {
-        await flushOutbox(trigger: "manual")
+        cancelDeferredFlush()
+        _ = await flushOutbox(trigger: "manual")
+    }
+
+    func flushOutboxCompletelyNow() async {
+        cancelDeferredFlush()
+        while true {
+            let result = await flushOutbox(trigger: "manualFull", scheduleContinuation: false)
+            guard result.didReachBatchLimit,
+                  !result.stoppedOnRetryableError,
+                  result.hasPendingItems else {
+                break
+            }
+        }
     }
 
     func pendingOutboxCount() async -> Int {
@@ -140,19 +166,64 @@ actor LocationUpdateDeliveryCoordinator {
         await notifyOutboxDidChange()
     }
 
-    private func flushOutbox(trigger: String) async {
-        guard !isFlushing else { return }
+    func sendPendingOutbox(to serverURL: URL) async {
+        guard await outboxStore.count() > 0 else { return }
+        let didRetarget = await outboxStore.updateServerURLForPendingItems(serverURL)
+        if didRetarget {
+            await notifyOutboxDidChange()
+        }
+        cancelDeferredFlush()
+        await flushOutboxCompletely(trigger: "serverURLChanged")
+    }
+
+    func discardPendingOutbox() async {
+        cancelDeferredFlush()
+        await outboxStore.removeAll()
+        await notifyOutboxDidChange()
+    }
+
+    private func flushOutboxCompletely(trigger: String) async {
+        cancelDeferredFlush()
+        while true {
+            let result = await flushOutbox(trigger: trigger, scheduleContinuation: false)
+            guard result.didReachBatchLimit,
+                  !result.stoppedOnRetryableError,
+                  result.hasPendingItems else {
+                break
+            }
+        }
+    }
+
+    private func flushOutbox(trigger: String, scheduleContinuation: Bool = true) async -> FlushResult {
+        guard !isFlushing else {
+            scheduleFlushSoon(trigger: "\(trigger):coalesced")
+            return FlushResult(
+                didReachBatchLimit: false,
+                stoppedOnRetryableError: true,
+                hasPendingItems: await outboxStore.count() > 0
+            )
+        }
         isFlushing = true
-        defer { isFlushing = false }
+        var shouldContinueAfterBatch = false
+        defer {
+            isFlushing = false
+            if scheduleContinuation && shouldContinueAfterBatch {
+                scheduleFlushSoon(trigger: "\(trigger):continuation")
+            }
+        }
 
         await outboxStore.pruneExpiredEntries()
 
         var processedCount = 0
+        var stoppedOnRetryableError = false
         while processedCount < flushBatchSize {
             guard let head = await outboxStore.peekHead() else { break }
             guard let serverURL = URL(string: head.serverURLString) else {
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item with invalid URL: \(head.serverURLString)")
-                await outboxStore.removeHead()
+                guard await outboxStore.removeHead(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping invalid URL item")
+                    break
+                }
                 await notifyOutboxDidChange()
                 processedCount += 1
                 continue
@@ -161,7 +232,10 @@ actor LocationUpdateDeliveryCoordinator {
             do {
                 let success = try await updateSender(serverURL, head.payload, head.enableHistory, head.retentionTime)
                 if success {
-                    await outboxStore.removeHead()
+                    guard await outboxStore.removeHead(matching: head) else {
+                        debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed during send; keeping current queue state")
+                        break
+                    }
                     await notifyOutboxDidChange()
                     processedCount += 1
                     await notifyOwnLocationUpdateDidSend()
@@ -172,22 +246,64 @@ actor LocationUpdateDeliveryCoordinator {
                 }
 
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item because server did not ACK")
-                await outboxStore.removeHead()
+                guard await outboxStore.removeHead(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping non-ACK item")
+                    break
+                }
                 await notifyOutboxDidChange()
                 processedCount += 1
             } catch {
                 if MiataruRetryClassifier.isRetryable(error) {
-                    await outboxStore.incrementHeadAttemptCount()
+                    guard await outboxStore.incrementHeadAttemptCount(matching: head) else {
+                        debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed during retryable error; keeping current queue state")
+                        break
+                    }
                     debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped (transient head error, trigger=\(trigger)): \(error)")
+                    stoppedOnRetryableError = true
                     break
                 }
 
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping non-retryable outbox item error: \(error)")
-                await outboxStore.removeHead()
+                guard await outboxStore.removeHead(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping non-retryable item")
+                    break
+                }
                 await notifyOutboxDidChange()
                 processedCount += 1
             }
         }
+
+        if processedCount >= flushBatchSize,
+           !stoppedOnRetryableError,
+           !(await outboxStore.isEmpty()) {
+            shouldContinueAfterBatch = true
+        }
+
+        return FlushResult(
+            didReachBatchLimit: processedCount >= flushBatchSize,
+            stoppedOnRetryableError: stoppedOnRetryableError,
+            hasPendingItems: shouldContinueAfterBatch
+        )
+    }
+
+    private func scheduleFlushSoon(trigger: String) {
+        guard deferredFlushTask == nil else { return }
+        let sleepNanoseconds = UInt64(deferredFlushDelay * 1_000_000_000)
+        deferredFlushTask = Task {
+            try? await Task.sleep(nanoseconds: sleepNanoseconds)
+            guard !Task.isCancelled else { return }
+            await self.runDeferredFlush(trigger: trigger)
+        }
+    }
+
+    private func runDeferredFlush(trigger: String) async {
+        deferredFlushTask = nil
+        _ = await flushOutbox(trigger: trigger)
+    }
+
+    private func cancelDeferredFlush() {
+        deferredFlushTask?.cancel()
+        deferredFlushTask = nil
     }
 
     private func notifyOutboxDidChange() async {

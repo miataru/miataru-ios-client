@@ -53,3 +53,59 @@ Noted that the changelog had not been updated and emphasized that this must be r
 _**Agent**_
 
 Added the missing `miataru/CHANGELOG.md` entries for version 3.1.7 and created this `.specstory` history entry as required by `miataru/AGENTS.md`, then amended the existing commit so the changelog/history documentation is included with the code change.
+
+---
+
+_**User**_
+
+Reported that changing the server URL while queued updates were pending did not reliably resume delivery, and requested that the user choose whether queued updates should be sent to the new server or discarded.
+
+---
+
+_**Agent**_
+
+Implemented a server URL confirmation flow in Settings:
+
+- Server URL edits are committed through a draft field.
+- If pending location updates exist, Settings asks whether to send queued updates to the new server URL or discard them.
+- Sending retargets all pending outbox records to the chosen URL before flushing; discarding removes all queued records.
+- Added localized strings and settings/localization coverage.
+
+---
+
+_**User**_
+
+Pointed out the stale string-catalog key `explanation_show_history_days`.
+
+---
+
+_**Agent**_
+
+Removed the unused `explanation_show_history_days` string-catalog entry and verified no source references remain.
+
+---
+
+_**User**_
+
+Observed that queued updates seemed to drain only irregularly and in batches, suspected inconsistent server URLs inside the queue, and requested a Flush button below the queued-updates statistic when the queue is larger than one.
+
+---
+
+_**Agent**_
+
+Hardened and extended queued update delivery:
+
+- New updates appended behind pending outbox items now schedule a near-term deferred drain instead of waiting only for app/network/timer triggers.
+- Successful full batches schedule follow-up batches automatically.
+- Location status now shows a manual "Flush queued updates" button below the queued-updates statistic when more than one item is pending.
+- The manual flush drains all currently deliverable batches until the queue is empty or the head item hits a retryable error.
+- Server URL retargeting now rewrites all pending records and uses guarded head removal/increment operations, so an older in-flight send cannot remove a queue item that has since been retargeted.
+- Added tests for deferred drain scheduling, manual full-batch flush, changed-server retargeting for mixed queued URLs, and retargeting while an old send is in flight.
+- Updated `CHANGELOG.md`, `DEVELOPMENT.md`, `documentation/test-katalog.md`, and `documentation/test-gap-matrix.md`.
+
+Validation performed:
+
+- `jq empty miataru/miataru/Assets/Localizable.xcstrings`
+- `git diff --check`
+- `rg "explanation_show_history_days"`
+- `xcodebuild test -project miataru/miataru.xcodeproj -scheme miataru -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' -only-testing:miataruTests/LocationUpdateDeliveryCoordinatorTests -only-testing:miataruTests/SettingsConfigurationTests`

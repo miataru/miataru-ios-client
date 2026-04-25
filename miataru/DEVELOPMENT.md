@@ -171,7 +171,10 @@ miataru/
   - queued items keep the original `UpdateLocationPayload`, including the event timestamp from the location update; retry sends must not rewrite metadata to the later send time
   - user controls live in Advanced Options > App behavior and are persisted via `location_update_outbox_retention_mode` and `location_update_outbox_max_items`
   - Settings > location status shows the current pending outbox count as "Queued location updates"
-  - flush triggers: app active, network recovery, periodic timer (`60s`) while pending items exist
+  - when more than one queued update is pending, Settings > location status offers a manual flush button that drains all currently deliverable batches until the queue is empty or the head hits a retryable error
+  - when the Miataru server URL changes while items are pending, Settings asks whether queued updates should be sent to the new server URL or discarded
+  - choosing the new server URL retargets every pending queue item before flushing; if an older in-flight send completes afterward, it must not remove the retargeted queue record
+  - flush triggers: app active, network recovery, deferred drain after appending behind pending items, continuation after full batches, manual full flush, and periodic timer (`60s`) while pending items exist
 - Widget extension intentionally keeps direct client calls without retries.
 
 ### Debug Commands
