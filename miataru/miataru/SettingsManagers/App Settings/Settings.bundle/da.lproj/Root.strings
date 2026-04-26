@@ -7,6 +7,7 @@
 "30minutes" = "30 minutter";
 "1hour" = "1 time";
 "2hours" = "2 timer";
+"4hours" = "4 timer";
 "6hours" = "6 timer";
 "12hours" = "12 timer";
 "24hours" = "24 timer";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "Balanceret (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "Strømbesparelse (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "Minimal (50m/40m)";
+"background_location_updates_section_title" = "Baggrundsopdateringer";
+"frequent_background_location_updates_title" = "Hyppigere baggrundsopdateringer";
+"background_location_distance_filter_title" = "Bevægelsestærskel";
+"frequent_background_location_updates_duration_title" = "Deaktiver automatisk efter";
+"frequent_background_location_updates_duration_unlimited" = "Aldrig";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-adfærd";
 "deactivate_device_lock" = "Deaktiver enhedslås";

@@ -71,7 +71,7 @@ struct iPhone_LocationStatusView: View {
             
             // Hinweistext für Hintergrund-Tracking
             if isInBackground {
-                Text(NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior"))
+                Text(backgroundLocationHintText)
                     .font(.caption2)
                     .foregroundColor(.gray)
                     .padding(.bottom, 4)
@@ -351,6 +351,10 @@ struct iPhone_LocationStatusView: View {
     // Tracking-Modus-Text
     private var trackingModeText: String {
         if isInBackground {
+            if settings.frequentBackgroundLocationUpdatesEnabled {
+                let format = NSLocalizedString("tracking_mode_frequent_background_updates_format", comment: "Tracking mode text for frequent background updates")
+                return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+            }
             return NSLocalizedString("Tracking mode: Battery saving (only significant movements)", comment: "Tracking mode text for background mode")
         } else {
             return NSLocalizedString("Tracking mode: Live (GPS)", comment: "Tracking mode text for foreground mode")
@@ -360,6 +364,14 @@ struct iPhone_LocationStatusView: View {
     // Ist die App im Hintergrund?
     private var isInBackground: Bool {
         UIApplication.shared.applicationState == .background
+    }
+
+    private var backgroundLocationHintText: String {
+        if settings.frequentBackgroundLocationUpdatesEnabled {
+            let format = NSLocalizedString("frequent_background_location_updates_active_hint_format", comment: "Hint shown when frequent background updates are active")
+            return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        }
+        return NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior")
     }
     
     // Log der letzten Updates (Dummy-Implementierung, sollte mit echten Daten aus LocationManager ersetzt werden)
@@ -570,6 +582,7 @@ struct PermissionStatusView: View {
 
 struct BackgroundStatusCard: View {
     @ObservedObject private var backgroundManager = LocationManager.shared
+    @ObservedObject private var settings = SettingsManager.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -596,6 +609,22 @@ struct BackgroundStatusCard: View {
                         .foregroundColor(.secondary)
                 }
             }
+
+            HStack {
+                Text(NSLocalizedString("background_tracking_mode_title", comment: "Label for current background tracking mode"))
+                Spacer()
+                Text(backgroundTrackingModeText)
+                    .foregroundColor(.secondary)
+            }
+
+            if settings.frequentBackgroundLocationUpdatesEnabled {
+                HStack {
+                    Text(NSLocalizedString("background_tracking_expires_at_label", comment: "Label for frequent background tracking expiration time"))
+                    Spacer()
+                    Text(backgroundTrackingExpirationText)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
         .padding()
         .background(Color(.systemGray6))
@@ -607,6 +636,25 @@ struct BackgroundStatusCard: View {
         formatter.dateStyle = .none
         formatter.timeStyle = .medium
         return formatter.string(from: date)
+    }
+
+    private var backgroundTrackingModeText: String {
+        if settings.frequentBackgroundLocationUpdatesEnabled {
+            let format = NSLocalizedString("background_tracking_mode_frequent_format", comment: "Background status text for frequent update mode")
+            return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        }
+        return NSLocalizedString("background_tracking_mode_significant_change", comment: "Background status text for significant-change mode")
+    }
+
+    private var backgroundTrackingExpirationText: String {
+        guard let expiresAt = settings.frequentBackgroundLocationUpdatesExpiresAt else {
+            return NSLocalizedString("background_tracking_expires_never", comment: "Frequent background tracking never expires")
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter.string(from: expiresAt)
     }
 }
 #Preview {

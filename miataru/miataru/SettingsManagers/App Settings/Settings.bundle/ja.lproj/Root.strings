@@ -7,6 +7,7 @@
 "30minutes" = "30分";
 "1hour" = "1時間";
 "2hours" = "2時間";
+"4hours" = "4時間";
 "6hours" = "6時間";
 "12hours" = "12時間";
 "24hours" = "24時間";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "バランス (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "省電力 (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "最小 (50m/40m)";
+"background_location_updates_section_title" = "バックグラウンド位置更新";
+"frequent_background_location_updates_title" = "より頻繁なバックグラウンド更新";
+"background_location_distance_filter_title" = "移動しきい値";
+"frequent_background_location_updates_duration_title" = "自動的に無効化するまで";
+"frequent_background_location_updates_duration_unlimited" = "なし";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "サーバーURL";
 "app_behaviour" = "アプリの動作";
 "deactivate_device_lock" = "デバイスロックを無効化";

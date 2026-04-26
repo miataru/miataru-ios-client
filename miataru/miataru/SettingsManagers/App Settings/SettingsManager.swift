@@ -76,6 +76,50 @@ class SettingsManager: ObservableObject {
     @Published var locationSensitivityLevel: Int {
         didSet { defaults.set(locationSensitivityLevel, forKey: SettingsKeys.locationSensitivityLevel) }
     }
+    @Published var frequentBackgroundLocationUpdatesEnabled: Bool {
+        didSet {
+            defaults.set(frequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+            if frequentBackgroundLocationUpdatesEnabled {
+                if !oldValue || frequentBackgroundLocationUpdatesExpiresAt == nil {
+                    refreshFrequentBackgroundLocationUpdatesExpiration()
+                }
+            } else if frequentBackgroundLocationUpdatesExpiresAt != nil {
+                frequentBackgroundLocationUpdatesExpiresAt = nil
+            }
+        }
+    }
+    @Published var frequentBackgroundLocationDistanceFilter: Int {
+        didSet {
+            let normalizedValue = FrequentBackgroundLocationDistanceFilter.normalized(frequentBackgroundLocationDistanceFilter)
+            if frequentBackgroundLocationDistanceFilter != normalizedValue {
+                frequentBackgroundLocationDistanceFilter = normalizedValue
+                return
+            }
+            defaults.set(String(frequentBackgroundLocationDistanceFilter), forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter)
+        }
+    }
+    @Published var frequentBackgroundLocationUpdateDuration: Int {
+        didSet {
+            let normalizedValue = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(frequentBackgroundLocationUpdateDuration)
+            if frequentBackgroundLocationUpdateDuration != normalizedValue {
+                frequentBackgroundLocationUpdateDuration = normalizedValue
+                return
+            }
+            defaults.set(String(frequentBackgroundLocationUpdateDuration), forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration)
+            if frequentBackgroundLocationUpdatesEnabled {
+                refreshFrequentBackgroundLocationUpdatesExpiration()
+            }
+        }
+    }
+    @Published var frequentBackgroundLocationUpdatesExpiresAt: Date? {
+        didSet {
+            if let frequentBackgroundLocationUpdatesExpiresAt {
+                defaults.set(frequentBackgroundLocationUpdatesExpiresAt, forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt)
+            } else {
+                defaults.removeObject(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt)
+            }
+        }
+    }
     @Published var autoRefreshDeviceList: Bool {
         didSet { defaults.set(autoRefreshDeviceList, forKey: SettingsKeys.autoRefreshDeviceList) }
     }
@@ -105,6 +149,10 @@ class SettingsManager: ObservableObject {
     var locationUpdateOutboxRetentionTimeToLive: TimeInterval? {
         let mode = LocationUpdateOutboxRetentionMode(rawValue: locationUpdateOutboxRetentionMode) ?? .twentyFourHours
         return mode.timeToLive
+    }
+
+    var frequentBackgroundLocationUpdateDurationMode: FrequentBackgroundLocationUpdateDuration {
+        FrequentBackgroundLocationUpdateDuration(rawValue: frequentBackgroundLocationUpdateDuration) ?? .fourHours
     }
 
     // Global toggle for pulsing animation on map markers
@@ -228,6 +276,10 @@ class SettingsManager: ObservableObject {
         self.historyNumberOfDays = Self.persistedInt(forKey: SettingsKeys.historyNumberOfDays, defaults: d, defaultValue: SettingsDefaultValues.historyNumberOfDays)
         self.locationActivityType = Self.persistedInt(forKey: SettingsKeys.locationActivityType, defaults: d, defaultValue: SettingsDefaultValues.locationActivityType)
         self.locationSensitivityLevel = Self.persistedInt(forKey: SettingsKeys.locationSensitivityLevel, defaults: d, defaultValue: SettingsDefaultValues.locationSensitivityLevel)
+        self.frequentBackgroundLocationUpdatesEnabled = d.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+        self.frequentBackgroundLocationDistanceFilter = FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
+        self.frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration))
+        self.frequentBackgroundLocationUpdatesExpiresAt = d.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date
         self.autoRefreshDeviceList = d.bool(forKey: SettingsKeys.autoRefreshDeviceList)
         self.unknownVisitorAlertsEnabled = d.bool(forKey: SettingsKeys.unknownVisitorAlertsEnabled)
         self.showCurrentSpeedOnMap = d.bool(forKey: SettingsKeys.showCurrentSpeedOnMap)
@@ -250,6 +302,46 @@ class SettingsManager: ObservableObject {
     // MARK: - Synchronize
     func synchronize() {
         defaults.synchronize()
+    }
+
+    func refreshFrequentBackgroundLocationUpdatesExpiration(now: Date = Date()) {
+        frequentBackgroundLocationUpdatesExpiresAt = frequentBackgroundLocationUpdateDurationMode.expirationDate(from: now)
+    }
+
+    func ensureFrequentBackgroundLocationUpdatesExpiration(now: Date = Date()) {
+        guard frequentBackgroundLocationUpdatesEnabled else {
+            if frequentBackgroundLocationUpdatesExpiresAt != nil {
+                frequentBackgroundLocationUpdatesExpiresAt = nil
+            }
+            return
+        }
+
+        if frequentBackgroundLocationUpdateDurationMode == .unlimited {
+            if frequentBackgroundLocationUpdatesExpiresAt != nil {
+                frequentBackgroundLocationUpdatesExpiresAt = nil
+            }
+            return
+        }
+
+        if let expiresAt = frequentBackgroundLocationUpdatesExpiresAt {
+            if expiresAt <= now {
+                frequentBackgroundLocationUpdatesEnabled = false
+            }
+        } else {
+            refreshFrequentBackgroundLocationUpdatesExpiration(now: now)
+        }
+    }
+
+    @discardableResult
+    func disableExpiredFrequentBackgroundLocationUpdatesIfNeeded(now: Date = Date()) -> Bool {
+        guard frequentBackgroundLocationUpdatesEnabled,
+              let expiresAt = frequentBackgroundLocationUpdatesExpiresAt,
+              expiresAt <= now else {
+            return false
+        }
+
+        frequentBackgroundLocationUpdatesEnabled = false
+        return true
     }
 
     @MainActor

@@ -44,6 +44,30 @@ struct iPhone_AdvancedOptionsView: View {
 
                     SettingsDescriptionText("location_sensitivity_explanation")
                 }
+
+                Section(header: Text("background_location_updates_section_title")) {
+                    Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                        .accessibilityIdentifier("settings_frequent_background_location_updates_toggle")
+                    SettingsDescriptionText("frequent_background_location_updates_explanation")
+
+                    if settings.frequentBackgroundLocationUpdatesEnabled {
+                        SettingsWarningText("frequent_background_location_updates_battery_warning")
+
+                        Picker("background_location_distance_filter_title", selection: $settings.frequentBackgroundLocationDistanceFilter) {
+                            Text("100m").tag(100)
+                            Text("50m").tag(50)
+                            Text("25m").tag(25)
+                        }
+
+                        Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
+                            Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
+                            Text("4hours").tag(FrequentBackgroundLocationUpdateDuration.fourHours.rawValue)
+                            Text("12hours").tag(FrequentBackgroundLocationUpdateDuration.twelveHours.rawValue)
+                            Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
+                            Text("frequent_background_location_updates_duration_unlimited").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
+                        }
+                    }
+                }
             }
 
             Section(header: Text("app_behaviour")) {

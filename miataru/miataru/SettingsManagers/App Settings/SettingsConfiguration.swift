@@ -26,6 +26,10 @@ enum SettingsKeys {
     static let historyNumberOfDays = "history_number_of_days"
     static let locationActivityType = "location_activity_type"
     static let locationSensitivityLevel = "location_sensitivity_level"
+    static let frequentBackgroundLocationUpdatesEnabled = "frequent_background_location_updates_enabled"
+    static let frequentBackgroundLocationDistanceFilter = "frequent_background_location_distance_filter"
+    static let frequentBackgroundLocationUpdateDuration = "frequent_background_location_update_duration"
+    static let frequentBackgroundLocationUpdatesExpiresAt = "frequent_background_location_updates_expires_at"
     static let autoRefreshDeviceList = "auto_refresh_device_list"
     static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
     static let showCurrentSpeedOnMap = "show_current_speed_on_map"
@@ -62,6 +66,9 @@ enum SettingsDefaultValues {
     static let historyNumberOfDays = 10_000_000
     static let locationActivityType = 0
     static let locationSensitivityLevel = 2
+    static let frequentBackgroundLocationUpdatesEnabled = false
+    static let frequentBackgroundLocationDistanceFilter = 100
+    static let frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.fourHours.rawValue
     static let autoRefreshDeviceList = true
     static let unknownVisitorAlertsEnabled = false
     static let showCurrentSpeedOnMap = true
@@ -92,6 +99,9 @@ enum SettingsDefaultValues {
         SettingsKeys.historyNumberOfDays: String(historyNumberOfDays),
         SettingsKeys.locationActivityType: locationActivityType,
         SettingsKeys.locationSensitivityLevel: locationSensitivityLevel,
+        SettingsKeys.frequentBackgroundLocationUpdatesEnabled: frequentBackgroundLocationUpdatesEnabled,
+        SettingsKeys.frequentBackgroundLocationDistanceFilter: String(frequentBackgroundLocationDistanceFilter),
+        SettingsKeys.frequentBackgroundLocationUpdateDuration: String(frequentBackgroundLocationUpdateDuration),
         SettingsKeys.autoRefreshDeviceList: autoRefreshDeviceList,
         SettingsKeys.unknownVisitorAlertsEnabled: unknownVisitorAlertsEnabled,
         SettingsKeys.showCurrentSpeedOnMap: showCurrentSpeedOnMap,
@@ -124,6 +134,35 @@ enum LocationUpdateOutboxRetentionMode: Int {
         case .unlimited:
             return nil
         }
+    }
+}
+
+enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable {
+    case unlimited = 0
+    case oneHour = 3_600
+    case fourHours = 14_400
+    case twelveHours = 43_200
+    case twentyFourHours = 86_400
+
+    var timeInterval: TimeInterval? {
+        self == .unlimited ? nil : TimeInterval(rawValue)
+    }
+
+    func expirationDate(from startDate: Date) -> Date? {
+        guard let timeInterval else { return nil }
+        return startDate.addingTimeInterval(timeInterval)
+    }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundLocationUpdateDuration
+    }
+}
+
+enum FrequentBackgroundLocationDistanceFilter {
+    static let allowedValues = [100, 50, 25]
+
+    static func normalized(_ value: Int) -> Int {
+        allowedValues.contains(value) ? value : SettingsDefaultValues.frequentBackgroundLocationDistanceFilter
     }
 }
 

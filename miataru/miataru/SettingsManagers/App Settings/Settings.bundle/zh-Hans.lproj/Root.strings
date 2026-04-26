@@ -7,6 +7,7 @@
 "30minutes" = "30 分钟";
 "1hour" = "1 小时";
 "2hours" = "2 小时";
+"4hours" = "4 小时";
 "6hours" = "6 小时";
 "12hours" = "12 小时";
 "24hours" = "24 小时";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "平衡 (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "省电 (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "最低 (50m/40m)";
+"background_location_updates_section_title" = "后台位置更新";
+"frequent_background_location_updates_title" = "更频繁的后台更新";
+"background_location_distance_filter_title" = "移动阈值";
+"frequent_background_location_updates_duration_title" = "自动停用时间";
+"frequent_background_location_updates_duration_unlimited" = "永不";
+"100m" = "100 米";
+"50m" = "50 米";
+"25m" = "25 米";
 "server_url" = "Miataru 服务器 URL";
 "app_behaviour" = "应用行为";
 "deactivate_device_lock" = "禁用设备锁定";

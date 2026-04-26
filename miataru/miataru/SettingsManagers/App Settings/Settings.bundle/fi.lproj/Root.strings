@@ -7,6 +7,7 @@
 "30minutes" = "30 minuuttia";
 "1hour" = "1 tunti";
 "2hours" = "2 tuntia";
+"4hours" = "4 tuntia";
 "6hours" = "6 tuntia";
 "12hours" = "12 tuntia";
 "24hours" = "24 tuntia";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "Tasapainoinen (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "Virransäästö (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "Minimi (50m/40m)";
+"background_location_updates_section_title" = "Taustasijaintipäivitykset";
+"frequent_background_location_updates_title" = "Tiheämmät taustapäivitykset";
+"background_location_distance_filter_title" = "Liikkumiskynnys";
+"frequent_background_location_updates_duration_title" = "Poista automaattisesti käytöstä ajan jälkeen";
+"frequent_background_location_updates_duration_unlimited" = "Ei koskaan";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "Miataru-palvelimen URL";
 "app_behaviour" = "Sovelluksen toiminta";
 "deactivate_device_lock" = "Poista laitteen lukitus käytöstä";

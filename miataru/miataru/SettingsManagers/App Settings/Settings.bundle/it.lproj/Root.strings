@@ -7,6 +7,7 @@
 "30minutes" = "30 minuti";
 "1hour" = "1 ora";
 "2hours" = "2 ore";
+"4hours" = "4 ore";
 "6hours" = "6 ore";
 "12hours" = "12 ore";
 "24hours" = "24 ore";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "Bilanciato (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "Risparmio batteria (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "Minimo (50m/40m)";
+"background_location_updates_section_title" = "Aggiornamenti posizione in background";
+"frequent_background_location_updates_title" = "Aggiornamenti in background più frequenti";
+"background_location_distance_filter_title" = "Soglia di movimento";
+"frequent_background_location_updates_duration_title" = "Disattiva automaticamente dopo";
+"frequent_background_location_updates_duration_unlimited" = "Mai";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "URL server Miataru";
 "app_behaviour" = "Comportamento dell'app";
 "deactivate_device_lock" = "Disattiva blocco dispositivo";

@@ -7,6 +7,7 @@
 "30minutes" = "30 minutes";
 "1hour" = "1 hour";
 "2hours" = "2 hours";
+"4hours" = "4 hours";
 "6hours" = "6 hours";
 "12hours" = "12 hours";
 "24hours" = "24 hours";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "Balanced (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "Battery saver (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "Minimal (50m/40m)";
+"background_location_updates_section_title" = "Background location updates";
+"frequent_background_location_updates_title" = "More frequent background updates";
+"background_location_distance_filter_title" = "Movement threshold";
+"frequent_background_location_updates_duration_title" = "Automatically disable after";
+"frequent_background_location_updates_duration_unlimited" = "Never";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "Miataru Server URL";
 "app_behaviour" = "App behavior";
 "deactivate_device_lock" = "Deactivate device lock";

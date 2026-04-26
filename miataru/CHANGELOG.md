@@ -1,4 +1,9 @@
 version 3.1.7
+- Added an opt-in frequent background location-update mode in Advanced Options, keeping significant-change monitoring as the unchanged default when the user does not enable it.
+- Added configurable frequent-background distance presets (100 m default, 50 m, 25 m) and auto-disable durations (1 hour, 4 hours default, 12 hours, 24 hours, never), with automatic fallback to significant-change monitoring after expiry.
+- Added localized red battery-usage warning text while frequent background updates are enabled, plus background-mode/expiry visibility in the location-status view.
+- Preserved frequent-background update settings during DeviceKey recovery/reset flows and added regression coverage for defaults, localization parity, value normalization, expiry behavior, and default significant-change configuration.
+- Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 1 to 2.
 - Fixed offline `UpdateLocation` delivery so new updates are queued behind already pending outbox items and retried in FIFO order without replacing the original event payload metadata.
 - Added a location-status statistic for queued location updates that still need to be sent.
 - Added Advanced Options controls for the unsent location-update queue retention and capacity, keeping the default at 24 hours / 500 updates while allowing longer retention, unlimited retention, and higher caps.

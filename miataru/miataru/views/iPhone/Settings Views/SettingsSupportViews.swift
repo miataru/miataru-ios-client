@@ -24,6 +24,21 @@ struct SettingsDescriptionText: View {
     }
 }
 
+struct SettingsWarningText: View {
+    let key: LocalizedStringKey
+
+    init(_ key: LocalizedStringKey) {
+        self.key = key
+    }
+
+    var body: some View {
+        Text(key)
+            .font(.caption)
+            .foregroundColor(.red)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 struct AllowedDeviceListSettingsContent: View {
     @ObservedObject private var settings = SettingsManager.shared
     @State private var isActivatingAllowedDeviceList = false

@@ -573,6 +573,10 @@ struct iPhone_DeviceKeySheetView: View {
             historyNumberOfDays: settings.historyNumberOfDays,
             locationActivityType: settings.locationActivityType,
             locationSensitivityLevel: settings.locationSensitivityLevel,
+            frequentBackgroundLocationUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentBackgroundLocationDistanceFilter: settings.frequentBackgroundLocationDistanceFilter,
+            frequentBackgroundLocationUpdateDuration: settings.frequentBackgroundLocationUpdateDuration,
+            frequentBackgroundLocationUpdatesExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
             autoRefreshDeviceList: settings.autoRefreshDeviceList,
             unknownVisitorAlertsEnabled: settings.unknownVisitorAlertsEnabled,
             unknownVisitorAlertsPermissionDenied: settings.unknownVisitorAlertsPermissionDenied,
@@ -615,6 +619,10 @@ struct iPhone_DeviceKeySheetView: View {
         assignIfChanged(\.historyNumberOfDays, snapshot.historyNumberOfDays)
         assignIfChanged(\.locationActivityType, snapshot.locationActivityType)
         assignIfChanged(\.locationSensitivityLevel, snapshot.locationSensitivityLevel)
+        assignIfChanged(\.frequentBackgroundLocationUpdatesEnabled, snapshot.frequentBackgroundLocationUpdatesEnabled)
+        assignIfChanged(\.frequentBackgroundLocationDistanceFilter, snapshot.frequentBackgroundLocationDistanceFilter)
+        assignIfChanged(\.frequentBackgroundLocationUpdateDuration, snapshot.frequentBackgroundLocationUpdateDuration)
+        assignIfChanged(\.frequentBackgroundLocationUpdatesExpiresAt, snapshot.frequentBackgroundLocationUpdatesExpiresAt)
         assignIfChanged(\.autoRefreshDeviceList, snapshot.autoRefreshDeviceList)
         assignIfChanged(\.unknownVisitorAlertsEnabled, snapshot.unknownVisitorAlertsEnabled)
         assignIfChanged(\.unknownVisitorAlertsPermissionDenied, snapshot.unknownVisitorAlertsPermissionDenied)
@@ -875,6 +883,10 @@ private struct SettingsSnapshot {
     let historyNumberOfDays: Int
     let locationActivityType: Int
     let locationSensitivityLevel: Int
+    let frequentBackgroundLocationUpdatesEnabled: Bool
+    let frequentBackgroundLocationDistanceFilter: Int
+    let frequentBackgroundLocationUpdateDuration: Int
+    let frequentBackgroundLocationUpdatesExpiresAt: Date?
     let autoRefreshDeviceList: Bool
     let unknownVisitorAlertsEnabled: Bool
     let unknownVisitorAlertsPermissionDenied: Bool

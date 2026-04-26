@@ -9,6 +9,7 @@
 
 import Testing
 import Foundation
+import CoreLocation
 @testable import miataru
 
 struct SettingsConfigurationTests {
@@ -63,6 +64,20 @@ struct SettingsConfigurationTests {
             "activity_type_accuracy_explanation",
             "location_sensitivity_title",
             "location_sensitivity_explanation",
+            "background_location_updates_section_title",
+            "frequent_background_location_updates_title",
+            "frequent_background_location_updates_explanation",
+            "frequent_background_location_updates_battery_warning",
+            "background_location_distance_filter_title",
+            "frequent_background_location_updates_duration_title",
+            "frequent_background_location_updates_duration_unlimited",
+            "frequent_background_location_updates_active_hint_format",
+            "tracking_mode_frequent_background_updates_format",
+            "background_tracking_mode_title",
+            "background_tracking_expires_at_label",
+            "background_tracking_mode_frequent_format",
+            "background_tracking_mode_significant_change",
+            "background_tracking_expires_never",
             "location_track",
             "explanation_location_track",
             "save_location_history_to_server",
@@ -154,6 +169,15 @@ struct SettingsConfigurationTests {
             "activity_type_fitness",
             "activity_type_automotive",
             "location_sensitivity_title",
+            "background_location_updates_section_title",
+            "frequent_background_location_updates_title",
+            "background_location_distance_filter_title",
+            "frequent_background_location_updates_duration_title",
+            "frequent_background_location_updates_duration_unlimited",
+            "4hours",
+            "100m",
+            "50m",
+            "25m",
             "server_url",
             "app_behaviour",
             "deactivate_device_lock",
@@ -214,6 +238,9 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.trackAndReportLocation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.locationActivityType] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.locationSensitivityLevel] as? String == "2")
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdatesEnabled] as? Bool == false)
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdateDuration] as? String == "14400")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.preventScreenRotation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.pulsingMapMarkers] as? Bool == true)
@@ -232,6 +259,46 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.navigationTransportType] as? String == "2")
         #expect(defaultsByKey[SettingsKeys.automaticRouteUpdateDuringNavigation] as? Bool == true)
         #expect(defaultsByKey[SettingsKeys.showRouteProgress] as? Bool == true)
+    }
+
+    @Test("Frequent background location update settings normalize and expire as expected")
+    func frequentBackgroundLocationUpdateSettingsNormalizeAndExpire() {
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(100) == 100)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(50) == 50)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(25) == 25)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(10) == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
+
+        #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue) == 3_600)
+        #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundLocationUpdateDuration)
+
+        let startDate = Date(timeIntervalSince1970: 1_000)
+        #expect(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: startDate) == startDate.addingTimeInterval(14_400))
+        #expect(FrequentBackgroundLocationUpdateDuration.unlimited.expirationDate(from: startDate) == nil)
+    }
+
+    @Test("Background location configuration preserves significant-change default")
+    func backgroundLocationConfigurationPreservesSignificantChangeDefault() {
+        let defaultConfiguration = LocationManager.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 25
+        )
+        #expect(defaultConfiguration.usesSignificantChangeMonitoring)
+        #expect(defaultConfiguration.distanceFilter == kCLDistanceFilterNone)
+
+        let frequentConfiguration = LocationManager.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50
+        )
+        #expect(!frequentConfiguration.usesSignificantChangeMonitoring)
+        #expect(frequentConfiguration.distanceFilter == 50)
+        #expect(frequentConfiguration.desiredAccuracy == kCLLocationAccuracyNearestTenMeters)
+
+        let normalizedConfiguration = LocationManager.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 10
+        )
+        #expect(!normalizedConfiguration.usesSignificantChangeMonitoring)
+        #expect(normalizedConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
     }
 
     private func loadStringCatalog() throws -> [String: Any] {

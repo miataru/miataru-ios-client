@@ -7,6 +7,7 @@
 "30minutes" = "30 minuten";
 "1hour" = "1 uur";
 "2hours" = "2 uur";
+"4hours" = "4 uur";
 "6hours" = "6 uur";
 "12hours" = "12 uur";
 "24hours" = "24 uur";
@@ -22,6 +23,14 @@
 "location_tracking_update_sensitivity_balanced_short" = "Gebalanceerd (10m/10m)";
 "location_tracking_update_sensitivity_battery_saver_short" = "Batterijbesparing (25m/20m)";
 "location_tracking_update_sensitivity_minimal_short" = "Minimaal (50m/40m)";
+"background_location_updates_section_title" = "Achtergrondlocatie-updates";
+"frequent_background_location_updates_title" = "Frequentere achtergrondupdates";
+"background_location_distance_filter_title" = "Bewegingsdrempel";
+"frequent_background_location_updates_duration_title" = "Automatisch uitschakelen na";
+"frequent_background_location_updates_duration_unlimited" = "Nooit";
+"100m" = "100 m";
+"50m" = "50 m";
+"25m" = "25 m";
 "server_url" = "Miataru-server-URL";
 "app_behaviour" = "App-gedrag";
 "deactivate_device_lock" = "Apparaatvergrendeling uitschakelen";
