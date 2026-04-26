@@ -539,13 +539,15 @@ final class LocationManager: NSObject, ObservableObject {
             self.serverUpdateStatus = .failed("Invalid location values")
             return
         }
+        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: UIApplication.shared.applicationState)
         self.serverUpdateStatus = .updating
         Task {
             let result = await locationUpdateDeliveryCoordinator.submit(
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: settings.saveLocationHistoryOnServer,
-                retentionTime: settings.locationDataRetentionTime
+                retentionTime: settings.locationDataRetentionTime,
+                deliveryDelay: deliveryDelay
             )
 
             switch result {
@@ -570,6 +572,14 @@ final class LocationManager: NSObject, ObservableObject {
                 }
             }
         }
+    }
+
+    private func frequentBackgroundLocationDeliveryDelay(for applicationState: UIApplication.State) -> TimeInterval? {
+        guard applicationState != .active,
+              settings.frequentBackgroundLocationUpdatesEnabled else {
+            return nil
+        }
+        return settings.frequentBackgroundLocationDeliveryModeSelection.delay
     }
 
     @MainActor

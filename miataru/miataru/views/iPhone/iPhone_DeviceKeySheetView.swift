@@ -577,6 +577,7 @@ struct iPhone_DeviceKeySheetView: View {
             frequentBackgroundLocationDistanceFilter: settings.frequentBackgroundLocationDistanceFilter,
             frequentBackgroundLocationUpdateDuration: settings.frequentBackgroundLocationUpdateDuration,
             frequentBackgroundLocationUpdatesExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
+            frequentBackgroundLocationDeliveryMode: settings.frequentBackgroundLocationDeliveryMode,
             autoRefreshDeviceList: settings.autoRefreshDeviceList,
             unknownVisitorAlertsEnabled: settings.unknownVisitorAlertsEnabled,
             unknownVisitorAlertsPermissionDenied: settings.unknownVisitorAlertsPermissionDenied,
@@ -623,6 +624,7 @@ struct iPhone_DeviceKeySheetView: View {
         assignIfChanged(\.frequentBackgroundLocationDistanceFilter, snapshot.frequentBackgroundLocationDistanceFilter)
         assignIfChanged(\.frequentBackgroundLocationUpdateDuration, snapshot.frequentBackgroundLocationUpdateDuration)
         assignIfChanged(\.frequentBackgroundLocationUpdatesExpiresAt, snapshot.frequentBackgroundLocationUpdatesExpiresAt)
+        assignIfChanged(\.frequentBackgroundLocationDeliveryMode, snapshot.frequentBackgroundLocationDeliveryMode)
         assignIfChanged(\.autoRefreshDeviceList, snapshot.autoRefreshDeviceList)
         assignIfChanged(\.unknownVisitorAlertsEnabled, snapshot.unknownVisitorAlertsEnabled)
         assignIfChanged(\.unknownVisitorAlertsPermissionDenied, snapshot.unknownVisitorAlertsPermissionDenied)
@@ -887,6 +889,7 @@ private struct SettingsSnapshot {
     let frequentBackgroundLocationDistanceFilter: Int
     let frequentBackgroundLocationUpdateDuration: Int
     let frequentBackgroundLocationUpdatesExpiresAt: Date?
+    let frequentBackgroundLocationDeliveryMode: Int
     let autoRefreshDeviceList: Bool
     let unknownVisitorAlertsEnabled: Bool
     let unknownVisitorAlertsPermissionDenied: Bool

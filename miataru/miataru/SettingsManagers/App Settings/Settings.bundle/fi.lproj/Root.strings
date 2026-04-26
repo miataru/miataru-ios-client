@@ -28,6 +28,12 @@
 "background_location_distance_filter_title" = "Liikkumiskynnys";
 "frequent_background_location_updates_duration_title" = "Poista automaattisesti käytöstä ajan jälkeen";
 "frequent_background_location_updates_duration_unlimited" = "Ei koskaan";
+"frequent_background_location_delivery_mode_title" = "Lähetä palvelimelle";
+"frequent_background_location_delivery_immediate" = "Heti";
+"frequent_background_location_delivery_30s" = "30 sekunnin välein";
+"frequent_background_location_delivery_1m" = "Minuutin välein";
+"frequent_background_location_delivery_5m" = "5 minuutin välein";
+"frequent_background_location_delivery_10m" = "10 minuutin välein";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

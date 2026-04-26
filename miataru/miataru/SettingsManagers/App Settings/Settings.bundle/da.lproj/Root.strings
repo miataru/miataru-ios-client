@@ -28,6 +28,12 @@
 "background_location_distance_filter_title" = "Bevægelsestærskel";
 "frequent_background_location_updates_duration_title" = "Deaktiver automatisk efter";
 "frequent_background_location_updates_duration_unlimited" = "Aldrig";
+"frequent_background_location_delivery_mode_title" = "Send til server";
+"frequent_background_location_delivery_immediate" = "Med det samme";
+"frequent_background_location_delivery_30s" = "Hvert 30. sekund";
+"frequent_background_location_delivery_1m" = "Hvert minut";
+"frequent_background_location_delivery_5m" = "Hvert 5. minut";
+"frequent_background_location_delivery_10m" = "Hvert 10. minut";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

@@ -69,8 +69,27 @@ struct SettingsConfigurationTests {
             "frequent_background_location_updates_explanation",
             "frequent_background_location_updates_battery_warning",
             "background_location_distance_filter_title",
+            "background_location_distance_filter_100m_explanation",
+            "background_location_distance_filter_50m_explanation",
+            "background_location_distance_filter_25m_explanation",
             "frequent_background_location_updates_duration_title",
             "frequent_background_location_updates_duration_unlimited",
+            "frequent_background_location_duration_1h_explanation",
+            "frequent_background_location_duration_4h_explanation",
+            "frequent_background_location_duration_12h_explanation",
+            "frequent_background_location_duration_24h_explanation",
+            "frequent_background_location_duration_never_explanation",
+            "frequent_background_location_delivery_mode_title",
+            "frequent_background_location_delivery_immediate",
+            "frequent_background_location_delivery_30s",
+            "frequent_background_location_delivery_1m",
+            "frequent_background_location_delivery_5m",
+            "frequent_background_location_delivery_10m",
+            "frequent_background_location_delivery_immediate_explanation",
+            "frequent_background_location_delivery_30s_explanation",
+            "frequent_background_location_delivery_1m_explanation",
+            "frequent_background_location_delivery_5m_explanation",
+            "frequent_background_location_delivery_10m_explanation",
             "frequent_background_location_updates_active_hint_format",
             "tracking_mode_frequent_background_updates_format",
             "background_tracking_mode_title",
@@ -174,6 +193,12 @@ struct SettingsConfigurationTests {
             "background_location_distance_filter_title",
             "frequent_background_location_updates_duration_title",
             "frequent_background_location_updates_duration_unlimited",
+            "frequent_background_location_delivery_mode_title",
+            "frequent_background_location_delivery_immediate",
+            "frequent_background_location_delivery_30s",
+            "frequent_background_location_delivery_1m",
+            "frequent_background_location_delivery_5m",
+            "frequent_background_location_delivery_10m",
             "4hours",
             "100m",
             "50m",
@@ -241,6 +266,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdatesEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdateDuration] as? String == "14400")
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDeliveryMode] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.preventScreenRotation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.pulsingMapMarkers] as? Bool == true)
@@ -274,6 +300,11 @@ struct SettingsConfigurationTests {
         let startDate = Date(timeIntervalSince1970: 1_000)
         #expect(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: startDate) == startDate.addingTimeInterval(14_400))
         #expect(FrequentBackgroundLocationUpdateDuration.unlimited.expirationDate(from: startDate) == nil)
+
+        #expect(FrequentBackgroundLocationDeliveryMode.immediate.delay == nil)
+        #expect(FrequentBackgroundLocationDeliveryMode.everyThirtySeconds.delay == 30)
+        #expect(FrequentBackgroundLocationDeliveryMode.normalizedRawValue(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue) == 600)
+        #expect(FrequentBackgroundLocationDeliveryMode.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundLocationDeliveryMode)
     }
 
     @Test("Background location configuration preserves significant-change default")

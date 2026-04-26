@@ -625,6 +625,70 @@
         }
       }
     },
+    "4hours" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 timer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 Stunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 hours"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 horas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 tuntia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 heures"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 ore"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4時間"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 uur"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 小时"
+          }
+        }
+      }
+    },
     "5km" : {
       "localizations" : {
         "da" : {
@@ -1265,6 +1329,70 @@
         }
       }
     },
+    "25m" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 m"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 米"
+          }
+        }
+      }
+    },
     "30minutes" : {
       "localizations" : {
         "da" : {
@@ -1457,6 +1585,70 @@
         }
       }
     },
+    "50m" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 m"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 米"
+          }
+        }
+      }
+    },
     "60s" : {
       "localizations" : {
         "da" : {
@@ -1645,198 +1837,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "100 米"
-          }
-        }
-      }
-    },
-    "4hours" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 小时"
-          }
-        }
-      }
-    },
-    "50m" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 m"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "50 米"
-          }
-        }
-      }
-    },
-    "25m" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 m"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "25 米"
           }
         }
       }
@@ -4784,262 +4784,197 @@
         }
       }
     },
-    "background_location_updates_section_title" : {
-      "comment" : "Section title for background location update settings",
+    "background_location_distance_filter_25m_explanation" : {
+      "comment" : "Explanation for 25 m frequent background movement threshold",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Baggrundsopdateringer"
+            "value" : "Mest responsiv. Accepterer opdateringer efter ca. 25 m og kan bruge mest batteri."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hintergrund-Standortupdates"
+            "value" : "Am reaktionsschnellsten. Akzeptiert Updates nach etwa 25 m und kann am meisten Akku verbrauchen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Background location updates"
+            "value" : "Most responsive. Accepts updates after about 25 m and can use the most battery."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizaciones de ubicación en segundo plano"
+            "value" : "El más sensible. Acepta actualizaciones tras unos 25 m y puede consumir la mayor cantidad de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taustasijaintipäivitykset"
+            "value" : "Reagoi nopeimmin. Hyväksyy päivitykset noin 25 m jälkeen ja voi kuluttaa eniten akkua."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mises à jour de position en arrière-plan"
+            "value" : "Le plus réactif. Accepte des mises à jour après environ 25 m et peut consommer le plus de batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiornamenti posizione in background"
+            "value" : "Massima reattività. Accetta aggiornamenti dopo circa 25 m e può consumare più batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックグラウンド位置更新"
+            "value" : "最も反応が速い設定です。約25 mの移動後に更新を受け入れ、最もバッテリーを消費する場合があります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Achtergrondlocatie-updates"
+            "value" : "Reageert het snelst. Accepteert updates na ongeveer 25 m en kan de meeste batterij gebruiken."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后台位置更新"
+            "value" : "响应最快。移动约 25 米后接受更新，可能消耗最多电量。"
           }
         }
       }
     },
-    "frequent_background_location_updates_title" : {
-      "comment" : "Toggle title for frequent background location updates",
+    "background_location_distance_filter_50m_explanation" : {
+      "comment" : "Explanation for 50 m frequent background movement threshold",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer"
+            "value" : "Mere responsiv. Accepterer opdateringer efter ca. 50 m og kan bruge mere batteri."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates"
+            "value" : "Reaktionsschneller. Akzeptiert Updates nach etwa 50 m und kann mehr Akku verbrauchen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "More frequent background updates"
+            "value" : "More responsive. Accepts updates after about 50 m and can use more battery."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizaciones en segundo plano más frecuentes"
+            "value" : "Más sensible. Acepta actualizaciones tras unos 50 m y puede consumir más batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset"
+            "value" : "Reagoi nopeammin. Hyväksyy päivitykset noin 50 m jälkeen ja voi kuluttaa enemmän akkua."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mises à jour en arrière-plan plus fréquentes"
+            "value" : "Plus réactif. Accepte des mises à jour après environ 50 m et peut consommer plus de batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiornamenti in background più frequenti"
+            "value" : "Più reattivo. Accetta aggiornamenti dopo circa 50 m e può consumare più batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "より頻繁なバックグラウンド更新"
+            "value" : "より反応が速い設定です。約50 mの移動後に更新を受け入れ、より多くのバッテリーを消費する場合があります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates"
+            "value" : "Reageert sneller. Accepteert updates na ongeveer 50 m en kan meer batterij gebruiken."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更频繁的后台更新"
+            "value" : "响应更快。移动约 50 米后接受更新，可能会消耗更多电量。"
           }
         }
       }
     },
-    "frequent_background_location_updates_explanation" : {
-      "comment" : "Explanation for frequent background location updates",
+    "background_location_distance_filter_100m_explanation" : {
+      "comment" : "Explanation for 100 m frequent background movement threshold",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Når denne tilstand er slået fra, bruger Miataru den nuværende batteribesparende significant-change-tilstand. Når den er slået til, forsøger appen at levere opdateringer efter den valgte bevægelsestærskel."
+            "value" : "Standard. Accepterer hyppigere baggrundsopdateringer efter ca. 100 m bevægelse og er den mest batterivenlige hyppige tilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn diese Option ausgeschaltet ist, nutzt Miataru den bisherigen energiesparenden Significant-Change-Modus. Wenn sie eingeschaltet ist, versucht die App, Updates ab der gewählten Bewegungsschwelle zu liefern."
+            "value" : "Standard. Akzeptiert häufigere Hintergrund-Updates nach etwa 100 m Bewegung und ist der akkusparendste häufigere Modus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When this is off, Miataru keeps using the current battery-saving significant-change mode. When it is on, the app tries to deliver updates after the selected movement threshold."
+            "value" : "Default. Accepts frequent background updates after about 100 m of movement and is the most battery-friendly frequent mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cuando está desactivado, Miataru sigue usando el modo actual de ahorro de batería con cambios significativos. Cuando está activado, la app intenta entregar actualizaciones después del umbral de movimiento elegido."
+            "value" : "Predeterminado. Acepta actualizaciones frecuentes en segundo plano tras unos 100 m de movimiento y es el modo frecuente que ahorra más batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kun tämä on pois käytöstä, Miataru käyttää nykyistä akkua säästävää significant-change-tilaa. Kun se on käytössä, sovellus yrittää toimittaa päivityksiä valitun liikkumiskynnyksen jälkeen."
+            "value" : "Oletus. Hyväksyy tiheämmät taustapäivitykset noin 100 m liikkeen jälkeen ja on akkua säästävin tiheä tila."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lorsque cette option est désactivée, Miataru conserve le mode actuel économe en batterie basé sur les changements significatifs. Lorsqu’elle est activée, l’app essaie d’envoyer des mises à jour après le seuil de déplacement choisi."
+            "value" : "Par défaut. Accepte les mises à jour fréquentes en arrière-plan après environ 100 m de déplacement et reste le mode fréquent le plus économe."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quando questa opzione è disattivata, Miataru continua a usare l’attuale modalità a risparmio batteria basata sui cambiamenti significativi. Quando è attiva, l’app prova a inviare aggiornamenti dopo la soglia di movimento scelta."
+            "value" : "Predefinito. Accetta aggiornamenti frequenti in background dopo circa 100 m di movimento ed è la modalità frequente più efficiente per la batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "オフの場合、Miataru は現在の省電力な Significant-Change モードを使い続けます。オンの場合、選択した移動しきい値を超えた後に更新を届けようとします。"
+            "value" : "標準。約100 mの移動後に、より頻繁なバックグラウンド更新を受け入れます。頻繁モードの中では最も省電力です。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Als dit uit staat, blijft Miataru de huidige batterijbesparende significant-change-modus gebruiken. Als dit aan staat, probeert de app updates te leveren na de gekozen bewegingsdrempel."
+            "value" : "Standaard. Accepteert frequentere achtergrondupdates na ongeveer 100 m beweging en is de zuinigste frequente modus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关闭时，Miataru 会继续使用当前省电的显著位置变化模式。开启时，应用会尝试在达到所选移动阈值后发送更新。"
-          }
-        }
-      }
-    },
-    "frequent_background_location_updates_battery_warning" : {
-      "comment" : "Battery warning shown when frequent background updates are enabled",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Advarsel: Denne tilstand kan øge batteriforbruget mærkbart."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warnung: In diesem Modus ist mit erhöhtem Akkuverbrauch zu rechnen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warning: This mode can increase battery usage."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Advertencia: este modo puede aumentar el consumo de batería."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Varoitus: Tämä tila voi lisätä akun kulutusta."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avertissement : ce mode peut augmenter la consommation de batterie."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attenzione: questa modalità può aumentare il consumo della batteria."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "警告: このモードではバッテリー消費が増える可能性があります。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Waarschuwing: deze modus kan het batterijverbruik verhogen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "警告：此模式可能会增加电池消耗。"
+            "value" : "默认。移动约 100 米后才接受更频繁的后台更新，是频繁模式中最省电的选择。"
           }
         }
       }
@@ -5109,291 +5044,96 @@
         }
       }
     },
-    "frequent_background_location_updates_duration_title" : {
-      "comment" : "Picker title for frequent background update duration",
+    "background_location_updates_section_title" : {
+      "comment" : "Section title for background location update settings",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deaktiver automatisk efter"
+            "value" : "Baggrundsopdateringer"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatisch deaktivieren nach"
+            "value" : "Hintergrund-Standortupdates"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatically disable after"
+            "value" : "Background location updates"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Desactivar automáticamente después de"
+            "value" : "Actualizaciones de ubicación en segundo plano"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poista automaattisesti käytöstä ajan jälkeen"
+            "value" : "Taustasijaintipäivitykset"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Désactiver automatiquement après"
+            "value" : "Mises à jour de position en arrière-plan"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disattiva automaticamente dopo"
+            "value" : "Aggiornamenti posizione in background"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自動的に無効化するまで"
+            "value" : "バックグラウンド位置更新"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Automatisch uitschakelen na"
+            "value" : "Achtergrondlocatie-updates"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动停用时间"
+            "value" : "后台位置更新"
           }
         }
       }
     },
-    "frequent_background_location_updates_duration_unlimited" : {
-      "comment" : "Never auto-disable option for frequent background location updates",
+    "background_status_header" : {
+      "comment" : "Header for background location status card",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aldrig"
+            "value" : "Baggrundsstatus"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie"
+            "value" : "Hintergrund-Status"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Never"
+            "value" : "Background Status"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nunca"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei koskaan"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jamais"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mai"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "なし"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nooit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "永不"
-          }
-        }
-      }
-    },
-    "frequent_background_location_updates_active_hint_format" : {
-      "comment" : "Hint shown when frequent background updates are active",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer er aktive. Miataru anmoder om opdateringer efter ca. %d m bevægelse."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates sind aktiv. Miataru fordert Updates nach etwa %d m Bewegung an."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frequent background updates are active. Miataru requests updates after about %d m of movement."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano están activas. Miataru solicita actualizaciones tras unos %d m de movimiento."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset ovat käytössä. Miataru pyytää päivityksiä noin %d m liikkumisen jälkeen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan sont actives. Miataru demande des mises à jour après environ %d m de déplacement."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background sono attivi. Miataru richiede aggiornamenti dopo circa %d m di movimento."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "頻繁なバックグラウンド更新が有効です。Miataru は約 %d m の移動後に更新を要求します。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frequentere achtergrondupdates zijn actief. Miataru vraagt updates aan na ongeveer %d m beweging."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更频繁的后台更新已启用。Miataru 会在移动约 %d 米后请求更新。"
-          }
-        }
-      }
-    },
-    "tracking_mode_frequent_background_updates_format" : {
-      "comment" : "Tracking mode text for frequent background updates",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sporingstilstand: Hyppigere baggrundsopdateringer (%d m)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolgungsmodus: Häufigere Hintergrund-Updates (%d m)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tracking mode: Frequent background updates (%d m)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo de seguimiento: actualizaciones frecuentes en segundo plano (%d m)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seurantatila: tiheämmät taustapäivitykset (%d m)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de suivi : mises à jour fréquentes en arrière-plan (%d m)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modalità di tracciamento: aggiornamenti frequenti in background (%d m)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "追跡モード: 頻繁なバックグラウンド更新 (%d m)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trackingmodus: frequentere achtergrondupdates (%d m)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟踪模式：更频繁的后台更新（%d 米）"
-          }
-        }
-      }
-    },
-    "background_tracking_mode_title" : {
-      "comment" : "Label for current background tracking mode",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Baggrundstilstand"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hintergrundmodus"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background mode"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo en segundo plano"
+            "value" : "Estado en segundo plano"
           }
         },
         "fi" : {
@@ -5405,31 +5145,31 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mode arrière-plan"
+            "value" : "État en arrière-plan"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modalità background"
+            "value" : "Stato in background"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックグラウンドモード"
+            "value" : "バックグラウンドステータス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Achtergrondmodus"
+            "value" : "Achtergrondstatus"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后台模式"
+            "value" : "后台状态"
           }
         }
       }
@@ -5495,6 +5235,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "有效期至"
+          }
+        }
+      }
+    },
+    "background_tracking_expires_never" : {
+      "comment" : "Frequent background tracking never expires",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aldrig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei koskaan"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jamais"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mai"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "なし"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nooit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永不"
           }
         }
       }
@@ -5629,96 +5434,31 @@
         }
       }
     },
-    "background_tracking_expires_never" : {
-      "comment" : "Frequent background tracking never expires",
+    "background_tracking_mode_title" : {
+      "comment" : "Label for current background tracking mode",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aldrig"
+            "value" : "Baggrundstilstand"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie"
+            "value" : "Hintergrundmodus"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Never"
+            "value" : "Background mode"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nunca"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei koskaan"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jamais"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mai"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "なし"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nooit"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "永不"
-          }
-        }
-      }
-    },
-    "background_status_header" : {
-      "comment" : "Header for background location status card",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Baggrundsstatus"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hintergrund-Status"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background Status"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estado en segundo plano"
+            "value" : "Modo en segundo plano"
           }
         },
         "fi" : {
@@ -5730,31 +5470,31 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "État en arrière-plan"
+            "value" : "Mode arrière-plan"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stato in background"
+            "value" : "Modalità background"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックグラウンドステータス"
+            "value" : "バックグラウンドモード"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Achtergrondstatus"
+            "value" : "Achtergrondmodus"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "后台状态"
+            "value" : "后台模式"
           }
         }
       }
@@ -14318,6 +14058,1436 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完成"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_1m" : {
+      "comment" : "One-minute delayed delivery option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 1 Minute"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every minute"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada minuto"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni minuto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke minuut"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_1m_explanation" : {
+      "comment" : "Explanation for one-minute frequent background location delivery",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepterede opdateringer gemmes lokalt og sendes samlet, når vinduet på 1 minut er nået."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzeptierte Updates werden lokal gespeichert und gemeinsam gesendet, wenn das 1-Minuten-Fenster erreicht ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepted updates are stored locally and sent together when the 1-minute window is reached."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones aceptadas se guardan localmente y se envían juntas al cumplirse la ventana de 1 minuto."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyväksytyt päivitykset tallennetaan paikallisesti ja lähetetään yhdessä, kun 1 minuutin ikkuna täyttyy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour acceptées sont conservées localement puis envoyées ensemble lorsque la fenêtre d’une minute est atteinte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti accettati vengono salvati localmente e inviati insieme al termine della finestra di 1 minuto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け入れられた更新をローカルに保存し、1分の送信ウィンドウに達したらまとめて送信します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geaccepteerde updates worden lokaal bewaard en samen verzonden wanneer het venster van 1 minuut is bereikt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已接受的更新会先保存在本地，并在 1 分钟窗口到达后一起发送。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_5m" : {
+      "comment" : "Five-minute delayed delivery option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 5. minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 5 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 5 minutes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 5 minutos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 5 minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 5 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 5 minuten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 5 分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_5m_explanation" : {
+      "comment" : "Explanation for five-minute frequent background location delivery",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepterede opdateringer gemmes lokalt og sendes samlet, når vinduet på 5 minutter er nået."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzeptierte Updates werden lokal gespeichert und gemeinsam gesendet, wenn das 5-Minuten-Fenster erreicht ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepted updates are stored locally and sent together when the 5-minute window is reached."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones aceptadas se guardan localmente y se envían juntas al cumplirse la ventana de 5 minutos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyväksytyt päivitykset tallennetaan paikallisesti ja lähetetään yhdessä, kun 5 minuutin ikkuna täyttyy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour acceptées sont conservées localement puis envoyées ensemble lorsque la fenêtre de 5 minutes est atteinte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti accettati vengono salvati localmente e inviati insieme al termine della finestra di 5 minuti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け入れられた更新をローカルに保存し、5分の送信ウィンドウに達したらまとめて送信します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geaccepteerde updates worden lokaal bewaard en samen verzonden wanneer het venster van 5 minuten is bereikt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已接受的更新会先保存在本地，并在 5 分钟窗口到达后一起发送。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_10m" : {
+      "comment" : "Ten-minute delayed delivery option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 10. minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 10 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 10 minutes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 10 minutos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 10 minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 10 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 10 minuten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 10 分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_10m_explanation" : {
+      "comment" : "Explanation for ten-minute frequent background location delivery",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepterede opdateringer gemmes lokalt og sendes samlet, når vinduet på 10 minutter er nået."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzeptierte Updates werden lokal gespeichert und gemeinsam gesendet, wenn das 10-Minuten-Fenster erreicht ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepted updates are stored locally and sent together when the 10-minute window is reached."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones aceptadas se guardan localmente y se envían juntas al cumplirse la ventana de 10 minutos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyväksytyt päivitykset tallennetaan paikallisesti ja lähetetään yhdessä, kun 10 minuutin ikkuna täyttyy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour acceptées sont conservées localement puis envoyées ensemble lorsque la fenêtre de 10 minutes est atteinte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti accettati vengono salvati localmente e inviati insieme al termine della finestra di 10 minuti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け入れられた更新をローカルに保存し、10分の送信ウィンドウに達したらまとめて送信します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geaccepteerde updates worden lokaal bewaard en samen verzonden wanneer het venster van 10 minuten is bereikt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已接受的更新会先保存在本地，并在 10 分钟窗口到达后一起发送。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_30s" : {
+      "comment" : "30-second delayed delivery option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 30. sekund"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 30 Sekunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 30 seconds"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 30 segundos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 sekunnin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 30 secondes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 30 secondi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30秒ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 30 seconden"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 30 秒"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_30s_explanation" : {
+      "comment" : "Explanation for 30-second frequent background location delivery",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepterede opdateringer gemmes lokalt og sendes samlet, når vinduet på 30 sekunder er nået."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akzeptierte Updates werden lokal gespeichert und gemeinsam gesendet, wenn das 30-Sekunden-Fenster erreicht ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepted updates are stored locally and sent together when the 30-second window is reached."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones aceptadas se guardan localmente y se envían juntas al cumplirse la ventana de 30 segundos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyväksytyt päivitykset tallennetaan paikallisesti ja lähetetään yhdessä, kun 30 sekunnin ikkuna täyttyy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour acceptées sont conservées localement puis envoyées ensemble lorsque la fenêtre de 30 secondes est atteinte."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti accettati vengono salvati localmente e inviati insieme al termine della finestra di 30 secondi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け入れられた更新をローカルに保存し、30秒の送信ウィンドウに達したらまとめて送信します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geaccepteerde updates worden lokaal bewaard en samen verzonden wanneer het venster van 30 seconden is bereikt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已接受的更新会先保存在本地，并在 30 秒窗口到达后一起发送。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_immediate" : {
+      "comment" : "Immediate delivery option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Med det samme"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sofort"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Immediately"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inmediatamente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Immédiatement"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すぐに"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meteen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_immediate_explanation" : {
+      "comment" : "Explanation for immediate frequent background location delivery",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. Hver accepteret baggrundsopdatering sendes straks til serveren."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. Jedes akzeptierte Hintergrund-Update wird sofort an den Server gesendet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default. Each accepted background update is sent to the server right away."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado. Cada actualización en segundo plano aceptada se envía al servidor de inmediato."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oletus. Jokainen hyväksytty taustapäivitys lähetetään palvelimelle heti."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par défaut. Chaque mise à jour en arrière-plan acceptée est envoyée immédiatement au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predefinito. Ogni aggiornamento in background accettato viene inviato subito al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準。受け入れられたバックグラウンド更新をそれぞれすぐにサーバーへ送信します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard. Elke geaccepteerde achtergrondupdate wordt meteen naar de server gestuurd."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认。每个已接受的后台更新都会立即发送到服务器。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_delivery_mode_title" : {
+      "comment" : "Picker title for frequent background location update delivery mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send til server"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Server senden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send to server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar al servidor"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lähetä palvelimelle"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoyer au serveur"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invia al server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーへ送信"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naar server sturen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发送到服务器"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_1h_explanation" : {
+      "comment" : "Explanation for one-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 1 time, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates werden nach 1 Stunde ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates turn off after 1 hour, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 1 hora y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 1 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 1 heure, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 1 ora, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates worden na 1 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_4h_explanation" : {
+      "comment" : "Explanation for four-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. Hyppigere baggrundsopdateringer slås fra efter 4 timer, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. Häufigere Hintergrund-Updates werden nach 4 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default. Frequent background updates turn off after 4 hours, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado. Las actualizaciones frecuentes en segundo plano se desactivan después de 4 horas y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oletus. Tiheämmät taustapäivitykset poistuvat käytöstä 4 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par défaut. Les mises à jour fréquentes en arrière-plan se désactivent après 4 heures, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predefinito. Gli aggiornamenti frequenti in background si disattivano dopo 4 ore, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準。4時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard. Frequentere achtergrondupdates worden na 4 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认。4 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_12h_explanation" : {
+      "comment" : "Explanation for twelve-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 12 timer, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates werden nach 12 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates turn off after 12 hours, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 12 horas y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 12 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 12 heures, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 12 ore, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates worden na 12 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_24h_explanation" : {
+      "comment" : "Explanation for twenty-four-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 24 timer, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates werden nach 24 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates turn off after 24 hours, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 24 horas y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 24 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 24 heures, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 24 ore, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates worden na 24 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_never_explanation" : {
+      "comment" : "Explanation for never auto-disabling frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer forbliver aktive, indtil du slår dem fra manuelt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates bleiben aktiv, bis du sie manuell ausschaltest."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates stay on until you turn them off manually."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano permanecen activas hasta que las desactives manualmente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset pysyvät käytössä, kunnes poistat ne käytöstä käsin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan restent actives jusqu’à ce que vous les désactiviez manuellement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background restano attivi finché non li disattivi manualmente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動でオフにするまで、より頻繁なバックグラウンド更新は有効なままです。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates blijven actief totdat je ze handmatig uitschakelt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更频繁的后台更新会保持开启，直到你手动将其关闭。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_active_hint_format" : {
+      "comment" : "Hint shown when frequent background updates are active",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer er aktive. Miataru anmoder om opdateringer efter ca. %d m bevægelse."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates sind aktiv. Miataru fordert Updates nach etwa %d m Bewegung an."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates are active. Miataru requests updates after about %d m of movement."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano están activas. Miataru solicita actualizaciones tras unos %d m de movimiento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset ovat käytössä. Miataru pyytää päivityksiä noin %d m liikkumisen jälkeen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan sont actives. Miataru demande des mises à jour après environ %d m de déplacement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background sono attivi. Miataru richiede aggiornamenti dopo circa %d m di movimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁なバックグラウンド更新が有効です。Miataru は約 %d m の移動後に更新を要求します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates zijn actief. Miataru vraagt updates aan na ongeveer %d m beweging."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更频繁的后台更新已启用。Miataru 会在移动约 %d 米后请求更新。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_battery_warning" : {
+      "comment" : "Battery warning shown when frequent background updates are enabled",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advarsel: Denne tilstand kan øge batteriforbruget mærkbart."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warnung: In diesem Modus ist mit erhöhtem Akkuverbrauch zu rechnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warning: This mode can increase battery usage."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advertencia: este modo puede aumentar el consumo de batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varoitus: Tämä tila voi lisätä akun kulutusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avertissement : ce mode peut augmenter la consommation de batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attenzione: questa modalità può aumentare il consumo della batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警告: このモードではバッテリー消費が増える可能性があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waarschuwing: deze modus kan het batterijverbruik verhogen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警告：此模式可能会增加电池消耗。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_duration_title" : {
+      "comment" : "Picker title for frequent background update duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktiver automatisk efter"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch deaktivieren nach"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatically disable after"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar automáticamente después de"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poista automaattisesti käytöstä ajan jälkeen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver automatiquement après"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva automaticamente dopo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動的に無効化するまで"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch uitschakelen na"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动停用时间"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_duration_unlimited" : {
+      "comment" : "Never auto-disable option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aldrig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei koskaan"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jamais"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mai"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "なし"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nooit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永不"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_explanation" : {
+      "comment" : "Explanation for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Når denne tilstand er slået fra, bruger Miataru den nuværende batteribesparende significant-change-tilstand. Når den er slået til, forsøger appen at levere opdateringer efter den valgte bevægelsestærskel."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn diese Option ausgeschaltet ist, nutzt Miataru den bisherigen energiesparenden Significant-Change-Modus. Wenn sie eingeschaltet ist, versucht die App, Updates ab der gewählten Bewegungsschwelle zu liefern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When this is off, Miataru keeps using the current battery-saving significant-change mode. When it is on, the app tries to deliver updates after the selected movement threshold."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando está desactivado, Miataru sigue usando el modo actual de ahorro de batería con cambios significativos. Cuando está activado, la app intenta entregar actualizaciones después del umbral de movimiento elegido."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kun tämä on pois käytöstä, Miataru käyttää nykyistä akkua säästävää significant-change-tilaa. Kun se on käytössä, sovellus yrittää toimittaa päivityksiä valitun liikkumiskynnyksen jälkeen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsque cette option est désactivée, Miataru conserve le mode actuel économe en batterie basé sur les changements significatifs. Lorsqu’elle est activée, l’app essaie d’envoyer des mises à jour après le seuil de déplacement choisi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando questa opzione è disattivata, Miataru continua a usare l’attuale modalità a risparmio batteria basata sui cambiamenti significativi. Quando è attiva, l’app prova a inviare aggiornamenti dopo la soglia di movimento scelta."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オフの場合、Miataru は現在の省電力な Significant-Change モードを使い続けます。オンの場合、選択した移動しきい値を超えた後に更新を届けようとします。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Als dit uit staat, blijft Miataru de huidige batterijbesparende significant-change-modus gebruiken. Als dit aan staat, probeert de app updates te leveren na de gekozen bewegingsdrempel."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭时，Miataru 会继续使用当前省电的显著位置变化模式。开启时，应用会尝试在达到所选移动阈值后发送更新。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_title" : {
+      "comment" : "Toggle title for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More frequent background updates"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizaciones en segundo plano más frecuentes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mises à jour en arrière-plan plus fréquentes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiornamenti in background più frequenti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンド更新"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更频繁的后台更新"
           }
         }
       }
@@ -26599,6 +27769,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟踪模式：实时（GPS）"
+          }
+        }
+      }
+    },
+    "tracking_mode_frequent_background_updates_format" : {
+      "comment" : "Tracking mode text for frequent background updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sporingstilstand: Hyppigere baggrundsopdateringer (%d m)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgungsmodus: Häufigere Hintergrund-Updates (%d m)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Frequent background updates (%d m)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo de seguimiento: actualizaciones frecuentes en segundo plano (%d m)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seurantatila: tiheämmät taustapäivitykset (%d m)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de suivi : mises à jour fréquentes en arrière-plan (%d m)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modalità di tracciamento: aggiornamenti frequenti in background (%d m)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡モード: 頻繁なバックグラウンド更新 (%d m)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackingmodus: frequentere achtergrondupdates (%d m)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟踪模式：更频繁的后台更新（%d 米）"
           }
         }
       }

@@ -58,6 +58,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("50m").tag(50)
                             Text("25m").tag(25)
                         }
+                        SettingsDescriptionText(frequentBackgroundDistanceFilterExplanationKey)
 
                         Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
                             Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
@@ -66,6 +67,16 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
                             Text("frequent_background_location_updates_duration_unlimited").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
                         }
+                        SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
+
+                        Picker("frequent_background_location_delivery_mode_title", selection: $settings.frequentBackgroundLocationDeliveryMode) {
+                            Text("frequent_background_location_delivery_immediate").tag(FrequentBackgroundLocationDeliveryMode.immediate.rawValue)
+                            Text("frequent_background_location_delivery_30s").tag(FrequentBackgroundLocationDeliveryMode.everyThirtySeconds.rawValue)
+                            Text("frequent_background_location_delivery_1m").tag(FrequentBackgroundLocationDeliveryMode.everyMinute.rawValue)
+                            Text("frequent_background_location_delivery_5m").tag(FrequentBackgroundLocationDeliveryMode.everyFiveMinutes.rawValue)
+                            Text("frequent_background_location_delivery_10m").tag(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue)
+                        }
+                        SettingsDescriptionText(frequentBackgroundDeliveryExplanationKey)
                     }
                 }
             }
@@ -146,6 +157,47 @@ struct iPhone_AdvancedOptionsView: View {
         .navigationTitle("advanced_options")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("screen_settings_advanced_options")
+    }
+
+    private var frequentBackgroundDistanceFilterExplanationKey: LocalizedStringKey {
+        switch settings.frequentBackgroundLocationDistanceFilter {
+        case 25:
+            return "background_location_distance_filter_25m_explanation"
+        case 50:
+            return "background_location_distance_filter_50m_explanation"
+        default:
+            return "background_location_distance_filter_100m_explanation"
+        }
+    }
+
+    private var frequentBackgroundDurationExplanationKey: LocalizedStringKey {
+        switch settings.frequentBackgroundLocationUpdateDurationMode {
+        case .oneHour:
+            return "frequent_background_location_duration_1h_explanation"
+        case .fourHours:
+            return "frequent_background_location_duration_4h_explanation"
+        case .twelveHours:
+            return "frequent_background_location_duration_12h_explanation"
+        case .twentyFourHours:
+            return "frequent_background_location_duration_24h_explanation"
+        case .unlimited:
+            return "frequent_background_location_duration_never_explanation"
+        }
+    }
+
+    private var frequentBackgroundDeliveryExplanationKey: LocalizedStringKey {
+        switch settings.frequentBackgroundLocationDeliveryModeSelection {
+        case .immediate:
+            return "frequent_background_location_delivery_immediate_explanation"
+        case .everyThirtySeconds:
+            return "frequent_background_location_delivery_30s_explanation"
+        case .everyMinute:
+            return "frequent_background_location_delivery_1m_explanation"
+        case .everyFiveMinutes:
+            return "frequent_background_location_delivery_5m_explanation"
+        case .everyTenMinutes:
+            return "frequent_background_location_delivery_10m_explanation"
+        }
     }
 }
 

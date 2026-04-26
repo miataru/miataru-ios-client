@@ -28,6 +28,12 @@
 "background_location_distance_filter_title" = "Bewegingsdrempel";
 "frequent_background_location_updates_duration_title" = "Automatisch uitschakelen na";
 "frequent_background_location_updates_duration_unlimited" = "Nooit";
+"frequent_background_location_delivery_mode_title" = "Naar server sturen";
+"frequent_background_location_delivery_immediate" = "Meteen";
+"frequent_background_location_delivery_30s" = "Elke 30 seconden";
+"frequent_background_location_delivery_1m" = "Elke minuut";
+"frequent_background_location_delivery_5m" = "Elke 5 minuten";
+"frequent_background_location_delivery_10m" = "Elke 10 minuten";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

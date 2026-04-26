@@ -28,6 +28,12 @@
 "background_location_distance_filter_title" = "移動しきい値";
 "frequent_background_location_updates_duration_title" = "自動的に無効化するまで";
 "frequent_background_location_updates_duration_unlimited" = "なし";
+"frequent_background_location_delivery_mode_title" = "サーバーへ送信";
+"frequent_background_location_delivery_immediate" = "すぐに";
+"frequent_background_location_delivery_30s" = "30秒ごと";
+"frequent_background_location_delivery_1m" = "1分ごと";
+"frequent_background_location_delivery_5m" = "5分ごと";
+"frequent_background_location_delivery_10m" = "10分ごと";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

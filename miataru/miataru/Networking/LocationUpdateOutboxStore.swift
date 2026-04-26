@@ -14,6 +14,7 @@ struct LocationUpdateOutboxItem: Codable {
     let dedupeKey: String
     var serverURLString: String
     let enqueuedAt: Date
+    let availableAfter: Date?
     var attemptCount: Int
     let payload: UpdateLocationPayload
     let enableHistory: Bool
@@ -22,6 +23,7 @@ struct LocationUpdateOutboxItem: Codable {
     init(
         serverURLString: String,
         enqueuedAt: Date,
+        availableAfter: Date? = nil,
         attemptCount: Int = 0,
         payload: UpdateLocationPayload,
         enableHistory: Bool,
@@ -30,6 +32,7 @@ struct LocationUpdateOutboxItem: Codable {
         self.dedupeKey = Self.makeDedupeKey(for: payload)
         self.serverURLString = serverURLString
         self.enqueuedAt = enqueuedAt
+        self.availableAfter = availableAfter
         self.attemptCount = attemptCount
         self.payload = payload
         self.enableHistory = enableHistory
@@ -98,13 +101,15 @@ actor LocationUpdateOutboxStore {
         serverURL: URL,
         payload: UpdateLocationPayload,
         enableHistory: Bool,
-        retentionTime: Int
+        retentionTime: Int,
+        availableAfter: Date? = nil
     ) {
         pruneExpiredEntriesIfNeeded()
 
         let item = LocationUpdateOutboxItem(
             serverURLString: serverURL.absoluteString,
             enqueuedAt: nowProvider(),
+            availableAfter: availableAfter,
             payload: payload,
             enableHistory: enableHistory,
             retentionTime: retentionTime
@@ -182,6 +187,23 @@ actor LocationUpdateOutboxStore {
     func itemsSnapshot() -> [LocationUpdateOutboxItem] {
         pruneExpiredEntriesIfNeeded()
         return items
+    }
+
+    func activeDelayedBatchReleaseDate(now: Date) -> Date? {
+        pruneExpiredEntriesIfNeeded()
+        return items
+            .compactMap(\.availableAfter)
+            .filter { $0 > now }
+            .min()
+    }
+
+    func nextFlushDate(now: Date) -> Date? {
+        pruneExpiredEntriesIfNeeded()
+        guard let head = items.first else { return nil }
+        guard let availableAfter = head.availableAfter, availableAfter > now else {
+            return now
+        }
+        return availableAfter
     }
 
     private func pruneExpiredEntriesIfNeeded() {

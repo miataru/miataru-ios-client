@@ -148,6 +148,64 @@ struct LocationUpdateDeliveryCoordinatorTests {
         await coordinator.stopPeriodicFlushTaskForTesting()
     }
 
+    @Test("Delayed submit batches updates until the selected delivery window")
+    func delayedSubmitBatchesUpdatesUntilDeliveryWindow() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [
+            .success(true),
+            .success(true)
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            }
+        )
+
+        let firstResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "1"),
+            enableHistory: true,
+            retentionTime: 60,
+            deliveryDelay: 0.1
+        )
+        let secondResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "2"),
+            enableHistory: true,
+            retentionTime: 60,
+            deliveryDelay: 0.1
+        )
+
+        if case .queued = firstResult {
+        } else {
+            Issue.record("Expected first delayed update to be queued")
+        }
+        if case .queued = secondResult {
+        } else {
+            Issue.record("Expected second delayed update to be queued")
+        }
+
+        var snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["1", "2"])
+        #expect(snapshot[0].availableAfter == snapshot[1].availableAfter)
+        #expect(await sender.callCount == 0)
+
+        try await Task.sleep(nanoseconds: 300_000_000)
+
+        snapshot = await store.itemsSnapshot()
+        #expect(snapshot.isEmpty)
+        #expect(await sender.sentTimestamps == ["1", "2"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
     @Test("Manual full flush drains more than one batch")
     func manualFullFlushDrainsMoreThanOneBatch() async throws {
         let tempURL = temporaryOutboxURL()

@@ -51,6 +51,7 @@ actor LocationUpdateDeliveryCoordinator {
 
     private var periodicFlushTask: Task<Void, Never>?
     private var deferredFlushTask: Task<Void, Never>?
+    private var deferredFlushDate: Date?
     private var isFlushing = false
 
     init(
@@ -94,14 +95,32 @@ actor LocationUpdateDeliveryCoordinator {
         periodicFlushTask = nil
         deferredFlushTask?.cancel()
         deferredFlushTask = nil
+        deferredFlushDate = nil
     }
 
     func submit(
         serverURL: URL,
         payload: UpdateLocationPayload,
         enableHistory: Bool,
-        retentionTime: Int
+        retentionTime: Int,
+        deliveryDelay: TimeInterval? = nil
     ) async -> SubmitResult {
+        if let deliveryDelay, deliveryDelay > 0 {
+            let now = Date()
+            let availableAfter = await outboxStore.activeDelayedBatchReleaseDate(now: now)
+                ?? now.addingTimeInterval(deliveryDelay)
+            await outboxStore.enqueue(
+                serverURL: serverURL,
+                payload: payload,
+                enableHistory: enableHistory,
+                retentionTime: retentionTime,
+                availableAfter: availableAfter
+            )
+            await notifyOutboxDidChange()
+            await scheduleNextFlushIfNeeded(now: now, trigger: "delayedSubmit")
+            return .queued
+        }
+
         if !(await outboxStore.isEmpty()) {
             await outboxStore.enqueue(
                 serverURL: serverURL,
@@ -148,7 +167,7 @@ actor LocationUpdateDeliveryCoordinator {
     func flushOutboxCompletelyNow() async {
         cancelDeferredFlush()
         while true {
-            let result = await flushOutbox(trigger: "manualFull", scheduleContinuation: false)
+            let result = await flushOutbox(trigger: "manualFull", scheduleContinuation: false, includeDelayedItems: true)
             guard result.didReachBatchLimit,
                   !result.stoppedOnRetryableError,
                   result.hasPendingItems else {
@@ -185,7 +204,7 @@ actor LocationUpdateDeliveryCoordinator {
     private func flushOutboxCompletely(trigger: String) async {
         cancelDeferredFlush()
         while true {
-            let result = await flushOutbox(trigger: trigger, scheduleContinuation: false)
+            let result = await flushOutbox(trigger: trigger, scheduleContinuation: false, includeDelayedItems: true)
             guard result.didReachBatchLimit,
                   !result.stoppedOnRetryableError,
                   result.hasPendingItems else {
@@ -194,7 +213,9 @@ actor LocationUpdateDeliveryCoordinator {
         }
     }
 
-    private func flushOutbox(trigger: String, scheduleContinuation: Bool = true) async -> FlushResult {
+    private func flushOutbox(trigger: String,
+                             scheduleContinuation: Bool = true,
+                             includeDelayedItems: Bool = false) async -> FlushResult {
         guard !isFlushing else {
             scheduleFlushSoon(trigger: "\(trigger):coalesced")
             return FlushResult(
@@ -218,6 +239,12 @@ actor LocationUpdateDeliveryCoordinator {
         var stoppedOnRetryableError = false
         while processedCount < flushBatchSize {
             guard let head = await outboxStore.peekHead() else { break }
+            if !includeDelayedItems,
+               let availableAfter = head.availableAfter,
+               availableAfter > Date() {
+                scheduleFlush(at: availableAfter, trigger: "\(trigger):delayedHead")
+                break
+            }
             guard let serverURL = URL(string: head.serverURLString) else {
                 debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item with invalid URL: \(head.serverURLString)")
                 guard await outboxStore.removeHead(matching: head) else {
@@ -287,8 +314,33 @@ actor LocationUpdateDeliveryCoordinator {
     }
 
     private func scheduleFlushSoon(trigger: String) {
-        guard deferredFlushTask == nil else { return }
-        let sleepNanoseconds = UInt64(deferredFlushDelay * 1_000_000_000)
+        scheduleFlush(after: deferredFlushDelay, trigger: trigger)
+    }
+
+    private func scheduleNextFlushIfNeeded(now: Date, trigger: String) async {
+        guard let nextFlushDate = await outboxStore.nextFlushDate(now: now) else { return }
+        scheduleFlush(for: nextFlushDate, now: now, trigger: trigger)
+    }
+
+    private func scheduleFlush(for date: Date, now: Date = Date(), trigger: String) {
+        let delay = max(deferredFlushDelay, date.timeIntervalSince(now))
+        scheduleFlush(after: delay, trigger: trigger)
+    }
+
+    private func scheduleFlush(at date: Date, trigger: String) {
+        scheduleFlush(for: date, trigger: trigger)
+    }
+
+    private func scheduleFlush(after delay: TimeInterval, trigger: String) {
+        let normalizedDelay = max(0.05, delay)
+        let scheduledDate = Date().addingTimeInterval(normalizedDelay)
+        if let deferredFlushDate, deferredFlushDate <= scheduledDate {
+            return
+        }
+
+        deferredFlushTask?.cancel()
+        let sleepNanoseconds = UInt64(normalizedDelay * 1_000_000_000)
+        deferredFlushDate = scheduledDate
         deferredFlushTask = Task {
             try? await Task.sleep(nanoseconds: sleepNanoseconds)
             guard !Task.isCancelled else { return }
@@ -298,12 +350,14 @@ actor LocationUpdateDeliveryCoordinator {
 
     private func runDeferredFlush(trigger: String) async {
         deferredFlushTask = nil
+        deferredFlushDate = nil
         _ = await flushOutbox(trigger: trigger)
     }
 
     private func cancelDeferredFlush() {
         deferredFlushTask?.cancel()
         deferredFlushTask = nil
+        deferredFlushDate = nil
     }
 
     private func notifyOutboxDidChange() async {
