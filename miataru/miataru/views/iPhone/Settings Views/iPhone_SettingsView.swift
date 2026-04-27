@@ -23,6 +23,15 @@ struct iPhone_SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+                    Section(header: Text("background_location_updates_section_title")) {
+                        Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                            .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
+                        SettingsDescriptionText("frequent_background_location_updates_central_explanation")
+                        SettingsWarningText("frequent_background_location_updates_battery_warning")
+                    }
+                }
+
                 Section(header: Text("track_and_history")) {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
                     SettingsDescriptionText("explanation_location_track")

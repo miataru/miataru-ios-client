@@ -67,6 +67,7 @@ struct SettingsConfigurationTests {
             "background_location_updates_section_title",
             "frequent_background_location_updates_title",
             "frequent_background_location_updates_explanation",
+            "frequent_background_location_updates_central_explanation",
             "frequent_background_location_updates_battery_warning",
             "frequent_background_location_reminder_notification_title",
             "frequent_background_location_reminder_notification_body",

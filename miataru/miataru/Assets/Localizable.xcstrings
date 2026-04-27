@@ -15102,73 +15102,8 @@
         }
       }
     },
-    "frequent_background_location_reminder_notification_body" : {
-      "comment" : "Notification body explaining that tapping opens Advanced Options to disable frequent background tracking",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru bruger den hyppige baggrundstilstand uden udløb. Tryk for at åbne avancerede indstillinger og slå den fra."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru nutzt den nie ablaufenden Modus für häufige Hintergrund-Standortupdates. Tippe, um die erweiterten Einstellungen zu öffnen und ihn auszuschalten."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru is using the never-expiring frequent background location mode. Tap to open Advanced Options and turn it off."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru está usando el modo frecuente de ubicación en segundo plano sin caducidad. Toca para abrir las opciones avanzadas y desactivarlo."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru käyttää päättymätöntä tiheää taustasijaintitilaa. Avaa lisäasetukset napauttamalla ja poista se käytöstä."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru utilise le mode de localisation fréquent en arrière-plan sans expiration. Touchez pour ouvrir les options avancées et le désactiver."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru sta usando la modalità frequente di posizione in background senza scadenza. Tocca per aprire le opzioni avanzate e disattivarla."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru は期限なしの頻繁なバックグラウンド位置情報モードを使用しています。タップして詳細設定を開き、オフにできます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru gebruikt de frequentere achtergrondlocatiemodus zonder eindtijd. Tik om Geavanceerde opties te openen en deze uit te schakelen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru 正在使用永不过期的频繁后台位置模式。轻点可打开高级选项并将其关闭。"
-          }
-        }
-      }
-    },
     "frequent_background_location_expired_notification_body" : {
-      "comment" : "Notification body explaining that temporary frequent background tracking automatically ended and Miataru returned to standard background updates",
+      "comment" : "Notification body explaining that Miataru returned to standard background tracking",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -15293,6 +15228,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "后台跟踪已恢复为标准模式"
+          }
+        }
+      }
+    },
+    "frequent_background_location_reminder_notification_body" : {
+      "comment" : "Notification body explaining that tapping opens Advanced Options to disable frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru bruger den hyppige baggrundstilstand uden udløb. Tryk for at åbne avancerede indstillinger og slå den fra."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru nutzt den nie ablaufenden Modus für häufige Hintergrund-Standortupdates. Tippe, um die erweiterten Einstellungen zu öffnen und ihn auszuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru is using the never-expiring frequent background location mode. Tap to open Advanced Options and turn it off."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru está usando el modo frecuente de ubicación en segundo plano sin caducidad. Toca para abrir las opciones avanzadas y desactivarlo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru käyttää päättymätöntä tiheää taustasijaintitilaa. Avaa lisäasetukset napauttamalla ja poista se käytöstä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru utilise le mode de localisation fréquent en arrière-plan sans expiration. Touchez pour ouvrir les options avancées et le désactiver."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru sta usando la modalità frequente di posizione in background senza scadenza. Tocca per aprire le opzioni avanzate e disattivarla."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru は期限なしの頻繁なバックグラウンド位置情報モードを使用しています。タップして詳細設定を開き、オフにできます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru gebruikt de frequentere achtergrondlocatiemodus zonder eindtijd. Tik om Geavanceerde opties te openen en deze uit te schakelen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 正在使用永不过期的频繁后台位置模式。轻点可打开高级选项并将其关闭。"
           }
         }
       }
@@ -15488,6 +15488,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "警告：此模式可能会增加电池消耗。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_updates_central_explanation" : {
+      "comment" : "Explanation for the central settings toggle shown while frequent background location updates are active",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer er aktive. Flere indstillinger findes under Avancerede indstillinger; her kan du til enhver tid slå tilstanden fra centralt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates sind aktiv. Weitere Einstellungen findest du unter Erweiterte Optionen; hier kannst du den Modus jederzeit zentral deaktivieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More frequent background updates are active. More settings are available under Advanced Options; you can turn this mode off centrally here at any time."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones en segundo plano más frecuentes están activas. Hay más ajustes en Opciones avanzadas; aquí puedes desactivar este modo de forma centralizada en cualquier momento."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset ovat käytössä. Lisää asetuksia on Lisäasetuksissa; voit poistaa tämän tilan keskitetysti käytöstä täällä milloin tahansa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour en arrière-plan plus fréquentes sont actives. D’autres réglages sont disponibles dans Options avancées; vous pouvez désactiver ce mode ici de façon centralisée à tout moment."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti in background più frequenti sono attivi. Altre impostazioni sono disponibili in Opzioni avanzate; qui puoi disattivare centralmente questa modalità in qualsiasi momento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンド更新が有効です。詳細設定は「詳細オプション」で利用でき、このモードはここからいつでも一括でオフにできます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates zijn actief. Meer instellingen vind je onder Geavanceerde opties; je kunt deze modus hier op elk moment centraal uitschakelen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更频繁的后台更新已启用。更多设置可在高级选项中找到；你可以随时在这里集中关闭此模式。"
           }
         }
       }

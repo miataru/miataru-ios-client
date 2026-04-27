@@ -7,6 +7,7 @@ version 3.1.7
 - Added a local notification for finite frequent-background durations so users are informed when Miataru automatically returns to the standard background update mode.
 - Added localized per-option explanations for frequent background movement threshold, auto-disable duration, server-delivery mode, and visitor-check interval choices.
 - Added localized red battery-usage warning text while frequent background updates are enabled, plus background-mode/expiry visibility in the location-status view.
+- Added a prominent central Settings toggle while frequent background updates are active, making the battery impact visible and allowing the mode to be turned off without opening Advanced Options.
 - Preserved frequent-background update settings during DeviceKey recovery/reset flows and added regression coverage for defaults, localization parity, value normalization, expiry behavior, and default significant-change configuration.
 - Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 1 to 2.
 - Fixed offline `UpdateLocation` delivery so new updates are queued behind already pending outbox items and retried in FIFO order without replacing the original event payload metadata.
