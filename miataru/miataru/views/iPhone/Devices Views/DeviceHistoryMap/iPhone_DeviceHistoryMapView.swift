@@ -59,6 +59,8 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var isScrubbing = false
     @State private var pendingFocusAfterScrub = false
     @State private var isSelectionDragging = false
+    @State private var suppressNextScrubFocus = false
+    @State private var tappedHistoryEntryKey: String? = nil
     private let playbackContextPadding = 50
     private let activeHistoryCacheReuseWindow: TimeInterval = 3
     private let locationTriggeredRefreshThrottle: TimeInterval = 10
@@ -173,17 +175,15 @@ struct iPhone_DeviceHistoryMapView: View {
             ForEach(Array(annotations.enumerated()), id: \.offset) { _, entry in
                 let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
                 let isSelected = selectedEntry.map { isSelectedEntry(entry, selected: $0) } ?? false
+                let isTapped = tappedHistoryEntryKey == historyEntryKey(for: entry)
                 Annotation("", coordinate: coord, anchor: isSelected ? .bottom : .center) {
                     if isSelected {
-                        VStack(spacing: 6) {
-                            Text(formattedDateTimeLabel(for: entry))
-                                .font(.caption2)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.ultraThinMaterial, in: Capsule())
-                                .overlay(
-                                    Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                                )
+                        VStack(spacing: 8) {
+                            if isTapped {
+                                historyEntryDetailBubble(for: entry)
+                            } else {
+                                historyEntrySummaryBubble(for: entry)
+                            }
                             MiataruMapMarker(color: color(for: entry, within: mapHistory))
                                 .shadow(radius: 2)
                         }
@@ -378,10 +378,19 @@ struct iPhone_DeviceHistoryMapView: View {
             }
         }
         .onChange(of: scrubTimestamp) { _, _ in
-            if isPlaybackStepping { return }
+            if isPlaybackStepping {
+                tappedHistoryEntryKey = nil
+                return
+            }
             if isPlaying {
+                tappedHistoryEntryKey = nil
                 startPlayback()
             } else {
+                if suppressNextScrubFocus {
+                    suppressNextScrubFocus = false
+                    return
+                }
+                tappedHistoryEntryKey = nil
                 if isScrubbing {
                     pendingFocusAfterScrub = true
                 } else {
@@ -709,10 +718,110 @@ struct iPhone_DeviceHistoryMapView: View {
         return Self.historyColor(for: ratio)
     }
 
+    private func historyEntrySummaryBubble(for entry: MiataruLocationData) -> some View {
+        Text(formattedDateTimeLabel(for: entry))
+            .font(.caption2)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.ultraThinMaterial, in: Capsule())
+            .overlay(
+                Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)
+            )
+    }
+
+    private func historyEntryDetailBubble(for entry: MiataruLocationData) -> some View {
+        let rows = historyDetailRows(for: entry)
+
+        return VStack(alignment: .leading, spacing: 5) {
+            Text(Self.timelineDateFormatter.string(from: entry.TimestampDate))
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: 5) {
+                    Image(systemName: row.systemImage)
+                        .font(.caption2)
+                        .frame(width: 12)
+                        .foregroundStyle(.secondary)
+                    Text(row.text)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+        .frame(maxWidth: 240, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.12), radius: 5, x: 0, y: 2)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
     private func formattedDateTimeLabel(for entry: MiataruLocationData) -> String {
         let dateTimeText = Self.timelineDateFormatter.string(from: entry.TimestampDate)
         let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed, minSpeedKmh: 0)
         return speedText != nil ? "\(dateTimeText) • \(speedText!)" : dateTimeText
+    }
+
+    private func historyDetailRows(for entry: MiataruLocationData) -> [(systemImage: String, text: String)] {
+        var rows: [(systemImage: String, text: String)] = [
+            ("location", coordinateText(latitude: entry.Latitude, longitude: entry.Longitude))
+        ]
+
+        if entry.HorizontalAccuracy.isFinite, entry.HorizontalAccuracy > 0 {
+            rows.append(("scope", "\(NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details")): \(distanceText(meters: entry.HorizontalAccuracy, maximumFractionDigits: 0))"))
+        }
+
+        if let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed, minSpeedKmh: 0) {
+            rows.append(("speedometer", "\(NSLocalizedString("Speed", comment: "Speed display in Location Tracking Details")): \(speedText)"))
+        }
+
+        if let altitude = entry.Altitude, altitude.isFinite {
+            rows.append(("mountain.2", "\(NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")): \(distanceText(meters: altitude, maximumFractionDigits: 0))"))
+        }
+
+        if let batteryLevel = entry.BatteryLevel, batteryLevel.isFinite, batteryLevel >= 0 {
+            rows.append(("battery.100", "\(NSLocalizedString("Battery level", comment: "Battery level display in Location Tracking Details")): \(batteryText(batteryLevel))"))
+        }
+
+        return rows
+    }
+
+    private func coordinateText(latitude: Double, longitude: Double) -> String {
+        String(format: "%.5f, %.5f", latitude, longitude)
+    }
+
+    private func batteryText(_ batteryLevel: Double) -> String {
+        let normalized = batteryLevel <= 1 ? batteryLevel * 100 : batteryLevel
+        return String(format: "%.0f%%", min(max(normalized, 0), 100))
+    }
+
+    private func distanceText(meters: Double, maximumFractionDigits: Int) -> String {
+        let usesMetric: Bool
+        if #available(iOS 16.0, *) {
+            usesMetric = Locale.current.measurementSystem == .metric
+        } else {
+            usesMetric = Locale.current.usesMetricSystem
+        }
+
+        let value = usesMetric ? meters : meters * 3.28084
+        let unit = usesMetric
+            ? NSLocalizedString("altitude_meters", comment: "Altitude in meters")
+            : NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+        return "\(localizedNumber(value, maximumFractionDigits: maximumFractionDigits)) \(unit)"
+    }
+
+    private func localizedNumber(_ value: Double, maximumFractionDigits: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = .current
+        formatter.maximumFractionDigits = maximumFractionDigits
+        formatter.minimumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: value)) ?? String(format: "%.\(maximumFractionDigits)f", value)
     }
 
     private func isSelectedEntry(_ entry: MiataruLocationData, selected: MiataruLocationData) -> Bool {
@@ -721,10 +830,22 @@ struct iPhone_DeviceHistoryMapView: View {
             selected.Longitude == entry.Longitude
     }
 
+    private func historyEntryKey(for entry: MiataruLocationData) -> String {
+        "\(entry.Timestamp)|\(entry.Latitude)|\(entry.Longitude)"
+    }
+
     private func selectEntryFromMap(_ entry: MiataruLocationData) {
-        scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
+        let timestamp = entry.TimestampDate.timeIntervalSince1970
+        tappedHistoryEntryKey = historyEntryKey(for: entry)
+        stopPlayback()
+        guard scrubTimestamp != timestamp else {
+            hasUserScrubbed = true
+            return
+        }
+        suppressNextScrubFocus = true
+        debouncedFocusTask?.cancel()
+        scrubTimestamp = timestamp
         hasUserScrubbed = true
-        // onChange(of: scrubTimestamp) handles focusing or playback restart
     }
 
     private func normalizeHistoryEntries(from entries: [MiataruLocationData]) -> [MiataruLocationData] {
@@ -781,6 +902,7 @@ struct iPhone_DeviceHistoryMapView: View {
         selectedRange = newRange
         displayRange = newRange
         scrubTimestamp = upper
+        tappedHistoryEntryKey = nil
         hasUserScrubbed = false
         hasUserAdjustedMapCamera = false
         scheduleRegionUpdate(animated: true)
@@ -829,6 +951,7 @@ struct iPhone_DeviceHistoryMapView: View {
     private func handleScrubBegan() {
         isScrubbing = true
         pendingFocusAfterScrub = false
+        tappedHistoryEntryKey = nil
         debouncedFocusTask?.cancel()
     }
 
@@ -842,6 +965,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func handleSelectionDragBegan() {
         isSelectionDragging = true
+        tappedHistoryEntryKey = nil
         debouncedRegionTask?.cancel()
     }
 
@@ -907,6 +1031,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func startPlayback() {
         stopPlayback()
+        tappedHistoryEntryKey = nil
         playbackLockedSpan = nil
         let entries = visibleHistory
         guard !entries.isEmpty else { return }
