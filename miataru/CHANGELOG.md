@@ -1,4 +1,5 @@
 version 3.1.7
+- Fixed device-map marker selection on iPhone and iPad so the nearby-device picker now considers the marker distance on screen at the current zoom level, not only a fixed physical distance in meters. This makes the picker appear reliably when devices look close together or overlap on the map.
 - Added a separated, tappable device-list notice while frequent background updates are active; it opens Advanced Options directly and shows the expiration time when the mode is configured to end automatically.
 - Added an opt-in frequent background location-update mode in Advanced Options, keeping significant-change monitoring as the unchanged default when the user does not enable it.
 - Added configurable frequent-background distance presets (100 m default, 50 m, 25 m) and auto-disable durations (1 hour, 4 hours default, 12 hours, 24 hours, never), with automatic fallback to significant-change monitoring after expiry.

@@ -60,7 +60,6 @@ struct iPad_DeviceMapView: View {
     @State private var showDeviceActionDialog = false // Controls confirmation dialog for actions
     @State private var devicePickerData: DevicePickerData? = nil // Holds nearby devices for picker sheet (triggers sheet when non-nil)
     @State private var cachedDeviceCoordinates: [String: CLLocationCoordinate2D] = [:] // Cached coordinates to avoid recomputing on tap
-    @State private var precomputedNearbyDevices: [String: [KnownDevice]] = [:] // Precomputed nearby devices keyed by deviceID
     @State private var now = Date() // Timer for relative time display
     @State private var showNetworkErrorIcon = false // Show network error icon on network issues
     @State private var screenSize: CGSize = .zero // Track screen size for off-screen arrows
@@ -900,7 +899,6 @@ struct iPad_DeviceMapView: View {
             }
         }
         cachedDeviceCoordinates = dict
-        precomputedNearbyDevices = computeNearbyGroups(from: dict)
     }
     
     private func presentActions(for deviceID: String) {
@@ -910,7 +908,7 @@ struct iPad_DeviceMapView: View {
     }
     
     private func handleDeviceTap(deviceID: String, coordinate: CLLocationCoordinate2D) {
-        let nearby = precomputedNearbyDevices[deviceID] ?? nearbyDevices(around: deviceID, coordinate: coordinate)
+        let nearby = nearbyDevices(around: deviceID, coordinate: coordinate)
         if nearby.count > 1 {
             devicePickerData = DevicePickerData(devices: nearby)
         } else if let first = nearby.first {
@@ -921,7 +919,7 @@ struct iPad_DeviceMapView: View {
     }
     
     private func nearbyDevices(around deviceID: String, coordinate: CLLocationCoordinate2D, thresholdMeters: Double = 35) -> [KnownDevice] {
-        let targetLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let selectionRegion = currentRegion ?? cameraPosition.region ?? region
         let devicesWithCoordinates: [(KnownDevice, CLLocationCoordinate2D)] = deviceStore.devices.compactMap { known in
             if let cached = cachedDeviceCoordinates[known.DeviceID] {
                 return (known, cached)
@@ -931,8 +929,13 @@ struct iPad_DeviceMapView: View {
         }
         
         let closeDevices = devicesWithCoordinates.filter { pair in
-            let loc = CLLocation(latitude: pair.1.latitude, longitude: pair.1.longitude)
-            return targetLocation.distance(from: loc) <= thresholdMeters
+            areCoordinatesNearForMapSelection(
+                coordinate,
+                pair.1,
+                in: selectionRegion,
+                screenSize: screenSize,
+                minimumMeters: thresholdMeters
+            )
         }.map { $0.0 }
         
         let tapped = closeDevices.first(where: { $0.DeviceID == deviceID })
@@ -958,31 +961,6 @@ struct iPad_DeviceMapView: View {
             return CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
         }
         return nil
-    }
-
-    private func computeNearbyGroups(from coords: [String: CLLocationCoordinate2D], thresholdMeters: Double = 35) -> [String: [KnownDevice]] {
-        var result: [String: [KnownDevice]] = [:]
-        let deviceLookup = Dictionary(uniqueKeysWithValues: deviceStore.devices.map { ($0.DeviceID, $0) })
-        
-        for (id, coord) in coords {
-            let targetLocation = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
-            var nearbyIDs: [String] = []
-            for (otherID, otherCoord) in coords {
-                guard otherID != id else { continue }
-                let loc = CLLocation(latitude: otherCoord.latitude, longitude: otherCoord.longitude)
-                if targetLocation.distance(from: loc) <= thresholdMeters {
-                    nearbyIDs.append(otherID)
-                }
-            }
-            guard !nearbyIDs.isEmpty else { continue }
-            let ordered = ([id] + nearbyIDs.sorted { (deviceLookup[$0]?.DeviceName ?? $0)
-                .localizedCaseInsensitiveCompare(deviceLookup[$1]?.DeviceName ?? $1) == .orderedAscending })
-                .compactMap { deviceLookup[$0] }
-            if ordered.count > 1 {
-                result[id] = ordered
-            }
-        }
-        return result
     }
 
     // Preloads history before navigating to the dedicated history map to avoid switching views when no data exists.

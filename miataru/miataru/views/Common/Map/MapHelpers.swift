@@ -41,6 +41,61 @@ func currentZoomLevelFromSpan(_ span: MKCoordinateSpan) -> Int {
     return Int(round(km))
 }
 
+/// Approximates the screen distance between two coordinates for the currently visible map region.
+/// This keeps hit ambiguity aligned with what the user sees at the current zoom level.
+func mapScreenDistancePoints(
+    from first: CLLocationCoordinate2D,
+    to second: CLLocationCoordinate2D,
+    in region: MKCoordinateRegion?,
+    screenSize: CGSize
+) -> CGFloat? {
+    guard let region,
+          screenSize.width > 0,
+          screenSize.height > 0,
+          region.span.latitudeDelta > 0,
+          region.span.longitudeDelta > 0
+    else { return nil }
+
+    let latitudeSpan = max(abs(region.span.latitudeDelta), Double.leastNonzeroMagnitude)
+    let longitudeSpan = min(max(abs(region.span.longitudeDelta), Double.leastNonzeroMagnitude), 360)
+    let latitudeDelta = second.latitude - first.latitude
+    let longitudeDelta = shortestLongitudeDelta(second.longitude, first.longitude)
+
+    let dx = CGFloat(longitudeDelta / longitudeSpan) * screenSize.width
+    let dy = CGFloat(latitudeDelta / latitudeSpan) * screenSize.height
+    return hypot(dx, dy)
+}
+
+/// Returns true when coordinates are close enough to make marker selection ambiguous.
+/// The physical distance floor handles tight zoom, while the point radius handles low zoom where pins visually overlap.
+func areCoordinatesNearForMapSelection(
+    _ first: CLLocationCoordinate2D,
+    _ second: CLLocationCoordinate2D,
+    in region: MKCoordinateRegion?,
+    screenSize: CGSize,
+    minimumMeters: CLLocationDistance = 35,
+    radiusPoints: CGFloat = 80
+) -> Bool {
+    let firstLocation = CLLocation(latitude: first.latitude, longitude: first.longitude)
+    let secondLocation = CLLocation(latitude: second.latitude, longitude: second.longitude)
+    if firstLocation.distance(from: secondLocation) <= minimumMeters {
+        return true
+    }
+
+    guard radiusPoints > 0,
+          let screenDistance = mapScreenDistancePoints(from: first, to: second, in: region, screenSize: screenSize)
+    else { return false }
+
+    return screenDistance <= radiusPoints
+}
+
+private func shortestLongitudeDelta(_ longitude: Double, _ referenceLongitude: Double) -> Double {
+    var delta = longitude - referenceLongitude
+    while delta > 180 { delta -= 360 }
+    while delta < -180 { delta += 360 }
+    return delta
+}
+
 /// Returns a relative time string for a date (e.g. "2 minutes ago" or "now")
 func relativeTimeString(
     from date: Date?,

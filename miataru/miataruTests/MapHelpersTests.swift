@@ -1,5 +1,7 @@
 import Testing
 import Foundation
+import CoreGraphics
+import MapKit
 @testable import miataru
 
 @Suite("MapHelpers logic tests")
@@ -78,6 +80,44 @@ struct MapHelpersTests {
             // Allow small rounding differences
             #expect(abs(roundTrip - level) <= 1)
         }
+    }
+
+    @Test("map selection proximity follows screen distance at lower zoom")
+    func testMapSelectionProximityUsesScreenDistance() async throws {
+        let first = CLLocationCoordinate2D(latitude: 52.0, longitude: 13.0)
+        let visuallyCloseButMoreThan35mAway = CLLocationCoordinate2D(latitude: 52.0, longitude: 13.002)
+        let region = MKCoordinateRegion(
+            center: first,
+            span: MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)
+        )
+
+        let isNear = areCoordinatesNearForMapSelection(
+            first,
+            visuallyCloseButMoreThan35mAway,
+            in: region,
+            screenSize: CGSize(width: 400, height: 800)
+        )
+
+        #expect(isNear)
+    }
+
+    @Test("map selection proximity still rejects visually distant devices")
+    func testMapSelectionProximityRejectsDistantScreenPoints() async throws {
+        let first = CLLocationCoordinate2D(latitude: 52.0, longitude: 13.0)
+        let distant = CLLocationCoordinate2D(latitude: 52.0, longitude: 13.02)
+        let region = MKCoordinateRegion(
+            center: first,
+            span: MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)
+        )
+
+        let isNear = areCoordinatesNearForMapSelection(
+            first,
+            distant,
+            in: region,
+            screenSize: CGSize(width: 400, height: 800)
+        )
+
+        #expect(!isNear)
     }
 
     @Test("relativeTimeString with future date returns 'now'")
