@@ -103,6 +103,14 @@ struct iPhone_DevicesView: View {
                         }
                     }
                 }
+                if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+                    Section {
+                        FrequentBackgroundLocationUpdatesDeviceListNotice {
+                            AppNavigationCoordinator.shared.openAdvancedSettings()
+                        }
+                    }
+                }
+
                 Section {
                     ForEach(store.devices) { device in
                         if editMode == .inactive {

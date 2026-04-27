@@ -95,6 +95,14 @@ struct iPad_DevicesView: View {
                     }
                 }
 
+                if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+                    Section {
+                        FrequentBackgroundLocationUpdatesDeviceListNotice {
+                            AppNavigationCoordinator.shared.openAdvancedSettings()
+                        }
+                    }
+                }
+
                 Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
                     ForEach(store.devices) { device in
                         if cache.getLocation(for: device.DeviceID) != nil {

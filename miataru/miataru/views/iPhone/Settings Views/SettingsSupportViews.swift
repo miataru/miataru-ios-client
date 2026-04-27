@@ -39,6 +39,40 @@ struct SettingsWarningText: View {
     }
 }
 
+struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
+    let action: () -> Void
+
+    init(action: @escaping () -> Void) {
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Label {
+                    Text("frequent_background_location_updates_device_list_notice")
+                        .font(.subheadline)
+                        .fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: "location.fill")
+                        .foregroundColor(.blue)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .foregroundColor(.primary)
+        .padding(.vertical, 6)
+        .accessibilityIdentifier("devices_frequent_background_location_updates_notice")
+        .accessibilityHint(Text("frequent_background_location_updates_device_list_notice_hint"))
+    }
+}
+
 struct AllowedDeviceListSettingsContent: View {
     @ObservedObject private var settings = SettingsManager.shared
     @State private var isActivatingAllowedDeviceList = false
