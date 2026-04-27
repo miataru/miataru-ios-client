@@ -24,7 +24,7 @@ version 3.1.7
 - Made common error overlays wrap long messages more reliably and kept history preload errors visible longer.
 - Kept manual pan/zoom interaction on the device history map authoritative during live history refreshes, so newly recorded positions no longer force the map to refit after the user has adjusted the camera.
 - Stopped history-map item taps from automatically recentering the map; tapping a point now only selects it and preserves the current camera.
-- Added an expanded detail bubble for explicitly tapped history points, showing available timestamp, coordinates, accuracy, speed, altitude, and battery information directly at the selected item.
+- Added an expanded detail bubble for selected history points, including the initially selected item when the history map opens, showing available timestamp, coordinates, accuracy, speed, altitude, and battery information directly at the item.
 
 version 3.1.5
 - Refactored the iOS settings flow: centralized runtime defaults and one-time existing-install migrations, shortened the root settings screen, added a dedicated `Advanced Options` page, and moved ACL/status content to the intended destinations.

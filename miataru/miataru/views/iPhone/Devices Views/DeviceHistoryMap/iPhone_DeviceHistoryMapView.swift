@@ -60,7 +60,6 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var pendingFocusAfterScrub = false
     @State private var isSelectionDragging = false
     @State private var suppressNextScrubFocus = false
-    @State private var tappedHistoryEntryKey: String? = nil
     private let playbackContextPadding = 50
     private let activeHistoryCacheReuseWindow: TimeInterval = 3
     private let locationTriggeredRefreshThrottle: TimeInterval = 10
@@ -175,15 +174,10 @@ struct iPhone_DeviceHistoryMapView: View {
             ForEach(Array(annotations.enumerated()), id: \.offset) { _, entry in
                 let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
                 let isSelected = selectedEntry.map { isSelectedEntry(entry, selected: $0) } ?? false
-                let isTapped = tappedHistoryEntryKey == historyEntryKey(for: entry)
                 Annotation("", coordinate: coord, anchor: isSelected ? .bottom : .center) {
                     if isSelected {
                         VStack(spacing: 8) {
-                            if isTapped {
-                                historyEntryDetailBubble(for: entry)
-                            } else {
-                                historyEntrySummaryBubble(for: entry)
-                            }
+                            historyEntryDetailBubble(for: entry)
                             MiataruMapMarker(color: color(for: entry, within: mapHistory))
                                 .shadow(radius: 2)
                         }
@@ -378,19 +372,14 @@ struct iPhone_DeviceHistoryMapView: View {
             }
         }
         .onChange(of: scrubTimestamp) { _, _ in
-            if isPlaybackStepping {
-                tappedHistoryEntryKey = nil
-                return
-            }
+            if isPlaybackStepping { return }
             if isPlaying {
-                tappedHistoryEntryKey = nil
                 startPlayback()
             } else {
                 if suppressNextScrubFocus {
                     suppressNextScrubFocus = false
                     return
                 }
-                tappedHistoryEntryKey = nil
                 if isScrubbing {
                     pendingFocusAfterScrub = true
                 } else {
@@ -718,17 +707,6 @@ struct iPhone_DeviceHistoryMapView: View {
         return Self.historyColor(for: ratio)
     }
 
-    private func historyEntrySummaryBubble(for entry: MiataruLocationData) -> some View {
-        Text(formattedDateTimeLabel(for: entry))
-            .font(.caption2)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(.ultraThinMaterial, in: Capsule())
-            .overlay(
-                Capsule().stroke(Color.primary.opacity(0.12), lineWidth: 1)
-            )
-    }
-
     private func historyEntryDetailBubble(for entry: MiataruLocationData) -> some View {
         let rows = historyDetailRows(for: entry)
 
@@ -760,12 +738,6 @@ struct iPhone_DeviceHistoryMapView: View {
         )
         .shadow(color: .black.opacity(0.12), radius: 5, x: 0, y: 2)
         .fixedSize(horizontal: false, vertical: true)
-    }
-
-    private func formattedDateTimeLabel(for entry: MiataruLocationData) -> String {
-        let dateTimeText = Self.timelineDateFormatter.string(from: entry.TimestampDate)
-        let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed, minSpeedKmh: 0)
-        return speedText != nil ? "\(dateTimeText) • \(speedText!)" : dateTimeText
     }
 
     private func historyDetailRows(for entry: MiataruLocationData) -> [(systemImage: String, text: String)] {
@@ -830,13 +802,8 @@ struct iPhone_DeviceHistoryMapView: View {
             selected.Longitude == entry.Longitude
     }
 
-    private func historyEntryKey(for entry: MiataruLocationData) -> String {
-        "\(entry.Timestamp)|\(entry.Latitude)|\(entry.Longitude)"
-    }
-
     private func selectEntryFromMap(_ entry: MiataruLocationData) {
         let timestamp = entry.TimestampDate.timeIntervalSince1970
-        tappedHistoryEntryKey = historyEntryKey(for: entry)
         stopPlayback()
         guard scrubTimestamp != timestamp else {
             hasUserScrubbed = true
@@ -902,7 +869,6 @@ struct iPhone_DeviceHistoryMapView: View {
         selectedRange = newRange
         displayRange = newRange
         scrubTimestamp = upper
-        tappedHistoryEntryKey = nil
         hasUserScrubbed = false
         hasUserAdjustedMapCamera = false
         scheduleRegionUpdate(animated: true)
@@ -951,7 +917,6 @@ struct iPhone_DeviceHistoryMapView: View {
     private func handleScrubBegan() {
         isScrubbing = true
         pendingFocusAfterScrub = false
-        tappedHistoryEntryKey = nil
         debouncedFocusTask?.cancel()
     }
 
@@ -965,7 +930,6 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func handleSelectionDragBegan() {
         isSelectionDragging = true
-        tappedHistoryEntryKey = nil
         debouncedRegionTask?.cancel()
     }
 
@@ -1031,7 +995,6 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func startPlayback() {
         stopPlayback()
-        tappedHistoryEntryKey = nil
         playbackLockedSpan = nil
         let entries = visibleHistory
         guard !entries.isEmpty else { return }
