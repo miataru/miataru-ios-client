@@ -105,7 +105,7 @@ struct iPhone_DevicesView: View {
                 }
                 if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
                     Section {
-                        FrequentBackgroundLocationUpdatesDeviceListNotice {
+                        FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
                             AppNavigationCoordinator.shared.openAdvancedSettings()
                         }
                     }

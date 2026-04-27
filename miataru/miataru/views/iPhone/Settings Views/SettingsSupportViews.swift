@@ -40,22 +40,34 @@ struct SettingsWarningText: View {
 }
 
 struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
+    let expiresAt: Date?
     let action: () -> Void
 
-    init(action: @escaping () -> Void) {
+    init(expiresAt: Date?, action: @escaping () -> Void) {
+        self.expiresAt = expiresAt
         self.action = action
     }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Label {
-                    Text("frequent_background_location_updates_device_list_notice")
-                        .font(.subheadline)
-                        .fixedSize(horizontal: false, vertical: true)
-                } icon: {
+                HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "location.fill")
                         .foregroundColor(.blue)
+                        .padding(.top, 1)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("frequent_background_location_updates_device_list_notice")
+                            .font(.subheadline)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if let expiresAt {
+                            Text(expirationText(for: expiresAt))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                 }
 
                 Spacer(minLength: 8)
@@ -71,6 +83,23 @@ struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
         .accessibilityIdentifier("devices_frequent_background_location_updates_notice")
         .accessibilityHint(Text("frequent_background_location_updates_device_list_notice_hint"))
     }
+
+    private func expirationText(for date: Date) -> String {
+        String(
+            format: NSLocalizedString(
+                "frequent_background_location_updates_device_list_notice_expires_format",
+                comment: "Expiration line shown in the device list notice for temporary frequent background updates"
+            ),
+            Self.expirationFormatter.string(from: date)
+        )
+    }
+
+    private static let expirationFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
 }
 
 struct AllowedDeviceListSettingsContent: View {
