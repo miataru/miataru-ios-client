@@ -34,6 +34,13 @@
 "frequent_background_location_delivery_1m" = "Hvert minut";
 "frequent_background_location_delivery_5m" = "Hvert 5. minut";
 "frequent_background_location_delivery_10m" = "Hvert 10. minut";
+"frequent_background_visitor_check_interval_title" = "Tjek besøgende";
+"frequent_background_visitor_check_every_update" = "Ved hver opdatering";
+"frequent_background_visitor_check_1m" = "Hvert minut";
+"frequent_background_visitor_check_5m" = "Hvert 5. minut";
+"frequent_background_visitor_check_10m" = "Hvert 10. minut";
+"frequent_background_visitor_check_30m" = "Hvert 30. minut";
+"frequent_background_visitor_check_60m" = "Hver time";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

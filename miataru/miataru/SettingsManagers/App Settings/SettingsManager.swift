@@ -130,6 +130,16 @@ class SettingsManager: ObservableObject {
             defaults.set(String(frequentBackgroundLocationDeliveryMode), forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode)
         }
     }
+    @Published var frequentBackgroundVisitorCheckInterval: Int {
+        didSet {
+            let normalizedValue = FrequentBackgroundVisitorCheckInterval.normalizedRawValue(frequentBackgroundVisitorCheckInterval)
+            if frequentBackgroundVisitorCheckInterval != normalizedValue {
+                frequentBackgroundVisitorCheckInterval = normalizedValue
+                return
+            }
+            defaults.set(String(frequentBackgroundVisitorCheckInterval), forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval)
+        }
+    }
     @Published var autoRefreshDeviceList: Bool {
         didSet { defaults.set(autoRefreshDeviceList, forKey: SettingsKeys.autoRefreshDeviceList) }
     }
@@ -167,6 +177,10 @@ class SettingsManager: ObservableObject {
 
     var frequentBackgroundLocationDeliveryModeSelection: FrequentBackgroundLocationDeliveryMode {
         FrequentBackgroundLocationDeliveryMode(rawValue: frequentBackgroundLocationDeliveryMode) ?? .immediate
+    }
+
+    var frequentBackgroundVisitorCheckIntervalSelection: FrequentBackgroundVisitorCheckInterval {
+        FrequentBackgroundVisitorCheckInterval(rawValue: frequentBackgroundVisitorCheckInterval) ?? .tenMinutes
     }
 
     // Global toggle for pulsing animation on map markers
@@ -295,6 +309,7 @@ class SettingsManager: ObservableObject {
         self.frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration))
         self.frequentBackgroundLocationUpdatesExpiresAt = d.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date
         self.frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode))
+        self.frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval))
         self.autoRefreshDeviceList = d.bool(forKey: SettingsKeys.autoRefreshDeviceList)
         self.unknownVisitorAlertsEnabled = d.bool(forKey: SettingsKeys.unknownVisitorAlertsEnabled)
         self.showCurrentSpeedOnMap = d.bool(forKey: SettingsKeys.showCurrentSpeedOnMap)

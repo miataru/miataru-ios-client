@@ -2,7 +2,10 @@ version 3.1.7
 - Added an opt-in frequent background location-update mode in Advanced Options, keeping significant-change monitoring as the unchanged default when the user does not enable it.
 - Added configurable frequent-background distance presets (100 m default, 50 m, 25 m) and auto-disable durations (1 hour, 4 hours default, 12 hours, 24 hours, never), with automatic fallback to significant-change monitoring after expiry.
 - Added frequent-background delivery options so updates can keep sending immediately by default or be queued locally and flushed together after 30 seconds, 1 minute, 5 minutes, or 10 minutes.
-- Added localized per-option explanations for frequent background movement threshold, auto-disable duration, and server-delivery mode choices.
+- Added configurable visitor-history check intervals for frequent background mode, defaulting to 10 minutes so visitor checks no longer have to run after every background location upload.
+- Added a repeating local reminder notification for the never-expiring frequent background mode; tapping it opens the Advanced Options page where the mode can be turned off.
+- Added a local notification for finite frequent-background durations so users are informed when Miataru automatically returns to the standard background update mode.
+- Added localized per-option explanations for frequent background movement threshold, auto-disable duration, server-delivery mode, and visitor-check interval choices.
 - Added localized red battery-usage warning text while frequent background updates are enabled, plus background-mode/expiry visibility in the location-status view.
 - Preserved frequent-background update settings during DeviceKey recovery/reset flows and added regression coverage for defaults, localization parity, value normalization, expiry behavior, and default significant-change configuration.
 - Incremented iOS app build number (`CURRENT_PROJECT_VERSION`) from 1 to 2.

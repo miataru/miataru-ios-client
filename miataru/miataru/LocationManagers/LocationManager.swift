@@ -120,6 +120,7 @@ final class LocationManager: NSObject, ObservableObject {
         applyLocationUpdateOutboxPolicy()
         settings.ensureFrequentBackgroundLocationUpdatesExpiration()
         scheduleFrequentBackgroundLocationExpirationTimer()
+        refreshFrequentBackgroundTrackingReminder()
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
         // Load persisted background update metrics
@@ -156,6 +157,7 @@ final class LocationManager: NSObject, ObservableObject {
         
         // Re-check permission escalation / first-time prompt if needed
         handleFrequentBackgroundLocationExpirationIfNeeded()
+        refreshFrequentBackgroundTrackingReminder()
         ensureAuthorizationIfNeeded()
         if !isTracking,
            settings.trackAndReportLocation,
@@ -192,6 +194,7 @@ final class LocationManager: NSObject, ObservableObject {
                 } else {
                     self.stopTracking()
                 }
+                self.refreshFrequentBackgroundTrackingReminder()
             }
             .store(in: &cancellables)
 
@@ -215,6 +218,7 @@ final class LocationManager: NSObject, ObservableObject {
             guard let self else { return }
             self.settings.ensureFrequentBackgroundLocationUpdatesExpiration()
             self.scheduleFrequentBackgroundLocationExpirationTimer()
+            self.refreshFrequentBackgroundTrackingReminder()
             if self.isTracking, UIApplication.shared.applicationState != .active {
                 self.startSignificantChangeUpdates()
             }
@@ -519,6 +523,22 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundLocationExpirationTimer = timer
         RunLoop.main.add(timer, forMode: .common)
     }
+
+    private func refreshFrequentBackgroundTrackingReminder() {
+        let locationTrackingEnabled = settings.trackAndReportLocation
+        let frequentBackgroundUpdatesEnabled = settings.frequentBackgroundLocationUpdatesEnabled
+        let durationMode = settings.frequentBackgroundLocationUpdateDurationMode
+        let expiresAt = settings.frequentBackgroundLocationUpdatesExpiresAt
+
+        Task {
+            await FrequentBackgroundTrackingReminderService.shared.refresh(
+                locationTrackingEnabled: locationTrackingEnabled,
+                frequentBackgroundUpdatesEnabled: frequentBackgroundUpdatesEnabled,
+                durationMode: durationMode,
+                expiresAt: expiresAt
+            )
+        }
+    }
     
     // MARK: - Server Communication
     @MainActor
@@ -539,7 +559,9 @@ final class LocationManager: NSObject, ObservableObject {
             self.serverUpdateStatus = .failed("Invalid location values")
             return
         }
-        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: UIApplication.shared.applicationState)
+        let applicationState = UIApplication.shared.applicationState
+        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
+        let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
         self.serverUpdateStatus = .updating
         Task {
             let result = await locationUpdateDeliveryCoordinator.submit(
@@ -547,7 +569,8 @@ final class LocationManager: NSObject, ObservableObject {
                 payload: payload,
                 enableHistory: settings.saveLocationHistoryOnServer,
                 retentionTime: settings.locationDataRetentionTime,
-                deliveryDelay: deliveryDelay
+                deliveryDelay: deliveryDelay,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval
             )
 
             switch result {
@@ -555,7 +578,10 @@ final class LocationManager: NSObject, ObservableObject {
                 self.markServerUpdateSucceeded()
                 NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
                 Task {
-                    await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
+                    await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
+                        serverURL: serverURL,
+                        minimumInterval: visitorCheckMinimumInterval
+                    )
                 }
             case .queued:
                 debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
@@ -580,6 +606,14 @@ final class LocationManager: NSObject, ObservableObject {
             return nil
         }
         return settings.frequentBackgroundLocationDeliveryModeSelection.delay
+    }
+
+    private func frequentBackgroundVisitorCheckMinimumInterval(for applicationState: UIApplication.State) -> TimeInterval? {
+        guard applicationState != .active,
+              settings.frequentBackgroundLocationUpdatesEnabled else {
+            return nil
+        }
+        return settings.frequentBackgroundVisitorCheckIntervalSelection.minimumInterval
     }
 
     @MainActor
@@ -689,6 +723,7 @@ final class LocationManager: NSObject, ObservableObject {
     func appDidEnterForeground() {
         debugLog("[LocationManager] App did enter foreground")
         handleFrequentBackgroundLocationExpirationIfNeeded()
+        refreshFrequentBackgroundTrackingReminder()
         guard isTracking else { return }
         // Check daily reset on foreground entry so UI reflects a new day immediately
         maybeResetBackgroundMetricsIfNeeded()
@@ -699,6 +734,7 @@ final class LocationManager: NSObject, ObservableObject {
     func appDidEnterBackground() {
         debugLog("[LocationManager] App did enter background")
         handleFrequentBackgroundLocationExpirationIfNeeded()
+        refreshFrequentBackgroundTrackingReminder()
         guard isTracking else { return }
         stopHighAccuracyUpdates()
         startSignificantChangeUpdates()

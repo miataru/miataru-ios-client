@@ -11,6 +11,7 @@ import SwiftUI
 
 struct iPhone_RootView: View {
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     private let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
     @State private var selectedTab = 0
     @State private var showDeviceKeySheet = false
@@ -53,6 +54,7 @@ struct iPhone_RootView: View {
                (0...2).contains(initialTab) {
                 selectedTab = initialTab
             }
+            applyRootNavigationDestination(appNavigation.rootDestination)
             if !isUITesting, settings.deviceKeyAuthBlocked {
                 deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
                 withAnimation(.easeInOut(duration: 0.25)) {
@@ -83,6 +85,9 @@ struct iPhone_RootView: View {
             guard !isUITesting else { return }
             selectedTab = 1
         }
+        .onReceive(appNavigation.$rootDestination.compactMap { $0 }) { destination in
+            applyRootNavigationDestination(destination)
+        }
         .overlay(alignment: .top) {
             if showDeviceKeyBanner {
                 DeviceKeyBannerView(
@@ -98,6 +103,15 @@ struct iPhone_RootView: View {
             if !isUITesting, newValue != nil {
                 selectedTab = 0
             }
+        }
+    }
+
+    private func applyRootNavigationDestination(_ destination: AppRootNavigationDestination?) {
+        switch destination {
+        case .settings:
+            selectedTab = 2
+        case .none:
+            break
         }
     }
 }

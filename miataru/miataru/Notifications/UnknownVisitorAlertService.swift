@@ -65,6 +65,16 @@ struct UnknownVisitorAlertEvaluationResult {
     let newWatermarkMs: Int64
 }
 
+struct BackgroundVisitorCheckThrottle {
+    static func shouldRun(lastCheckAt: Date?,
+                          now: Date,
+                          minimumInterval: TimeInterval?) -> Bool {
+        guard let minimumInterval, minimumInterval > 0 else { return true }
+        guard let lastCheckAt else { return true }
+        return now.timeIntervalSince(lastCheckAt) >= minimumInterval
+    }
+}
+
 struct UnknownVisitorAlertEvaluator {
     static func evaluate(visitors: [MiataruVisitor],
                          lastProcessedTimestampMs: Int64,
@@ -147,6 +157,7 @@ actor UnknownVisitorAlertService {
     private enum Keys {
         static let lastProcessedVisitorTimestampMs = "unknown_visitor_alert_last_processed_ts_ms"
         static let lastNotifiedByDeviceID = "unknown_visitor_alert_last_notified_by_device"
+        static let lastBackgroundVisitorCheckAt = "unknown_visitor_alert_last_background_check_at"
     }
 
     private let defaults: UserDefaults
@@ -192,8 +203,10 @@ actor UnknownVisitorAlertService {
         }
     }
 
-    func processAfterSuccessfulLocationUpdate(serverURL: URL) async {
+    func processAfterSuccessfulLocationUpdate(serverURL: URL,
+                                              minimumInterval: TimeInterval? = nil) async {
         guard await shouldProcessUnknownVisitorAlerts() else { return }
+        guard shouldRunVisitorCheck(minimumInterval: minimumInterval) else { return }
 
         if isProcessing {
             pendingServerURL = serverURL
@@ -226,6 +239,23 @@ actor UnknownVisitorAlertService {
         default:
             return false
         }
+    }
+
+    private func shouldRunVisitorCheck(minimumInterval: TimeInterval?) -> Bool {
+        guard let minimumInterval, minimumInterval > 0 else { return true }
+
+        let now = nowProvider()
+        let lastCheckAt = defaults.object(forKey: Keys.lastBackgroundVisitorCheckAt) as? Date
+        guard BackgroundVisitorCheckThrottle.shouldRun(
+            lastCheckAt: lastCheckAt,
+            now: now,
+            minimumInterval: minimumInterval
+        ) else {
+            return false
+        }
+
+        defaults.set(now, forKey: Keys.lastBackgroundVisitorCheckAt)
+        return true
     }
 
     private func processOnce(serverURL: URL) async {

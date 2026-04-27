@@ -206,6 +206,34 @@
 			</dict>
 			<dict>
 				<key>Type</key>
+				<string>PSMultiValueSpecifier</string>
+				<key>Title</key>
+				<string>frequent_background_visitor_check_interval_title</string>
+				<key>Key</key>
+				<string>frequent_background_visitor_check_interval</string>
+				<key>DefaultValue</key>
+				<string>600</string>
+				<key>Titles</key>
+				<array>
+					<string>frequent_background_visitor_check_every_update</string>
+					<string>frequent_background_visitor_check_1m</string>
+					<string>frequent_background_visitor_check_5m</string>
+					<string>frequent_background_visitor_check_10m</string>
+					<string>frequent_background_visitor_check_30m</string>
+					<string>frequent_background_visitor_check_60m</string>
+				</array>
+				<key>Values</key>
+				<array>
+					<string>0</string>
+					<string>60</string>
+					<string>300</string>
+					<string>600</string>
+					<string>1800</string>
+					<string>3600</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Type</key>
 				<string>PSGroupSpecifier</string>
 				<key>Title</key>
 				<string>server_url</string>

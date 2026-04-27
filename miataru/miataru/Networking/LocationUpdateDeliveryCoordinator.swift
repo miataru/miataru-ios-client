@@ -29,6 +29,7 @@ actor LocationUpdateDeliveryCoordinator {
     }
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
+    typealias VisitorProcessor = (URL, TimeInterval?) async -> Void
 
     private struct FlushResult {
         let didReachBatchLimit: Bool
@@ -48,6 +49,7 @@ actor LocationUpdateDeliveryCoordinator {
     private let flushBatchSize: Int
     private let flushInterval: TimeInterval
     private let deferredFlushDelay: TimeInterval
+    private let visitorProcessor: VisitorProcessor
 
     private var periodicFlushTask: Task<Void, Never>?
     private var deferredFlushTask: Task<Void, Never>?
@@ -59,7 +61,8 @@ actor LocationUpdateDeliveryCoordinator {
         flushBatchSize: Int = 25,
         flushInterval: TimeInterval = 60,
         deferredFlushDelay: TimeInterval = 1,
-        updateSender: UpdateSender? = nil
+        updateSender: UpdateSender? = nil,
+        visitorProcessor: VisitorProcessor? = nil
     ) {
         self.outboxStore = outboxStore
         self.flushBatchSize = max(1, flushBatchSize)
@@ -73,6 +76,12 @@ actor LocationUpdateDeliveryCoordinator {
                 enableHistory: enableHistory,
                 retentionTime: retentionTime,
                 retryPolicy: .updateLocation
+            )
+        }
+        self.visitorProcessor = visitorProcessor ?? { serverURL, minimumInterval in
+            await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
+                serverURL: serverURL,
+                minimumInterval: minimumInterval
             )
         }
     }
@@ -103,7 +112,8 @@ actor LocationUpdateDeliveryCoordinator {
         payload: UpdateLocationPayload,
         enableHistory: Bool,
         retentionTime: Int,
-        deliveryDelay: TimeInterval? = nil
+        deliveryDelay: TimeInterval? = nil,
+        visitorCheckMinimumInterval: TimeInterval? = nil
     ) async -> SubmitResult {
         if let deliveryDelay, deliveryDelay > 0 {
             let now = Date()
@@ -114,7 +124,8 @@ actor LocationUpdateDeliveryCoordinator {
                 payload: payload,
                 enableHistory: enableHistory,
                 retentionTime: retentionTime,
-                availableAfter: availableAfter
+                availableAfter: availableAfter,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval
             )
             await notifyOutboxDidChange()
             await scheduleNextFlushIfNeeded(now: now, trigger: "delayedSubmit")
@@ -126,7 +137,8 @@ actor LocationUpdateDeliveryCoordinator {
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: enableHistory,
-                retentionTime: retentionTime
+                retentionTime: retentionTime,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval
             )
             await notifyOutboxDidChange()
             scheduleFlushSoon(trigger: "submitWithPendingOutbox")
@@ -144,7 +156,8 @@ actor LocationUpdateDeliveryCoordinator {
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: enableHistory,
-                retentionTime: retentionTime
+                retentionTime: retentionTime,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval
             )
             await notifyOutboxDidChange()
             return .queued
@@ -266,9 +279,7 @@ actor LocationUpdateDeliveryCoordinator {
                     await notifyOutboxDidChange()
                     processedCount += 1
                     await notifyOwnLocationUpdateDidSend()
-                    Task {
-                        await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(serverURL: serverURL)
-                    }
+                    Task { await visitorProcessor(serverURL, head.visitorCheckMinimumInterval) }
                     continue
                 }
 

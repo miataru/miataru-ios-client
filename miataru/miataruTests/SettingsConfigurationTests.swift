@@ -68,6 +68,10 @@ struct SettingsConfigurationTests {
             "frequent_background_location_updates_title",
             "frequent_background_location_updates_explanation",
             "frequent_background_location_updates_battery_warning",
+            "frequent_background_location_reminder_notification_title",
+            "frequent_background_location_reminder_notification_body",
+            "frequent_background_location_expired_notification_title",
+            "frequent_background_location_expired_notification_body",
             "background_location_distance_filter_title",
             "background_location_distance_filter_100m_explanation",
             "background_location_distance_filter_50m_explanation",
@@ -90,6 +94,19 @@ struct SettingsConfigurationTests {
             "frequent_background_location_delivery_1m_explanation",
             "frequent_background_location_delivery_5m_explanation",
             "frequent_background_location_delivery_10m_explanation",
+            "frequent_background_visitor_check_interval_title",
+            "frequent_background_visitor_check_every_update",
+            "frequent_background_visitor_check_1m",
+            "frequent_background_visitor_check_5m",
+            "frequent_background_visitor_check_10m",
+            "frequent_background_visitor_check_30m",
+            "frequent_background_visitor_check_60m",
+            "frequent_background_visitor_check_every_update_explanation",
+            "frequent_background_visitor_check_1m_explanation",
+            "frequent_background_visitor_check_5m_explanation",
+            "frequent_background_visitor_check_10m_explanation",
+            "frequent_background_visitor_check_30m_explanation",
+            "frequent_background_visitor_check_60m_explanation",
             "frequent_background_location_updates_active_hint_format",
             "tracking_mode_frequent_background_updates_format",
             "background_tracking_mode_title",
@@ -199,6 +216,13 @@ struct SettingsConfigurationTests {
             "frequent_background_location_delivery_1m",
             "frequent_background_location_delivery_5m",
             "frequent_background_location_delivery_10m",
+            "frequent_background_visitor_check_interval_title",
+            "frequent_background_visitor_check_every_update",
+            "frequent_background_visitor_check_1m",
+            "frequent_background_visitor_check_5m",
+            "frequent_background_visitor_check_10m",
+            "frequent_background_visitor_check_30m",
+            "frequent_background_visitor_check_60m",
             "4hours",
             "100m",
             "50m",
@@ -267,6 +291,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdateDuration] as? String == "14400")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDeliveryMode] as? String == "0")
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundVisitorCheckInterval] as? String == "600")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.preventScreenRotation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.pulsingMapMarkers] as? Bool == true)
@@ -305,6 +330,11 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundLocationDeliveryMode.everyThirtySeconds.delay == 30)
         #expect(FrequentBackgroundLocationDeliveryMode.normalizedRawValue(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue) == 600)
         #expect(FrequentBackgroundLocationDeliveryMode.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundLocationDeliveryMode)
+
+        #expect(FrequentBackgroundVisitorCheckInterval.everyUpdate.minimumInterval == nil)
+        #expect(FrequentBackgroundVisitorCheckInterval.tenMinutes.minimumInterval == 600)
+        #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue) == 3_600)
+        #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)
     }
 
     @Test("Background location configuration preserves significant-change default")

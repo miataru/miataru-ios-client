@@ -34,6 +34,13 @@
 "frequent_background_location_delivery_1m" = "1分ごと";
 "frequent_background_location_delivery_5m" = "5分ごと";
 "frequent_background_location_delivery_10m" = "10分ごと";
+"frequent_background_visitor_check_interval_title" = "訪問者を確認";
+"frequent_background_visitor_check_every_update" = "更新ごと";
+"frequent_background_visitor_check_1m" = "1分ごと";
+"frequent_background_visitor_check_5m" = "5分ごと";
+"frequent_background_visitor_check_10m" = "10分ごと";
+"frequent_background_visitor_check_30m" = "30分ごと";
+"frequent_background_visitor_check_60m" = "1時間ごと";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

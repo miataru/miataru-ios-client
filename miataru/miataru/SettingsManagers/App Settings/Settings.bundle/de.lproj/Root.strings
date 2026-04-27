@@ -34,6 +34,13 @@
 "frequent_background_location_delivery_1m" = "Alle 1 Minute";
 "frequent_background_location_delivery_5m" = "Alle 5 Minuten";
 "frequent_background_location_delivery_10m" = "Alle 10 Minuten";
+"frequent_background_visitor_check_interval_title" = "Besucher prüfen";
+"frequent_background_visitor_check_every_update" = "Bei jedem Update";
+"frequent_background_visitor_check_1m" = "Alle 1 Minute";
+"frequent_background_visitor_check_5m" = "Alle 5 Minuten";
+"frequent_background_visitor_check_10m" = "Alle 10 Minuten";
+"frequent_background_visitor_check_30m" = "Alle 30 Minuten";
+"frequent_background_visitor_check_60m" = "Alle 60 Minuten";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

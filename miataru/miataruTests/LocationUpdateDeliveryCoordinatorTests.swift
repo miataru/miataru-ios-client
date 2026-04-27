@@ -29,7 +29,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let result = await coordinator.submit(
@@ -74,7 +75,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let result = await coordinator.submit(
@@ -124,7 +126,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             deferredFlushDelay: 0.05,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let result = await coordinator.submit(
@@ -166,7 +169,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             deferredFlushDelay: 0.05,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let firstResult = await coordinator.submit(
@@ -174,14 +178,16 @@ struct LocationUpdateDeliveryCoordinatorTests {
             payload: payload(timestamp: "1"),
             enableHistory: true,
             retentionTime: 60,
-            deliveryDelay: 0.1
+            deliveryDelay: 0.1,
+            visitorCheckMinimumInterval: 600
         )
         let secondResult = await coordinator.submit(
             serverURL: URL(string: "https://example.org")!,
             payload: payload(timestamp: "2"),
             enableHistory: true,
             retentionTime: 60,
-            deliveryDelay: 0.1
+            deliveryDelay: 0.1,
+            visitorCheckMinimumInterval: 600
         )
 
         if case .queued = firstResult {
@@ -196,6 +202,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
         var snapshot = await store.itemsSnapshot()
         #expect(snapshot.map(\.payload.Timestamp) == ["1", "2"])
         #expect(snapshot[0].availableAfter == snapshot[1].availableAfter)
+        #expect(snapshot[0].visitorCheckMinimumInterval == 600)
+        #expect(snapshot[1].visitorCheckMinimumInterval == 600)
         #expect(await sender.callCount == 0)
 
         try await Task.sleep(nanoseconds: 300_000_000)
@@ -204,6 +212,42 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(snapshot.isEmpty)
         #expect(await sender.sentTimestamps == ["1", "2"])
         await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Flush forwards queued visitor check interval")
+    func flushForwardsQueuedVisitorCheckInterval() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "visitor-check"),
+            enableHistory: true,
+            retentionTime: 60,
+            visitorCheckMinimumInterval: 600
+        )
+
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let visitorProcessor = RecordingVisitorProcessor()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: { url, minimumInterval in
+                await visitorProcessor.record(url: url, minimumInterval: minimumInterval)
+            }
+        )
+
+        await coordinator.flushOutboxNow()
+
+        let records = await visitorProcessor.recordsSnapshot()
+        #expect(records.count == 1)
+        #expect(records.first?.urlString == "https://example.org")
+        #expect(records.first?.minimumInterval == 600)
     }
 
     @Test("Manual full flush drains more than one batch")
@@ -228,7 +272,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         await coordinator.flushOutboxCompletelyNow()
@@ -256,7 +301,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         await coordinator.flushOutboxNow()
@@ -290,7 +336,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         await coordinator.flushOutboxNow()
@@ -315,7 +362,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let result = await coordinator.submit(
@@ -359,7 +407,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         await coordinator.sendPendingOutbox(to: newServerURL)
@@ -387,7 +436,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             deferredFlushDelay: 0.05,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         let flushTask = Task {
@@ -427,7 +477,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             flushInterval: 60,
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
-            }
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
         )
 
         await coordinator.discardPendingOutbox()
@@ -458,6 +509,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         return directory.appendingPathComponent("locationUpdateOutbox.json")
     }
+
+    private static let noOpVisitorProcessor: LocationUpdateDeliveryCoordinator.VisitorProcessor = { _, _ in }
 }
 
 private actor MockUpdateSender {
@@ -498,6 +551,23 @@ private actor MockUpdateSender {
         case .failure(let error):
             throw error
         }
+    }
+}
+
+private actor RecordingVisitorProcessor {
+    struct Record: Sendable {
+        let urlString: String
+        let minimumInterval: TimeInterval?
+    }
+
+    private var records: [Record] = []
+
+    func record(url: URL, minimumInterval: TimeInterval?) {
+        records.append(Record(urlString: url.absoluteString, minimumInterval: minimumInterval))
+    }
+
+    func recordsSnapshot() -> [Record] {
+        records
     }
 }
 

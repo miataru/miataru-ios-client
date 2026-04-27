@@ -34,6 +34,13 @@
 "frequent_background_location_delivery_1m" = "Elke minuut";
 "frequent_background_location_delivery_5m" = "Elke 5 minuten";
 "frequent_background_location_delivery_10m" = "Elke 10 minuten";
+"frequent_background_visitor_check_interval_title" = "Bezoekers controleren";
+"frequent_background_visitor_check_every_update" = "Bij elke update";
+"frequent_background_visitor_check_1m" = "Elke minuut";
+"frequent_background_visitor_check_5m" = "Elke 5 minuten";
+"frequent_background_visitor_check_10m" = "Elke 10 minuten";
+"frequent_background_visitor_check_30m" = "Elke 30 minuten";
+"frequent_background_visitor_check_60m" = "Elk uur";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

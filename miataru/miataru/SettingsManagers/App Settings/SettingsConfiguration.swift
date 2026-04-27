@@ -31,6 +31,7 @@ enum SettingsKeys {
     static let frequentBackgroundLocationUpdateDuration = "frequent_background_location_update_duration"
     static let frequentBackgroundLocationUpdatesExpiresAt = "frequent_background_location_updates_expires_at"
     static let frequentBackgroundLocationDeliveryMode = "frequent_background_location_delivery_mode"
+    static let frequentBackgroundVisitorCheckInterval = "frequent_background_visitor_check_interval"
     static let autoRefreshDeviceList = "auto_refresh_device_list"
     static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
     static let showCurrentSpeedOnMap = "show_current_speed_on_map"
@@ -71,6 +72,7 @@ enum SettingsDefaultValues {
     static let frequentBackgroundLocationDistanceFilter = 100
     static let frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.fourHours.rawValue
     static let frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.immediate.rawValue
+    static let frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.tenMinutes.rawValue
     static let autoRefreshDeviceList = true
     static let unknownVisitorAlertsEnabled = false
     static let showCurrentSpeedOnMap = true
@@ -105,6 +107,7 @@ enum SettingsDefaultValues {
         SettingsKeys.frequentBackgroundLocationDistanceFilter: String(frequentBackgroundLocationDistanceFilter),
         SettingsKeys.frequentBackgroundLocationUpdateDuration: String(frequentBackgroundLocationUpdateDuration),
         SettingsKeys.frequentBackgroundLocationDeliveryMode: String(frequentBackgroundLocationDeliveryMode),
+        SettingsKeys.frequentBackgroundVisitorCheckInterval: String(frequentBackgroundVisitorCheckInterval),
         SettingsKeys.autoRefreshDeviceList: autoRefreshDeviceList,
         SettingsKeys.unknownVisitorAlertsEnabled: unknownVisitorAlertsEnabled,
         SettingsKeys.showCurrentSpeedOnMap: showCurrentSpeedOnMap,
@@ -182,6 +185,23 @@ enum FrequentBackgroundLocationDeliveryMode: Int, CaseIterable {
 
     static func normalizedRawValue(_ value: Int) -> Int {
         Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundLocationDeliveryMode
+    }
+}
+
+enum FrequentBackgroundVisitorCheckInterval: Int, CaseIterable {
+    case everyUpdate = 0
+    case everyMinute = 60
+    case everyFiveMinutes = 300
+    case tenMinutes = 600
+    case everyThirtyMinutes = 1_800
+    case everyHour = 3_600
+
+    var minimumInterval: TimeInterval? {
+        self == .everyUpdate ? nil : TimeInterval(rawValue)
+    }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundVisitorCheckInterval
     }
 }
 

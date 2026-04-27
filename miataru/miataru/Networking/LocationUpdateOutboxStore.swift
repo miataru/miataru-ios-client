@@ -19,6 +19,7 @@ struct LocationUpdateOutboxItem: Codable {
     let payload: UpdateLocationPayload
     let enableHistory: Bool
     let retentionTime: Int
+    let visitorCheckMinimumInterval: TimeInterval?
 
     init(
         serverURLString: String,
@@ -27,7 +28,8 @@ struct LocationUpdateOutboxItem: Codable {
         attemptCount: Int = 0,
         payload: UpdateLocationPayload,
         enableHistory: Bool,
-        retentionTime: Int
+        retentionTime: Int,
+        visitorCheckMinimumInterval: TimeInterval? = nil
     ) {
         self.dedupeKey = Self.makeDedupeKey(for: payload)
         self.serverURLString = serverURLString
@@ -37,6 +39,7 @@ struct LocationUpdateOutboxItem: Codable {
         self.payload = payload
         self.enableHistory = enableHistory
         self.retentionTime = retentionTime
+        self.visitorCheckMinimumInterval = visitorCheckMinimumInterval
     }
 
     static func makeDedupeKey(for payload: UpdateLocationPayload) -> String {
@@ -102,7 +105,8 @@ actor LocationUpdateOutboxStore {
         payload: UpdateLocationPayload,
         enableHistory: Bool,
         retentionTime: Int,
-        availableAfter: Date? = nil
+        availableAfter: Date? = nil,
+        visitorCheckMinimumInterval: TimeInterval? = nil
     ) {
         pruneExpiredEntriesIfNeeded()
 
@@ -112,7 +116,8 @@ actor LocationUpdateOutboxStore {
             availableAfter: availableAfter,
             payload: payload,
             enableHistory: enableHistory,
-            retentionTime: retentionTime
+            retentionTime: retentionTime,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval
         )
 
         guard !items.contains(where: { $0.dedupeKey == item.dedupeKey }) else {

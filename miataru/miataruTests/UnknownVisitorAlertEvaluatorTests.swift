@@ -142,6 +142,32 @@ struct UnknownVisitorAlertEvaluatorTests {
         #expect(await notifier.didRequestAuthorization == false)
     }
 
+    @Test("Background visitor check throttle respects configured minimum interval")
+    func backgroundVisitorCheckThrottleRespectsMinimumInterval() {
+        let now = Date(timeIntervalSince1970: 2_000)
+
+        #expect(BackgroundVisitorCheckThrottle.shouldRun(
+            lastCheckAt: nil,
+            now: now,
+            minimumInterval: 600
+        ))
+        #expect(!BackgroundVisitorCheckThrottle.shouldRun(
+            lastCheckAt: now.addingTimeInterval(-599),
+            now: now,
+            minimumInterval: 600
+        ))
+        #expect(BackgroundVisitorCheckThrottle.shouldRun(
+            lastCheckAt: now.addingTimeInterval(-600),
+            now: now,
+            minimumInterval: 600
+        ))
+        #expect(BackgroundVisitorCheckThrottle.shouldRun(
+            lastCheckAt: now,
+            now: now,
+            minimumInterval: nil
+        ))
+    }
+
     private func msString(_ date: Date) -> String {
         String(Int64((date.timeIntervalSince1970 * 1000.0).rounded()))
     }
@@ -175,5 +201,263 @@ actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
 
     func add(_ request: UNNotificationRequest) async throws {
         _ = request
+    }
+}
+
+struct FrequentBackgroundTrackingReminderServiceTests {
+    @Test("Never-expiring frequent background mode schedules a repeating 24h reminder")
+    func neverExpiringFrequentBackgroundModeSchedulesReminder() async throws {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: true,
+            durationMode: .unlimited,
+            expiresAt: nil
+        )
+
+        let addedRequests = await notifier.addedRequests
+        let request = try #require(addedRequests.first)
+        #expect(request.identifier == FrequentBackgroundTrackingReminderService.notificationIdentifier)
+        #expect(request.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.notificationType)
+
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == FrequentBackgroundTrackingReminderService.reminderInterval)
+        #expect(trigger.repeats)
+    }
+
+    @Test("Existing reminder is kept so the 24h timer is not reset repeatedly")
+    func existingReminderIsKeptWithoutRescheduling() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .authorized,
+            pendingRequests: [Self.existingReminderRequest()]
+        )
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: true,
+            durationMode: .unlimited,
+            expiresAt: nil
+        )
+
+        #expect(await notifier.addedRequests.isEmpty)
+        #expect(await notifier.removedPendingIdentifiers.isEmpty)
+    }
+
+    @Test("Finite or inactive frequent background mode removes the reminder")
+    func inactiveModeRemovesReminder() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: true,
+            durationMode: .fourHours,
+            expiresAt: nil
+        )
+
+        #expect(await notifier.addedRequests.isEmpty)
+        #expect(await notifier.removedPendingIdentifiers.contains(FrequentBackgroundTrackingReminderService.notificationIdentifier))
+        #expect(await notifier.removedDeliveredIdentifiers.contains(FrequentBackgroundTrackingReminderService.notificationIdentifier))
+    }
+
+    @Test("Undetermined notification permission is requested before scheduling")
+    func undeterminedPermissionIsRequestedBeforeScheduling() async throws {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .notDetermined,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: true,
+            durationMode: .unlimited,
+            expiresAt: nil
+        )
+
+        #expect(await notifier.didRequestAuthorization)
+        #expect(await notifier.addedRequests.count == 1)
+    }
+
+    @Test("Finite frequent background mode schedules one expiration notification")
+    func finiteFrequentBackgroundModeSchedulesExpirationNotification() async throws {
+        let suiteName = "FrequentBackgroundTrackingReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 2_000)
+        let expiresAt = now.addingTimeInterval(600)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = FrequentBackgroundTrackingReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: true,
+            durationMode: .fourHours,
+            expiresAt: expiresAt
+        )
+
+        let addedRequests = await notifier.addedRequests
+        let request = try #require(addedRequests.first)
+        #expect(request.identifier == FrequentBackgroundTrackingReminderService.expirationNotificationIdentifier)
+        #expect(request.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.expirationNotificationType)
+
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == 600)
+        #expect(!trigger.repeats)
+        #expect(defaults.object(forKey: "frequent_background_tracking_expiration_notification_date") as? Date == expiresAt)
+    }
+
+    @Test("Manual finite mode disable cancels future expiration notification")
+    func manualFiniteModeDisableCancelsFutureExpirationNotification() async throws {
+        let suiteName = "FrequentBackgroundTrackingReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 2_000)
+        defaults.set(now.addingTimeInterval(600), forKey: "frequent_background_tracking_expiration_notification_date")
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .authorized,
+            pendingRequests: [Self.existingExpirationRequest()]
+        )
+        let service = FrequentBackgroundTrackingReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: false,
+            durationMode: .fourHours,
+            expiresAt: nil
+        )
+
+        #expect(await notifier.removedPendingIdentifiers.contains(FrequentBackgroundTrackingReminderService.expirationNotificationIdentifier))
+        #expect(defaults.object(forKey: "frequent_background_tracking_expiration_notification_date") == nil)
+    }
+
+    @Test("Automatic finite mode expiry does not cancel due expiration notification")
+    func automaticFiniteModeExpiryDoesNotCancelDueExpirationNotification() async throws {
+        let suiteName = "FrequentBackgroundTrackingReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 2_000)
+        defaults.set(now, forKey: "frequent_background_tracking_expiration_notification_date")
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .authorized,
+            pendingRequests: [Self.existingExpirationRequest()]
+        )
+        let service = FrequentBackgroundTrackingReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(
+            locationTrackingEnabled: true,
+            frequentBackgroundUpdatesEnabled: false,
+            durationMode: .fourHours,
+            expiresAt: nil
+        )
+
+        #expect(!(await notifier.removedPendingIdentifiers.contains(FrequentBackgroundTrackingReminderService.expirationNotificationIdentifier)))
+        #expect(defaults.object(forKey: "frequent_background_tracking_expiration_notification_date") == nil)
+    }
+
+    private static func existingReminderRequest() -> UNNotificationRequest {
+        let content = UNMutableNotificationContent()
+        content.userInfo = [
+            FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey: FrequentBackgroundTrackingReminderService.notificationType
+        ]
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: FrequentBackgroundTrackingReminderService.reminderInterval,
+            repeats: true
+        )
+        return UNNotificationRequest(
+            identifier: FrequentBackgroundTrackingReminderService.notificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
+    }
+
+    private static func existingExpirationRequest() -> UNNotificationRequest {
+        let content = UNMutableNotificationContent()
+        content.userInfo = [
+            FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey: FrequentBackgroundTrackingReminderService.expirationNotificationType
+        ]
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: 600,
+            repeats: false
+        )
+        return UNNotificationRequest(
+            identifier: FrequentBackgroundTrackingReminderService.expirationNotificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
+    }
+}
+
+actor MockFrequentBackgroundTrackingReminderNotifier: FrequentBackgroundTrackingReminderNotifying {
+    private var status: UNAuthorizationStatus
+    private let requestAuthorizationResult: Result<Bool, Error>
+    private(set) var didRequestAuthorization: Bool = false
+    private(set) var pendingRequests: [UNNotificationRequest]
+    private(set) var addedRequests: [UNNotificationRequest] = []
+    private(set) var removedPendingIdentifiers: [String] = []
+    private(set) var removedDeliveredIdentifiers: [String] = []
+
+    init(initialStatus: UNAuthorizationStatus,
+         pendingRequests: [UNNotificationRequest] = [],
+         requestAuthorizationResult: Result<Bool, Error> = .success(false)) {
+        self.status = initialStatus
+        self.pendingRequests = pendingRequests
+        self.requestAuthorizationResult = requestAuthorizationResult
+    }
+
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        status
+    }
+
+    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool {
+        _ = options
+        didRequestAuthorization = true
+        switch requestAuthorizationResult {
+        case .success(let granted):
+            status = granted ? .authorized : .denied
+            return granted
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    func pendingNotificationRequests() async -> [UNNotificationRequest] {
+        pendingRequests
+    }
+
+    func add(_ request: UNNotificationRequest) async throws {
+        addedRequests.append(request)
+        pendingRequests.removeAll { $0.identifier == request.identifier }
+        pendingRequests.append(request)
+    }
+
+    func removePendingNotificationRequests(withIdentifiers identifiers: [String]) async {
+        removedPendingIdentifiers.append(contentsOf: identifiers)
+        pendingRequests.removeAll { identifiers.contains($0.identifier) }
+    }
+
+    func removeDeliveredNotifications(withIdentifiers identifiers: [String]) async {
+        removedDeliveredIdentifiers.append(contentsOf: identifiers)
     }
 }

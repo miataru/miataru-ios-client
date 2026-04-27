@@ -11,7 +11,9 @@ import SwiftUI
 
 struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     @State private var showingDeviceKeySheet = false
+    @State private var showAdvancedOptionsFromNavigationRequest = false
     @State private var serverURLDraft = SettingsManager.shared.miataruServerURL
     @State private var pendingServerURLChange: String?
     @State private var pendingServerURLQueuedCount = 0
@@ -19,7 +21,7 @@ struct iPhone_SettingsView: View {
     @FocusState private var isServerURLFieldFocused: Bool
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("track_and_history")) {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
@@ -155,6 +157,9 @@ struct iPhone_SettingsView: View {
                     }
                 }
             }
+            .navigationDestination(isPresented: $showAdvancedOptionsFromNavigationRequest) {
+                iPhone_AdvancedOptionsView()
+            }
             .navigationTitle("settings")
             .sheet(isPresented: $showingDeviceKeySheet) {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
@@ -178,6 +183,9 @@ struct iPhone_SettingsView: View {
             }
         }
         .accessibilityIdentifier("settings_navigation_view")
+        .onAppear {
+            handleSettingsNavigationRequest(appNavigation.settingsRequest)
+        }
         .onChange(of: isServerURLFieldFocused) { _, isFocused in
             if !isFocused {
                 commitServerURLDraft()
@@ -193,9 +201,22 @@ struct iPhone_SettingsView: View {
                 serverURLDraft = newValue
             }
         }
+        .onReceive(appNavigation.$settingsRequest.compactMap { $0 }) { request in
+            handleSettingsNavigationRequest(request)
+        }
     }
 
     @State private var isUpdatingUnknownVisitorAlerts = false
+
+    private func handleSettingsNavigationRequest(_ request: SettingsNavigationRequest?) {
+        guard let request,
+              request.destination == .advancedOptions else {
+            return
+        }
+
+        showAdvancedOptionsFromNavigationRequest = true
+        appNavigation.consumeSettingsRequest(request)
+    }
 
     private func updateUnknownVisitorAlerts(_ newValue: Bool) {
         isUpdatingUnknownVisitorAlerts = true

@@ -15102,6 +15102,266 @@
         }
       }
     },
+    "frequent_background_location_reminder_notification_body" : {
+      "comment" : "Notification body explaining that tapping opens Advanced Options to disable frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru bruger den hyppige baggrundstilstand uden udløb. Tryk for at åbne avancerede indstillinger og slå den fra."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru nutzt den nie ablaufenden Modus für häufige Hintergrund-Standortupdates. Tippe, um die erweiterten Einstellungen zu öffnen und ihn auszuschalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru is using the never-expiring frequent background location mode. Tap to open Advanced Options and turn it off."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru está usando el modo frecuente de ubicación en segundo plano sin caducidad. Toca para abrir las opciones avanzadas y desactivarlo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru käyttää päättymätöntä tiheää taustasijaintitilaa. Avaa lisäasetukset napauttamalla ja poista se käytöstä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru utilise le mode de localisation fréquent en arrière-plan sans expiration. Touchez pour ouvrir les options avancées et le désactiver."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru sta usando la modalità frequente di posizione in background senza scadenza. Tocca per aprire le opzioni avanzate e disattivarla."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru は期限なしの頻繁なバックグラウンド位置情報モードを使用しています。タップして詳細設定を開き、オフにできます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru gebruikt de frequentere achtergrondlocatiemodus zonder eindtijd. Tik om Geavanceerde opties te openen en deze uit te schakelen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 正在使用永不过期的频繁后台位置模式。轻点可打开高级选项并将其关闭。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_expired_notification_body" : {
+      "comment" : "Notification body explaining that temporary frequent background tracking automatically ended and Miataru returned to standard background updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den midlertidige tilstand for hyppige baggrundsopdateringer er afsluttet automatisk. Miataru bruger nu standardtilstanden for baggrundsopdateringer igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der temporäre Modus für häufige Hintergrund-Standortupdates wurde automatisch beendet. Miataru nutzt jetzt wieder den Standardmodus für Hintergrundupdates."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The temporary frequent background location mode ended automatically. Miataru now uses the standard background update mode again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El modo temporal de ubicación frecuente en segundo plano terminó automáticamente. Miataru vuelve a usar el modo estándar de actualizaciones en segundo plano."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Väliaikainen tiheä taustasijaintitila päättyi automaattisesti. Miataru käyttää nyt taas taustapäivitysten vakiotilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mode temporaire de localisation fréquente en arrière-plan s’est terminé automatiquement. Miataru utilise de nouveau le mode standard des mises à jour en arrière-plan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La modalità temporanea di posizione frequente in background è terminata automaticamente. Miataru usa di nuovo la modalità standard per gli aggiornamenti in background."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時的な頻繁なバックグラウンド位置情報モードは自動的に終了しました。Miataru は再び標準のバックグラウンド更新モードを使用しています。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De tijdelijke frequentere achtergrondlocatiemodus is automatisch beëindigd. Miataru gebruikt nu weer de standaardmodus voor achtergrondupdates."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "临时的频繁后台位置模式已自动结束。Miataru 现在已重新使用标准后台更新模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_expired_notification_title" : {
+      "comment" : "Notification title shown when temporary frequent background tracking has automatically ended",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baggrundssporing er tilbage i standardtilstand"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund-Tracking ist wieder im Standardmodus"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background tracking is back to standard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento en segundo plano vuelve al modo estándar"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustaseuranta on taas vakiotilassa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi en arrière-plan est revenu au mode standard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento in background è tornato alla modalità standard"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンド追跡が標準モードに戻りました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achtergrondtracking is terug naar de standaardmodus"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台跟踪已恢复为标准模式"
+          }
+        }
+      }
+    },
+    "frequent_background_location_reminder_notification_title" : {
+      "comment" : "Notification title reminding the user that never-expiring frequent background tracking is still active",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig baggrundssporing er stadig slået til"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufiges Hintergrund-Tracking ist noch aktiv"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background tracking is still on"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente en segundo plano sigue activo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä taustaseuranta on edelleen päällä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent en arrière-plan est toujours actif"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente in background è ancora attivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁なバックグラウンド追跡がまだ有効です"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent volgen op de achtergrond staat nog aan"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁后台跟踪仍处于开启状态"
+          }
+        }
+      }
+    },
     "frequent_background_location_updates_active_hint_format" : {
       "comment" : "Hint shown when frequent background updates are active",
       "localizations" : {
@@ -15488,6 +15748,851 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更频繁的后台更新"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_1m" : {
+      "comment" : "One-minute visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 1 Minute"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every minute"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada minuto"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni minuto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke minuut"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_1m_explanation" : {
+      "comment" : "Explanation for one-minute visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I den hyppigere baggrundstilstand hentes visitorhistorikken højst én gang i minuttet. Lokationsuploads følger fortsat serverens sendeindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im häufigeren Hintergrundmodus wird die Besucherhistorie höchstens einmal pro Minute abgefragt. Standort-Uploads laufen weiter gemäß der Sendeeinstellung zum Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In frequent background mode, visitor history is requested at most once every minute. Location uploads continue according to the server-delivery setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el modo frecuente en segundo plano, el historial de visitantes se solicita como máximo una vez por minuto. Las cargas de ubicación siguen la opción de envío al servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmässä taustatilassa vierailijahistoria haetaan enintään kerran minuutissa. Sijaintilähetykset noudattavat edelleen palvelimelle lähettämisen asetusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mode arrière-plan fréquent, l’historique des visiteurs est demandé au plus une fois par minute. Les envois de position suivent toujours le réglage d’envoi au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella modalità frequente in background, la cronologia visitatori viene richiesta al massimo una volta al minuto. Gli invii della posizione seguono ancora l’impostazione di invio al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンドモードでは、訪問者履歴の取得は最大でも1分に1回です。位置情報のアップロードはサーバー送信設定に従います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In de frequentere achtergrondmodus wordt de bezoekersgeschiedenis hoogstens eenmaal per minuut opgevraagd. Locatie-uploads blijven de serververzendinstelling volgen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在更频繁的后台模式下，访客历史最多每分钟请求一次。位置上传仍会遵循服务器发送设置。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_5m" : {
+      "comment" : "Five-minute visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 5. minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 5 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 5 minutes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 5 minutos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 5 minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 5 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 5 minuten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 5 分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_5m_explanation" : {
+      "comment" : "Explanation for five-minute visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I den hyppigere baggrundstilstand hentes visitorhistorikken højst hvert 5. minut. Lokationsuploads følger fortsat serverens sendeindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im häufigeren Hintergrundmodus wird die Besucherhistorie höchstens alle 5 Minuten abgefragt. Standort-Uploads laufen weiter gemäß der Sendeeinstellung zum Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In frequent background mode, visitor history is requested at most every 5 minutes. Location uploads continue according to the server-delivery setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el modo frecuente en segundo plano, el historial de visitantes se solicita como máximo cada 5 minutos. Las cargas de ubicación siguen la opción de envío al servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmässä taustatilassa vierailijahistoria haetaan enintään 5 minuutin välein. Sijaintilähetykset noudattavat edelleen palvelimelle lähettämisen asetusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mode arrière-plan fréquent, l’historique des visiteurs est demandé au plus toutes les 5 minutes. Les envois de position suivent toujours le réglage d’envoi au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella modalità frequente in background, la cronologia visitatori viene richiesta al massimo ogni 5 minuti. Gli invii della posizione seguono ancora l’impostazione di invio al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンドモードでは、訪問者履歴の取得は最大でも5分ごとです。位置情報のアップロードはサーバー送信設定に従います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In de frequentere achtergrondmodus wordt de bezoekersgeschiedenis hoogstens elke 5 minuten opgevraagd. Locatie-uploads blijven de serververzendinstelling volgen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在更频繁的后台模式下，访客历史最多每 5 分钟请求一次。位置上传仍会遵循服务器发送设置。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_10m" : {
+      "comment" : "Ten-minute visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 10. minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 10 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 10 minutes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 10 minutos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 10 minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 10 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 10 minuten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 10 分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_10m_explanation" : {
+      "comment" : "Explanation for default ten-minute visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. I den hyppigere baggrundstilstand hentes visitorhistorikken højst hvert 10. minut. Lokationsuploads følger fortsat serverens sendeindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard. Im häufigeren Hintergrundmodus wird die Besucherhistorie höchstens alle 10 Minuten abgefragt. Standort-Uploads laufen weiter gemäß der Sendeeinstellung zum Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default. In frequent background mode, visitor history is requested at most every 10 minutes. Location uploads continue according to the server-delivery setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado. En el modo frecuente en segundo plano, el historial de visitantes se solicita como máximo cada 10 minutos. Las cargas de ubicación siguen la opción de envío al servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oletus. Tiheämmässä taustatilassa vierailijahistoria haetaan enintään 10 minuutin välein. Sijaintilähetykset noudattavat edelleen palvelimelle lähettämisen asetusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par défaut. En mode arrière-plan fréquent, l’historique des visiteurs est demandé au plus toutes les 10 minutes. Les envois de position suivent toujours le réglage d’envoi au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predefinito. Nella modalità frequente in background, la cronologia visitatori viene richiesta al massimo ogni 10 minuti. Gli invii della posizione seguono ancora l’impostazione di invio al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準。より頻繁なバックグラウンドモードでは、訪問者履歴の取得は最大でも10分ごとです。位置情報のアップロードはサーバー送信設定に従います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard. In de frequentere achtergrondmodus wordt de bezoekersgeschiedenis hoogstens elke 10 minuten opgevraagd. Locatie-uploads blijven de serververzendinstelling volgen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认。在更频繁的后台模式下，访客历史最多每 10 分钟请求一次。位置上传仍会遵循服务器发送设置。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_30m" : {
+      "comment" : "Thirty-minute visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hvert 30. minut"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 30 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every 30 minutes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada 30 minutos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 minuutin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les 30 minutes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni 30 minuti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30分ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke 30 minuten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 30 分钟"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_30m_explanation" : {
+      "comment" : "Explanation for thirty-minute visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I den hyppigere baggrundstilstand hentes visitorhistorikken højst hvert 30. minut. Lokationsuploads følger fortsat serverens sendeindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im häufigeren Hintergrundmodus wird die Besucherhistorie höchstens alle 30 Minuten abgefragt. Standort-Uploads laufen weiter gemäß der Sendeeinstellung zum Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In frequent background mode, visitor history is requested at most every 30 minutes. Location uploads continue according to the server-delivery setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el modo frecuente en segundo plano, el historial de visitantes se solicita como máximo cada 30 minutos. Las cargas de ubicación siguen la opción de envío al servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmässä taustatilassa vierailijahistoria haetaan enintään 30 minuutin välein. Sijaintilähetykset noudattavat edelleen palvelimelle lähettämisen asetusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mode arrière-plan fréquent, l’historique des visiteurs est demandé au plus toutes les 30 minutes. Les envois de position suivent toujours le réglage d’envoi au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella modalità frequente in background, la cronologia visitatori viene richiesta al massimo ogni 30 minuti. Gli invii della posizione seguono ancora l’impostazione di invio al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンドモードでは、訪問者履歴の取得は最大でも30分ごとです。位置情報のアップロードはサーバー送信設定に従います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In de frequentere achtergrondmodus wordt de bezoekersgeschiedenis hoogstens elke 30 minuten opgevraagd. Locatie-uploads blijven de serververzendinstelling volgen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在更频繁的后台模式下，访客历史最多每 30 分钟请求一次。位置上传仍会遵循服务器发送设置。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_60m" : {
+      "comment" : "Sixty-minute visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hver time"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle 60 Minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every hour"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada hora"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tunnin välein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les heures"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ogni ora"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1時間ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elk uur"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每小时"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_60m_explanation" : {
+      "comment" : "Explanation for sixty-minute visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I den hyppigere baggrundstilstand hentes visitorhistorikken højst én gang i timen. Lokationsuploads følger fortsat serverens sendeindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im häufigeren Hintergrundmodus wird die Besucherhistorie höchstens alle 60 Minuten abgefragt. Standort-Uploads laufen weiter gemäß der Sendeeinstellung zum Server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In frequent background mode, visitor history is requested at most once every hour. Location uploads continue according to the server-delivery setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En el modo frecuente en segundo plano, el historial de visitantes se solicita como máximo una vez por hora. Las cargas de ubicación siguen la opción de envío al servidor."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmässä taustatilassa vierailijahistoria haetaan enintään kerran tunnissa. Sijaintilähetykset noudattavat edelleen palvelimelle lähettämisen asetusta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En mode arrière-plan fréquent, l’historique des visiteurs est demandé au plus une fois par heure. Les envois de position suivent toujours le réglage d’envoi au serveur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nella modalità frequente in background, la cronologia visitatori viene richiesta al massimo una volta all’ora. Gli invii della posizione seguono ancora l’impostazione di invio al server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンドモードでは、訪問者履歴の取得は最大でも1時間に1回です。位置情報のアップロードはサーバー送信設定に従います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In de frequentere achtergrondmodus wordt de bezoekersgeschiedenis hoogstens eenmaal per uur opgevraagd. Locatie-uploads blijven de serververzendinstelling volgen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在更频繁的后台模式下，访客历史最多每小时请求一次。位置上传仍会遵循服务器发送设置。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_every_update" : {
+      "comment" : "Every-update visitor-history check option for frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ved hver opdatering"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei jedem Update"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every update"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cada actualización"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jokaisella päivityksellä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À chaque mise à jour"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A ogni aggiornamento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新ごと"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bij elke update"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次更新"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_every_update_explanation" : {
+      "comment" : "Explanation for every-update visitor-history checks in frequent background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitorhistorikken hentes efter hver accepteret baggrundsopdatering. Det er mest aktuelt, men bruger mest netværk og batteri."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Besucherhistorie wird nach jedem akzeptierten Hintergrund-Update abgefragt. Das ist am aktuellsten, nutzt aber am meisten Netzwerk und Akku."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitor history is requested after every accepted background update. This is the freshest option, but uses the most network and battery."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El historial de visitantes se solicita después de cada actualización en segundo plano aceptada. Es la opción más actual, pero usa más red y batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vierailijahistoria haetaan jokaisen hyväksytyn taustapäivityksen jälkeen. Tämä on ajantasaisin vaihtoehto, mutta käyttää eniten verkkoa ja akkua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’historique des visiteurs est demandé après chaque mise à jour en arrière-plan acceptée. C’est l’option la plus à jour, mais elle utilise le plus de réseau et de batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cronologia visitatori viene richiesta dopo ogni aggiornamento in background accettato. È l’opzione più aggiornata, ma usa più rete e batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け入れられた各バックグラウンド更新の後に訪問者履歴を取得します。最も新しい状態を保てますが、通信とバッテリーを最も使います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De bezoekersgeschiedenis wordt na elke geaccepteerde achtergrondupdate opgevraagd. Dit is het meest actueel, maar gebruikt de meeste netwerk- en batterijcapaciteit."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次已接受的后台更新后都会请求访客历史。这是最新的选项，但会使用最多网络和电量。"
+          }
+        }
+      }
+    },
+    "frequent_background_visitor_check_interval_title" : {
+      "comment" : "Picker title for visitor-history check frequency in frequent background updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tjek besøgende"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Besucher prüfen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check visitors"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar visitantes"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarkista vierailijat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier les visiteurs"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controlla visitatori"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "訪問者を確認"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bezoekers controleren"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查访客"
           }
         }
       }

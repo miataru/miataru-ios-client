@@ -34,6 +34,13 @@
 "frequent_background_location_delivery_1m" = "Minuutin välein";
 "frequent_background_location_delivery_5m" = "5 minuutin välein";
 "frequent_background_location_delivery_10m" = "10 minuutin välein";
+"frequent_background_visitor_check_interval_title" = "Tarkista vierailijat";
+"frequent_background_visitor_check_every_update" = "Jokaisella päivityksellä";
+"frequent_background_visitor_check_1m" = "Minuutin välein";
+"frequent_background_visitor_check_5m" = "5 minuutin välein";
+"frequent_background_visitor_check_10m" = "10 minuutin välein";
+"frequent_background_visitor_check_30m" = "30 minuutin välein";
+"frequent_background_visitor_check_60m" = "Tunnin välein";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";

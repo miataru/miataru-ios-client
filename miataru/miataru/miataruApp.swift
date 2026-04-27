@@ -170,6 +170,27 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
         completionHandler([.banner, .list, .sound])
     }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        if let type = userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String,
+           Self.opensAdvancedSettingsNotificationTypes.contains(type) {
+            Task { @MainActor in
+                AppNavigationCoordinator.shared.openAdvancedSettings()
+            }
+            completionHandler()
+            return
+        }
+
+        completionHandler()
+    }
+
+    private static let opensAdvancedSettingsNotificationTypes: Set<String> = [
+        FrequentBackgroundTrackingReminderService.notificationType,
+        FrequentBackgroundTrackingReminderService.expirationNotificationType
+    ]
 }
 
 @main

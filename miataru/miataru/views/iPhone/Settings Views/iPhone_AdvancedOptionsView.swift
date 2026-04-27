@@ -77,6 +77,16 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_location_delivery_10m").tag(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue)
                         }
                         SettingsDescriptionText(frequentBackgroundDeliveryExplanationKey)
+
+                        Picker("frequent_background_visitor_check_interval_title", selection: $settings.frequentBackgroundVisitorCheckInterval) {
+                            Text("frequent_background_visitor_check_every_update").tag(FrequentBackgroundVisitorCheckInterval.everyUpdate.rawValue)
+                            Text("frequent_background_visitor_check_1m").tag(FrequentBackgroundVisitorCheckInterval.everyMinute.rawValue)
+                            Text("frequent_background_visitor_check_5m").tag(FrequentBackgroundVisitorCheckInterval.everyFiveMinutes.rawValue)
+                            Text("frequent_background_visitor_check_10m").tag(FrequentBackgroundVisitorCheckInterval.tenMinutes.rawValue)
+                            Text("frequent_background_visitor_check_30m").tag(FrequentBackgroundVisitorCheckInterval.everyThirtyMinutes.rawValue)
+                            Text("frequent_background_visitor_check_60m").tag(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue)
+                        }
+                        SettingsDescriptionText(frequentBackgroundVisitorCheckExplanationKey)
                     }
                 }
             }
@@ -197,6 +207,23 @@ struct iPhone_AdvancedOptionsView: View {
             return "frequent_background_location_delivery_5m_explanation"
         case .everyTenMinutes:
             return "frequent_background_location_delivery_10m_explanation"
+        }
+    }
+
+    private var frequentBackgroundVisitorCheckExplanationKey: LocalizedStringKey {
+        switch settings.frequentBackgroundVisitorCheckIntervalSelection {
+        case .everyUpdate:
+            return "frequent_background_visitor_check_every_update_explanation"
+        case .everyMinute:
+            return "frequent_background_visitor_check_1m_explanation"
+        case .everyFiveMinutes:
+            return "frequent_background_visitor_check_5m_explanation"
+        case .tenMinutes:
+            return "frequent_background_visitor_check_10m_explanation"
+        case .everyThirtyMinutes:
+            return "frequent_background_visitor_check_30m_explanation"
+        case .everyHour:
+            return "frequent_background_visitor_check_60m_explanation"
         }
     }
 }
