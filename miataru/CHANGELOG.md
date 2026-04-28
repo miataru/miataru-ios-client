@@ -1,3 +1,11 @@
+version 3.1.8
+- Added a configurable low-battery auto-disable threshold for frequent background updates in Advanced Options, defaulting to 30% and available as 10%, 20%, 30%, 40%, or 50%.
+- When the selected battery threshold is reached, Miataru now automatically disables frequent background updates, cancels the related reminder/expiration timers, returns to standard significant-change background tracking, and sends a localized explanatory notification.
+- Localized the new setting, Settings.bundle entry, explanatory text, and low-battery notification across all supported app languages.
+- Formatted user-facing percentages in code with NumberFormatter-backed localized strings so the string catalog no longer contains hard-coded percentage values.
+- Added regression coverage for setting defaults and normalization, low-battery auto-disable decisions, notification cleanup, and localized key coverage.
+- Updated project metadata for version 3.1.8.
+
 version 3.1.7
 - Fixed device-map marker selection on iPhone and iPad so the nearby-device picker now considers the marker distance on screen at the current zoom level, not only a fixed physical distance in meters. This makes the picker appear reliably when devices look close together or overlap on the map.
 - Added a separated, tappable device-list notice while frequent background updates are active; it opens Advanced Options directly and shows the expiration time when the mode is configured to end automatically.

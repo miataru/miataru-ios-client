@@ -69,6 +69,18 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
 
+                        Picker("frequent_background_battery_auto_disable_level_title", selection: $settings.frequentBackgroundBatteryAutoDisableLevel) {
+                            Text(verbatim: "10%").tag(10)
+                            Text(verbatim: "20%").tag(20)
+                            Text(verbatim: "30%").tag(30)
+                            Text(verbatim: "40%").tag(40)
+                            Text(verbatim: "50%").tag(50)
+                        }
+                        Text(frequentBackgroundBatteryAutoDisableLevelExplanation)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
                         Picker("frequent_background_location_delivery_mode_title", selection: $settings.frequentBackgroundLocationDeliveryMode) {
                             Text("frequent_background_location_delivery_immediate").tag(FrequentBackgroundLocationDeliveryMode.immediate.rawValue)
                             Text("frequent_background_location_delivery_30s").tag(FrequentBackgroundLocationDeliveryMode.everyThirtySeconds.rawValue)
@@ -210,6 +222,15 @@ struct iPhone_AdvancedOptionsView: View {
         }
     }
 
+    private var frequentBackgroundBatteryAutoDisableLevelExplanation: String {
+        let defaultPercent = Self.localizedPercentString(from: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel)
+        let format = NSLocalizedString(
+            "frequent_background_battery_auto_disable_level_explanation",
+            comment: "Explanation for low-battery auto-disable threshold in frequent background location updates; placeholder is the localized default percentage"
+        )
+        return String(format: format, locale: .current, defaultPercent)
+    }
+
     private var frequentBackgroundVisitorCheckExplanationKey: LocalizedStringKey {
         switch settings.frequentBackgroundVisitorCheckIntervalSelection {
         case .everyUpdate:
@@ -225,6 +246,15 @@ struct iPhone_AdvancedOptionsView: View {
         case .everyHour:
             return "frequent_background_visitor_check_60m_explanation"
         }
+    }
+
+    private static func localizedPercentString(from percent: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        formatter.locale = .current
+        return formatter.string(from: NSNumber(value: Double(percent) / 100)) ?? "\(percent)%"
     }
 }
 

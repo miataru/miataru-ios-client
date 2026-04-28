@@ -76,6 +76,8 @@ actor FrequentBackgroundTrackingReminderService {
     static let notificationType = "frequent_background_tracking_reminder"
     static let expirationNotificationIdentifier = "frequent_background_tracking_expired"
     static let expirationNotificationType = "frequent_background_tracking_expired"
+    static let batteryAutoDisableNotificationIdentifier = "frequent_background_tracking_battery_auto_disabled"
+    static let batteryAutoDisableNotificationType = "frequent_background_tracking_battery_auto_disabled"
     static let notificationTypeUserInfoKey = UnknownVisitorAlertService.notificationTypeUserInfoKey
     static let reminderInterval: TimeInterval = 24 * 60 * 60
 
@@ -119,6 +121,68 @@ actor FrequentBackgroundTrackingReminderService {
     func cancel() async {
         await cancelDailyReminder()
         await cancelScheduledExpirationNotificationIfNeeded()
+    }
+
+    func notifyBatteryAutoDisable(batteryPercent: Int, thresholdPercent: Int) async {
+        await cancelForBatteryAutoDisable()
+
+        guard await ensureAuthorization() else {
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = NSLocalizedString(
+            "frequent_background_location_battery_auto_disabled_notification_title",
+            tableName: nil,
+            bundle: .main,
+            value: "Background updates switched to standard",
+            comment: "Notification title shown when low battery automatically disables frequent background tracking"
+        )
+        let bodyFormat = NSLocalizedString(
+            "frequent_background_location_battery_auto_disabled_notification_body_format",
+            tableName: nil,
+            bundle: .main,
+            value: "Battery is at %@ and reached the %@ limit. Miataru turned off more frequent background updates and is now using standard mode.",
+            comment: "Notification body explaining that low battery disabled frequent background tracking"
+        )
+        content.body = String(
+            format: bodyFormat,
+            locale: Locale.current,
+            Self.localizedPercentString(from: batteryPercent),
+            Self.localizedPercentString(from: thresholdPercent)
+        )
+        content.sound = .default
+        content.userInfo = [
+            Self.notificationTypeUserInfoKey: Self.batteryAutoDisableNotificationType
+        ]
+
+        let request = UNNotificationRequest(
+            identifier: Self.batteryAutoDisableNotificationIdentifier,
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            await notifier.removePendingNotificationRequests(withIdentifiers: [Self.batteryAutoDisableNotificationIdentifier])
+            try await notifier.add(request)
+        } catch {
+            debugLog("[FrequentBackgroundTrackingReminderService] Failed scheduling battery auto-disable notification: \(error)")
+        }
+    }
+
+    private static func localizedPercentString(from percent: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        formatter.locale = .current
+        return formatter.string(from: NSNumber(value: Double(percent) / 100)) ?? "\(percent)%"
+    }
+
+    private func cancelForBatteryAutoDisable() async {
+        await cancelDailyReminder()
+        await notifier.removePendingNotificationRequests(withIdentifiers: [Self.expirationNotificationIdentifier])
+        defaults.removeObject(forKey: Keys.scheduledExpirationDate)
     }
 
     private func cancelDailyReminder() async {

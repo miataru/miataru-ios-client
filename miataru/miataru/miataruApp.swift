@@ -189,7 +189,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     private static let opensAdvancedSettingsNotificationTypes: Set<String> = [
         FrequentBackgroundTrackingReminderService.notificationType,
-        FrequentBackgroundTrackingReminderService.expirationNotificationType
+        FrequentBackgroundTrackingReminderService.expirationNotificationType,
+        FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType
     ]
 }
 

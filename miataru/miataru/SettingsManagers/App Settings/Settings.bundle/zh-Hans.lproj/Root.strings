@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "更频繁的后台更新";
 "background_location_distance_filter_title" = "移动阈值";
 "frequent_background_location_updates_duration_title" = "自动停用时间";
+"frequent_background_battery_auto_disable_level_title" = "按电量停用";
 "frequent_background_location_updates_duration_unlimited" = "永不";
 "frequent_background_location_delivery_mode_title" = "发送到服务器";
 "frequent_background_location_delivery_immediate" = "立即";

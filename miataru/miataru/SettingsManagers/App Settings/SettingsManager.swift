@@ -111,6 +111,16 @@ class SettingsManager: ObservableObject {
             }
         }
     }
+    @Published var frequentBackgroundBatteryAutoDisableLevel: Int {
+        didSet {
+            let normalizedValue = FrequentBackgroundBatteryAutoDisableLevel.normalized(frequentBackgroundBatteryAutoDisableLevel)
+            if frequentBackgroundBatteryAutoDisableLevel != normalizedValue {
+                frequentBackgroundBatteryAutoDisableLevel = normalizedValue
+                return
+            }
+            defaults.set(String(frequentBackgroundBatteryAutoDisableLevel), forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel)
+        }
+    }
     @Published var frequentBackgroundLocationUpdatesExpiresAt: Date? {
         didSet {
             if let frequentBackgroundLocationUpdatesExpiresAt {
@@ -307,6 +317,7 @@ class SettingsManager: ObservableObject {
         self.frequentBackgroundLocationUpdatesEnabled = d.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
         self.frequentBackgroundLocationDistanceFilter = FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
         self.frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration))
+        self.frequentBackgroundBatteryAutoDisableLevel = FrequentBackgroundBatteryAutoDisableLevel.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel))
         self.frequentBackgroundLocationUpdatesExpiresAt = d.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date
         self.frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode))
         self.frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval))

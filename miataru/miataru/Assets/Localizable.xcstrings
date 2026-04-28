@@ -15622,6 +15622,266 @@
         }
       }
     },
+    "frequent_background_battery_auto_disable_level_title" : {
+      "comment" : "Picker title for low-battery auto-disable threshold in frequent background location updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktiver ved batteriniveau"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktivieren bei Akkustand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disable at battery level"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar con batería al"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poista käytöstä akun tasolla"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver au niveau de batterie"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disattiva al livello batteria"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー残量で無効化"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uitschakelen bij batterijniveau"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按电量停用"
+          }
+        }
+      }
+    },
+    "frequent_background_battery_auto_disable_level_explanation" : {
+      "comment" : "Explanation for low-battery auto-disable threshold in frequent background location updates; placeholder is the localized default percentage",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard %@. Når batteriniveauet er på eller under denne værdi, slår Miataru hyppigere baggrundsopdateringer fra og vender tilbage til standard baggrundssporing."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard %@. Wenn der Akkustand diesen Wert erreicht oder darunter fällt, deaktiviert Miataru die häufigeren Hintergrund-Updates und nutzt wieder das normale Hintergrund-Tracking."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default %@. When the battery level is at or below this value, Miataru turns off more frequent background updates and returns to standard background tracking."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado: %@. Cuando el nivel de batería está en este valor o por debajo, Miataru desactiva las actualizaciones en segundo plano más frecuentes y vuelve al seguimiento en segundo plano estándar."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oletus %@. Kun akun taso on tämä arvo tai sen alle, Miataru poistaa tiheämmät taustapäivitykset käytöstä ja palaa normaaliin taustaseurantaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par défaut %@. Lorsque le niveau de batterie atteint cette valeur ou passe en dessous, Miataru désactive les mises à jour en arrière-plan plus fréquentes et revient au suivi en arrière-plan standard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predefinito %@. Quando il livello della batteria raggiunge questo valore o scende al di sotto, Miataru disattiva gli aggiornamenti in background più frequenti e torna al tracciamento in background standard."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルトは%@です。バッテリー残量がこの値以下になると、Miataru はより頻繁なバックグラウンド更新をオフにし、標準のバックグラウンド追跡に戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standaard %@. Wanneer het batterijniveau op of onder deze waarde komt, schakelt Miataru frequentere achtergrondupdates uit en keert terug naar standaard achtergrondtracking."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认 %@。当电量达到或低于此值时，Miataru 会关闭更频繁的后台更新，并返回标准后台跟踪。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_battery_auto_disabled_notification_title" : {
+      "comment" : "Notification title shown when low battery automatically disables frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baggrundsopdateringer skiftet til standard"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund-Updates auf Standard umgestellt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Background updates switched to standard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizaciones en segundo plano en modo estándar"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustapäivitykset vaihdettiin oletustilaan"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mises à jour en arrière-plan repassées au standard"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiornamenti in background tornati standard"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンド更新を標準に切り替えました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Achtergrondupdates naar standaard gezet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台更新已切换为标准模式"
+          }
+        }
+      }
+    },
+    "frequent_background_location_battery_auto_disabled_notification_body_format" : {
+      "comment" : "Notification body explaining that low battery disabled frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batteriet er på %@ og har nået grænsen på %@. Miataru har slået hyppigere baggrundsopdateringer fra og bruger nu standardtilstanden."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Akku liegt bei %@ und hat die Grenze von %@ erreicht. Miataru hat häufigere Hintergrund-Updates deaktiviert und nutzt jetzt den Standardmodus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery is at %@ and reached the %@ limit. Miataru turned off more frequent background updates and is now using standard mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La batería está al %@ y alcanzó el límite del %@. Miataru desactivó las actualizaciones en segundo plano más frecuentes y ahora usa el modo estándar."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akku on %@ ja saavutti %@ rajan. Miataru poisti tiheämmät taustapäivitykset käytöstä ja käyttää nyt oletustilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La batterie est à %@ et a atteint la limite de %@. Miataru a désactivé les mises à jour en arrière-plan plus fréquentes et utilise maintenant le mode standard."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La batteria è al %@ e ha raggiunto il limite del %@. Miataru ha disattivato gli aggiornamenti in background più frequenti e ora usa la modalità standard."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー残量が%@になり、%@の上限に達しました。Miataru はより頻繁なバックグラウンド更新をオフにし、標準モードを使用しています。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De batterij staat op %@ en heeft de grens van %@ bereikt. Miataru heeft frequentere achtergrondupdates uitgeschakeld en gebruikt nu de standaardmodus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电量为 %@，已达到 %@ 限制。Miataru 已关闭更频繁的后台更新，现在使用标准模式。"
+          }
+        }
+      }
+    },
     "frequent_background_location_updates_battery_warning" : {
       "comment" : "Battery warning shown when frequent background updates are enabled",
       "localizations" : {

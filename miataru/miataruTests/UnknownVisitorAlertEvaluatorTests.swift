@@ -376,6 +376,43 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(defaults.object(forKey: "frequent_background_tracking_expiration_notification_date") == nil)
     }
 
+    @Test("Low battery auto-disable cancels timers and sends explanatory notification")
+    func lowBatteryAutoDisableCancelsTimersAndSendsNotification() async throws {
+        let suiteName = "FrequentBackgroundTrackingReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 2_000)
+        defaults.set(now.addingTimeInterval(600), forKey: "frequent_background_tracking_expiration_notification_date")
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .authorized,
+            pendingRequests: [
+                Self.existingReminderRequest(),
+                Self.existingExpirationRequest()
+            ]
+        )
+        let service = FrequentBackgroundTrackingReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.notifyBatteryAutoDisable(batteryPercent: 29, thresholdPercent: 30)
+
+        #expect(await notifier.removedPendingIdentifiers.contains(FrequentBackgroundTrackingReminderService.notificationIdentifier))
+        #expect(await notifier.removedDeliveredIdentifiers.contains(FrequentBackgroundTrackingReminderService.notificationIdentifier))
+        #expect(await notifier.removedPendingIdentifiers.contains(FrequentBackgroundTrackingReminderService.expirationNotificationIdentifier))
+        #expect(defaults.object(forKey: "frequent_background_tracking_expiration_notification_date") == nil)
+
+        let request = try #require(await notifier.addedRequests.last)
+        #expect(request.identifier == FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationIdentifier)
+        #expect(request.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType)
+        #expect(request.trigger == nil)
+        #expect(request.content.body.contains("29"))
+        #expect(request.content.body.contains("30"))
+    }
+
     private static func existingReminderRequest() -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.userInfo = [

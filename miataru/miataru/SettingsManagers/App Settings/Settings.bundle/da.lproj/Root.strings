@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "Hyppigere baggrundsopdateringer";
 "background_location_distance_filter_title" = "Bevægelsestærskel";
 "frequent_background_location_updates_duration_title" = "Deaktiver automatisk efter";
+"frequent_background_battery_auto_disable_level_title" = "Deaktiver ved batteriniveau";
 "frequent_background_location_updates_duration_unlimited" = "Aldrig";
 "frequent_background_location_delivery_mode_title" = "Send til server";
 "frequent_background_location_delivery_immediate" = "Med det samme";

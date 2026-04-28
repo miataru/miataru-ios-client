@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "Frequentere achtergrondupdates";
 "background_location_distance_filter_title" = "Bewegingsdrempel";
 "frequent_background_location_updates_duration_title" = "Automatisch uitschakelen na";
+"frequent_background_battery_auto_disable_level_title" = "Uitschakelen bij batterijniveau";
 "frequent_background_location_updates_duration_unlimited" = "Nooit";
 "frequent_background_location_delivery_mode_title" = "Naar server sturen";
 "frequent_background_location_delivery_immediate" = "Meteen";

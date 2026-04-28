@@ -30,6 +30,7 @@ enum SettingsKeys {
     static let frequentBackgroundLocationDistanceFilter = "frequent_background_location_distance_filter"
     static let frequentBackgroundLocationUpdateDuration = "frequent_background_location_update_duration"
     static let frequentBackgroundLocationUpdatesExpiresAt = "frequent_background_location_updates_expires_at"
+    static let frequentBackgroundBatteryAutoDisableLevel = "frequent_background_battery_auto_disable_level"
     static let frequentBackgroundLocationDeliveryMode = "frequent_background_location_delivery_mode"
     static let frequentBackgroundVisitorCheckInterval = "frequent_background_visitor_check_interval"
     static let autoRefreshDeviceList = "auto_refresh_device_list"
@@ -71,6 +72,7 @@ enum SettingsDefaultValues {
     static let frequentBackgroundLocationUpdatesEnabled = false
     static let frequentBackgroundLocationDistanceFilter = 100
     static let frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.fourHours.rawValue
+    static let frequentBackgroundBatteryAutoDisableLevel = 30
     static let frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.immediate.rawValue
     static let frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.tenMinutes.rawValue
     static let autoRefreshDeviceList = true
@@ -106,6 +108,7 @@ enum SettingsDefaultValues {
         SettingsKeys.frequentBackgroundLocationUpdatesEnabled: frequentBackgroundLocationUpdatesEnabled,
         SettingsKeys.frequentBackgroundLocationDistanceFilter: String(frequentBackgroundLocationDistanceFilter),
         SettingsKeys.frequentBackgroundLocationUpdateDuration: String(frequentBackgroundLocationUpdateDuration),
+        SettingsKeys.frequentBackgroundBatteryAutoDisableLevel: String(frequentBackgroundBatteryAutoDisableLevel),
         SettingsKeys.frequentBackgroundLocationDeliveryMode: String(frequentBackgroundLocationDeliveryMode),
         SettingsKeys.frequentBackgroundVisitorCheckInterval: String(frequentBackgroundVisitorCheckInterval),
         SettingsKeys.autoRefreshDeviceList: autoRefreshDeviceList,
@@ -169,6 +172,14 @@ enum FrequentBackgroundLocationDistanceFilter {
 
     static func normalized(_ value: Int) -> Int {
         allowedValues.contains(value) ? value : SettingsDefaultValues.frequentBackgroundLocationDistanceFilter
+    }
+}
+
+enum FrequentBackgroundBatteryAutoDisableLevel {
+    static let allowedValues = [10, 20, 30, 40, 50]
+
+    static func normalized(_ value: Int) -> Int {
+        allowedValues.contains(value) ? value : SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel
     }
 }
 

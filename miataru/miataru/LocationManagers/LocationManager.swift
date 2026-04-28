@@ -208,13 +208,14 @@ final class LocationManager: NSObject, ObservableObject {
         }
         .store(in: &cancellables)
 
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest4(
             settings.$frequentBackgroundLocationUpdatesEnabled.removeDuplicates(),
             settings.$frequentBackgroundLocationDistanceFilter.removeDuplicates(),
-            settings.$frequentBackgroundLocationUpdateDuration.removeDuplicates()
+            settings.$frequentBackgroundLocationUpdateDuration.removeDuplicates(),
+            settings.$frequentBackgroundBatteryAutoDisableLevel.removeDuplicates()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] _, _, _ in
+        .sink { [weak self] _, _, _, _ in
             guard let self else { return }
             self.settings.ensureFrequentBackgroundLocationUpdatesExpiration()
             self.scheduleFrequentBackgroundLocationExpirationTimer()
@@ -306,6 +307,23 @@ final class LocationManager: NSObject, ObservableObject {
 
     private static func backgroundDesiredAccuracy(for distanceFilterMeters: Int) -> CLLocationAccuracy {
         distanceFilterMeters <= 50 ? kCLLocationAccuracyNearestTenMeters : kCLLocationAccuracyHundredMeters
+    }
+
+    static func batteryPercent(from batteryLevel: Float) -> Int? {
+        guard batteryLevel >= 0, batteryLevel.isFinite else { return nil }
+        return Int((Double(batteryLevel) * 100).rounded(.down))
+    }
+
+    static func shouldDisableFrequentBackgroundUpdatesForBattery(frequentUpdatesEnabled: Bool,
+                                                                 batteryPercent: Int?,
+                                                                 thresholdPercent: Int) -> Bool {
+        guard frequentUpdatesEnabled,
+              let batteryPercent else {
+            return false
+        }
+
+        let normalizedThreshold = FrequentBackgroundBatteryAutoDisableLevel.normalized(thresholdPercent)
+        return batteryPercent <= normalizedThreshold
     }
     
     // MARK: - Permissions
@@ -458,6 +476,11 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("startSignificantChangeUpdates called")
         handleFrequentBackgroundLocationExpirationIfNeeded()
 
+        if disableFrequentBackgroundLocationUpdatesIfBatteryIsLow() {
+            startSignificantChangeMonitoring()
+            return
+        }
+
         let configuration = Self.backgroundUpdateConfiguration(
             frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
@@ -488,6 +511,31 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.distanceFilter = configuration.distanceFilter
         locationManager.startUpdatingLocation()
         stopForegroundLocationTimer()
+    }
+
+    @discardableResult
+    private func disableFrequentBackgroundLocationUpdatesIfBatteryIsLow() -> Bool {
+        let thresholdPercent = settings.frequentBackgroundBatteryAutoDisableLevel
+        guard let batteryPercent = Self.batteryPercent(from: UIDevice.current.batteryLevel),
+              Self.shouldDisableFrequentBackgroundUpdatesForBattery(
+                frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                batteryPercent: batteryPercent,
+                thresholdPercent: thresholdPercent
+              ) else {
+            return false
+        }
+
+        settings.frequentBackgroundLocationUpdatesEnabled = false
+        scheduleFrequentBackgroundLocationExpirationTimer()
+        debugLog("[LocationManager] Frequent background updates disabled because battery is at \(batteryPercent)% (threshold \(thresholdPercent)%)")
+
+        Task {
+            await FrequentBackgroundTrackingReminderService.shared.notifyBatteryAutoDisable(
+                batteryPercent: batteryPercent,
+                thresholdPercent: thresholdPercent
+            )
+        }
+        return true
     }
 
     @discardableResult
@@ -841,6 +889,11 @@ extension LocationManager: CLLocationManagerDelegate {
             guard let location = locations.last else { return }
             let applicationState = UIApplication.shared.applicationState
             if self.handleFrequentBackgroundLocationExpirationIfNeeded(),
+               applicationState != .active {
+                self.startSignificantChangeUpdates()
+                return
+            }
+            if self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow(),
                applicationState != .active {
                 self.startSignificantChangeUpdates()
                 return

@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "Tiheämmät taustapäivitykset";
 "background_location_distance_filter_title" = "Liikkumiskynnys";
 "frequent_background_location_updates_duration_title" = "Poista automaattisesti käytöstä ajan jälkeen";
+"frequent_background_battery_auto_disable_level_title" = "Poista käytöstä akun tasolla";
 "frequent_background_location_updates_duration_unlimited" = "Ei koskaan";
 "frequent_background_location_delivery_mode_title" = "Lähetä palvelimelle";
 "frequent_background_location_delivery_immediate" = "Heti";

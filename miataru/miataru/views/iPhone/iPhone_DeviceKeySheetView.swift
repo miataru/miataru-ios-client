@@ -576,6 +576,7 @@ struct iPhone_DeviceKeySheetView: View {
             frequentBackgroundLocationUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             frequentBackgroundLocationDistanceFilter: settings.frequentBackgroundLocationDistanceFilter,
             frequentBackgroundLocationUpdateDuration: settings.frequentBackgroundLocationUpdateDuration,
+            frequentBackgroundBatteryAutoDisableLevel: settings.frequentBackgroundBatteryAutoDisableLevel,
             frequentBackgroundLocationUpdatesExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
             frequentBackgroundLocationDeliveryMode: settings.frequentBackgroundLocationDeliveryMode,
             frequentBackgroundVisitorCheckInterval: settings.frequentBackgroundVisitorCheckInterval,
@@ -624,6 +625,7 @@ struct iPhone_DeviceKeySheetView: View {
         assignIfChanged(\.frequentBackgroundLocationUpdatesEnabled, snapshot.frequentBackgroundLocationUpdatesEnabled)
         assignIfChanged(\.frequentBackgroundLocationDistanceFilter, snapshot.frequentBackgroundLocationDistanceFilter)
         assignIfChanged(\.frequentBackgroundLocationUpdateDuration, snapshot.frequentBackgroundLocationUpdateDuration)
+        assignIfChanged(\.frequentBackgroundBatteryAutoDisableLevel, snapshot.frequentBackgroundBatteryAutoDisableLevel)
         assignIfChanged(\.frequentBackgroundLocationUpdatesExpiresAt, snapshot.frequentBackgroundLocationUpdatesExpiresAt)
         assignIfChanged(\.frequentBackgroundLocationDeliveryMode, snapshot.frequentBackgroundLocationDeliveryMode)
         assignIfChanged(\.frequentBackgroundVisitorCheckInterval, snapshot.frequentBackgroundVisitorCheckInterval)
@@ -890,6 +892,7 @@ private struct SettingsSnapshot {
     let frequentBackgroundLocationUpdatesEnabled: Bool
     let frequentBackgroundLocationDistanceFilter: Int
     let frequentBackgroundLocationUpdateDuration: Int
+    let frequentBackgroundBatteryAutoDisableLevel: Int
     let frequentBackgroundLocationUpdatesExpiresAt: Date?
     let frequentBackgroundLocationDeliveryMode: Int
     let frequentBackgroundVisitorCheckInterval: Int

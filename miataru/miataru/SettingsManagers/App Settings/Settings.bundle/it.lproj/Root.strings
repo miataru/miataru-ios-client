@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "Aggiornamenti in background più frequenti";
 "background_location_distance_filter_title" = "Soglia di movimento";
 "frequent_background_location_updates_duration_title" = "Disattiva automaticamente dopo";
+"frequent_background_battery_auto_disable_level_title" = "Disattiva al livello batteria";
 "frequent_background_location_updates_duration_unlimited" = "Mai";
 "frequent_background_location_delivery_mode_title" = "Invia al server";
 "frequent_background_location_delivery_immediate" = "Subito";

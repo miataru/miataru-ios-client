@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "より頻繁なバックグラウンド更新";
 "background_location_distance_filter_title" = "移動しきい値";
 "frequent_background_location_updates_duration_title" = "自動的に無効化するまで";
+"frequent_background_battery_auto_disable_level_title" = "バッテリー残量で無効化";
 "frequent_background_location_updates_duration_unlimited" = "なし";
 "frequent_background_location_delivery_mode_title" = "サーバーへ送信";
 "frequent_background_location_delivery_immediate" = "すぐに";

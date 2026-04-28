@@ -69,6 +69,10 @@ struct SettingsConfigurationTests {
             "frequent_background_location_updates_explanation",
             "frequent_background_location_updates_central_explanation",
             "frequent_background_location_updates_battery_warning",
+            "frequent_background_battery_auto_disable_level_title",
+            "frequent_background_battery_auto_disable_level_explanation",
+            "frequent_background_location_battery_auto_disabled_notification_title",
+            "frequent_background_location_battery_auto_disabled_notification_body_format",
             "frequent_background_location_reminder_notification_title",
             "frequent_background_location_reminder_notification_body",
             "frequent_background_location_expired_notification_title",
@@ -211,6 +215,7 @@ struct SettingsConfigurationTests {
             "background_location_distance_filter_title",
             "frequent_background_location_updates_duration_title",
             "frequent_background_location_updates_duration_unlimited",
+            "frequent_background_battery_auto_disable_level_title",
             "frequent_background_location_delivery_mode_title",
             "frequent_background_location_delivery_immediate",
             "frequent_background_location_delivery_30s",
@@ -291,6 +296,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdatesEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdateDuration] as? String == "14400")
+        #expect(defaultsByKey[SettingsKeys.frequentBackgroundBatteryAutoDisableLevel] as? String == "30")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDeliveryMode] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundVisitorCheckInterval] as? String == "600")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
@@ -327,6 +333,11 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: startDate) == startDate.addingTimeInterval(14_400))
         #expect(FrequentBackgroundLocationUpdateDuration.unlimited.expirationDate(from: startDate) == nil)
 
+        #expect(FrequentBackgroundBatteryAutoDisableLevel.normalized(10) == 10)
+        #expect(FrequentBackgroundBatteryAutoDisableLevel.normalized(30) == 30)
+        #expect(FrequentBackgroundBatteryAutoDisableLevel.normalized(50) == 50)
+        #expect(FrequentBackgroundBatteryAutoDisableLevel.normalized(25) == SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel)
+
         #expect(FrequentBackgroundLocationDeliveryMode.immediate.delay == nil)
         #expect(FrequentBackgroundLocationDeliveryMode.everyThirtySeconds.delay == 30)
         #expect(FrequentBackgroundLocationDeliveryMode.normalizedRawValue(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue) == 600)
@@ -361,6 +372,38 @@ struct SettingsConfigurationTests {
         )
         #expect(!normalizedConfiguration.usesSignificantChangeMonitoring)
         #expect(normalizedConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
+    }
+
+    @Test("Background battery threshold only disables frequent mode when active and known")
+    func backgroundBatteryThresholdOnlyDisablesFrequentModeWhenActiveAndKnown() {
+        #expect(LocationManager.batteryPercent(from: 0.301) == 30)
+        #expect(LocationManager.batteryPercent(from: -1) == nil)
+
+        #expect(LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: 30,
+            thresholdPercent: 30
+        ))
+        #expect(LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: 29,
+            thresholdPercent: 25
+        ))
+        #expect(!LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: 31,
+            thresholdPercent: 30
+        ))
+        #expect(!LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: false,
+            batteryPercent: 20,
+            thresholdPercent: 30
+        ))
+        #expect(!LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: nil,
+            thresholdPercent: 30
+        ))
     }
 
     private func loadStringCatalog() throws -> [String: Any] {

@@ -27,6 +27,7 @@
 "frequent_background_location_updates_title" = "Häufigere Hintergrund-Updates";
 "background_location_distance_filter_title" = "Bewegungsschwelle";
 "frequent_background_location_updates_duration_title" = "Automatisch deaktivieren nach";
+"frequent_background_battery_auto_disable_level_title" = "Deaktivieren bei Akkustand";
 "frequent_background_location_updates_duration_unlimited" = "Nie";
 "frequent_background_location_delivery_mode_title" = "An Server senden";
 "frequent_background_location_delivery_immediate" = "Sofort";
