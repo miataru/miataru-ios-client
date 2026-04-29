@@ -1,4 +1,5 @@
 version 3.1.8
+- Moved the central frequent-background-updates toggle below the Tracking & Security settings section and now shows it whenever location tracking is enabled, so users can enable the mode directly from standard tracking.
 - Added a configurable low-battery auto-disable threshold for frequent background updates in Advanced Options, defaulting to 30% and available as 10%, 20%, 30%, 40%, or 50%.
 - When the selected battery threshold is reached, Miataru now automatically disables frequent background updates, cancels the related reminder/expiration timers, returns to standard significant-change background tracking, and sends a localized explanatory notification.
 - Localized the new setting, Settings.bundle entry, explanatory text, and low-battery notification across all supported app languages.
