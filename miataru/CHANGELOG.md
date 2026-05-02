@@ -1,3 +1,11 @@
+version 3.1.9
+- Fixed the iPad Devices and Groups sidebars so their custom header no longer leaves the large system navigation gap above the first list section.
+- Restored the iPad sidebar hide/show workflow with a sidebar button in the list header and a floating restore button over the map/detail view.
+- Restored the full-bleed iPad map layout so the map again extends behind the status/title area instead of showing a white strip at the top.
+- Kept the frequent-background-updates notice conditional on the mode being active; on iPad it now appears inside the existing Devices section so inactive mode keeps the same spacing.
+- Localized the new sidebar accessibility labels and hints across the supported in-app languages.
+- Updated project metadata for version 3.1.9.
+
 version 3.1.8
 - Moved the central frequent-background-updates toggle below the Tracking & Security settings section and now shows it whenever location tracking is enabled, so users can enable the mode directly from standard tracking.
 - Added a configurable low-battery auto-disable threshold for frequent background updates in Advanced Options, defaulting to 30% and available as 10%, 20%, 30%, 40%, or 50%.

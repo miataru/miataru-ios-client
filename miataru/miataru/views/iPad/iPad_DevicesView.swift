@@ -28,6 +28,7 @@ struct iPad_DevicesView: View {
     @State private var navigationTargetDevice: KnownDevice? = nil
     @State private var isUpdatingFromDeepLink = false // Track if we're updating selection from deep link (to prevent circular updates)
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openWindow) private var openWindow
@@ -54,188 +55,191 @@ struct iPad_DevicesView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: $selection) {
-                if !unknownVisitors.isEmpty {
-                    Section(header: Text("unknown_visitors_section_title")) {
-                        ForEach(unknownVisitors, id: \.uniqueID) { visitor in
-                            UnknownVisitorRow(
-                                visitor: visitor,
-                                onAllow: {
-                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
-                                },
-                                onIgnore: {
-                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                },
-                                addActionTitleKey: settings.allowedDeviceListEnabled
-                                    ? "unknown_visitor_add_and_allow"
-                                    : "add"
-                            )
-                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                Button {
-                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
-                                } label: {
-                                    Label(
-                                        settings.allowedDeviceListEnabled
-                                            ? "unknown_visitor_add_and_allow"
-                                            : "add",
-                                        systemImage: "plus.circle"
-                                    )
-                                }
-                                .tint(.green)
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                } label: {
-                                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
-                                }
-                            }
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            VStack(spacing: 0) {
+                iPadSidebarListHeader(
+                    title: NSLocalizedString("devices", comment: "Devices list title on iPad"),
+                    editTitle: editMode == .active
+                        ? NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list.")
+                        : NSLocalizedString("devicelist_editbutton", comment: "Edit device list"),
+                    onToggleEdit: {
+                        editMode = editMode == .active ? .inactive : .active
+                    },
+                    onAdd: {
+                        showingAddDevice = true
+                    },
+                    onToggleSidebar: {
+                        withAnimation {
+                            columnVisibility = .detailOnly
                         }
-                    }
-                }
+                    },
+                    addAccessibilityLabel: NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list"),
+                    addAccessibilityHint: NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form"),
+                    addAccessibilityIdentifier: "devices_add_button"
+                )
 
-                if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
-                    Section {
-                        FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
-                            AppNavigationCoordinator.shared.openAdvancedSettings()
-                        }
-                    }
-                }
-
-                Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
-                    ForEach(store.devices) { device in
-                        if cache.getLocation(for: device.DeviceID) != nil {
-                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
-                                .accessibilityIdentifier(
-                                    device.DeviceID == thisDeviceIDManager.shared.deviceID
-                                        ? "devices_row_this_device"
-                                        : "devices_row_\(device.DeviceID)"
+                List(selection: $selection) {
+                    if !unknownVisitors.isEmpty {
+                        Section(header: Text("unknown_visitors_section_title")) {
+                            ForEach(unknownVisitors, id: \.uniqueID) { visitor in
+                                UnknownVisitorRow(
+                                    visitor: visitor,
+                                    onAllow: {
+                                        pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                    },
+                                    onIgnore: {
+                                        ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                    },
+                                    addActionTitleKey: settings.allowedDeviceListEnabled
+                                        ? "unknown_visitor_add_and_allow"
+                                        : "add"
                                 )
-                                .tag(device.DeviceID)
-                                .tint(.primary)
-                                .draggable(device.DeviceID)
-                                .contextMenu {
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                     Button {
-                                        openWindow(value: device.DeviceID)
+                                        pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
                                     } label: {
-                                        Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
-                                            .labelStyle(.titleAndIcon)
+                                        Label(
+                                            settings.allowedDeviceListEnabled
+                                                ? "unknown_visitor_add_and_allow"
+                                                : "add",
+                                            systemImage: "plus.circle"
+                                        )
                                     }
-                                    if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                    .tint(.green)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+                                    } label: {
+                                        Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
+                        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+                            FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
+                                AppNavigationCoordinator.shared.openAdvancedSettings()
+                            }
+                        }
+
+                        ForEach(store.devices) { device in
+                            if cache.getLocation(for: device.DeviceID) != nil {
+                                DeviceRowView(device: device, cache: cache, showsSlogan: true)
+                                    .accessibilityIdentifier(
+                                        device.DeviceID == thisDeviceIDManager.shared.deviceID
+                                            ? "devices_row_this_device"
+                                            : "devices_row_\(device.DeviceID)"
+                                    )
+                                    .tag(device.DeviceID)
+                                    .tint(.primary)
+                                    .draggable(device.DeviceID)
+                                    .contextMenu {
                                         Button {
-                                            navigationTargetDevice = device
+                                            openWindow(value: device.DeviceID)
                                         } label: {
-                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                            Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
                                                 .labelStyle(.titleAndIcon)
                                         }
-                                    }
-                                    Button {
-                                        editingDevice = device
-                                    } label: {
-                                        Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
-                                            .labelStyle(.titleAndIcon)
-                                    }
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await removeDevice(deviceID: device.DeviceID)
+                                        if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                            Button {
+                                                navigationTargetDevice = device
+                                            } label: {
+                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                    .labelStyle(.titleAndIcon)
+                                            }
                                         }
-                                    } label: {
-                                        Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
-                                    }
-                                }
-                                .swipeActions(edge: .leading) {
-                                    if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                         Button {
-                                            navigationTargetDevice = device
+                                            editingDevice = device
                                         } label: {
-                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                            Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                                .labelStyle(.titleAndIcon)
                                         }
-                                        .tint(.green)
-                                    }
-                                    Button {
-                                        editingDevice = device
-                                    } label: {
-                                        Label("edit_device_swipe", systemImage: "pencil")
-                                    }
-                                    .tint(.blue)
-                                }
-                        } else {
-                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
-                                .accessibilityIdentifier(
-                                    device.DeviceID == thisDeviceIDManager.shared.deviceID
-                                        ? "devices_row_this_device"
-                                        : "devices_row_\(device.DeviceID)"
-                                )
-                                .tag(device.DeviceID)
-                                .tint(.primary)
-                                .contextMenu {
-                                    Button {
-                                        editingDevice = device
-                                    } label: {
-                                        Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
-                                            .labelStyle(.titleAndIcon)
-                                    }
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await removeDevice(deviceID: device.DeviceID)
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await removeDevice(deviceID: device.DeviceID)
+                                            }
+                                        } label: {
+                                            Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
                                         }
-                                    } label: {
-                                        Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
                                     }
-                                }
-                                .swipeActions(edge: .leading) {
-                                    Button {
-                                        editingDevice = device
-                                    } label: {
-                                        Label("edit_device_swipe", systemImage: "pencil")
+                                    .swipeActions(edge: .leading) {
+                                        if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
+                                            Button {
+                                                navigationTargetDevice = device
+                                            } label: {
+                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                            }
+                                            .tint(.green)
+                                        }
+                                        Button {
+                                            editingDevice = device
+                                        } label: {
+                                            Label("edit_device_swipe", systemImage: "pencil")
+                                        }
+                                        .tint(.blue)
                                     }
-                                    .tint(.blue)
-                                }
-                        }
-                    }
-                    .onDelete { indices in
-                        let deviceIDs = indices.map { store.devices[$0].DeviceID }
-                        Task {
-                            for deviceID in deviceIDs {
-                                await removeDevice(deviceID: deviceID)
+                            } else {
+                                DeviceRowView(device: device, cache: cache, showsSlogan: true)
+                                    .accessibilityIdentifier(
+                                        device.DeviceID == thisDeviceIDManager.shared.deviceID
+                                            ? "devices_row_this_device"
+                                            : "devices_row_\(device.DeviceID)"
+                                    )
+                                    .tag(device.DeviceID)
+                                    .tint(.primary)
+                                    .contextMenu {
+                                        Button {
+                                            editingDevice = device
+                                        } label: {
+                                            Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                                .labelStyle(.titleAndIcon)
+                                        }
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await removeDevice(deviceID: device.DeviceID)
+                                            }
+                                        } label: {
+                                            Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
+                                        }
+                                    }
+                                    .swipeActions(edge: .leading) {
+                                        Button {
+                                            editingDevice = device
+                                        } label: {
+                                            Label("edit_device_swipe", systemImage: "pencil")
+                                        }
+                                        .tint(.blue)
+                                    }
                             }
                         }
-                    }
-                    .onMove { indices, newOffset in
-                        store.move(fromOffsets: indices, toOffset: newOffset)
-                    }
-                }
-            }
-            .navigationTitle(NSLocalizedString("devices", comment: "Devices list title on iPad"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        editMode = editMode == .active ? .inactive : .active
-                    } label: {
-                        if editMode == .active {
-                            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
-                        } else {
-                            Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list"))
+                        .onDelete { indices in
+                            let deviceIDs = indices.map { store.devices[$0].DeviceID }
+                            Task {
+                                for deviceID in deviceIDs {
+                                    await removeDevice(deviceID: deviceID)
+                                }
+                            }
+                        }
+                        .onMove { indices, newOffset in
+                            store.move(fromOffsets: indices, toOffset: newOffset)
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddDevice = true }) {
-                        Image(systemName: "plus")
-                            .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
-                            .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
-                    }
-                    .accessibilityIdentifier("devices_add_button")
+                .listStyle(.sidebar)
+                .contentMargins(.top, 0, for: .scrollContent)
+                .refreshable {
+                    let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
+                    await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
+                    await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
+                    if success { Haptic.notifySuccess() }
                 }
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .ignoresSafeArea(.container, edges: .top)
             .environment(\.editMode, $editMode)
-            .refreshable {
-                let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
-                await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
-                await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
-                if success { Haptic.notifySuccess() }
-            }
             .onAppear {
                 isVisible = true
                 if selection == nil && !store.devices.isEmpty {
@@ -334,6 +338,17 @@ struct iPad_DevicesView: View {
                 } else {
                     Text("Select a device to view details")
                         .foregroundColor(.secondary)
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if columnVisibility == .detailOnly {
+                    iPadSidebarRestoreButton {
+                        withAnimation {
+                            columnVisibility = .all
+                        }
+                    }
+                    .padding(.top, 64)
+                    .padding(.leading, 16)
                 }
             }
             .ignoresSafeArea(.container, edges: .top)
@@ -524,6 +539,89 @@ struct iPad_DevicesView: View {
         }
     }
 
+}
+
+struct iPadSidebarListHeader: View {
+    let title: String
+    let editTitle: String
+    let onToggleEdit: () -> Void
+    let onAdd: () -> Void
+    let onToggleSidebar: () -> Void
+    let addAccessibilityLabel: String
+    let addAccessibilityHint: String
+    let addAccessibilityIdentifier: String
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button(action: onToggleEdit) {
+                Text(editTitle)
+                    .lineLimit(1)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.primary)
+            .frame(width: 104, alignment: .leading)
+
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+
+            HStack(spacing: 8) {
+                Button(action: onAdd) {
+                    Image(systemName: "plus")
+                        .font(.title2.weight(.medium))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
+                .accessibilityLabel(Text(addAccessibilityLabel))
+                .accessibilityHint(Text(addAccessibilityHint))
+                .accessibilityIdentifier(addAccessibilityIdentifier)
+
+                Button(action: onToggleSidebar) {
+                    Image(systemName: "sidebar.left")
+                        .font(.title2.weight(.medium))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
+                .accessibilityLabel(Text("Hide sidebar"))
+                .accessibilityHint(Text("Shows the map without the sidebar"))
+            }
+            .frame(width: 104, alignment: .trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+    }
+}
+
+struct iPadSidebarRestoreButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "sidebar.left")
+                .font(.title2.weight(.medium))
+                .foregroundStyle(.primary)
+                .frame(width: 44, height: 44)
+                .background {
+                    if #available(iOS 26.0, *) {
+                        Color.clear.glassEffect(in: .circle)
+                    } else {
+                        Circle().fill(.ultraThinMaterial)
+                    }
+                }
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Show sidebar"))
+        .accessibilityHint(Text("Shows the device list sidebar"))
+    }
 }
 
 #Preview {

@@ -9,7 +9,8 @@ When frequent background location updates are active, the device list now shows 
 ## Behavior
 
 - The notice is shown only when location tracking is enabled and frequent background location updates are active.
-- The notice appears in its own list section above the device rows on iPhone and iPad.
+- The notice appears in its own list section above the device rows on iPhone.
+- On iPad, the notice appears as the first row inside the Devices section so the section header keeps the same spacing as the inactive state.
 - If frequent background updates have a temporary expiration date, the notice shows the localized expiration time below the active-mode message.
 - If the duration is set to never expire, the notice keeps the compact single-line active-mode message.
 - Tapping the notice uses `AppNavigationCoordinator.openAdvancedSettings()` to switch to Settings and push Advanced Options.

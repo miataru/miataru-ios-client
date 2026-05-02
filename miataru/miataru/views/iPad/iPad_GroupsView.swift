@@ -17,67 +17,72 @@ struct iPad_GroupsView: View {
     @State private var editMode: EditMode = .inactive
     @State private var currentGroup: DeviceGroup? = nil // Track the currently displayed group
     @State private var lastSelectedGroupID: String? = nil // Preserve selection across edit mode toggles
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: $selection) {
-                Section(header: Text(NSLocalizedString("groups", comment: "Groups list header on iPad"))) {
-                    ForEach(groupStore.groups) { group in
-                        GroupRowView(group: group)
-                            .tag(group.id)
-                            .tint(.primary)
-                            .contextMenu {
-                                Button {
-                                    editingGroup = group
-                                } label: {
-                                    Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
-                                }
-                                Button(role: .destructive) {
-                                    groupStore.remove(group: group)
-                                } label: {
-                                    Label("delete_group", systemImage: "trash")
-                                }
-                            }
-                            .swipeActions(edge: .leading) {
-                                Button {
-                                    editingGroup = group
-                                } label: {
-                                    Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
-                    }
-                    .onDelete { indices in
-                        groupStore.remove(atOffsets: indices)
-                    }
-                    .onMove { indices, newOffset in
-                        groupStore.move(fromOffsets: indices, toOffset: newOffset)
-                    }
-                }
-            }
-            .navigationTitle(NSLocalizedString("groups", comment: "Groups list title on iPad"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            VStack(spacing: 0) {
+                iPadSidebarListHeader(
+                    title: NSLocalizedString("groups", comment: "Groups list title on iPad"),
+                    editTitle: editMode == .active
+                        ? NSLocalizedString("grouplist_edit_done", comment: "Finish editing the group list.")
+                        : NSLocalizedString("grouplist_editbutton", comment: "Edit group list"),
+                    onToggleEdit: {
                         editMode = editMode == .active ? .inactive : .active
-                    } label: {
-                        if editMode == .active {
-                            Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the group list."))
-                        } else {
-                            Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list"))
-                            //Image(systemName: "pencil")
-                            //    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit group list")))
+                    },
+                    onAdd: {
+                        showingAddGroup = true
+                    },
+                    onToggleSidebar: {
+                        withAnimation {
+                            columnVisibility = .detailOnly
+                        }
+                    },
+                    addAccessibilityLabel: NSLocalizedString("grouplist_addbutton", comment: "Create a new group"),
+                    addAccessibilityHint: NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet"),
+                    addAccessibilityIdentifier: "groups_add_button"
+                )
+
+                List(selection: $selection) {
+                    Section(header: Text(NSLocalizedString("groups", comment: "Groups list header on iPad"))) {
+                        ForEach(groupStore.groups) { group in
+                            GroupRowView(group: group)
+                                .tag(group.id)
+                                .tint(.primary)
+                                .contextMenu {
+                                    Button {
+                                        editingGroup = group
+                                    } label: {
+                                        Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                    }
+                                    Button(role: .destructive) {
+                                        groupStore.remove(group: group)
+                                    } label: {
+                                        Label("delete_group", systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        editingGroup = group
+                                    } label: {
+                                        Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
+                        }
+                        .onDelete { indices in
+                            groupStore.remove(atOffsets: indices)
+                        }
+                        .onMove { indices, newOffset in
+                            groupStore.move(fromOffsets: indices, toOffset: newOffset)
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddGroup = true }) {
-                        Image(systemName: "plus")
-                            .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
-                            .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
-                    }
-                }
+                .listStyle(.sidebar)
+                .contentMargins(.top, 0, for: .scrollContent)
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .ignoresSafeArea(.container, edges: .top)
             .environment(\.editMode, $editMode)
         } detail: {
             NavigationStack {
@@ -115,6 +120,17 @@ struct iPad_GroupsView: View {
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding()
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if columnVisibility == .detailOnly {
+                    iPadSidebarRestoreButton {
+                        withAnimation {
+                            columnVisibility = .all
+                        }
+                    }
+                    .padding(.top, 64)
+                    .padding(.leading, 16)
                 }
             }
             .ignoresSafeArea(.container, edges: .top)
