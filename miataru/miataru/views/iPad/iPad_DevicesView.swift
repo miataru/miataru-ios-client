@@ -340,17 +340,6 @@ struct iPad_DevicesView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .overlay(alignment: .topLeading) {
-                if columnVisibility == .detailOnly {
-                    iPadSidebarRestoreButton {
-                        withAnimation {
-                            columnVisibility = .all
-                        }
-                    }
-                    .padding(.top, 64)
-                    .padding(.leading, 16)
-                }
-            }
             .ignoresSafeArea(.container, edges: .top)
         }
         .ignoresSafeArea(.container, edges: .top)
@@ -596,31 +585,6 @@ struct iPadSidebarListHeader: View {
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 12)
-    }
-}
-
-struct iPadSidebarRestoreButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: "sidebar.left")
-                .font(.title2.weight(.medium))
-                .foregroundStyle(.primary)
-                .frame(width: 44, height: 44)
-                .background {
-                    if #available(iOS 26.0, *) {
-                        Color.clear.glassEffect(in: .circle)
-                    } else {
-                        Circle().fill(.ultraThinMaterial)
-                    }
-                }
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text("Show sidebar"))
-        .accessibilityHint(Text("Shows the device list sidebar"))
     }
 }
 

@@ -1,6 +1,10 @@
+version 3.1.10
+- Removed the duplicate collapsed-sidebar restore button on iPad by relying on the native `NavigationSplitView` restore control instead of drawing an additional custom overlay.
+- Updated project metadata for version 3.1.10.
+
 version 3.1.9
 - Fixed the iPad Devices and Groups sidebars so their custom header no longer leaves the large system navigation gap above the first list section.
-- Restored the iPad sidebar hide/show workflow with a sidebar button in the list header and a floating restore button over the map/detail view.
+- Restored the iPad sidebar hide/show workflow with a sidebar button in the list header while relying on the native collapsed-sidebar restore control.
 - Restored the full-bleed iPad map layout so the map again extends behind the status/title area instead of showing a white strip at the top.
 - Kept the frequent-background-updates notice conditional on the mode being active; on iPad it now appears inside the existing Devices section so inactive mode keeps the same spacing.
 - Localized the new sidebar accessibility labels and hints across the supported in-app languages.

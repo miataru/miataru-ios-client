@@ -122,17 +122,6 @@ struct iPad_GroupsView: View {
                         .padding()
                 }
             }
-            .overlay(alignment: .topLeading) {
-                if columnVisibility == .detailOnly {
-                    iPadSidebarRestoreButton {
-                        withAnimation {
-                            columnVisibility = .all
-                        }
-                    }
-                    .padding(.top, 64)
-                    .padding(.leading, 16)
-                }
-            }
             .ignoresSafeArea(.container, edges: .top)
         }
         .ignoresSafeArea(.container, edges: .top)
