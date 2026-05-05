@@ -79,6 +79,15 @@ final class LocationManager: NSObject, ObservableObject {
         let distanceFilter: CLLocationDistance
         let desiredAccuracy: CLLocationAccuracy
     }
+
+    enum TrackingMode: Equatable {
+        case stopped
+        case foregroundHighAccuracy
+        case backgroundSignificantChange
+        case backgroundFrequent(distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
+    }
+
+    private var navigationLocationSessionIDs = Set<UUID>()
     
     // MARK: - Init
     override private init() {
@@ -163,9 +172,8 @@ final class LocationManager: NSObject, ObservableObject {
            settings.trackAndReportLocation,
            !settings.deviceKeyAuthBlocked {
             startTracking()
-        }
-        if isTracking {
-            startHighAccuracyUpdates()
+        } else if isTracking {
+            applyTrackingMode(reason: "app did become active")
         }
         Task {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
@@ -220,8 +228,8 @@ final class LocationManager: NSObject, ObservableObject {
             self.settings.ensureFrequentBackgroundLocationUpdatesExpiration()
             self.scheduleFrequentBackgroundLocationExpirationTimer()
             self.refreshFrequentBackgroundTrackingReminder()
-            if self.isTracking, UIApplication.shared.applicationState != .active {
-                self.startSignificantChangeUpdates()
+            if self.isTracking {
+                self.applyTrackingMode(reason: "frequent background settings changed")
             }
         }
         .store(in: &cancellables)
@@ -262,7 +270,7 @@ final class LocationManager: NSObject, ObservableObject {
                 self.locationManager.activityType = Self.activityTypeFrom(newValue)
                 if self.isTracking {
                     // Restart location updates to apply new activityType immediately
-                    self.updateTrackingMode()
+                    self.applyTrackingMode(reason: "activity type changed")
                 }
             }
             .store(in: &cancellables)
@@ -307,6 +315,41 @@ final class LocationManager: NSObject, ObservableObject {
 
     private static func backgroundDesiredAccuracy(for distanceFilterMeters: Int) -> CLLocationAccuracy {
         distanceFilterMeters <= 50 ? kCLLocationAccuracyNearestTenMeters : kCLLocationAccuracyHundredMeters
+    }
+
+    static func resolvedTrackingMode(isTracking: Bool,
+                                     authorizationStatus: CLAuthorizationStatus,
+                                     applicationState: UIApplication.State,
+                                     frequentUpdatesEnabled: Bool,
+                                     distanceFilterMeters: Int,
+                                     hasNavigationLocationSession: Bool) -> TrackingMode {
+        guard isTracking else { return .stopped }
+
+        switch authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            break
+        default:
+            return .stopped
+        }
+
+        if applicationState == .active {
+            if hasNavigationLocationSession {
+                return .foregroundHighAccuracy
+            }
+            return .foregroundHighAccuracy
+        }
+
+        let configuration = backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters
+        )
+        if configuration.usesSignificantChangeMonitoring {
+            return .backgroundSignificantChange
+        }
+        return .backgroundFrequent(
+            distanceFilter: configuration.distanceFilter,
+            desiredAccuracy: configuration.desiredAccuracy
+        )
     }
 
     static func batteryPercent(from batteryLevel: Float) -> Int? {
@@ -409,52 +452,76 @@ final class LocationManager: NSObject, ObservableObject {
         }
         isTracking = true
         handleFrequentBackgroundLocationExpirationIfNeeded()
-        updateTrackingMode()
+        applyTrackingMode(reason: "start tracking")
     }
     
     func stopTracking() {
         debugLog("stopTracking called")
         isTracking = false
-        locationManager.stopUpdatingLocation()
-        locationManager.stopMonitoringSignificantLocationChanges()
-        stopHeadingUpdates()
-        stopForegroundLocationTimer()
+        applyTrackingMode(reason: "stop tracking")
     }
-    
-    private func updateTrackingMode() {
-        handleFrequentBackgroundLocationExpirationIfNeeded()
+
+    @discardableResult
+    func beginNavigationLocationSession() -> UUID {
+        let id = UUID()
+        navigationLocationSessionIDs.insert(id)
+        debugLog("[LocationManager] beginNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
+        applyTrackingMode(reason: "begin navigation location session")
+        return id
+    }
+
+    func endNavigationLocationSession(_ id: UUID) {
+        guard navigationLocationSessionIDs.remove(id) != nil else { return }
+        debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
+        applyTrackingMode(reason: "end navigation location session")
+    }
+
+    private func applyTrackingMode(reason: String) {
         let state = UIApplication.shared.applicationState
         let status = locationManager.authorizationStatus
-        debugLog("updateTrackingMode called, state: \(state.rawValue), status: \(status.rawValue), isTracking: \(isTracking)")
-        switch status {
-        case .authorizedAlways, .authorizedWhenInUse:
-            if isTracking {
-                if state == .active {
-                    startHighAccuracyUpdates()
-                } else {
-                    startSignificantChangeUpdates()
-                }
-            } else {
-                // Ensure updates are stopped but preserve user's tracking preference flag
-                stopHighAccuracyUpdates()
-                stopSignificantChangeUpdates()
-            }
-        case .notDetermined:
-            // Do not reset isTracking while the user has not decided yet
-            break
-        case .denied, .restricted:
-            // Explicitly stop tracking if permission is denied/restricted
-            stopTracking()
-            // Update the setting to reflect the actual permission state
+
+        handleFrequentBackgroundLocationExpirationIfNeeded()
+        if isTracking, state != .active {
+            disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
+        }
+
+        if status == .denied || status == .restricted {
             if settings.trackAndReportLocation {
+                debugLog("Location permission denied/restricted, setting trackAndReportLocation to false")
                 settings.trackAndReportLocation = false
             }
-        @unknown default:
-            stopHighAccuracyUpdates()
-            stopSignificantChangeUpdates()
+        }
+
+        let mode = Self.resolvedTrackingMode(
+            isTracking: isTracking,
+            authorizationStatus: status,
+            applicationState: state,
+            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
+            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty
+        )
+        debugLog("[LocationManager] applyTrackingMode reason=\(reason), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), mode=\(mode)")
+        apply(mode)
+    }
+
+    private func apply(_ mode: TrackingMode) {
+        switch mode {
+        case .stopped:
+            stopAllLocationServices()
+        case .foregroundHighAccuracy:
+            startHighAccuracyUpdates()
+        case .backgroundSignificantChange:
+            startSignificantChangeMonitoring()
+        case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
+            let configuration = BackgroundUpdateConfiguration(
+                usesSignificantChangeMonitoring: false,
+                distanceFilter: distanceFilter,
+                desiredAccuracy: desiredAccuracy
+            )
+            startFrequentBackgroundLocationUpdates(configuration: configuration)
         }
     }
-    
+
     private func startHighAccuracyUpdates() {
         debugLog("Calling startHighAccuracyUpdates")
         locationManager.allowsBackgroundLocationUpdates = false
@@ -472,26 +539,6 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
     
-    func startSignificantChangeUpdates() {
-        debugLog("startSignificantChangeUpdates called")
-        handleFrequentBackgroundLocationExpirationIfNeeded()
-
-        if disableFrequentBackgroundLocationUpdatesIfBatteryIsLow() {
-            startSignificantChangeMonitoring()
-            return
-        }
-
-        let configuration = Self.backgroundUpdateConfiguration(
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
-            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
-        )
-        if configuration.usesSignificantChangeMonitoring {
-            startSignificantChangeMonitoring()
-        } else {
-            startFrequentBackgroundLocationUpdates(configuration: configuration)
-        }
-    }
-
     private func startSignificantChangeMonitoring() {
         debugLog("Starting significant-change background updates")
         locationManager.allowsBackgroundLocationUpdates = true
@@ -565,7 +612,7 @@ final class LocationManager: NSObject, ObservableObject {
         let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
             guard let self else { return }
             if self.handleFrequentBackgroundLocationExpirationIfNeeded(), self.isTracking {
-                self.updateTrackingMode()
+                self.applyTrackingMode(reason: "frequent background expiration timer")
             }
         }
         frequentBackgroundLocationExpirationTimer = timer
@@ -750,12 +797,11 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Background Tracking API
     func startBackgroundTracking() {
-        guard settings.trackAndReportLocation else { return }
-        startSignificantChangeUpdates()
+        applyTrackingMode(reason: "start background tracking")
     }
     
     func stopBackgroundTracking() {
-        stopTracking()
+        applyTrackingMode(reason: "stop background tracking")
     }
     
     // MARK: - App Delegate Extension
@@ -764,7 +810,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
-        stopBackgroundTracking()
+        appDidEnterForeground()
     }
     
     // MARK: - App Lifecycle Hooks
@@ -775,8 +821,7 @@ final class LocationManager: NSObject, ObservableObject {
         guard isTracking else { return }
         // Check daily reset on foreground entry so UI reflects a new day immediately
         maybeResetBackgroundMetricsIfNeeded()
-        stopSignificantChangeUpdates()
-        startHighAccuracyUpdates()
+        applyTrackingMode(reason: "app did enter foreground")
     }
 
     func appDidEnterBackground() {
@@ -784,21 +829,15 @@ final class LocationManager: NSObject, ObservableObject {
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
         guard isTracking else { return }
-        stopHighAccuracyUpdates()
-        startSignificantChangeUpdates()
+        applyTrackingMode(reason: "app did enter background")
     }
 
-    private func stopHighAccuracyUpdates() {
-        debugLog("[LocationManager] Stopping high accuracy updates")
+    private func stopAllLocationServices() {
+        debugLog("[LocationManager] Stopping all location services")
         locationManager.stopUpdatingLocation()
+        locationManager.stopMonitoringSignificantLocationChanges()
         stopHeadingUpdates()
         stopForegroundLocationTimer()
-    }
-
-    private func stopSignificantChangeUpdates() {
-        debugLog("[LocationManager] Stopping background location updates")
-        locationManager.stopMonitoringSignificantLocationChanges()
-        locationManager.stopUpdatingLocation()
     }
 
     private func startHeadingUpdatesIfAvailable() {
@@ -890,12 +929,12 @@ extension LocationManager: CLLocationManagerDelegate {
             let applicationState = UIApplication.shared.applicationState
             if self.handleFrequentBackgroundLocationExpirationIfNeeded(),
                applicationState != .active {
-                self.startSignificantChangeUpdates()
+                self.applyTrackingMode(reason: "frequent background expired during location update")
                 return
             }
             if self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow(),
                applicationState != .active {
-                self.startSignificantChangeUpdates()
+                self.applyTrackingMode(reason: "frequent background battery auto-disable during location update")
                 return
             }
             self.latestRawLocation = location
@@ -1005,7 +1044,7 @@ extension LocationManager: CLLocationManagerDelegate {
                 hasRequestedAlwaysAuthorization = true
                 self.locationManager.requestAlwaysAuthorization()
             }
-            self.updateTrackingMode()
+            self.applyTrackingMode(reason: "authorization changed")
         }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

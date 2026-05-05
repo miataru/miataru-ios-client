@@ -10,6 +10,7 @@
 import Testing
 import Foundation
 import CoreLocation
+import UIKit
 @testable import miataru
 
 struct SettingsConfigurationTests {
@@ -372,6 +373,84 @@ struct SettingsConfigurationTests {
         )
         #expect(!normalizedConfiguration.usesSignificantChangeMonitoring)
         #expect(normalizedConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
+    }
+
+    @Test("Location tracking mode resolver keeps foreground, navigation, and background policies distinct")
+    func locationTrackingModeResolverKeepsForegroundNavigationAndBackgroundPoliciesDistinct() {
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: false,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .active,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: true
+        ) == .stopped)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .denied,
+            applicationState: .active,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: true
+        ) == .stopped)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .active,
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 100,
+            hasNavigationLocationSession: false
+        ) == .foregroundHighAccuracy)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .active,
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 100,
+            hasNavigationLocationSession: true
+        ) == .foregroundHighAccuracy)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 25,
+            hasNavigationLocationSession: true
+        ) == .backgroundSignificantChange)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .backgroundFrequent(distanceFilter: 50, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 10,
+            hasNavigationLocationSession: true
+        ) == .backgroundFrequent(
+            distanceFilter: CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter),
+            desiredAccuracy: kCLLocationAccuracyHundredMeters
+        ))
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .backgroundSignificantChange)
     }
 
     @Test("Background battery threshold only disables frequent mode when active and known")

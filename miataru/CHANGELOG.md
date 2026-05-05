@@ -1,3 +1,12 @@
+version 3.1.11
+- Centralized location tracking mode selection in `LocationManager`, making foreground high-accuracy, standard significant-change background tracking, and opt-in frequent background updates resolve through one path.
+- Focused Turn-by-turn navigation now registers an explicit location session and cleans it up when navigation is disabled, auto-stopped, direction-switched, or the navigation view disappears.
+- App backgrounding now always applies the configured background policy, even while a navigation session is active; returning to the foreground reapplies high-accuracy tracking.
+- Fixed the legacy foreground lifecycle hook so it no longer stops location tracking when the app enters the foreground.
+- Added regression coverage for foreground/background/navigation tracking-mode resolution.
+- Documented the location tracking mode resolver behavior.
+- Updated project metadata for version 3.1.11.
+
 version 3.1.10
 - Removed the duplicate collapsed-sidebar restore button on iPad by relying on the native `NavigationSplitView` restore control instead of drawing an additional custom overlay.
 - Updated project metadata for version 3.1.10.

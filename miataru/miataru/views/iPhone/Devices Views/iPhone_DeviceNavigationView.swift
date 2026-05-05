@@ -65,6 +65,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
     @State private var isNavigationMode: Bool = false
+    @State private var navigationLocationSessionID: UUID? = nil
     @State private var lastFollowCameraUpdate: Date? = nil
     @State private var lastFollowCameraCenter: CLLocationCoordinate2D? = nil
     @State private var lastFollowCameraHeading: CLLocationDirection? = nil
@@ -462,6 +463,7 @@ struct iPhone_DeviceNavigationView: View {
                 routeInfoState.onCancel = nil
                 // Stop mutual navigation detection
                 mutualNavigationDetector.stopMonitoring()
+                endNavigationLocationSessionIfNeeded()
             }
             .onChange(of: settings.mapUpdateInterval) {
                 restartAutoUpdate()
@@ -494,6 +496,7 @@ struct iPhone_DeviceNavigationView: View {
                 navigationOverlayCancellables.removeAll()
                 lastOverlayStepIndex = nil
                 isFollowDeviceHeadingMode = false
+                endNavigationLocationSessionIfNeeded()
                 isNavigationMode = false
                 shouldPerformInitialNavigationZoom = false
             }
@@ -1466,6 +1469,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func enableNavigationMode() {
         isNavigationMode = true
+        beginNavigationLocationSessionIfNeeded()
         isAutoCenteringEnabled = true
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
@@ -1499,6 +1503,7 @@ struct iPhone_DeviceNavigationView: View {
 
     private func disableNavigationMode() {
         isNavigationMode = false
+        endNavigationLocationSessionIfNeeded()
         isAutoCenteringEnabled = true
         lastFollowCameraUpdate = nil
         lastFollowCameraCenter = nil
@@ -1509,6 +1514,17 @@ struct iPhone_DeviceNavigationView: View {
         shouldPerformInitialNavigationZoom = false
         showChromeIfNeeded()
         resetZoomToFitRouteOrBoth()
+    }
+
+    private func beginNavigationLocationSessionIfNeeded() {
+        guard navigationLocationSessionID == nil else { return }
+        navigationLocationSessionID = locationManager.beginNavigationLocationSession()
+    }
+
+    private func endNavigationLocationSessionIfNeeded() {
+        guard let navigationLocationSessionID else { return }
+        locationManager.endNavigationLocationSession(navigationLocationSessionID)
+        self.navigationLocationSessionID = nil
     }
 
     private func updateFollowCamera(animated: Bool, force: Bool = false) {
@@ -1815,6 +1831,7 @@ struct iPhone_DeviceNavigationView: View {
         // Disable navigation modes when navigation is stopped
         isNavigationMode = false
         isFollowDeviceHeadingMode = false
+        endNavigationLocationSessionIfNeeded()
         shouldPerformInitialNavigationZoom = false
         // Reset follow camera state
         lastFollowCameraUpdate = nil
