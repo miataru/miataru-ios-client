@@ -15752,6 +15752,71 @@
         }
       }
     },
+    "frequent_background_location_updates_central_explanation" : {
+      "comment" : "Short explanation for the central frequent background updates toggle in settings",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slår hyppigere baggrundsopdateringer til eller fra. Åbn Avancerede indstillinger for at finjustere afstand, varighed, levering og besøgsforespørgsler."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schaltet häufigere Hintergrund-Updates ein oder aus. In den erweiterten Optionen kannst du Distanz, Dauer, Zustellung und Besucherabfragen fein einstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turns frequent background updates on or off. Open Advanced Options to fine-tune distance, duration, delivery and visitor checks."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa o desactiva las actualizaciones en segundo plano más frecuentes. Abre Opciones avanzadas para ajustar distancia, duración, entrega y comprobaciones de visitantes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ottaa tiheämmät taustapäivitykset käyttöön tai pois käytöstä. Avaa lisäasetukset, jos haluat säätää etäisyyttä, kestoa, toimitusta ja vierailijatarkistuksia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active ou désactive les mises à jour en arrière-plan plus fréquentes. Ouvrez les options avancées pour ajuster la distance, la durée, l’envoi et les vérifications des visiteurs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva o disattiva gli aggiornamenti in background più frequenti. Apri le opzioni avanzate per regolare distanza, durata, invio e controlli dei visitatori."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "より頻繁なバックグラウンド更新のオン/オフを切り替えます。距離、期間、送信、訪問者チェックの調整は詳細オプションで行えます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schakelt frequentere achtergrondupdates in of uit. Open Geavanceerde opties om afstand, duur, levering en bezoekerscontroles fijn af te stemmen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启或关闭更频繁的后台更新。打开高级选项可微调距离、持续时间、发送方式和访客检查。"
+          }
+        }
+      }
+    },
     "frequent_background_location_updates_device_list_notice" : {
       "comment" : "Notice shown above devices while frequent background location updates are active",
       "localizations" : {

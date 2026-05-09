@@ -1,3 +1,14 @@
+version 3.1.12
+- Centralized successful `GetLocation` response ingestion so device-location cache, slogan cache, widget payloads, and device-list rows reuse already fetched server data consistently.
+- Hardened device-location cache writes with timestamp ordering so older app, history, widget, or background responses can no longer overwrite newer location data.
+- Reused latest `GetLocationHistory` entries to improve cached battery, altitude, speed, timestamp, and placemark freshness without adding new server requests.
+- Reused visitor-history responses from refreshers, visitor-history views, mutual-navigation checks, and unknown-visitor alerts to update the recent-visitor indicator more quickly.
+- Preserved newer widget App Group locations when the app syncs widget data and imported newer widget-written locations into the app cache on startup and foreground activation.
+- Removed redundant per-view cache update loops from iPhone/iPad device maps, group maps, navigation, and device-list fallback paths in favor of the central ingest path.
+- Added regression coverage for timestamp ordering, opt-in missing-device removal, history promotion, and recent-visitor normalization.
+- Added the missing localized `frequent_background_location_updates_central_explanation` string across all supported app locales and wired the central Settings toggle to use it.
+- Updated project metadata for version 3.1.12.
+
 version 3.1.11
 - Centralized location tracking mode selection in `LocationManager`, making foreground high-accuracy, standard significant-change background tracking, and opt-in frequent background updates resolve through one path.
 - Focused Turn-by-turn navigation now registers an explicit location session and cleans it up when navigation is disabled, auto-stopped, direction-switched, or the navigation view disappears.

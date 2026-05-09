@@ -11,6 +11,7 @@ import Foundation
 import UIKit
 import Combine
 import CoreLocation
+import MiataruAPIClient
 
 struct DeviceLocationSnapshot {
     let deviceID: String
@@ -144,9 +145,13 @@ class DeviceLocationCacheStore: ObservableObject {
         return []
     }
 
-    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) {
+    @discardableResult
+    func setLocation(for deviceID: String, latitude: Double, longitude: Double, accuracy: Double, timestamp: Date, batteryLevel: Double? = nil, altitude: Double? = nil, speed: Double? = nil) -> Bool {
         if let idx = locations.firstIndex(where: { $0.deviceID == deviceID }) {
             let existing = locations[idx]
+            guard timestamp >= existing.timestamp else {
+                return false
+            }
             let moved = existing.latitude != latitude || existing.longitude != longitude
             let updated = CachedDeviceLocation(
                 deviceID: deviceID,
@@ -158,8 +163,8 @@ class DeviceLocationCacheStore: ObservableObject {
                 country: existing.country,
                 locality: existing.locality,
                 timeZone: existing.timeZone,
-                batteryLevel: batteryLevel,
-                altitude: altitude,
+                batteryLevel: batteryLevel ?? existing.batteryLevel,
+                altitude: altitude ?? existing.altitude,
                 speed: speed ?? existing.speed
             )
             locations[idx] = updated
@@ -174,17 +179,15 @@ class DeviceLocationCacheStore: ObservableObject {
                 }
             }
             WidgetDataSyncCoordinator.syncAllDevices()
+            return true
         } else {
             let newLocation = CachedDeviceLocation(deviceID: deviceID, latitude: latitude, longitude: longitude, accuracy: accuracy, timestamp: timestamp, batteryLevel: batteryLevel, altitude: altitude, speed: speed)
             locations.append(newLocation)
             // New entry: if no placemark present, enqueue
             enqueueGeocodingIfNeeded(for: deviceID)
             WidgetDataSyncCoordinator.syncAllDevices()
+            return true
         }
-
-        // Widget snapshots are now generated inside the widget extension to avoid
-        // app/widget write races on the same files.
-        // (Intentionally no app-side snapshot generation here.)
     }
 
     func applyLocationSnapshots(
@@ -192,14 +195,30 @@ class DeviceLocationCacheStore: ObservableObject {
         removingMissingDeviceIDs missingDeviceIDs: Set<String> = [],
         forceGeocoding: Bool = false
     ) {
-        let snapshotsByID = Dictionary(uniqueKeysWithValues: snapshots.map { ($0.deviceID, $0) })
+        var snapshotsByID: [String: DeviceLocationSnapshot] = [:]
+        for snapshot in snapshots {
+            guard !snapshot.deviceID.isEmpty else { continue }
+            if let existing = snapshotsByID[snapshot.deviceID],
+               existing.timestamp > snapshot.timestamp {
+                continue
+            }
+            snapshotsByID[snapshot.deviceID] = snapshot
+        }
+
         var remainingSnapshotIDs = Set(snapshotsByID.keys)
         var nextLocations: [CachedDeviceLocation] = []
         nextLocations.reserveCapacity(max(locations.count, snapshots.count))
         var deviceIDsNeedingGeocoding: [String] = []
+        var didChange = false
 
         for existing in locations {
             if let snapshot = snapshotsByID[existing.deviceID] {
+                remainingSnapshotIDs.remove(existing.deviceID)
+                guard snapshot.timestamp >= existing.timestamp else {
+                    nextLocations.append(existing)
+                    continue
+                }
+
                 let updated = CachedDeviceLocation(
                     deviceID: snapshot.deviceID,
                     latitude: snapshot.latitude,
@@ -209,12 +228,12 @@ class DeviceLocationCacheStore: ObservableObject {
                     country: existing.country,
                     locality: existing.locality,
                     timeZone: existing.timeZone,
-                    batteryLevel: snapshot.batteryLevel,
-                    altitude: snapshot.altitude,
+                    batteryLevel: snapshot.batteryLevel ?? existing.batteryLevel,
+                    altitude: snapshot.altitude ?? existing.altitude,
                     speed: snapshot.speed ?? existing.speed
                 )
                 nextLocations.append(updated)
-                remainingSnapshotIDs.remove(existing.deviceID)
+                didChange = true
 
                 let moved = existing.latitude != snapshot.latitude || existing.longitude != snapshot.longitude
                 if moved {
@@ -228,10 +247,12 @@ class DeviceLocationCacheStore: ObservableObject {
                 }
             } else if !missingDeviceIDs.contains(existing.deviceID) {
                 nextLocations.append(existing)
+            } else {
+                didChange = true
             }
         }
 
-        for snapshot in snapshots where remainingSnapshotIDs.contains(snapshot.deviceID) {
+        for snapshot in snapshotsByID.values where remainingSnapshotIDs.contains(snapshot.deviceID) {
             let newLocation = CachedDeviceLocation(
                 deviceID: snapshot.deviceID,
                 latitude: snapshot.latitude,
@@ -244,12 +265,15 @@ class DeviceLocationCacheStore: ObservableObject {
             )
             nextLocations.append(newLocation)
             deviceIDsNeedingGeocoding.append(snapshot.deviceID)
+            didChange = true
         }
 
-        locations = nextLocations
+        if didChange {
+            locations = nextLocations
+        }
 
         if forceGeocoding {
-            for location in nextLocations {
+            for location in (didChange ? nextLocations : locations) {
                 enqueueGeocodingIfNeeded(for: location.deviceID, force: true)
             }
         } else {
@@ -258,7 +282,59 @@ class DeviceLocationCacheStore: ObservableObject {
             }
         }
 
-        WidgetDataSyncCoordinator.syncAllDevices()
+        if didChange {
+            WidgetDataSyncCoordinator.syncAllDevices()
+        }
+    }
+
+    func ingestServerLocations(
+        _ locations: [MiataruLocationData],
+        removingMissingDeviceIDs missingDeviceIDs: Set<String> = [],
+        forceGeocoding: Bool = false
+    ) {
+        let snapshots = locations.map { location in
+            DeviceLocationSnapshot(
+                deviceID: location.Device,
+                latitude: location.Latitude,
+                longitude: location.Longitude,
+                accuracy: location.HorizontalAccuracy,
+                timestamp: location.TimestampDate,
+                batteryLevel: location.BatteryLevel,
+                altitude: location.Altitude,
+                speed: location.Speed
+            )
+        }
+
+        applyLocationSnapshots(
+            snapshots,
+            removingMissingDeviceIDs: missingDeviceIDs,
+            forceGeocoding: forceGeocoding
+        )
+    }
+
+    func ingestLatestHistoryEntry(_ entries: [MiataruLocationData], for deviceID: String) {
+        let normalizedTargetID = normalizedDeviceID(deviceID)
+        guard !normalizedTargetID.isEmpty else { return }
+        let matchingEntries = entries.filter { normalizedDeviceID($0.Device) == normalizedTargetID }
+        guard let latestEntry = matchingEntries.max(by: { $0.TimestampDate < $1.TimestampDate }) else { return }
+        ingestServerLocations([latestEntry])
+    }
+
+    func updateRecentVisitors(
+        from visitors: [MiataruVisitor],
+        ownDeviceID: String,
+        window: TimeInterval = 90,
+        now: Date = Date()
+    ) {
+        let normalizedOwnDeviceID = normalizedDeviceID(ownDeviceID)
+        let cutoff = now.addingTimeInterval(-window)
+        let recentVisitorDeviceIDs = Set(
+            visitors
+                .filter { $0.TimeStampDate >= cutoff }
+                .map { normalizedDeviceID($0.DeviceID) }
+                .filter { !$0.isEmpty && $0 != normalizedOwnDeviceID }
+        )
+        setRecentVisitorDeviceIDs(recentVisitorDeviceIDs)
     }
 
     func getLocation(for deviceID: String) -> CachedDeviceLocation? {
@@ -327,12 +403,20 @@ class DeviceLocationCacheStore: ObservableObject {
     
     /// Sets the device IDs that have looked for the current user's device in the past 90 seconds
     func setRecentVisitorDeviceIDs(_ deviceIDs: Set<String>) {
-        recentVisitorDeviceIDs = deviceIDs
+        recentVisitorDeviceIDs = Set(
+            deviceIDs
+                .map { normalizedDeviceID($0) }
+                .filter { !$0.isEmpty }
+        )
     }
     
     /// Checks if a device has looked for the current user's device in the past 90 seconds
     func hasRecentVisitor(deviceID: String) -> Bool {
-        return recentVisitorDeviceIDs.contains(deviceID)
+        return recentVisitorDeviceIDs.contains(normalizedDeviceID(deviceID))
+    }
+
+    private func normalizedDeviceID(_ deviceID: String) -> String {
+        deviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
     }
 
     private func processNextGeocode() {

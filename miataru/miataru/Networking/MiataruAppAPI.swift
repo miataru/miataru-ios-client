@@ -39,7 +39,10 @@ enum MiataruAppAPI {
                 requestingDeviceKey: requestingDeviceKey
             )
         }
-        await DeviceSloganCacheStore.shared.ingestGetLocationResults(locations, requestedDeviceIDs: deviceIDs)
+        await MainActor.run {
+            DeviceSloganCacheStore.shared.ingestGetLocationResults(locations, requestedDeviceIDs: deviceIDs)
+            DeviceLocationCacheStore.shared.ingestServerLocations(locations)
+        }
         return locations
     }
 
@@ -50,7 +53,7 @@ enum MiataruAppAPI {
         requestingDeviceKey: String? = nil,
         amount: Int
     ) async throws -> [MiataruLocationData] {
-        try await executor.execute(policy: .read, operationName: "getLocationHistory") {
+        let locations = try await executor.execute(policy: .read, operationName: "getLocationHistory") {
             try await MiataruAPIClient.getLocationHistory(
                 serverURL: serverURL,
                 forDeviceID: deviceID,
@@ -59,6 +62,10 @@ enum MiataruAppAPI {
                 amount: amount
             )
         }
+        await MainActor.run {
+            DeviceLocationCacheStore.shared.ingestLatestHistoryEntry(locations, for: deviceID)
+        }
+        return locations
     }
 
     static func getVisitorHistory(
@@ -67,7 +74,7 @@ enum MiataruAppAPI {
         deviceKey: String? = nil,
         amount: Int
     ) async throws -> [MiataruVisitor] {
-        try await executor.execute(policy: .read, operationName: "getVisitorHistory") {
+        let visitors = try await executor.execute(policy: .read, operationName: "getVisitorHistory") {
             try await MiataruAPIClient.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: deviceID,
@@ -75,6 +82,8 @@ enum MiataruAppAPI {
                 amount: amount
             )
         }
+        await ingestVisitorHistoryIfCurrentDevice(visitors, for: deviceID)
+        return visitors
     }
 
     static func getVisitorHistoryWithConfig(
@@ -83,7 +92,7 @@ enum MiataruAppAPI {
         deviceKey: String? = nil,
         amount: Int?
     ) async throws -> MiataruGetVisitorHistoryResponse {
-        try await executor.execute(policy: .read, operationName: "getVisitorHistoryWithConfig") {
+        let response = try await executor.execute(policy: .read, operationName: "getVisitorHistoryWithConfig") {
             try await MiataruAPIClient.getVisitorHistoryWithConfig(
                 serverURL: serverURL,
                 forDeviceID: deviceID,
@@ -91,6 +100,8 @@ enum MiataruAppAPI {
                 amount: amount
             )
         }
+        await ingestVisitorHistoryIfCurrentDevice(response.MiataruVisitors, for: deviceID)
+        return response
     }
 
     static func getDeviceSlogan(
@@ -208,5 +219,18 @@ enum MiataruAppAPI {
                 retentionTime: retentionTime
             )
         }
+    }
+
+    private static func ingestVisitorHistoryIfCurrentDevice(_ visitors: [MiataruVisitor], for deviceID: String) async {
+        await MainActor.run {
+            let requestedDeviceID = normalizedDeviceID(deviceID)
+            let currentDeviceID = normalizedDeviceID(thisDeviceIDManager.shared.deviceID)
+            guard !requestedDeviceID.isEmpty, requestedDeviceID == currentDeviceID else { return }
+            DeviceLocationCacheStore.shared.updateRecentVisitors(from: visitors, ownDeviceID: currentDeviceID)
+        }
+    }
+
+    private static func normalizedDeviceID(_ deviceID: String) -> String {
+        deviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
     }
 }

@@ -533,22 +533,8 @@ struct iPhone_DevicesView: View {
             )
 
             let foundIDs = Set(locations.map { $0.Device })
-            for location in locations {
-                cache.setLocation(
-                    for: location.Device,
-                    latitude: location.Latitude,
-                    longitude: location.Longitude,
-                    accuracy: location.HorizontalAccuracy,
-                    timestamp: location.TimestampDate,
-                    batteryLevel: location.BatteryLevel,
-                    altitude: location.Altitude
-                )
-            }
-
             let missingIDs = Set(deviceIDs).subtracting(foundIDs)
-            for missingID in missingIDs {
-                cache.removeLocation(for: missingID)
-            }
+            cache.ingestServerLocations(locations, removingMissingDeviceIDs: missingIDs)
         } catch {
             debugLog("[DevicesView] Failed refreshing unknown visitor locations: \(error)")
         }

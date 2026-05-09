@@ -1091,17 +1091,6 @@ struct iPhone_DeviceNavigationView: View {
             if let loc = locations.first {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
                 let changed = deviceCoordinate?.latitude != coordinate.latitude || deviceCoordinate?.longitude != coordinate.longitude
-                // Update cache first to keep consistency with the rest of the app
-                DeviceLocationCacheStore.shared.setLocation(
-                    for: device.DeviceID,
-                    latitude: loc.Latitude,
-                    longitude: loc.Longitude,
-                    accuracy: loc.HorizontalAccuracy,
-                    timestamp: loc.TimestampDate,
-                    batteryLevel: loc.BatteryLevel,
-                    altitude: loc.Altitude,
-                    speed: loc.Speed
-                )
                 deviceCoordinate = coordinate
                 deviceTimestamp = loc.TimestampDate
                 if changed || animatedDeviceCoordinate == nil {

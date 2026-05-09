@@ -384,28 +384,12 @@ actor UnknownVisitorAlertService {
 
         do {
             APIRequestCounter.shared.record(.getLocation)
-            let locations = try await MiataruAppAPI.getLocation(
+            _ = try await MiataruAppAPI.getLocation(
                 serverURL: serverURL,
                 forDeviceIDs: missingDeviceIDs,
                 requestingDeviceID: requestingDeviceID,
                 requestingDeviceKey: requestingDeviceKey
             )
-
-            await MainActor.run {
-                let cache = DeviceLocationCacheStore.shared
-                for location in locations {
-                    cache.setLocation(
-                        for: location.Device,
-                        latitude: location.Latitude,
-                        longitude: location.Longitude,
-                        accuracy: location.HorizontalAccuracy,
-                        timestamp: location.TimestampDate,
-                        batteryLevel: location.BatteryLevel,
-                        altitude: location.Altitude,
-                        speed: location.Speed
-                    )
-                }
-            }
 
             let refreshedCities = await MainActor.run {
                 let cache = DeviceLocationCacheStore.shared

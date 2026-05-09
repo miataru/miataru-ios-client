@@ -84,7 +84,7 @@ struct iPhone_SettingsView: View {
                     Section(header: Text("background_location_updates_section_title")) {
                         Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
-                        SettingsDescriptionText("frequent_background_location_updates_explanation")
+                        SettingsDescriptionText("frequent_background_location_updates_central_explanation")
                         if settings.frequentBackgroundLocationUpdatesEnabled {
                             SettingsWarningText("frequent_background_location_updates_battery_warning")
                         }

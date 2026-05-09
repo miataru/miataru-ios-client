@@ -1,6 +1,7 @@
 import Testing
 import Combine
 import Foundation
+import MiataruAPIClient
 @testable import miataru
 
 @MainActor
@@ -124,5 +125,196 @@ struct DeviceLocationCacheStoreTests {
 
         #expect(cache.getLocation(for: retainedID) != nil)
         #expect(cache.getLocation(for: removedID) == nil)
+    }
+
+    @Test("ingestServerLocations applies newer or equal timestamps but ignores older data")
+    func testIngestServerLocationsRespectsTimestamps() async throws {
+        let cache = DeviceLocationCacheStore.shared
+        let deviceID = "TEST_DEVICE_TIMESTAMP_\(UUID().uuidString)"
+
+        cache.removeLocation(for: deviceID)
+        defer { cache.removeLocation(for: deviceID) }
+
+        cache.setLocation(
+            for: deviceID,
+            latitude: 52.0,
+            longitude: 13.0,
+            accuracy: 10,
+            timestamp: Date(timeIntervalSince1970: 2_000),
+            batteryLevel: 0.50,
+            altitude: 30,
+            speed: 4
+        )
+
+        cache.ingestServerLocations([
+            location(deviceID: deviceID, timestamp: 1_000, latitude: 40, longitude: 9, batteryLevel: 0.90, altitude: 99, speed: 12)
+        ])
+
+        var cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.latitude == 52.0)
+        #expect(cached.longitude == 13.0)
+        #expect(cached.batteryLevel == 0.50)
+        #expect(cached.altitude == 30)
+        #expect(cached.speed == 4)
+
+        cache.ingestServerLocations([
+            location(deviceID: deviceID, timestamp: 2_000, latitude: 52, longitude: 13, batteryLevel: 0.80, altitude: 40, speed: 8)
+        ])
+
+        cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.batteryLevel == 0.80)
+        #expect(cached.altitude == 40)
+        #expect(cached.speed == 8)
+
+        cache.ingestServerLocations([
+            location(deviceID: deviceID, timestamp: 3_000, latitude: 53, longitude: 14, batteryLevel: 0.70, altitude: 50, speed: nil)
+        ])
+
+        cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.latitude == 53)
+        #expect(cached.longitude == 14)
+        #expect(cached.batteryLevel == 0.70)
+        #expect(cached.altitude == 50)
+        #expect(cached.speed == 8)
+    }
+
+    @Test("ingestServerLocations only removes missing devices when explicitly requested")
+    func testIngestServerLocationsMissingRemovalIsOptIn() async throws {
+        let cache = DeviceLocationCacheStore.shared
+        let retainedID = "TEST_DEVICE_RETAIN_\(UUID().uuidString)"
+        let missingID = "TEST_DEVICE_MISSING_\(UUID().uuidString)"
+
+        cache.removeLocation(for: retainedID)
+        cache.removeLocation(for: missingID)
+        defer {
+            cache.removeLocation(for: retainedID)
+            cache.removeLocation(for: missingID)
+        }
+
+        cache.setLocation(for: retainedID, latitude: 1, longitude: 1, accuracy: 5, timestamp: Date(timeIntervalSince1970: 1_000))
+        cache.setLocation(for: missingID, latitude: 2, longitude: 2, accuracy: 5, timestamp: Date(timeIntervalSince1970: 1_000))
+
+        cache.ingestServerLocations([
+            location(deviceID: retainedID, timestamp: 2_000, latitude: 3, longitude: 3)
+        ])
+        #expect(cache.getLocation(for: missingID) != nil)
+
+        cache.ingestServerLocations(
+            [location(deviceID: retainedID, timestamp: 3_000, latitude: 4, longitude: 4)],
+            removingMissingDeviceIDs: [missingID]
+        )
+        #expect(cache.getLocation(for: missingID) == nil)
+    }
+
+    @Test("ingestLatestHistoryEntry only promotes the newest matching history entry")
+    func testIngestLatestHistoryEntryUsesNewestMatchingEntry() async throws {
+        let cache = DeviceLocationCacheStore.shared
+        let deviceID = "TEST_DEVICE_HISTORY_\(UUID().uuidString)"
+        let otherID = "TEST_DEVICE_HISTORY_OTHER_\(UUID().uuidString)"
+
+        cache.removeLocation(for: deviceID)
+        cache.removeLocation(for: otherID)
+        defer {
+            cache.removeLocation(for: deviceID)
+            cache.removeLocation(for: otherID)
+        }
+
+        cache.ingestLatestHistoryEntry(
+            [
+                location(deviceID: deviceID, timestamp: 1_000, latitude: 10, longitude: 10, batteryLevel: 0.10),
+                location(deviceID: otherID, timestamp: 4_000, latitude: 99, longitude: 99, batteryLevel: 0.99),
+                location(deviceID: deviceID, timestamp: 3_000, latitude: 30, longitude: 30, batteryLevel: 0.30)
+            ],
+            for: deviceID
+        )
+
+        var cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.timestamp == Date(timeIntervalSince1970: 3_000))
+        #expect(cached.latitude == 30)
+        #expect(cache.getLocation(for: otherID) == nil)
+
+        cache.setLocation(
+            for: deviceID,
+            latitude: 50,
+            longitude: 50,
+            accuracy: 10,
+            timestamp: Date(timeIntervalSince1970: 5_000),
+            batteryLevel: 0.50
+        )
+        cache.ingestLatestHistoryEntry(
+            [location(deviceID: deviceID, timestamp: 4_000, latitude: 40, longitude: 40, batteryLevel: 0.40)],
+            for: deviceID
+        )
+
+        cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.timestamp == Date(timeIntervalSince1970: 5_000))
+        #expect(cached.latitude == 50)
+        #expect(cached.batteryLevel == 0.50)
+
+        cache.ingestLatestHistoryEntry(
+            [location(deviceID: otherID, timestamp: 6_000, latitude: 60, longitude: 60, batteryLevel: 0.60)],
+            for: deviceID
+        )
+
+        cached = try #require(cache.getLocation(for: deviceID))
+        #expect(cached.timestamp == Date(timeIntervalSince1970: 5_000))
+        #expect(cache.getLocation(for: otherID) == nil)
+    }
+
+    @Test("updateRecentVisitors stores normalized recent visitor IDs for the current device")
+    func testUpdateRecentVisitorsNormalizesAndFiltersEntries() async throws {
+        let cache = DeviceLocationCacheStore.shared
+        let ownID = "OWN_DEVICE_\(UUID().uuidString)"
+        let recentID = "recent_device_\(UUID().uuidString)"
+        let oldID = "old_device_\(UUID().uuidString)"
+        let now = Date(timeIntervalSince1970: 10_000)
+
+        cache.setRecentVisitorDeviceIDs([])
+        defer { cache.setRecentVisitorDeviceIDs([]) }
+
+        cache.updateRecentVisitors(
+            from: [
+                visitor(deviceID: recentID, date: now.addingTimeInterval(-30)),
+                visitor(deviceID: oldID, date: now.addingTimeInterval(-120)),
+                visitor(deviceID: ownID, date: now.addingTimeInterval(-10))
+            ],
+            ownDeviceID: ownID,
+            window: 90,
+            now: now
+        )
+
+        #expect(cache.hasRecentVisitor(deviceID: recentID.uppercased()))
+        #expect(cache.hasRecentVisitor(deviceID: recentID.lowercased()))
+        #expect(!cache.hasRecentVisitor(deviceID: oldID))
+        #expect(!cache.hasRecentVisitor(deviceID: ownID))
+    }
+
+    private func location(
+        deviceID: String,
+        timestamp: TimeInterval,
+        latitude: Double,
+        longitude: Double,
+        accuracy: Double = 10,
+        batteryLevel: Double? = nil,
+        altitude: Double? = nil,
+        speed: Double? = nil
+    ) -> MiataruLocationData {
+        MiataruLocationData(
+            Device: deviceID,
+            Timestamp: String(Int64(timestamp)),
+            Longitude: longitude,
+            Latitude: latitude,
+            HorizontalAccuracy: accuracy,
+            Speed: speed,
+            BatteryLevel: batteryLevel,
+            Altitude: altitude
+        )
+    }
+
+    private func visitor(deviceID: String, date: Date) -> MiataruVisitor {
+        MiataruVisitor(
+            DeviceID: deviceID,
+            TimeStamp: String(Int64((date.timeIntervalSince1970 * 1_000).rounded()))
+        )
     }
 }

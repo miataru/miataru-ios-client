@@ -95,23 +95,11 @@ final class DeviceLocationRefresher {
                     requestingDeviceKey: settings.deviceKey
                 )
 
-                let snapshots = locations.map {
-                    DeviceLocationSnapshot(
-                        deviceID: $0.Device,
-                        latitude: $0.Latitude,
-                        longitude: $0.Longitude,
-                        accuracy: $0.HorizontalAccuracy,
-                        timestamp: $0.TimestampDate,
-                        batteryLevel: $0.BatteryLevel,
-                        altitude: $0.Altitude,
-                        speed: nil
-                    )
-                }
                 let foundIDs = Set(locations.map { $0.Device })
                 let missingIDs = Set(deviceIDs).subtracting(foundIDs)
 
-                cache.applyLocationSnapshots(
-                    snapshots,
+                cache.ingestServerLocations(
+                    locations,
                     removingMissingDeviceIDs: missingIDs,
                     forceGeocoding: forceGeocoding
                 )
@@ -149,20 +137,12 @@ final class DeviceLocationRefresher {
                 amount: 50
             )
             
-            // Calculate cutoff time: 90 seconds ago
-            let cutoffTime = Date().addingTimeInterval(-90)
-            
-            // Filter visitors from the past 90 seconds and get unique device IDs
-            let recentVisitorDeviceIDs = Set(visitors
-                .filter { $0.TimeStampDate >= cutoffTime }
-                .map { $0.DeviceID })
-            
             // Update cache on main thread
             await MainActor.run {
-                cache.setRecentVisitorDeviceIDs(recentVisitorDeviceIDs)
+                cache.updateRecentVisitors(from: visitors, ownDeviceID: currentDeviceID)
             }
             
-            debugLog("[DeviceLocationRefresher] Found \(recentVisitorDeviceIDs.count) devices that looked for current user in past 90 seconds")
+            debugLog("[DeviceLocationRefresher] Found \(cache.recentVisitorDeviceIDs.count) devices that looked for current user in past 90 seconds")
         } catch {
             _ = DeviceKeyAuthHandler.handle(error: error)
             debugLog("[DeviceLocationRefresher] Error refreshing visitor history: \(error)")

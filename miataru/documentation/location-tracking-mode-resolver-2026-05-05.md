@@ -35,4 +35,4 @@ Validated with:
 xcodebuild test -project miataru/miataru.xcodeproj -scheme miataru -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4.1' -only-testing:miataruTests/SettingsConfigurationTests/locationTrackingModeResolverKeepsForegroundNavigationAndBackgroundPoliciesDistinct
 ```
 
-The broader `SettingsConfigurationTests` target compiles and runs, but still fails on the pre-existing missing localization key `frequent_background_location_updates_central_explanation`, unrelated to this resolver change.
+Follow-up on 2026-05-09: the previously missing `frequent_background_location_updates_central_explanation` localization key was added, and the broader `SettingsConfigurationTests` target now passes.

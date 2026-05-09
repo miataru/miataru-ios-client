@@ -224,6 +224,8 @@ struct miataruApp: App {
         if SettingsManager.shared.trackAndReportLocation {
             locationManager.requestLocationPermission()
         }
+        // Preserve newer widget-fetched locations before rewriting shared widget data.
+        WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
         // Ensure widgets have initial data even before the first update cycle.
         WidgetDataSyncCoordinator.syncAllDevices()
         // Do NOT call startTracking() here!
@@ -279,6 +281,7 @@ struct miataruApp: App {
         .onChange(of: scenePhase) {
             switch scenePhase {
             case .active:
+                WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
                 LocationManager.shared.appDidEnterForeground()
             case .background:
                 LocationManager.shared.appDidEnterBackground()
