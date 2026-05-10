@@ -1,3 +1,9 @@
+version 3.1.13
+- Added a separate `miataru-iOS15` iPhone/iPad app target and shared scheme with deployment target 15.0, the release bundle identifier `com.miataru.ios`, and no embedded widget extension.
+- Added an isolated iOS 15-compatible SwiftUI/UIKit app surface under `miataru/miataruLegacy` for onboarding, permissions, devices, groups, maps, QR scan/share, and settings while leaving the modern iOS app surface untouched.
+- Wired the legacy target through an explicit shared-core allowlist for settings, networking, location, notifications, stores, helpers, assets, and localizations, plus a legacy widget-sync shim so WidgetKit/AppIntents stay out of the iOS 15 path.
+- Documented target ownership, release flow, excluded modern features, and deliberate shared-core backport rules in `documentation/ios15-compatibility-path.md`.
+
 version 3.1.12
 - Centralized successful `GetLocation` response ingestion so device-location cache, slogan cache, widget payloads, and device-list rows reuse already fetched server data consistently.
 - Hardened device-location cache writes with timestamp ordering so older app, history, widget, or background responses can no longer overwrite newer location data.

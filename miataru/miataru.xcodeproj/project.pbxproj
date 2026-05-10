@@ -13,6 +13,10 @@
 		8BDCBB342E06E9CF000041DC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
 		8C00000D3E00000100000001 /* miataruWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8C0000013E00000100000001 /* miataruWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8C00000F3E00000100000002 /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
+		C01500173F15000000000017 /* DebugLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01500163F15000000000016 /* DebugLog.swift */; };
+		C01500193F15000000000019 /* DeviceKeyAuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01500183F15000000000018 /* DeviceKeyAuthHandler.swift */; };
+		C015001A3F1500000000001A /* MiataruAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */; };
+		C015001B3F1500000000001B /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDCBB332E06E9CF000041DC /* CodeScanner */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +63,9 @@
 		8BA62CFF2E057D1A00F54650 /* miataruUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C0000013E00000100000001 /* miataruWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = miataruWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000013F00000100000001 /* miataruScreenshotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miataruScreenshotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C01500013F15000000000001 /* miataru-iOS15.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "miataru-iOS15.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C01500163F15000000000016 /* DebugLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = miataru/DebugLog.swift; sourceTree = "<group>"; };
+		C01500183F15000000000018 /* DeviceKeyAuthHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = miataru/DeviceKeyAuthHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -75,6 +82,15 @@
 				Info.plist,
 			);
 			target = 8C0000033E00000100000001 /* miataruWidgets */;
+		};
+		C01500103F15000000000010 /* Exceptions for "SettingsManagers" folder in "miataru-iOS15" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedWidgetConfig.swift,
+				SharedWidgetData.swift,
+				WidgetDataSyncCoordinator.swift,
+			);
+			target = C01500023F15000000000002 /* miataru-iOS15 */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -108,6 +124,44 @@
 		A10000023F00000100000001 /* miataruScreenshotUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = miataruScreenshotUITests;
+			sourceTree = "<group>";
+		};
+		C01500093F15000000000009 /* miataruLegacy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataruLegacy;
+			sourceTree = "<group>";
+		};
+		C015000A3F1500000000000A /* SettingsManagers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C01500103F15000000000010 /* Exceptions for "SettingsManagers" folder in "miataru-iOS15" target */,
+			);
+			path = miataru/SettingsManagers;
+			sourceTree = "<group>";
+		};
+		C01500113F15000000000011 /* Networking */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataru/Networking;
+			sourceTree = "<group>";
+		};
+		C01500123F15000000000012 /* LocationManagers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataru/LocationManagers;
+			sourceTree = "<group>";
+		};
+		C01500133F15000000000013 /* Notifications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataru/Notifications;
+			sourceTree = "<group>";
+		};
+		C01500143F15000000000014 /* Haptic */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataru/Haptic;
+			sourceTree = "<group>";
+		};
+		C01500153F15000000000015 /* Assets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = miataru/Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -153,6 +207,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C01500043F15000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C015001A3F1500000000001A /* MiataruAPIClient in Frameworks */,
+				C015001B3F1500000000001B /* CodeScanner in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -165,12 +228,21 @@
 		};
 		8BA62CDF2E057D1700F54650 = {
 			isa = PBXGroup;
-			children = (
-				8BA62CEA2E057D1700F54650 /* miataru */,
-				8BA62CF82E057D1A00F54650 /* miataruTests */,
-				8C0000113E00000100000001 /* miataruUITests */,
-				A10000023F00000100000001 /* miataruScreenshotUITests */,
-				8C0000023E00000100000001 /* miataruWidgets */,
+				children = (
+					8BA62CEA2E057D1700F54650 /* miataru */,
+					C01500093F15000000000009 /* miataruLegacy */,
+					C015000A3F1500000000000A /* SettingsManagers */,
+					C01500113F15000000000011 /* Networking */,
+					C01500123F15000000000012 /* LocationManagers */,
+					C01500133F15000000000013 /* Notifications */,
+					C01500143F15000000000014 /* Haptic */,
+					C01500153F15000000000015 /* Assets */,
+					C01500163F15000000000016 /* DebugLog.swift */,
+					C01500183F15000000000018 /* DeviceKeyAuthHandler.swift */,
+					8BA62CF82E057D1A00F54650 /* miataruTests */,
+					8C0000113E00000100000001 /* miataruUITests */,
+					A10000023F00000100000001 /* miataruScreenshotUITests */,
+					8C0000023E00000100000001 /* miataruWidgets */,
 				8B3AFA8C2E0E900B0046E5B3 /* Frameworks */,
 				8BA62CE92E057D1700F54650 /* Products */,
 			);
@@ -181,10 +253,11 @@
 			children = (
 				8BA62CE82E057D1700F54650 /* miataru.app */,
 				8BA62CF52E057D1A00F54650 /* miataruTests.xctest */,
-				8BA62CFF2E057D1A00F54650 /* miataruUITests.xctest */,
-				A10000013F00000100000001 /* miataruScreenshotUITests.xctest */,
-				8C0000013E00000100000001 /* miataruWidgets.appex */,
-			);
+					8BA62CFF2E057D1A00F54650 /* miataruUITests.xctest */,
+					A10000013F00000100000001 /* miataruScreenshotUITests.xctest */,
+					8C0000013E00000100000001 /* miataruWidgets.appex */,
+					C01500013F15000000000001 /* miataru-iOS15.app */,
+				);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -287,6 +360,36 @@
 			productReference = 8C0000013E00000100000001 /* miataruWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		C01500023F15000000000002 /* miataru-iOS15 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01500063F15000000000006 /* Build configuration list for PBXNativeTarget "miataru-iOS15" */;
+			buildPhases = (
+				C01500033F15000000000003 /* Sources */,
+				C01500043F15000000000004 /* Frameworks */,
+				C01500053F15000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C01500093F15000000000009 /* miataruLegacy */,
+				C015000A3F1500000000000A /* SettingsManagers */,
+				C01500113F15000000000011 /* Networking */,
+				C01500123F15000000000012 /* LocationManagers */,
+				C01500133F15000000000013 /* Notifications */,
+				C01500143F15000000000014 /* Haptic */,
+				C01500153F15000000000015 /* Assets */,
+			);
+			name = "miataru-iOS15";
+			packageProductDependencies = (
+				8BDCBB332E06E9CF000041DC /* CodeScanner */,
+				8B0556F52E0FFF31008B3C81 /* MiataruAPIClient */,
+			);
+			productName = "miataru-iOS15";
+			productReference = C01500013F15000000000001 /* miataru-iOS15.app */;
+			productType = "com.apple.product-type.application";
+		};
 		A10000033F00000100000001 /* miataruScreenshotUITests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A100000B3F00000100000001 /* Build configuration list for PBXNativeTarget "miataruScreenshotUITests" */;
@@ -333,13 +436,17 @@
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = 8BA62CE72E057D1700F54650;
 					};
-					8C0000033E00000100000001 = {
-						CreatedOnToolsVersion = 16.4;
-						ProvisioningStyle = Automatic;
-					};
-					A10000033F00000100000001 = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = 8BA62CE72E057D1700F54650;
+						8C0000033E00000100000001 = {
+							CreatedOnToolsVersion = 16.4;
+							ProvisioningStyle = Automatic;
+						};
+						C01500023F15000000000002 = {
+							CreatedOnToolsVersion = 16.4;
+							ProvisioningStyle = Automatic;
+						};
+						A10000033F00000100000001 = {
+							CreatedOnToolsVersion = 16.4;
+							TestTargetID = 8BA62CE72E057D1700F54650;
 					};
 				};
 			};
@@ -374,11 +481,12 @@
 			targets = (
 				8BA62CE72E057D1700F54650 /* miataru */,
 				8BA62CF42E057D1A00F54650 /* miataruTests */,
-				8BA62CFE2E057D1A00F54650 /* miataruUITests */,
-				A10000033F00000100000001 /* miataruScreenshotUITests */,
-				8C0000033E00000100000001 /* miataruWidgets */,
-			);
-		};
+					8BA62CFE2E057D1A00F54650 /* miataruUITests */,
+					A10000033F00000100000001 /* miataruScreenshotUITests */,
+					8C0000033E00000100000001 /* miataruWidgets */,
+					C01500023F15000000000002 /* miataru-iOS15 */,
+				);
+			};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -411,6 +519,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A10000083F00000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C01500053F15000000000005 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -452,6 +567,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C01500033F15000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C01500173F15000000000017 /* DebugLog.swift in Sources */,
+				C01500193F15000000000019 /* DeviceKeyAuthHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -809,6 +933,84 @@
 			};
 			name = Release;
 		};
+		C01500073F15000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = miataru/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = miataru;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need background location to keep your device location updated even when the app is not open.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show your position and share with your devices.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
+				PRODUCT_MODULE_NAME = miataruLegacy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG MIATARU_LEGACY $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C01500083F15000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = miataru/miataru.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = X7H5D9Q5T4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = miataru/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = miataru;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSCameraUsageDescription = "The camera is used to scan QR-Codes.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need background location to keep your device location updated even when the app is not open.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Miataru uses your location to allow tracking and sharing your location with users you allow through the Miataru server you choose.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show your position and share with your devices.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.miataru.ios;
+				PRODUCT_MODULE_NAME = miataruLegacy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "MIATARU_LEGACY $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A10000093F00000100000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -891,6 +1093,15 @@
 			buildConfigurations = (
 				8C0000083E00000100000001 /* Debug */,
 				8C0000093E00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01500063F15000000000006 /* Build configuration list for PBXNativeTarget "miataru-iOS15" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01500073F15000000000007 /* Debug */,
+				C01500083F15000000000008 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
