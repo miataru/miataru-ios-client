@@ -199,7 +199,9 @@ struct iPhone_LocationStatusView: View {
             }
             
             // Berechtigungs-Status
-            PermissionStatusView(status: locationManager.authorizationStatus)
+            PermissionStatusView(status: locationManager.authorizationStatus) {
+                locationManager.requestFullLocationAuthorizationAgain()
+            }
             
             // Background Status
             BackgroundStatusCard()
@@ -504,6 +506,7 @@ struct ServerStatusRow: View {
 
 struct PermissionStatusView: View {
     let status: CLAuthorizationStatus
+    let requestAction: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -525,6 +528,18 @@ struct PermissionStatusView: View {
                 Text("Open app settings in iOS to change location permission state.")
                     .font(.caption)
                     .foregroundColor(.red)
+            }
+
+            if status != .authorizedAlways {
+                Button {
+                    requestAction()
+                } label: {
+                    Label("location_permission_request_again_button", systemImage: "location.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier("location_status_request_permission_button")
             }
         }
         .padding()

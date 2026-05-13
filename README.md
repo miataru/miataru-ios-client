@@ -103,9 +103,10 @@ miataru/
 
 - **State Management**: Uses `ObservableObject` and `@Published` properties for reactive UI updates (e.g., onboarding flow).
 - **Settings**: Preferences are stored in `UserDefaults` and managed via `SettingsManager`. Observers react to changes (e.g., enabling/disabling tracking, toggling device auto-lock via `UIApplication.isIdleTimerDisabled`).
-- **Location Tracking**: `LocationManager` requests permissions and starts/stops tracking in response to `SettingsManager.shared.trackAndReportLocation`. Foreground uses high-accuracy updates; background uses significant-change updates.
+- **Location Tracking**: `LocationManager` requests permissions and starts/stops tracking in response to `SettingsManager.shared.trackAndReportLocation`. Foreground uses high-accuracy updates; background uses significant-change updates. The Location Tracking Details screen can restart the full location authorization flow when users need to request `Always` access again after choosing a limited option.
 - **Device ID**: Managed by `thisDeviceIDManager` with migration from legacy storage (`deviceID.plist`) to a modern text file under Application Support.
-- **Onboarding**: Shown until completion; controlled via `UserDefaults.hasCompletedOnboarding`. iPhone/iPad-optimized flows are provided.
+- **DeviceKey**: Optional server-side write protection for location updates, visitor history, and access-control settings. DeviceKey setup is available from onboarding, the current-device screen, and settings.
+- **Onboarding**: Shown until completion; controlled via `UserDefaults.hasCompletedOnboarding`. iPhone/iPad-optimized flows are provided. When a DeviceKey is created during onboarding, the setup sheet closes automatically after the success state is visible.
 - **Deep Link**: Opening `miataru://<DEVICE_ID>` presents an add-device sheet with the ID prefilled.
 - **Error Handling**: Transient, user-friendly overlays (`ErrorOverlay`) surface issues; non-critical errors are logged.
 - **Battery Optimization**: Tracking runs only when enabled. Background work is minimized; users can optionally disable auto-lock while the app is in foreground.
@@ -116,14 +117,18 @@ miataru/
 
 1. **First Launch**:
    - User is presented with the onboarding flow to set up permissions and preferences.
+   - If location tracking is enabled, the app first asks for When In Use location access and then attempts to escalate to Always access so background tracking can work as intended.
+   - DeviceKey setup in onboarding confirms success briefly and then returns the user to the onboarding pager.
    - On completion, the main app interface is shown.
 
 2. **Main Interface**:
    - View devices and groups on a map; manage known devices and groups; adjust settings.
    - Share your device via a QR code or deep link; scan others using the built-in scanner.
+   - The current-device screen refreshes visitor history when opened so recent visitors are visible without waiting for the next automatic refresh.
 
 3. **Settings**:
    - Enable/disable location tracking; configure map and update behavior; control device auto-lock and other preferences.
+   - Location Tracking Details includes a manual action to request location permissions again, including the `Always` escalation when iOS still allows it.
 
 4. **Error Handling**:
    - If permissions are missing or errors occur, the user is notified and guided to resolve issues.
@@ -187,6 +192,7 @@ miataru/
 - Explain why permissions are needed
 - Provide clear opt-in/out options
 - Handle permission changes gracefully
+- Allow users to re-enter the location authorization flow from Location Tracking Details when they selected a limited option during onboarding or changed the permission later.
 
 ## Build Requirements
 

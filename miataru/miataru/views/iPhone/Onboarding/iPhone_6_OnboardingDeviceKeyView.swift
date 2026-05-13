@@ -12,6 +12,7 @@ import SwiftUI
 struct iPhone_6_OnboardingDeviceKeyView: View {
     var onFinish: () -> Void = {}
     @State private var showDeviceKeySheet = false
+    @State private var dismissDeviceKeySheetTask: Task<Void, Never>? = nil
     @StateObject private var settings = SettingsManager.shared
     
     private var hasDeviceKey: Bool {
@@ -42,13 +43,36 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
             .tint(hasDeviceKey ? .green : .blue)
             .accessibilityHint(Text("device_key_button_hint"))
             .padding(.horizontal)
-            .sheet(isPresented: $showDeviceKeySheet) {
-                iPhone_DeviceKeySheetView(showsMismatchWarning: false)
+            .sheet(
+                isPresented: $showDeviceKeySheet,
+                onDismiss: cancelPendingDeviceKeySheetDismiss
+            ) {
+                iPhone_DeviceKeySheetView(
+                    showsMismatchWarning: false,
+                    onDeviceKeySuccess: scheduleDeviceKeySheetDismiss
+                )
             }
             Spacer()
         }
         .padding()
         .background(Color(.systemBackground))
+        .onDisappear(perform: cancelPendingDeviceKeySheetDismiss)
+    }
+
+    @MainActor
+    private func scheduleDeviceKeySheetDismiss() {
+        dismissDeviceKeySheetTask?.cancel()
+        dismissDeviceKeySheetTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            guard !Task.isCancelled else { return }
+            showDeviceKeySheet = false
+            dismissDeviceKeySheetTask = nil
+        }
+    }
+
+    private func cancelPendingDeviceKeySheetDismiss() {
+        dismissDeviceKeySheetTask?.cancel()
+        dismissDeviceKeySheetTask = nil
     }
 }
 

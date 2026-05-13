@@ -31,9 +31,9 @@ final class VisitorHistoryViewModel: ObservableObject {
         visitors.sorted { $0.TimeStampDate > $1.TimeStampDate }
     }
 
-    func refreshIfNeeded(isVisible: Bool, force: Bool = false) async {
+    func refreshIfNeeded(isVisible: Bool, force: Bool = false, showLoading: Bool = false) async {
         if force {
-            let didRefresh = await loadVisitorHistory(showLoading: false)
+            let didRefresh = await loadVisitorHistory(showLoading: showLoading)
             if didRefresh {
                 lastRefresh = Date()
             }
@@ -44,7 +44,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             return
         }
 
-        let didRefresh = await loadVisitorHistory(showLoading: false)
+        let didRefresh = await loadVisitorHistory(showLoading: showLoading)
         if didRefresh {
             lastRefresh = Date()
         }

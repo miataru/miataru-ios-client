@@ -50,15 +50,12 @@ final class LocationManager: NSObject, ObservableObject {
     private let locationUpdateDeliveryCoordinator = LocationUpdateDeliveryCoordinator.shared
     @Published private(set) var isNetworkAvailable: Bool = true
     @Published private(set) var pendingLocationUpdateCount: Int = 0
-    private let alwaysAuthorizationRequestedKey = "miataru_always_authorization_requested"
+    private var pendingAlwaysAuthorizationRequestTask: Task<Void, Never>?
+    private var didAttemptAlwaysAuthorizationInCurrentSession = false
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
     private let headingAccuracyThreshold: Double = 35
     private let headingMinSpeedThreshold: Double = 1.0
-    private var hasRequestedAlwaysAuthorization: Bool {
-        get { userDefaults.bool(forKey: alwaysAuthorizationRequestedKey) }
-        set { userDefaults.set(newValue, forKey: alwaysAuthorizationRequestedKey) }
-    }
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -150,6 +147,7 @@ final class LocationManager: NSObject, ObservableObject {
     deinit {
         NotificationCenter.default.removeObserver(self)
         frequentBackgroundLocationExpirationTimer?.invalidate()
+        pendingAlwaysAuthorizationRequestTask?.cancel()
     }
     
     @objc private func appDidBecomeActive() {
@@ -375,7 +373,7 @@ final class LocationManager: NSObject, ObservableObject {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
-            locationManager.requestAlwaysAuthorization()
+            requestAlwaysAuthorizationIfPossible(reason: "explicit permission request", delay: 0)
         case .authorizedAlways:
             // Permission already granted, no action needed
             break
@@ -384,6 +382,23 @@ final class LocationManager: NSObject, ObservableObject {
             openAppSettings()
         @unknown default:
             break
+        }
+    }
+
+    func requestFullLocationAuthorizationAgain() {
+        pendingAlwaysAuthorizationRequestTask?.cancel()
+        pendingAlwaysAuthorizationRequestTask = nil
+        didAttemptAlwaysAuthorizationInCurrentSession = false
+
+        if !settings.trackAndReportLocation {
+            settings.trackAndReportLocation = true
+        }
+
+        requestLocationPermission()
+
+        if settings.trackAndReportLocation,
+           !settings.deviceKeyAuthBlocked {
+            startTracking()
         }
     }
     
@@ -431,15 +446,38 @@ final class LocationManager: NSObject, ObservableObject {
                 // Trigger first-time prompt
                 locationManager.requestWhenInUseAuthorization()
             case .authorizedWhenInUse:
-                // Escalate to Always once if user opted-in to tracking
-                if !hasRequestedAlwaysAuthorization {
-                    debugLog("Ensuring Always authorization after WhenInUse…")
-                    hasRequestedAlwaysAuthorization = true
-                    locationManager.requestAlwaysAuthorization()
-                }
+                requestAlwaysAuthorizationIfPossible(reason: "ensure authorization")
             default:
                 break
             }
+        }
+    }
+
+    private func requestAlwaysAuthorizationIfPossible(reason: String, delay: TimeInterval = 0.6) {
+        guard settings.trackAndReportLocation,
+              locationManager.authorizationStatus == .authorizedWhenInUse,
+              !didAttemptAlwaysAuthorizationInCurrentSession,
+              pendingAlwaysAuthorizationRequestTask == nil else {
+            return
+        }
+
+        let delayNanoseconds = UInt64(max(0, delay) * 1_000_000_000)
+        pendingAlwaysAuthorizationRequestTask = Task { @MainActor [weak self] in
+            if delayNanoseconds > 0 {
+                try? await Task.sleep(nanoseconds: delayNanoseconds)
+            }
+            guard !Task.isCancelled else { return }
+            guard let self else { return }
+            self.pendingAlwaysAuthorizationRequestTask = nil
+            guard self.settings.trackAndReportLocation,
+                  self.locationManager.authorizationStatus == .authorizedWhenInUse,
+                  !self.didAttemptAlwaysAuthorizationInCurrentSession else {
+                return
+            }
+
+            self.didAttemptAlwaysAuthorizationInCurrentSession = true
+            debugLog("Requesting Always authorization (\(reason))")
+            self.locationManager.requestAlwaysAuthorization()
         }
     }
     
@@ -450,6 +488,7 @@ final class LocationManager: NSObject, ObservableObject {
             debugLog("startTracking blocked due to DeviceKey auth failure")
             return
         }
+        ensureAuthorizationIfNeeded()
         isTracking = true
         handleFrequentBackgroundLocationExpirationIfNeeded()
         applyTrackingMode(reason: "start tracking")
@@ -1026,9 +1065,32 @@ extension LocationManager: CLLocationManagerDelegate {
             }
         }
     }
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleAuthorizationChange(manager.authorizationStatus)
+    }
+
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        handleAuthorizationChange(status)
+    }
+
+    private func handleAuthorizationChange(_ status: CLAuthorizationStatus) {
         Task { @MainActor in
             self.authorizationStatus = status
+            switch status {
+            case .notDetermined, .denied, .restricted:
+                self.pendingAlwaysAuthorizationRequestTask?.cancel()
+                self.pendingAlwaysAuthorizationRequestTask = nil
+                self.didAttemptAlwaysAuthorizationInCurrentSession = false
+            case .authorizedAlways:
+                self.pendingAlwaysAuthorizationRequestTask?.cancel()
+                self.pendingAlwaysAuthorizationRequestTask = nil
+            case .authorizedWhenInUse:
+                break
+            @unknown default:
+                break
+            }
+
             // If permission is denied or restricted, update the setting to reflect the actual state
             if status == .denied || status == .restricted {
                 if settings.trackAndReportLocation {
@@ -1037,12 +1099,8 @@ extension LocationManager: CLLocationManagerDelegate {
                 }
             }
             if status == .authorizedWhenInUse,
-               settings.trackAndReportLocation,
-               !hasRequestedAlwaysAuthorization {
-                // Escalate to Always once, if user opted-in to tracking
-                debugLog("Authorized WhenInUse. Requesting Always authorization…")
-                hasRequestedAlwaysAuthorization = true
-                self.locationManager.requestAlwaysAuthorization()
+               settings.trackAndReportLocation {
+                self.requestAlwaysAuthorizationIfPossible(reason: "authorization changed")
             }
             self.applyTrackingMode(reason: "authorization changed")
         }

@@ -12,6 +12,7 @@ import SwiftUI
 struct iPhone_8_OnboardingAllowedDeviceListView: View {
     var onFinish: () -> Void = {}
     @State private var showDeviceKeySheet = false
+    @State private var dismissDeviceKeySheetTask: Task<Void, Never>? = nil
     @State private var isActivating = false
     @State private var activationError: String? = nil
     @StateObject private var settings = SettingsManager.shared
@@ -89,9 +90,16 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
         }
         .padding()
         .background(Color(.systemBackground))
-        .sheet(isPresented: $showDeviceKeySheet) {
-            iPhone_DeviceKeySheetView(showsMismatchWarning: false)
+        .sheet(
+            isPresented: $showDeviceKeySheet,
+            onDismiss: cancelPendingDeviceKeySheetDismiss
+        ) {
+            iPhone_DeviceKeySheetView(
+                showsMismatchWarning: false,
+                onDeviceKeySuccess: scheduleDeviceKeySheetDismiss
+            )
         }
+        .onDisappear(perform: cancelPendingDeviceKeySheetDismiss)
     }
     
     @MainActor
@@ -108,6 +116,22 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
         }
         
         isActivating = false
+    }
+
+    @MainActor
+    private func scheduleDeviceKeySheetDismiss() {
+        dismissDeviceKeySheetTask?.cancel()
+        dismissDeviceKeySheetTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            guard !Task.isCancelled else { return }
+            showDeviceKeySheet = false
+            dismissDeviceKeySheetTask = nil
+        }
+    }
+
+    private func cancelPendingDeviceKeySheetDismiss() {
+        dismissDeviceKeySheetTask?.cancel()
+        dismissDeviceKeySheetTask = nil
     }
 }
 

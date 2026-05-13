@@ -13,6 +13,7 @@ import UIKit
 
 struct iPhone_DeviceKeySheetView: View {
     let showsMismatchWarning: Bool
+    let onDeviceKeySuccess: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var settings = SettingsManager.shared
@@ -28,8 +29,9 @@ struct iPhone_DeviceKeySheetView: View {
     @State private var didAutoOpenCustomForMismatch = false
     @State private var keyCardState: KeyCardState
 
-    init(showsMismatchWarning: Bool) {
+    init(showsMismatchWarning: Bool, onDeviceKeySuccess: @escaping () -> Void = {}) {
         self.showsMismatchWarning = showsMismatchWarning
+        self.onDeviceKeySuccess = onDeviceKeySuccess
         let hasRuntimeAuthBlock = SettingsManager.shared.deviceKeyAuthBlocked
         let initialErrorMessage: String? = {
             if showsMismatchWarning {
@@ -125,8 +127,7 @@ struct iPhone_DeviceKeySheetView: View {
                             errorMessage = result
                             keyCardState = .failure
                         } else {
-                            errorMessage = nil
-                            keyCardState = .success
+                            handleDeviceKeySuccess()
                         }
                         return result
                     }
@@ -307,8 +308,7 @@ struct iPhone_DeviceKeySheetView: View {
                 showCustomKeySheet = true
             }
         } else {
-            errorMessage = nil
-            keyCardState = .success
+            handleDeviceKeySuccess()
         }
     }
 
@@ -409,8 +409,7 @@ struct iPhone_DeviceKeySheetView: View {
         }
         let result = await performRestoreValidation(currentKey: trimmed, newKey: trimmed)
         if result == nil {
-            errorMessage = nil
-            keyCardState = .success
+            handleDeviceKeySuccess()
         } else {
             keyCardState = .failure
         }
@@ -429,12 +428,17 @@ struct iPhone_DeviceKeySheetView: View {
         }
         let result = await performSetDeviceKey(currentKey: currentKey, newKey: trimmed)
         if result == nil {
-            errorMessage = nil
-            keyCardState = .success
+            handleDeviceKeySuccess()
         } else {
             keyCardState = .failure
         }
         return result?.message
+    }
+
+    private func handleDeviceKeySuccess() {
+        errorMessage = nil
+        keyCardState = .success
+        onDeviceKeySuccess()
     }
 
     private func performRestoreValidation(currentKey: String?, newKey: String) async -> String? {

@@ -76,12 +76,12 @@ struct iPhone_MyDeviceQRCodeView: View {
                     isVisible = true
                     _ = synchronizeCurrentDeviceIdentity()
                     hydrateSloganFromCache()
-                    if visitorHistoryViewModel.visitors.isEmpty {
-                        Task {
-                            await visitorHistoryViewModel.loadVisitorHistory(showLoading: true)
-                        }
-                    }
                     Task {
+                        await visitorHistoryViewModel.refreshIfNeeded(
+                            isVisible: true,
+                            force: true,
+                            showLoading: visitorHistoryViewModel.visitors.isEmpty
+                        )
                         await loadOwnDeviceSloganIfNeeded()
                     }
                 }

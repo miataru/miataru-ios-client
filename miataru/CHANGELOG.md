@@ -1,3 +1,11 @@
+version 3.1.13
+- Fixed visitor-history freshness on the current-device tab so recent visitors are refreshed immediately when the tab opens instead of waiting for the next automatic or manual reload.
+- Improved the location-permission escalation flow so choosing `When In Use` can still trigger the follow-up `Always` request during tracking setup.
+- Added a localized `Request Location Permission Again` action in Location Tracking Details to restart the full location authorization flow after limited or changed iOS permission choices.
+- Removed the persistent one-time lockout around `Always` authorization requests and replaced it with current-session gating plus modern authorization-change handling.
+- Made onboarding DeviceKey setup sheets close automatically shortly after a successful DeviceKey create/restore/reset result, while leaving normal settings DeviceKey sheets unchanged.
+- Updated project metadata for version 3.1.13.
+
 version 3.1.12
 - Centralized successful `GetLocation` response ingestion so device-location cache, slogan cache, widget payloads, and device-list rows reuse already fetched server data consistently.
 - Hardened device-location cache writes with timestamp ordering so older app, history, widget, or background responses can no longer overwrite newer location data.
