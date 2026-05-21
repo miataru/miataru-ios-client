@@ -51,6 +51,45 @@ struct LiveUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
     }
 }
 
+protocol UnknownVisitorAlertDataProviding {
+    func getVisitorHistory(serverURL: URL,
+                           forDeviceID deviceID: String,
+                           deviceKey: String,
+                           amount: Int) async throws -> [MiataruVisitor]
+    func getLocation(serverURL: URL,
+                     forDeviceIDs deviceIDs: [String],
+                     requestingDeviceID: String,
+                     requestingDeviceKey: String) async throws -> [MiataruLocationData]
+}
+
+struct LiveUnknownVisitorAlertDataProvider: UnknownVisitorAlertDataProviding {
+    func getVisitorHistory(serverURL: URL,
+                           forDeviceID deviceID: String,
+                           deviceKey: String,
+                           amount: Int) async throws -> [MiataruVisitor] {
+        APIRequestCounter.shared.record(.getVisitorHistory)
+        return try await MiataruAppAPI.getVisitorHistory(
+            serverURL: serverURL,
+            forDeviceID: deviceID,
+            deviceKey: deviceKey,
+            amount: amount
+        )
+    }
+
+    func getLocation(serverURL: URL,
+                     forDeviceIDs deviceIDs: [String],
+                     requestingDeviceID: String,
+                     requestingDeviceKey: String) async throws -> [MiataruLocationData] {
+        APIRequestCounter.shared.record(.getLocation)
+        return try await MiataruAppAPI.getLocation(
+            serverURL: serverURL,
+            forDeviceIDs: deviceIDs,
+            requestingDeviceID: requestingDeviceID,
+            requestingDeviceKey: requestingDeviceKey
+        )
+    }
+}
+
 struct UnknownVisitorAlertCandidate: Equatable {
     let deviceID: String
     let visitTimestampMs: Int64
@@ -63,6 +102,13 @@ struct UnknownVisitorAlertCandidate: Equatable {
 struct UnknownVisitorAlertEvaluationResult {
     let candidates: [UnknownVisitorAlertCandidate]
     let newWatermarkMs: Int64
+}
+
+struct UnknownVisitorAlertRuntime {
+    let ownDeviceID: String
+    let deviceKey: String
+    let knownDeviceIDs: Set<String>
+    let ignoredDeviceIDs: Set<String>
 }
 
 struct BackgroundVisitorCheckThrottle {
@@ -162,6 +208,7 @@ actor UnknownVisitorAlertService {
 
     private let defaults: UserDefaults
     private let notifier: UnknownVisitorAlertNotifying
+    private let dataProvider: UnknownVisitorAlertDataProviding
     private let nowProvider: () -> Date
 
     private var isProcessing: Bool = false
@@ -169,9 +216,11 @@ actor UnknownVisitorAlertService {
 
     init(defaults: UserDefaults = .standard,
          notifier: UnknownVisitorAlertNotifying = LiveUnknownVisitorAlertNotifier(),
+         dataProvider: UnknownVisitorAlertDataProviding = LiveUnknownVisitorAlertDataProvider(),
          nowProvider: @escaping () -> Date = Date.init) {
         self.defaults = defaults
         self.notifier = notifier
+        self.dataProvider = dataProvider
         self.nowProvider = nowProvider
     }
 
@@ -277,173 +326,214 @@ actor UnknownVisitorAlertService {
         guard let deviceKey = runtime.deviceKey, !deviceKey.isEmpty else { return }
 
         do {
-            APIRequestCounter.shared.record(.getVisitorHistory)
-            let visitors = try await MiataruAppAPI.getVisitorHistory(
+            let visitors = try await dataProvider.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: runtime.ownDeviceID,
                 deviceKey: deviceKey,
                 amount: 100
             )
 
-            let lastProcessedTimestampMs = getLastProcessedTimestampMs()
-            var lastNotifiedAtByDeviceID = getLastNotifiedAtByDeviceID()
-
-            let evaluation = UnknownVisitorAlertEvaluator.evaluate(
-                visitors: visitors,
-                lastProcessedTimestampMs: lastProcessedTimestampMs,
-                ownDeviceID: runtime.ownDeviceID,
-                knownDeviceIDs: runtime.knownIDs,
-                ignoredDeviceIDs: runtime.ignoredIDs,
-                lastNotifiedAtByDeviceID: lastNotifiedAtByDeviceID
+            await processVisitorHistory(
+                visitors,
+                serverURL: serverURL,
+                runtime: UnknownVisitorAlertRuntime(
+                    ownDeviceID: runtime.ownDeviceID,
+                    deviceKey: deviceKey,
+                    knownDeviceIDs: runtime.knownIDs,
+                    ignoredDeviceIDs: runtime.ignoredIDs
+                )
             )
-
-            setLastProcessedTimestampMs(evaluation.newWatermarkMs)
-            guard !evaluation.candidates.isEmpty else { return }
-
-            let candidateDeviceIDs = evaluation.candidates.map(\.deviceID)
-            let cityByDeviceID = await bestEffortCityLookup(for: candidateDeviceIDs,
-                                                            serverURL: serverURL,
-                                                            requestingDeviceID: runtime.ownDeviceID,
-                                                            requestingDeviceKey: deviceKey)
-
-            for candidate in evaluation.candidates {
-                let slogan = await bestEffortSloganLookup(for: candidate.deviceID,
-                                                          serverURL: serverURL,
-                                                          requestingDeviceID: runtime.ownDeviceID,
-                                                          requestingDeviceKey: deviceKey)
-                let city = cityByDeviceID[candidate.deviceID]
-
-                let format = NSLocalizedString(
-                    "unknown_visitor_alert_notification_body_with_details",
-                    comment: "Notification body when slogan and city are available for an unknown visitor alert"
-                )
-                let fallbackBody = NSLocalizedString(
-                    "unknown_visitor_alert_notification_body_fallback",
-                    comment: "Fallback notification body when no supplemental details are available for an unknown visitor alert"
-                )
-                let body: String
-                if let slogan, !slogan.isEmpty,
-                   let city, !city.isEmpty {
-                    body = String(format: format, locale: Locale.current, slogan, city)
-                } else {
-                    body = fallbackBody
-                }
-
-                let content = UNMutableNotificationContent()
-                content.title = NSLocalizedString(
-                    "unknown_visitor_alert_notification_title",
-                    comment: "Notification title for unknown visitor alert"
-                )
-                content.body = body
-                content.sound = .default
-                content.userInfo = [
-                    Self.notificationTypeUserInfoKey: Self.unknownVisitorNotificationType,
-                    "device_id": candidate.deviceID,
-                    "visit_ts_ms": candidate.visitTimestampMs
-                ]
-
-                let request = UNNotificationRequest(
-                    identifier: "unknown-visitor-\(candidate.deviceID)-\(candidate.visitTimestampMs)",
-                    content: content,
-                    trigger: nil
-                )
-
-                do {
-                    try await notifier.add(request)
-                    lastNotifiedAtByDeviceID[candidate.deviceID] = nowProvider()
-                } catch {
-                    debugLog("[UnknownVisitorAlertService] Failed scheduling notification: \(error)")
-                }
-            }
-
-            setLastNotifiedAtByDeviceID(lastNotifiedAtByDeviceID)
         } catch {
             _ = DeviceKeyAuthHandler.handle(error: error)
             debugLog("[UnknownVisitorAlertService] Failed processing unknown visitor alerts: \(error)")
         }
     }
 
-    private func bestEffortCityLookup(for deviceIDs: [String],
-                                      serverURL: URL,
-                                      requestingDeviceID: String,
-                                      requestingDeviceKey: String) async -> [String: String] {
-        var cityByDeviceID: [String: String] = await MainActor.run {
-            let cache = DeviceLocationCacheStore.shared
-            var result: [String: String] = [:]
-            for deviceID in deviceIDs {
-                if let locality = cache.getLocation(for: deviceID)?.locality,
-                   !locality.isEmpty {
-                    result[deviceID] = locality
-                }
+    func processVisitorHistory(_ visitors: [MiataruVisitor],
+                               serverURL: URL,
+                               runtime: UnknownVisitorAlertRuntime) async {
+        let ownDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(runtime.ownDeviceID)
+        let deviceKey = runtime.deviceKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !ownDeviceID.isEmpty, !deviceKey.isEmpty else { return }
+
+        let lastProcessedTimestampMs = getLastProcessedTimestampMs()
+        var lastNotifiedAtByDeviceID = getLastNotifiedAtByDeviceID()
+
+        let evaluation = UnknownVisitorAlertEvaluator.evaluate(
+            visitors: visitors,
+            lastProcessedTimestampMs: lastProcessedTimestampMs,
+            ownDeviceID: ownDeviceID,
+            knownDeviceIDs: runtime.knownDeviceIDs,
+            ignoredDeviceIDs: runtime.ignoredDeviceIDs,
+            lastNotifiedAtByDeviceID: lastNotifiedAtByDeviceID
+        )
+
+        setLastProcessedTimestampMs(evaluation.newWatermarkMs)
+        guard !evaluation.candidates.isEmpty else { return }
+
+        let candidateDeviceIDs = evaluation.candidates.map(\.deviceID)
+        let supplementalDataByDeviceID = await bestEffortSupplementalDataLookup(
+            for: candidateDeviceIDs,
+            serverURL: serverURL,
+            requestingDeviceID: ownDeviceID,
+            requestingDeviceKey: deviceKey
+        )
+
+        for candidate in evaluation.candidates {
+            let supplementalData = supplementalDataByDeviceID[candidate.deviceID]
+            let slogan = supplementalData?.slogan
+            let city = supplementalData?.city
+
+            let format = NSLocalizedString(
+                "unknown_visitor_alert_notification_body_with_details",
+                comment: "Notification body when slogan and city are available for an unknown visitor alert"
+            )
+            let fallbackBody = NSLocalizedString(
+                "unknown_visitor_alert_notification_body_fallback",
+                comment: "Fallback notification body when no supplemental details are available for an unknown visitor alert"
+            )
+            let body: String
+            if let slogan, !slogan.isEmpty,
+               let city, !city.isEmpty {
+                body = String(format: format, locale: Locale.current, slogan, city)
+            } else {
+                body = fallbackBody
             }
-            return result
+
+            let content = UNMutableNotificationContent()
+            content.title = NSLocalizedString(
+                "unknown_visitor_alert_notification_title",
+                comment: "Notification title for unknown visitor alert"
+            )
+            content.body = body
+            content.sound = .default
+            content.userInfo = [
+                Self.notificationTypeUserInfoKey: Self.unknownVisitorNotificationType,
+                "device_id": candidate.deviceID,
+                "visit_ts_ms": candidate.visitTimestampMs
+            ]
+
+            let request = UNNotificationRequest(
+                identifier: "unknown-visitor-\(candidate.deviceID)-\(candidate.visitTimestampMs)",
+                content: content,
+                trigger: nil
+            )
+
+            do {
+                try await notifier.add(request)
+                lastNotifiedAtByDeviceID[candidate.deviceID] = nowProvider()
+            } catch {
+                debugLog("[UnknownVisitorAlertService] Failed scheduling notification: \(error)")
+            }
         }
 
-        let missingDeviceIDs = deviceIDs.filter { cityByDeviceID[$0] == nil }
-        guard !missingDeviceIDs.isEmpty else { return cityByDeviceID }
+        setLastNotifiedAtByDeviceID(lastNotifiedAtByDeviceID)
+    }
+
+    private struct SupplementalData {
+        var slogan: String?
+        var city: String?
+    }
+
+    private func bestEffortSupplementalDataLookup(for deviceIDs: [String],
+                                                  serverURL: URL,
+                                                  requestingDeviceID: String,
+                                                  requestingDeviceKey: String) async -> [String: SupplementalData] {
+        let normalizedDeviceIDs = normalizedUniqueDeviceIDs(deviceIDs)
+        guard !normalizedDeviceIDs.isEmpty else { return [:] }
+
+        var result = await cachedSupplementalData(for: normalizedDeviceIDs)
+        let missingDeviceIDs = normalizedDeviceIDs.filter { deviceID in
+            let data = result[deviceID]
+            return data?.slogan == nil || data?.city == nil
+        }
+
+        guard !missingDeviceIDs.isEmpty else { return result }
 
         do {
-            APIRequestCounter.shared.record(.getLocation)
-            _ = try await MiataruAppAPI.getLocation(
+            let locations = try await dataProvider.getLocation(
                 serverURL: serverURL,
                 forDeviceIDs: missingDeviceIDs,
                 requestingDeviceID: requestingDeviceID,
                 requestingDeviceKey: requestingDeviceKey
             )
 
-            let refreshedCities = await MainActor.run {
-                let cache = DeviceLocationCacheStore.shared
-                var result: [String: String] = [:]
-                for deviceID in missingDeviceIDs {
-                    if let locality = cache.getLocation(for: deviceID)?.locality,
-                       !locality.isEmpty {
-                        result[deviceID] = locality
-                    }
-                }
-                return result
+            let locationsByDeviceID = locations.reduce(into: [String: MiataruLocationData]()) { partialResult, location in
+                let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(location.Device)
+                guard !normalizedID.isEmpty else { return }
+                partialResult[normalizedID] = location
             }
 
-            for (deviceID, city) in refreshedCities {
-                cityByDeviceID[deviceID] = city
+            await MainActor.run {
+                DeviceLocationCacheStore.shared.ingestServerLocations(locations)
+                DeviceSloganCacheStore.shared.ingestGetLocationResults(locations, requestedDeviceIDs: missingDeviceIDs)
+            }
+
+            for deviceID in missingDeviceIDs {
+                guard let location = locationsByDeviceID[deviceID],
+                      let slogan = cleansedSlogan(location.DeviceSlogan) else { continue }
+                var data = result[deviceID] ?? SupplementalData()
+                data.slogan = slogan
+                result[deviceID] = data
+            }
+
+            let refreshedCacheData = await cachedSupplementalData(for: missingDeviceIDs)
+            for deviceID in missingDeviceIDs {
+                guard let refreshedData = refreshedCacheData[deviceID] else { continue }
+                var data = result[deviceID] ?? SupplementalData()
+                data.slogan = data.slogan ?? refreshedData.slogan
+                data.city = data.city ?? refreshedData.city
+                result[deviceID] = data
             }
         } catch {
-            debugLog("[UnknownVisitorAlertService] Failed best-effort city lookup: \(error)")
+            debugLog("[UnknownVisitorAlertService] Failed best-effort supplemental data lookup: \(error)")
         }
 
-        return cityByDeviceID
+        return result
     }
 
-    private func bestEffortSloganLookup(for deviceID: String,
-                                        serverURL: URL,
-                                        requestingDeviceID: String,
-                                        requestingDeviceKey: String) async -> String? {
-        let cachedSlogan = await MainActor.run {
-            DeviceSloganCacheStore.shared.slogan(for: deviceID)
-        }
-        if let cachedSlogan, !cachedSlogan.isEmpty {
-            return cachedSlogan
-        }
+    private func cachedSupplementalData(for deviceIDs: [String]) async -> [String: SupplementalData] {
+        await MainActor.run {
+            let cache = DeviceLocationCacheStore.shared
+            let sloganCache = DeviceSloganCacheStore.shared
+            var dataByDeviceID: [String: SupplementalData] = [:]
 
-        do {
-            APIRequestCounter.shared.record(.getLocation)
-            _ = try await MiataruAppAPI.getLocation(
-                serverURL: serverURL,
-                forDeviceIDs: [deviceID],
-                requestingDeviceID: requestingDeviceID,
-                requestingDeviceKey: requestingDeviceKey
-            )
-        } catch {
-            debugLog("[UnknownVisitorAlertService] Failed best-effort slogan lookup via GetLocation: \(error)")
-        }
+            for deviceID in deviceIDs {
+                let cachedLocation = cache.locations.first {
+                    UnknownVisitorAlertEvaluator.normalizeDeviceID($0.deviceID) == deviceID
+                }
 
-        let refreshedSlogan = await MainActor.run {
-            DeviceSloganCacheStore.shared.slogan(for: deviceID)
+                var data = SupplementalData()
+                if let slogan = sloganCache.slogan(for: deviceID), !slogan.isEmpty {
+                    data.slogan = slogan
+                }
+                if let locality = cachedLocation?.locality, !locality.isEmpty {
+                    data.city = locality
+                }
+                if data.slogan != nil || data.city != nil {
+                    dataByDeviceID[deviceID] = data
+                }
+            }
+
+            return dataByDeviceID
         }
-        guard let refreshedSlogan,
-              !refreshedSlogan.isEmpty else {
-            return nil
+    }
+
+    private func normalizedUniqueDeviceIDs(_ deviceIDs: [String]) -> [String] {
+        var seenIDs: Set<String> = []
+        var result: [String] = []
+        for deviceID in deviceIDs {
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(deviceID)
+            guard !normalizedID.isEmpty, !seenIDs.contains(normalizedID) else { continue }
+            seenIDs.insert(normalizedID)
+            result.append(normalizedID)
         }
-        return refreshedSlogan
+        return result
+    }
+
+    private func cleansedSlogan(_ slogan: String?) -> String? {
+        let cleansed = MiataruAppAPI.cleanseDeviceSlogan(slogan ?? "")
+        return cleansed.isEmpty ? nil : cleansed
     }
 
     private func currentTimestampMs() -> Int64 {

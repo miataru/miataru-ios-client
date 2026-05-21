@@ -37,26 +37,12 @@ struct iPhone_DevicesView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     private var unknownVisitors: [MiataruVisitor] {
-        let knownDeviceIDs = Set(store.devices.map { $0.DeviceID.uppercased() })
-        let ignoredDeviceIDs = Set(ignoredStore.ignoredDeviceIDs.map { $0.uppercased() })
-        
-        // Get unique DeviceIDs from visitors, keeping the most recent visit for each
-        var uniqueVisitors: [String: MiataruVisitor] = [:]
-        for visitor in visitorHistoryViewModel.sortedVisitors {
-            let normalizedID = visitor.DeviceID.uppercased()
-            if !knownDeviceIDs.contains(normalizedID) && !ignoredDeviceIDs.contains(normalizedID) && !normalizedID.isEmpty {
-                if let existing = uniqueVisitors[normalizedID] {
-                    // Keep the most recent visit
-                    if visitor.TimeStampDate > existing.TimeStampDate {
-                        uniqueVisitors[normalizedID] = visitor
-                    }
-                } else {
-                    uniqueVisitors[normalizedID] = visitor
-                }
-            }
-        }
-        
-        return Array(uniqueVisitors.values).sorted { $0.TimeStampDate > $1.TimeStampDate }
+        UnknownVisitorFilter.visitors(
+            from: visitorHistoryViewModel.sortedVisitors,
+            knownDeviceIDs: Set(store.devices.map(\.DeviceID)),
+            ignoredDeviceIDs: Set(ignoredStore.ignoredDeviceIDs),
+            ownDeviceID: thisDeviceIDManager.shared.deviceID
+        )
     }
 
     var body: some View {

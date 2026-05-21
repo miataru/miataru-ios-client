@@ -13,6 +13,7 @@ import UserNotifications
 import MiataruAPIClient
 @testable import miataru
 
+@Suite(.serialized)
 struct UnknownVisitorAlertEvaluatorTests {
     @Test("Unknown visitor with new timestamp is selected")
     func unknownVisitorWithNewTimestampIsSelected() {
@@ -82,9 +83,9 @@ struct UnknownVisitorAlertEvaluatorTests {
     func knownIgnoredAndOwnIDsAreExcluded() {
         let now = Date(timeIntervalSince1970: 1_700_000_000)
         let visitors = [
-            MiataruVisitor(DeviceID: "OWN_DEVICE", TimeStamp: msString(now)),
-            MiataruVisitor(DeviceID: "KNOWN_DEVICE", TimeStamp: msString(now.addingTimeInterval(5))),
-            MiataruVisitor(DeviceID: "IGNORED_DEVICE", TimeStamp: msString(now.addingTimeInterval(10))),
+            MiataruVisitor(DeviceID: " own_device ", TimeStamp: msString(now)),
+            MiataruVisitor(DeviceID: " known_device ", TimeStamp: msString(now.addingTimeInterval(5))),
+            MiataruVisitor(DeviceID: " ignored_device ", TimeStamp: msString(now.addingTimeInterval(10))),
             MiataruVisitor(DeviceID: "UNKNOWN_DEVICE", TimeStamp: msString(now.addingTimeInterval(15)))
         ]
 
@@ -99,6 +100,116 @@ struct UnknownVisitorAlertEvaluatorTests {
 
         #expect(result.candidates.count == 1)
         #expect(result.candidates.first?.deviceID == "UNKNOWN_DEVICE")
+    }
+
+    @Test("Unknown visitor filter excludes known ignored and own IDs")
+    func unknownVisitorFilterExcludesKnownIgnoredAndOwnIDs() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let unknownID = "unknown_device"
+        let visitors = [
+            MiataruVisitor(DeviceID: "known_device", TimeStamp: msString(now.addingTimeInterval(10))),
+            MiataruVisitor(DeviceID: "ignored_device", TimeStamp: msString(now.addingTimeInterval(20))),
+            MiataruVisitor(DeviceID: "own_device", TimeStamp: msString(now.addingTimeInterval(30))),
+            MiataruVisitor(DeviceID: " \(unknownID) ", TimeStamp: msString(now.addingTimeInterval(40))),
+            MiataruVisitor(DeviceID: unknownID.uppercased(), TimeStamp: msString(now.addingTimeInterval(50)))
+        ]
+
+        let filteredVisitors = UnknownVisitorFilter.visitors(
+            from: visitors,
+            knownDeviceIDs: [" KNOWN_DEVICE "],
+            ignoredDeviceIDs: ["IGNORED_DEVICE"],
+            ownDeviceID: "OWN_DEVICE"
+        )
+
+        #expect(filteredVisitors.count == 1)
+        #expect(filteredVisitors.first?.DeviceID == "UNKNOWN_DEVICE")
+        #expect(filteredVisitors.first?.TimeStamp == msString(now.addingTimeInterval(50)))
+    }
+
+    @Test("Alert enrichment requests locations only for unknown candidates")
+    func alertEnrichmentRequestsLocationsOnlyForUnknownCandidates() async throws {
+        let suiteName = "UnknownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let knownID = "KNOWN_ALLOWED_DEVICE_\(UUID().uuidString)"
+        let unknownID = "UNKNOWN_DEVICE_\(UUID().uuidString)"
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [
+            MiataruVisitor(DeviceID: knownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(1))),
+            MiataruVisitor(DeviceID: " \(unknownID.lowercased()) ", TimeStamp: msString(now.addingTimeInterval(2)))
+        ])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            nowProvider: { now }
+        )
+        await service.processVisitorHistory(
+            [
+                MiataruVisitor(DeviceID: knownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(1))),
+                MiataruVisitor(DeviceID: " \(unknownID.lowercased()) ", TimeStamp: msString(now.addingTimeInterval(2)))
+            ],
+            serverURL: URL(string: "https://example.org")!,
+            runtime: UnknownVisitorAlertRuntime(
+                ownDeviceID: "OWN_DEVICE",
+                deviceKey: "test-device-key",
+                knownDeviceIDs: [knownID],
+                ignoredDeviceIDs: []
+            )
+        )
+
+        let locationRequests = await dataProvider.locationRequests
+        let addedRequests = await notifier.addedRequests
+        #expect(locationRequests == [[UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID)]])
+        #expect(addedRequests.count == 1)
+        #expect(addedRequests.first?.content.userInfo["device_id"] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
+    }
+
+    @Test("Known visitors do not trigger alert enrichment")
+    func knownVisitorsDoNotTriggerAlertEnrichment() async throws {
+        let suiteName = "UnknownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let knownID = "KNOWN_ONLY_DEVICE_\(UUID().uuidString)"
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [
+            MiataruVisitor(DeviceID: " \(knownID.lowercased()) ", TimeStamp: msString(now.addingTimeInterval(1)))
+        ])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            nowProvider: { now }
+        )
+        await service.processVisitorHistory(
+            [
+                MiataruVisitor(DeviceID: " \(knownID.lowercased()) ", TimeStamp: msString(now.addingTimeInterval(1)))
+            ],
+            serverURL: URL(string: "https://example.org")!,
+            runtime: UnknownVisitorAlertRuntime(
+                ownDeviceID: "OWN_DEVICE",
+                deviceKey: "test-device-key",
+                knownDeviceIDs: [knownID],
+                ignoredDeviceIDs: []
+            )
+        )
+
+        let locationRequests = await dataProvider.locationRequests
+        let addedRequests = await notifier.addedRequests
+        #expect(locationRequests.isEmpty)
+        #expect(addedRequests.isEmpty)
     }
 
     @Test("Permission request enables feature when authorization is granted")
@@ -177,6 +288,7 @@ actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
     private let status: UNAuthorizationStatus
     private let requestAuthorizationResult: Result<Bool, Error>
     private(set) var didRequestAuthorization: Bool = false
+    private(set) var addedRequests: [UNNotificationRequest] = []
 
     init(initialStatus: UNAuthorizationStatus,
          requestAuthorizationResult: Result<Bool, Error>) {
@@ -200,7 +312,38 @@ actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
     }
 
     func add(_ request: UNNotificationRequest) async throws {
-        _ = request
+        addedRequests.append(request)
+    }
+}
+
+actor MockUnknownVisitorAlertDataProvider: UnknownVisitorAlertDataProviding {
+    private let visitors: [MiataruVisitor]
+    private(set) var locationRequests: [[String]] = []
+
+    init(visitors: [MiataruVisitor]) {
+        self.visitors = visitors
+    }
+
+    func getVisitorHistory(serverURL: URL,
+                           forDeviceID deviceID: String,
+                           deviceKey: String,
+                           amount: Int) async throws -> [MiataruVisitor] {
+        _ = serverURL
+        _ = deviceID
+        _ = deviceKey
+        _ = amount
+        return visitors
+    }
+
+    func getLocation(serverURL: URL,
+                     forDeviceIDs deviceIDs: [String],
+                     requestingDeviceID: String,
+                     requestingDeviceKey: String) async throws -> [MiataruLocationData] {
+        _ = serverURL
+        _ = requestingDeviceID
+        _ = requestingDeviceKey
+        locationRequests.append(deviceIDs)
+        return []
     }
 }
 

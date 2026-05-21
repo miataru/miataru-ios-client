@@ -1,3 +1,11 @@
+version 3.1.14
+- Restricted unknown-visitor alert enrichment to true unknown visitor candidates so known, allowed, ignored, and own devices no longer trigger supplemental `GetLocation` requests during visitor-history processing.
+- Batched alert supplemental lookups per visitor-history processing run and reused cached city/slogan data when available, avoiding per-device enrichment requests when possible.
+- Shared the same normalized unknown-visitor filtering logic between iPhone and iPad device lists so already known or ignored visitor IDs are consistently excluded.
+- Added regression coverage for known/allowed visitor filtering, supplemental lookup scoping, ID normalization, and shared unknown-visitor list filtering.
+- Documented the visitor-history-only enrichment flow and its separation from normal location-update delivery.
+- Updated project metadata for version 3.1.14.
+
 version 3.1.13
 - Fixed visitor-history freshness on the current-device tab so recent visitors are refreshed immediately when the tab opens instead of waiting for the next automatic or manual reload.
 - Improved the location-permission escalation flow so choosing `When In Use` can still trigger the follow-up `Always` request during tracking setup.
