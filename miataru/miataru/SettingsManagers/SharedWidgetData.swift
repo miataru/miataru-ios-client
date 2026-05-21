@@ -33,10 +33,17 @@ struct WidgetDeviceData: Codable, Identifiable, Hashable {
     let color: WidgetColor?
 }
 
+struct WidgetDeviceSelectionData: Codable, Identifiable, Hashable {
+    let id: String
+    let name: String
+    let color: WidgetColor?
+}
+
 struct WidgetSharedPayload: Codable {
     var devices: [WidgetDeviceData]
     var ownDeviceID: String?
     var ownDevice: WidgetDeviceData?
+    var deviceSelections: [WidgetDeviceSelectionData]? = nil
 }
 
 enum SharedWidgetDataManager {
@@ -97,4 +104,3 @@ enum SharedWidgetDataManager {
         }
     }
 }
-

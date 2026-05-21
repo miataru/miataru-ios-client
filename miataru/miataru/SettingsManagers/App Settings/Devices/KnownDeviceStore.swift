@@ -19,7 +19,7 @@ class KnownDeviceStore: ObservableObject {
     
     @Published var devices: [KnownDevice] = [] {
         didSet {
-            guard !isInitializing else { return }
+            guard !isInitializing && !isBatchUpdating else { return }
             setupSubscribers()
             save()
             WidgetDataSyncCoordinator.syncAllDevices()
@@ -28,6 +28,7 @@ class KnownDeviceStore: ObservableObject {
     private let fileName = "knownDevices.plist"
     private var cancellables: [AnyCancellable] = []
     private var isInitializing = true
+    private var isBatchUpdating = false
 
     private var fileURL: URL {
         AppDirectories.applicationSupportFile(named: fileName)
@@ -36,16 +37,20 @@ class KnownDeviceStore: ObservableObject {
     // Make init private for singleton
     private init() {
         self.devices = load()
+        var shouldSaveAfterInitialization = normalizeDevicePositions()
         // Sicherstellen, dass das eigene Gerät immer in der Liste ist
         let myDeviceID = thisDeviceIDManager.shared.deviceID
         if !self.devices.contains(where: { $0.DeviceID == myDeviceID }) {
             let myDeviceName = NSLocalizedString("my_device", comment: "Name for the user's own device in the device list")
             let myDevice = KnownDevice(name: myDeviceName, deviceID: myDeviceID, color: UIColor.systemBlue)
             self.devices.insert(myDevice, at: 0)
+            shouldSaveAfterInitialization = normalizeDevicePositions() || shouldSaveAfterInitialization
             debugLog("[DEBUG] Eigenes Gerät mit DeviceID \(myDeviceID) wurde automatisch als erstes Device hinzugefügt.")
-            save()
         }
         setupSubscribers()
+        if shouldSaveAfterInitialization {
+            save()
+        }
         isInitializing = false
     }
 
@@ -54,7 +59,8 @@ class KnownDeviceStore: ObservableObject {
         for device in devices {
             let c = device.objectWillChange
                 .sink { [weak self] _ in
-                    self?.save()
+                    guard let self, !self.isInitializing && !self.isBatchUpdating else { return }
+                    self.save()
                     WidgetDataSyncCoordinator.syncAllDevices()
                 }
             cancellables.append(c)
@@ -76,7 +82,14 @@ class KnownDeviceStore: ObservableObject {
         do {
             if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self, UIColor.self], from: data) as? [KnownDevice] {
                 // Nach gespeicherter Reihenfolge sortieren
-                return devices.sorted { $0.KnownDevicesTablePosition < $1.KnownDevicesTablePosition }
+                return devices.enumerated()
+                    .sorted {
+                        if $0.element.KnownDevicesTablePosition == $1.element.KnownDevicesTablePosition {
+                            return $0.offset < $1.offset
+                        }
+                        return $0.element.KnownDevicesTablePosition < $1.element.KnownDevicesTablePosition
+                    }
+                    .map(\.element)
             }
         } catch {
             debugLog("Fehler beim Laden der KnownDevices: \(error)")
@@ -90,17 +103,18 @@ class KnownDeviceStore: ObservableObject {
         if devices.contains(where: { $0.DeviceID == device.DeviceID }) {
             return false
         }
+        device.KnownDevicesTablePosition = devices.count
         devices.append(device)
         return true
     }
 
     func move(fromOffsets source: IndexSet, toOffset destination: Int) {
+        isBatchUpdating = true
         devices.move(fromOffsets: source, toOffset: destination)
         // Reihenfolge-Index aktualisieren
-        for (index, device) in devices.enumerated() {
-            device.KnownDevicesTablePosition = index
-        }
-        save()
+        _ = normalizeDevicePositions()
+        isBatchUpdating = false
+        commitDeviceChanges()
     }
 
     func remove(atOffsets offsets: IndexSet) {
@@ -108,22 +122,28 @@ class KnownDeviceStore: ObservableObject {
         let deviceIDsToRemove = offsets.map { devices[$0].DeviceID }
         
         // Remove devices from the list
+        isBatchUpdating = true
         devices.remove(atOffsets: offsets)
+        _ = normalizeDevicePositions()
+        isBatchUpdating = false
         
         // Remove devices from all groups
         removeDevicesFromAllGroups(deviceIDs: deviceIDsToRemove)
         
-        save()
+        commitDeviceChanges()
     }
     
     func removeDevice(byID deviceID: String) {
         // Remove device from the list
+        isBatchUpdating = true
         devices.removeAll { $0.DeviceID == deviceID }
+        _ = normalizeDevicePositions()
+        isBatchUpdating = false
         
         // Remove device from all groups
         removeDevicesFromAllGroups(deviceIDs: [deviceID])
         
-        save()
+        commitDeviceChanges()
     }
     
     private func removeDevicesFromAllGroups(deviceIDs: [String]) {
@@ -141,5 +161,23 @@ class KnownDeviceStore: ObservableObject {
                 group.objectWillChange.send()
             }
         }
+    }
+
+    @discardableResult
+    private func normalizeDevicePositions() -> Bool {
+        var changed = false
+        for (index, device) in devices.enumerated() {
+            if device.KnownDevicesTablePosition != index {
+                device.KnownDevicesTablePosition = index
+                changed = true
+            }
+        }
+        return changed
+    }
+
+    private func commitDeviceChanges() {
+        setupSubscribers()
+        save()
+        WidgetDataSyncCoordinator.syncAllDevices()
     }
 } 

@@ -95,6 +95,7 @@ enum WidgetDataSyncCoordinator {
     static func buildPayload(devices: [KnownDevice], locations: [CachedDeviceLocation], ownDeviceID: String) -> WidgetSharedPayload {
         var entries: [WidgetDeviceData] = []
         var ownDevice: WidgetDeviceData?
+        let selections = devices.map { WidgetDeviceDataBuilder.makeSelection(device: $0) }
 
         for device in devices {
             guard let location = locations.first(where: { $0.deviceID == device.DeviceID }) else { continue }
@@ -108,7 +109,8 @@ enum WidgetDataSyncCoordinator {
         return WidgetSharedPayload(
             devices: entries,
             ownDeviceID: ownDeviceID,
-            ownDevice: ownDevice
+            ownDevice: ownDevice,
+            deviceSelections: selections
         )
     }
 
@@ -154,7 +156,8 @@ enum WidgetDataSyncCoordinator {
         return WidgetSharedPayload(
             devices: entries,
             ownDeviceID: ownDeviceID,
-            ownDevice: entries.first { normalizedDeviceID($0.id) == normalizedDeviceID(ownDeviceID) }
+            ownDevice: entries.first { normalizedDeviceID($0.id) == normalizedDeviceID(ownDeviceID) },
+            deviceSelections: devices.map { WidgetDeviceDataBuilder.makeSelection(device: $0) }
         )
     }
 
@@ -166,6 +169,14 @@ enum WidgetDataSyncCoordinator {
 // MARK: - Helpers
 
 private enum WidgetDeviceDataBuilder {
+    static func makeSelection(device: KnownDevice) -> WidgetDeviceSelectionData {
+        WidgetDeviceSelectionData(
+            id: device.DeviceID,
+            name: device.DeviceName,
+            color: WidgetColorFactory.color(from: device.DeviceColor)
+        )
+    }
+
     static func makeEntry(device: KnownDevice, location: CachedDeviceLocation) -> WidgetDeviceData? {
         WidgetDeviceData(
             id: device.DeviceID,

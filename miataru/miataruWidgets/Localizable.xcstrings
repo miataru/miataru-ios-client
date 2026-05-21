@@ -328,7 +328,7 @@
       }
     },
     "widget_intent_device_title" : {
-      "comment" : "Device entity\nParameter title for selecting a device",
+      "comment" : "Parameter title for selecting a device",
       "localizations" : {
         "da" : {
           "stringUnit" : {

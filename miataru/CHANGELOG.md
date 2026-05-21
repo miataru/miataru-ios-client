@@ -1,4 +1,8 @@
 version 3.1.14
+- Fixed configurable widgets so selecting a different device now drives the rendered text and map content through the selected device ID instead of falling back to a previously cached widget device.
+- Split widget device selections from cached widget location entries, keeping all known devices selectable in store order even when some devices do not yet have cached widget location data.
+- Normalized known-device ordering after load, add, move, and removal operations, and routed iPhone device reordering through the store so widget sync receives the persisted order.
+- Added regression coverage and technical documentation for the widget device-selection flow.
 - Restricted unknown-visitor alert enrichment to true unknown visitor candidates so known, allowed, ignored, and own devices no longer trigger supplemental `GetLocation` requests during visitor-history processing.
 - Batched alert supplemental lookups per visitor-history processing run and reused cached city/slogan data when available, avoiding per-device enrichment requests when possible.
 - Shared the same normalized unknown-visitor filtering logic between iPhone and iPad device lists so already known or ignored visitor IDs are consistently excluded.

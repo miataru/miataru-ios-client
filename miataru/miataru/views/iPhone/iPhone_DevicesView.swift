@@ -170,7 +170,7 @@ struct iPhone_DevicesView: View {
                         }
                     }
                     .onMove { indices, newOffset in
-                        store.devices.move(fromOffsets: indices, toOffset: newOffset)
+                        store.move(fromOffsets: indices, toOffset: newOffset)
                     }
                     .onDelete { indices in
                         Task {
