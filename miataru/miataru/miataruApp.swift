@@ -228,6 +228,9 @@ struct miataruApp: App {
         WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
         // Ensure widgets have initial data even before the first update cycle.
         WidgetDataSyncCoordinator.syncAllDevices()
+        Task { @MainActor in
+            PersistentDataCleanup.run()
+        }
         // Do NOT call startTracking() here!
         // Tracking is now controlled by the observer in LocationManager.observeSettings().
         // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.

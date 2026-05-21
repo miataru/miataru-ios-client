@@ -51,6 +51,8 @@ enum SharedWidgetDataManager {
     private static let sharedDataFileName = "SharedDeviceData.json"
     private static let snapshotPrefix = "MapSnapshot-"
     private static let snapshotExtension = "png"
+    private static let widgetSnapshotCacheDirectoryName = "WidgetSnapshots"
+    private static let snapshotFilePrefixes = ["MapSnapshot-", "WidgetMapSnapshot-"]
 
     /// Location of the shared App Group container.
     static var sharedContainerURL: URL? {
@@ -63,7 +65,7 @@ enum SharedWidgetDataManager {
     }
 
     /// Location of the map snapshot image for a specific device and appearance.
-    static func mapSnapshotURL(for deviceID: String, style: Any? = nil) -> URL? {
+    static func mapSnapshotURL(for deviceID: String, style: Any? = nil, containerURL: URL? = nil) -> URL? {
         let suffix: String
         #if canImport(UIKit)
         if let style = style as? UIUserInterfaceStyle {
@@ -78,7 +80,118 @@ enum SharedWidgetDataManager {
         #else
         suffix = ""
         #endif
-        return sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
+        guard let directory = mapSnapshotDirectoryURL(containerURL: containerURL, createIfNeeded: true) else {
+            return nil
+        }
+        return directory.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
+    }
+
+    static func mapSnapshotDirectoryURL(containerURL: URL? = nil, createIfNeeded: Bool = false) -> URL? {
+        guard let containerURL = containerURL ?? sharedContainerURL else { return nil }
+        let directory = containerURL
+            .appendingPathComponent("Library", isDirectory: true)
+            .appendingPathComponent("Caches", isDirectory: true)
+            .appendingPathComponent(widgetSnapshotCacheDirectoryName, isDirectory: true)
+
+        if createIfNeeded {
+            try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        }
+
+        return directory
+    }
+
+    @discardableResult
+    static func pruneMapSnapshots(
+        retainingDeviceIDs retainedDeviceIDs: Set<String>,
+        containerURL: URL? = nil,
+        fileManager: FileManager = .default
+    ) -> Int {
+        guard let containerURL = containerURL ?? sharedContainerURL else { return 0 }
+        let retainedIDs = Set(retainedDeviceIDs.map(normalizedDeviceID).filter { !$0.isEmpty })
+        var removedCount = 0
+
+        if let snapshotDirectory = mapSnapshotDirectoryURL(containerURL: containerURL) {
+            removedCount += pruneSnapshotFiles(
+                in: snapshotDirectory,
+                retainingDeviceIDs: retainedIDs,
+                removeAllSnapshots: false,
+                fileManager: fileManager
+            )
+        }
+
+        // Root-level snapshot files are legacy; current code writes into Library/Caches.
+        removedCount += pruneSnapshotFiles(
+            in: containerURL,
+            retainingDeviceIDs: retainedIDs,
+            removeAllSnapshots: true,
+            fileManager: fileManager
+        )
+
+        return removedCount
+    }
+
+    private static func pruneSnapshotFiles(
+        in directory: URL,
+        retainingDeviceIDs retainedDeviceIDs: Set<String>,
+        removeAllSnapshots: Bool,
+        fileManager: FileManager
+    ) -> Int {
+        guard let files = try? fileManager.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles]
+        ) else {
+            return 0
+        }
+
+        var removedCount = 0
+        for file in files {
+            var isDirectory: ObjCBool = false
+            guard fileManager.fileExists(atPath: file.path, isDirectory: &isDirectory),
+                  !isDirectory.boolValue,
+                  let snapshot = snapshotMetadata(for: file.lastPathComponent) else {
+                continue
+            }
+
+            let shouldRemove = snapshot.isAtomicWriteTemp
+                || removeAllSnapshots
+                || !retainedDeviceIDs.contains(snapshot.deviceID)
+
+            guard shouldRemove else { continue }
+            do {
+                try fileManager.removeItem(at: file)
+                removedCount += 1
+            } catch {
+                debugLog("Failed to remove widget snapshot \(file.lastPathComponent): \(error)")
+            }
+        }
+
+        return removedCount
+    }
+
+    private static func snapshotMetadata(for fileName: String) -> (deviceID: String, isAtomicWriteTemp: Bool)? {
+        guard let pngRange = fileName.range(of: ".\(snapshotExtension)") else { return nil }
+        let isAtomicWriteTemp = fileName[pngRange.upperBound...].hasPrefix(".sb-")
+        let baseName = String(fileName[..<pngRange.lowerBound])
+
+        for prefix in snapshotFilePrefixes where baseName.hasPrefix(prefix) {
+            var deviceID = String(baseName.dropFirst(prefix.count))
+            if deviceID.hasSuffix("-light") {
+                deviceID.removeLast("-light".count)
+            } else if deviceID.hasSuffix("-dark") {
+                deviceID.removeLast("-dark".count)
+            }
+
+            let normalizedID = normalizedDeviceID(deviceID)
+            guard !normalizedID.isEmpty else { return nil }
+            return (normalizedID, isAtomicWriteTemp)
+        }
+
+        return nil
+    }
+
+    private static func normalizedDeviceID(_ deviceID: String) -> String {
+        deviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
     }
 
     /// Persist a payload into the shared container.

@@ -104,10 +104,10 @@ final class DeviceSloganCacheStore: ObservableObject {
         persist()
     }
 
-    func markFreshNow(for deviceID: String) {
+    func markFreshNow(for deviceID: String, at date: Date = Date()) {
         let normalizedID = normalizedDeviceID(deviceID)
         guard !normalizedID.isEmpty else { return }
-        markFetchAttempt(for: normalizedID, at: Date())
+        markFetchAttempt(for: normalizedID, at: date)
     }
 
     func migrateCachedEntry(from oldDeviceID: String, to newDeviceID: String) {
@@ -129,6 +129,52 @@ final class DeviceSloganCacheStore: ObservableObject {
         }
 
         persist()
+    }
+
+    func removeCachedEntry(for deviceID: String) {
+        let normalizedID = normalizedDeviceID(deviceID)
+        guard !normalizedID.isEmpty else { return }
+        slogansByDeviceID.removeValue(forKey: normalizedID)
+        knownDeviceIDs.remove(normalizedID)
+        lastFetchByDeviceID.removeValue(forKey: normalizedID)
+        persist()
+    }
+
+    @discardableResult
+    func prune(
+        retainingDeviceIDs retainedDeviceIDs: Set<String>,
+        unknownDeviceTTL: TimeInterval = 7 * 24 * 60 * 60,
+        now: Date = Date()
+    ) -> Int {
+        let retainedIDs = Set(retainedDeviceIDs.map(normalizedDeviceID).filter { !$0.isEmpty })
+        let ttl = max(0, unknownDeviceTTL)
+        let allDeviceIDs = Set(
+            Set(slogansByDeviceID.keys)
+                .union(knownDeviceIDs)
+                .union(lastFetchByDeviceID.keys)
+                .map(normalizedDeviceID)
+                .filter { !$0.isEmpty }
+        )
+
+        var removedCount = 0
+        for normalizedID in allDeviceIDs {
+            guard !retainedIDs.contains(normalizedID) else { continue }
+
+            guard let lastFetch = lastFetchByDeviceID[normalizedID],
+                  now.timeIntervalSince(lastFetch) <= ttl else {
+                slogansByDeviceID.removeValue(forKey: normalizedID)
+                knownDeviceIDs.remove(normalizedID)
+                lastFetchByDeviceID.removeValue(forKey: normalizedID)
+                removedCount += 1
+                continue
+            }
+        }
+
+        if removedCount > 0 {
+            persist()
+        }
+
+        return removedCount
     }
 
     private func persist() {

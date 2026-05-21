@@ -135,6 +135,36 @@ struct LocationUpdateOutboxStoreTests {
         #expect(snapshot.map(\.payload.Timestamp) == ["old", "new-1", "new-2"])
     }
 
+    @Test("Default retry outbox policy stays capped at 500 items and 24 hours")
+    func defaultRetryOutboxPolicyRemainsBounded() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let clock = MutableClock(now: Date(timeIntervalSince1970: 100))
+        let store = LocationUpdateOutboxStore(
+            fileURL: tempURL,
+            nowProvider: { clock.now }
+        )
+
+        for index in 0...500 {
+            await store.enqueue(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "\(index)"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+
+        var snapshot = await store.itemsSnapshot()
+        #expect(snapshot.count == 500)
+        #expect(snapshot.first?.payload.Timestamp == "1")
+        #expect(snapshot.last?.payload.Timestamp == "500")
+
+        clock.now = Date(timeIntervalSince1970: 100 + 24 * 60 * 60 + 1)
+        snapshot = await store.itemsSnapshot()
+        #expect(snapshot.isEmpty)
+    }
+
     private func payload(
         timestamp: String,
         latitude: Double = 50.0,

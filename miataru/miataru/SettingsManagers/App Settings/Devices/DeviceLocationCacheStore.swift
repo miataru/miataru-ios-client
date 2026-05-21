@@ -372,6 +372,40 @@ class DeviceLocationCacheStore: ObservableObject {
         WidgetDataSyncCoordinator.syncAllDevices()
     }
 
+    @discardableResult
+    func prune(
+        retainingDeviceIDs retainedDeviceIDs: Set<String>,
+        unknownDeviceTTL: TimeInterval = 7 * 24 * 60 * 60,
+        now: Date = Date()
+    ) -> Int {
+        let retainedIDs = Set(retainedDeviceIDs.map(normalizedDeviceID).filter { !$0.isEmpty })
+        let ttl = max(0, unknownDeviceTTL)
+        var removedDeviceIDs = Set<String>()
+
+        let nextLocations = locations.filter { location in
+            let normalizedID = normalizedDeviceID(location.deviceID)
+            guard !normalizedID.isEmpty else {
+                return false
+            }
+            if retainedIDs.contains(normalizedID) {
+                return true
+            }
+            let shouldKeep = now.timeIntervalSince(location.timestamp) <= ttl
+            if !shouldKeep {
+                removedDeviceIDs.insert(normalizedID)
+            }
+            return shouldKeep
+        }
+
+        let removedCount = locations.count - nextLocations.count
+        guard removedCount > 0 else { return 0 }
+
+        locations = nextLocations
+        geocodeQueue.removeAll { removedDeviceIDs.contains(normalizedDeviceID($0)) }
+        WidgetDataSyncCoordinator.syncAllDevices()
+        return removedCount
+    }
+
     // MARK: - Reverse Geocoding Queue
     func enqueueGeocodingIfNeeded(for deviceID: String, force: Bool = false) {
         // If not forced and placemark already present with timezone, skip

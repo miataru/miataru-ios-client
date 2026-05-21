@@ -8,6 +8,10 @@ version 3.1.14
 - Shared the same normalized unknown-visitor filtering logic between iPhone and iPad device lists so already known or ignored visitor IDs are consistently excluded.
 - Added regression coverage for known/allowed visitor filtering, supplemental lookup scoping, ID normalization, and shared unknown-visitor list filtering.
 - Documented the visitor-history-only enrichment flow and its separation from normal location-update delivery.
+- Added startup and post-device-removal cleanup for app-owned persistent data, pruning orphaned widget snapshots, stale unknown location cache entries, and stale unknown slogan cache entries.
+- Moved widget map snapshots into the App Group `Library/Caches/WidgetSnapshots` directory and removed legacy root-level snapshot files and atomic-write leftovers during cleanup.
+- Switched the Miataru API client to a non-disk-caching ephemeral `URLSession` for POST JSON requests.
+- Added regression coverage and technical documentation for persistent app-data cleanup behavior.
 - Updated project metadata for version 3.1.14.
 
 version 3.1.13

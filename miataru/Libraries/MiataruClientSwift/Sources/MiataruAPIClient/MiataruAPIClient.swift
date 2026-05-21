@@ -872,7 +872,12 @@ public enum MiataruAPIClient {
 
     public static let packageVersion = "1.1.2"
 
-    private static let session = URLSession.shared
+    private static let session: URLSession = {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        configuration.urlCache = nil
+        return URLSession(configuration: configuration)
+    }()
     private static let jsonDecoder = JSONDecoder()
 
     private static func makeJSONEncoder() -> JSONEncoder {
@@ -1397,6 +1402,7 @@ public enum MiataruAPIClient {
                                           customLog: ((String) -> String)?) async throws -> Data {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.httpBody = httpBody

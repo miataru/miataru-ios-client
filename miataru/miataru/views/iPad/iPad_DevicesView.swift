@@ -406,6 +406,7 @@ struct iPad_DevicesView: View {
             }
         } else {
             store.removeDevice(byID: deviceID)
+            PersistentDataCleanup.run()
         }
     }
 

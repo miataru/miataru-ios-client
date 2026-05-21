@@ -51,6 +51,7 @@ enum SharedWidgetDataManager {
     // Otherwise the app can overwrite the widget image while the widget text comes from fresh widget data.
     private static let snapshotPrefix = "WidgetMapSnapshot-"
     private static let snapshotExtension = "png"
+    private static let widgetSnapshotCacheDirectoryName = "WidgetSnapshots"
     private static let widgetRequestCountKey = "miataru_widgetRequestCount"
     private static let widgetRequestLastResetKey = "miataru_widgetRequestLastReset"
     private static let legacyWidgetRequestTimestampsKey = "miataru_widgetRequestTimestamps"
@@ -78,7 +79,24 @@ enum SharedWidgetDataManager {
         #else
         let suffix = ""
         #endif
-        return sharedContainerURL?.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
+        guard let directory = mapSnapshotDirectoryURL(createIfNeeded: true) else {
+            return nil
+        }
+        return directory.appendingPathComponent("\(snapshotPrefix)\(deviceID)\(suffix).\(snapshotExtension)")
+    }
+
+    private static func mapSnapshotDirectoryURL(createIfNeeded: Bool = false) -> URL? {
+        guard let containerURL = sharedContainerURL else { return nil }
+        let directory = containerURL
+            .appendingPathComponent("Library", isDirectory: true)
+            .appendingPathComponent("Caches", isDirectory: true)
+            .appendingPathComponent(widgetSnapshotCacheDirectoryName, isDirectory: true)
+
+        if createIfNeeded {
+            try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        }
+
+        return directory
     }
 
     static func write(_ payload: WidgetSharedPayload) {

@@ -153,6 +153,7 @@ class AllowedDeviceListManager {
         // Sync full list
         do {
             try await syncAllowedDeviceListIfEnabled(trigger: .remove)
+            PersistentDataCleanup.run()
         } catch {
             // Rollback on failure
             restoreSnapshot(snapshot)
