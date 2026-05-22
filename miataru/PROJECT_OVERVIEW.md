@@ -1,198 +1,137 @@
 # miataru iOS App - Project Overview
 
-## 🎯 Project Purpose
-miataru is a privacy-focused iOS application that enables users to track their device location, share it securely with trusted parties, and manage multiple devices and groups. The app prioritizes user privacy, battery efficiency, and cross-platform compatibility.
+## Current State
 
-## 🏗️ Architecture Overview
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.1.14** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
-### Technology Stack
-- **Frontend**: SwiftUI (iOS 18.0+)
-- **State Management**: ObservableObject pattern with @Published properties
-- **Data Persistence**: UserDefaults via SettingsManager; Application Support files for devices/groups
-- **Location Services**: CoreLocation framework (foreground and significant-change background)
-- **QR Code**: CodeScanner (scan), QRCode (generate)
-- **Platforms**: iPhone and iPad
+Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 
-### Core Components
-```
-miataruApp.swift (Entry Point)
-├── MiataruRootView (Main Navigation)
-├── OnboardingContainerView (User Setup)
+## Architecture
+
+```text
+miataruApp.swift
+├── MiataruRootView
+│   ├── iPhone_RootView
+│   └── iPad_RootView
+├── OnboardingContainerView
 ├── LocationManagers/
-│   └── LocationManager.swift
+│   ├── LocationManager.swift
+│   ├── DeviceLocationRefresher.swift
+│   └── RouteCacheStore.swift
+├── Networking/
+│   ├── MiataruAppAPI.swift
+│   ├── MiataruRequestExecutor.swift
+│   ├── MiataruRetryPolicy.swift
+│   ├── LocationUpdateDeliveryCoordinator.swift
+│   └── LocationUpdateOutboxStore.swift
+├── Notifications/
+│   ├── UnknownVisitorAlertService.swift
+│   ├── UnknownVisitorFilter.swift
+│   └── FrequentBackgroundTrackingReminderService.swift
 ├── SettingsManagers/
-│   └── App Settings/ (SettingsManager, thisDeviceIDManager, Settings.bundle)
-│   └── Devices/ (KnownDevice, KnownDeviceStore)
-│   └── Groups/ (DeviceGroup, DeviceGroupStore)
+│   ├── App Settings/
+│   ├── Devices/
+│   ├── Groups/
+│   ├── SharedWidgetData.swift
+│   ├── WidgetDataSyncCoordinator.swift
+│   └── PersistentDataCleanup.swift
 ├── views/
-│   ├── Common/ (Shared UI)
-│   ├── iPhone/ (iPhone-specific)
-│   ├── iPad/ (iPad-specific)
-│   └── Mac/ (onboarding previews only)
-└── Assets/ (Resources & Localization)
+│   ├── Common/
+│   ├── iPhone/
+│   ├── iPad/
+│   └── Mac/
+├── miataruWidgets/
+└── Assets/
 ```
 
-### Common Components Overview
+## Core Domains
 
-- Shared UI (`views/Common/`):
-  - `ErrorOverlay`, `ViewModifiers` (adaptive toolbars/navigation)
-  - Device & group UI: `DeviceRowView`, `GroupRowView`, `DeviceNameLabel`, `DeviceBatterySymbol`
-  - Map UI & helpers (`views/Common/Map/`): `MiataruMapMarker`, `PulsingAccuracyCircle`, `MapScaleBar` (+ `MapScaleBarViewModel`), `MapCompass`, `OffScreenDeviceArrow`, `OffscreenDeviceEdgeHelper`, `RouteGhostCalculator`, `RouteStyle`, `Shimmer`
-- Data & Caching:
-  - `KnownDeviceStore`, `DeviceGroupStore` (secure archiving under Application Support)
-  - `DeviceLocationCacheStore` (latest device locations + reverse geocoded placemarks)
-  - `RouteCacheStore` (cached routes keyed by device/transport; distance threshold validation)
-- Utilities:
-  - `thisDeviceIDManager` (device ID generation + legacy migration)
-  - `Haptic` (feedback utilities)
+### Location Tracking
 
-## 🔑 Key Features
+`LocationManager` owns permission state, local GPS updates, heading updates, tracking mode resolution, background behavior, and upload status. It resolves one of four modes:
 
-### Location Management
-- **Privacy-First**: User controls all location sharing
-- **Battery Optimized**: High-accuracy foreground; significant-change background
-- **Permission Handling**: Staged requests (WhenInUse → Always when opted-in)
-- **Background Support**: Significant-change updates
+- stopped
+- foreground high accuracy
+- background significant-change monitoring
+- frequent background updates with configured distance/accuracy
 
-### Device Management
-- **Multi-Device**: Track multiple devices
-- **Group Support**: Organize devices into groups
-- **QR Code Sharing**: Share own device, scan to add others
-- **Deep Link**: `miataru://<DEVICE_ID>` adds devices via sheet
+Foreground tracking uses high accuracy. Background tracking defaults to significant-change monitoring unless the user opts into frequent background updates. Frequent background mode is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable.
 
-### User Experience
-- **Onboarding Flow**: Guided setup (iPhone/iPad-optimized)
-- **Settings Control**: Comprehensive preferences via SettingsManager
-- **Error Handling**: Transient overlays
-- **Localization**: German, English, and Japanese
+### Miataru API Access
 
-## 📱 Platform-Specific Considerations
+The local `MiataruAPIClient` package exposes typed protocol calls. App code uses `MiataruAppAPI` wrappers for centralized retry behavior, cache ingestion, DeviceKey handling, and app-level side effects.
 
-### iPhone
-- Touch-optimized interface
-- Location permission workflows
-- Deep-link and QR onboarding
-- Battery optimization features
+Transient network and server failures are classified by `MiataruRetryClassifier`. Reads, writes, and `updateLocation` each retry once with short jittered backoff. Failed `updateLocation` payloads are persisted in `LocationUpdateOutboxStore` and drained by `LocationUpdateDeliveryCoordinator` without rewriting original event metadata.
 
-### iPad
-- Larger screen layouts
-- Split view support
-- Enhanced device management
-- Optimized for productivity
+### Device Identity, DeviceKey, and Access Control
 
-### Mac
-- Not currently targeted (Mac directory hosts onboarding previews only)
+`thisDeviceIDManager` owns current-device identity and legacy migration. DeviceKey flows allow create, restore, reset, recovery, and emergency identity reset. DeviceKey protects update writes, visitor history, device slogans, security status, and allowed-device-list access where the server supports it.
 
-## 🛠️ Development Guidelines
+Allowed Device List behavior is integrated into add/edit/delete flows and uses immediate sync from edit screens. Unknown visitors can be allowed, ignored, or surfaced through opt-in notifications.
 
-### Code Organization
-- **Views**: Minimal UI logic, delegate to managers
-- **Managers**: Handle business logic and data
-- **Models**: Use SwiftUI data binding
-- **Assets**: Organized by platform and feature
+### Devices, Groups, and Caches
 
-### State Management
-- Use ObservableObject for view models
-- Implement proper MVVM pattern
-- Handle app lifecycle changes
-- Manage user preferences reactively
+`KnownDeviceStore` and `DeviceGroupStore` persist user-managed devices and groups under Application Support. `DeviceLocationCacheStore`, `DeviceHistoryCacheStore`, and `DeviceSloganCacheStore` provide current location, history, reverse-geocode, recent-visitor, and slogan data.
 
-### Testing Strategy
-- Unit tests for business logic
-- UI tests for critical flows
-- Multi-device testing
-- Permission flow verification
+Successful server responses are centrally ingested so device rows, maps, navigation, visitor flows, and widgets share the same freshness rules. Startup and device-list cleanup prune stale unknown-device locations, slogans, and legacy widget snapshots.
 
-## 🔒 Privacy & Security
+### Widgets
 
-### Data Protection
-- Location data encryption
-- User consent requirements
-- Data retention policies
-- GDPR compliance
+The widget extension contains text and map widgets. Device selection is AppIntent-based and reads `WidgetDeviceSelectionData` so every known device remains selectable even if no widget location snapshot exists yet. The app and widget exchange JSON payloads, configuration, and map snapshots through the `group.com.miataru.ios` App Group.
 
-### Permission Management
-- Minimal permission requests
-- Clear permission explanations
-- Graceful permission denial
-- User control over data
+Widgets can use cached app data and, when configured, live server fetches via shared server URL, known device IDs, own device ID, and own DeviceKey.
 
-## 📊 Performance Considerations
+### Maps and Navigation
 
-### Battery Optimization
-- Smart location updates
-- Background task management
-- Auto-lock control
-- Energy-efficient operations
+Shared map components live in `views/Common/Map`. Device and group maps reuse marker rendering, accuracy circles, compass, scale bar, off-screen arrows, route style, and speed/relative-time helpers.
 
-### Memory Management
-- Proper observer cleanup
-- Weak reference usage
-- Resource deallocation
-- Memory leak prevention
+`iPhone_DeviceNavigationView` coordinates `MKRoute`, `RouteCacheStore`, `NavigationRouteRefreshPolicy`, route overlays, ETA updates, focused navigation, and `NavigationOverlayKit` instructions. Standard `device -> user` navigation can show a route-progress ghost; focused double-tap navigation deliberately keeps only the base route and optional mutual-navigation overlay.
 
-## 🚀 Deployment & Distribution
+### Notifications
 
-### Build Requirements
-- Xcode 16.0+
-- iOS 18.0+ deployment target
-- Swift 5+
-- macOS 14.0+ (development)
+`UnknownVisitorAlertService` evaluates visitor history incrementally from activation time, filters own/known/ignored IDs, applies a per-device cooldown, enriches true unknown candidates with cached or batched `GetLocation` data, and schedules local notifications.
 
-### Distribution
-- App Store distribution
-- TestFlight beta testing
-- Enterprise deployment support
-- Universal binary support
+`FrequentBackgroundTrackingReminderService` manages reminder, expiry, and low-battery auto-disable notifications for frequent background tracking.
 
-## 🔧 Common Development Tasks
+## Platform Layout
 
-### Adding Features
-1. Create platform-specific views
-2. Implement business logic in managers
-3. Update settings if needed
-4. Add localization strings
-5. Test on all platforms
+- iPhone: Devices, QR, Settings tabs; groups live inside the Devices flow.
+- iPad: Devices, Groups, QR, Settings tabs; split views and separate device windows are supported.
+- Mac: source files exist for preview/scaffolding only; no active Mac product target.
 
-### Debugging
-- Location simulation in Xcode
-- Permission status checking
-- Battery usage monitoring
-- Background task verification
+## Testing
 
-### Performance Tuning
-- Instruments profiling
-- Memory usage analysis
-- Battery impact assessment
-- Background task optimization
+Active app tests are split into:
 
-## 📚 Resources & References
+- `miataruTests` for unit tests
+- `miataruUITests` for deterministic functional UI tests
+- `miataruScreenshotUITests` for explicit screenshot capture
 
-### Documentation
-- [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
-- [CoreLocation Framework](https://developer.apple.com/documentation/corelocation)
-- [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines)
+Shared schemes and scripts:
 
-### Dependencies
-- **CodeScanner**: QR code scanning
-- **MiataruAPIClient** (via local `Libraries/MiataruClientSwift`): API client
-- **QRCode**: QR generation
-- **SwiftImageReadWrite**: Image handling
+- `miataru-FunctionalUI` / `FunctionalSerial.xctestplan` / `scripts/test-functional-ui-serial.sh`
+- `miataru-Screenshots` / `Screenshots.xctestplan` / `scripts/test-screenshots.sh`
+- `scripts/test-unit.sh`, `scripts/test-ui.sh`, and `scripts/test-all.sh`
 
-## 🎯 Future Roadmap
+The current catalog and remaining gaps are maintained in `documentation/test-katalog.md` and `documentation/test-gap-matrix.md`.
 
-### Planned Features
-- Enhanced privacy controls
-- Advanced device grouping
-- Improved battery optimization
-- Extended platform support
+## Dependencies
 
-### Technical Improvements
-- Performance optimizations
-- Enhanced error handling
-- Better testing coverage
-- Documentation updates
+- Local packages: `Libraries/CodeScanner-main`, `Libraries/QRCode-main`, `Libraries/MiataruClientSwift`
+- Remote SwiftPM packages: `NavigationOverlayKit`, `swift-qrcode-generator`, `SwiftImageReadWrite`
 
----
+`Package.resolved` pins `NavigationOverlayKit` 1.1.0, `swift-qrcode-generator` 2.0.2, and `SwiftImageReadWrite` 1.9.2.
 
-*This overview provides Cursor with comprehensive context about the miataru iOS app project, enabling better code assistance and development guidance.*
+## Development Priorities
+
+Recent 2026 work focused on:
+
+- DeviceKey, allowed-device list, device slogans, and security status
+- visitor history, unknown visitor alerts, and recent-visitor indicators
+- robust navigation, focused camera behavior, route-progress ghost rendering, and route request limits
+- background tracking controls, retry/outbox resilience, and persistent cleanup
+- widgets and App Group data synchronization
+- localization coverage across all supported languages
+- active unit/UI/screenshot test infrastructure
+
+The current highest-value test gaps are integration coverage for the location/routing pipeline, unknown-visitor trigger wiring, allowed-device sync, persistence-store error paths, and widget payload contracts.

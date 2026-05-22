@@ -1,102 +1,108 @@
 # miataru - App Store Description
 
 ## Subtitle (30 characters max)
+
 Your Location, Your Control
 
----
+## Description Prompt
 
-## Description (4000 characters max) + Prompt
-take this "description text" and translate these in this order: English, Danish, Dutch, Finnish, French, Italian, German, Japanese, Spanish, Simplified-Chinese 
-Output in this language order and make each language individually copyable markdown.Each copyable markdown portion has a small note of the language before the markdown and no markdown headline itself. It should be real markdown.
+Translate the description text below in this exact order: English, Danish, Dutch, Finnish, French, Italian, German, Japanese, Spanish, Simplified Chinese.
 
-Description Text:
+Output each language as its own copyable markdown block with a small language note before the block and no markdown headline inside the block.
 
-Take control of your location sharing with miataru - the privacy-focused location sharing app that puts you in charge.
+## Description Text
 
-miataru is a powerful location tracking and sharing app designed for people who value privacy and control. Share your location with family, friends, or trusted devices through your own Miataru server, keeping your data secure and under your control.
+Take control of your location sharing with miataru, the privacy-focused location app for people who want their location data to stay under their own control.
+
+miataru lets you share your device location through the Miataru server you choose. Use your own server or a trusted community server, add only the devices you trust, and decide which privacy and tracking features fit your situation.
 
 Privacy First:
-Your location data belongs to you. miataru connects to Miataru servers that you choose, ensuring your location information never goes through third-party services you don't trust. You control who sees your location and when.
+Your location data belongs to you. miataru does not depend on unwanted third-party tracking services. You configure the server, manage your own device identity, and decide who may access your location.
+
+DeviceKey Protection:
+Protect your device with DeviceKey authentication for location updates, visitor history, device info, and access-control settings. miataru includes setup, restore, reset, and recovery flows so you stay in control of your identity.
 
 Smart Location Tracking:
-• Background and foreground location sharing
-• Battery-optimized tracking that respects your device's power
-• High-accuracy updates when you need them, efficient monitoring when you don't
+* Foreground and background location sharing
+* Efficient significant-change background tracking by default
+* Optional frequent background updates for temporary high-detail tracking
+* Configurable update distance, duration, delivery delay, and low-battery auto-disable
+* Offline queueing for location updates when the network is unavailable
 
 Multi-Device Management:
-• Track multiple devices from a single app
-• Organize devices into custom groups for easy management
-• See battery levels, altitude, speed, and distance for each device
+* Track multiple devices from one app
+* Organize devices into custom groups
+* See distance, last update, battery, altitude, speed, and place information when available
+* Add devices with QR codes, deep links, or manual entry
+* Use an Allowed Device List to restrict access where supported by your server
 
-Beautiful Maps & Navigation:
-• Interactive maps with accuracy indicators
-• Real-time device positions with visual feedback
-• Off-screen arrows point to devices outside your current view
-• Built-in navigation with route planning and progress tracking
+Maps and Navigation:
+* Interactive maps with accuracy indicators
+* Off-screen arrows for devices outside the current map view
+* Route planning with ETA, distance, arrival time, and progress
+* Focused navigation mode for following a route
+* Turn-by-turn instruction overlay, haptics, and sound cues
 
-Easy Sharing:
-• Generate QR codes to share your device instantly
-• Scan QR codes to add new devices quickly
-• Share via email, messages, or any app
+Visitor Awareness:
+* View recent devices that requested your location
+* Get optional alerts for unknown visitors
+* Allow or ignore unknown devices directly from the app
 
-Designed for iOS:
-• Native SwiftUI interface optimized for iPhone and iPad
-• iPad multitasking support - open devices in separate windows
+Widgets:
+* Add text or map widgets for selected devices
+* Keep device selection synced with the app
+* Use cached map snapshots and shared app data for quick glanceable updates
 
-Battery Conscious:
-• Intelligent background tracking that minimizes battery drain
-• Automatic animation reduction in Low Power Mode
-• Smart update intervals that balance accuracy and efficiency
-
-Self-Hosted Server Support:
-Connect to your own Miataru server or choose from trusted community servers. Your location data stays where you want it - no cloud services, no data mining, no unwanted tracking.
+Designed for iPhone and iPad:
+* Native SwiftUI interface
+* Dedicated iPad layout with split views and device windows
+* Localized for Danish, Dutch, English, Finnish, French, German, Italian, Japanese, Spanish, and Simplified Chinese
 
 Perfect For:
-• Families wanting to stay connected safely
-• Friends sharing locations during trips
-• People managing multiple devices
-• Anyone who values privacy in location sharing
-• Users who prefer self-hosted solutions
+* Families who want privacy-respecting location sharing
+* Friends coordinating during trips
+* People managing multiple devices
+* Users who prefer self-hosted services
+* Anyone who wants location sharing without giving up control
 
-Privacy & Security:
-miataru is designed with privacy at its core. Your location data is only shared with the Miataru server you configure, and only with devices you explicitly add. No analytics, no tracking, no data collection - just location sharing you control.
-
-Download miataru today and experience location sharing that respects your privacy and puts you in control.
----
+Download miataru and use location sharing on your own terms.
 
 ## Promotional Text (170 characters max)
-Share your location securely with trusted devices. Privacy-focused, battery-optimized, and fully under your control. Connect to your own server or trusted community servers.
 
----
+Private location sharing on your terms. DeviceKey protection, widgets, route navigation, and self-hosted Miataru server support.
 
 ## Keywords (100 characters max)
-location,tracking,privacy,share,family,friends,map,navigation,device,group,QR,secure,self-hosted,offline,battery
 
----
+location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-hosted,server
 
-## What's New (Example for version updates)
-• Enhanced location tracking accuracy
-• Improved battery optimization
-• New route progress visualization
-• Better offline support
-• Bug fixes and performance improvements
+## What's New - Version 3.1.14
 
----
+* More reliable route-progress ghost rendering during navigation
+* Safer navigation auto-updates and stale route response handling
+* Live map speed labels now hide when location samples are stale
+* Fixed configurable widget device selection
+* Improved unknown visitor alert filtering and enrichment
+* Startup cleanup for stale cache and widget snapshot data
 
-## App Store Screenshot Suggestions
+## Screenshot Suggestions
 
-**Screenshot 1:** Main devices list showing multiple devices with battery levels and distances
-**Screenshot 2:** Interactive map view with device markers and accuracy circles
-**Screenshot 3:** QR code sharing interface
-**Screenshot 4:** Group management view
-**Screenshot 5:** Settings showing privacy and customization options
+**Screenshot 1:** Devices list with distance, battery, slogan/place, and recent visitor indicator
 
----
+**Screenshot 2:** Device map with marker, accuracy circle, speed/distance, and off-screen arrow context
 
-## Marketing Assets Notes
+**Screenshot 3:** Navigation view with route, ETA, arrival time, and turn-by-turn overlay
 
-- Emphasize privacy and user control in all visuals
-- Show the clean, modern iOS interface
-- Highlight multi-device and group features
-- Demonstrate QR code sharing workflow
-- Show map views with real-world context
+**Screenshot 4:** QR tab with current-device QR code, DeviceKey action, and visitor history
+
+**Screenshot 5:** Advanced Options showing frequent background tracking and privacy controls
+
+**Screenshot 6:** iPad split view with device or group map
+
+**Screenshot 7:** Widget selection and map/text widget output
+
+## Marketing Notes
+
+- Lead with privacy, control, and user-selected server.
+- Show the real app UI rather than abstract privacy graphics.
+- Emphasize DeviceKey, Allowed Device List, unknown visitor awareness, widgets, and route navigation as current differentiators.
+- Avoid implying a cloud account, analytics service, or centralized tracking backend.

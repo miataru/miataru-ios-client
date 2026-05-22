@@ -1,46 +1,64 @@
 # MiataruAPIClient
 
-Dieses Repository enthält ein Swift Package zur Nutzung der Miataru API sowie eine Beispielapplikation.
+This directory contains the local Swift package for the Miataru API as well as a small sample application.
 
-## Struktur
+## Structure
 
-- `Sources/MiataruAPIClient/` – Das eigentliche Swift Package (Library)
-- `Examples/MiataruTestApp/` – Beispielapplikation und Dockerfile
+- `Sources/MiataruAPIClient/` - Swift Package library
+- `Definitions/Miataru.yaml` - API definition
+- `Examples/MiataruTestApp/` - Sample application and Dockerfile
 
-## Nutzung als Swift Package in Xcode
+## Using as a Swift Package in Xcode
 
-1. Öffne dein Xcode-Projekt.
-2. Wähle im Menü: **File > Add Packages...**
-3. Gib den lokalen Pfad zu diesem Ordner oder das Git-Repository an.
-4. Füge das Produkt **MiataruAPIClient** als Abhängigkeit hinzu.
-5. Importiere das Package in deinem Code:
-   ```swift
-   import MiataruAPIClient
-   ```
+1. Open your Xcode project.
+2. Choose **File > Add Packages...**.
+3. Enter the local path to this folder or the Git repository.
+4. Add the **MiataruAPIClient** product as a dependency.
+5. Import the package:
 
-## Beispielapplikation lokal ausführen
+```swift
+import MiataruAPIClient
+```
+
+## Running the sample application locally
 
 ```bash
 cd Examples/MiataruTestApp
 swift run
 ```
 
-## Beispielapplikation mit Docker ausführen (aus Projekt-Root)
+## Running the sample application with Docker
 
 ```bash
 docker build -f Examples/MiataruTestApp/Dockerfile -t miataru-testapp .
 docker run -it --rm miataru-testapp
 ```
 
-## Hinweise
-- Die Beispielapplikation sendet und liest Testdaten von https://service.miataru.com.
-- Passe ggf. die Device-IDs in `main.swift` an.
-- Die Library kann in eigenen Swift-Projekten verwendet werden.
+## Library behavior
 
-## GetLocation mit DeviceKey des anfragenden Geräts
+- POST requests use a `URLSessionConfiguration.ephemeral` and `reloadIgnoringLocalCacheData` so JSON responses are not stored in a disk cache.
+- The library itself does not perform app-specific retry, outbox, or cache ingest steps.
+- The miataru app uses `MiataruAppAPI`, `MiataruRequestExecutor`, `MiataruRetryPolicy`, and `LocationUpdateDeliveryCoordinator` in the app target for that.
+- Existing `APIError` values are passed through unchanged so request/server errors do not accidentally appear as encoding errors.
 
-Die `getLocation`-Methode unterstützt optional den DeviceKey des anfragenden Geräts.
-Dadurch kann der Server eine Kombination aus `RequestMiataruDeviceID` und `RequestMiataruDeviceKey` validieren.
+## Supported APIs
+
+- `getLocation`
+- `getLocationHistory`
+- `getVisitorHistory`
+- `getVisitorHistoryWithConfig`
+- `updateLocation`
+- `deleteLocation`
+- `setDeviceKey`
+- `setAllowedDeviceList`
+- `getAllowedDeviceList`
+- `setDeviceSlogan`
+- `getDeviceSlogan`
+- `getDeviceSecurityStatus`
+
+## GetLocation with the requesting device's DeviceKey
+
+`getLocation` optionally supports `RequestMiataruDeviceID` and `RequestMiataruDeviceKey`.
 
 ```swift
 let locations = try await MiataruAPIClient.getLocation(
@@ -51,15 +69,14 @@ let locations = try await MiataruAPIClient.getLocation(
 )
 
 if let first = locations.first {
-    print(first.Device)                  // targetDeviceID
-    print(first.DeviceSlogan ?? "(kein Slogan)")
+    print(first.Device)
+    print(first.DeviceSlogan ?? "(no slogan)")
 }
 ```
 
-## GetLocationHistory mit DeviceKey des anfragenden Geräts
+## GetLocationHistory with the requesting device's DeviceKey
 
-Die `getLocationHistory`-Methode unterstützt ebenfalls optional den DeviceKey des anfragenden Geräts.
-Dadurch kann der Server auch bei History-Abfragen die Kombination aus `RequestMiataruDeviceID` und `RequestMiataruDeviceKey` validieren.
+`getLocationHistory` also supports the optional DeviceKey of the requesting device.
 
 ```swift
 let history = try await MiataruAPIClient.getLocationHistory(
@@ -71,9 +88,94 @@ let history = try await MiataruAPIClient.getLocationHistory(
 )
 ```
 
-## Device Slogan API
+## Visitor History
 
-Die Library unterstützt jetzt auch die neuen Endpunkte `setDeviceSlogan` und `getDeviceSlogan`.
+`getVisitorHistory` returns the visitor list directly. `getVisitorHistoryWithConfig` can first read server configuration data and then load the available history amount.
+
+```swift
+let visitors = try await MiataruAPIClient.getVisitorHistory(
+    serverURL: serverURL,
+    forDeviceID: ownDeviceID,
+    deviceKey: ownDeviceKey,
+    amount: 100
+)
+
+let response = try await MiataruAPIClient.getVisitorHistoryWithConfig(
+    serverURL: serverURL,
+    forDeviceID: ownDeviceID,
+    deviceKey: ownDeviceKey,
+    amount: nil
+)
+```
+
+## UpdateLocation and DeleteLocation
+
+```swift
+let payload = UpdateLocationPayload(
+    Device: ownDeviceID,
+    DeviceKey: ownDeviceKey,
+    Timestamp: "\(Int(Date().timeIntervalSince1970 * 1000))",
+    Longitude: 13.4050,
+    Latitude: 52.5200,
+    HorizontalAccuracy: 10,
+    Speed: nil,
+    BatteryLevel: nil,
+    Altitude: nil
+)
+
+let acknowledged = try await MiataruAPIClient.updateLocation(
+    serverURL: serverURL,
+    locationData: payload,
+    enableHistory: true,
+    retentionTime: 1440
+)
+
+let deleted = try await MiataruAPIClient.deleteLocation(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    deviceKey: ownDeviceKey
+)
+```
+
+## DeviceKey API
+
+```swift
+let response = try await MiataruAPIClient.setDeviceKey(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    currentDeviceKey: oldDeviceKey,
+    newDeviceKey: newDeviceKey
+)
+```
+
+## Allowed Device List API
+
+```swift
+let updateResponse = try await MiataruAPIClient.setAllowedDeviceList(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    deviceKey: ownDeviceKey,
+    allowedDevices: [
+        MiataruAllowedDevice(
+            DeviceID: friendDeviceID,
+            hasCurrentLocationAccess: true,
+            hasHistoryAccess: true
+        )
+    ]
+)
+
+let allowedDeviceList = try await MiataruAPIClient.getAllowedDeviceList(
+    serverURL: serverURL,
+    deviceID: ownDeviceID,
+    deviceKey: ownDeviceKey
+)
+
+print(allowedDeviceList.DeviceID)
+print(allowedDeviceList.IsAllowedDeviceListEnabled)
+print(allowedDeviceList.allowedDevices.count)
+```
+
+## Device Slogan API
 
 ```swift
 let setResponse = try await MiataruAPIClient.setDeviceSlogan(
@@ -90,15 +192,12 @@ let slogan = try await MiataruAPIClient.getDeviceSlogan(
     requestingDeviceKey: ownDeviceKey
 )
 
-print(setResponse.MiataruResponse)         // "ACK"
-print(slogan.DeviceID)                     // targetDeviceID
-print(slogan.Slogan ?? "(kein Slogan)")
+print(setResponse.MiataruResponse)
+print(slogan.DeviceID)
+print(slogan.Slogan ?? "(no slogan)")
 ```
 
 ## Device Security Status API
-
-Die Library unterstützt zusätzlich den Endpunkt `getDeviceSecurityStatus`.
-Der Call erfordert die Authentifizierung über `RequestDeviceID` und `RequestDeviceKey`.
 
 ```swift
 let securityStatus = try await MiataruAPIClient.getDeviceSecurityStatus(
@@ -108,24 +207,12 @@ let securityStatus = try await MiataruAPIClient.getDeviceSecurityStatus(
     requestingDeviceKey: ownDeviceKey
 )
 
-print(securityStatus.DeviceID)                  // targetDeviceID
-print(securityStatus.HasDeviceKey)              // true/false
-print(securityStatus.IsAllowedDeviceListEnabled) // true/false
+print(securityStatus.DeviceID)
+print(securityStatus.HasDeviceKey)
+print(securityStatus.IsAllowedDeviceListEnabled)
 ```
 
-## Allowed Device List Read API
+## Notes for the miataru app
 
-Die Library unterstützt außerdem den Endpunkt `getAllowedDeviceList` zum Auslesen der gespeicherten ACL eines Geräts.
-Der Call verwendet Owner-Authentifizierung über `DeviceID` und `DeviceKey`.
-
-```swift
-let allowedDeviceList = try await MiataruAPIClient.getAllowedDeviceList(
-    serverURL: serverURL,
-    deviceID: ownDeviceID,
-    deviceKey: ownDeviceKey
-)
-
-print(allowedDeviceList.DeviceID)                    // ownDeviceID
-print(allowedDeviceList.IsAllowedDeviceListEnabled)  // true/false
-print(allowedDeviceList.allowedDevices.count)        // Anzahl ACL-Einträge
-```
+- App code should prefer `MiataruAppAPI` over calling `MiataruAPIClient` directly so retry, counters, device key error handling, and cache ingest stay consistent.
+- Widget code uses the library more directly because the widget extension should not access app actors and the app outbox store.

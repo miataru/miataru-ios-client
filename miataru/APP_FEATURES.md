@@ -1,190 +1,225 @@
-# miataru App – Feature and Developer Guide
+# miataru App - Feature and Developer Guide
 
-This document lists all features offered by the miataru iOS app. Each item is described twice: once for **users** and once for **developers**. The descriptions also outline how the feature behaves in the interface so the flow from view to view is clear.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.1.14**.
 
 ## App Navigation and Views
+
 **For users:**
-- iPhone launches with **Devices**, **QR**, and **Settings** tabs. Group management is embedded in the Devices flow.
-- iPad launches with **Devices**, **Groups**, **QR**, and **Settings** tabs and uses split navigation for large-screen workflows.
-- Tapping a device or group drills into dedicated map screens, while the QR tab always displays your personal code for quick sharing.
-- On iPad, you can open a device in a new window from the list or map via context menu, or by dragging the item toward the screen edge.
+
+- iPhone uses three tabs: **Devices**, **QR**, and **Settings**. Group management is embedded inside Devices.
+- iPad uses **Devices**, **Groups**, **QR**, and **Settings** tabs with split navigation.
+- Device and group rows open map views; device map screens can start navigation, open history, edit devices, or recenter the map.
+- On iPad, device details can open in separate windows for multitasking.
 
 **For developers:**
-- `iPhone_RootView` constructs the compact-width tab structure (`iPhone_DevicesView`, `iPhone_MyDeviceQRCodeView`, `iPhone_SettingsView`), while iPad uses `iPad_RootView` with a dedicated groups tab.
-- `MiataruRootView` selects platform‑specific root containers so iPad and Mac can embed their own navigation styles.
-- iPad supports opening device detail windows using a value‑based `WindowGroup(for: String)` and context menu/drag interactions.
+
+- `MiataruRootView` selects `iPhone_RootView` for compact width and `iPad_RootView` for regular width.
+- `iPhone_RootView` owns the compact tab layout; `iPad_RootView` owns the iPad tab layout and split-view entry points.
+- `DeviceWindowEntrypoint` supports value-based iPad device windows via `WindowGroup(for: String)`.
+- Mac view files are preview/scaffolding only; the shipping product target is iPhone/iPad.
 
 ## Location Tracking
-**For users:**
-- Enable background and foreground tracking in *Settings* to share your location with a Miataru server.
-- The app sends updates even with the screen locked and records a log of recent updates.
-- Location sharing can store history on the server and works offline until network connectivity resumes.
-- Tracking accuracy, activity type, and sensitivity are configurable in *Settings*, and a "Location Tracking Details" page shows the last GPS and server updates.
 
-- When supported by your device/client, the app also submits altitude (above sea level), speed, and battery level with location updates.
-- Visual effects such as pulsing accuracy circles and shimmering indicators pause automatically in Low Power Mode or while the app is in the background.
+**For users:**
+
+- Location sharing is opt-in and controlled from Settings.
+- Foreground tracking uses high accuracy. Background tracking defaults to energy-conscious significant-change updates.
+- Frequent background updates are optional and expose configurable distance, duration, delivery delay, visitor-history check interval, and low-battery auto-disable.
+- The app reports available altitude, speed, horizontal accuracy, and battery level with location updates.
+- Location Tracking Details shows app version/build, permission state, current location, accuracy, speed, battery, daily API/widget counters, route requests, queued updates, background status, and recent update logs.
+- Users can request location permission again from Location Tracking Details.
 
 **For developers:**
-- `LocationManager` publishes the current location, permission state, server update status, altitude, speed, battery level (when available), and a log of recent updates. It switches between high‑accuracy updates in the foreground and significant‑change monitoring in the background, requests authorization when needed, and uploads data using `MiataruAPIClient`.
-- Low Power Mode and scene phase changes are observed (e.g., `Notification.Name.NSProcessInfoPowerStateDidChange`) to gate animations like shimmer/pulsing without changing data behavior.
-- `iPhone_LocationStatusView` renders `LocationManager` diagnostics, while `SettingsManager` bindings immediately adjust `CLLocationManager` configuration.
+
+- `LocationManager` resolves tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`).
+- Frequent background settings are represented by `FrequentBackgroundLocationDistanceFilter`, `FrequentBackgroundLocationUpdateDuration`, `FrequentBackgroundLocationDeliveryMode`, `FrequentBackgroundVisitorCheckInterval`, and low-battery threshold values in `SettingsManager`.
+- Navigation views register explicit navigation location sessions so active navigation keeps high-quality local updates while lifecycle transitions still apply the correct background policy.
+- Visual effects are gated by Low Power Mode and scene phase through `animationsGate()`.
+
+## Offline Delivery and Retry
+
+**For users:**
+
+- Temporary network failures do not immediately lose location updates. Failed sends are queued locally and retried later.
+- The Location Tracking Details page shows queued update count and can manually flush a larger queue.
+- If the Miataru server URL changes while updates are queued, users choose whether to send queued updates to the new server or discard them.
+
+**For developers:**
+
+- `MiataruAppAPI` wraps the local `MiataruAPIClient` with app-level retry and cache-ingest behavior.
+- `MiataruRetryPolicy` retries reads, writes, and `updateLocation` once with jittered backoff.
+- `LocationUpdateOutboxStore` persists FIFO `updateLocation` payloads in Application Support with dedupe by `Device+Timestamp+Latitude+Longitude`.
+- `LocationUpdateDeliveryCoordinator` drains the outbox on app activation, network recovery, deferred submit, delayed frequent-background release, periodic timer, server URL retargeting, and manual flush.
+- The widget extension intentionally keeps direct client calls without the app retry/outbox layer.
 
 ## Device Management
-**For users:**
-- Maintain a list of devices, each with a name, ID, and optional color.
-- Add devices by scanning a Miataru QR code or entering the ID manually.
-- Swipe a row to delete, edit, or start navigation, pull down to refresh locations, and the last opened device is reopened automatically on launch.
 
-- Device rows show last update time, distance, and—when available—battery level and altitude. Units adapt to your locale (metric/imperial).
-- Pull‑to‑refresh also triggers reverse geocoding for visible devices to keep place names fresh.
+**For users:**
+
+- Maintain a list of devices with name, ID, and optional color.
+- Add devices by scanning Miataru QR codes, opening `miataru://<DEVICE_ID>` links, or entering an ID manually.
+- Device rows can show last update, distance, battery, altitude, speed, approximate place, slogan, and recent-visitor indicators.
+- Pull-to-refresh updates visible device data and keeps existing cache values visible through transient network failures.
+- Deleting a device also updates access-control and cache/widget state where relevant.
 
 **For developers:**
-- `KnownDeviceStore` persists devices in `Application Support` and ensures the current device is always present.
-- `iPhone_DevicesView` (stack layout) and `iPad_DevicesView` (split layout) both support refresh hooks, deep-link re-selection, Unknown Visitors allow/ignore flows, and allowlist-aware delete synchronization.
-- `iPhone_AddDeviceView` integrates `CodeScanner` to scan `miataru://` QR codes, offers a color picker, and prevents duplicate IDs.
-- `DeviceRowView` (shared) replaces `iPhone_DeviceRowView`, displays battery/altitude/speed when available, and uses `MeasurementFormatter` with the system `measurementSystem` for localized units.
-- `DeviceNameLabel` and static parts of markers are rasterized and cached to improve scrolling/rendering performance.
+
+- `KnownDeviceStore` persists devices under Application Support and keeps the current device available.
+- Device-list refreshes use consolidated cache snapshots instead of per-row partial updates.
+- `DeviceLocationCacheStore` timestamp-ordering prevents older app, history, widget, or background responses from overwriting newer data.
+- `DeviceSloganCacheStore` handles slogan fetch/cache/cleanup; `MiataruAppAPI` sanitizes slogan draft/save input.
+- `PersistentDataCleanup` prunes orphaned unknown-device locations, slogans, and widget snapshots.
+
+## DeviceKey, Access Control, and Unknown Visitors
+
+**For users:**
+
+- DeviceKey can be created, restored, reset, and recovered from onboarding, the current-device screen, and Settings.
+- DeviceKey-protected flows cover location updates, visitor history, device slogans, security status, and allowed-device-list operations when the server enforces them.
+- Allowed Device List can restrict which devices are allowed to access this device.
+- Unknown visitors can be allowed, ignored, or surfaced through optional local notifications.
+- Unknown visitor notifications start from activation time and are filtered so own, known, allowed, and ignored devices do not create alerts.
+
+**For developers:**
+
+- `DeviceKeyAuthHandler` coordinates runtime auth-block handling and recovery/reset notifications.
+- `AllowedDeviceListManager` performs access-control sync through `MiataruAppAPI`.
+- `UnknownVisitorFilter` normalizes the shared unknown visitor filtering logic for iPhone and iPad lists.
+- `UnknownVisitorAlertService` evaluates visitor history incrementally, applies 24-hour per-device cooldown, coalesces in-flight processing, and batches supplemental `GetLocation` enrichment for true unknown candidates.
 
 ## Group Management
+
 **For users:**
-- Create named groups, add or remove devices, reorder groups, and view devices by group. Empty states guide first‑time use, and swiping a group row reveals delete or edit actions.
-- iPhone keeps group access integrated in the Devices flow, while iPad intentionally keeps a dedicated Groups tab with split navigation.
-- Group detail lists show each device’s last update, distance, and battery status where available. On iPad, the group detail sheet shows a proper Cancel/Save toolbar.
+
+- Create named groups, assign devices, reorder groups, and view group maps.
+- iPhone keeps group access inside the Devices flow.
+- iPad keeps a dedicated Groups tab with split navigation.
 
 **For developers:**
-- `DeviceGroup` and `DeviceGroupStore` provide persistence for sets of device IDs.
-- iPhone group editing uses `iPhone_GroupDetailView` + `GroupEditSheetContainer`; iPad uses `iPad_GroupsView` + `iPad_GroupDetailView` in split/detail presentation.
-- Group maps (`iPhone_GroupMapView` / `iPad_GroupMapView`) share core behavior (markers, off-screen arrows, navigation/history actions), while keeping platform-tailored navigation chrome.
+
+- `DeviceGroup` and `DeviceGroupStore` persist group membership.
+- iPhone group editing uses `iPhone_GroupDetailView` and `GroupEditSheetContainer`.
+- iPad group editing uses `iPad_GroupsView` and `iPad_GroupDetailView`.
+- Group maps share marker, off-screen-arrow, navigation, and history behavior with device maps.
 
 ## Map Views and Navigation
-**For users:**
-- View device positions with accuracy circles, relative time, and distance.
-- Off‑screen arrows point toward devices outside the current map region.
-- Optional route navigation shows travel time and progress.
-- Pull down to refresh a device’s position, tap arrows to recenter or open another device, and network errors are indicated by an overlay and icon.
 
-- Off‑screen arrows can display segmented lengths (1 segment per 50 km, up to 10) and are grouped by map edge for clarity. Their visibility is controlled by a global setting.
-- When enabled, other known devices that would be visible at the current zoom level are shown on a device’s map for better context.
-- Navigation includes a scale bar and custom compass; auto‑centering pauses while you interact and resumes automatically once idle.
-- Route progress can be visualized using completed vs. remaining segments with a moving ghost marker (shown after at least 5% estimated progress in standard device-to-user navigation).
-- In focused double-tap navigation mode, ghost/progress segmentation is intentionally disabled; the app renders the stable base route (and optional mutual-navigation overlay) and periodically re-establishes that overlay locally without extra route API requests.
-- Routes are recalculated when transport mode changes or after significant movement; route requests are rate‑limited daily, and the reload action can force a fresh calculation ignoring caches.
-- Start navigation by long‑pressing a device pin on the map or swiping right on a device row. Your own device never offers navigation. Apple Maps handoff uses proper destination names.
-- When you switch navigation to route from your device toward a selected device, a top overlay displays turn‑by‑turn instructions.
+**For users:**
+
+- Maps show device markers, accuracy circles, relative time, distance, and optional speed labels.
+- Live speed labels disappear when the backing location sample is older than five minutes.
+- Off-screen arrows point toward devices outside the current region.
+- Navigation can show route, ETA, distance, arrival time, route progress, turn-by-turn instructions, haptics, and sound cues.
+- Standard `device -> user` navigation can show completed/remaining route segments plus a moving ghost marker.
+- Focused double-tap navigation keeps a stable base route and intentionally disables ghost/progress segmentation.
 
 **For developers:**
-- `iPhone_DeviceMapView` draws markers, off‑screen arrows, error overlays, network‑error icons, and handles map camera logic, timers, and edit/navigation sheets. Auto‑centering gating is unified across views.
-- `iPhone_DeviceNavigationView` uses `MKRoute`, `RouteCacheStore`, and `SettingsManager.navigationTransportType` to render routes and progress; it recalculates on transport changes or movement thresholds and enforces a daily route‑request limit.
-- `NavigationOverlayKit` is used in `iPhone_DeviceNavigationView` to show live turn‑by‑turn instructions when routing from the current device toward the target device.
-- `RouteGhostCalculator` estimates progress along the route using the active traveler's timestamp and speed: selected-device data in standard `device -> user` navigation and local-user data in reverse `user -> device` navigation. The navigation view stores that result as a `RouteGhostSnapshot` and uses a progress render revision so SwiftUI `Map` reliably redraws completed/remaining polylines and the ghost marker.
-- Route-progress visibility is based on the current route seed time and progress threshold, not solely on cached sample timestamps, so valid cached routes can still show live progress. Focused navigation remains excluded from ghost/progress segmentation.
-- `MapScaleBar` is backed by `MapScaleBarViewModel` for cached updates; `MapCompass` is shared.
-- `OffscreenDeviceEdgeHelper` groups arrow indicators by edge and scales coordinates; segments represent ~50 km and are capped at 10.
-- `MiataruMapMarker` and label components use rasterized caching keyed by color/icon/height/colorScheme/scale and respect Dynamic Type and color scheme.
 
-## QR Code Sharing
+- Shared map components live in `views/Common/Map`.
+- `RouteCacheStore` caches routes by device, transport, and direction with endpoint and off-route validation.
+- `NavigationRouteRefreshPolicy` centralizes reroute decisions.
+- `RouteGhostCalculator` uses direction-specific timestamp/speed sources and polyline geometry for route-progress splitting.
+- `RouteGhostPresentationPolicy` keeps cached-route ghost visibility based on the current route seed time.
+- `iPhone_DeviceNavigationView` serializes auto-update work and ignores stale `MKDirections` responses after newer route work starts.
+- `NavigationOverlayKit` provides turn-by-turn instruction UI for current-device-to-target routing.
+
+## QR Code Sharing and Visitor History
+
 **For users:**
-- Display your own device ID as a QR code, copy it, or share via link or email.
-- Add other devices by scanning their Miataru QR code.
-- The QR tab offers one‑tap sharing, shows visitor history directly below your code, and the add‑device sheet guides scanning and rejects non‑Miataru codes.
 
-- The share sheet includes additional options, and email sharing attaches the QR image reliably.
+- The QR tab displays this device's QR code, share actions, DeviceKey access, and visitor history.
+- Visitor history refreshes when the current-device tab opens and also during foreground auto-refresh cycles.
+- Unknown devices from visitor history can be added or ignored.
 
 **For developers:**
-- `iPhone_MyDeviceQRCodeView` renders customizable QR codes using the `QRCode` package and supports `ShareLink` and `MFMailComposeViewController`.
-- `VisitorHistoryViewModel` and `VisitorHistorySection` power inline visitor history within the QR tab, while `iPhone_VisitorHistoryView` reuses the same data loader.
-- Visitor auto-refresh on iPad Devices and QR-based visitor surfaces uses periodic foreground tasks keyed to `outsideMapUpdateInterval`; refresh throttling only updates `lastRefresh` after successful loads to avoid stale lockout after transient errors.
-- `iPhone_AddDeviceView` validates the `miataru://` prefix from scanned codes before accepting an ID and allows manual entry with color selection.
+
+- `iPhone_MyDeviceQRCodeView` renders QR codes using `QRCode` and supports `ShareLink` / mail sharing.
+- `VisitorHistoryViewModel` and shared visitor sections power both the QR tab and the standalone visitor history view.
+- Visitor-history loads ingest recent visitor state into `DeviceLocationCacheStore` when the request is for the current device.
+
+## Widgets
+
+**For users:**
+
+- miataru includes text and map widgets for selected devices.
+- Widgets can be configured per device and keep every known device selectable, even before a cached widget location exists.
+- Widget maps use cached light/dark snapshots and update from shared app data or configured live fetches.
+
+**For developers:**
+
+- `miataruWidgets` contains `DeviceLocationTextWidget`, `DeviceLocationMapWidget`, AppIntent configuration, shared config/data models, and widget-side snapshot generation.
+- The app writes `WidgetSharedPayload` and `SharedWidgetConfig` through the `group.com.miataru.ios` App Group.
+- `WidgetDataSyncCoordinator` preserves newer widget-written locations during app sync and imports newer widget locations into the app cache on startup/foreground activation.
+- Widget map snapshots are stored under the App Group `Library/Caches/WidgetSnapshots` directory.
 
 ## Onboarding Flow
+
 **For users:**
-- A six‑step wizard guides through welcome, permissions, server URL, history settings, personal QR code display, and completion.
-- Each step shows illustrations and contextual explanations; server selection validates custom HTTPS URLs, and completion flag controls whether the wizard reappears on next launch.
+
+- Full onboarding always includes welcome, permission, server, QR, and completion pages.
+- When tracking is enabled, additional pages appear for location history, unknown visitor alerts, DeviceKey, and allowed-device-list setup.
+- Existing users with tracking enabled can see a shorter post-update flow focused on DeviceKey setup.
 
 **For developers:**
-- Platform‑specific containers (`iPhone_OnboardingContainerView`, `iPad_OnboardingContainerView`, `Mac_OnboardingContainerView`) embed the individual onboarding pages and update `SettingsManager` and `UserDefaults.hasCompletedOnboarding` as the user progresses.
+
+- `OnboardingContainerView` selects iPhone or iPad onboarding by size class.
+- `iPhone_OnboardingContainerView` composes optional pages based on `SettingsManager.shared.trackAndReportLocation`.
+- Successful DeviceKey setup sheets close automatically in onboarding after the success state is visible.
 
 ## Settings and Configuration
-**For users:**
-- Control tracking, data retention, server URL, device autolock, accuracy indicators, map type, zoom level, update interval, group zoom‑to‑fit, off‑screen arrows, auto‑refresh, reverse geocoding threshold, navigation mode, and route progress.
-- View location tracking details or replay the onboarding wizard directly from the tracking details page.
-- Settings are grouped into tracking, app behavior, map configuration, and navigation sections for easier discovery.
 
-- All app preferences are also available in the system Settings app.
-- New options include: navigation route auto‑update, route progress visualization toggle, a global pulsing/shimmer switch for map markers, and off‑screen arrow visibility.
-- Bicycle transport mode was removed; existing values fall back to walking for directions and car icons where applicable.
+**For users:**
+
+- Root settings cover tracking/history, unknown visitor alerts, DeviceKey, frequent background toggle, allowed-device-list entry, app behavior, map type/zoom, navigation transport, server URL, Advanced Options, and Location Tracking Details.
+- Advanced Options include tracking accuracy/sensitivity, frequent background details, marker effects, accuracy indicators, off-screen arrows, device-list refresh, speed labels, outbox policy, map update intervals, reverse geocoding threshold, route auto-update, and route progress.
+- System Settings also exposes the same registered defaults through `Settings.bundle`.
 
 **For developers:**
-- `SettingsManager` stores all preferences in `UserDefaults` and triggers side effects such as permission checks and auto‑refresh.
-- `iPhone_SettingsView` binds directly to these properties and navigates to `iPhone_LocationStatusView` (now a page) or re-runs the onboarding flow via `AppState`.
-- Defaults are registered from `Settings.bundle`, enabling control from the system Settings app. The manager observes low‑power state and scene phase for UI effect gating.
-- Reverse geocoding threshold is user‑configurable (off/100 m/1 km/10 km; default 1 km) and applied centrally.
 
-## Location Status & Error Handling
-**For users:**
-- A dedicated status view shows permission state, last GPS and server updates, background activity, and a log of recent events.
-- If a network or permission error occurs, an overlay explains the problem.
-- Map screens additionally display a network-error icon when the server cannot be reached.
-
-- The status view lists speed and battery (when available) and tracks route‑request statistics over the last 24 hours.
-- The status view now also hosts the prominent action to reopen onboarding, keeping tracking diagnostics and recovery/help actions together.
-
-**For developers:**
-- `LocationManager` posts `didSendOwnLocationUpdate` notifications; `ErrorOverlayManager` and `ErrorOverlay` provide reusable alert UIs, and map views toggle a network icon via `showNetworkErrorIcon` flags.
-- Status is presented as a dedicated page; related counters (e.g., daily route requests) are maintained in settings/state for diagnostics.
+- `SettingsManager` is the single source for runtime preferences and side effects.
+- `SettingsConfiguration` centralizes defaults, normalization, and one-time existing-install migrations.
+- Settings parity is regression-tested against `Settings.bundle/Root.plist` and localized `Root.strings` files.
 
 ## Caching and Reverse Geocoding
+
 **For users:**
-- Device list rows display last seen time, distance, and approximate place name without requiring a network connection every time.
-- Cached data is also used by device and group maps so known positions remain visible offline until refreshed.
+
+- Device lists and maps remain useful when temporarily offline because recent locations, places, slogans, and widget data are cached.
+- Reverse geocoding updates are centralized and respect a configurable movement threshold.
 
 **For developers:**
-- `DeviceLocationCacheStore` caches coordinates, manages a centralized reverse‑geocoding queue with a configurable distance threshold, and stores results in `Application Support`. Views consult the cache first before hitting the network and throttle UI updates to the configured map update interval.
-- Own‑device updates trigger immediate cache writes to kick off reverse geocoding promptly. A `RouteCacheStore` caches routes by device and transport, with distance‑based invalidation.
-- Static map elements such as `MiataruMapMarker` and `DeviceNameLabel` are rasterized and cached with keys that include color scheme and display scale; renderers respect Dynamic Type and set `isOpaque=false` where appropriate.
 
-## Haptic Feedback and UI Enhancements
-**For users:**
-- Actions like successful refresh trigger subtle haptic feedback, pulsing accuracy circles show location precision, and shimmering indicators highlight loading states.
-
-- Animations for pulsing/shimmer are automatically reduced in Low Power Mode or when the app is backgrounded to save energy.
-
-**For developers:**
-- The `Haptic` utility abstracts platform differences. Shared UI elements such as `MiataruMapMarker`, `PulsingAccuracyCircle`, `Shimmer`, `MapCompass`, and `MapScaleBar` reside under `views/Common` and are reused across device and group map views.
-
-## Multi‑platform Support
-**For users:**
-- The interface adapts to iPhone, iPad, and Mac, with platform‑specific root views and onboarding flows. iPhone uses a compact tab flow (groups inside Devices), iPad presents split views with a dedicated Groups tab, and Mac currently mirrors the iPhone experience in a resizable window.
-
-- On iPad, you can open device details in separate windows for multitasking.
-
-**For developers:**
-- `MiataruRootView` selects the appropriate root view using size classes and platform checks. Dedicated onboarding containers exist for each platform, and many components in `views/Common` are platform agnostic.
-
-## Platform Drift Decisions (Audit 2026-03-04)
-**For users:**
-- Device deletion with allowlist enabled now behaves consistently on iPhone and iPad.
-- Device history on iPad now validates availability before opening the history map and shows in-map feedback if no data exists.
-- Unknown Visitors are available in the iPad devices flow, matching the iPhone allow/ignore workflow.
-- Visitor sections on iPad now auto-refresh in the foreground with the same retry behavior as iPhone.
-- Group placement remains intentionally different: iPhone keeps groups in the Devices flow, iPad keeps a dedicated Groups tab.
-
-**For developers:**
-- Unified behavior: allowlist delete sync, history preload guard before navigation, and test-critical accessibility identifiers (`devices_add_button`, `devices_row_this_device`, `device_map_overview`) now align across iPhone/iPad.
-- Visitor refresh parity: periodic foreground refresh and successful-load throttling are now aligned across iPad/iPhone visitor flows.
-- Intentional difference: iPhone compact navigation integrates groups, while iPad keeps split-view group navigation as a product decision.
-- Decision matrix and evidence are documented in `documentation/audits/ipad-iphone-audit-2026-03-04.md`.
+- `DeviceLocationCacheStore` manages latest locations, reverse-geocode queueing, timestamp ordering, history promotion, recent visitors, and cache pruning.
+- `DeviceSloganCacheStore` caches server-provided slogans and prunes stale unknown-device entries.
+- `RouteCacheStore` keeps route reuse independent from location/slogan caches.
 
 ## Localization and Accessibility
-**For users:**
-- Available in English, German, and Japanese, with dynamic type and accessibility labels and hints applied to buttons, tab items, and swipe actions.
 
-- VoiceOver support has been improved across lists and map controls. Alerts and route‑limit messages are localized.
-- Sensitive DeviceKey values are hidden by default and can be revealed temporarily with a dedicated show/hide control.
+**For users:**
+
+- The app is localized in Danish, German, English, Spanish, Finnish, French, Italian, Japanese, Dutch, and Simplified Chinese.
+- Dynamic Type, accessibility labels/hints, VoiceOver traits, localized alerts, and localized route/status copy are maintained across the main flows.
+- Sensitive DeviceKey values are hidden by default and can be revealed temporarily.
 
 **For developers:**
-- Localizations reside in `en.lproj`, `de.lproj`, and `ja.lproj`. Most text uses `NSLocalizedString` and SwiftUI accessibility modifiers to provide labels, hints, and traits.
-- Units adapt using the system `measurementSystem`. New strings (e.g., daily route‑limit reached) are provided in the string catalog for all supported languages.
 
----
-This document serves as a comprehensive reference for both users and developers of the miataru application.
+- App strings live primarily in `Assets/Localizable.xcstrings`; system Settings strings live under `Settings.bundle/*.lproj/Root.strings`.
+- `InfoPlist.strings` exists for all supported app locales.
+- Tests check localization key completeness for settings and unknown visitor alert flows.
+
+## Testing and Documentation
+
+**For users:**
+
+- The app has dedicated regression coverage for core behavior, UI flows, and App Store screenshot capture states.
+
+**For developers:**
+
+- Active targets are `miataruTests`, `miataruUITests`, and `miataruScreenshotUITests`.
+- Shared schemes are `miataru-FunctionalUI` and `miataru-Screenshots`.
+- Use `scripts/test-unit.sh`, `scripts/test-functional-ui-serial.sh`, `scripts/test-ui.sh`, `scripts/test-screenshots.sh`, or `scripts/test-all.sh`.
+- Keep `documentation/test-katalog.md` and `documentation/test-gap-matrix.md` synchronized whenever tests change.
+
+## Historical Platform Drift Decision
+
+The 2026-03-04 iPad/iPhone audit aligned important behavior across form factors while keeping one intentional product difference: iPhone groups remain integrated in Devices, while iPad keeps a dedicated Groups tab. The dated audit remains in `miataru/documentation/audits/ipad-iphone-audit-2026-03-04.md`.

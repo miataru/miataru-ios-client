@@ -1,4 +1,5 @@
 version 3.1.14
+- Updated the living project documentation, documentation index/audit, App Store copy source, local API-client README, and third-party license summary to match the current 3.1.14 project state.
 - Stabilized navigation route-progress ghost rendering by storing explicit ghost snapshots, forcing map progress redraws through a render revision, and giving user/device/ghost annotations stable internal identities.
 - Serialized navigation auto-update work so overlapping target-location fetches and stale `MKDirections` responses can no longer overwrite newer route or ghost state after screen, device, or direction changes.
 - Clarified route-ghost direction handling so standard `device -> user` progress uses device speed/timestamp, reverse `user -> device` progress uses user speed/timestamp, and cached routes use fresh route seed time for ghost visibility.

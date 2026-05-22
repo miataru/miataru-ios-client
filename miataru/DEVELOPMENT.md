@@ -1,221 +1,225 @@
 # Development Guide - miataru iOS App
 
-## Quick Start for Developers
+## Quick Start
 
 ### Prerequisites
-- Xcode 16.0+ (iOS 18.0+ deployment target)
-- iOS 18.0+ device or simulator
-- Swift 5+
-- macOS 14.0+ (for development)
+
+- Xcode 16+
+- iOS 18.6 device or simulator
+- macOS 14+ development host
+- Swift language version 5.0 in project settings
 
 ### Setup
-1. Clone the repository
-2. Open `miataru/miataru.xcodeproj` in Xcode
-3. Select your development team in project settings
-4. Build and run on target device/simulator
 
-## Project Structure Deep Dive
+1. Clone the repository.
+2. Open `miataru/miataru.xcodeproj` in Xcode.
+3. Select a development team if signing needs to be changed locally.
+4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-### Core Architecture
-```
+The current main app metadata is version **3.1.14**. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+
+## Project Structure
+
+```text
 miataru/
-├── miataruApp.swift          # App entry, global state, onboarding & deep links
-├── views/                    # UI components
-│   ├── Common/               # Shared UI elements
-│   ├── iPhone/               # Root, devices, groups, settings, QR
-│   ├── iPad/                 # Root, devices, groups, settings
-│   └── Mac/                  # Onboarding previews (no Mac target)
-├── LocationManagers/         # Location handling (fg/bg, significant-change)
-├── SettingsManagers/         # User preferences & data stores
-│   ├── App Settings/         # SettingsManager, Settings.bundle
-│   ├── Devices/              # KnownDevice, KnownDeviceStore
-│   └── Groups/               # DeviceGroup, DeviceGroupStore
-└── Assets/                   # Resources & localization (xcstrings, icons)
+├── miataruApp.swift                 # App entry, lifecycle, deep links, test launch state
+├── views/
+│   ├── Common/                      # Shared UI, map components, route helpers
+│   ├── iPhone/                      # iPhone tabs and flows
+│   ├── iPad/                        # iPad tabs, split views, device windows
+│   └── Mac/                         # Preview/scaffolding only
+├── LocationManagers/                # Tracking, refresh, route cache
+├── Networking/                      # API wrappers, retry, outbox
+├── Notifications/                   # Unknown visitor and frequent-background notifications
+├── SettingsManagers/                # Settings, stores, caches, widget sync, cleanup
+├── Assets/                          # String catalogs, sounds, icons, onboarding assets
+├── miataruWidgets/                  # WidgetKit extension
+├── miataruTests/                    # Unit tests
+├── miataruUITests/                  # Functional UI tests
+└── miataruScreenshotUITests/        # Screenshot UI tests
 ```
 
-### Common Components Overview
+## Core Components
 
-- Shared UI (`views/Common/`):
-  - `ErrorOverlay` (transient errors), `ViewModifiers` (`adaptiveToolbarBackground`, `adaptiveNavigationBackground`)
-  - `DeviceRowView`, `GroupRowView`, `DeviceNameLabel` (label caching), `DeviceBatterySymbol`
-  - Map helpers (`views/Common/Map/`): `MiataruMapMarker`, `PulsingAccuracyCircle`, `MapScaleBar` + `MapScaleBarViewModel`, `MapCompass`, `OffScreenDeviceArrow`, `OffscreenDeviceEdgeHelper`, `RouteGhostCalculator`, `RouteStyle`, `Shimmer`
-- Stores & caches:
-  - `KnownDeviceStore`, `DeviceGroupStore` (secure archiving to Application Support)
-  - `DeviceLocationCacheStore` (last locations + reverse geocode queue)
-  - `RouteCacheStore` (cached `MKRoute` by device & transport; distance-based validity)
-- Utilities:
-  - `thisDeviceIDManager` (device ID generation + legacy migration)
-  - `Haptic` (success/warning/error feedback)
+### App Bootstrap
 
-### Key Dependencies
-- **CodeScanner**: QR code scanning functionality
-- **MiataruAPIClient** (via local `Libraries/MiataruClientSwift`): Miataru protocol client
-- **QRCode**: QR code generation
-- **SwiftImageReadWrite**: Image handling utilities
+- `miataruApp` applies UI-test launch configuration, settings migration, settings default registration, widget import/sync, persistent cleanup, app lifecycle tracking, deep links, and device detail windows.
+- `AppState` controls full and post-update onboarding.
+- `AppDelegate` manages notification presentation and routes frequent-background notification taps to Advanced Options.
+- Rotation lock is controlled by `RotationLockController` and the `prevent_screen_rotation` setting.
+
+### Settings
+
+- `SettingsManager` owns runtime preferences and side effects.
+- `SettingsConfiguration` / `SettingsDefaultValues` centralize defaults, normalization, and one-time existing-install migrations.
+- Defaults are registered from `Settings.bundle/Root.plist`.
+- Settings parity with `Settings.bundle` and localization catalogs is covered by unit tests.
+
+### Location Tracking
+
+- `LocationManager` resolves tracking mode centrally:
+  - stopped
+  - foreground high accuracy
+  - background significant-change monitoring
+  - frequent background updates
+- Frequent background mode includes distance, duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
+- Navigation views call `beginNavigationLocationSession()` / `endNavigationLocationSession(_:)` so focused navigation gets immediate local location updates without bypassing lifecycle background policy.
+- `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity-filtered.
+
+### API and Retry
+
+- `MiataruAPIClient` is the local Swift package that encodes/decodes Miataru API requests.
+- `MiataruAppAPI` is the app-facing wrapper. Use it for app target calls so retry behavior, DeviceKey handling, counters, and cache ingestion remain centralized.
+- `MiataruRetryPolicy` retries reads, writes, and `updateLocation` once with short jittered backoff.
+- Retryable failures: transient `URLError` values, HTTP `408`, `429`, and `5xx`.
+- Non-retryable failures: invalid URL, encoding/decoding errors, auth/ACL failures, and other functional `4xx`.
+
+### Location Update Outbox
+
+- `LocationUpdateDeliveryCoordinator` serializes `updateLocation` delivery.
+- `LocationUpdateOutboxStore` persists queued payloads in Application Support.
+- Defaults: max 500 items, TTL 24 hours.
+- User-configurable policy: 24h, 7d, 30d, unlimited; max 500, 1000, 2500, 5000, 10000.
+- Dedupe key: `Device+Timestamp+Latitude+Longitude`.
+- Queued payloads preserve original event timestamp and metadata.
+- Flush triggers: app activation, network recovery, submit behind pending queue, periodic timer, delayed frequent-background release, manual flush, and server URL retargeting.
+- If server URL changes while items are pending, Settings asks whether to retarget pending items or discard them.
+
+### Caches and Cleanup
+
+- `DeviceLocationCacheStore` owns latest device locations, reverse geocoding, history promotion, recent visitors, and timestamp-ordering.
+- `DeviceSloganCacheStore` owns slogan cache/freshness and cleanup.
+- `WidgetDataSyncCoordinator` writes App Group payload/config and imports newer widget-written locations into the app cache.
+- `PersistentDataCleanup` removes stale unknown-device location/slogan cache entries and stale widget snapshots.
+
+### Widgets
+
+- Widget target sources live in `miataruWidgets/`.
+- Text and map widgets use `AppIntentConfiguration` with `DeviceSelectionIntent`.
+- Shared App Group: `group.com.miataru.ios`.
+- Main app writes `WidgetSharedPayload` and `SharedWidgetConfig`.
+- Widget selections are separate from cached location entries so devices remain selectable before first widget location data exists.
+- Map snapshots are stored under `Library/Caches/WidgetSnapshots` in the App Group container.
+- Widget extension calls the API client directly and intentionally does not use the app retry/outbox actor.
+
+### Unknown Visitor Alerts
+
+- `UnknownVisitorAlertService` is an actor that processes current-device visitor history after successful location delivery.
+- It starts at enable time, filters own/known/ignored devices, applies a 24-hour per-device cooldown, and coalesces in-flight runs.
+- Supplemental notification details are best-effort and only fetched for true unknown candidates.
+- `UnknownVisitorFilter` keeps unknown visitor list filtering shared between iPhone and iPad.
+
+### Navigation
+
+- `NavigationRouteRefreshPolicy` centralizes route refresh decisions.
+- `RouteCacheStore` caches `MKRoute` values by device, transport, and direction with endpoint/off-route validation.
+- `RouteGhostCalculator` computes progress and route splits using polyline geometry.
+- `RouteGhostPresentationPolicy` controls ghost visibility with fresh route seed time.
+- Focused double-tap navigation intentionally suppresses route-progress ghost/segmentation and periodically re-establishes the base overlay without extra `MKDirections` calls.
+- `NavigationOverlayKit` renders turn-by-turn instruction UI when routing from current device to target device.
+
+## Testing
+
+### Scripts
+
+```bash
+cd miataru
+./scripts/test-unit.sh
+./scripts/test-ui.sh
+./scripts/test-functional-ui-serial.sh
+./scripts/test-screenshots.sh --list
+./scripts/test-screenshots.sh --test root-qr --device "iPhone 16 Pro Max" --languages en
+./scripts/test-all.sh
+```
+
+### Schemes and Plans
+
+- `miataru-FunctionalUI` uses `FunctionalSerial.xctestplan` for unit + functional UI tests.
+- `miataru-Screenshots` uses `Screenshots.xctestplan` for explicit screenshot captures.
+- Screenshot output goes to `miataru/artifacts/screenshots/<version-build-tag>/`.
+
+### Test Documentation Rule
+
+Whenever tests are added, removed, renamed, moved, or materially changed:
+
+1. Update `documentation/test-katalog.md`.
+2. Update `documentation/test-gap-matrix.md`.
+3. Keep counters, coverage notes, and prioritized gaps consistent.
 
 ## Development Workflow
 
-### Code Organization
-- **Views**: Keep UI logic minimal, delegate to managers
-- **Managers**: Handle business logic and data persistence
-- **Models**: Use SwiftUI's built-in data binding
-- **Assets**: Organize by platform and feature
+- Keep UI logic thin and move business behavior into managers, actors, stores, and helpers.
+- Use `SettingsManager` for user preferences and side effects.
+- Use `MiataruAppAPI` for app API calls.
+- Use cache/store APIs instead of ad hoc file or `UserDefaults` access.
+- Add localization strings for every supported locale.
+- Preserve iPhone/iPad product differences intentionally; do not assume both roots should be identical.
+- Update living docs when behavior changes.
 
-### Testing Strategy
-- Unit tests for managers and business logic
-- UI tests for critical user flows
-- Test on multiple device types (iPhone, iPad)
-- Verify location permission flows
+## Debugging
 
-### Debugging Tips
-- Use Xcode's location simulation for testing
-- Monitor battery usage during development
-- Test background/foreground transitions
-- Verify privacy compliance
- - Test deep links: `miataru://<DEVICE_ID>` (Simulator: `xcrun simctl openurl booted miataru://ABCDEF...`)
+- Deep link test:
 
-### Navigation Route Refresh Behavior
-- Auto-refresh route decisions are centralized in `views/Common/NavigationRouteRefreshPolicy.swift`.
-- Hard refresh triggers: auto-update enabled + missing route, or user off-route.
-- Standard navigation mode (`isRouteFromDeviceToUser == true`): target movement only triggers reroute when target moved significantly **and** is off the current route.
-- In standard navigation mode, bottom accessory ETA/arrival values are continuously updated from elapsed time since the route seed timestamp, so the displayed route time does not appear frozen between route recalculations.
-- Reverse navigation mode keeps movement-trigger behavior compatible with prior logic after the significant-movement check.
-- Route reuse still goes through `RouteCacheStore` (`useCachedRouteIfValid`) before issuing new `MKDirections` requests.
-- Focused double-tap navigation mode (`isNavigationMode == true`) intentionally renders a stable base route (plus optional mutual-navigation overlay) without ghost/progress segmentation.
-- Focused mode periodically re-establishes the already-available route polyline on the map (~6s cadence) to prevent transient disappearing overlays; this is a render refresh and does **not** trigger additional `MKDirections` API calls.
+```bash
+xcrun simctl openurl booted miataru://ABCDEF
+```
 
-### Route Progress Ghost Rendering
-- `iPhone_DeviceNavigationView` stores route progress in an explicit `RouteGhostSnapshot` state instead of deriving the ghost only inside the SwiftUI `Map` builder.
-- Snapshot updates are driven by the one-second navigation clock plus relevant route inputs (route, coordinates, timestamps, speed, direction, and `showRouteProgress`).
-- Meaningful ghost movement increments `routeProgressRenderRevision`; the map content includes that revision in its render key so `MapPolyline`, `MapCircle`, and the ghost annotation are rebuilt when progress advances.
-- User, target-device, and ghost markers are wrapped in stable internal annotation identities to avoid SwiftUI `Map` reusing empty-label annotations across different marker types.
-- Ghost marker visibility is controlled by `RouteGhostPresentationPolicy`: standard mode can show it after the minimum-progress threshold, reverse mode keeps it hidden, and cached routes use `routeSummarySeedDate` rather than stale server sample timestamps.
-- `RouteGhostCalculator` uses polyline geometry length for progress splitting and names the direction flag `isRouteFromDeviceToUser`; standard mode uses device speed/timestamp, reverse mode uses user speed/timestamp.
-- Automatic navigation updates are serialized: one auto-update tick and one target-device fetch at a time, route calculations are generation-guarded, and stale `MKDirections` responses are ignored after newer work starts or the view disappears.
-- See `documentation/navigation-ghost-update-stabilization-2026-05-22.md` for the reasoning, implications, and focused validation command.
-
-### Widget Intent String Extraction
-- `DeviceSelectionIntent.parameterSummary` uses key-path summary syntax (`Summary { \.$device }`) to avoid generating a fragile interpolated key (`"Show ${device}"`) that can become stale in `miataruWidgets/Localizable.xcstrings`.
-
-## Common Development Tasks
-
-### Adding New Features
-1. Create view in appropriate platform folder
-2. Add manager if business logic is needed
-3. Update settings if user preferences are involved
-4. Add localization strings
-5. Test on all target platforms
-
-### Location Permission Handling
-- Always check authorization status before requesting
-- Provide clear user feedback
-- Handle denied permissions gracefully
-- Respect user's privacy choices
-
-### Settings Management
-- Use `SettingsManager` for all user preferences
-- Observe changes and update UI accordingly
-- Provide sensible defaults
-- Validate user input
- - Register defaults from `Settings.bundle/Root.plist` via `SettingsManager.registerDefaultsFromSettingsBundle()`
-
-## Performance Considerations
-
-### Battery Optimization
-- Minimize background location updates
-- Use appropriate accuracy levels
-- Implement proper app lifecycle handling
-- Monitor battery usage in development
-
-### Memory Management
-- Avoid retain cycles in closures
-- Use weak references where appropriate
-- Clean up observers and timers
-- Monitor memory usage in Instruments
-
-## Privacy & Security
-
-### Data Handling
-- Never store sensitive location data unencrypted
-- Implement proper data retention policies
-- Provide user control over data sharing
-- Follow GDPR and privacy best practices
-
-### Permission Management
-- Request only necessary permissions
-- Explain why permissions are needed
-- Provide clear opt-out options
-- Handle permission changes gracefully
+- Use Xcode location simulation to test tracking and navigation.
+- Use Console.app and Xcode logs for location permission and background-mode issues.
+- Watch Location Tracking Details for daily API counters, route requests, queued updates, and server status.
+- For server URL changes with pending outbox items, verify the confirmation dialog and retarget/discard behavior.
+- For screenshot issues, inspect `miataru/artifacts/xcresult/`.
 
 ## Troubleshooting
 
-### Common Issues
-- **Location not updating**: Check permission status and settings
-- **QR code not scanning**: Verify camera permissions
-- **Settings not persisting**: Check UserDefaults implementation
-- **Background location issues**: Verify background modes in Info.plist
-- **"Error while encoding the location update" shown unexpectedly**:
-  - This message is considered a technical/debug signal and should not be surfaced as a prominent user-facing overlay.
-  - Verify `MiataruAPIClient.performPostRequest<T: Encodable>` rethrows existing `APIError` values unchanged, so transient request failures are not mislabeled as encoding issues.
-  - For map/history fetch UI, log encoding failures via `debugLog` and avoid large red error overlays unless a user-actionable issue exists.
+### Location not updating
 
-### Network Retry Policy (Implemented)
-- Miataru API retries are centralized in app code:
-  - `miataru/Networking/MiataruRetryPolicy.swift`
-  - `miataru/Networking/MiataruRequestExecutor.swift`
-  - `miataru/Networking/MiataruAppAPI.swift`
-- Retryable failures:
-  - transient `URLError` (`timedOut`, `networkConnectionLost`, `notConnectedToInternet`, `cannotConnectToHost`, `cannotFindHost`, `dnsLookupFailed`)
-  - HTTP `408`, `429`, and `5xx`
-- Non-retryable failures:
-  - `invalidURL`, `encodingError`, `decodingError`
-  - auth/ACL failures (`401`, `403`) and other functional `4xx`
-- Profiles:
-  - Reads: `1` retry, `0.8s` backoff, `±25%` jitter
-  - Writes: `1` retry, `1.0s` backoff, `±25%` jitter
-  - `updateLocation`: `1` retry, `1.2s` backoff, `±25%` jitter, then persistent outbox
-- `updateLocation` outbox:
-  - persisted in App Support (`locationUpdateOutbox.json`)
-  - FIFO, default cap `500`, default TTL `24h`, user-configurable up to higher caps and unlimited TTL, dedupe by `Device+Timestamp+Latitude+Longitude`
-  - while pending items exist, new `updateLocation` submissions are appended to the outbox instead of being sent ahead of older updates
-  - queued items keep the original `UpdateLocationPayload`, including the event timestamp from the location update; retry sends must not rewrite metadata to the later send time
-  - user controls live in Advanced Options > App behavior and are persisted via `location_update_outbox_retention_mode` and `location_update_outbox_max_items`
-  - Settings > location status shows the current pending outbox count as "Queued location updates"
-  - when more than one queued update is pending, Settings > location status offers a manual flush button that drains all currently deliverable batches until the queue is empty or the head hits a retryable error
-  - when the Miataru server URL changes while items are pending, Settings asks whether queued updates should be sent to the new server URL or discarded
-  - choosing the new server URL retargets every pending queue item before flushing; if an older in-flight send completes afterward, it must not remove the retargeted queue record
-  - flush triggers: app active, network recovery, deferred drain after appending behind pending items, continuation after full batches, manual full flush, and periodic timer (`60s`) while pending items exist
-- Widget extension intentionally keeps direct client calls without retries.
+- Confirm `track_and_report_location` is enabled.
+- Confirm iOS permission state in Location Tracking Details.
+- Use "Request Location Permission Again" if the user selected a limited permission path.
+- Check DeviceKey auth banner if writes are blocked by server authentication.
 
-### Debug Commands
-- Enable location simulation in Xcode
-- Use Console app for system logs
-- Monitor network requests in Network tab
-- Check device logs for permission issues
+### Background updates not frequent enough
 
-## Contributing Guidelines
+- Standard background mode uses significant-change monitoring by design.
+- Enable frequent background updates only when the higher battery cost is acceptable.
+- Check expiration duration, low-battery threshold, and whether the app returned to standard background mode.
 
-### Code Style
-- Follow Swift style guide
-- Use meaningful variable names
-- Add comments for complex logic
-- Keep functions focused and small
+### Queued location updates remain pending
 
-### Git Workflow
-- Create feature branches for new work
-- Write descriptive commit messages
-- Test before pushing
-- Update documentation as needed
+- Check network availability.
+- Check server URL validity.
+- Use the manual flush button if more than one update is queued.
+- Retryable head errors intentionally stop a flush cycle to preserve FIFO ordering.
+
+### Unexpected "encoding" errors
+
+- `MiataruAPIClient.performPostRequest<T: Encodable>` should rethrow existing `APIError` values unchanged.
+- Encoding failures are technical diagnostics and should not be shown as large user-facing map/history overlays unless actionable.
+
+### Widget displays the wrong device
+
+- Verify `DeviceSelectionIntent` uses the selected AppIntent entity ID.
+- Verify `WidgetSharedPayload.deviceSelections` includes all known devices.
+- Verify app/widget payloads are written into the same App Group container.
+- Check that stale root-level map snapshots were cleaned up and current snapshots are in `Library/Caches/WidgetSnapshots`.
+
+## Dependencies
+
+- `CodeScanner`: QR scanning
+- `QRCode` and `swift-qrcode-generator`: QR generation
+- `MiataruAPIClient`: Miataru protocol client
+- `SwiftImageReadWrite`: image utilities
+- `NavigationOverlayKit`: turn-by-turn navigation overlay
+
+Third-party license details are tracked in `../3rd party licenses.md`.
 
 ## Resources
 
-### Documentation
-- [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
-- [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines)
-- [Location Services Programming Guide](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/LocationAwarenessPG/)
-
-### Tools
-- Xcode Instruments for performance profiling
-- Simulator for testing different devices
-- TestFlight for beta distribution
-- App Store Connect for release management
+- `README.md`: project-level overview
+- `miataru/PROJECT_OVERVIEW.md`: architecture overview
+- `miataru/APP_FEATURES.md`: user/developer feature guide
+- `documentation/README.md`: documentation map and audit scope
+- `documentation/test-katalog.md`: active test catalog
+- `documentation/test-gap-matrix.md`: prioritized test gaps
+- `documentation/screenshot-test-workflow.md`: screenshot capture workflow
