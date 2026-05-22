@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-03-14)
+# Test Catalog (as of 2026-05-22)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **107** (Unit: 92, UI: 15 incl. 10 screenshot captures)
+- Actively linked app test cases: **215** (Unit: 199, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -48,9 +48,13 @@ Important project observations:
 | UT-NRP-008 | No refresh if target did not move beyond threshold | No refresh without relevant movement | Very high threshold, small movement -> false | NavigationRouteRefreshPolicy | Unit | Threshold 1000m | Medium |
 | UT-NRP-009 | No refresh when target coordinates are missing and user is on route | Missing-data behavior | currentDeviceCoordinate=nil, user on route -> false | NavigationRouteRefreshPolicy | Unit | nil + lastRouteCoordinate | Medium |
 | UT-NRP-010 | hasTargetMovedSignificantly returns false for missing coordinates | Helper robustness | Missing current/last -> false | NavigationRouteRefreshPolicy | Unit | Nil parameters | Medium |
-| UT-RGC-001 | Ghost progresses with primary speed and timestamp (non-reversed: user primary) | Ghost progress standard mode | user speed/timestamp as primary source, progress in (0,1] | RouteGhostCalculator | Unit | FakeRoute (MKRoute shim), fixed time | High |
+| UT-RGC-001 | Ghost progresses with device speed and timestamp in standard direction | Ghost progress standard mode | `device -> user` uses device speed/timestamp and progresses from the device coordinate | RouteGhostCalculator | Unit | FakeRoute (MKRoute shim), fixed time | High |
 | UT-RGC-002 | Ghost uses expectedTravelTime fallback when speeds are below threshold | Validate fallback path | Low speeds -> expectedTravelTime used | RouteGhostCalculator | Unit | FakeRoute, near-threshold speeds | High |
-| UT-RGC-003 | Ghost bases from device when reversed route | Direction-dependent source | isRouteReversed=true -> device is base | RouteGhostCalculator | Unit | FakeRoute, fixed time | High |
+| UT-RGC-003 | Ghost progresses with user speed and timestamp in reverse direction | Direction-dependent source | `user -> device` uses user speed/timestamp and progresses from the user coordinate | RouteGhostCalculator | Unit | FakeRoute, fixed time | High |
+| UT-RGC-004 | Ghost progresses monotonically between timer ticks | Timer-driven progress stability | Same server position, speed, and timestamp produce increasing progress across repeated `now` ticks | RouteGhostCalculator | Unit | FakeRoute, fixed time offsets | High |
+| UT-RGC-005 | Ghost uses polyline length when reported route distance is larger | Geometry-distance fallback | Reported route distance larger than polyline length still returns a valid destination ghost | RouteGhostCalculator | Unit | FakeRoute, MKPolyline geometry | High |
+| UT-RGC-006 | Ghost uses polyline length when reported route distance is smaller | Geometry-distance fallback | Reported route distance smaller than polyline length still returns a valid destination ghost | RouteGhostCalculator | Unit | FakeRoute, MKPolyline geometry | High |
+| UT-RGC-007 | Presentation policy uses fresh route start instead of stale sample timestamps | Cached-route visibility | Fresh `routeSummarySeedDate` keeps ghost presentation eligible despite old server sample timestamps | RouteGhostPresentationPolicy | Unit | Fixed route start/time | High |
 | UT-RCS-001 | Set and get cached route by key | Cache baseline behavior | set/get by key returns route | RouteCacheStore | Unit | `RouteCacheStore.shared`, FakeRoute | High |
 | UT-RCS-002 | isValid returns true when both endpoints moved less than threshold and on-route | Normal validity behavior | Small endpoint movement + on-route -> true | RouteCacheStore | Unit | Threshold + offRouteThreshold | High |
 | UT-RCS-003 | isValid returns false when either endpoint moved beyond threshold | Invalidate on large movement | Endpoint moved far -> false | RouteCacheStore | Unit | Movement delta > 100m | High |

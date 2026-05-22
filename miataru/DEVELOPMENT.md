@@ -84,6 +84,16 @@ miataru/
 - Focused double-tap navigation mode (`isNavigationMode == true`) intentionally renders a stable base route (plus optional mutual-navigation overlay) without ghost/progress segmentation.
 - Focused mode periodically re-establishes the already-available route polyline on the map (~6s cadence) to prevent transient disappearing overlays; this is a render refresh and does **not** trigger additional `MKDirections` API calls.
 
+### Route Progress Ghost Rendering
+- `iPhone_DeviceNavigationView` stores route progress in an explicit `RouteGhostSnapshot` state instead of deriving the ghost only inside the SwiftUI `Map` builder.
+- Snapshot updates are driven by the one-second navigation clock plus relevant route inputs (route, coordinates, timestamps, speed, direction, and `showRouteProgress`).
+- Meaningful ghost movement increments `routeProgressRenderRevision`; the map content includes that revision in its render key so `MapPolyline`, `MapCircle`, and the ghost annotation are rebuilt when progress advances.
+- User, target-device, and ghost markers are wrapped in stable internal annotation identities to avoid SwiftUI `Map` reusing empty-label annotations across different marker types.
+- Ghost marker visibility is controlled by `RouteGhostPresentationPolicy`: standard mode can show it after the minimum-progress threshold, reverse mode keeps it hidden, and cached routes use `routeSummarySeedDate` rather than stale server sample timestamps.
+- `RouteGhostCalculator` uses polyline geometry length for progress splitting and names the direction flag `isRouteFromDeviceToUser`; standard mode uses device speed/timestamp, reverse mode uses user speed/timestamp.
+- Automatic navigation updates are serialized: one auto-update tick and one target-device fetch at a time, route calculations are generation-guarded, and stale `MKDirections` responses are ignored after newer work starts or the view disappears.
+- See `documentation/navigation-ghost-update-stabilization-2026-05-22.md` for the reasoning, implications, and focused validation command.
+
 ### Widget Intent String Extraction
 - `DeviceSelectionIntent.parameterSummary` uses key-path summary syntax (`Summary { \.$device }`) to avoid generating a fragile interpolated key (`"Show ${device}"`) that can become stale in `miataruWidgets/Localizable.xcstrings`.
 

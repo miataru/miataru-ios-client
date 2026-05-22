@@ -1,4 +1,10 @@
 version 3.1.14
+- Stabilized navigation route-progress ghost rendering by storing explicit ghost snapshots, forcing map progress redraws through a render revision, and giving user/device/ghost annotations stable internal identities.
+- Serialized navigation auto-update work so overlapping target-location fetches and stale `MKDirections` responses can no longer overwrite newer route or ghost state after screen, device, or direction changes.
+- Clarified route-ghost direction handling so standard `device -> user` progress uses device speed/timestamp, reverse `user -> device` progress uses user speed/timestamp, and cached routes use fresh route seed time for ghost visibility.
+- Hardened route-ghost distance handling by using polyline geometry length when splitting completed/remaining route progress, avoiding failures from small `MKRoute.distance` versus polyline discrepancies.
+- Added route-ghost regression coverage for monotonic tick progress, direction-specific speed/timestamp use, cached-route visibility, and route-distance/polyline-length mismatches.
+- Documented the route-ghost update logic, reasoning, concurrency implications, and focused validation workflow.
 - Hid live map-marker speed labels once the marker location is older than five minutes, while keeping device history speed details time-independent.
 - Added regression coverage for live marker speed freshness, the five-minute boundary, future timestamps, and unchanged history speed formatting.
 - Fixed configurable widgets so selecting a different device now drives the rendered text and map content through the selected device ID instead of falling back to a previously cached widget device.

@@ -66,7 +66,7 @@ This document lists all features offered by the miataru iOS app. Each item is de
 - Off‑screen arrows can display segmented lengths (1 segment per 50 km, up to 10) and are grouped by map edge for clarity. Their visibility is controlled by a global setting.
 - When enabled, other known devices that would be visible at the current zoom level are shown on a device’s map for better context.
 - Navigation includes a scale bar and custom compass; auto‑centering pauses while you interact and resumes automatically once idle.
-- Route progress can be visualized using completed vs. remaining segments with a moving ghost marker (shown after at least 5% estimated progress).
+- Route progress can be visualized using completed vs. remaining segments with a moving ghost marker (shown after at least 5% estimated progress in standard device-to-user navigation).
 - In focused double-tap navigation mode, ghost/progress segmentation is intentionally disabled; the app renders the stable base route (and optional mutual-navigation overlay) and periodically re-establishes that overlay locally without extra route API requests.
 - Routes are recalculated when transport mode changes or after significant movement; route requests are rate‑limited daily, and the reload action can force a fresh calculation ignoring caches.
 - Start navigation by long‑pressing a device pin on the map or swiping right on a device row. Your own device never offers navigation. Apple Maps handoff uses proper destination names.
@@ -76,7 +76,8 @@ This document lists all features offered by the miataru iOS app. Each item is de
 - `iPhone_DeviceMapView` draws markers, off‑screen arrows, error overlays, network‑error icons, and handles map camera logic, timers, and edit/navigation sheets. Auto‑centering gating is unified across views.
 - `iPhone_DeviceNavigationView` uses `MKRoute`, `RouteCacheStore`, and `SettingsManager.navigationTransportType` to render routes and progress; it recalculates on transport changes or movement thresholds and enforces a daily route‑request limit.
 - `NavigationOverlayKit` is used in `iPhone_DeviceNavigationView` to show live turn‑by‑turn instructions when routing from the current device toward the target device.
-- `RouteGhostCalculator` estimates remote progress along the route using last update timestamps and current/estimated speed; progress overlay rendering splits polylines into completed/remaining segments.
+- `RouteGhostCalculator` estimates progress along the route using the active traveler's timestamp and speed: selected-device data in standard `device -> user` navigation and local-user data in reverse `user -> device` navigation. The navigation view stores that result as a `RouteGhostSnapshot` and uses a progress render revision so SwiftUI `Map` reliably redraws completed/remaining polylines and the ghost marker.
+- Route-progress visibility is based on the current route seed time and progress threshold, not solely on cached sample timestamps, so valid cached routes can still show live progress. Focused navigation remains excluded from ghost/progress segmentation.
 - `MapScaleBar` is backed by `MapScaleBarViewModel` for cached updates; `MapCompass` is shared.
 - `OffscreenDeviceEdgeHelper` groups arrow indicators by edge and scales coordinates; segments represent ~50 km and are capped at 10.
 - `MiataruMapMarker` and label components use rasterized caching keyed by color/icon/height/colorScheme/scale and respect Dynamic Type and color scheme.

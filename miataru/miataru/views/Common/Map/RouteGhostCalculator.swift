@@ -32,7 +32,7 @@ struct RouteGhostCalculator {
     ///   - userTimestamp: The last known timestamp of the local device location.
     ///   - knownUserSpeed: Optional local device speed in meters per second.
     ///   - now: Reference time (defaults to Date()).
-    ///   - isRouteReversed: false = reversed route (user → device). true = non-reversed route (device → user).
+    ///   - isRouteFromDeviceToUser: true = standard route (device → user). false = reversed route (user → device).
     /// - Returns: (donePolyline, todoPolyline, ghostCoordinate, progress [0,1]) or nil if cannot compute.
     static func ghost(
         for route: MKRoute,
@@ -43,10 +43,10 @@ struct RouteGhostCalculator {
         userTimestamp: Date?,
         knownUserSpeed: Double?,
         now: Date = Date(),
-        isRouteReversed: Bool = false
+        isRouteFromDeviceToUser: Bool = true
     ) -> (MKPolyline, MKPolyline, CLLocationCoordinate2D, Double)? {
-        guard route.distance > 0 else { return nil }
-        let totalDistance = route.distance
+        let totalDistance = route.polyline.geometryDistance
+        guard totalDistance > 0 else { return nil }
         
         // Only use speeds above the threshold to filter out GPS noise from stationary devices
         let deviceSpeed = usableSpeed(knownDeviceSpeed)
@@ -54,9 +54,9 @@ struct RouteGhostCalculator {
         
         // Use the speed/timestamp of the active traveler (device or user) to keep progress
         // aligned to route direction.
-        let primarySpeed = isRouteReversed ? deviceSpeed : userSpeed
-        let primaryTimestamp = isRouteReversed ? deviceTimestamp : userTimestamp
-        let secondaryTimestamp = isRouteReversed ? userTimestamp : deviceTimestamp
+        let primarySpeed = isRouteFromDeviceToUser ? deviceSpeed : userSpeed
+        let primaryTimestamp = isRouteFromDeviceToUser ? deviceTimestamp : userTimestamp
+        let secondaryTimestamp = isRouteFromDeviceToUser ? userTimestamp : deviceTimestamp
         
         let fallbackElapsed: TimeInterval
         if let primaryTimestamp {
@@ -71,8 +71,7 @@ struct RouteGhostCalculator {
         // last known position on the route. This ensures projected progress starts from
         // the current device/user location instead of always from the route origin.
         let baseCoordinate: CLLocationCoordinate2D? = {
-            // Non-reversed (device → user): base is device. Reversed (user → device): base is user.
-            if isRouteReversed {
+            if isRouteFromDeviceToUser {
                 return deviceCoordinate
             } else {
                 return userCoordinate
@@ -122,5 +121,33 @@ struct RouteGhostCalculator {
     private static func usableSpeed(_ speed: Double?) -> Double? {
         guard let speed, speed.isFinite else { return nil }
         return speed >= speedThreshold ? speed : nil
+    }
+}
+
+enum RouteGhostPresentationPolicy {
+    static func shouldShowGhost(
+        isRouteFromDeviceToUser: Bool,
+        progress: Double,
+        minimumProgress: Double,
+        routeStartDate: Date?,
+        expectedTravelTime: TimeInterval,
+        now: Date
+    ) -> Bool {
+        guard isRouteFromDeviceToUser else { return false }
+        guard progress > minimumProgress, progress < 1 else { return false }
+        guard expectedTravelTime > 0, let routeStartDate else { return true }
+        return now.timeIntervalSince(routeStartDate) < expectedTravelTime
+    }
+}
+
+private extension MKPolyline {
+    var geometryDistance: CLLocationDistance {
+        guard pointCount > 1 else { return 0 }
+        let points = points()
+        var distance: CLLocationDistance = 0
+        for index in 0..<(pointCount - 1) {
+            distance += points[index].distance(to: points[index + 1])
+        }
+        return distance
     }
 }

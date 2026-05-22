@@ -17,6 +17,42 @@ import AudioToolbox
 import MiataruAPIClient
 import NavigationOverlayKit
 
+private struct NavigationMapAnnotation: Identifiable {
+    let id: String
+    let coordinate: CLLocationCoordinate2D
+}
+
+private struct RouteRenderKey: Hashable {
+    let routeRevision: UInt64
+    let progressRevision: UInt64
+}
+
+private struct RouteGhostSnapshot {
+    let donePolyline: MKPolyline
+    let todoPolyline: MKPolyline
+    let coordinate: CLLocationCoordinate2D
+    let progress: Double
+    let showsGhost: Bool
+
+    func isMeaningfullyDifferent(from other: RouteGhostSnapshot) -> Bool {
+        if showsGhost != other.showsGhost { return true }
+        if abs(progress - other.progress) >= 0.00001 { return true }
+        let current = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let next = CLLocation(latitude: other.coordinate.latitude, longitude: other.coordinate.longitude)
+        return current.distance(from: next) >= 0.5
+    }
+}
+
+private struct TargetLocationFetchRequest {
+    var resetAndRecenter: Bool
+    var ignoreRouteCache: Bool
+
+    mutating func merge(resetAndRecenter: Bool, ignoreRouteCache: Bool) {
+        self.resetAndRecenter = self.resetAndRecenter || resetAndRecenter
+        self.ignoreRouteCache = self.ignoreRouteCache || ignoreRouteCache
+    }
+}
+
 struct iPhone_DeviceNavigationView: View {
     var device: KnownDevice
 
@@ -38,6 +74,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var routeDisplayPolyline: MKPolyline?
     @State private var mutualRouteOverlayPolyline: MKPolyline?
     @State private var routeOverlayRenderRevision: UInt64 = 0
+    @State private var routeProgressRenderRevision: UInt64 = 0
+    @State private var routeGhostSnapshot: RouteGhostSnapshot?
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var travelTime: String?
     @State private var distanceText: String?
@@ -90,6 +128,12 @@ struct iPhone_DeviceNavigationView: View {
     @State private var navigationOverlayCancellables = Set<AnyCancellable>()
     @State private var pendingRouteRetryOnReconnect: Bool = false
     @State private var routeRetryTask: Task<Void, Never>? = nil
+    @State private var routeCalculationTask: Task<Void, Never>? = nil
+    @State private var routeCalculationGeneration: UInt64 = 0
+    @State private var autoUpdateTask: Task<Void, Never>? = nil
+    @State private var isFetchingTargetDeviceLocation: Bool = false
+    @State private var pendingTargetLocationFetchRequest: TargetLocationFetchRequest? = nil
+    @State private var targetLocationFetchGeneration: UInt64 = 0
     private let maxRouteRetryAttempts: Int = 3
     // Legacy fields removed in favor of RouteRequestCounter
     // Fit configuration: reduce padding around both markers when auto-centering
@@ -206,7 +250,15 @@ struct iPhone_DeviceNavigationView: View {
         .toolbar(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .toolbarBackgroundVisibility(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .id(device.DeviceID)
-            .onChange(of: device.DeviceID) {
+        .onChange(of: device.DeviceID) {
+            routeCalculationGeneration &+= 1
+            routeCalculationTask?.cancel()
+            routeCalculationTask = nil
+            autoUpdateTask?.cancel()
+            autoUpdateTask = nil
+            targetLocationFetchGeneration &+= 1
+            pendingTargetLocationFetchRequest = nil
+            isFetchingTargetDeviceLocation = false
             // Reset all device-related state when a new device is injected
             // We intentionally do NOT clear the route cache here; it is keyed by device id
             userCoordinate = nil
@@ -254,20 +306,28 @@ struct iPhone_DeviceNavigationView: View {
     private var baseMapView: some View {
         Map(position: $mapPosition, scope: mapScope) {
             if let coord = animatedUserCoordinate {
-                Annotation("", coordinate: coord, anchor: .bottom) {
-                    userMarkerContent
+                ForEach([NavigationMapAnnotation(id: "user-\(thisDeviceIDManager.shared.deviceID)", coordinate: coord)]) { annotation in
+                    Annotation("", coordinate: annotation.coordinate, anchor: .bottom) {
+                        userMarkerContent
+                    }
                 }
             }
             if let coord = animatedDeviceCoordinate {
-                Annotation("", coordinate: coord, anchor: .bottom) {
-                    deviceMarkerContent
+                ForEach([NavigationMapAnnotation(id: "device-\(device.DeviceID)", coordinate: coord)]) { annotation in
+                    Annotation("", coordinate: annotation.coordinate, anchor: .bottom) {
+                        deviceMarkerContent
+                    }
                 }
             }
             if let route = route {
                 let baseRoutePolyline = routeDisplayPolyline ?? route.polyline
+                let routeRenderKey = RouteRenderKey(
+                    routeRevision: routeOverlayRenderRevision,
+                    progressRevision: routeProgressRenderRevision
+                )
                 // Directly reference isMutualNavigation to ensure Map content observes the state change
                 // This allows the overlay polyline to be added/removed without reloading the entire map
-                ForEach([routeOverlayRenderRevision], id: \.self) { _ in
+                ForEach([routeRenderKey], id: \.self) { _ in
                     if shouldUseFocusedNavigationRouteRendering {
                         MapPolyline(baseRoutePolyline)
                             .stroke(RouteStyle.withoutRemaining, lineWidth: 4)
@@ -276,33 +336,15 @@ struct iPhone_DeviceNavigationView: View {
                                 .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                         }
                     } else if settings.showRouteProgress {
-                        let knownSpeed = DeviceLocationCacheStore.shared.getLocation(for: device.DeviceID)?.speed
-                        let userSpeed = effectiveUserLocation?.speed
-                        // ETA has passed when time since the route's start (timestamp used when route was calculated) is >= route ETA; then do not draw ghost. Require expectedTravelTime > 0 so short routes still show the ghost.
-                        let routeStartTimestamp = isRouteFromDeviceToUser ? lastRouteDeviceTimestamp : lastRouteUserTimestamp
-                        let etaHasPassed: Bool = {
-                            guard route.expectedTravelTime > 0, let start = routeStartTimestamp else { return false }
-                            return now.timeIntervalSince(start) >= route.expectedTravelTime
-                        }()
-                        if let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
-                            for: route,
-                            deviceCoordinate: deviceCoordinate,
-                            userCoordinate: userCoordinate,
-                            deviceTimestamp: deviceTimestamp,
-                            knownDeviceSpeed: knownSpeed,
-                            userTimestamp: userTimestamp,
-                            knownUserSpeed: userSpeed,
-                            now: now,
-                            isRouteReversed: isRouteFromDeviceToUser
-                        ) {
-                            if progress <= minimumProgressToShowGhost {
+                        if let ghostSnapshot = routeGhostSnapshot {
+                            if ghostSnapshot.progress <= minimumProgressToShowGhost {
                                 MapPolyline(baseRoutePolyline)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)
                                 if isMutualNavigation, let mutualRouteOverlayPolyline {
                                     MapPolyline(mutualRouteOverlayPolyline)
                                         .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                                 }
-                            } else if progress >= 1 {
+                            } else if ghostSnapshot.progress >= 1 {
                                 MapPolyline(baseRoutePolyline)
                                     .stroke(RouteStyle.completed, lineWidth: 4)
                                 if isMutualNavigation, let mutualRouteOverlayPolyline {
@@ -310,32 +352,33 @@ struct iPhone_DeviceNavigationView: View {
                                         .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                                 }
                             } else {
-                                MapPolyline(done)
+                                MapPolyline(ghostSnapshot.donePolyline)
                                     .stroke(RouteStyle.completed, lineWidth: 4)
-                                MapPolyline(todo)
+                                MapPolyline(ghostSnapshot.todoPolyline)
                                     .stroke(RouteStyle.remaining, lineWidth: 4)
                                 if isMutualNavigation {
-                                    MapPolyline(done)
+                                    MapPolyline(ghostSnapshot.donePolyline)
                                         .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
-                                    MapPolyline(todo)
+                                    MapPolyline(ghostSnapshot.todoPolyline)
                                         .stroke(RouteStyle.mutualNavigation, lineWidth: 2.5)
                                 }
-                                // Ghost is shown when: route is non-reversed (device→user), progress is in (0.05, 1), and ETA has not passed.
-                                if isRouteFromDeviceToUser, !etaHasPassed {
-                                    MapCircle(center: ghost, radius: 50)
+                                if ghostSnapshot.showsGhost {
+                                    MapCircle(center: ghostSnapshot.coordinate, radius: 50)
                                         .foregroundStyle(RouteStyle.completed.opacity(0.5))
-                                    Annotation("", coordinate: ghost) {
-                                        VStack(spacing: 2) {
-                                            Image(systemName: transportSymbolName())
-                                                .font(.system(size: 16))
-                                                .foregroundColor(Color.primary.opacity(0.9))
-                                                .shadow(radius: 4)
-                                            DeviceNameLabel(
-                                                deviceName: device.DeviceName,
-                                                deviceID: device.DeviceID,
-                                                font: .caption2,
-                                                opacity: 0.8
-                                            )
+                                    ForEach([NavigationMapAnnotation(id: "ghost-\(device.DeviceID)", coordinate: ghostSnapshot.coordinate)]) { annotation in
+                                        Annotation("", coordinate: annotation.coordinate) {
+                                            VStack(spacing: 2) {
+                                                Image(systemName: transportSymbolName())
+                                                    .font(.system(size: 16))
+                                                    .foregroundColor(Color.primary.opacity(0.9))
+                                                    .shadow(radius: 4)
+                                                DeviceNameLabel(
+                                                    deviceName: device.DeviceName,
+                                                    deviceID: device.DeviceID,
+                                                    font: .caption2,
+                                                    opacity: 0.8
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -407,6 +450,7 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 hasAppliedInitialFetchRouteSync = false
                 updateCoordinates(recenter: true)
+                updateRouteGhostSnapshot(forceRevision: true)
                 // Record initial distance after coordinates are set
                 recordInitialDistance()
                 if !useCachedRouteIfValid() { // prefer cached route on appear
@@ -422,6 +466,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
+                updateRouteGhostSnapshot()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
                 updateLiveNavigationRouteSummary()
@@ -429,6 +474,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onReceive(locationManager.$latestRawLocation) { _ in
                 updateCoordinates()
+                updateRouteGhostSnapshot()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
                 updateLiveNavigationRouteSummary()
@@ -436,6 +482,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onReceive(cache.$locations) { _ in
                 updateCoordinates()
+                updateRouteGhostSnapshot()
                 checkAutoStopCondition()
                 updateNavigationOverlayStep()
                 updateLiveNavigationRouteSummary()
@@ -443,6 +490,7 @@ struct iPhone_DeviceNavigationView: View {
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
                 now = input
+                updateRouteGhostSnapshot()
                 updateLiveNavigationRouteSummary()
                 refreshFocusedNavigationRouteOverlayIfNeeded(currentTime: input)
             }
@@ -455,8 +503,14 @@ struct iPhone_DeviceNavigationView: View {
                 navigationFeedbackGate.isViewActive = false
                 navigationOverlayCancellables.removeAll()
                 stopAutoUpdate()
+                routeCalculationGeneration &+= 1
+                routeCalculationTask?.cancel()
+                routeCalculationTask = nil
+                targetLocationFetchGeneration &+= 1
                 routeRetryTask?.cancel()
                 routeRetryTask = nil
+                pendingTargetLocationFetchRequest = nil
+                isFetchingTargetDeviceLocation = false
                 routeInfoState.isChromeVisible = true
                 // Hide accessory and remove cancel handler when leaving
                 routeInfoState.hide()
@@ -471,6 +525,13 @@ struct iPhone_DeviceNavigationView: View {
             .onChange(of: settings.automaticRouteUpdateDuringNavigation) { _, newValue in
                 // Keep UI and behavior in sync with the global setting
                 isAutoRouteUpdateLocked = newValue
+            }
+            .onChange(of: settings.showRouteProgress) { _, newValue in
+                if newValue {
+                    updateRouteGhostSnapshot(forceRevision: true)
+                } else {
+                    clearRouteGhostSnapshot(forceRevision: true)
+                }
             }
             .onChange(of: locationManager.isNetworkAvailable) { _, isAvailable in
                 guard isAvailable, pendingRouteRetryOnReconnect else { return }
@@ -495,6 +556,7 @@ struct iPhone_DeviceNavigationView: View {
                 navigationOverlayViewModel = nil
                 navigationOverlayCancellables.removeAll()
                 lastOverlayStepIndex = nil
+                clearRouteGhostSnapshot(forceRevision: true)
                 isFollowDeviceHeadingMode = false
                 endNavigationLocationSessionIfNeeded()
                 isNavigationMode = false
@@ -921,33 +983,59 @@ struct iPhone_DeviceNavigationView: View {
         }
         request.transportType = transportTypeFromSetting(settings.navigationTransportType)
         let hadRouteBeforeRecalculation = route != nil
-        Task {
+        routeCalculationGeneration &+= 1
+        let calculationGeneration = routeCalculationGeneration
+        routeCalculationTask?.cancel()
+        routeCalculationTask = Task {
             do {
                 let response = try await MKDirections(request: request).calculate()
-                if let first = response.routes.first {
-                    setRouteForRendering(first)
-                    routeSummarySeedDate = Date()
-                    applyStaticRouteSummary(for: first)
-                    // Refresh overlay with new route - this ensures overlay matches the route direction
-                    refreshNavigationOverlayForCurrentRoute()
-                    // Remember inputs used for this route calculation
-                    lastRouteUserCoordinate = user
-                    lastRouteDeviceCoordinate = device
-                    lastRouteUserTimestamp = userTimestamp
-                    lastRouteDeviceTimestamp = deviceTimestamp
-                    lastRouteTransportType = settings.navigationTransportType
-                    // Store in cache for reuse
-                    routeCache.set(
-                        for: self.device.DeviceID,
-                        transportType: settings.navigationTransportType,
-                        isRouteReversed: isRouteFromDeviceToUser,
-                        route: first,
-                        userCoordinate: user,
-                        deviceCoordinate: device,
-                        userTimestamp: userTimestamp,
-                        deviceTimestamp: deviceTimestamp
-                    )
-                } else {
+                await MainActor.run {
+                    guard !Task.isCancelled,
+                          isViewActive,
+                          calculationGeneration == routeCalculationGeneration else { return }
+                    defer { routeCalculationTask = nil }
+                    if let first = response.routes.first {
+                        routeSummarySeedDate = Date()
+                        setRouteForRendering(first)
+                        applyStaticRouteSummary(for: first)
+                        // Refresh overlay with new route - this ensures overlay matches the route direction
+                        refreshNavigationOverlayForCurrentRoute()
+                        // Remember inputs used for this route calculation
+                        lastRouteUserCoordinate = user
+                        lastRouteDeviceCoordinate = device
+                        lastRouteUserTimestamp = userTimestamp
+                        lastRouteDeviceTimestamp = deviceTimestamp
+                        lastRouteTransportType = settings.navigationTransportType
+                        // Store in cache for reuse
+                        routeCache.set(
+                            for: self.device.DeviceID,
+                            transportType: settings.navigationTransportType,
+                            isRouteReversed: isRouteFromDeviceToUser,
+                            route: first,
+                            userCoordinate: user,
+                            deviceCoordinate: device,
+                            userTimestamp: userTimestamp,
+                            deviceTimestamp: deviceTimestamp
+                        )
+                    } else {
+                        if !hadRouteBeforeRecalculation {
+                            setRouteForRendering(nil)
+                            travelTime = nil
+                            distanceText = nil
+                            arrivalTimeText = nil
+                            routeSummarySeedDate = nil
+                            lastRouteTransportType = nil
+                            refreshNavigationOverlayForCurrentRoute()
+                        }
+                        handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    guard !Task.isCancelled,
+                          isViewActive,
+                          calculationGeneration == routeCalculationGeneration else { return }
+                    defer { routeCalculationTask = nil }
                     if !hadRouteBeforeRecalculation {
                         setRouteForRendering(nil)
                         travelTime = nil
@@ -957,19 +1045,8 @@ struct iPhone_DeviceNavigationView: View {
                         lastRouteTransportType = nil
                         refreshNavigationOverlayForCurrentRoute()
                     }
-                    handleRouteRetry(noRouteFound: true, error: nil, ignoreCache: true, retryAttempt: retryAttempt)
+                    handleRouteRetry(noRouteFound: false, error: error, ignoreCache: true, retryAttempt: retryAttempt)
                 }
-            } catch {
-                if !hadRouteBeforeRecalculation {
-                    setRouteForRendering(nil)
-                    travelTime = nil
-                    distanceText = nil
-                    arrivalTimeText = nil
-                    routeSummarySeedDate = nil
-                    lastRouteTransportType = nil
-                    refreshNavigationOverlayForCurrentRoute()
-                }
-                handleRouteRetry(noRouteFound: false, error: error, ignoreCache: true, retryAttempt: retryAttempt)
             }
         }
     }
@@ -1082,6 +1159,41 @@ struct iPhone_DeviceNavigationView: View {
     // MARK: - Remote updates for the selected device only
 
     private func fetchTargetDeviceLocation(resetAndRecenter: Bool, ignoreRouteCache: Bool = false) async {
+        if isFetchingTargetDeviceLocation {
+            if pendingTargetLocationFetchRequest == nil {
+                pendingTargetLocationFetchRequest = TargetLocationFetchRequest(
+                    resetAndRecenter: resetAndRecenter,
+                    ignoreRouteCache: ignoreRouteCache
+                )
+            } else {
+                pendingTargetLocationFetchRequest?.merge(
+                    resetAndRecenter: resetAndRecenter,
+                    ignoreRouteCache: ignoreRouteCache
+                )
+            }
+            return
+        }
+
+        isFetchingTargetDeviceLocation = true
+        targetLocationFetchGeneration &+= 1
+        let fetchGeneration = targetLocationFetchGeneration
+        var request = TargetLocationFetchRequest(
+            resetAndRecenter: resetAndRecenter,
+            ignoreRouteCache: ignoreRouteCache
+        )
+
+        while !Task.isCancelled, isViewActive {
+            pendingTargetLocationFetchRequest = nil
+            await performTargetDeviceLocationFetch(request, generation: fetchGeneration)
+
+            guard let pendingRequest = pendingTargetLocationFetchRequest else { break }
+            request = pendingRequest
+        }
+
+        isFetchingTargetDeviceLocation = false
+    }
+
+    private func performTargetDeviceLocationFetch(_ request: TargetLocationFetchRequest, generation: UInt64) async {
         // Fetch latest location for just the selected device from the server.
         // Updates the shared device cache and view state. Recalculates route only
         // when explicitly re-centered (e.g., manual reload) or when auto-update logic decides so.
@@ -1096,6 +1208,9 @@ struct iPhone_DeviceNavigationView: View {
                 requestingDeviceID: thisDeviceIDManager.shared.deviceID,
                 requestingDeviceKey: settings.deviceKey
             )
+            guard !Task.isCancelled,
+                  isViewActive,
+                  generation == targetLocationFetchGeneration else { return }
             if let loc = locations.first {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
                 let changed = deviceCoordinate?.latitude != coordinate.latitude || deviceCoordinate?.longitude != coordinate.longitude
@@ -1109,14 +1224,15 @@ struct iPhone_DeviceNavigationView: View {
                     }
                 }
                 // Always update coordinates to allow auto-centering when enabled
-                updateCoordinates(recenter: resetAndRecenter)
+                updateCoordinates(recenter: request.resetAndRecenter)
+                updateRouteGhostSnapshot()
                 // Record initial distance if not yet recorded (after first successful fetch)
                 if initialDistance == nil {
                     recordInitialDistance()
                 }
                 // One-time sync: if initial route was calculated from stale cache,
                 // refresh it after the first successful fetch updates device location.
-                if !resetAndRecenter, !hasAppliedInitialFetchRouteSync, route != nil {
+                if !request.resetAndRecenter, !hasAppliedInitialFetchRouteSync, route != nil {
                     let coordChanged = (lastRouteDeviceCoordinate?.latitude != coordinate.latitude)
                         || (lastRouteDeviceCoordinate?.longitude != coordinate.longitude)
                     let timestampChanged = lastRouteDeviceTimestamp != loc.TimestampDate
@@ -1127,9 +1243,9 @@ struct iPhone_DeviceNavigationView: View {
                     }
                     hasAppliedInitialFetchRouteSync = true
                 }
-                // Recalculate route only on explicit reload (or initial load elsewhere) 
-                if resetAndRecenter {
-                    if ignoreRouteCache {
+                // Recalculate route only on explicit reload (or initial load elsewhere)
+                if request.resetAndRecenter {
+                    if request.ignoreRouteCache {
                         calculateRoute(ignoreCache: true)
                     } else {
                         if !useCachedRouteIfValid() {
@@ -1155,33 +1271,41 @@ struct iPhone_DeviceNavigationView: View {
         timerCancellable = Timer.publish(every: interval, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
-                Task {
-                    await fetchTargetDeviceLocation(resetAndRecenter: false)
-                    if !hasLocationUpdateSinceLastAutoUpdate {
-                        checkAutoStopCondition()
-                        return
-                    }
-                    hasLocationUpdateSinceLastAutoUpdate = false
-                    let targetOffRouteNow = isTargetOffRoute(threshold: offRouteThreshold)
-                    let shouldRefreshRoute = NavigationRouteRefreshPolicy.shouldRefreshRoute(
-                        isAutoRouteUpdateEnabled: isAutoRouteUpdateLocked,
-                        hasRoute: route != nil,
-                        isStandardNavigationMode: isRouteFromDeviceToUser,
-                        isUserOffRoute: isUserOffRoute(threshold: offRouteThreshold),
-                        isTargetOffRoute: targetOffRouteNow,
-                        currentDeviceCoordinate: deviceCoordinate,
-                        lastRouteDeviceCoordinate: lastRouteDeviceCoordinate,
-                        targetMovementThreshold: cacheReuseThreshold
-                    )
-                    if shouldRefreshRoute {
-                        if !useCachedRouteIfValid() {
-                            calculateRoute()
-                        }
-                    }
-                    // Check if devices are close enough to auto-stop navigation
-                    checkAutoStopCondition()
+                guard autoUpdateTask == nil else { return }
+                autoUpdateTask = Task { @MainActor in
+                    defer { autoUpdateTask = nil }
+                    await runAutoUpdateTick()
                 }
             }
+    }
+
+    private func runAutoUpdateTick() async {
+        await fetchTargetDeviceLocation(resetAndRecenter: false)
+        guard !Task.isCancelled else { return }
+        if !hasLocationUpdateSinceLastAutoUpdate {
+            checkAutoStopCondition()
+            return
+        }
+        hasLocationUpdateSinceLastAutoUpdate = false
+        updateRouteGhostSnapshot()
+        let targetOffRouteNow = isTargetOffRoute(threshold: offRouteThreshold)
+        let shouldRefreshRoute = NavigationRouteRefreshPolicy.shouldRefreshRoute(
+            isAutoRouteUpdateEnabled: isAutoRouteUpdateLocked,
+            hasRoute: route != nil,
+            isStandardNavigationMode: isRouteFromDeviceToUser,
+            isUserOffRoute: isUserOffRoute(threshold: offRouteThreshold),
+            isTargetOffRoute: targetOffRouteNow,
+            currentDeviceCoordinate: deviceCoordinate,
+            lastRouteDeviceCoordinate: lastRouteDeviceCoordinate,
+            targetMovementThreshold: cacheReuseThreshold
+        )
+        if shouldRefreshRoute {
+            if !useCachedRouteIfValid() {
+                calculateRoute()
+            }
+        }
+        // Check if devices are close enough to auto-stop navigation
+        checkAutoStopCondition()
     }
 
     private func isUserOffRoute(threshold: CLLocationDistance? = nil) -> Bool {
@@ -1224,8 +1348,61 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func stopAutoUpdate() {
+        autoUpdateTask?.cancel()
+        autoUpdateTask = nil
         timerCancellable?.cancel()
         timerCancellable = nil
+    }
+
+    private func updateRouteGhostSnapshot(forceRevision: Bool = false) {
+        guard settings.showRouteProgress, let route else {
+            clearRouteGhostSnapshot(forceRevision: forceRevision)
+            return
+        }
+
+        guard let (done, todo, ghost, progress) = RouteGhostCalculator.ghost(
+            for: route,
+            deviceCoordinate: deviceCoordinate,
+            userCoordinate: userCoordinate,
+            deviceTimestamp: deviceTimestamp,
+            knownDeviceSpeed: cache.getLocation(for: device.DeviceID)?.speed,
+            userTimestamp: userTimestamp,
+            knownUserSpeed: effectiveUserLocation?.speed,
+            now: now,
+            isRouteFromDeviceToUser: isRouteFromDeviceToUser
+        ) else {
+            clearRouteGhostSnapshot(forceRevision: forceRevision)
+            return
+        }
+
+        let nextSnapshot = RouteGhostSnapshot(
+            donePolyline: done,
+            todoPolyline: todo,
+            coordinate: ghost,
+            progress: progress,
+            showsGhost: RouteGhostPresentationPolicy.shouldShowGhost(
+                isRouteFromDeviceToUser: isRouteFromDeviceToUser,
+                progress: progress,
+                minimumProgress: minimumProgressToShowGhost,
+                routeStartDate: routeSummarySeedDate,
+                expectedTravelTime: route.expectedTravelTime,
+                now: now
+            )
+        )
+        let shouldBumpRevision = forceRevision
+            || routeGhostSnapshot.map { $0.isMeaningfullyDifferent(from: nextSnapshot) } ?? true
+        routeGhostSnapshot = nextSnapshot
+        if shouldBumpRevision {
+            routeProgressRenderRevision &+= 1
+        }
+    }
+
+    private func clearRouteGhostSnapshot(forceRevision: Bool = false) {
+        let hadSnapshot = routeGhostSnapshot != nil
+        routeGhostSnapshot = nil
+        if forceRevision || hadSnapshot {
+            routeProgressRenderRevision &+= 1
+        }
     }
 
     private func copiedPolyline(from sourcePolyline: MKPolyline) -> MKPolyline? {
@@ -1259,16 +1436,19 @@ struct iPhone_DeviceNavigationView: View {
         guard let newRoute else {
             routeDisplayPolyline = nil
             mutualRouteOverlayPolyline = nil
+            clearRouteGhostSnapshot(forceRevision: true)
             return
         }
         let sourcePolyline = newRoute.polyline
         guard let routePolylineCopy = copiedPolyline(from: sourcePolyline) else {
             routeDisplayPolyline = nil
             mutualRouteOverlayPolyline = nil
+            clearRouteGhostSnapshot(forceRevision: true)
             return
         }
         routeDisplayPolyline = routePolylineCopy
         mutualRouteOverlayPolyline = copiedPolyline(from: sourcePolyline)
+        updateRouteGhostSnapshot(forceRevision: true)
     }
 
     @MainActor
@@ -1949,8 +2129,8 @@ extension iPhone_DeviceNavigationView {
                 offRouteThreshold: offRouteThreshold
             ) {
                 // Apply cached route and keep display fields in sync
-                setRouteForRendering(cached.route)
                 routeSummarySeedDate = Date()
+                setRouteForRendering(cached.route)
                 applyStaticRouteSummary(for: cached.route)
                 refreshNavigationOverlayForCurrentRoute()
                 // Align last-route inputs so existing change detection logic works
