@@ -653,7 +653,11 @@ struct iPhone_DeviceNavigationView: View {
                             let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: thisDeviceIDManager.shared.deviceID))
                             let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
                             let speedText = settings.showCurrentSpeedOnMap
-                                ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: thisDeviceIDManager.shared.deviceID)?.speed)
+                                ? mapLiveSpeedLabelText(
+                                    speedMetersPerSecond: cache.getLocation(for: thisDeviceIDManager.shared.deviceID)?.speed,
+                                    locationTimestamp: ts,
+                                    now: context.date
+                                )
                                 : nil
                             let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                             Text(displayText)
@@ -709,7 +713,11 @@ struct iPhone_DeviceNavigationView: View {
                         let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: device.DeviceID))
                         let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
                         let speedText = settings.showCurrentSpeedOnMap
-                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: device.DeviceID)?.speed)
+                            ? mapLiveSpeedLabelText(
+                                speedMetersPerSecond: cache.getLocation(for: device.DeviceID)?.speed,
+                                locationTimestamp: timestamp,
+                                now: context.date
+                            )
                             : nil
                         let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                         Text(displayText)

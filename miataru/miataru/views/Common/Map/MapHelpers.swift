@@ -148,6 +148,19 @@ func mapSpeedLabelText(speedMetersPerSecond: Double?, minSpeedKmh: Double = 10) 
     return "\(numberString) \(unitString)"
 }
 
+/// Returns a formatted speed string for live map markers only while the location is fresh.
+func mapLiveSpeedLabelText(
+    speedMetersPerSecond: Double?,
+    locationTimestamp: Date?,
+    now: Date = Date(),
+    minSpeedKmh: Double = 10,
+    maximumLocationAge: TimeInterval = 5 * 60
+) -> String? {
+    guard let locationTimestamp else { return nil }
+    guard now.timeIntervalSince(locationTimestamp) <= maximumLocationAge else { return nil }
+    return mapSpeedLabelText(speedMetersPerSecond: speedMetersPerSecond, minSpeedKmh: minSpeedKmh)
+}
+
 /// Returns a formatted timezone offset string (e.g., "+2" or "-5") comparing device timezone to local timezone
 func timezoneOffsetString(deviceTimeZone: TimeZone?) -> String? {
     guard let deviceTimeZone = deviceTimeZone else { return nil }

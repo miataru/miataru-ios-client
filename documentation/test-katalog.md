@@ -119,6 +119,11 @@ These cases were previously located under `miataru.xcodeproj/*.swift` and are no
 | DT-MH-008 | relativeTimeString with future date returns 'now' | Future-date handling | Future date -> now string | MapHelpers | Unit | Yes |
 | DT-MH-009 | timezoneOffsetString returns negative offset for behind timezones | Negative timezone offset | -3h vs local -> "-3" | MapHelpers | Unit | Yes |
 | DT-MH-010 | mapSpeedLabelText returns non-nil when min threshold is 0 and positive speed | Configurable threshold | minSpeedKmh=0 + positive speed -> label | MapHelpers | Unit | Yes |
+| DT-MH-011 | mapLiveSpeedLabelText returns formatted value for fresh locations | Live marker speed freshness | 60s old + 5 m/s -> label with km/h or mph | MapHelpers | Unit | Yes |
+| DT-MH-012 | mapLiveSpeedLabelText still shows speed exactly at five minutes | Live marker boundary | 300s old + 5 m/s -> label | MapHelpers | Unit | Yes |
+| DT-MH-013 | mapLiveSpeedLabelText hides speed older than five minutes | Live marker stale suppression | 301s old + 5 m/s -> nil | MapHelpers | Unit | Yes |
+| DT-MH-014 | mapLiveSpeedLabelText treats future timestamps as fresh | Future timestamp handling | Future timestamp + 5 m/s -> label | MapHelpers | Unit | Yes |
+| DT-MH-015 | history speed formatting stays independent from live freshness | History/live display separation | Stale live timestamp hides label while history formatting still shows speed | MapHelpers | Unit | Yes |
 | DT-MHA-001 | mapSpeedLabelText returns nil for nil or zero/negative speeds | Guard paths in mapSpeedLabelText | nil/0/<0 -> nil | MapHelpers | Unit | Yes |
 | DT-MHA-002 | relativeTimeString respects custom timeConsideredNow threshold | Parameterized now threshold | 2s old with threshold=1 -> not now | MapHelpers | Unit | Yes |
 | DT-MKP-001 | split(at:) splits a simple horizontal segment correctly | Basic split case | Half segment, length consistency, progress ~0.5 | MKPolyline Extension | Unit | Yes |

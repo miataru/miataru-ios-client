@@ -47,6 +47,78 @@ struct MapHelpersTests {
         }
     }
 
+    @Test("mapLiveSpeedLabelText returns formatted value for fresh locations")
+    func testMapLiveSpeedLabelFreshLocation() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let timestamp = now.addingTimeInterval(-60)
+        let label = mapLiveSpeedLabelText(
+            speedMetersPerSecond: 5.0,
+            locationTimestamp: timestamp,
+            now: now
+        )
+
+        #expect(label != nil)
+        if let label {
+            let hasUnit = label.contains("km/h") || label.contains("mph")
+            #expect(hasUnit)
+        }
+    }
+
+    @Test("mapLiveSpeedLabelText still shows speed exactly at five minutes")
+    func testMapLiveSpeedLabelFiveMinuteBoundary() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let timestamp = now.addingTimeInterval(-300)
+        let label = mapLiveSpeedLabelText(
+            speedMetersPerSecond: 5.0,
+            locationTimestamp: timestamp,
+            now: now
+        )
+
+        #expect(label != nil)
+    }
+
+    @Test("mapLiveSpeedLabelText hides speed older than five minutes")
+    func testMapLiveSpeedLabelStaleLocation() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let timestamp = now.addingTimeInterval(-301)
+        let label = mapLiveSpeedLabelText(
+            speedMetersPerSecond: 5.0,
+            locationTimestamp: timestamp,
+            now: now
+        )
+
+        #expect(label == nil)
+    }
+
+    @Test("mapLiveSpeedLabelText treats future timestamps as fresh")
+    func testMapLiveSpeedLabelFutureTimestamp() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let timestamp = now.addingTimeInterval(30)
+        let label = mapLiveSpeedLabelText(
+            speedMetersPerSecond: 5.0,
+            locationTimestamp: timestamp,
+            now: now
+        )
+
+        #expect(label != nil)
+    }
+
+    @Test("history speed formatting stays independent from live freshness")
+    func testHistorySpeedFormattingIgnoresLiveFreshness() async throws {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let staleTimestamp = now.addingTimeInterval(-301)
+        let liveLabel = mapLiveSpeedLabelText(
+            speedMetersPerSecond: 0.5,
+            locationTimestamp: staleTimestamp,
+            now: now,
+            minSpeedKmh: 0
+        )
+        let historyLabel = mapSpeedLabelText(speedMetersPerSecond: 0.5, minSpeedKmh: 0)
+
+        #expect(liveLabel == nil)
+        #expect(historyLabel != nil)
+    }
+
     @Test("timezoneOffsetString returns nil for same timezone")
     func testTimezoneOffsetSame() async throws {
         let result = timezoneOffsetString(deviceTimeZone: TimeZone.current)

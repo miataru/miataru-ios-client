@@ -662,7 +662,11 @@ struct iPhone_DeviceMapView: View {
                                         let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
                                         let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
                                         let speedText = settings.showCurrentSpeedOnMap
-                                            ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed)
+                                            ? mapLiveSpeedLabelText(
+                                                speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed,
+                                                locationTimestamp: timestamp,
+                                                now: context.date
+                                            )
                                             : nil
                                         let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                         Text(displayText)
@@ -744,7 +748,11 @@ struct iPhone_DeviceMapView: View {
                                                 let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: other.DeviceID))
                                                 let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
                                                 let speedText = settings.showCurrentSpeedOnMap
-                                                    ? mapSpeedLabelText(speedMetersPerSecond: cached.speed)
+                                                    ? mapLiveSpeedLabelText(
+                                                        speedMetersPerSecond: cached.speed,
+                                                        locationTimestamp: cached.timestamp,
+                                                        now: context.date
+                                                    )
                                                     : nil
                                                 let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                                 Text(displayText)

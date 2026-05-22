@@ -1,4 +1,4 @@
-# Test Gap Matrix (as of 2026-03-14)
+# Test Gap Matrix (as of 2026-05-22)
 
 ## Purpose
 
@@ -23,7 +23,7 @@ Scale:
 | Visitor History + Known Device Resolution (`VisitorHistoryViewModel`, `KnownDeviceStore`) | Medium | Yes (5) | No | No | No | Medium | Medium | Add persistence/concurrency tests (duplicate IDs, case-insensitive merge, race-safe updates). |
 | Unknown Visitor Alerts (`UnknownVisitorAlertEvaluator`, `UnknownVisitorAlertService`) | High | Yes (7) | No | No | No | Medium | Medium-High | Add integration tests for upload-triggered history polling, watermark progression, and end-to-end local notification scheduling. |
 | Device Info / Slogan Editing (`MiataruAppAPI`, QR/Edit-Device slogan flows) | Medium | Yes (2) | No | No | No | Low-Medium | Medium | Add save/display roundtrip coverage for the editable slogan flows, including cache refresh and server-error handling. |
-| Map Helper + Polyline Geometry (`MapHelpers`, `MKPolyline` Extensions) | High | Yes (23) | No | No | No | Medium-High | Medium | Tighten assertions for numeric edge cases and distance projection regressions. |
+| Map Helper + Polyline Geometry (`MapHelpers`, `MKPolyline` Extensions) | High | Yes (28) | No | No | No | Medium-High | Medium | Add UI/visual coverage for live marker label composition and continue tightening numeric geometry edge cases. |
 | Location Update Pipeline (`LocationManager`, `DeviceLocationRefresher`, retry/outbox path) | Very High | Yes (18) | No | No | No | Medium | Medium-High | Add integration tests for GPS updates, network failures, retry/backoff, outbox flush triggers, and background behavior. |
 | Settings Defaults + Localization (`SettingsManager`, `Settings.bundle`, `Localizable.xcstrings`) | Medium-High | Yes (4) | No | No | Yes (1 targeted settings-navigation smoke) | Medium | Medium | Add integration coverage for fresh-install defaults, one-time upgrade migration wiring in app bootstrap, and locale synchronization edge cases. |
 | Device Access / Sync (`AllowedDeviceListManager`, SyncQueue) | High | No | No | No | No | None | High | Add tests for sync triggers, conflict cases, error paths, and idempotent sync behavior. |

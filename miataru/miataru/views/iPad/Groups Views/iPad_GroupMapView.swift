@@ -498,7 +498,11 @@ struct iPad_GroupMapView: View {
                                             let timezoneOffset = timezoneOffsetString(deviceTimeZone: cache.getTimeZone(for: deviceID))
                                             let baseText = timezoneOffset != nil ? "\(timeString) (\(timezoneOffset!))" : timeString
                                             let speedText = settings.showCurrentSpeedOnMap
-                                                ? mapSpeedLabelText(speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed)
+                                                ? mapLiveSpeedLabelText(
+                                                    speedMetersPerSecond: cache.getLocation(for: deviceID)?.speed,
+                                                    locationTimestamp: timestamp,
+                                                    now: context.date
+                                                )
                                                 : nil
                                             let displayText = speedText != nil ? "\(baseText) • \(speedText!)" : baseText
                                             Text(displayText)

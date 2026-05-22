@@ -1,4 +1,6 @@
 version 3.1.14
+- Hid live map-marker speed labels once the marker location is older than five minutes, while keeping device history speed details time-independent.
+- Added regression coverage for live marker speed freshness, the five-minute boundary, future timestamps, and unchanged history speed formatting.
 - Fixed configurable widgets so selecting a different device now drives the rendered text and map content through the selected device ID instead of falling back to a previously cached widget device.
 - Split widget device selections from cached widget location entries, keeping all known devices selectable in store order even when some devices do not yet have cached widget location data.
 - Normalized known-device ordering after load, add, move, and removal operations, and routed iPhone device reordering through the store so widget sync receives the persisted order.
