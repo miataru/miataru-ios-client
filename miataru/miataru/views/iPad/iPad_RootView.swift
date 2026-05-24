@@ -121,6 +121,9 @@ struct iPad_RootView: View {
 
     private func applyRootNavigationDestination(_ destination: AppRootNavigationDestination?) {
         switch destination {
+        case .devices:
+            selectedTab = 0
+            appNavigation.consumeRootDestination(.devices)
         case .settings:
             selectedTab = 3
         case .none:

@@ -16,7 +16,7 @@ import MiataruAPIClient
 struct iPhone_MyDeviceQRCodeView: View {
     @Environment(\.animationsAllowed) private var animationsAllowed
 
-    @State var content: String = "miataru://" + thisDeviceIDManager.shared.deviceID
+    @State var content: String = DeviceLinkResolver.urlString(for: thisDeviceIDManager.shared.deviceID)
     @State private var currentDeviceID = thisDeviceIDManager.shared.deviceID
     @State var correction: QRCode.ErrorCorrection = .low
 
@@ -469,7 +469,7 @@ struct iPhone_MyDeviceQRCodeView: View {
         String(
             format: NSLocalizedString("share_device_email_body", comment: "Body for sharing a device link via email or share sheet"),
             currentDeviceID,
-            "miataru://\(currentDeviceID)"
+            DeviceLinkResolver.urlString(for: currentDeviceID)
         )
     }
 
@@ -626,7 +626,7 @@ struct iPhone_MyDeviceQRCodeView: View {
             return false
         }
         currentDeviceID = latestDeviceID
-        content = "miataru://\(latestDeviceID)"
+        content = DeviceLinkResolver.urlString(for: latestDeviceID)
         return true
     }
 }
@@ -647,7 +647,7 @@ struct MailView: UIViewControllerRepresentable {
         let vc = MFMailComposeViewController()
         vc.mailComposeDelegate = context.coordinator
         let subject = NSLocalizedString("share_device_email_subject", comment: "")
-        let body = String(format: NSLocalizedString("share_device_email_body", comment: ""), deviceID, "miataru://\(deviceID)")
+        let body = String(format: NSLocalizedString("share_device_email_body", comment: ""), deviceID, DeviceLinkResolver.urlString(for: deviceID))
         vc.setSubject(subject)
         vc.setMessageBody(body, isHTML: false)
         if let data = qrImage.pngData() {

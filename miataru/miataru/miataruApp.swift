@@ -175,6 +175,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
+        if let type = userInfo[UnknownVisitorAlertService.notificationTypeUserInfoKey] as? String,
+           type == UnknownVisitorAlertService.unknownVisitorNotificationType,
+           let deviceID = userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String {
+            let visitDate = Self.unknownVisitorVisitDate(from: userInfo)
+            Task { @MainActor in
+                AppNavigationCoordinator.shared.openUnknownVisitorNotificationDevice(deviceID, visitDate: visitDate)
+            }
+            completionHandler()
+            return
+        }
+
         if let type = userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String,
            Self.opensAdvancedSettingsNotificationTypes.contains(type) {
             Task { @MainActor in
@@ -192,16 +203,38 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         FrequentBackgroundTrackingReminderService.expirationNotificationType,
         FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType
     ]
+
+    private static func unknownVisitorVisitDate(from userInfo: [AnyHashable: Any]) -> Date? {
+        let rawValue = userInfo[UnknownVisitorAlertService.notificationVisitTimestampUserInfoKey]
+        let timestampMs: Int64?
+
+        if let value = rawValue as? Int64 {
+            timestampMs = value
+        } else if let value = rawValue as? Int {
+            timestampMs = Int64(value)
+        } else if let value = rawValue as? NSNumber {
+            timestampMs = value.int64Value
+        } else if let value = rawValue as? String {
+            timestampMs = Int64(value)
+        } else {
+            timestampMs = nil
+        }
+
+        guard let timestampMs else { return nil }
+        return Date(timeIntervalSince1970: Double(timestampMs) / 1_000.0)
+    }
 }
 
 @main
 struct miataruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appState: AppState
+    @StateObject private var appNavigation = AppNavigationCoordinator.shared
     @State private var autolockCancellable: AnyCancellable? = nil
     @State private var rotationLockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
+    @State private var activeUnknownDeviceAction: UnknownDeviceActionRequest? = nil
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
@@ -271,14 +304,48 @@ struct miataruApp: App {
                             RotationLockController.shared.setRotationLockEnabled(isEnabled)
                         }
 #endif
+                    presentAddDeviceRequest(appNavigation.addDeviceRequest)
+                    presentUnknownDeviceActionRequest(appNavigation.unknownDeviceActionRequest)
                 }
                 .onOpenURL { url in
                     handleIncomingURL(url)
+                }
+                .onChange(of: appNavigation.addDeviceRequest) { _, request in
+                    presentAddDeviceRequest(request)
+                }
+                .onChange(of: appNavigation.unknownDeviceActionRequest) { _, request in
+                    presentUnknownDeviceActionRequest(request)
                 }
                 .sheet(isPresented: $showAddDeviceSheet, onDismiss: { pendingDeviceID = nil }) {
                     if let deviceID = pendingDeviceID {
                         iPhone_AddDeviceView(store: KnownDeviceStore.shared, isPresented: $showAddDeviceSheet, prefillDeviceID: deviceID)
                     }
+                }
+                .sheet(item: $activeUnknownDeviceAction) { request in
+                    UnknownDeviceActionSheet(
+                        deviceID: request.deviceID,
+                        visitDate: request.visitDate,
+                        addActionTitle: unknownDeviceAddActionTitle,
+                        message: unknownDeviceActionMessage,
+                        onAdd: {
+                            activeUnknownDeviceAction = nil
+                            Task { @MainActor in
+                                await Task.yield()
+                                try? await Task.sleep(nanoseconds: 250_000_000)
+                                openUnknownDeviceAddOrKnownDevice(request.deviceID)
+                            }
+                        },
+                        onIgnore: {
+                            IgnoredVisitorDeviceStore.shared.addIgnored(deviceID: request.deviceID)
+                            Haptic.notifySuccess()
+                            activeUnknownDeviceAction = nil
+                        },
+                        onCancel: {
+                            activeUnknownDeviceAction = nil
+                        }
+                    )
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
                 }
         }
         .onChange(of: scenePhase) {
@@ -301,9 +368,7 @@ struct miataruApp: App {
     }
 
     private func handleIncomingURL(_ url: URL) {
-        guard url.scheme == "miataru" else { return }
-        let deviceID = url.host ?? ""
-        guard !deviceID.isEmpty else { return }
+        guard let deviceID = DeviceLinkResolver.deviceID(from: url) else { return }
 
         Task { @MainActor in
             // When resuming from background, SwiftUI may restore navigation state after the URL
@@ -311,15 +376,50 @@ struct miataruApp: App {
             await Task.yield()
             try? await Task.sleep(nanoseconds: 180_000_000)
 
-            // If the device already exists, navigate to it; otherwise fall back to add flow.
-            if KnownDeviceStore.shared.devices.contains(where: { $0.DeviceID == deviceID }) {
+            if DeviceLinkResolver.canonicalKnownDeviceID(for: deviceID) != nil {
                 showAddDeviceSheet = false
                 pendingDeviceID = nil
-                SettingsManager.shared.lastOpenedDeviceID = deviceID
-            } else {
-                pendingDeviceID = deviceID
-                showAddDeviceSheet = true
             }
+            appNavigation.openDeviceLink(deviceID)
+        }
+    }
+
+    @MainActor
+    private func presentAddDeviceRequest(_ request: AddDeviceRequest?) {
+        guard let request else { return }
+        pendingDeviceID = request.deviceID
+        activeUnknownDeviceAction = nil
+        showAddDeviceSheet = true
+        appNavigation.consumeAddDeviceRequest(request)
+    }
+
+    @MainActor
+    private func presentUnknownDeviceActionRequest(_ request: UnknownDeviceActionRequest?) {
+        guard let request else { return }
+        activeUnknownDeviceAction = request
+        appNavigation.consumeUnknownDeviceActionRequest(request)
+    }
+
+    private var unknownDeviceAddActionTitle: String {
+        if SettingsManager.shared.allowedDeviceListEnabled {
+            return NSLocalizedString("unknown_visitor_add_and_allow", comment: "Action to add an unknown visitor device and allow access")
+        }
+        return NSLocalizedString("add", comment: "Add")
+    }
+
+    private var unknownDeviceActionMessage: String {
+        let key = SettingsManager.shared.allowedDeviceListEnabled
+            ? "unknown_device_actions_message_acl_enabled"
+            : "unknown_device_actions_message_acl_disabled"
+        return NSLocalizedString(key, comment: "Explanation for unknown device action dialog")
+    }
+
+    @MainActor
+    private func openUnknownDeviceAddOrKnownDevice(_ rawDeviceID: String) {
+        if let knownDeviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) {
+            appNavigation.openKnownDevice(knownDeviceID)
+        } else {
+            appNavigation.openAddDevice(rawDeviceID)
         }
     }
 
@@ -428,6 +528,156 @@ private struct DeviceWindowEntrypoint: View {
                     dismissWindow(value: id)
                 }
             }
+        }
+    }
+}
+
+private struct UnknownDeviceActionSheet: View {
+    let deviceID: String
+    let visitDate: Date?
+    let addActionTitle: String
+    let message: String
+    let onAdd: () -> Void
+    let onIgnore: () -> Void
+    let onCancel: () -> Void
+
+    @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
+    @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
+
+    private var sloganText: String? {
+        guard let slogan = sloganCache.slogan(for: deviceID), !slogan.isEmpty else { return nil }
+        return slogan
+    }
+
+    private var locationText: String? {
+        if let cached = locationCache.getLocation(for: deviceID) {
+            if let locality = cached.locality, let country = cached.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = cached.locality {
+                return locality
+            }
+            if let country = cached.country {
+                return country
+            }
+        }
+
+        if let placemark = locationCache.getPlacemark(for: deviceID) {
+            if let locality = placemark.locality, let country = placemark.country {
+                return "\(locality), \(country)"
+            }
+            if let locality = placemark.locality {
+                return locality
+            }
+            if let country = placemark.country {
+                return country
+            }
+        }
+
+        return nil
+    }
+
+    private var formattedVisitDate: String? {
+        guard let visitDate else { return nil }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: visitDate, relativeTo: Date())
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Label {
+                            Text("unknown_device_actions_title")
+                                .font(.title2.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } icon: {
+                            Image(systemName: "questionmark.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.blue)
+                        }
+                        .labelStyle(.titleAndIcon)
+
+                        Text(message)
+                            .font(.body)
+                            .foregroundStyle(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        UnknownDeviceInfoRow(systemImage: "number", value: deviceID, monospaced: true)
+
+                        if let sloganText {
+                            UnknownDeviceInfoRow(systemImage: "text.quote", value: sloganText)
+                        }
+
+                        if let locationText {
+                            UnknownDeviceInfoRow(systemImage: "mappin.and.ellipse", value: locationText)
+                        }
+
+                        if let formattedVisitDate {
+                            UnknownDeviceInfoRow(systemImage: "clock", value: formattedVisitDate)
+                        }
+                    }
+
+                    VStack(spacing: 12) {
+                        Button(action: onAdd) {
+                            Label(addActionTitle, systemImage: "plus.circle.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+
+                        Button(role: .destructive, action: onIgnore) {
+                            Label(
+                                NSLocalizedString("allowed_device_list_ignore_button", comment: "Button to ignore an unknown visitor device"),
+                                systemImage: "eye.slash"
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 28)
+                .padding(.bottom, 34)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .onAppear {
+                locationCache.enqueueGeocodingIfNeeded(for: deviceID)
+            }
+            .navigationTitle("unknown_device_actions_title")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("cancel", role: .cancel, action: onCancel)
+                }
+            }
+        }
+    }
+}
+
+private struct UnknownDeviceInfoRow: View {
+    let systemImage: String
+    let value: String
+    var monospaced = false
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .frame(width: 22)
+
+            Text(value)
+                .font(monospaced ? Font.footnote.monospaced() : Font.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .textSelection(.enabled)
         }
     }
 }

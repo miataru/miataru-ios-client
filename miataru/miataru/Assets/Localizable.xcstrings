@@ -2450,6 +2450,7 @@
       }
     },
     "add" : {
+      "comment" : "Add",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -20876,71 +20877,6 @@
         }
       }
     },
-    "location_permission_request_again_button" : {
-      "comment" : "Button in Location Tracking Details that restarts the full location authorization request flow",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anmod om placering igen"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standortfreigabe erneut anfragen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Request Location Permission Again"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solicitar permiso de ubicación de nuevo"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pyydä sijaintilupaa uudelleen"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Redemander l'autorisation de localisation"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Richiedi di nuovo il permesso di posizione"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置情報の許可を再度リクエスト"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Locatietoestemming opnieuw vragen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "再次请求位置权限"
-          }
-        }
-      }
-    },
     "location_permission_open_settings_message" : {
       "comment" : "Explanation message when redirecting to Settings for location permission",
       "localizations" : {
@@ -21067,6 +21003,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开设置"
+          }
+        }
+      }
+    },
+    "location_permission_request_again_button" : {
+      "comment" : "Button in Location Tracking Details that restarts the full location authorization request flow",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmod om placering igen"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortfreigabe erneut anfragen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request Location Permission Again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solicitar permiso de ubicación de nuevo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pyydä sijaintilupaa uudelleen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redemander l'autorisation de localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richiedi di nuovo il permesso di posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報の許可を再度リクエスト"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietoestemming opnieuw vragen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次请求位置权限"
           }
         }
       }
@@ -29977,6 +29978,203 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
+          }
+        }
+      }
+    },
+    "unknown_device_actions_message_acl_disabled" : {
+      "comment" : "Dialog message for an unknown device when the allowed device list is disabled. Device details are shown separately.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ukendt enhed forsøgte at anmode om din position.\n\nDin position er indtil nu ikke blevet delt med denne enhed.\nHvis du tilføjer den, kan du aktivere adgangskontrol og derefter vælge, om den får adgang, og hvilke positionsdata der deles.\nDu kan også ignorere den. Så modtager den ingen positionsdata og vises kun i besøgshistorikken på fanen \"denne enhed\"."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein unbekanntes Gerät wollte deine Position abfragen.\n\nDeine Position wurde bisher nicht an dieses Gerät weitergegeben.\nWenn du es hinzufügst, kannst du die Zugriffskontrolle aktivieren und dann festlegen, ob es Zugriff bekommt und welche Positionsdaten freigegeben werden.\nDu kannst es auch ignorieren. Dann erhält es keine Positionsdaten und taucht nur noch in der Besucherhistorie im Tab „dieses Gerät“ auf."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown device wanted to request your location.\n\nYour location has not been shared with this device so far.\nIf you add it, you can enable access control and then choose whether it gets access and which location data is shared.\nYou can also ignore it. Then it receives no location data and only appears in the visitor history on the \"this Device\" tab."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo desconocido intentó consultar tu ubicación.\n\nTu ubicación aún no se ha compartido con este dispositivo.\nSi lo añades, puedes activar el control de acceso y decidir si tendrá acceso y qué datos de ubicación se compartirán.\nTambién puedes ignorarlo. Entonces no recibirá ningún dato de ubicación y solo aparecerá en el historial de visitantes de la pestaña \"este dispositivo\"."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon laite yritti pyytää sijaintiasi.\n\nSijaintiasi ei ole tähän mennessä jaettu tälle laitteelle.\nJos lisäät sen, voit ottaa käyttöön käyttöoikeuksien hallinnan ja valita, saako se käyttöoikeuden ja mitä sijaintitietoja jaetaan.\nVoit myös ohittaa sen. Silloin se ei saa sijaintitietoja ja näkyy vain \"tämä laite\" -välilehden vierailuhistoriassa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un appareil inconnu a voulu demander votre position.\n\nVotre position n’a pas encore été partagée avec cet appareil.\nSi vous l’ajoutez, vous pouvez activer le contrôle d’accès puis choisir s’il obtient un accès et quelles données de position sont partagées.\nVous pouvez aussi l’ignorer. Il ne recevra alors aucune donnée de position et n’apparaîtra plus que dans l’historique des visiteurs de l’onglet « cet appareil »."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo sconosciuto ha provato a richiedere la tua posizione.\n\nLa tua posizione non è stata ancora condivisa con questo dispositivo.\nSe lo aggiungi, puoi attivare il controllo accessi e poi scegliere se avrà accesso e quali dati di posizione verranno condivisi.\nPuoi anche ignorarlo. In questo caso non riceverà alcun dato di posizione e comparirà solo nella cronologia visitatori della scheda \"questo dispositivo\"."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイスがあなたの位置情報を要求しようとしました。\n\nあなたの位置情報は、これまでこのデバイスに共有されていません。\n追加する場合は、アクセス制御を有効にしてから、アクセスを許可するか、どの位置情報を共有するかを選択できます。\n無視することもできます。その場合、このデバイスは位置情報を受け取らず、「このデバイス」タブの訪問履歴にのみ表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een onbekend apparaat wilde je locatie opvragen.\n\nJe locatie is tot nu toe niet met dit apparaat gedeeld.\nAls je het toevoegt, kun je toegangscontrole inschakelen en daarna kiezen of het toegang krijgt en welke locatiegegevens worden gedeeld.\nJe kunt het ook negeren. Dan ontvangt het geen locatiegegevens en verschijnt het alleen nog in de bezoekgeschiedenis op het tabblad \"dit apparaat\"."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一台未知设备想要请求你的位置。\n\n到目前为止，你的位置尚未与这台设备共享。\n如果你添加它，可以启用访问控制，然后选择它是否可以访问以及共享哪些位置数据。\n你也可以忽略它。这样它不会收到任何位置数据，并且只会显示在“此设备”标签页的访问历史中。"
+          }
+        }
+      }
+    },
+    "unknown_device_actions_message_acl_enabled" : {
+      "comment" : "Dialog message for an unknown device when the allowed device list is enabled. Device details are shown separately.",
+      "extractionState" : "stale",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ukendt enhed forsøgte at anmode om din position.\n\nDin position er indtil nu ikke blevet delt med denne enhed.\nHvis du tilføjer den, kan du vælge, om den får adgang, og hvilke positionsdata der deles.\nDu kan også ignorere den. Så modtager den ingen positionsdata og vises kun i besøgshistorikken på fanen \"denne enhed\"."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein unbekanntes Gerät wollte deine Position abfragen.\n\nDeine Position wurde bisher nicht an dieses Gerät weitergegeben.\nWenn du es hinzufügst, kannst du festlegen, ob es Zugriff bekommt und welche Positionsdaten freigegeben werden.\nDu kannst es auch ignorieren. Dann erhält es keine Positionsdaten und taucht nur noch in der Besucherhistorie im Tab „dieses Gerät“ auf."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown device wanted to request your location.\n\nYour location has not been shared with this device so far.\nIf you add it, you can choose whether it gets access and which location data is shared.\nYou can also ignore it. Then it receives no location data and only appears in the visitor history on the \"this Device\" tab."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo desconocido intentó consultar tu ubicación.\n\nTu ubicación aún no se ha compartido con este dispositivo.\nSi lo añades, puedes decidir si tendrá acceso y qué datos de ubicación se compartirán.\nTambién puedes ignorarlo. Entonces no recibirá ningún dato de ubicación y solo aparecerá en el historial de visitantes de la pestaña \"este dispositivo\"."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon laite yritti pyytää sijaintiasi.\n\nSijaintiasi ei ole tähän mennessä jaettu tälle laitteelle.\nJos lisäät sen, voit valita, saako se käyttöoikeuden ja mitä sijaintitietoja jaetaan.\nVoit myös ohittaa sen. Silloin se ei saa sijaintitietoja ja näkyy vain \"tämä laite\" -välilehden vierailuhistoriassa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un appareil inconnu a voulu demander votre position.\n\nVotre position n’a pas encore été partagée avec cet appareil.\nSi vous l’ajoutez, vous pouvez choisir s’il obtient un accès et quelles données de position sont partagées.\nVous pouvez aussi l’ignorer. Il ne recevra alors aucune donnée de position et n’apparaîtra plus que dans l’historique des visiteurs de l’onglet « cet appareil »."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un dispositivo sconosciuto ha provato a richiedere la tua posizione.\n\nLa tua posizione non è stata ancora condivisa con questo dispositivo.\nSe lo aggiungi, puoi scegliere se avrà accesso e quali dati di posizione verranno condivisi.\nPuoi anche ignorarlo. In questo caso non riceverà alcun dato di posizione e comparirà solo nella cronologia visitatori della scheda \"questo dispositivo\"."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイスがあなたの位置情報を要求しようとしました。\n\nあなたの位置情報は、これまでこのデバイスに共有されていません。\n追加する場合は、アクセスを許可するか、どの位置情報を共有するかを選択できます。\n無視することもできます。その場合、このデバイスは位置情報を受け取らず、「このデバイス」タブの訪問履歴にのみ表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een onbekend apparaat wilde je locatie opvragen.\n\nJe locatie is tot nu toe niet met dit apparaat gedeeld.\nAls je het toevoegt, kun je kiezen of het toegang krijgt en welke locatiegegevens worden gedeeld.\nJe kunt het ook negeren. Dan ontvangt het geen locatiegegevens en verschijnt het alleen nog in de bezoekgeschiedenis op het tabblad \"dit apparaat\"."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一台未知设备想要请求你的位置。\n\n到目前为止，你的位置尚未与这台设备共享。\n如果你添加它，可以选择它是否可以访问以及共享哪些位置数据。\n你也可以忽略它。这样它不会收到任何位置数据，并且只会显示在“此设备”标签页的访问历史中。"
+          }
+        }
+      }
+    },
+    "unknown_device_actions_title" : {
+      "comment" : "Title for actions shown for an unknown device.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukendt enhed"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekanntes Gerät"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo desconocido"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon laite"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil inconnu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo sconosciuto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なデバイス"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onbekend apparaat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知设备"
           }
         }
       }

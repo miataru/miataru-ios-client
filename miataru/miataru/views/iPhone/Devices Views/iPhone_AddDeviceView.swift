@@ -217,9 +217,8 @@ struct iPhone_AddDeviceView: View {
             CodeScannerView(codeTypes: [.qr]) { result in
                 switch result {
                 case .success(let res):
-                    let prefix = "miataru://"
-                    if res.string.hasPrefix(prefix) {
-                        deviceID = String(res.string.dropFirst(prefix.count)).uppercased()
+                    if let scannedDeviceID = DeviceLinkResolver.deviceID(fromCanonicalCode: res.string) {
+                        deviceID = scannedDeviceID
                         Haptic.impactMedium()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             isShowingScanner = false

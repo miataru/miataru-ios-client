@@ -14,12 +14,12 @@ struct iPad_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
     @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
 
     @State private var selection: String? = nil // DeviceID
     @State private var showingAddDevice = false
-    @State private var pendingDeviceItem: DeviceIDItem? = nil
     @State private var editingDevice: KnownDevice? = nil
     @State private var editMode: EditMode = .inactive
     @State private var isVisible: Bool = false
@@ -72,19 +72,16 @@ struct iPad_DevicesView: View {
                             ForEach(unknownVisitors, id: \.uniqueID) { visitor in
                                 UnknownVisitorRow(
                                     visitor: visitor,
-                                    onAllow: {
-                                        pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                    onShowActions: {
+                                        appNavigation.presentUnknownDeviceActions(visitor.DeviceID, visitDate: visitor.TimeStampDate)
                                     },
                                     onIgnore: {
                                         ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                    },
-                                    addActionTitleKey: settings.allowedDeviceListEnabled
-                                        ? "unknown_visitor_add_and_allow"
-                                        : "add"
+                                    }
                                 )
                                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                     Button {
-                                        pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                        appNavigation.openAddDevice(visitor.DeviceID)
                                     } label: {
                                         Label(
                                             settings.allowedDeviceListEnabled
@@ -246,6 +243,7 @@ struct iPad_DevicesView: View {
                     await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
                     await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 }
+                handleDeviceOpenRequest(appNavigation.deviceOpenRequest)
             }
             .onDisappear {
                 isVisible = false
@@ -288,6 +286,9 @@ struct iPad_DevicesView: View {
                     await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
                     await refreshUnknownVisitorSupplementalDataIfNeeded()
                 }
+            }
+            .onChange(of: appNavigation.deviceOpenRequest) { _, request in
+                handleDeviceOpenRequest(request)
             }
         } detail: {
             NavigationStack {
@@ -333,16 +334,6 @@ struct iPad_DevicesView: View {
         .ignoresSafeArea(.container, edges: .top)
         .sheet(isPresented: $showingAddDevice) {
             iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice)
-        }
-        .sheet(item: $pendingDeviceItem) { item in
-            iPhone_AddDeviceView(
-                store: store,
-                isPresented: Binding(
-                    get: { pendingDeviceItem != nil },
-                    set: { if !$0 { pendingDeviceItem = nil } }
-                ),
-                prefillDeviceID: item.deviceID
-            )
         }
         .dropDestination(for: String.self) { items, _ in
             if let deviceID = items.first, cache.getLocation(for: deviceID) != nil {
@@ -407,6 +398,30 @@ struct iPad_DevicesView: View {
         } else {
             store.removeDevice(byID: deviceID)
             PersistentDataCleanup.run()
+        }
+    }
+
+    @MainActor
+    private func handleDeviceOpenRequest(_ request: DeviceOpenRequest?) {
+        guard let request else { return }
+        guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: request.deviceID, store: store) else {
+            appNavigation.consumeDeviceOpenRequest(request)
+            return
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            isUpdatingFromDeepLink = true
+            selection = deviceID
+            lastSelectedDeviceID = deviceID
+            mapViewKey = UUID()
+            settings.lastOpenedDeviceID = deviceID
+            appNavigation.consumeDeviceOpenRequest(request)
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 200_000_000)
+                isUpdatingFromDeepLink = false
+            }
         }
     }
 

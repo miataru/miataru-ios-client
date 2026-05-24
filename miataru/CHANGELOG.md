@@ -1,3 +1,11 @@
+version 3.1.15
+- Reworked the unknown-device workflow so tapping an unknown visitor row, tapping its options button, or opening an unknown-visitor notification presents the same explanatory action sheet.
+- The unknown-device sheet now shows the known device details from the visitor row, including device ID, cached info/slogan, cached location, and visit time when available.
+- Clarified the localized unknown-device copy across all app languages, including that the current position has not yet been shared, that adding allows access selection, and that ignored devices receive no position data.
+- Centralized `miataru://<DeviceID>` parsing and routing so existing QR codes, in-app scanner input, and external Camera-app links keep working while known devices open directly and unknown devices open the add-device flow.
+- Added regression coverage for URI compatibility, case-insensitive known-device resolution, known-vs-unknown routing, and unknown-visitor notification branching.
+- Updated project metadata for version 3.1.15.
+
 version 3.1.14
 - Updated the living project documentation, documentation index/audit, App Store copy source, local API-client README, and third-party license summary to match the current 3.1.14 project state.
 - Stabilized navigation route-progress ghost rendering by storing explicit ghost snapshots, forcing map progress redraws through a render revision, and giving user/device/ghost annotations stable internal identities.

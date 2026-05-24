@@ -168,7 +168,7 @@ struct UnknownVisitorAlertEvaluatorTests {
         let addedRequests = await notifier.addedRequests
         #expect(locationRequests == [[UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID)]])
         #expect(addedRequests.count == 1)
-        #expect(addedRequests.first?.content.userInfo["device_id"] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
+        #expect(addedRequests.first?.content.userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
     }
 
     @Test("Known visitors do not trigger alert enrichment")

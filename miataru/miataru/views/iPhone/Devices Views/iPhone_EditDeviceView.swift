@@ -240,7 +240,7 @@ struct iPhone_EditDeviceView: View {
                 }
                 Section(header: Text("device_qr_code")) {
                     let qrContent = QRCodeShape(
-                        data: ("miataru://" + device.DeviceID).data(using: .utf8) ?? Data(),
+                        data: DeviceLinkResolver.urlString(for: device.DeviceID).data(using: .utf8) ?? Data(),
                         errorCorrection: .low
                     )
                     HStack {

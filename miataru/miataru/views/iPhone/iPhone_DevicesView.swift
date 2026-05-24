@@ -14,6 +14,7 @@ struct iPhone_DevicesView: View {
     @StateObject private var store = KnownDeviceStore.shared
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     private let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
     @StateObject private var visitorHistoryViewModel = VisitorHistoryViewModel()
     @ObservedObject private var ignoredStore = IgnoredVisitorDeviceStore.shared
@@ -21,7 +22,6 @@ struct iPhone_DevicesView: View {
     @State private var showingAddDevice = false
     @State private var showingAddGroup = false
     @State private var prefillDeviceID: String? = nil
-    @State private var pendingDeviceItem: DeviceIDItem? = nil
     @State private var editMode: EditMode = .inactive
     @State private var groupEditMode: EditMode = .inactive
     @State private var editingDevice: KnownDevice? = nil
@@ -53,22 +53,17 @@ struct iPhone_DevicesView: View {
                         ForEach(unknownVisitors, id: \.uniqueID) { visitor in
                             UnknownVisitorRow(
                                 visitor: visitor,
-                                onAllow: {
-                                    // Allow action - set pendingDeviceItem to trigger sheet with prefill
-                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                onShowActions: {
+                                    appNavigation.presentUnknownDeviceActions(visitor.DeviceID, visitDate: visitor.TimeStampDate)
                                 },
                                 onIgnore: {
                                     // Ignore action
                                     ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                },
-                                addActionTitleKey: settings.allowedDeviceListEnabled
-                                    ? "unknown_visitor_add_and_allow"
-                                    : "add"
+                                }
                             )
                             .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                 Button {
-                                    // Set pendingDeviceItem to trigger sheet with prefill
-                                    pendingDeviceItem = DeviceIDItem(id: visitor.DeviceID, deviceID: visitor.DeviceID)
+                                    appNavigation.openAddDevice(visitor.DeviceID)
                                 } label: {
                                     Label(
                                         settings.allowedDeviceListEnabled
@@ -317,16 +312,6 @@ struct iPhone_DevicesView: View {
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)
             }
-            .sheet(item: $pendingDeviceItem) { item in
-                iPhone_AddDeviceView(
-                    store: store,
-                    isPresented: Binding(
-                        get: { pendingDeviceItem != nil },
-                        set: { if !$0 { pendingDeviceItem = nil } }
-                    ),
-                    prefillDeviceID: item.deviceID
-                )
-            }
             .sheet(isPresented: $showingAddGroup) {
                 iPhone_AddGroupView(groupStore: groupStore, isPresented: $showingAddGroup)
             }
@@ -372,6 +357,7 @@ struct iPhone_DevicesView: View {
                     await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
                     await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 }
+                handleDeviceOpenRequest(appNavigation.deviceOpenRequest)
             }
             .onDisappear {
                 isVisible = false
@@ -443,6 +429,9 @@ struct iPhone_DevicesView: View {
                     navigationPath = [.device(requestedID)]
                 }
             }
+            .onChange(of: appNavigation.deviceOpenRequest) { _, request in
+                handleDeviceOpenRequest(request)
+            }
             // Intentionally do not reset didAutoNavigateFromSavedDevice on
             // changes to lastOpenedDeviceID to avoid unintended re-pushes
         }
@@ -462,6 +451,24 @@ struct iPhone_DevicesView: View {
         } else {
             store.removeDevice(byID: deviceID)
             PersistentDataCleanup.run()
+        }
+    }
+
+    @MainActor
+    private func handleDeviceOpenRequest(_ request: DeviceOpenRequest?) {
+        guard let request else { return }
+        guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: request.deviceID, store: store) else {
+            appNavigation.consumeDeviceOpenRequest(request)
+            return
+        }
+
+        Task { @MainActor in
+            navigationPath = []
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            navigationPath = [.device(deviceID)]
+            settings.lastOpenedDeviceID = deviceID
+            appNavigation.consumeDeviceOpenRequest(request)
         }
     }
 
@@ -567,9 +574,8 @@ private enum NavigationDestination: Hashable {
 
 struct UnknownVisitorRow: View {
     let visitor: MiataruVisitor
-    let onAllow: () -> Void
+    let onShowActions: () -> Void
     let onIgnore: () -> Void
-    let addActionTitleKey: LocalizedStringKey
     
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @ObservedObject private var locationCache = DeviceLocationCacheStore.shared
@@ -652,25 +658,19 @@ struct UnknownVisitorRow: View {
                 locationCache.enqueueGeocodingIfNeeded(for: visitor.DeviceID)
             }
             Spacer()
-            Menu {
-                Button(role: .none) {
-                    onAllow()
-                } label: {
-                    Label(addActionTitleKey, systemImage: "plus.circle")
-                }
-                
-                Button(role: .destructive) {
-                    onIgnore()
-                } label: {
-                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
-                }
-            } label: {
+            Button(action: onShowActions) {
                 Image(systemName: "ellipsis.circle")
                     .font(.title3)
                     .foregroundColor(.blue)
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("unknown_device_actions_title"))
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onShowActions()
+        }
     }
 }
 

@@ -25,7 +25,10 @@ struct UnknownVisitorAlertLocalizationTests {
             "onboarding_unknown_visitor_alerts_example_message",
             "unknown_visitor_alert_notification_title",
             "unknown_visitor_alert_notification_body_with_details",
-            "unknown_visitor_alert_notification_body_fallback"
+            "unknown_visitor_alert_notification_body_fallback",
+            "unknown_device_actions_title",
+            "unknown_device_actions_message_acl_enabled",
+            "unknown_device_actions_message_acl_disabled"
         ]
 
         let testFileURL = URL(fileURLWithPath: #filePath)

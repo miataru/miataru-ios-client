@@ -199,6 +199,8 @@ actor UnknownVisitorAlertService {
 
     static let notificationTypeUserInfoKey = "miataru_notification_type"
     static let unknownVisitorNotificationType = "unknown_visitor_alert"
+    static let notificationDeviceIDUserInfoKey = "device_id"
+    static let notificationVisitTimestampUserInfoKey = "visit_ts_ms"
 
     private enum Keys {
         static let lastProcessedVisitorTimestampMs = "unknown_visitor_alert_last_processed_ts_ms"
@@ -409,8 +411,8 @@ actor UnknownVisitorAlertService {
             content.sound = .default
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.unknownVisitorNotificationType,
-                "device_id": candidate.deviceID,
-                "visit_ts_ms": candidate.visitTimestampMs
+                Self.notificationDeviceIDUserInfoKey: candidate.deviceID,
+                Self.notificationVisitTimestampUserInfoKey: candidate.visitTimestampMs
             ]
 
             let request = UNNotificationRequest(
