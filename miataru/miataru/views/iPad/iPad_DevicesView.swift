@@ -81,7 +81,7 @@ struct iPad_DevicesView: View {
                                 )
                                 .swipeActions(edge: .leading, allowsFullSwipe: false) {
                                     Button {
-                                        appNavigation.openAddDevice(visitor.DeviceID)
+                                        appNavigation.openAddDevice(visitor.DeviceID, source: .unknownVisitor)
                                     } label: {
                                         Label(
                                             settings.allowedDeviceListEnabled

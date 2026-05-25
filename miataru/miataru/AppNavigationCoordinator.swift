@@ -29,9 +29,20 @@ struct DeviceOpenRequest: Equatable, Identifiable {
     let deviceID: String
 }
 
+enum AddDeviceRequestSource: Equatable {
+    case general
+    case unknownVisitor
+}
+
 struct AddDeviceRequest: Equatable, Identifiable {
     let id = UUID()
     let deviceID: String
+    let source: AddDeviceRequestSource
+
+    init(deviceID: String, source: AddDeviceRequestSource = .general) {
+        self.deviceID = deviceID
+        self.source = source
+    }
 }
 
 struct UnknownDeviceActionRequest: Equatable, Identifiable {
@@ -71,10 +82,10 @@ final class AppNavigationCoordinator: ObservableObject {
         }
     }
 
-    func openAddDevice(_ rawDeviceID: String) {
+    func openAddDevice(_ rawDeviceID: String, source: AddDeviceRequestSource = .general) {
         guard let deviceID = DeviceLinkResolver.normalizedDeviceID(rawDeviceID) else { return }
         rootDestination = .devices
-        addDeviceRequest = AddDeviceRequest(deviceID: deviceID)
+        addDeviceRequest = AddDeviceRequest(deviceID: deviceID, source: source)
     }
 
     func openUnknownVisitorNotificationDevice(_ rawDeviceID: String, visitDate: Date? = nil) {

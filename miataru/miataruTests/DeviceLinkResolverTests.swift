@@ -89,6 +89,20 @@ struct DeviceLinkResolverTests {
         let unknownID = "UNKNOWN-\(UUID().uuidString)".uppercased()
         coordinator.openDeviceLink(unknownID.lowercased())
         #expect(coordinator.addDeviceRequest?.deviceID == unknownID)
+        #expect(coordinator.addDeviceRequest?.source == .general)
+    }
+
+    @Test("Unknown visitor add requests preserve source")
+    func unknownVisitorAddRequestPreservesSource() {
+        let coordinator = AppNavigationCoordinator.shared
+        clearCoordinatorRequests(coordinator)
+        defer { clearCoordinatorRequests(coordinator) }
+
+        let unknownID = "UNKNOWN-\(UUID().uuidString)".uppercased()
+        coordinator.openAddDevice(unknownID.lowercased(), source: .unknownVisitor)
+
+        #expect(coordinator.addDeviceRequest?.deviceID == unknownID)
+        #expect(coordinator.addDeviceRequest?.source == .unknownVisitor)
     }
 
     @Test("Unknown visitor notification routes to dialog unless device is now known")

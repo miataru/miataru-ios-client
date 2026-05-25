@@ -2,8 +2,11 @@ version 3.1.15
 - Reworked the unknown-device workflow so tapping an unknown visitor row, tapping its options button, or opening an unknown-visitor notification presents the same explanatory action sheet.
 - The unknown-device sheet now shows the known device details from the visitor row, including device ID, cached info/slogan, cached location, and visit time when available.
 - Clarified the localized unknown-device copy across all app languages, including that the current position has not yet been shared, that adding allows access selection, and that ignored devices receive no position data.
+- Locked the Device ID field when adding an unknown visitor from the Devices tab, QR-tab visitor history, standalone visitor history, or unknown-visitor notification flow, while keeping normal Add Device and unknown deep-link prefills editable.
+- Hid QR scanning from the locked unknown-visitor Add Device flow and left the prefilled Device ID visible as read-only context.
 - Centralized `miataru://<DeviceID>` parsing and routing so existing QR codes, in-app scanner input, and external Camera-app links keep working while known devices open directly and unknown devices open the add-device flow.
-- Added regression coverage for URI compatibility, case-insensitive known-device resolution, known-vs-unknown routing, and unknown-visitor notification branching.
+- Added regression coverage for URI compatibility, case-insensitive known-device resolution, known-vs-unknown routing, unknown-visitor notification branching, and Add Device request source preservation.
+- Documented the locked unknown-visitor Add Device flow and its separation from normal Add Device/deep-link behavior.
 - Updated project metadata for version 3.1.15.
 
 version 3.1.14

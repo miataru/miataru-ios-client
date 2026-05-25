@@ -14,6 +14,7 @@ struct iPhone_AddDeviceView: View {
     @ObservedObject var store: KnownDeviceStore
     @Binding var isPresented: Bool
     var prefillDeviceID: String? = nil
+    var allowsDeviceIDEditing: Bool = true
     @State private var deviceName: String = ""
     @State private var deviceID: String = ""
     @State private var deviceColor: Color = Self.randomVividColor()
@@ -74,10 +75,11 @@ struct iPhone_AddDeviceView: View {
         return vividColors.randomElement() ?? .blue
     }
     
-    init(store: KnownDeviceStore, isPresented: Binding<Bool>, prefillDeviceID: String? = nil) {
+    init(store: KnownDeviceStore, isPresented: Binding<Bool>, prefillDeviceID: String? = nil, allowsDeviceIDEditing: Bool = true) {
         self.store = store
         self._isPresented = isPresented
         self.prefillDeviceID = prefillDeviceID
+        self.allowsDeviceIDEditing = allowsDeviceIDEditing
         if let prefill = prefillDeviceID {
             _deviceID = State(initialValue: prefill)
         }
@@ -108,10 +110,21 @@ struct iPhone_AddDeviceView: View {
                     }
                 }
                 Section(header: Text("device_id")) {
-                    Button(action: { isShowingScanner = true }) {
-                        Label("scan_qr_code", systemImage: "qrcode.viewfinder")
+                    if allowsDeviceIDEditing {
+                        Button(action: { isShowingScanner = true }) {
+                            Label("scan_qr_code", systemImage: "qrcode.viewfinder")
+                        }
+                        .accessibilityIdentifier("add_device_scan_qr_button")
+                        TextField("device_id2", text: $deviceID)
+                            .accessibilityIdentifier("add_device_device_id_field")
+                    } else {
+                        Text(deviceID.isEmpty ? "-" : deviceID)
+                            .font(.footnote.monospaced())
+                            .foregroundColor(.secondary)
+                            .textSelection(.enabled)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("add_device_locked_device_id")
                     }
-                    TextField("device_id2", text: $deviceID)
                 }
                 Section(header: Text("device_color")) {
                     Button(action: { showColorPickerSheet = true }) {

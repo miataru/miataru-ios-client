@@ -234,6 +234,7 @@ struct miataruApp: App {
     @State private var rotationLockCancellable: AnyCancellable? = nil
     @State private var showAddDeviceSheet = false
     @State private var pendingDeviceID: String? = nil
+    @State private var pendingAddDeviceSource: AddDeviceRequestSource = .general
     @State private var activeUnknownDeviceAction: UnknownDeviceActionRequest? = nil
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
@@ -316,9 +317,17 @@ struct miataruApp: App {
                 .onChange(of: appNavigation.unknownDeviceActionRequest) { _, request in
                     presentUnknownDeviceActionRequest(request)
                 }
-                .sheet(isPresented: $showAddDeviceSheet, onDismiss: { pendingDeviceID = nil }) {
+                .sheet(isPresented: $showAddDeviceSheet, onDismiss: {
+                    pendingDeviceID = nil
+                    pendingAddDeviceSource = .general
+                }) {
                     if let deviceID = pendingDeviceID {
-                        iPhone_AddDeviceView(store: KnownDeviceStore.shared, isPresented: $showAddDeviceSheet, prefillDeviceID: deviceID)
+                        iPhone_AddDeviceView(
+                            store: KnownDeviceStore.shared,
+                            isPresented: $showAddDeviceSheet,
+                            prefillDeviceID: deviceID,
+                            allowsDeviceIDEditing: pendingAddDeviceSource != .unknownVisitor
+                        )
                     }
                 }
                 .sheet(item: $activeUnknownDeviceAction) { request in
@@ -379,6 +388,7 @@ struct miataruApp: App {
             if DeviceLinkResolver.canonicalKnownDeviceID(for: deviceID) != nil {
                 showAddDeviceSheet = false
                 pendingDeviceID = nil
+                pendingAddDeviceSource = .general
             }
             appNavigation.openDeviceLink(deviceID)
         }
@@ -388,6 +398,7 @@ struct miataruApp: App {
     private func presentAddDeviceRequest(_ request: AddDeviceRequest?) {
         guard let request else { return }
         pendingDeviceID = request.deviceID
+        pendingAddDeviceSource = request.source
         activeUnknownDeviceAction = nil
         showAddDeviceSheet = true
         appNavigation.consumeAddDeviceRequest(request)
@@ -419,7 +430,7 @@ struct miataruApp: App {
         if let knownDeviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) {
             appNavigation.openKnownDevice(knownDeviceID)
         } else {
-            appNavigation.openAddDevice(rawDeviceID)
+            appNavigation.openAddDevice(rawDeviceID, source: .unknownVisitor)
         }
     }
 

@@ -194,7 +194,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                             get: { pendingDeviceItem != nil },
                             set: { if !$0 { pendingDeviceItem = nil } }
                         ),
-                        prefillDeviceID: item.deviceID
+                        prefillDeviceID: item.deviceID,
+                        allowsDeviceIDEditing: false
                     )
                     .onDisappear {
                         Task {

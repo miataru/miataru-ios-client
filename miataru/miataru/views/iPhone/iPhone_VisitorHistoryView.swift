@@ -237,7 +237,8 @@ struct iPhone_VisitorHistoryView: View {
                     get: { pendingDeviceItem != nil },
                     set: { if !$0 { pendingDeviceItem = nil } }
                 ),
-                prefillDeviceID: item.deviceID
+                prefillDeviceID: item.deviceID,
+                allowsDeviceIDEditing: false
             )
             .onDisappear {
                 // Refresh visitor history after adding device to show updated name
