@@ -243,6 +243,7 @@ struct miataruApp: App {
     @State private var pendingDeviceID: String? = nil
     @State private var pendingAddDeviceSource: AddDeviceRequestSource = .general
     @State private var activeUnknownDeviceAction: UnknownDeviceActionRequest? = nil
+    @State private var unknownDeviceActionDetent: PresentationDetent = .large
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
@@ -354,7 +355,7 @@ struct miataruApp: App {
                             activeUnknownDeviceAction = nil
                         }
                     )
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.medium, .large], selection: $unknownDeviceActionDetent)
                     .presentationDragIndicator(.visible)
                 }
         }
@@ -408,6 +409,7 @@ struct miataruApp: App {
     @MainActor
     private func presentUnknownDeviceActionRequest(_ request: UnknownDeviceActionRequest?) {
         guard let request else { return }
+        unknownDeviceActionDetent = .large
         activeUnknownDeviceAction = request
         appNavigation.consumeUnknownDeviceActionRequest(request)
     }

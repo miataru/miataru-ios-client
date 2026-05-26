@@ -1,4 +1,5 @@
 version 3.1.16
+- Opened the unknown-device action sheet at its large detent by default so the Add/Ignore buttons are visible immediately when adding from unknown visitors or notification flows.
 - Made background location tracking reboot-resilient by keeping significant-change monitoring active as a sparse recovery anchor whenever user-enabled tracking has `Always` authorization and DeviceKey authentication is not blocking updates.
 - Frequent background updates now run alongside the significant-change recovery anchor instead of replacing it, so iOS can relaunch Miataru after system termination or reboot on the next significant location change.
 - Added launch recovery for Core Location starts and normal app starts, reconstructing tracking mode from settings, authorization, frequent-mode expiration, battery auto-disable, and DeviceKey auth state.
