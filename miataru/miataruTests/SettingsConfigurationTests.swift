@@ -453,6 +453,37 @@ struct SettingsConfigurationTests {
         ) == .backgroundSignificantChange)
     }
 
+    @Test("Background lifecycle context keeps frequent mode active even before UIKit reports background")
+    func backgroundLifecycleContextKeepsFrequentModeActiveBeforeUIKitStateCatchesUp() {
+        let forcedBackgroundState = LocationManager.effectiveApplicationStateForTracking(
+            currentState: .active,
+            context: .forceBackground
+        )
+        #expect(forcedBackgroundState == .background)
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: forcedBackgroundState,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .backgroundFrequent(distanceFilter: 50, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
+
+        let forcedForegroundState = LocationManager.effectiveApplicationStateForTracking(
+            currentState: .background,
+            context: .forceForeground
+        )
+        #expect(forcedForegroundState == .active)
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: forcedForegroundState,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .foregroundHighAccuracy)
+    }
+
     @Test("Significant-change recovery anchor is kept only for active Always-authorized tracking")
     func significantChangeRecoveryAnchorRequiresActiveAlwaysAuthorizedTracking() {
         #expect(LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(

@@ -36,6 +36,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
+    private let recoveryAnchorLocationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
     private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
     private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
@@ -86,6 +87,12 @@ final class LocationManager: NSObject, ObservableObject {
         case backgroundFrequent(distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
     }
 
+    enum TrackingApplicationStateContext: Equatable {
+        case current
+        case forceForeground
+        case forceBackground
+    }
+
     struct LocationSubmissionDeduplicationKey: Equatable {
         let timestampSeconds: Int64
         let latitudeMicrodegrees: Int64
@@ -102,6 +109,11 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
         locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
+        recoveryAnchorLocationManager.delegate = self
+        recoveryAnchorLocationManager.allowsBackgroundLocationUpdates = true
+        recoveryAnchorLocationManager.pausesLocationUpdatesAutomatically = false
+        recoveryAnchorLocationManager.showsBackgroundLocationIndicator = false
+        recoveryAnchorLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
         if CLLocationManager.headingAvailable() {
             locationManager.headingFilter = 1
         }
@@ -273,7 +285,9 @@ final class LocationManager: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }
-                self.locationManager.activityType = Self.activityTypeFrom(newValue)
+                let activityType = Self.activityTypeFrom(newValue)
+                self.locationManager.activityType = activityType
+                self.recoveryAnchorLocationManager.activityType = activityType
                 if self.isTracking {
                     // Restart location updates to apply new activityType immediately
                     self.applyTrackingMode(reason: "activity type changed")
@@ -356,6 +370,18 @@ final class LocationManager: NSObject, ObservableObject {
             distanceFilter: configuration.distanceFilter,
             desiredAccuracy: configuration.desiredAccuracy
         )
+    }
+
+    static func effectiveApplicationStateForTracking(currentState: UIApplication.State,
+                                                     context: TrackingApplicationStateContext) -> UIApplication.State {
+        switch context {
+        case .current:
+            return currentState
+        case .forceForeground:
+            return .active
+        case .forceBackground:
+            return .background
+        }
     }
 
     static func batteryPercent(from batteryLevel: Float) -> Int? {
@@ -600,8 +626,11 @@ final class LocationManager: NSObject, ObservableObject {
         applyTrackingMode(reason: "end navigation location session")
     }
 
-    private func applyTrackingMode(reason: String) {
-        let state = UIApplication.shared.applicationState
+    private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
+        let state = Self.effectiveApplicationStateForTracking(
+            currentState: UIApplication.shared.applicationState,
+            context: applicationStateContext
+        )
         let status = locationManager.authorizationStatus
 
         if settings.deviceKeyAuthBlocked {
@@ -683,6 +712,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
         locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.stopMonitoringSignificantLocationChanges()
         stopHeadingUpdates()
         locationManager.desiredAccuracy = configuration.desiredAccuracy
         locationManager.distanceFilter = configuration.distanceFilter
@@ -705,7 +735,8 @@ final class LocationManager: NSObject, ObservableObject {
     private func startSignificantChangeRecoveryAnchor(reason: String) {
         guard !isSignificantChangeRecoveryAnchorActive else { return }
         debugLog("[LocationManager] Starting significant-change recovery anchor (\(reason))")
-        locationManager.startMonitoringSignificantLocationChanges()
+        locationManager.stopMonitoringSignificantLocationChanges()
+        recoveryAnchorLocationManager.startMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = true
     }
 
@@ -946,7 +977,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Background Tracking API
     func startBackgroundTracking() {
-        applyTrackingMode(reason: "start background tracking")
+        applyTrackingMode(reason: "start background tracking", applicationStateContext: .forceBackground)
     }
     
     func stopBackgroundTracking() {
@@ -970,7 +1001,7 @@ final class LocationManager: NSObject, ObservableObject {
         guard isTracking else { return }
         // Check daily reset on foreground entry so UI reflects a new day immediately
         maybeResetBackgroundMetricsIfNeeded()
-        applyTrackingMode(reason: "app did enter foreground")
+        applyTrackingMode(reason: "app did enter foreground", applicationStateContext: .forceForeground)
     }
 
     func appDidEnterBackground() {
@@ -978,13 +1009,15 @@ final class LocationManager: NSObject, ObservableObject {
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
         guard isTracking else { return }
-        applyTrackingMode(reason: "app did enter background")
+        applyTrackingMode(reason: "app did enter background", applicationStateContext: .forceBackground)
     }
 
     private func stopAllLocationServices() {
         debugLog("[LocationManager] Stopping all location services")
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
+        recoveryAnchorLocationManager.stopUpdatingLocation()
+        recoveryAnchorLocationManager.stopMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = false
         stopHeadingUpdates()
         stopForegroundLocationTimer()

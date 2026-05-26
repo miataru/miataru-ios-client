@@ -4,8 +4,9 @@ version 3.1.16
 - Frequent background updates now run alongside the significant-change recovery anchor instead of replacing it, so iOS can relaunch Miataru after system termination or reboot on the next significant location change.
 - Added launch recovery for Core Location starts and normal app starts, reconstructing tracking mode from settings, authorization, frequent-mode expiration, battery auto-disable, and DeviceKey auth state.
 - Frequent-mode expiration and low-battery auto-disable now only disable the frequent/high-accuracy portion and fall back to standard significant-change tracking.
+- Background lifecycle transitions now force the background tracking policy immediately, and the significant-change recovery anchor now uses a dedicated `CLLocationManager` so frequent background updates can run through standard location updates without being displaced by the recovery anchor.
 - Added upload deduplication for parallel location callbacks so frequent and significant-change services do not submit the same location twice.
-- Added regression coverage for recovery-anchor eligibility, launch recovery gating, location-launch detection, and duplicate callback suppression.
+- Added regression coverage for recovery-anchor eligibility, launch recovery gating, location-launch detection, background lifecycle mode selection, and duplicate callback suppression.
 - Updated project metadata for version 3.1.16.
 
 version 3.1.15
