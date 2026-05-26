@@ -52,6 +52,8 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var pendingLocationUpdateCount: Int = 0
     private var pendingAlwaysAuthorizationRequestTask: Task<Void, Never>?
     private var didAttemptAlwaysAuthorizationInCurrentSession = false
+    private var isSignificantChangeRecoveryAnchorActive = false
+    private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
     private let headingAccuracyThreshold: Double = 35
@@ -82,6 +84,12 @@ final class LocationManager: NSObject, ObservableObject {
         case foregroundHighAccuracy
         case backgroundSignificantChange
         case backgroundFrequent(distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
+    }
+
+    struct LocationSubmissionDeduplicationKey: Equatable {
+        let timestampSeconds: Int64
+        let latitudeMicrodegrees: Int64
+        let longitudeMicrodegrees: Int64
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
@@ -366,6 +374,60 @@ final class LocationManager: NSObject, ObservableObject {
         let normalizedThreshold = FrequentBackgroundBatteryAutoDisableLevel.normalized(thresholdPercent)
         return batteryPercent <= normalizedThreshold
     }
+
+    static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
+                                                              authorizationStatus: CLAuthorizationStatus,
+                                                              deviceKeyAuthBlocked: Bool) -> Bool {
+        guard trackAndReportLocation,
+              !deviceKeyAuthBlocked else {
+            return false
+        }
+
+        return authorizationStatus == .authorizedAlways
+    }
+
+    static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
+                                                 deviceKeyAuthBlocked: Bool) -> Bool {
+        trackAndReportLocation && !deviceKeyAuthBlocked
+    }
+
+    static func locationSubmissionDeduplicationKey(for location: CLLocation) -> LocationSubmissionDeduplicationKey? {
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        let timestamp = location.timestamp.timeIntervalSince1970
+        guard latitude.isFinite,
+              longitude.isFinite,
+              timestamp.isFinite else {
+            return nil
+        }
+
+        return LocationSubmissionDeduplicationKey(
+            timestampSeconds: Int64(timestamp.rounded(.down)),
+            latitudeMicrodegrees: Int64((latitude * 1_000_000).rounded()),
+            longitudeMicrodegrees: Int64((longitude * 1_000_000).rounded())
+        )
+    }
+
+    static func shouldSubmitLocationForUpload(_ location: CLLocation,
+                                              lastSubmittedKey: LocationSubmissionDeduplicationKey?) -> Bool {
+        guard let candidateKey = locationSubmissionDeduplicationKey(for: location),
+              let lastSubmittedKey else {
+            return true
+        }
+
+        return candidateKey != lastSubmittedKey
+    }
+
+    static func frequentBackgroundModeSwitchReason(didExpire: Bool,
+                                                   didDisableForBattery: Bool) -> String {
+        if didDisableForBattery {
+            return "frequent background battery auto-disable during location update"
+        }
+        if didExpire {
+            return "frequent background expired during location update"
+        }
+        return "frequent background mode changed during location update"
+    }
     
     // MARK: - Permissions
     func requestLocationPermission() {
@@ -486,12 +548,35 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("startTracking called")
         if settings.deviceKeyAuthBlocked {
             debugLog("startTracking blocked due to DeviceKey auth failure")
+            isTracking = false
+            stopAllLocationServices()
             return
         }
         ensureAuthorizationIfNeeded()
         isTracking = true
         handleFrequentBackgroundLocationExpirationIfNeeded()
         applyTrackingMode(reason: "start tracking")
+    }
+
+    func restoreTrackingAfterLaunch(reason: String) {
+        debugLog("[LocationManager] Restoring tracking after launch: \(reason)")
+        authorizationStatus = locationManager.authorizationStatus
+        handleFrequentBackgroundLocationExpirationIfNeeded()
+        refreshFrequentBackgroundTrackingReminder()
+
+        guard Self.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        ) else {
+            isTracking = false
+            stopAllLocationServices()
+            return
+        }
+
+        ensureAuthorizationIfNeeded()
+        isTracking = true
+        applyTrackingMode(reason: "restore tracking after launch: \(reason)")
+        refreshPendingLocationUpdateCount()
     }
     
     func stopTracking() {
@@ -519,6 +604,13 @@ final class LocationManager: NSObject, ObservableObject {
         let state = UIApplication.shared.applicationState
         let status = locationManager.authorizationStatus
 
+        if settings.deviceKeyAuthBlocked {
+            debugLog("[LocationManager] applyTrackingMode stopped because DeviceKey auth is blocked")
+            isTracking = false
+            stopAllLocationServices()
+            return
+        }
+
         handleFrequentBackgroundLocationExpirationIfNeeded()
         if isTracking, state != .active {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
@@ -540,6 +632,7 @@ final class LocationManager: NSObject, ObservableObject {
             hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty
         )
         debugLog("[LocationManager] applyTrackingMode reason=\(reason), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), mode=\(mode)")
+        ensureSignificantChangeRecoveryAnchorIfNeeded(reason: reason, authorizationStatus: status)
         apply(mode)
     }
 
@@ -565,7 +658,6 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("Calling startHighAccuracyUpdates")
         locationManager.allowsBackgroundLocationUpdates = false
         debugLog("allowsBackgroundLocationUpdates set to false (foreground)")
-        locationManager.stopMonitoringSignificantLocationChanges()
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.startUpdatingLocation()
@@ -584,19 +676,37 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("allowsBackgroundLocationUpdates set to true (background)")
         locationManager.stopUpdatingLocation()
         stopHeadingUpdates()
-        locationManager.startMonitoringSignificantLocationChanges()
+        startSignificantChangeRecoveryAnchor(reason: "background significant-change mode")
         stopForegroundLocationTimer()
     }
 
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
         locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.stopMonitoringSignificantLocationChanges()
         stopHeadingUpdates()
         locationManager.desiredAccuracy = configuration.desiredAccuracy
         locationManager.distanceFilter = configuration.distanceFilter
         locationManager.startUpdatingLocation()
         stopForegroundLocationTimer()
+    }
+
+    private func ensureSignificantChangeRecoveryAnchorIfNeeded(reason: String, authorizationStatus: CLAuthorizationStatus) {
+        guard Self.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: settings.trackAndReportLocation && isTracking,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        ) else {
+            return
+        }
+
+        startSignificantChangeRecoveryAnchor(reason: "recovery anchor: \(reason)")
+    }
+
+    private func startSignificantChangeRecoveryAnchor(reason: String) {
+        guard !isSignificantChangeRecoveryAnchorActive else { return }
+        debugLog("[LocationManager] Starting significant-change recovery anchor (\(reason))")
+        locationManager.startMonitoringSignificantLocationChanges()
+        isSignificantChangeRecoveryAnchorActive = true
     }
 
     @discardableResult
@@ -875,6 +985,7 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("[LocationManager] Stopping all location services")
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
+        isSignificantChangeRecoveryAnchorActive = false
         stopHeadingUpdates()
         stopForegroundLocationTimer()
     }
@@ -966,16 +1077,9 @@ extension LocationManager: CLLocationManagerDelegate {
         Task { @MainActor in
             guard let location = locations.last else { return }
             let applicationState = UIApplication.shared.applicationState
-            if self.handleFrequentBackgroundLocationExpirationIfNeeded(),
-               applicationState != .active {
-                self.applyTrackingMode(reason: "frequent background expired during location update")
-                return
-            }
-            if self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow(),
-               applicationState != .active {
-                self.applyTrackingMode(reason: "frequent background battery auto-disable during location update")
-                return
-            }
+            let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
+            let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
+            let didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery
             self.latestRawLocation = location
             let mode = applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
             // Record update arrival whenever app is not active (background or inactive)
@@ -1016,7 +1120,15 @@ extension LocationManager: CLLocationManagerDelegate {
                 userHeading = smoothHeading(normalizedHeading(location.course))
             }
             
-            guard shouldAcceptUpdate else { return }
+            guard shouldAcceptUpdate else {
+                if didSwitchFrequentBackgroundMode, applicationState != .active {
+                    self.applyTrackingMode(reason: Self.frequentBackgroundModeSwitchReason(
+                        didExpire: didExpireFrequentBackgroundUpdates,
+                        didDisableForBattery: didDisableFrequentBackgroundUpdatesForBattery
+                    ))
+                }
+                return
+            }
             self.currentLocation = location
             self.lastUpdateTime = Date()
             // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
@@ -1035,8 +1147,19 @@ extension LocationManager: CLLocationManagerDelegate {
                 altitude: altitudeValue,
                 speed: speedValue
             )
-            self.sendLocationToServer(location)
+            if Self.shouldSubmitLocationForUpload(location, lastSubmittedKey: self.lastSubmittedLocationDeduplicationKey) {
+                self.lastSubmittedLocationDeduplicationKey = Self.locationSubmissionDeduplicationKey(for: location)
+                self.sendLocationToServer(location)
+            } else {
+                debugLog("[LocationManager] Skipping duplicate location upload from parallel location services")
+            }
             self.addUpdateLogEntry(mode: mode)
+            if didSwitchFrequentBackgroundMode, applicationState != .active {
+                self.applyTrackingMode(reason: Self.frequentBackgroundModeSwitchReason(
+                    didExpire: didExpireFrequentBackgroundUpdates,
+                    didDisableForBattery: didDisableFrequentBackgroundUpdatesForBattery
+                ))
+            }
         }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {

@@ -1,3 +1,12 @@
+version 3.1.16
+- Made background location tracking reboot-resilient by keeping significant-change monitoring active as a sparse recovery anchor whenever user-enabled tracking has `Always` authorization and DeviceKey authentication is not blocking updates.
+- Frequent background updates now run alongside the significant-change recovery anchor instead of replacing it, so iOS can relaunch Miataru after system termination or reboot on the next significant location change.
+- Added launch recovery for Core Location starts and normal app starts, reconstructing tracking mode from settings, authorization, frequent-mode expiration, battery auto-disable, and DeviceKey auth state.
+- Frequent-mode expiration and low-battery auto-disable now only disable the frequent/high-accuracy portion and fall back to standard significant-change tracking.
+- Added upload deduplication for parallel location callbacks so frequent and significant-change services do not submit the same location twice.
+- Added regression coverage for recovery-anchor eligibility, launch recovery gating, location-launch detection, and duplicate callback suppression.
+- Updated project metadata for version 3.1.16.
+
 version 3.1.15
 - Reworked the unknown-device workflow so tapping an unknown visitor row, tapping its options button, or opening an unknown-visitor notification presents the same explanatory action sheet.
 - The unknown-device sheet now shows the known device details from the visitor row, including device ID, cached info/slogan, cached location, and visit time when available.

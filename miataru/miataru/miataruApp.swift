@@ -148,6 +148,9 @@ fileprivate final class RotationLockController {
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        if Self.didLaunchForLocation(launchOptions) {
+            LocationManager.shared.restoreTrackingAfterLaunch(reason: "location launch")
+        }
         return true
     }
 
@@ -204,6 +207,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType
     ]
 
+    static func didLaunchForLocation(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        launchOptions?[.location] != nil
+    }
+
     private static func unknownVisitorVisitDate(from userInfo: [AnyHashable: Any]) -> Date? {
         let rawValue = userInfo[UnknownVisitorAlertService.notificationVisitTimestampUserInfoKey]
         let timestampMs: Int64?
@@ -253,10 +260,10 @@ struct miataruApp: App {
         let deviceID = thisDeviceIDManager.shared.deviceID
         debugLog("this devices ID: \(deviceID)")
         
-        // LocationManager initialisieren und Berechtigungen nur anfordern, wenn gewünscht
+        // LocationManager initialisieren und Tracking nach App-/Location-Launch rekonstruieren.
         let locationManager = LocationManager.shared
         if SettingsManager.shared.trackAndReportLocation {
-            locationManager.requestLocationPermission()
+            locationManager.restoreTrackingAfterLaunch(reason: "app launch")
         }
         // Preserve newer widget-fetched locations before rewriting shared widget data.
         WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
@@ -265,13 +272,7 @@ struct miataruApp: App {
         Task { @MainActor in
             PersistentDataCleanup.run()
         }
-        // Do NOT call startTracking() here!
-        // Tracking is now controlled by the observer in LocationManager.observeSettings().
-        // The observer listens to changes in SettingsManager.shared.trackAndReportLocation.
-        // If the setting is enabled, tracking will start automatically.
-        // If the setting is disabled, tracking will be stopped automatically.
-        // This ensures the app always respects the user's preference, even on app launch.
-        // locationManager.startTracking() // Removed to ensure correct behavior
+        // Runtime toggle changes remain controlled by LocationManager.observeSettings().
         
         // Debuging: Remove before flight !!!!! ##########################
         //UserDefaults.standard.hasCompletedOnboarding = false

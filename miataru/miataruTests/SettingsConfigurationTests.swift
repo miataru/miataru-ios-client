@@ -453,6 +453,86 @@ struct SettingsConfigurationTests {
         ) == .backgroundSignificantChange)
     }
 
+    @Test("Significant-change recovery anchor is kept only for active Always-authorized tracking")
+    func significantChangeRecoveryAnchorRequiresActiveAlwaysAuthorizedTracking() {
+        #expect(LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+
+        #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedWhenInUse,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: true
+        ))
+    }
+
+    @Test("Tracking is restored after launch only when the user setting still permits it")
+    func trackingRestoreAfterLaunchRequiresEnabledTrackingWithoutAuthBlock() {
+        #expect(LocationManager.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: false,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: true
+        ))
+        #expect(AppDelegate.didLaunchForLocation([.location: true]))
+        #expect(!AppDelegate.didLaunchForLocation(nil))
+    }
+
+    @Test("Duplicate location callbacks are suppressed before upload")
+    func duplicateLocationCallbacksAreSuppressedBeforeUpload() throws {
+        let timestamp = Date(timeIntervalSince1970: 2_000)
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.551086, longitude: 9.993682),
+            altitude: 10,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 4,
+            course: 90,
+            speed: 2,
+            timestamp: timestamp
+        )
+        let sameCallback = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.551086, longitude: 9.993682),
+            altitude: 12,
+            horizontalAccuracy: 3,
+            verticalAccuracy: 4,
+            course: 90,
+            speed: 2,
+            timestamp: timestamp
+        )
+        let laterCallback = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.551086, longitude: 9.993682),
+            altitude: 10,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 4,
+            course: 90,
+            speed: 2,
+            timestamp: timestamp.addingTimeInterval(1)
+        )
+
+        let key = try #require(LocationManager.locationSubmissionDeduplicationKey(for: location))
+        #expect(LocationManager.shouldSubmitLocationForUpload(location, lastSubmittedKey: nil))
+        #expect(!LocationManager.shouldSubmitLocationForUpload(sameCallback, lastSubmittedKey: key))
+        #expect(LocationManager.shouldSubmitLocationForUpload(laterCallback, lastSubmittedKey: key))
+    }
+
     @Test("Background battery threshold only disables frequent mode when active and known")
     func backgroundBatteryThresholdOnlyDisablesFrequentModeWhenActiveAndKnown() {
         #expect(LocationManager.batteryPercent(from: 0.301) == 30)

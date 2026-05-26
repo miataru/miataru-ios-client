@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-05-22)
+# Test Catalog (as of 2026-05-26)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **215** (Unit: 199, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **218** (Unit: 202, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -113,6 +113,9 @@ Important project observations:
 | UT-SET-002 | Settings localization keys exist for all app locales | Enforce localization completeness | Required settings labels/explanations are present and non-empty for all 10 locales | Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
 | UT-SET-003 | Settings.bundle strings contain renamed labels and picker options for all locales | Keep in-app and bundle copy aligned | Every localized `Root.strings` file contains the renamed settings labels and picker values | Settings.bundle localization QA | Unit | plist/strings parsing from bundle resources | High |
 | UT-SET-004 | Settings.bundle plist defaults match the runtime settings defaults | Prevent fresh-install default drift | `Root.plist` defaults stay in sync with the centralized runtime registration table | Settings defaults QA | Unit | plist parsing + `SettingsDefaultValues` | High |
+| UT-SET-005 | Significant-change recovery anchor is kept only for active Always-authorized tracking | Protect reboot-safe tracking anchor eligibility | Active tracking with `Always` authorization keeps the recovery anchor; disabled tracking, `When In Use`, or DeviceKey auth block do not | LocationManager background tracking policy | Unit | Static policy inputs | High |
+| UT-SET-006 | Tracking is restored after launch only when the user setting still permits it | Protect app/location launch recovery gating | Launch recovery requires enabled tracking without DeviceKey auth block and detects `UIApplication.LaunchOptionsKey.location` | LocationManager / AppDelegate launch recovery | Unit | Static policy inputs + launch options dictionary | High |
+| UT-SET-007 | Duplicate location callbacks are suppressed before upload | Prevent duplicate server sends from parallel location services | Same timestamp and coordinate callback is skipped; later timestamp is accepted | LocationManager upload dedupe | Unit | Deterministic `CLLocation` fixtures | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases
@@ -201,6 +204,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
+- Added focused coverage for reboot-safe background tracking policy decisions, location-launch detection, and duplicate location callback suppression.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
