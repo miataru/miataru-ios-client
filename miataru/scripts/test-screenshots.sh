@@ -7,6 +7,7 @@ PROJECT_PATH="${PROJECT_PATH:-$REPO_ROOT/miataru.xcodeproj}"
 SCHEME="${SCHEME:-miataru-Screenshots}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
 TEST_PLAN="${TEST_PLAN:-Screenshots}"
+SCREENSHOT_SIMULATOR_PREFIX="${SCREENSHOT_SIMULATOR_PREFIX:-miataru Screenshots - }"
 
 ARTIFACT_ROOT="${ARTIFACT_ROOT:-$REPO_ROOT/artifacts}"
 SCREENSHOT_ROOT=""
@@ -519,6 +520,11 @@ find_simulator_udid_by_name() {
   '
 }
 
+screenshot_simulator_name() {
+  local device_name="$1"
+  printf '%s%s' "$SCREENSHOT_SIMULATOR_PREFIX" "$device_name"
+}
+
 ensure_simulator() {
   local simulator_name="$1"
   local device_type_id="$2"
@@ -744,7 +750,7 @@ for language in "${LANGUAGES[@]}"; do
   region="$(region_for_language "$language")"
   for spec in "${EFFECTIVE_DEVICE_SPECS[@]}"; do
     IFS='|' read -r device_name type_id <<< "$spec"
-    udid="$(ensure_simulator "$device_name" "$type_id")"
+    udid="$(ensure_simulator "$(screenshot_simulator_name "$device_name")" "$type_id")"
     run_single_capture "$language" "$region" "$device_name" "$udid"
   done
 done
