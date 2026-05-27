@@ -1,3 +1,12 @@
+version 3.1.17
+- Hardened reboot-safe background tracking after real-device testing showed that frequent background mode could still lose all updates after an iPhone restart.
+- Moved Core Location location-launch recovery into `application(_:willFinishLaunchingWithOptions:)` with a dedupe guard for `didFinishLaunchingWithOptions`, so Miataru reconstructs tracking as early as possible when iOS relaunches it for location.
+- Added a short background-task wrapper around background location uploads so a location callback received after reboot or background relaunch has protected time to reach the Miataru server before suspension.
+- Tightened the tracking resolver so background tracking requires `Always` location authorization; `When In Use` remains foreground-only instead of presenting a misleading background/reboot-capable tracking state.
+- Kept the significant-change recovery anchor on its dedicated Core Location manager while frequent background updates use standard background location updates on the primary manager.
+- Added regression coverage for the `When In Use` foreground/background split and documented the remaining iOS boundaries around force-quit, missing `Always` permission, and real-device reboot validation.
+- Updated project metadata for version 3.1.17.
+
 version 3.1.16
 - Opened the unknown-device action sheet at its large detent by default so the Add/Ignore buttons are visible immediately when adding from unknown visitors or notification flows.
 - Made background location tracking reboot-resilient by keeping significant-change monitoring active as a sparse recovery anchor whenever user-enabled tracking has `Always` authorization and DeviceKey authentication is not blocking updates.

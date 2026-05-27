@@ -14,6 +14,25 @@ import MiataruAPIClient
 import UIKit
 import Network
 
+@MainActor
+private final class LocationBackgroundTaskToken {
+    private var identifier: UIBackgroundTaskIdentifier = .invalid
+
+    init(name: String) {
+        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            Task { @MainActor in
+                self?.end()
+            }
+        }
+    }
+
+    func end() {
+        guard identifier != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(identifier)
+        identifier = .invalid
+    }
+}
+
 /// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
 final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
@@ -346,8 +365,10 @@ final class LocationManager: NSObject, ObservableObject {
         guard isTracking else { return .stopped }
 
         switch authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
+        case .authorizedAlways:
             break
+        case .authorizedWhenInUse:
+            return applicationState == .active ? .foregroundHighAccuracy : .stopped
         default:
             return .stopped
         }
@@ -712,7 +733,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
         locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.stopMonitoringSignificantLocationChanges()
+        // Keep significant-change monitoring alive on the recovery manager so reboot relaunch remains registered.
         stopHeadingUpdates()
         locationManager.desiredAccuracy = configuration.desiredAccuracy
         locationManager.distanceFilter = configuration.distanceFilter
@@ -726,6 +747,7 @@ final class LocationManager: NSObject, ObservableObject {
             authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
         ) else {
+            stopSignificantChangeRecoveryAnchor(reason: "recovery anchor no longer eligible: \(reason)")
             return
         }
 
@@ -733,11 +755,17 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func startSignificantChangeRecoveryAnchor(reason: String) {
-        guard !isSignificantChangeRecoveryAnchorActive else { return }
-        debugLog("[LocationManager] Starting significant-change recovery anchor (\(reason))")
-        locationManager.stopMonitoringSignificantLocationChanges()
+        let action = isSignificantChangeRecoveryAnchorActive ? "Reasserting" : "Starting"
+        debugLog("[LocationManager] \(action) significant-change recovery anchor (\(reason))")
         recoveryAnchorLocationManager.startMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = true
+    }
+
+    private func stopSignificantChangeRecoveryAnchor(reason: String) {
+        guard isSignificantChangeRecoveryAnchorActive else { return }
+        debugLog("[LocationManager] Stopping significant-change recovery anchor (\(reason))")
+        recoveryAnchorLocationManager.stopMonitoringSignificantLocationChanges()
+        isSignificantChangeRecoveryAnchorActive = false
     }
 
     @discardableResult
@@ -837,8 +865,17 @@ final class LocationManager: NSObject, ObservableObject {
         let applicationState = UIApplication.shared.applicationState
         let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
         let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
+        let backgroundTask = beginLocationUploadBackgroundTaskIfNeeded(for: applicationState)
         self.serverUpdateStatus = .updating
         Task {
+            defer {
+                if let backgroundTask {
+                    Task { @MainActor in
+                        backgroundTask.end()
+                    }
+                }
+            }
+
             let result = await locationUpdateDeliveryCoordinator.submit(
                 serverURL: serverURL,
                 payload: payload,
@@ -873,6 +910,12 @@ final class LocationManager: NSObject, ObservableObject {
                 }
             }
         }
+    }
+
+    @MainActor
+    private func beginLocationUploadBackgroundTaskIfNeeded(for applicationState: UIApplication.State) -> LocationBackgroundTaskToken? {
+        guard applicationState != .active else { return nil }
+        return LocationBackgroundTaskToken(name: "MiataruLocationUpdate")
     }
 
     private func frequentBackgroundLocationDeliveryDelay(for applicationState: UIApplication.State) -> TimeInterval? {

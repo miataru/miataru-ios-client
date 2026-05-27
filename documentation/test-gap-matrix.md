@@ -1,4 +1,4 @@
-# Test Gap Matrix (as of 2026-05-26)
+# Test Gap Matrix (as of 2026-05-27)
 
 ## Purpose
 
@@ -25,14 +25,14 @@ Scale:
 | Unknown Visitor Alerts (`UnknownVisitorAlertEvaluator`, `UnknownVisitorAlertService`) | High | Yes (7) | No | No | No | Medium | Medium-High | Add integration tests for upload-triggered history polling, watermark progression, and end-to-end local notification scheduling. |
 | Device Info / Slogan Editing (`MiataruAppAPI`, QR/Edit-Device slogan flows) | Medium | Yes (2) | No | No | No | Low-Medium | Medium | Add save/display roundtrip coverage for the editable slogan flows, including cache refresh and server-error handling. |
 | Map Helper + Polyline Geometry (`MapHelpers`, `MKPolyline` Extensions) | High | Yes (28) | No | No | No | Medium-High | Medium | Add UI/visual coverage for live marker label composition and continue tightening numeric geometry edge cases. |
-| Location Update Pipeline (`LocationManager`, `DeviceLocationRefresher`, retry/outbox path) | Very High | Yes (22) | No | No | No | Medium-High | Medium | Add integration tests for GPS updates, network failures, retry/backoff, outbox flush triggers, and real background/reboot behavior on device. |
+| Location Update Pipeline (`LocationManager`, `DeviceLocationRefresher`, retry/outbox path) | Very High | Yes (22) | No | No | No | Medium-High | Medium | Add integration tests for GPS updates, network failures, retry/backoff, outbox flush triggers, protected background uploads, and real background/reboot behavior on device. |
 | Settings Defaults + Localization (`SettingsManager`, `Settings.bundle`, `Localizable.xcstrings`) | Medium-High | Yes (4) | No | No | Yes (1 targeted settings-navigation smoke) | Medium | Medium | Add integration coverage for fresh-install defaults, one-time upgrade migration wiring in app bootstrap, and locale synchronization edge cases. |
 | Device Access / Sync (`AllowedDeviceListManager`, SyncQueue) | High | No | No | No | No | None | High | Add tests for sync triggers, conflict cases, error paths, and idempotent sync behavior. |
 | Persistence Stores (`DeviceLocationCacheStore`, `DeviceHistoryCacheStore`, `DeviceGroupStore`, `DeviceSloganCacheStore`, `LocationUpdateOutboxStore`) | High | Partly direct | No | No | No | Low-Medium | High | Expand serialization roundtrip, migration-safe loading, corruption handling, and thread-safety tests for remaining stores. |
 | Widget Data Flow (`WidgetDataSyncCoordinator`, `SharedWidgetData`, `WidgetMapSnapshotGenerator`) | Medium-High | No | No | No | No | None | High | Add contract tests for payload formats, data filtering, and snapshot failure cases. |
 | Device Key / Auth (`DeviceKeyAuthHandler`) | High | No | No | No | No | None | High | Add unit tests for signature/format validation and strict negative cases. |
 | Core UI Flows (Onboarding, Device/Group Lists, Navigation Screens) | Very High | No | No | No | Yes (15 deterministic flows incl. screenshot suite) | Medium-High | Medium | Next expansion: device map, group flow, and navigation start/stop including abort paths. |
-| App Bootstrap (`miataruApp`, `AppState`, `AppDelegate`) | Medium | Yes (1) | No | No | No | Low | Medium | Add smoke integration tests for startup state, initial settings, and notification/permission branching. |
+| App Bootstrap (`miataruApp`, `AppState`, `AppDelegate`) | Medium | Yes (1) | No | No | No | Low | Medium | Add smoke integration tests for startup state, early location-launch recovery, initial settings, and notification/permission branching. |
 
 ## Prioritized Backlog
 
@@ -47,7 +47,7 @@ Scale:
 | P2 (done 2026-03-14) | Protect multi-word device slogan input during editing | Done: live input keeps regular spaces while final save normalization still trims edges | Added `DeviceSloganSanitizationTests` and split slogan draft sanitization from save cleansing. |
 | P1 (done 2026-05-22) | Stabilize route ghost progress regressions | Done: direction-specific speed/timestamp use, monotonic tick progress, polyline-length distance fallback, and cached-route ghost visibility are unit-tested | Expanded `RouteGhostCalculatorTests` and added `RouteGhostPresentationPolicy` coverage. |
 | P1 (done 2026-05-24) | Protect unknown-device URI and notification routing | Done: canonical `miataru://` parsing, scanner prefix compatibility, case-insensitive known-device resolution, coordinator add/open routing, and notification known-vs-unknown branching are unit-tested | Added `DeviceLinkResolverTests` and expanded unknown-device dialog localization checks. |
-| P1 (done 2026-05-26) | Protect reboot-safe background tracking decisions | Done: recovery-anchor eligibility, launch recovery gating, location-launch detection, background lifecycle mode selection, and duplicate location callback suppression are unit-tested | Expanded `SettingsConfigurationTests` with `LocationManager` and `AppDelegate` recovery decision coverage. |
+| P1 (done 2026-05-27) | Protect reboot-safe background tracking decisions | Done: recovery-anchor eligibility, launch recovery gating, location-launch detection, foreground-only `When In Use` behavior, background lifecycle mode selection, and duplicate location callback suppression are unit-tested | Expanded `SettingsConfigurationTests` with `LocationManager` and `AppDelegate` recovery decision coverage. |
 | P1 | No integration tests for location/routing pipeline | Core app function with many dependencies | Integration test setup with fake location + fake API for route/update lifecycle. |
 | P1 | No integration tests for unknown-visitor alert trigger wiring | New feature relies on two asynchronous trigger paths (`submit` + outbox flush) and server history deltas | Add integration tests for both trigger hooks and “from activation time” watermark behavior. |
 | P1 | No tests for AllowedDevice sync | Data consistency and access logic are critical | Unit + integration tests for SyncQueue, conflict handling, repeatability. |

@@ -146,11 +146,16 @@ fileprivate final class RotationLockController {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    private var didRestoreTrackingForLocationLaunch = false
+
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        restoreTrackingForLocationLaunchIfNeeded(launchOptions)
+        return true
+    }
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
-        if Self.didLaunchForLocation(launchOptions) {
-            LocationManager.shared.restoreTrackingAfterLaunch(reason: "location launch")
-        }
+        restoreTrackingForLocationLaunchIfNeeded(launchOptions)
         return true
     }
 
@@ -209,6 +214,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     static func didLaunchForLocation(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         launchOptions?[.location] != nil
+    }
+
+    static func shouldRestoreLocationLaunch(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?, didRestore: Bool) -> Bool {
+        didLaunchForLocation(launchOptions) && !didRestore
+    }
+
+    private func restoreTrackingForLocationLaunchIfNeeded(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        guard Self.shouldRestoreLocationLaunch(launchOptions, didRestore: didRestoreTrackingForLocationLaunch) else {
+            return
+        }
+
+        didRestoreTrackingForLocationLaunch = true
+        LocationManager.shared.restoreTrackingAfterLaunch(reason: "location launch")
     }
 
     private static func unknownVisitorVisitDate(from userInfo: [AnyHashable: Any]) -> Date? {

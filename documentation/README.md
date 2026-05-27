@@ -30,7 +30,7 @@ These files are retained as historical evidence. They should not be edited merel
 
 ## Current Project Facts
 
-- Current app version: `3.1.16`
+- Current app version: `3.1.17`
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`

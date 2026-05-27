@@ -424,6 +424,24 @@ struct SettingsConfigurationTests {
 
         #expect(LocationManager.resolvedTrackingMode(
             isTracking: true,
+            authorizationStatus: .authorizedWhenInUse,
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .stopped)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedWhenInUse,
+            applicationState: .active,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .foregroundHighAccuracy)
+
+        #expect(LocationManager.resolvedTrackingMode(
+            isTracking: true,
             authorizationStatus: .authorizedAlways,
             applicationState: .background,
             frequentUpdatesEnabled: true,
@@ -525,6 +543,9 @@ struct SettingsConfigurationTests {
         ))
         #expect(AppDelegate.didLaunchForLocation([.location: true]))
         #expect(!AppDelegate.didLaunchForLocation(nil))
+        #expect(AppDelegate.shouldRestoreLocationLaunch([.location: true], didRestore: false))
+        #expect(!AppDelegate.shouldRestoreLocationLaunch([.location: true], didRestore: true))
+        #expect(!AppDelegate.shouldRestoreLocationLaunch(nil, didRestore: false))
     }
 
     @Test("Duplicate location callbacks are suppressed before upload")

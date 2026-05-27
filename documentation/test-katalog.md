@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-05-26)
+# Test Catalog (as of 2026-05-27)
 
 ## 1) Scope and Classification
 
@@ -114,9 +114,9 @@ Important project observations:
 | UT-SET-003 | Settings.bundle strings contain renamed labels and picker options for all locales | Keep in-app and bundle copy aligned | Every localized `Root.strings` file contains the renamed settings labels and picker values | Settings.bundle localization QA | Unit | plist/strings parsing from bundle resources | High |
 | UT-SET-004 | Settings.bundle plist defaults match the runtime settings defaults | Prevent fresh-install default drift | `Root.plist` defaults stay in sync with the centralized runtime registration table | Settings defaults QA | Unit | plist parsing + `SettingsDefaultValues` | High |
 | UT-SET-005 | Significant-change recovery anchor is kept only for active Always-authorized tracking | Protect reboot-safe tracking anchor eligibility | Active tracking with `Always` authorization keeps the recovery anchor; disabled tracking, `When In Use`, or DeviceKey auth block do not | LocationManager background tracking policy | Unit | Static policy inputs | High |
-| UT-SET-006 | Tracking is restored after launch only when the user setting still permits it | Protect app/location launch recovery gating | Launch recovery requires enabled tracking without DeviceKey auth block and detects `UIApplication.LaunchOptionsKey.location` | LocationManager / AppDelegate launch recovery | Unit | Static policy inputs + launch options dictionary | High |
+| UT-SET-006 | Tracking is restored after launch only when the user setting still permits it | Protect app/location launch recovery gating | Launch recovery requires enabled tracking without DeviceKey auth block and detects `UIApplication.LaunchOptionsKey.location`; AppDelegate restores location launches early and dedupes later launch handling | LocationManager / AppDelegate launch recovery | Unit | Static policy inputs + launch options dictionary | High |
 | UT-SET-007 | Duplicate location callbacks are suppressed before upload | Prevent duplicate server sends from parallel location services | Same timestamp and coordinate callback is skipped; later timestamp is accepted | LocationManager upload dedupe | Unit | Deterministic `CLLocation` fixtures | High |
-| UT-SET-008 | Background lifecycle context keeps frequent mode active even before UIKit reports background | Protect background transition race | A background lifecycle event forces `.background`, so frequent background mode starts even if `UIApplication` still reports `.active`; foreground forcing returns high accuracy | LocationManager lifecycle tracking policy | Unit | Static app-state/context inputs | High |
+| UT-SET-008 | Background lifecycle context keeps frequent mode active even before UIKit reports background | Protect background transition race | A background lifecycle event forces `.background`, so frequent background mode starts even if `UIApplication` still reports `.active`; foreground forcing returns high accuracy; `When In Use` authorization remains foreground-only | LocationManager lifecycle tracking policy | Unit | Static app-state/context inputs | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases
@@ -205,7 +205,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Added focused coverage for reboot-safe background tracking policy decisions, background lifecycle mode selection, location-launch detection, and duplicate location callback suppression.
+- Added focused coverage for reboot-safe background tracking policy decisions, background lifecycle mode selection, foreground-only `When In Use` authorization, location-launch detection, and duplicate location callback suppression.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
