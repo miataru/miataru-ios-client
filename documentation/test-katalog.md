@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **219** (Unit: 203, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **220** (Unit: 204, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -74,14 +74,15 @@ Important project observations:
 | UT-VHV-003 | Device resolution after adding unknown device | unknown->known transition | First nil, after add() name resolves | VisitorHistory / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
 | UT-VHV-004 | Visitor history sorting by timestamp | Validate sorting logic | 3 visitors sorted descending by TimeStampDate | VisitorHistory | Unit | Fixed time offsets | Medium |
 | UT-VHV-005 | Shortened device ID format | Validate display format | Long ID becomes `prefix...suffix` | VisitorHistory (UI helper) | Unit | Static string ID | Low |
-| UT-DLR-001 | Canonical miataru URI parses device ID | Preserve external URI behavior | `miataru://device_abc-123` resolves to normalized device ID | DeviceLinkResolver | Unit | URL fixture | High |
-| UT-DLR-002 | Path-style miataru URI remains accepted for compatibility | Keep tolerant URI handling | `miataru:/device_abc-123` resolves to normalized device ID | DeviceLinkResolver | Unit | URL fixture | Medium |
+| UT-DLR-001 | Canonical miataru URI parses device ID | Preserve external URI behavior | `miataru://Device_abc-123` resolves to the case-preserved device ID | DeviceLinkResolver | Unit | URL fixture | High |
+| UT-DLR-002 | Path-style miataru URI remains accepted for compatibility | Keep tolerant URI handling | `miataru:/device_abc-123` resolves to the case-preserved device ID | DeviceLinkResolver | Unit | URL fixture | Medium |
 | UT-DLR-003 | Wrong URI scheme is ignored | Reject unrelated links | `https://...` returns nil | DeviceLinkResolver | Unit | URL fixture | High |
 | UT-DLR-004 | Empty miataru URI is ignored | Avoid blank add/open requests | `miataru://` returns nil | DeviceLinkResolver | Unit | URL fixture | High |
-| UT-DLR-005 | Canonical scanner code keeps miataru prefix compatibility | Protect QR scanner and QR generation contract | `miataru://...` scanner input and generated URL strings stay canonical | DeviceLinkResolver | Unit | Plain strings | High |
-| UT-DLR-006 | Known device resolution is case-insensitive and returns canonical stored ID | Preserve old QR links while opening stored device | Mixed-case stored ID is found from differently cased input | DeviceLinkResolver / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
-| UT-DLR-007 | Device link routing opens known devices and adds unknown devices | Validate external URI branching | Known URI opens device, unknown URI opens add-device sheet | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
-| UT-DLR-008 | Unknown visitor notification routes by known state | Validate notification-tap branching | Unknown notification shows action dialog, known notification opens device | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-005 | Canonical scanner code keeps miataru prefix compatibility | Protect QR scanner and QR generation contract | `miataru://...` scanner input preserves Device ID case and generated URL strings stay canonical | DeviceLinkResolver | Unit | Plain strings | High |
+| UT-DLR-006 | Device ID trimming preserves case | Keep display/persistence separate from comparison normalization | Trimmed IDs keep original case; normalized IDs uppercase for comparisons | DeviceLinkResolver | Unit | Plain strings | High |
+| UT-DLR-007 | Known device resolution is case-insensitive and returns canonical stored ID | Preserve old QR links while opening stored device | Mixed-case stored ID is found from differently cased input | DeviceLinkResolver / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-008 | Device link routing opens known devices and adds unknown devices | Validate external URI branching | Known URI opens stored canonical device, unknown URI opens add-device sheet preserving input case | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-009 | Unknown visitor notification routes by known state | Validate notification-tap branching | Unknown notification shows action dialog preserving input case, known notification opens device | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
 | UT-MRE-001 | Retries once for transient network error and succeeds | Validate retry path | first timedOut fails, second succeeds, 1 sleep recorded | MiataruRequestExecutor | Unit | injected sleep + deterministic jitter | High |
 | UT-MRE-002 | Does not retry for non-retryable auth error | Validate non-retry path | `401` serverError throws without retry | MiataruRequestExecutor | Unit | APIError simulation | High |
 | UT-MRE-003 | Classifier marks transient statuses and URL errors as retryable | Validate classification table | 408/429/5xx + transient URLError are retryable; auth/invalid/decoding are not | MiataruRetryClassifier | Unit | APIError + URLError cases | High |

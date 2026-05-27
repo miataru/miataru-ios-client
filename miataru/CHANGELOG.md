@@ -1,4 +1,7 @@
 version 3.1.17
+- Preserved lowercase and mixed-case Device IDs when adding unknown devices from unknown visitors, unknown-device actions, QR scanner input, or external `miataru://` links.
+- Split Device ID handling so visible/add-device flows only trim whitespace while internal matching can still use uppercase normalization for case-insensitive known-device resolution and cache keys.
+- Added regression coverage for case-preserving URI/scanner parsing, case-preserving unknown-device add requests, and continued case-insensitive known-device routing.
 - Hardened reboot-safe background tracking after real-device testing showed that frequent background mode could still lose all updates after an iPhone restart.
 - Moved Core Location location-launch recovery into `application(_:willFinishLaunchingWithOptions:)` with a dedupe guard for `didFinishLaunchingWithOptions`, so Miataru reconstructs tracking as early as possible when iOS relaunches it for location.
 - Added a short background-task wrapper around background location uploads so a location callback received after reboot or background relaunch has protected time to reach the Miataru server before suspension.

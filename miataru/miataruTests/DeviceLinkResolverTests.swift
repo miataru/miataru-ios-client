@@ -17,16 +17,16 @@ import UIKit
 struct DeviceLinkResolverTests {
     @Test("Canonical miataru URI parses device ID")
     func canonicalMiataruURIParsesDeviceID() throws {
-        let url = try #require(URL(string: "miataru://device_abc-123"))
+        let url = try #require(URL(string: "miataru://Device_abc-123"))
 
-        #expect(DeviceLinkResolver.deviceID(from: url) == "DEVICE_ABC-123")
+        #expect(DeviceLinkResolver.deviceID(from: url) == "Device_abc-123")
     }
 
     @Test("Path-style miataru URI remains accepted for compatibility")
     func pathStyleMiataruURIParsesDeviceID() throws {
         let url = try #require(URL(string: "miataru:/device_abc-123"))
 
-        #expect(DeviceLinkResolver.deviceID(from: url) == "DEVICE_ABC-123")
+        #expect(DeviceLinkResolver.deviceID(from: url) == "device_abc-123")
     }
 
     @Test("Wrong URI scheme is ignored")
@@ -45,8 +45,14 @@ struct DeviceLinkResolverTests {
 
     @Test("Canonical scanner code keeps miataru prefix compatibility")
     func canonicalScannerCodeKeepsPrefixCompatibility() {
-        #expect(DeviceLinkResolver.deviceID(fromCanonicalCode: "miataru://device_abc-123") == "DEVICE_ABC-123")
+        #expect(DeviceLinkResolver.deviceID(fromCanonicalCode: "miataru://Device_abc-123") == "Device_abc-123")
         #expect(DeviceLinkResolver.urlString(for: "CURRENT_DEVICE") == "miataru://CURRENT_DEVICE")
+    }
+
+    @Test("Device ID trimming preserves case")
+    func deviceIDTrimmingPreservesCase() {
+        #expect(DeviceLinkResolver.trimmedDeviceID("  MixedCase-device_123  ") == "MixedCase-device_123")
+        #expect(DeviceLinkResolver.normalizedDeviceID("  MixedCase-device_123  ") == "MIXEDCASE-DEVICE_123")
     }
 
     @Test("Known device resolution is case-insensitive and returns canonical stored ID")
@@ -86,20 +92,21 @@ struct DeviceLinkResolverTests {
             coordinator.consumeDeviceOpenRequest(request)
         }
 
-        let unknownID = "UNKNOWN-\(UUID().uuidString)".uppercased()
-        coordinator.openDeviceLink(unknownID.lowercased())
-        #expect(coordinator.addDeviceRequest?.deviceID == unknownID)
+        let unknownID = "Unknown-\(UUID().uuidString)"
+        let lowercaseUnknownID = unknownID.lowercased()
+        coordinator.openDeviceLink(lowercaseUnknownID)
+        #expect(coordinator.addDeviceRequest?.deviceID == lowercaseUnknownID)
         #expect(coordinator.addDeviceRequest?.source == .general)
     }
 
-    @Test("Unknown visitor add requests preserve source")
-    func unknownVisitorAddRequestPreservesSource() {
+    @Test("Unknown visitor add requests preserve source and case")
+    func unknownVisitorAddRequestPreservesSourceAndCase() {
         let coordinator = AppNavigationCoordinator.shared
         clearCoordinatorRequests(coordinator)
         defer { clearCoordinatorRequests(coordinator) }
 
-        let unknownID = "UNKNOWN-\(UUID().uuidString)".uppercased()
-        coordinator.openAddDevice(unknownID.lowercased(), source: .unknownVisitor)
+        let unknownID = "Unknown-\(UUID().uuidString)"
+        coordinator.openAddDevice(unknownID, source: .unknownVisitor)
 
         #expect(coordinator.addDeviceRequest?.deviceID == unknownID)
         #expect(coordinator.addDeviceRequest?.source == .unknownVisitor)
@@ -110,9 +117,9 @@ struct DeviceLinkResolverTests {
         let coordinator = AppNavigationCoordinator.shared
         clearCoordinatorRequests(coordinator)
 
-        let unknownID = "UNKNOWN-\(UUID().uuidString)".uppercased()
+        let unknownID = "Unknown-\(UUID().uuidString)"
         let visitDate = Date(timeIntervalSince1970: 1_775_999_123)
-        coordinator.openUnknownVisitorNotificationDevice(unknownID.lowercased(), visitDate: visitDate)
+        coordinator.openUnknownVisitorNotificationDevice(unknownID, visitDate: visitDate)
         #expect(coordinator.unknownDeviceActionRequest?.deviceID == unknownID)
         #expect(coordinator.unknownDeviceActionRequest?.visitDate == visitDate)
         #expect(coordinator.deviceOpenRequest == nil)

@@ -77,13 +77,13 @@ final class AppNavigationCoordinator: ObservableObject {
     func openDeviceLink(_ rawDeviceID: String) {
         if let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) {
             openKnownDevice(deviceID)
-        } else if let deviceID = DeviceLinkResolver.normalizedDeviceID(rawDeviceID) {
+        } else if let deviceID = DeviceLinkResolver.trimmedDeviceID(rawDeviceID) {
             openAddDevice(deviceID)
         }
     }
 
     func openAddDevice(_ rawDeviceID: String, source: AddDeviceRequestSource = .general) {
-        guard let deviceID = DeviceLinkResolver.normalizedDeviceID(rawDeviceID) else { return }
+        guard let deviceID = DeviceLinkResolver.trimmedDeviceID(rawDeviceID) else { return }
         rootDestination = .devices
         addDeviceRequest = AddDeviceRequest(deviceID: deviceID, source: source)
     }
@@ -97,7 +97,7 @@ final class AppNavigationCoordinator: ObservableObject {
     }
 
     func presentUnknownDeviceActions(_ rawDeviceID: String, visitDate: Date? = nil) {
-        guard let deviceID = DeviceLinkResolver.normalizedDeviceID(rawDeviceID) else { return }
+        guard let deviceID = DeviceLinkResolver.trimmedDeviceID(rawDeviceID) else { return }
         rootDestination = .devices
         unknownDeviceActionRequest = UnknownDeviceActionRequest(deviceID: deviceID, visitDate: visitDate)
     }

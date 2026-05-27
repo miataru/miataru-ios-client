@@ -27,7 +27,7 @@ enum DeviceLinkResolver {
             rawDeviceID = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         }
 
-        return normalizedDeviceID(rawDeviceID)
+        return trimmedDeviceID(rawDeviceID)
     }
 
     static func deviceID(fromCanonicalCode rawValue: String) -> String? {
@@ -35,11 +35,17 @@ enum DeviceLinkResolver {
         guard trimmedValue.lowercased().hasPrefix(canonicalPrefix) else { return nil }
 
         let rawDeviceID = String(trimmedValue.dropFirst(canonicalPrefix.count))
-        return normalizedDeviceID(rawDeviceID)
+        return trimmedDeviceID(rawDeviceID)
+    }
+
+    static func trimmedDeviceID(_ rawValue: String) -> String? {
+        let trimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     static func normalizedDeviceID(_ rawValue: String) -> String? {
-        let normalized = rawValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard let trimmed = trimmedDeviceID(rawValue) else { return nil }
+        let normalized = trimmed.uppercased()
         return normalized.isEmpty ? nil : normalized
     }
 
