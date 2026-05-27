@@ -111,55 +111,40 @@ final class VisitorHistoryViewModel: ObservableObject {
 
 struct VisitorHistoryStateView<Content: View>: View {
     @ObservedObject var viewModel: VisitorHistoryViewModel
-    @Environment(\.animationsAllowed) private var animationsAllowed
     let content: ([MiataruVisitor]) -> Content
-
-    private var stateKey: String {
-        if viewModel.isLoading { return "loading" }
-        if viewModel.errorMessage != nil { return "error" }
-        if viewModel.visitors.isEmpty { return "empty" }
-        return "content-\(viewModel.visitors.count)"
-    }
     
     var body: some View {
-        Group {
-            if viewModel.isLoading {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                }
-                .padding()
-                .miataruOverlayTransition(animationsAllowed)
-            } else if let error = viewModel.errorMessage {
-                VStack(spacing: 16) {
-                    Text(error)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                    Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
-                        Task {
-                            await viewModel.loadVisitorHistory()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .miataruOverlayTransition(animationsAllowed)
-            } else if viewModel.visitors.isEmpty {
-                VStack(spacing: 8) {
-                    Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .miataruOverlayTransition(animationsAllowed)
-            } else {
-                content(viewModel.sortedVisitors)
-                    .miataruOverlayTransition(animationsAllowed)
+        if viewModel.isLoading {
+            HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
             }
+            .padding()
+        } else if let error = viewModel.errorMessage {
+            VStack(spacing: 16) {
+                Text(error)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
+                    Task {
+                        await viewModel.loadVisitorHistory()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+        } else if viewModel.visitors.isEmpty {
+            VStack(spacing: 8) {
+                Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+        } else {
+            content(viewModel.sortedVisitors)
         }
-        .miataruAnimated(value: stateKey, animationsAllowed: animationsAllowed)
     }
 }
 
@@ -168,7 +153,6 @@ struct VisitorHistorySection: View {
     @ObservedObject var deviceStore: KnownDeviceStore
     @ObservedObject var ignoredStore = IgnoredVisitorDeviceStore.shared
     @Binding var pendingDeviceItem: DeviceIDItem?
-    @Environment(\.animationsAllowed) private var animationsAllowed
     let isLandscape: Bool
     
     var body: some View {
@@ -201,7 +185,6 @@ struct VisitorHistorySection: View {
                         }
                     }
                 }
-                .miataruAnimated(value: visitors.count, animationsAllowed: animationsAllowed)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -278,7 +261,6 @@ struct VisitorHistoryRow: View {
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.animationsAllowed) private var animationsAllowed
     
     var body: some View {
         HStack {
@@ -327,8 +309,6 @@ struct VisitorHistoryRow: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .accessibilityLabel(Text("visitor_history_ignored_indicator"))
-                            .contentTransition(.symbolEffect(.replace))
-                            .miataruOverlayTransition(animationsAllowed)
                     }
                 }
                 
@@ -426,15 +406,11 @@ struct VisitorHistoryRow: View {
                     Image(systemName: "ellipsis.circle")
                         .font(.title3)
                         .foregroundColor(.blue)
-                        .contentTransition(.symbolEffect(.replace))
                 }
-                .miataruOverlayTransition(animationsAllowed)
             }
         }
         .padding(.vertical, 4)
         .frame(minHeight: knownDevice == nil ? 84 : 56)
-        .miataruAnimated(value: isIgnored, animationsAllowed: animationsAllowed)
-        .miataruAnimated(value: knownDevice?.DeviceID ?? "unknown", animationsAllowed: animationsAllowed)
     }
     
     private var visitorSlogan: String? {

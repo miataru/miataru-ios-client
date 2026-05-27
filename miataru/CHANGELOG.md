@@ -1,4 +1,7 @@
 version 3.1.17
+- Added SwiftUI zoom navigation transitions for iPhone device and group pushes from the list rows into the matching map detail views.
+- Kept the onboarding wizard on the native page transition and removed the broader helper-driven state animations from forms, visitor history, QR, settings, and navigation chrome so motion stays focused on navigation context.
+- Updated project metadata for version 3.1.17 build 2.
 - Kept unknown-device action dialog localization keys visible to String Catalog extraction by replacing dynamic lookup with explicit localized string references.
 - Blocked case-insensitive duplicate Device IDs while keeping the original stored casing visible.
 - Added a localized duplicate-name warning in Add/Edit Device and showed a shortened Device ID in device-list rows when names or legacy Device ID conflicts would otherwise be ambiguous.

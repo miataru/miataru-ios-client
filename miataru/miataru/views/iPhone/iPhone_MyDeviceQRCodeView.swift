@@ -224,7 +224,6 @@ struct iPhone_MyDeviceQRCodeView: View {
                         .components(.onPixels)
                         .fill(dataColor)
                 }
-                .id(currentDeviceID)
                 .frame(
                     width: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
                     height: min(geometry.size.width * 0.6, geometry.size.height * 0.4, 300),
@@ -232,8 +231,6 @@ struct iPhone_MyDeviceQRCodeView: View {
                 )
                 .padding(.horizontal, isLandscape ? 20 : 16)
                 .padding(.vertical, isLandscape ? 6 : 8)
-                .miataruOverlayTransition(animationsAllowed)
-                .miataruAnimated(.easeInOut(duration: 0.25), value: currentDeviceID, animationsAllowed: animationsAllowed)
                 
                 // Title and explanation
                 VStack(spacing: isLandscape ? 8 : 12) {
@@ -410,19 +407,14 @@ struct iPhone_MyDeviceQRCodeView: View {
                             .multilineTextAlignment(.center)
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .center)
-                            .contentTransition(.opacity)
-                            .miataruAnimated(value: displayedSloganText, animationsAllowed: animationsAllowed)
 
                         if isLoadingSlogan || isSavingSlogan {
                             ProgressView()
                                 .controlSize(.small)
-                                .miataruOverlayTransition(animationsAllowed)
                         } else {
                             Image(systemName: "pencil")
                                 .foregroundColor(.blue)
                                 .font(.caption2)
-                                .contentTransition(.symbolEffect(.replace))
-                                .miataruOverlayTransition(animationsAllowed)
                         }
                     }
                     .padding(.horizontal, 12)
@@ -441,11 +433,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-                        .miataruStateTransition(animationsAllowed)
                 }
             }
-            .miataruAnimated(value: sloganErrorMessage, animationsAllowed: animationsAllowed)
-            .miataruAnimated(value: isLoadingSlogan || isSavingSlogan, animationsAllowed: animationsAllowed)
             .padding(.horizontal, isLandscape ? 20 : 16)
             .padding(.top, isLandscape ? 12 : 14)
             
@@ -455,9 +444,6 @@ struct iPhone_MyDeviceQRCodeView: View {
                 pendingDeviceItem: $pendingDeviceItem,
                 isLandscape: isLandscape
             )
-            .miataruAnimated(value: visitorHistoryViewModel.isLoading, animationsAllowed: animationsAllowed)
-            .miataruAnimated(value: visitorHistoryViewModel.errorMessage, animationsAllowed: animationsAllowed)
-            .miataruAnimated(value: visitorHistoryViewModel.visitors.count, animationsAllowed: animationsAllowed)
             .padding(.horizontal, isLandscape ? 20 : 16)
             .padding(.top, isLandscape ? 16 : 20)
             

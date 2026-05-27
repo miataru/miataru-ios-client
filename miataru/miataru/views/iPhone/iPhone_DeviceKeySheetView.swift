@@ -16,7 +16,6 @@ struct iPhone_DeviceKeySheetView: View {
     let onDeviceKeySuccess: () -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.animationsAllowed) private var animationsAllowed
     @StateObject private var settings = SettingsManager.shared
     @ObservedObject private var deviceStore = KnownDeviceStore.shared
     @ObservedObject private var groupStore = DeviceGroupStore.shared
@@ -61,15 +60,12 @@ struct iPhone_DeviceKeySheetView: View {
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
-                        .miataruStateTransition(animationsAllowed)
                 }
 
                 if hasDeviceKey {
                     deviceKeySetContent
-                        .miataruOverlayTransition(animationsAllowed)
                 } else {
                     deviceKeyUnsetContent
-                        .miataruOverlayTransition(animationsAllowed)
                 }
 
                 Spacer(minLength: 0)
@@ -87,8 +83,6 @@ struct iPhone_DeviceKeySheetView: View {
                 }
             }
             .overlay(copyOverlay)
-            .miataruAnimated(value: hasDeviceKey, animationsAllowed: animationsAllowed)
-            .miataruAnimated(value: errorMessage, animationsAllowed: animationsAllowed)
             .onAppear {
                 if errorMessage == nil {
                     if showsMismatchWarning {
@@ -149,7 +143,6 @@ struct iPhone_DeviceKeySheetView: View {
             Image(systemName: "key.card")
                 .font(.system(size: 104))
                 .foregroundColor(keyCardColor)
-                .contentTransition(.symbolEffect(.replace))
                 .padding(.top, 8)
                 .frame(width: 140, height: 140, alignment: .center)
                 .contentShape(Rectangle())
@@ -199,7 +192,6 @@ struct iPhone_DeviceKeySheetView: View {
             Image(systemName: "key.card")
                 .font(.system(size: 104))
                 .foregroundColor(keyCardColor)
-                .contentTransition(.symbolEffect(.replace))
                 .padding(.top, 8)
                 .frame(width: 140, height: 140, alignment: .center)
                 .contentShape(Rectangle())
@@ -280,7 +272,7 @@ struct iPhone_DeviceKeySheetView: View {
                     .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
                     Spacer()
                 }
-                .miataruOverlayTransition(animationsAllowed)
+                .transition(.opacity.combined(with: .scale(scale: 0.8)))
                 .zIndex(1)
             }
         }
@@ -289,19 +281,11 @@ struct iPhone_DeviceKeySheetView: View {
     private func copyDeviceKey() {
         guard let key = settings.deviceKey, !key.isEmpty else { return }
         UIPasteboard.general.string = key
-        if animationsAllowed {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                showCopiedAlert = true
-            }
-        } else {
+        withAnimation(.easeInOut(duration: 0.3)) {
             showCopiedAlert = true
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if animationsAllowed {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    showCopiedAlert = false
-                }
-            } else {
+            withAnimation(.easeInOut(duration: 0.3)) {
                 showCopiedAlert = false
             }
         }

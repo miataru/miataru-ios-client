@@ -13,7 +13,6 @@ import CodeScanner
 struct iPhone_AddDeviceView: View {
     @ObservedObject var store: KnownDeviceStore
     @Binding var isPresented: Bool
-    @Environment(\.animationsAllowed) private var animationsAllowed
     var prefillDeviceID: String? = nil
     var allowsDeviceIDEditing: Bool = true
     @State private var deviceName: String = ""
@@ -97,7 +96,6 @@ struct iPhone_AddDeviceView: View {
                         Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
                             .font(.caption)
                             .foregroundColor(.orange)
-                            .miataruStateTransition(animationsAllowed)
                     }
 
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
@@ -106,17 +104,13 @@ struct iPhone_AddDeviceView: View {
                         if isLoadingSlogan {
                             ProgressView()
                                 .scaleEffect(0.9)
-                                .miataruOverlayTransition(animationsAllowed)
                         } else {
                             Text(fetchedSlogan.isEmpty ? "-" : fetchedSlogan)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.trailing)
                                 .lineLimit(2)
-                                .contentTransition(.opacity)
                         }
                     }
-                    .miataruAnimated(value: isLoadingSlogan, animationsAllowed: animationsAllowed)
-                    .miataruAnimated(value: fetchedSlogan, animationsAllowed: animationsAllowed)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         adoptSloganAsDeviceNameIfNeeded()
@@ -159,16 +153,12 @@ struct iPhone_AddDeviceView: View {
                             VStack(alignment: .trailing, spacing: 6) {
                                 HStack(spacing: 6) {
                                     Image(systemName: deviceKeySecurityStatusIcon)
-                                        .contentTransition(.symbolEffect(.replace))
                                     Text(deviceKeySecurityStatusText)
-                                        .contentTransition(.opacity)
                                 }
                                 .foregroundColor(deviceKeySecurityStatusColor)
                                 HStack(spacing: 6) {
                                     Image(systemName: aclSecurityStatusIcon)
-                                        .contentTransition(.symbolEffect(.replace))
                                     Text(aclSecurityStatusText)
-                                        .contentTransition(.opacity)
                                 }
                                 .foregroundColor(aclSecurityStatusColor)
                                 if isLoadingSecurityStatus {
@@ -178,13 +168,9 @@ struct iPhone_AddDeviceView: View {
                                         Text(verbatim: "...")
                                     }
                                     .foregroundColor(.secondary)
-                                    .miataruStateTransition(animationsAllowed)
                                 }
                             }
                             .font(.caption)
-                            .miataruAnimated(value: isLoadingSecurityStatus, animationsAllowed: animationsAllowed)
-                            .miataruAnimated(value: deviceKeySecurityStatusText, animationsAllowed: animationsAllowed)
-                            .miataruAnimated(value: aclSecurityStatusText, animationsAllowed: animationsAllowed)
                         }
                         Toggle("allowed_device_list_current_location_access", isOn: $hasCurrentLocationAccess)
                         Text("allowed_device_list_current_location_access_description")
@@ -205,31 +191,26 @@ struct iPhone_AddDeviceView: View {
                             HStack {
                                 Image(systemName: "lock.shield")
                                     .foregroundColor(.blue)
-                                    .contentTransition(.symbolEffect(.replace))
                                 Text("allowed_device_list_enable_button")
 
                                 if isActivatingAllowedDeviceList {
                                     Spacer()
                                     ProgressView()
-                                        .miataruOverlayTransition(animationsAllowed)
                                 }
                             }
                         }
                         .disabled(isActivatingAllowedDeviceList || isSaving)
-                        .miataruAnimated(value: isActivatingAllowedDeviceList, animationsAllowed: animationsAllowed)
 
                         if let activationError {
                             Text(activationError)
                                 .font(.caption)
                                 .foregroundColor(.red)
-                                .miataruStateTransition(animationsAllowed)
                         }
 
                         Text("allowed_device_list_disabled_explanation")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .miataruAnimated(value: activationError, animationsAllowed: animationsAllowed)
                 }
             }
             .navigationTitle("new_device")

@@ -58,7 +58,6 @@ struct iPhone_EditDeviceView: View {
                         Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
                             .font(.caption)
                             .foregroundColor(.orange)
-                            .miataruStateTransition(animationsAllowed)
                     }
 
                     if isCurrentDevice {
@@ -79,17 +78,13 @@ struct iPhone_EditDeviceView: View {
                                 if isLoadingSlogan {
                                     ProgressView()
                                         .scaleEffect(0.9)
-                                        .miataruOverlayTransition(animationsAllowed)
                                 } else {
                                     Text("\(sloganDraft.count)/\(maxSloganLength)")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-                                        .contentTransition(.numericText())
                                 }
                             }
                         }
-                        .miataruAnimated(value: isLoadingSlogan, animationsAllowed: animationsAllowed)
-                        .miataruAnimated(value: sloganDraft.count, animationsAllowed: animationsAllowed)
                     } else {
                         HStack(alignment: .firstTextBaseline, spacing: 12) {
                             Text("Info")
@@ -97,17 +92,13 @@ struct iPhone_EditDeviceView: View {
                             if isLoadingSlogan {
                                 ProgressView()
                                     .scaleEffect(0.9)
-                                    .miataruOverlayTransition(animationsAllowed)
                             } else {
                                 Text(fetchedSlogan.isEmpty ? "-" : fetchedSlogan)
                                     .foregroundColor(.secondary)
                                     .multilineTextAlignment(.trailing)
                                     .lineLimit(2)
-                                    .contentTransition(.opacity)
                             }
                         }
-                        .miataruAnimated(value: isLoadingSlogan, animationsAllowed: animationsAllowed)
-                        .miataruAnimated(value: fetchedSlogan, animationsAllowed: animationsAllowed)
                     }
                 }
                 Section(header: Text("device_id")) {
@@ -153,31 +144,26 @@ struct iPhone_EditDeviceView: View {
                             HStack {
                                 Image(systemName: "lock.shield")
                                     .foregroundColor(.blue)
-                                    .contentTransition(.symbolEffect(.replace))
                                 Text("allowed_device_list_enable_button")
 
                                 if isActivatingAllowedDeviceList {
                                     Spacer()
                                     ProgressView()
-                                        .miataruOverlayTransition(animationsAllowed)
                                 }
                             }
                         }
                         .disabled(isActivatingAllowedDeviceList || isSaving)
-                        .miataruAnimated(value: isActivatingAllowedDeviceList, animationsAllowed: animationsAllowed)
 
                         if let activationError {
                             Text(activationError)
                                 .font(.caption)
                                 .foregroundColor(.red)
-                                .miataruStateTransition(animationsAllowed)
                         }
 
                         Text("allowed_device_list_disabled_explanation")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .miataruAnimated(value: activationError, animationsAllowed: animationsAllowed)
                 } else if device.DeviceID != thisDeviceIDManager.shared.deviceID {
                     Section(header: Text("allowed_device_list_access_controls")) {
                         HStack(alignment: .top, spacing: 12) {
@@ -186,16 +172,12 @@ struct iPhone_EditDeviceView: View {
                             VStack(alignment: .trailing, spacing: 6) {
                                 HStack(spacing: 6) {
                                     Image(systemName: deviceKeySecurityStatusIcon)
-                                        .contentTransition(.symbolEffect(.replace))
                                     Text(deviceKeySecurityStatusText)
-                                        .contentTransition(.opacity)
                                 }
                                 .foregroundColor(deviceKeySecurityStatusColor)
                                 HStack(spacing: 6) {
                                     Image(systemName: aclSecurityStatusIcon)
-                                        .contentTransition(.symbolEffect(.replace))
                                     Text(aclSecurityStatusText)
-                                        .contentTransition(.opacity)
                                 }
                                 .foregroundColor(aclSecurityStatusColor)
                                 if isLoadingSecurityStatus {
@@ -205,13 +187,9 @@ struct iPhone_EditDeviceView: View {
                                         Text(verbatim: "...")
                                     }
                                     .foregroundColor(.secondary)
-                                    .miataruStateTransition(animationsAllowed)
                                 }
                             }
                             .font(.caption)
-                            .miataruAnimated(value: isLoadingSecurityStatus, animationsAllowed: animationsAllowed)
-                            .miataruAnimated(value: deviceKeySecurityStatusText, animationsAllowed: animationsAllowed)
-                            .miataruAnimated(value: aclSecurityStatusText, animationsAllowed: animationsAllowed)
                         }
                         Toggle("allowed_device_list_current_location_access", isOn: Binding(
                             get: { tempHasCurrentLocationAccess },
@@ -264,10 +242,8 @@ struct iPhone_EditDeviceView: View {
                                     .scaleEffect(0.9)
                                 Spacer()
                             }
-                            .miataruStateTransition(animationsAllowed)
                         }
                     }
-                    .miataruAnimated(value: isSyncingACL, animationsAllowed: animationsAllowed)
                 }
                 Section(header: Text("device_qr_code")) {
                     let qrContent = QRCodeShape(
@@ -341,12 +317,12 @@ struct iPhone_EditDeviceView: View {
                         .background(Color.black.opacity(0.8))
                         .foregroundColor(.white)
                         .cornerRadius(10)
-                        .miataruOverlayTransition(animationsAllowed)
+                        .transition(animationsAllowed ? .opacity : .identity)
                         .zIndex(1)
                 }
             }, alignment: .top
         )
-        .miataruAnimated(value: copiedIDFeedback, animationsAllowed: animationsAllowed)
+        .animation(animationsAllowed ? .easeInOut : nil, value: copiedIDFeedback)
     }
     
     @MainActor
