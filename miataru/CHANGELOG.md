@@ -1,4 +1,5 @@
 version 3.1.17
+- Kept unknown-device action dialog localization keys visible to String Catalog extraction by replacing dynamic lookup with explicit localized string references.
 - Blocked case-insensitive duplicate Device IDs while keeping the original stored casing visible.
 - Added a localized duplicate-name warning in Add/Edit Device and showed a shortened Device ID in device-list rows when names or legacy Device ID conflicts would otherwise be ambiguous.
 - Added localized duplicate/conflict strings across all supported app languages.

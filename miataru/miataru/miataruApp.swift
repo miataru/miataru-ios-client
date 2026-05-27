@@ -440,10 +440,10 @@ struct miataruApp: App {
     }
 
     private var unknownDeviceActionMessage: String {
-        let key = SettingsManager.shared.allowedDeviceListEnabled
-            ? "unknown_device_actions_message_acl_enabled"
-            : "unknown_device_actions_message_acl_disabled"
-        return NSLocalizedString(key, comment: "Explanation for unknown device action dialog")
+        if SettingsManager.shared.allowedDeviceListEnabled {
+            return NSLocalizedString("unknown_device_actions_message_acl_enabled", comment: "Dialog message for an unknown device when the allowed device list is enabled.")
+        }
+        return NSLocalizedString("unknown_device_actions_message_acl_disabled", comment: "Dialog message for an unknown device when the allowed device list is disabled.")
     }
 
     @MainActor

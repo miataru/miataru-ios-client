@@ -30178,8 +30178,7 @@
       }
     },
     "unknown_device_actions_message_acl_disabled" : {
-      "comment" : "Dialog message for an unknown device when the allowed device list is disabled. Device details are shown separately.",
-      "extractionState" : "stale",
+      "comment" : "Dialog message for an unknown device when the allowed device list is disabled.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -30244,8 +30243,7 @@
       }
     },
     "unknown_device_actions_message_acl_enabled" : {
-      "comment" : "Dialog message for an unknown device when the allowed device list is enabled. Device details are shown separately.",
-      "extractionState" : "stale",
+      "comment" : "Dialog message for an unknown device when the allowed device list is enabled.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
