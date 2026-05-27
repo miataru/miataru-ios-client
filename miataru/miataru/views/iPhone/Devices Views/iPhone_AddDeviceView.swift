@@ -21,6 +21,7 @@ struct iPhone_AddDeviceView: View {
     @State private var isShowingScanner = false
     @State private var showInvalidQRAlert = false
     @State private var showDuplicateAlert = false
+    @State private var duplicateDeviceIDMessage: String = ""
     @State private var showColorPickerSheet = false
     @State private var hasCurrentLocationAccess: Bool = true
     @State private var hasHistoryAccess: Bool = false
@@ -90,6 +91,12 @@ struct iPhone_AddDeviceView: View {
             Form {
                 Section(header: Text("device_name")) {
                     TextField("device_name2", text: $deviceName)
+
+                    if hasSimilarDeviceName {
+                        Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
 
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
                         Text("Info")
@@ -220,7 +227,7 @@ struct iPhone_AddDeviceView: View {
                             await saveDevice()
                         }
                     }
-                    .disabled(deviceName.isEmpty || deviceID.isEmpty || isSaving || isActivatingAllowedDeviceList)
+                    .disabled(trimmedDeviceName.isEmpty || trimmedDeviceID.isEmpty || isSaving || isActivatingAllowedDeviceList)
                     .accessibilityIdentifier("add_device_confirm_button")
                 }
             }
@@ -261,7 +268,7 @@ struct iPhone_AddDeviceView: View {
         .alert(isPresented: $showDuplicateAlert) {
             Alert(
                 title: Text(NSLocalizedString("adddevice_duplicate_device_id_title", comment: "Alert title shown when user tries to add a duplicate device.")),
-                message: Text(NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.")),
+                message: Text(duplicateDeviceIDMessage.isEmpty ? NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.") : duplicateDeviceIDMessage),
                 dismissButton: .default(Text("ok"))
             )
         }
@@ -309,6 +316,7 @@ struct iPhone_AddDeviceView: View {
                 hasCurrentLocationAccess = true
                 hasHistoryAccess = false
                 saveError = nil
+                duplicateDeviceIDMessage = ""
                 fetchedSlogan = ""
                 sloganLookupTask?.cancel()
                 sloganLookupTask = nil
@@ -341,14 +349,30 @@ struct iPhone_AddDeviceView: View {
     private func saveDevice() async {
         isSaving = true
         saveError = nil
+
+        guard !trimmedDeviceName.isEmpty, !trimmedDeviceID.isEmpty else {
+            isSaving = false
+            return
+        }
+
+        if let existingDevice = store.device(matchingDeviceIDCaseInsensitive: trimmedDeviceID) {
+            duplicateDeviceIDMessage = String(
+                format: NSLocalizedString("adddevice_duplicate_device_id_case_insensitive_message", comment: "Alert text shown when a device ID matches an existing device ignoring letter case."),
+                existingDevice.DeviceID
+            )
+            Haptic.notifyWarning()
+            showDuplicateAlert = true
+            isSaving = false
+            return
+        }
         
         // Capture snapshot for rollback
         let snapshot = AllowedDeviceListManager.shared.captureSnapshot()
         
         let uiColor = UIColor(deviceColor)
         let newDevice = KnownDevice(
-            name: deviceName,
-            deviceID: deviceID,
+            name: trimmedDeviceName,
+            deviceID: trimmedDeviceID,
             color: uiColor,
             hasCurrentLocationAccess: hasCurrentLocationAccess,
             hasHistoryAccess: hasHistoryAccess
@@ -356,6 +380,7 @@ struct iPhone_AddDeviceView: View {
         
         let success = store.add(device: newDevice)
         if !success {
+            duplicateDeviceIDMessage = NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.")
             Haptic.notifyWarning()
             showDuplicateAlert = true
             isSaving = false
@@ -367,7 +392,7 @@ struct iPhone_AddDeviceView: View {
             do {
                 try await AllowedDeviceListManager.shared.syncAllowedDeviceListIfEnabled(trigger: .add)
                 Haptic.notifySuccess()
-                IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: deviceID)
+                IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: trimmedDeviceID)
                 isPresented = false
             } catch {
                 // Rollback on sync failure
@@ -378,7 +403,7 @@ struct iPhone_AddDeviceView: View {
             }
         } else {
             Haptic.notifySuccess()
-            IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: deviceID)
+            IgnoredVisitorDeviceStore.shared.removeIgnored(deviceID: trimmedDeviceID)
             isPresented = false
         }
         
@@ -472,6 +497,18 @@ struct iPhone_AddDeviceView: View {
         let trimmedSlogan = fetchedSlogan.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmedDeviceName.isEmpty, !trimmedSlogan.isEmpty else { return }
         deviceName = trimmedSlogan
+    }
+
+    private var trimmedDeviceName: String {
+        deviceName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var trimmedDeviceID: String {
+        deviceID.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var hasSimilarDeviceName: Bool {
+        store.hasCaseInsensitiveNameDuplicate(named: trimmedDeviceName)
     }
 
     @MainActor

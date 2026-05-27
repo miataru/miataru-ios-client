@@ -22,6 +22,7 @@ struct DeviceRowView: View {
     @State private var isGeocoding = false
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
+    @ObservedObject private var deviceStore = KnownDeviceStore.shared
     @State private var displayedCachedLocation: CachedDeviceLocation? = nil
     @State private var locationUpdateCancellable: AnyCancellable? = nil
     // For live updates, you could use @ObservedObject for the cache, but for now, fetch on render
@@ -58,9 +59,18 @@ struct DeviceRowView: View {
             }
             .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
-                Text(device.DeviceName)
+                Text(displayName)
                     .font(.headline)
                     .foregroundColor(colorScheme == .light ? .black : .white)
+
+                if shouldShowDeviceIDForAmbiguity {
+                    Text(ambiguousDeviceIDText)
+                        .font(.caption2)
+                        .monospaced()
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
 
                 if let slogan = sloganText {
                     Text(slogan)
@@ -112,14 +122,45 @@ struct DeviceRowView: View {
         .padding(.vertical, 4)
         .frame(minHeight: 56)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))
+        .accessibilityLabel(Text(accessibilityLabel))
         .accessibilityValue(Text(subtitleText(from: displayedCachedLocation)))
+    }
+
+    private var displayName: String {
+        device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
+    }
+
+    private var shouldShowDeviceIDForAmbiguity: Bool {
+        let hasNameAmbiguity = !device.DeviceName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && deviceStore.hasCaseInsensitiveNameDuplicate(for: device)
+        return hasNameAmbiguity || deviceStore.hasCaseInsensitiveDeviceIDDuplicate(for: device)
+    }
+
+    private var ambiguousDeviceIDText: String {
+        String(
+            format: NSLocalizedString("device_row_duplicate_name_device_id", comment: "Device row subtitle shown when multiple devices have the same display name."),
+            shortenedDeviceID(device.DeviceID)
+        )
+    }
+
+    private var accessibilityLabel: String {
+        shouldShowDeviceIDForAmbiguity
+            ? "\(displayName), \(ambiguousDeviceIDText)"
+            : displayName
     }
 
     private var sloganText: String? {
         guard showsSlogan else { return nil }
         guard let slogan = sloganCache.slogan(for: device.DeviceID), !slogan.isEmpty else { return nil }
         return slogan
+    }
+
+    private func shortenedDeviceID(_ deviceID: String) -> String {
+        let trimmedID = deviceID.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedID.count > 12 else { return trimmedID }
+        let prefix = trimmedID.prefix(6)
+        let suffix = trimmedID.suffix(4)
+        return "\(prefix)...\(suffix)"
     }
     
     /// Returns the subtitle string for the device row: last seen + distance

@@ -19,6 +19,7 @@ This directory contains both living documentation and dated implementation recor
 - `test-gap-matrix.md` - risk-based coverage and backlog matrix
 - `screenshot-test-workflow.md` - deterministic screenshot capture workflow
 - `test-build-repair-report-2026-02-27.md` - historical report for test wiring repair
+- `device-id-name-ambiguity-handling-2026-05-27.md` - Device ID duplicate blocking and duplicate-name disambiguation
 
 When tests change, update `test-katalog.md` and `test-gap-matrix.md` together.
 

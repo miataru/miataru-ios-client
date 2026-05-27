@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **220** (Unit: 204, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **223** (Unit: 207, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -81,8 +81,12 @@ Important project observations:
 | UT-DLR-005 | Canonical scanner code keeps miataru prefix compatibility | Protect QR scanner and QR generation contract | `miataru://...` scanner input preserves Device ID case and generated URL strings stay canonical | DeviceLinkResolver | Unit | Plain strings | High |
 | UT-DLR-006 | Device ID trimming preserves case | Keep display/persistence separate from comparison normalization | Trimmed IDs keep original case; normalized IDs uppercase for comparisons | DeviceLinkResolver | Unit | Plain strings | High |
 | UT-DLR-007 | Known device resolution is case-insensitive and returns canonical stored ID | Preserve old QR links while opening stored device | Mixed-case stored ID is found from differently cased input | DeviceLinkResolver / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
-| UT-DLR-008 | Device link routing opens known devices and adds unknown devices | Validate external URI branching | Known URI opens stored canonical device, unknown URI opens add-device sheet preserving input case | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
-| UT-DLR-009 | Unknown visitor notification routes by known state | Validate notification-tap branching | Unknown notification shows action dialog preserving input case, known notification opens device | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-008 | Known device store rejects case-insensitive Device ID duplicates | Protect unique Device ID semantics | Existing `MixedCase` ID blocks a differently cased duplicate while preserving stored casing | KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-009 | Known device store detects case-insensitive name duplicates without blocking | Warn/disambiguate same-looking names without preventing user choice | `Family iPhone` and `family iphone` are both allowed and detected as name duplicates | KnownDeviceStore | Unit | Shared store, cleanup via defer | Medium |
+| UT-DLR-010 | Known device store detects existing case-insensitive Device ID conflicts | Surface legacy/older stored conflicts | Existing same-ID-different-case entries are detected for row disambiguation | KnownDeviceStore | Unit | Shared store snapshot restore | High |
+| UT-DLR-011 | Device link routing opens known devices and adds unknown devices | Validate external URI branching | Known URI opens stored canonical device, unknown URI opens add-device sheet preserving input case | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-012 | Unknown visitor add requests preserve source and case | Protect Add Device prefill behavior | Unknown visitor action opens Add Device with source `unknownVisitor` and the original Device ID casing | AppNavigationCoordinator | Unit | Shared coordinator cleanup | High |
+| UT-DLR-013 | Unknown visitor notification routes by known state | Validate notification-tap branching | Unknown notification shows action dialog preserving input case, known notification opens device | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
 | UT-MRE-001 | Retries once for transient network error and succeeds | Validate retry path | first timedOut fails, second succeeds, 1 sleep recorded | MiataruRequestExecutor | Unit | injected sleep + deterministic jitter | High |
 | UT-MRE-002 | Does not retry for non-retryable auth error | Validate non-retry path | `401` serverError throws without retry | MiataruRequestExecutor | Unit | APIError simulation | High |
 | UT-MRE-003 | Classifier marks transient statuses and URL errors as retryable | Validate classification table | 408/429/5xx + transient URLError are retryable; auth/invalid/decoding are not | MiataruRetryClassifier | Unit | APIError + URLError cases | High |

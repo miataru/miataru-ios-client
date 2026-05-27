@@ -100,12 +100,46 @@ class KnownDeviceStore: ObservableObject {
     /// Fügt ein Gerät hinzu, wenn die DeviceID noch nicht existiert. Gibt true zurück, wenn erfolgreich, false bei Duplikat.
     @discardableResult
     func add(device: KnownDevice) -> Bool {
-        if devices.contains(where: { $0.DeviceID == device.DeviceID }) {
+        let trimmedDeviceID = trimmedValue(device.DeviceID)
+        guard !trimmedDeviceID.isEmpty else { return false }
+        if self.device(matchingDeviceIDCaseInsensitive: device.DeviceID) != nil {
             return false
         }
+        device.DeviceName = trimmedValue(device.DeviceName)
+        device.DeviceID = trimmedDeviceID
         device.KnownDevicesTablePosition = devices.count
         devices.append(device)
         return true
+    }
+
+    func device(matchingDeviceIDCaseInsensitive rawDeviceID: String, excluding excludedDevice: KnownDevice? = nil) -> KnownDevice? {
+        let normalizedID = normalizedDeviceID(rawDeviceID)
+        guard !normalizedID.isEmpty else { return nil }
+        return devices.first { device in
+            guard device !== excludedDevice else { return false }
+            return normalizedDeviceID(device.DeviceID) == normalizedID
+        }
+    }
+
+    func devices(matchingNameCaseInsensitive rawDeviceName: String, excluding excludedDevice: KnownDevice? = nil) -> [KnownDevice] {
+        let normalizedName = normalizedDeviceName(rawDeviceName)
+        guard !normalizedName.isEmpty else { return [] }
+        return devices.filter { device in
+            guard device !== excludedDevice else { return false }
+            return normalizedDeviceName(device.DeviceName) == normalizedName
+        }
+    }
+
+    func hasCaseInsensitiveNameDuplicate(for device: KnownDevice) -> Bool {
+        !devices(matchingNameCaseInsensitive: device.DeviceName, excluding: device).isEmpty
+    }
+
+    func hasCaseInsensitiveDeviceIDDuplicate(for device: KnownDevice) -> Bool {
+        self.device(matchingDeviceIDCaseInsensitive: device.DeviceID, excluding: device) != nil
+    }
+
+    func hasCaseInsensitiveNameDuplicate(named rawDeviceName: String, excluding excludedDevice: KnownDevice? = nil) -> Bool {
+        !devices(matchingNameCaseInsensitive: rawDeviceName, excluding: excludedDevice).isEmpty
     }
 
     func move(fromOffsets source: IndexSet, toOffset destination: Int) {
@@ -179,5 +213,17 @@ class KnownDeviceStore: ObservableObject {
         setupSubscribers()
         save()
         WidgetDataSyncCoordinator.syncAllDevices()
+    }
+
+    private func trimmedValue(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func normalizedDeviceID(_ deviceID: String) -> String {
+        trimmedValue(deviceID).uppercased()
+    }
+
+    private func normalizedDeviceName(_ deviceName: String) -> String {
+        trimmedValue(deviceName).folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
     }
 } 

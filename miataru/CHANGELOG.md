@@ -1,4 +1,7 @@
 version 3.1.17
+- Blocked case-insensitive duplicate Device IDs while keeping the original stored casing visible.
+- Added a localized duplicate-name warning in Add/Edit Device and showed a shortened Device ID in device-list rows when names or legacy Device ID conflicts would otherwise be ambiguous.
+- Added localized duplicate/conflict strings across all supported app languages.
 - Preserved lowercase and mixed-case Device IDs when adding unknown devices from unknown visitors, unknown-device actions, QR scanner input, or external `miataru://` links.
 - Split Device ID handling so visible/add-device flows only trim whitespace while internal matching can still use uppercase normalization for case-insensitive known-device resolution and cache keys.
 - Added regression coverage for case-preserving URI/scanner parsing, case-preserving unknown-device add requests, and continued case-insensitive known-device routing.

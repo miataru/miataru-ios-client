@@ -35,6 +35,7 @@ struct iPhone_EditDeviceView: View {
     @State private var activationError: String? = nil
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
+    @ObservedObject private var store = KnownDeviceStore.shared
     private let maxSloganLength = MiataruAppAPI.maxDeviceSloganLength
 
     private enum DeviceSecurityStatus {
@@ -52,6 +53,12 @@ struct iPhone_EditDeviceView: View {
             Form {
                 Section(header: Text("device_name")) {
                     TextField("device_name2", text: $tempDeviceName)
+
+                    if hasSimilarDeviceName {
+                        Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
 
                     if isCurrentDevice {
                         VStack(alignment: .leading, spacing: 6) {
@@ -589,6 +596,14 @@ struct iPhone_EditDeviceView: View {
 
     private func normalizeSlogan(_ slogan: String) -> String {
         MiataruAppAPI.cleanseDeviceSlogan(slogan, maxLength: maxSloganLength)
+    }
+
+    private var trimmedDeviceName: String {
+        tempDeviceName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var hasSimilarDeviceName: Bool {
+        store.hasCaseInsensitiveNameDuplicate(named: trimmedDeviceName, excluding: device)
     }
 
     private enum EditDeviceSloganError: LocalizedError {

@@ -68,6 +68,65 @@ struct DeviceLinkResolverTests {
         #expect(DeviceLinkResolver.canonicalKnownDeviceID(for: " \(canonicalID.uppercased()) ") == canonicalID)
     }
 
+    @Test("Known device store rejects case-insensitive Device ID duplicates")
+    func knownDeviceStoreRejectsCaseInsensitiveDeviceIDDuplicates() {
+        let store = KnownDeviceStore.shared
+        let canonicalID = "MixedCase-\(UUID().uuidString)"
+        let lowercaseID = canonicalID.lowercased()
+        store.removeDevice(byID: canonicalID)
+        store.removeDevice(byID: lowercaseID)
+        defer {
+            store.removeDevice(byID: canonicalID)
+            store.removeDevice(byID: lowercaseID)
+        }
+
+        let original = KnownDevice(name: "Original Device", deviceID: canonicalID, color: UIColor.systemBlue)
+        let duplicate = KnownDevice(name: "Duplicate Device", deviceID: lowercaseID, color: UIColor.systemRed)
+
+        #expect(store.add(device: original))
+        #expect(!store.add(device: duplicate))
+        #expect(store.device(matchingDeviceIDCaseInsensitive: lowercaseID)?.DeviceID == canonicalID)
+    }
+
+    @Test("Known device store detects case-insensitive name duplicates without blocking")
+    func knownDeviceStoreDetectsCaseInsensitiveNameDuplicatesWithoutBlocking() {
+        let store = KnownDeviceStore.shared
+        let firstID = "NameCaseA-\(UUID().uuidString)"
+        let secondID = "NameCaseB-\(UUID().uuidString)"
+        store.removeDevice(byID: firstID)
+        store.removeDevice(byID: secondID)
+        defer {
+            store.removeDevice(byID: firstID)
+            store.removeDevice(byID: secondID)
+        }
+
+        let first = KnownDevice(name: "Family iPhone", deviceID: firstID, color: UIColor.systemBlue)
+        let second = KnownDevice(name: "family iphone", deviceID: secondID, color: UIColor.systemGreen)
+
+        #expect(store.add(device: first))
+        #expect(store.add(device: second))
+        #expect(store.hasCaseInsensitiveNameDuplicate(for: first))
+        #expect(store.hasCaseInsensitiveNameDuplicate(for: second))
+    }
+
+    @Test("Known device store detects existing case-insensitive Device ID conflicts")
+    func knownDeviceStoreDetectsExistingCaseInsensitiveDeviceIDConflicts() {
+        let store = KnownDeviceStore.shared
+        let originalDevices = store.devices
+        let canonicalID = "ExistingCase-\(UUID().uuidString)"
+        let lowercaseID = canonicalID.lowercased()
+        defer {
+            store.devices = originalDevices
+        }
+
+        let first = KnownDevice(name: "First Device", deviceID: canonicalID, color: UIColor.systemBlue)
+        let second = KnownDevice(name: "Second Device", deviceID: lowercaseID, color: UIColor.systemOrange)
+        store.devices = [first, second]
+
+        #expect(store.hasCaseInsensitiveDeviceIDDuplicate(for: first))
+        #expect(store.hasCaseInsensitiveDeviceIDDuplicate(for: second))
+    }
+
     @Test("Device link routing opens known devices and adds unknown devices")
     func deviceLinkRoutingOpensKnownAndAddsUnknown() {
         let coordinator = AppNavigationCoordinator.shared
