@@ -15,7 +15,6 @@ struct iPhone_GroupsView: View {
     @State private var editMode: EditMode = .inactive
     @State private var editingGroup: DeviceGroup? = nil
     @State private var selectedGroupID: String? = nil
-    @Namespace private var zoomTransitionNamespace
 
     var body: some View {
         NavigationStack {
@@ -66,10 +65,6 @@ struct iPhone_GroupsView: View {
                     ForEach(groupStore.groups) { group in
                         NavigationLink(value: group.id) {
                             GroupRowView(group: group)
-                                .matchedTransitionSource(
-                                    id: MiataruZoomTransitionSource.group(group.id),
-                                    in: zoomTransitionNamespace
-                                )
                         }
                         .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -141,12 +136,6 @@ struct iPhone_GroupsView: View {
                 .navigationDestination(for: String.self) { groupID in
                     if let group = groupStore.groups.first(where: { $0.id == groupID }) {
                         iPhone_GroupMapView(group: group)
-                            .navigationTransition(
-                                .zoom(
-                                    sourceID: MiataruZoomTransitionSource.group(groupID),
-                                    in: zoomTransitionNamespace
-                                )
-                            )
                     } else {
                         Text(NSLocalizedString("Group not found", comment: "Shown when a group with the given ID does not exist"))
                     }

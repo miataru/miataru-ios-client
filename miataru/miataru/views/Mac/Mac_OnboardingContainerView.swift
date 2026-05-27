@@ -53,7 +53,6 @@ struct Mac_OnboardingContainerView: View {
                 ForEach(0..<pages.count, id: \.self) { index in
                     pages[index]
                         .tag(index)
-                        .onboardingPageMotion(trigger: currentPage, isActive: index == currentPage)
                 }
             }
             .tabViewStyle(PageTabViewStyle())
