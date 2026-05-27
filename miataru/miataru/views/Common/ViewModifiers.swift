@@ -17,31 +17,52 @@ enum MiataruZoomTransitionSource: Hashable {
 struct OnboardingPageMotion: ViewModifier {
     @Environment(\.animationsAllowed) private var animationsAllowed
     let trigger: Int
+    let isActive: Bool
     @State private var isVisible = false
+    @State private var revealTask: Task<Void, Never>?
 
     func body(content: Content) -> some View {
+        let shouldAnimate = animationsAllowed && isActive
+
         content
-            .opacity(isVisible ? 1 : 0)
-            .offset(y: isVisible ? 0 : 16)
-            .scaleEffect(isVisible ? 1 : 0.98)
-            .animation(animationsAllowed ? .easeOut(duration: 0.32) : nil, value: isVisible)
+            .opacity(isVisible || !shouldAnimate ? 1 : 0)
+            .offset(y: isVisible || !shouldAnimate ? 0 : 22)
+            .scaleEffect(isVisible || !shouldAnimate ? 1 : 0.97)
             .onAppear {
                 reveal()
             }
             .onChange(of: trigger) { _, _ in
                 reveal()
             }
+            .onChange(of: isActive) { _, _ in
+                reveal()
+            }
+            .onDisappear {
+                revealTask?.cancel()
+            }
     }
 
     private func reveal() {
-        guard animationsAllowed else {
+        revealTask?.cancel()
+
+        guard animationsAllowed, isActive else {
             isVisible = true
             return
         }
 
-        isVisible = false
-        DispatchQueue.main.async {
-            isVisible = true
+        var transaction = Transaction()
+        transaction.animation = nil
+        withTransaction(transaction) {
+            isVisible = false
+        }
+
+        revealTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 90_000_000)
+            guard !Task.isCancelled else { return }
+
+            withAnimation(.spring(response: 0.44, dampingFraction: 0.82)) {
+                isVisible = true
+            }
         }
     }
 }
@@ -112,7 +133,7 @@ extension View {
         self.animation(animationsAllowed ? animation : nil, value: value)
     }
 
-    func onboardingPageMotion(trigger: Int) -> some View {
-        modifier(OnboardingPageMotion(trigger: trigger))
+    func onboardingPageMotion(trigger: Int, isActive: Bool) -> some View {
+        modifier(OnboardingPageMotion(trigger: trigger, isActive: isActive))
     }
 }

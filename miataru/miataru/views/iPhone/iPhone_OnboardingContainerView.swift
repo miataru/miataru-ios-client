@@ -59,7 +59,7 @@ struct iPhone_OnboardingContainerView: View {
                 ForEach(0..<pages.count, id: \.self) { index in
                     pages[index]
                         .tag(index)
-                        .onboardingPageMotion(trigger: currentPage)
+                        .onboardingPageMotion(trigger: currentPage, isActive: index == currentPage)
                 }
             }
             .accessibilityIdentifier("onboarding_pager")
