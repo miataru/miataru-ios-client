@@ -11,6 +11,7 @@ import SwiftUI
 
 struct iPhone_AdvancedOptionsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @Environment(\.animationsAllowed) private var animationsAllowed
 
     var body: some View {
         Form {
@@ -52,13 +53,16 @@ struct iPhone_AdvancedOptionsView: View {
 
                     if settings.frequentBackgroundLocationUpdatesEnabled {
                         SettingsWarningText("frequent_background_location_updates_battery_warning")
+                            .miataruStateTransition(animationsAllowed)
 
                         Picker("background_location_distance_filter_title", selection: $settings.frequentBackgroundLocationDistanceFilter) {
                             Text("100m").tag(100)
                             Text("50m").tag(50)
                             Text("25m").tag(25)
                         }
+                        .miataruStateTransition(animationsAllowed)
                         SettingsDescriptionText(frequentBackgroundDistanceFilterExplanationKey)
+                            .miataruStateTransition(animationsAllowed)
 
                         Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
                             Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
@@ -67,7 +71,9 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
                             Text("frequent_background_location_updates_duration_unlimited").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
                         }
+                        .miataruStateTransition(animationsAllowed)
                         SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
+                            .miataruStateTransition(animationsAllowed)
 
                         Picker("frequent_background_battery_auto_disable_level_title", selection: $settings.frequentBackgroundBatteryAutoDisableLevel) {
                             Text(verbatim: "10%").tag(10)
@@ -80,6 +86,7 @@ struct iPhone_AdvancedOptionsView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
+                            .miataruStateTransition(animationsAllowed)
 
                         Picker("frequent_background_location_delivery_mode_title", selection: $settings.frequentBackgroundLocationDeliveryMode) {
                             Text("frequent_background_location_delivery_immediate").tag(FrequentBackgroundLocationDeliveryMode.immediate.rawValue)
@@ -88,7 +95,9 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_location_delivery_5m").tag(FrequentBackgroundLocationDeliveryMode.everyFiveMinutes.rawValue)
                             Text("frequent_background_location_delivery_10m").tag(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue)
                         }
+                        .miataruStateTransition(animationsAllowed)
                         SettingsDescriptionText(frequentBackgroundDeliveryExplanationKey)
+                            .miataruStateTransition(animationsAllowed)
 
                         Picker("frequent_background_visitor_check_interval_title", selection: $settings.frequentBackgroundVisitorCheckInterval) {
                             Text("frequent_background_visitor_check_every_update").tag(FrequentBackgroundVisitorCheckInterval.everyUpdate.rawValue)
@@ -98,9 +107,12 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_visitor_check_30m").tag(FrequentBackgroundVisitorCheckInterval.everyThirtyMinutes.rawValue)
                             Text("frequent_background_visitor_check_60m").tag(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue)
                         }
+                        .miataruStateTransition(animationsAllowed)
                         SettingsDescriptionText(frequentBackgroundVisitorCheckExplanationKey)
+                            .miataruStateTransition(animationsAllowed)
                     }
                 }
+                .miataruAnimated(value: settings.frequentBackgroundLocationUpdatesEnabled, animationsAllowed: animationsAllowed)
             }
 
             Section(header: Text("app_behaviour")) {

@@ -185,6 +185,7 @@ struct iPhone_DeviceHistoryMapView: View {
                         .onTapGesture {
                             selectEntryFromMap(entry)
                         }
+                        .miataruOverlayTransition(animationsAllowed)
                     } else {
                         Circle()
                             .fill(color(for: entry, within: mapHistory))
@@ -193,10 +194,12 @@ struct iPhone_DeviceHistoryMapView: View {
                             .onTapGesture {
                                 selectEntryFromMap(entry)
                             }
+                            .miataruOverlayTransition(animationsAllowed)
                     }
                 }
             }
         }
+        .miataruAnimated(.easeInOut(duration: 0.2), value: scrubTimestamp, animationsAllowed: animationsAllowed)
         .onMapCameraChange(frequency: .continuous) { context in
             let previousRegion = currentRegion
             let now = Date()

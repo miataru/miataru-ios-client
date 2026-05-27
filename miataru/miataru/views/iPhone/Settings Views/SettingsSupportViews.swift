@@ -104,6 +104,7 @@ struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
 
 struct AllowedDeviceListSettingsContent: View {
     @ObservedObject private var settings = SettingsManager.shared
+    @Environment(\.animationsAllowed) private var animationsAllowed
     @State private var isActivatingAllowedDeviceList = false
     @State private var activationError: String? = nil
 
@@ -113,11 +114,14 @@ struct AllowedDeviceListSettingsContent: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
+                        .contentTransition(.symbolEffect(.replace))
                     Text("allowed_device_list_enabled_status")
                         .font(.body)
                 }
+                .miataruStateTransition(animationsAllowed)
 
                 SettingsDescriptionText("allowed_device_list_enabled_explanation")
+                    .miataruStateTransition(animationsAllowed)
             } else {
                 Button {
                     Task {
@@ -127,25 +131,32 @@ struct AllowedDeviceListSettingsContent: View {
                     HStack {
                         Image(systemName: "lock.shield")
                             .foregroundColor(.blue)
+                            .contentTransition(.symbolEffect(.replace))
                         Text("allowed_device_list_enable_button")
 
                         if isActivatingAllowedDeviceList {
                             Spacer()
                             ProgressView()
+                                .miataruOverlayTransition(animationsAllowed)
                         }
                     }
                 }
                 .disabled(isActivatingAllowedDeviceList)
+                .miataruAnimated(value: isActivatingAllowedDeviceList, animationsAllowed: animationsAllowed)
 
                 if let error = activationError {
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
+                        .miataruStateTransition(animationsAllowed)
                 }
 
                 SettingsDescriptionText("allowed_device_list_disabled_explanation")
+                    .miataruStateTransition(animationsAllowed)
             }
         }
+        .miataruAnimated(value: settings.allowedDeviceListEnabled, animationsAllowed: animationsAllowed)
+        .miataruAnimated(value: activationError, animationsAllowed: animationsAllowed)
     }
 
     @MainActor

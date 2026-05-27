@@ -634,6 +634,10 @@ struct iPhone_DeviceNavigationView: View {
             navigationOverlayContent
             topOverlayContent
         }
+        .miataruAnimated(value: isChromeVisible, animationsAllowed: animationsAllowed)
+        .miataruAnimated(value: route != nil, animationsAllowed: animationsAllowed)
+        .miataruAnimated(value: travelTime ?? "", animationsAllowed: animationsAllowed)
+        .miataruAnimated(value: distanceText ?? "", animationsAllowed: animationsAllowed)
     }
 
     @ViewBuilder
@@ -644,6 +648,7 @@ struct iPhone_DeviceNavigationView: View {
                 .padding(.top, isChromeVisible ? -12 : -24)
                 .contentShape(Rectangle())
                 .onTapGesture { toggleChromeVisibility() }
+                .miataruStateTransition(animationsAllowed)
         }
     }
 
@@ -681,6 +686,7 @@ struct iPhone_DeviceNavigationView: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .padding()
+                .miataruStateTransition(animationsAllowed)
             }
         }
     }
@@ -1533,8 +1539,11 @@ struct iPhone_DeviceNavigationView: View {
                 .padding(.trailing, 16)
                 .padding(.bottom, bottomPadding)
                 .zIndex(2)
+                .miataruOverlayTransition(animationsAllowed)
             }
         }
+        .miataruAnimated(value: isChromeVisible, animationsAllowed: animationsAllowed)
+        .miataruAnimated(value: currentRegion != nil, animationsAllowed: animationsAllowed)
     }
 
     @ViewBuilder
@@ -1550,10 +1559,10 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 .padding([.top, .trailing], 10)
                 .zIndex(3)
-                .transition(animationsAllowed ? .opacity : .identity)
+                .miataruOverlayTransition(animationsAllowed)
             }
         }
-        .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: userHasRotatedMap)
+        .miataruAnimated(.easeInOut(duration: 0.3), value: userHasRotatedMap, animationsAllowed: animationsAllowed)
     }
 
     private func alignMapToNorth() {
