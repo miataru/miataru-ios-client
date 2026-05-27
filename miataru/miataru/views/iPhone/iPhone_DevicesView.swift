@@ -35,6 +35,7 @@ struct iPhone_DevicesView: View {
     @State private var navigationTargetDevice: KnownDevice? = nil
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
     @Environment(\.scenePhase) private var scenePhase
+    @Namespace private var zoomTransitionNamespace
     
     private var unknownVisitors: [MiataruVisitor] {
         UnknownVisitorFilter.visitors(
@@ -97,6 +98,10 @@ struct iPhone_DevicesView: View {
                         if editMode == .inactive {
                             NavigationLink(value: NavigationDestination.device(device.DeviceID)) {
                                 DeviceRowView(device: device, cache: cache, showsSlogan: true)
+                                    .matchedTransitionSource(
+                                        id: MiataruZoomTransitionSource.device(device.DeviceID),
+                                        in: zoomTransitionNamespace
+                                    )
                             }
                             .accessibilityIdentifier(
                                 device.DeviceID == thisDeviceIDManager.shared.deviceID
@@ -189,6 +194,10 @@ struct iPhone_DevicesView: View {
                         ForEach(groupStore.groups) { group in
                             NavigationLink(value: NavigationDestination.group(group.id)) {
                                 GroupRowView(group: group)
+                                    .matchedTransitionSource(
+                                        id: MiataruZoomTransitionSource.group(group.id),
+                                        in: zoomTransitionNamespace
+                                    )
                             }
                             .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -298,9 +307,21 @@ struct iPhone_DevicesView: View {
                             navigationPath.append(.device(newDeviceID))
                         }
                     )
+                    .navigationTransition(
+                        .zoom(
+                            sourceID: MiataruZoomTransitionSource.device(deviceID),
+                            in: zoomTransitionNamespace
+                        )
+                    )
                 case .group(let groupID):
                     if let group = groupStore.groups.first(where: { $0.id == groupID }) {
                         iPhone_GroupMapView(group: group)
+                            .navigationTransition(
+                                .zoom(
+                                    sourceID: MiataruZoomTransitionSource.group(groupID),
+                                    in: zoomTransitionNamespace
+                                )
+                            )
                     } else {
                         Text(NSLocalizedString("Group not found", comment: "Shown when a group with the given ID does not exist"))
                     }

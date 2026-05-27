@@ -9,6 +9,11 @@
 
 import SwiftUI
 
+enum MiataruZoomTransitionSource: Hashable {
+    case device(String)
+    case group(String)
+}
+
 /// ViewModifier that automatically applies the correct toolbar and tabbar backgrounds based on iOS version
 /// iOS 26+: transparent background, iOS prior: ultrathin material
 struct AdaptiveToolbarBackground: ViewModifier {
