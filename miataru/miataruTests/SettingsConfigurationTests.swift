@@ -604,6 +604,48 @@ struct SettingsConfigurationTests {
         #expect(LocationManager.shouldSuppressStaleFrequentBackgroundCallback(
             allowNextStaleCallback: false
         ))
+        #expect(LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            shouldMaintainRecoveryAnchor: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            shouldMaintainRecoveryAnchor: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .active,
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            shouldMaintainRecoveryAnchor: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: true,
+            shouldMaintainRecoveryAnchor: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            shouldMaintainRecoveryAnchor: false,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            shouldMaintainRecoveryAnchor: true,
+            updateSourceIsPrimary: false
+        ))
         #expect(!LocationManager.shouldCleanUpStaleFrequentBackgroundCallback(
             frequentUpdatesEnabled: true,
             didSwitchFrequentBackgroundMode: false,
@@ -659,6 +701,12 @@ struct SettingsConfigurationTests {
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false
         ))
+        #expect(LocationManager.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
         #expect(LocationManager.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: true,
             isTracking: true,
@@ -669,6 +717,18 @@ struct SettingsConfigurationTests {
 
         #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: false,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: true,
+            isTracking: false,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false
         ))
@@ -698,6 +758,12 @@ struct SettingsConfigurationTests {
             authorizationStatus: .authorizedWhenInUse,
             deviceKeyAuthBlocked: false
         ))
+        #expect(!LocationManager.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedWhenInUse,
+            deviceKeyAuthBlocked: false
+        ))
         #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: true,
             isTracking: true,
@@ -707,6 +773,12 @@ struct SettingsConfigurationTests {
         ))
         #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: true
+        ))
+        #expect(!LocationManager.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: true,
+            isTracking: true,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: true
         ))

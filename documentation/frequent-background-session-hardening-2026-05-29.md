@@ -10,9 +10,11 @@ This follow-up keeps the primary `CLLocationManager` as the durable significant-
 
 ## Implementation
 
-- Frequent background mode now holds a `CLBackgroundActivitySession` and an `Always` `CLServiceSession` while the mode is active.
-- The sessions are stopped when frequent mode is disabled, expires, is disabled for low battery, tracking is stopped, authorization is lost, or DeviceKey authentication blocks uploads.
+- Active `Always`-authorized tracking now holds an `Always` `CLServiceSession`, including standard significant-change mode.
+- Frequent background mode additionally holds a `CLBackgroundActivitySession` while the mode is active.
+- The Always service session is stopped when tracking is stopped, authorization is lost, or DeviceKey authentication blocks uploads. The frequent background activity session is also stopped when frequent mode is disabled, expires, or is disabled for low battery.
 - A primary significant-change callback can reassert frequent standard updates only if frequent standard updates were already active in the current process. This avoids restoring frequent mode aggressively after a cold reboot location wakeup.
+- In standard significant-change mode, a background primary callback reasserts significant-change monitoring again. This keeps the post-reboot path from relying only on launch-time reconstruction after the first delivered location.
 - The secondary frequent manager is stopped more defensively when frequent mode is inactive: standard updates and significant-change monitoring are stopped, background updates are disabled, automatic pausing is restored, and the delegate is detached.
 - If a stale secondary callback arrives just after frequent mode was stopped, the first valid location can still flow through the normal deduped upload path. Repeated stale callbacks are suppressed after cleanup.
 

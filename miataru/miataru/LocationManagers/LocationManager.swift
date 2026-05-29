@@ -75,8 +75,8 @@ final class LocationManager: NSObject, ObservableObject {
     private var isSignificantChangeRecoveryAnchorActive = false
     private var isFrequentBackgroundStandardUpdatesActive = false
     private var shouldAllowNextStaleFrequentBackgroundCallback = false
+    private var locationServiceSession: CLServiceSession?
     private var frequentBackgroundActivitySession: CLBackgroundActivitySession?
-    private var frequentBackgroundServiceSession: CLServiceSession?
     private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
@@ -215,6 +215,7 @@ final class LocationManager: NSObject, ObservableObject {
         NotificationCenter.default.removeObserver(self)
         frequentBackgroundLocationExpirationTimer?.invalidate()
         pendingAlwaysAuthorizationRequestTask?.cancel()
+        stopLocationServiceSession(reason: "deinit")
         stopFrequentBackgroundActivitySession(reason: "deinit")
     }
     
@@ -462,6 +463,17 @@ final class LocationManager: NSObject, ObservableObject {
         return authorizationStatus == .authorizedAlways
     }
 
+    static func shouldMaintainLocationServiceSession(trackAndReportLocation: Bool,
+                                                     isTracking: Bool,
+                                                     authorizationStatus: CLAuthorizationStatus,
+                                                     deviceKeyAuthBlocked: Bool) -> Bool {
+        shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: trackAndReportLocation && isTracking,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+        )
+    }
+
     static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
                                                   deviceKeyAuthBlocked: Bool) -> Bool {
         trackAndReportLocation && !deviceKeyAuthBlocked
@@ -590,6 +602,20 @@ final class LocationManager: NSObject, ObservableObject {
 
     static func shouldSuppressStaleFrequentBackgroundCallback(allowNextStaleCallback: Bool) -> Bool {
         !allowNextStaleCallback
+    }
+
+    static func shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+        applicationState: UIApplication.State,
+        frequentUpdatesEnabled: Bool,
+        didSwitchFrequentBackgroundMode: Bool,
+        shouldMaintainRecoveryAnchor: Bool,
+        updateSourceIsPrimary: Bool
+    ) -> Bool {
+        updateSourceIsPrimary &&
+        applicationState != .active &&
+        !frequentUpdatesEnabled &&
+        !didSwitchFrequentBackgroundMode &&
+        shouldMaintainRecoveryAnchor
     }
     
     // MARK: - Permissions
@@ -815,6 +841,15 @@ final class LocationManager: NSObject, ObservableObject {
             shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
         )
         debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
+        syncLocationServiceSession(
+            reason: reason,
+            shouldMaintainSession: Self.shouldMaintainLocationServiceSession(
+                trackAndReportLocation: settings.trackAndReportLocation,
+                isTracking: isTracking,
+                authorizationStatus: status,
+                deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+            )
+        )
         syncFrequentBackgroundActivitySession(
             reason: reason,
             shouldMaintainSession: shouldMaintainFrequentActivitySession
@@ -920,12 +955,28 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
-    private func startFrequentBackgroundActivitySessionIfNeeded(reason: String) {
-        if frequentBackgroundServiceSession == nil {
-            debugLog("[LocationManager] Starting frequent background CLServiceSession (\(reason))")
-            frequentBackgroundServiceSession = CLServiceSession(authorization: .always)
+    private func syncLocationServiceSession(reason: String, shouldMaintainSession: Bool) {
+        if shouldMaintainSession {
+            startLocationServiceSessionIfNeeded(reason: reason)
+        } else {
+            stopLocationServiceSession(reason: reason)
         }
+    }
 
+    private func startLocationServiceSessionIfNeeded(reason: String) {
+        guard locationServiceSession == nil else { return }
+        debugLog("[LocationManager] Starting Always CLServiceSession (\(reason))")
+        locationServiceSession = CLServiceSession(authorization: .always)
+    }
+
+    private func stopLocationServiceSession(reason: String) {
+        guard let locationServiceSession else { return }
+        debugLog("[LocationManager] Stopping Always CLServiceSession (\(reason))")
+        locationServiceSession.invalidate()
+        self.locationServiceSession = nil
+    }
+
+    private func startFrequentBackgroundActivitySessionIfNeeded(reason: String) {
         if frequentBackgroundActivitySession == nil {
             debugLog("[LocationManager] Starting frequent background CLBackgroundActivitySession (\(reason))")
             frequentBackgroundActivitySession = CLBackgroundActivitySession()
@@ -935,12 +986,6 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func stopFrequentBackgroundActivitySession(reason: String) {
-        if let serviceSession = frequentBackgroundServiceSession {
-            debugLog("[LocationManager] Stopping frequent background CLServiceSession (\(reason))")
-            serviceSession.invalidate()
-            frequentBackgroundServiceSession = nil
-        }
-
         if let activitySession = frequentBackgroundActivitySession {
             debugLog("[LocationManager] Stopping frequent background CLBackgroundActivitySession (\(reason))")
             activitySession.invalidate()
@@ -993,6 +1038,29 @@ final class LocationManager: NSObject, ObservableObject {
             reason: "frequent background reassert after primary significant-change callback",
             applicationStateContext: .forceBackground
         )
+    }
+
+    private func reassertStandardSignificantChangeAfterPrimaryCallbackIfNeeded(
+        applicationState: UIApplication.State,
+        updateSource: LocationUpdateSource,
+        didSwitchFrequentBackgroundMode: Bool
+    ) {
+        let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: settings.trackAndReportLocation && isTracking,
+            authorizationStatus: locationManager.authorizationStatus,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        )
+        guard Self.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
+            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor,
+            updateSourceIsPrimary: updateSource == .primary
+        ) else { return }
+
+        debugLog("[LocationManager] Reasserting standard significant-change tracking after primary background callback")
+        locationManager.allowsBackgroundLocationUpdates = true
+        startSignificantChangeRecoveryAnchor(reason: "standard significant-change callback reassert")
     }
 
     private func ensureSignificantChangeRecoveryAnchorIfNeeded(reason: String, shouldMaintainRecoveryAnchor: Bool) {
@@ -1317,6 +1385,7 @@ final class LocationManager: NSObject, ObservableObject {
         isSignificantChangeRecoveryAnchorActive = false
         isFrequentBackgroundStandardUpdatesActive = false
         shouldAllowNextStaleFrequentBackgroundCallback = false
+        stopLocationServiceSession(reason: "stop all location services")
         stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
         stopForegroundLocationTimer()
@@ -1431,6 +1500,11 @@ extension LocationManager: CLLocationManagerDelegate {
             ) {
                 return
             }
+            self.reassertStandardSignificantChangeAfterPrimaryCallbackIfNeeded(
+                applicationState: applicationState,
+                updateSource: updateSource,
+                didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
+            )
             self.latestRawLocation = location
             let mode = applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
             // Record update arrival whenever app is not active (background or inactive)
