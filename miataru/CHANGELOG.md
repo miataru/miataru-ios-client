@@ -2,6 +2,8 @@ version 3.1.18
 - Restored reboot-safe background location tracking after real-device testing showed that frequent background mode could prevent Miataru from receiving any post-reboot location wakeups.
 - Made the primary `CLLocationManager` the durable significant-change/reboot anchor for every active `Always`-authorized tracking mode, including foreground, standard background, and frequent background operation.
 - Moved frequent background `startUpdatingLocation()` work onto a separate Core Location manager so high-frequency background updates can run without displacing the primary significant-change relaunch registration.
+- Added a `CLBackgroundActivitySession`/`CLServiceSession` runtime anchor while frequent background mode is active, reducing burst-only delivery when iOS would otherwise suspend standard background location updates between significant-change wakeups.
+- Cleaned up stale secondary frequent-manager callbacks if they arrive after frequent background mode has already been disabled, while still allowing the first valid stale callback location to pass through the normal deduped upload path and suppressing repeated stale callbacks after cleanup.
 - Preserved the stable post-reboot behavior for frequent mode: after a reboot, Miataru resumes reporting via significant-change updates without a manual launch; the saved frequent mode resumes when the app is started normally again.
 - Kept standard significant-change tracking functional across foreground/background transitions and iPhone reboots, while maintaining duplicate-upload suppression for callbacks from parallel location services.
 - Added regression coverage for the primary-recovery-anchor/secondary-frequent-update command plan.

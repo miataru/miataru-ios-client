@@ -554,6 +554,73 @@ struct SettingsConfigurationTests {
         ])
     }
 
+    @Test("Primary significant-change callback reasserts frequent background only for active runtime sessions")
+    func primarySignificantChangeCallbackOnlyReassertsActiveFrequentRuntimeSessions() {
+        #expect(LocationManager.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: true,
+            updateSourceIsPrimary: true
+        ))
+
+        #expect(!LocationManager.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: false,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: .active,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: true,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: true,
+            updateSourceIsPrimary: true
+        ))
+        #expect(!LocationManager.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: true,
+            updateSourceIsPrimary: false
+        ))
+
+        #expect(LocationManager.shouldCleanUpStaleFrequentBackgroundCallback(
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            updateSourceIsFrequentBackground: true
+        ))
+        #expect(!LocationManager.shouldSuppressStaleFrequentBackgroundCallback(
+            allowNextStaleCallback: true
+        ))
+        #expect(LocationManager.shouldSuppressStaleFrequentBackgroundCallback(
+            allowNextStaleCallback: false
+        ))
+        #expect(!LocationManager.shouldCleanUpStaleFrequentBackgroundCallback(
+            frequentUpdatesEnabled: true,
+            didSwitchFrequentBackgroundMode: false,
+            updateSourceIsFrequentBackground: true
+        ))
+        #expect(!LocationManager.shouldCleanUpStaleFrequentBackgroundCallback(
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: true,
+            updateSourceIsFrequentBackground: true
+        ))
+        #expect(!LocationManager.shouldCleanUpStaleFrequentBackgroundCallback(
+            frequentUpdatesEnabled: false,
+            didSwitchFrequentBackgroundMode: false,
+            updateSourceIsFrequentBackground: false
+        ))
+    }
+
     @Test("Background lifecycle context keeps frequent mode active even before UIKit reports background")
     func backgroundLifecycleContextKeepsFrequentModeActiveBeforeUIKitStateCatchesUp() {
         let forcedBackgroundState = LocationManager.effectiveApplicationStateForTracking(
@@ -592,9 +659,37 @@ struct SettingsConfigurationTests {
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false
         ))
+        #expect(LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
 
         #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: false,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: false,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: false,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false
         ))
@@ -603,8 +698,22 @@ struct SettingsConfigurationTests {
             authorizationStatus: .authorizedWhenInUse,
             deviceKeyAuthBlocked: false
         ))
+        #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedWhenInUse,
+            deviceKeyAuthBlocked: false
+        ))
         #expect(!LocationManager.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: true
+        ))
+        #expect(!LocationManager.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: true
         ))
