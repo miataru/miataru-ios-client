@@ -226,7 +226,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
 
         didRestoreTrackingForLocationLaunch = true
-        LocationManager.shared.restoreTrackingAfterLaunch(reason: "location launch")
+        LocationManager.shared.restoreTrackingAfterLaunch(
+            reason: "location launch",
+            applicationStateContext: .forceBackground
+        )
     }
 
     private static func unknownVisitorVisitDate(from userInfo: [AnyHashable: Any]) -> Date? {

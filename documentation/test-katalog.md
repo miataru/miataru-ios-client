@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-05-27)
+# Test Catalog (as of 2026-05-29)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **223** (Unit: 207, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **224** (Unit: 208, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -122,6 +122,7 @@ Important project observations:
 | UT-SET-006 | Tracking is restored after launch only when the user setting still permits it | Protect app/location launch recovery gating | Launch recovery requires enabled tracking without DeviceKey auth block and detects `UIApplication.LaunchOptionsKey.location`; AppDelegate restores location launches early and dedupes later launch handling | LocationManager / AppDelegate launch recovery | Unit | Static policy inputs + launch options dictionary | High |
 | UT-SET-007 | Duplicate location callbacks are suppressed before upload | Prevent duplicate server sends from parallel location services | Same timestamp and coordinate callback is skipped; later timestamp is accepted | LocationManager upload dedupe | Unit | Deterministic `CLLocation` fixtures | High |
 | UT-SET-008 | Background lifecycle context keeps frequent mode active even before UIKit reports background | Protect background transition race | A background lifecycle event forces `.background`, so frequent background mode starts even if `UIApplication` still reports `.active`; foreground forcing returns high accuracy; `When In Use` authorization remains foreground-only | LocationManager lifecycle tracking policy | Unit | Static app-state/context inputs | High |
+| UT-SET-009 | Location service command plan keeps primary recovery anchor separate from frequent updates | Protect reboot-safe manager separation | Frequent background mode keeps the primary manager on significant-change monitoring while standard updates run on the secondary manager; standard and foreground modes stop secondary frequent updates | LocationManager Core Location manager command plan | Unit | Static tracking modes + authorization-anchor eligibility | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases

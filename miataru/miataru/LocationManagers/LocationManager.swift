@@ -55,7 +55,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
-    private let recoveryAnchorLocationManager = CLLocationManager()
+    private let frequentBackgroundLocationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
     private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
     private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
@@ -112,6 +112,30 @@ final class LocationManager: NSObject, ObservableObject {
         case forceBackground
     }
 
+    enum PrimaryLocationServiceCommand: Equatable {
+        case stopUpdatingLocation
+        case stopMonitoringSignificantLocationChanges
+        case startMonitoringSignificantLocationChanges
+        case startUpdatingLocation(allowsBackground: Bool, distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
+    }
+
+    enum SecondaryLocationServiceCommand: Equatable {
+        case stopUpdatingLocation
+        case stopMonitoringSignificantLocationChanges
+        case startUpdatingLocation(allowsBackground: Bool, distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
+    }
+
+    struct LocationServiceCommandPlan: Equatable {
+        let primary: [PrimaryLocationServiceCommand]
+        let secondary: [SecondaryLocationServiceCommand]
+    }
+
+    private enum LocationUpdateSource: String {
+        case primary
+        case frequentBackground
+        case unknown
+    }
+
     struct LocationSubmissionDeduplicationKey: Equatable {
         let timestampSeconds: Int64
         let latitudeMicrodegrees: Int64
@@ -128,11 +152,11 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.showsBackgroundLocationIndicator = false
         locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
-        recoveryAnchorLocationManager.delegate = self
-        recoveryAnchorLocationManager.allowsBackgroundLocationUpdates = true
-        recoveryAnchorLocationManager.pausesLocationUpdatesAutomatically = false
-        recoveryAnchorLocationManager.showsBackgroundLocationIndicator = false
-        recoveryAnchorLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
+        frequentBackgroundLocationManager.delegate = self
+        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = true
+        frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = false
+        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
+        frequentBackgroundLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
         if CLLocationManager.headingAvailable() {
             locationManager.headingFilter = 1
         }
@@ -306,7 +330,7 @@ final class LocationManager: NSObject, ObservableObject {
                 guard let self = self else { return }
                 let activityType = Self.activityTypeFrom(newValue)
                 self.locationManager.activityType = activityType
-                self.recoveryAnchorLocationManager.activityType = activityType
+                self.frequentBackgroundLocationManager.activityType = activityType
                 if self.isTracking {
                     // Restart location updates to apply new activityType immediately
                     self.applyTrackingMode(reason: "activity type changed")
@@ -436,6 +460,55 @@ final class LocationManager: NSObject, ObservableObject {
     static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
                                                  deviceKeyAuthBlocked: Bool) -> Bool {
         trackAndReportLocation && !deviceKeyAuthBlocked
+    }
+
+    static func locationServiceCommandPlan(for mode: TrackingMode,
+                                           shouldMaintainRecoveryAnchor: Bool) -> LocationServiceCommandPlan {
+        let secondaryStopCommands: [SecondaryLocationServiceCommand] = [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ]
+
+        switch mode {
+        case .stopped:
+            return LocationServiceCommandPlan(
+                primary: [.stopUpdatingLocation, .stopMonitoringSignificantLocationChanges],
+                secondary: secondaryStopCommands
+            )
+        case .foregroundHighAccuracy:
+            let foregroundPrimaryCommands: [PrimaryLocationServiceCommand] = [
+                shouldMaintainRecoveryAnchor ? .startMonitoringSignificantLocationChanges : .stopMonitoringSignificantLocationChanges,
+                .startUpdatingLocation(
+                    allowsBackground: false,
+                    distanceFilter: kCLDistanceFilterNone,
+                    desiredAccuracy: kCLLocationAccuracyBestForNavigation
+                )
+            ]
+            return LocationServiceCommandPlan(
+                primary: foregroundPrimaryCommands,
+                secondary: secondaryStopCommands
+            )
+        case .backgroundSignificantChange:
+            return LocationServiceCommandPlan(
+                primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
+                secondary: secondaryStopCommands
+            )
+        case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
+            return LocationServiceCommandPlan(
+                primary: [
+                    .stopUpdatingLocation,
+                    shouldMaintainRecoveryAnchor ? .startMonitoringSignificantLocationChanges : .stopMonitoringSignificantLocationChanges
+                ],
+                secondary: [
+                    .stopMonitoringSignificantLocationChanges,
+                    .startUpdatingLocation(
+                        allowsBackground: true,
+                        distanceFilter: distanceFilter,
+                        desiredAccuracy: desiredAccuracy
+                    )
+                ]
+            )
+        }
     }
 
     static func locationSubmissionDeduplicationKey(for location: CLLocation) -> LocationSubmissionDeduplicationKey? {
@@ -605,7 +678,7 @@ final class LocationManager: NSObject, ObservableObject {
         applyTrackingMode(reason: "start tracking")
     }
 
-    func restoreTrackingAfterLaunch(reason: String) {
+    func restoreTrackingAfterLaunch(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
         debugLog("[LocationManager] Restoring tracking after launch: \(reason)")
         authorizationStatus = locationManager.authorizationStatus
         handleFrequentBackgroundLocationExpirationIfNeeded()
@@ -622,7 +695,8 @@ final class LocationManager: NSObject, ObservableObject {
 
         ensureAuthorizationIfNeeded()
         isTracking = true
-        applyTrackingMode(reason: "restore tracking after launch: \(reason)")
+        debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
+        applyTrackingMode(reason: "restore tracking after launch: \(reason)", applicationStateContext: applicationStateContext)
         refreshPendingLocationUpdateCount()
     }
     
@@ -681,9 +755,18 @@ final class LocationManager: NSObject, ObservableObject {
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
             hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty
         )
-        debugLog("[LocationManager] applyTrackingMode reason=\(reason), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), mode=\(mode)")
-        ensureSignificantChangeRecoveryAnchorIfNeeded(reason: reason, authorizationStatus: status)
+        let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: settings.trackAndReportLocation && isTracking,
+            authorizationStatus: status,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        )
+        let commandPlan = Self.locationServiceCommandPlan(
+            for: mode,
+            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
+        )
+        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
         apply(mode)
+        ensureSignificantChangeRecoveryAnchorIfNeeded(reason: reason, shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor)
     }
 
     private func apply(_ mode: TrackingMode) {
@@ -706,6 +789,18 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func startHighAccuracyUpdates() {
         debugLog("Calling startHighAccuracyUpdates")
+        let shouldMaintainPrimarySignificantChangeMonitor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: settings.trackAndReportLocation && isTracking,
+            authorizationStatus: locationManager.authorizationStatus,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        )
+        if shouldMaintainPrimarySignificantChangeMonitor {
+            debugLog("[LocationManager] Keeping primary significant-change monitor active during foreground tracking")
+            locationManager.startMonitoringSignificantLocationChanges()
+        } else {
+            locationManager.stopMonitoringSignificantLocationChanges()
+        }
+        stopFrequentBackgroundStandardUpdates()
         locationManager.allowsBackgroundLocationUpdates = false
         debugLog("allowsBackgroundLocationUpdates set to false (foreground)")
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
@@ -725,28 +820,34 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.allowsBackgroundLocationUpdates = true
         debugLog("allowsBackgroundLocationUpdates set to true (background)")
         locationManager.stopUpdatingLocation()
+        locationManager.startMonitoringSignificantLocationChanges()
+        stopFrequentBackgroundStandardUpdates()
         stopHeadingUpdates()
-        startSignificantChangeRecoveryAnchor(reason: "background significant-change mode")
         stopForegroundLocationTimer()
     }
 
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
         locationManager.allowsBackgroundLocationUpdates = true
-        // Keep significant-change monitoring alive on the recovery manager so reboot relaunch remains registered.
+        locationManager.stopUpdatingLocation()
+        locationManager.startMonitoringSignificantLocationChanges()
+        // Keep the primary manager registered for significant-change relaunch; run frequent standard updates separately.
         stopHeadingUpdates()
-        locationManager.desiredAccuracy = configuration.desiredAccuracy
-        locationManager.distanceFilter = configuration.distanceFilter
-        locationManager.startUpdatingLocation()
+        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = true
+        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
+        frequentBackgroundLocationManager.desiredAccuracy = configuration.desiredAccuracy
+        frequentBackgroundLocationManager.distanceFilter = configuration.distanceFilter
+        frequentBackgroundLocationManager.startUpdatingLocation()
         stopForegroundLocationTimer()
     }
 
-    private func ensureSignificantChangeRecoveryAnchorIfNeeded(reason: String, authorizationStatus: CLAuthorizationStatus) {
-        guard Self.shouldMaintainSignificantChangeRecoveryAnchor(
-            trackAndReportLocation: settings.trackAndReportLocation && isTracking,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
-        ) else {
+    private func stopFrequentBackgroundStandardUpdates() {
+        frequentBackgroundLocationManager.stopUpdatingLocation()
+        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
+    }
+
+    private func ensureSignificantChangeRecoveryAnchorIfNeeded(reason: String, shouldMaintainRecoveryAnchor: Bool) {
+        guard shouldMaintainRecoveryAnchor else {
             stopSignificantChangeRecoveryAnchor(reason: "recovery anchor no longer eligible: \(reason)")
             return
         }
@@ -756,15 +857,15 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func startSignificantChangeRecoveryAnchor(reason: String) {
         let action = isSignificantChangeRecoveryAnchorActive ? "Reasserting" : "Starting"
-        debugLog("[LocationManager] \(action) significant-change recovery anchor (\(reason))")
-        recoveryAnchorLocationManager.startMonitoringSignificantLocationChanges()
+        debugLog("[LocationManager] \(action) primary significant-change recovery anchor (\(reason))")
+        locationManager.startMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = true
     }
 
     private func stopSignificantChangeRecoveryAnchor(reason: String) {
-        guard isSignificantChangeRecoveryAnchorActive else { return }
-        debugLog("[LocationManager] Stopping significant-change recovery anchor (\(reason))")
-        recoveryAnchorLocationManager.stopMonitoringSignificantLocationChanges()
+        let action = isSignificantChangeRecoveryAnchorActive ? "Stopping" : "Reasserting stopped"
+        debugLog("[LocationManager] \(action) primary significant-change recovery anchor (\(reason))")
+        locationManager.stopMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = false
     }
 
@@ -1059,11 +1160,21 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("[LocationManager] Stopping all location services")
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
-        recoveryAnchorLocationManager.stopUpdatingLocation()
-        recoveryAnchorLocationManager.stopMonitoringSignificantLocationChanges()
+        frequentBackgroundLocationManager.stopUpdatingLocation()
+        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
         isSignificantChangeRecoveryAnchorActive = false
         stopHeadingUpdates()
         stopForegroundLocationTimer()
+    }
+
+    private func locationUpdateSource(for manager: CLLocationManager) -> LocationUpdateSource {
+        if manager === locationManager {
+            return .primary
+        }
+        if manager === frequentBackgroundLocationManager {
+            return .frequentBackground
+        }
+        return .unknown
     }
 
     private func startHeadingUpdatesIfAvailable() {
@@ -1153,6 +1264,8 @@ extension LocationManager: CLLocationManagerDelegate {
         Task { @MainActor in
             guard let location = locations.last else { return }
             let applicationState = UIApplication.shared.applicationState
+            let updateSource = self.locationUpdateSource(for: manager)
+            debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), state=\(applicationState.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled)")
             let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
             let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
             let didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery

@@ -471,6 +471,89 @@ struct SettingsConfigurationTests {
         ) == .backgroundSignificantChange)
     }
 
+    @Test("Location service command plan keeps primary recovery anchor separate from frequent updates")
+    func locationServiceCommandPlanKeepsPrimaryRecoveryAnchorSeparateFromFrequentUpdates() {
+        let frequentPlan = LocationManager.locationServiceCommandPlan(
+            for: .backgroundFrequent(
+                distanceFilter: 50,
+                desiredAccuracy: kCLLocationAccuracyNearestTenMeters
+            ),
+            shouldMaintainRecoveryAnchor: true
+        )
+        #expect(frequentPlan.primary == [
+            .stopUpdatingLocation,
+            .startMonitoringSignificantLocationChanges
+        ])
+        #expect(frequentPlan.secondary == [
+            .stopMonitoringSignificantLocationChanges,
+            .startUpdatingLocation(
+                allowsBackground: true,
+                distanceFilter: 50,
+                desiredAccuracy: kCLLocationAccuracyNearestTenMeters
+            )
+        ])
+
+        let standardPlan = LocationManager.locationServiceCommandPlan(
+            for: .backgroundSignificantChange,
+            shouldMaintainRecoveryAnchor: true
+        )
+        #expect(standardPlan.primary == [
+            .stopUpdatingLocation,
+            .startMonitoringSignificantLocationChanges
+        ])
+        #expect(standardPlan.secondary == [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ])
+
+        let foregroundPlan = LocationManager.locationServiceCommandPlan(
+            for: .foregroundHighAccuracy,
+            shouldMaintainRecoveryAnchor: true
+        )
+        #expect(foregroundPlan.primary == [
+            .startMonitoringSignificantLocationChanges,
+            .startUpdatingLocation(
+                allowsBackground: false,
+                distanceFilter: kCLDistanceFilterNone,
+                desiredAccuracy: kCLLocationAccuracyBestForNavigation
+            )
+        ])
+        #expect(foregroundPlan.secondary == [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ])
+
+        let foregroundWhenInUsePlan = LocationManager.locationServiceCommandPlan(
+            for: .foregroundHighAccuracy,
+            shouldMaintainRecoveryAnchor: false
+        )
+        #expect(foregroundWhenInUsePlan.primary == [
+            .stopMonitoringSignificantLocationChanges,
+            .startUpdatingLocation(
+                allowsBackground: false,
+                distanceFilter: kCLDistanceFilterNone,
+                desiredAccuracy: kCLLocationAccuracyBestForNavigation
+            )
+        ])
+        #expect(foregroundWhenInUsePlan.secondary == [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ])
+
+        let stoppedPlan = LocationManager.locationServiceCommandPlan(
+            for: .stopped,
+            shouldMaintainRecoveryAnchor: false
+        )
+        #expect(stoppedPlan.primary == [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ])
+        #expect(stoppedPlan.secondary == [
+            .stopUpdatingLocation,
+            .stopMonitoringSignificantLocationChanges
+        ])
+    }
+
     @Test("Background lifecycle context keeps frequent mode active even before UIKit reports background")
     func backgroundLifecycleContextKeepsFrequentModeActiveBeforeUIKitStateCatchesUp() {
         let forcedBackgroundState = LocationManager.effectiveApplicationStateForTracking(

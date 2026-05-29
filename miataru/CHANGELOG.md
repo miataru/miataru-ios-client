@@ -1,3 +1,12 @@
+version 3.1.18
+- Restored reboot-safe background location tracking after real-device testing showed that frequent background mode could prevent Miataru from receiving any post-reboot location wakeups.
+- Made the primary `CLLocationManager` the durable significant-change/reboot anchor for every active `Always`-authorized tracking mode, including foreground, standard background, and frequent background operation.
+- Moved frequent background `startUpdatingLocation()` work onto a separate Core Location manager so high-frequency background updates can run without displacing the primary significant-change relaunch registration.
+- Preserved the stable post-reboot behavior for frequent mode: after a reboot, Miataru resumes reporting via significant-change updates without a manual launch; the saved frequent mode resumes when the app is started normally again.
+- Kept standard significant-change tracking functional across foreground/background transitions and iPhone reboots, while maintaining duplicate-upload suppression for callbacks from parallel location services.
+- Added regression coverage for the primary-recovery-anchor/secondary-frequent-update command plan.
+- Updated project metadata for version 3.1.18 build 1.
+
 version 3.1.17
 - Added SwiftUI zoom navigation transitions for iPhone device and group pushes from the list rows into the matching map detail views.
 - Kept the onboarding wizard on the native page transition and removed the broader helper-driven state animations from forms, visitor history, QR, settings, and navigation chrome so motion stays focused on navigation context.
