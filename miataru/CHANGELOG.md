@@ -1,3 +1,7 @@
+version 3.1.19
+- implemented Logger based debug logging for local app debugging
+- Updated project metadata for version 3.1.19 build 1.
+
 version 3.1.18
 - Restored reboot-safe background location tracking after real-device testing showed that frequent background mode could prevent Miataru from receiving any post-reboot location wakeups.
 - Made the primary `CLLocationManager` the durable significant-change/reboot anchor for every active `Always`-authorized tracking mode, including foreground, standard background, and frequent background operation.

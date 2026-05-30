@@ -6,18 +6,20 @@
  *
  * Created by Daniel Kirstenpfad on 2025-08-22.
  */
-
 import Foundation
+import os
 
-// Conditional debug logger: compiled out in non-Debug builds
 #if DEBUG
+private let debugLogger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.miataru.ios",
+    category: "Debug"
+)
+
 @inline(__always)
-func debugLog(_ message: @autoclosure () -> String) {
-    print(message())
+func debugLog(_ message: String) {
+    debugLogger.debug("\(message, privacy: .public)")
 }
 #else
 @inline(__always)
 func debugLog(_ message: @autoclosure () -> String) {}
 #endif
-
-
