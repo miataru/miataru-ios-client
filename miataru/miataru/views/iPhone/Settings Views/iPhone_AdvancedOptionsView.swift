@@ -62,6 +62,8 @@ struct iPhone_AdvancedOptionsView: View {
 
                         Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
                             Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
+                            Text("2hours").tag(FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
+                            Text("3hours").tag(FrequentBackgroundLocationUpdateDuration.threeHours.rawValue)
                             Text("4hours").tag(FrequentBackgroundLocationUpdateDuration.fourHours.rawValue)
                             Text("12hours").tag(FrequentBackgroundLocationUpdateDuration.twelveHours.rawValue)
                             Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
@@ -196,6 +198,10 @@ struct iPhone_AdvancedOptionsView: View {
         switch settings.frequentBackgroundLocationUpdateDurationMode {
         case .oneHour:
             return "frequent_background_location_duration_1h_explanation"
+        case .twoHours:
+            return "frequent_background_location_duration_2h_explanation"
+        case .threeHours:
+            return "frequent_background_location_duration_3h_explanation"
         case .fourHours:
             return "frequent_background_location_duration_4h_explanation"
         case .twelveHours:

@@ -84,7 +84,15 @@ struct SettingsConfigurationTests {
             "background_location_distance_filter_25m_explanation",
             "frequent_background_location_updates_duration_title",
             "frequent_background_location_updates_duration_unlimited",
+            "1hour",
+            "2hours",
+            "3hours",
+            "4hours",
+            "12hours",
+            "24hours",
             "frequent_background_location_duration_1h_explanation",
+            "frequent_background_location_duration_2h_explanation",
+            "frequent_background_location_duration_3h_explanation",
             "frequent_background_location_duration_4h_explanation",
             "frequent_background_location_duration_12h_explanation",
             "frequent_background_location_duration_24h_explanation",
@@ -230,7 +238,12 @@ struct SettingsConfigurationTests {
             "frequent_background_visitor_check_10m",
             "frequent_background_visitor_check_30m",
             "frequent_background_visitor_check_60m",
+            "1hour",
+            "2hours",
+            "3hours",
             "4hours",
+            "12hours",
+            "24hours",
             "100m",
             "50m",
             "25m",
@@ -328,9 +341,13 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(10) == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
 
         #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue) == 3_600)
+        #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.twoHours.rawValue) == 7_200)
+        #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.threeHours.rawValue) == 10_800)
         #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundLocationUpdateDuration)
 
         let startDate = Date(timeIntervalSince1970: 1_000)
+        #expect(FrequentBackgroundLocationUpdateDuration.twoHours.expirationDate(from: startDate) == startDate.addingTimeInterval(7_200))
+        #expect(FrequentBackgroundLocationUpdateDuration.threeHours.expirationDate(from: startDate) == startDate.addingTimeInterval(10_800))
         #expect(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: startDate) == startDate.addingTimeInterval(14_400))
         #expect(FrequentBackgroundLocationUpdateDuration.unlimited.expirationDate(from: startDate) == nil)
 

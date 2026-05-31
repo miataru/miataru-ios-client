@@ -1,4 +1,7 @@
 version 3.1.19
+- Added 2-hour and 3-hour auto-disable options for frequent background updates in Advanced Options and the iOS Settings.bundle, keeping 4 hours as the default.
+- Localized the new 3-hour picker label and the 2-hour/3-hour duration explanations across all supported app locales.
+- Added regression coverage for the new frequent-background duration normalization, expiration dates, and localization/settings-bundle parity.
 - implemented Logger based debug logging for local app debugging
 - Updated project metadata for version 3.1.19 build 1.
 

@@ -164,6 +164,8 @@
 				<key>Titles</key>
 				<array>
 					<string>1hour</string>
+					<string>2hours</string>
+					<string>3hours</string>
 					<string>4hours</string>
 					<string>12hours</string>
 					<string>24hours</string>
@@ -172,6 +174,8 @@
 				<key>Values</key>
 				<array>
 					<string>3600</string>
+					<string>7200</string>
+					<string>10800</string>
 					<string>14400</string>
 					<string>43200</string>
 					<string>86400</string>

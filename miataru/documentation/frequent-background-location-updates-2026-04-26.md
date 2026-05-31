@@ -17,12 +17,16 @@ When the mode is enabled, users can choose a background distance filter:
 Users can also choose when the mode should disable itself:
 
 - 1 hour
+- 2 hours
+- 3 hours
 - 4 hours (default)
 - 12 hours
 - 24 hours
 - Never
 
 The expiration is stored as a date when the option is enabled or when the duration changes. Once the date has passed, the app disables the frequent mode and returns to significant-change monitoring automatically. The "Never" option stores no expiration date.
+
+As of 2026-05-31, the finite duration list includes the additional 2-hour and 3-hour options. Existing installs keep their saved duration unchanged. Values that were valid before this change remain valid, and any unsupported stored value is still normalized back to the 4-hour default.
 
 When the mode is enabled with "Never", Miataru schedules a repeating local reminder notification every 24 hours while normal location tracking is also enabled. The reminder is not rescheduled on every app launch or setting refresh, so the 24-hour timer is not accidentally pushed out forever. If the user turns location tracking off, disables frequent background updates, or changes the duration back to a finite value, the pending reminder and any delivered reminder are removed.
 

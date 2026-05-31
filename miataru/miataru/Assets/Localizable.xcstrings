@@ -561,6 +561,70 @@
         }
       }
     },
+    "3hours" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 timer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Stunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 hours"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 horas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 tuntia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 heures"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 ore"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3時間"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 uur"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 小时"
+          }
+        }
+      }
+    },
     "2km" : {
       "localizations" : {
         "da" : {
@@ -15294,6 +15358,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_2h_explanation" : {
+      "comment" : "Explanation for two-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 2 timer, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates werden nach 2 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates turn off after 2 hours, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 2 horas y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 2 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 2 heures, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 2 ore, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates worden na 2 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+          }
+        }
+      }
+    },
+    "frequent_background_location_duration_3h_explanation" : {
+      "comment" : "Explanation for three-hour frequent background location duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 3 timer, og Miataru vender tilbage til significant-change-tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufigere Hintergrund-Updates werden nach 3 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background updates turn off after 3 hours, then Miataru returns to significant-change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 3 horas y Miataru vuelve al modo de cambios significativos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 3 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 3 heures, puis Miataru revient au mode de changements significatifs."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 3 ore, poi Miataru torna alla modalità cambiamenti significativi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequentere achtergrondupdates worden na 3 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
           }
         }
       }
