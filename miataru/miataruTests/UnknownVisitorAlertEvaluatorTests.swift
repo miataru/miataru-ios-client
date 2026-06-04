@@ -592,6 +592,31 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(await notifier.addedRequests.isEmpty)
     }
 
+    @Test("Smart frequent mode-change notification permission is requested before enabling")
+    func smartFrequentModeChangeNotificationPermissionIsRequestedBeforeEnabling() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .notDetermined,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        let granted = await service.requestSmartFrequentModeChangeNotificationAuthorization()
+
+        #expect(granted)
+        #expect(await notifier.didRequestAuthorization)
+    }
+
+    @Test("Smart frequent mode-change notification permission denial is reported")
+    func smartFrequentModeChangeNotificationPermissionDenialIsReported() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .denied)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        let granted = await service.requestSmartFrequentModeChangeNotificationAuthorization()
+
+        #expect(!granted)
+        #expect(!(await notifier.didRequestAuthorization))
+    }
+
     private static func existingReminderRequest() -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.userInfo = [

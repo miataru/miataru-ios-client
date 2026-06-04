@@ -99,6 +99,7 @@
 "smart_frequent_background_speed_detection_hybrid" = "混合";
 "smart_frequent_background_speed_detection_gps_only" = "仅 GPS 速度";
 "smart_frequent_background_inactivity_window_title" = "非活动窗口";
+"2kmh" = "2 公里/小时";
 "5kmh" = "5 公里/小时";
 "10kmh" = "10 公里/小时";
 "15kmh" = "15 公里/小时";

@@ -611,6 +611,21 @@ final class LocationManager: NSObject, ObservableObject {
         return speedKmh >= Double(SmartFrequentBackgroundSpeedThreshold.normalized(thresholdKmh))
     }
 
+    static func canActivateSmartFrequentBackgroundUpdates(now: Date,
+                                                          locationTimestamp: Date,
+                                                          previousLocationUpdateAt: Date?,
+                                                          inactivityWindow: TimeInterval) -> Bool {
+        guard inactivityWindow > 0 else { return false }
+        guard now.timeIntervalSince(locationTimestamp) < inactivityWindow else {
+            return false
+        }
+        if let previousLocationUpdateAt,
+           now.timeIntervalSince(previousLocationUpdateAt) >= inactivityWindow {
+            return false
+        }
+        return true
+    }
+
     static func shouldDeactivateSmartFrequentBackgroundUpdates(now: Date,
                                                                lastLocationUpdateAt: Date?,
                                                                lastRelevantMovementAt: Date?,
@@ -656,6 +671,26 @@ final class LocationManager: NSObject, ObservableObject {
 
         let normalizedThreshold = FrequentBackgroundBatteryAutoDisableLevel.normalized(thresholdPercent)
         return batteryPercent <= normalizedThreshold
+    }
+
+    static func frequentBackgroundLocationDeliveryDelay(applicationState: UIApplication.State,
+                                                        frequentUpdatesEnabled: Bool,
+                                                        deliveryMode: FrequentBackgroundLocationDeliveryMode) -> TimeInterval? {
+        guard applicationState != .active,
+              frequentUpdatesEnabled else {
+            return nil
+        }
+        return deliveryMode.delay
+    }
+
+    static func frequentBackgroundVisitorCheckMinimumInterval(applicationState: UIApplication.State,
+                                                              frequentUpdatesEnabled: Bool,
+                                                              visitorCheckInterval: FrequentBackgroundVisitorCheckInterval) -> TimeInterval? {
+        guard applicationState != .active,
+              frequentUpdatesEnabled else {
+            return nil
+        }
+        return visitorCheckInterval.minimumInterval
     }
 
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
@@ -1427,6 +1462,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         let didDeactivateForInactivity = handleSmartFrequentBackgroundInactivityIfNeeded(now: now)
+        let previousLocationUpdateAt = smartFrequentBackgroundSpeedReferenceLocation?.timestamp
         let didUpdateMovement = refreshSmartFrequentBackgroundMovementState(for: location, now: now)
         let speedKmh = Self.smartFrequentBackgroundSpeedKmh(
             for: location,
@@ -1443,6 +1479,12 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         guard updateSource == .primary,
+              Self.canActivateSmartFrequentBackgroundUpdates(
+                now: now,
+                locationTimestamp: location.timestamp,
+                previousLocationUpdateAt: previousLocationUpdateAt,
+                inactivityWindow: settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+              ),
               Self.shouldActivateSmartFrequentBackgroundUpdates(
                 speedKmh: speedKmh,
                 thresholdKmh: settings.smartFrequentBackgroundSpeedThresholdKmh
@@ -1692,19 +1734,19 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func frequentBackgroundLocationDeliveryDelay(for applicationState: UIApplication.State) -> TimeInterval? {
-        guard applicationState != .active,
-              effectiveFrequentBackgroundUpdatesEnabled else {
-            return nil
-        }
-        return settings.frequentBackgroundLocationDeliveryModeSelection.delay
+        Self.frequentBackgroundLocationDeliveryDelay(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
+            deliveryMode: settings.frequentBackgroundLocationDeliveryModeSelection
+        )
     }
 
     private func frequentBackgroundVisitorCheckMinimumInterval(for applicationState: UIApplication.State) -> TimeInterval? {
-        guard applicationState != .active,
-              effectiveFrequentBackgroundUpdatesEnabled else {
-            return nil
-        }
-        return settings.frequentBackgroundVisitorCheckIntervalSelection.minimumInterval
+        Self.frequentBackgroundVisitorCheckMinimumInterval(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
+            visitorCheckInterval: settings.frequentBackgroundVisitorCheckIntervalSelection
+        )
     }
 
     @MainActor

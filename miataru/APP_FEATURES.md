@@ -23,10 +23,10 @@ This document describes the current user-facing and developer-facing feature set
 **For users:**
 
 - Location sharing is opt-in and controlled from Settings.
-- Foreground tracking uses high accuracy. Background tracking defaults to energy-conscious significant-change updates.
-- Smart frequent background updates are optional and normally keep the battery-friendly significant-change mode active until movement above a configurable speed threshold is detected.
-- Manual frequent background updates remain available as a second stage after Smart frequent updates are enabled. Manual mode overrides Smart and exposes configurable distance, duration, delivery delay, visitor-history check interval, reminders, expiration notifications, and low-battery auto-disable.
-- Smart frequent updates can optionally send notifications when the app automatically switches frequent runtime on or back to standard background mode. These notifications are off by default.
+- Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode.
+- Smart frequent background updates are optional and normally keep the battery-saving standard mode active until movement above a configurable speed threshold is detected.
+- Manual frequent background updates remain available as a second stage after Smart frequent updates are enabled. Manual mode overrides Smart and exposes the same configurable distance, delivery delay, visitor-history check interval, reminders, expiration notifications, and low-battery auto-disable behavior used by Smart frequent runtime.
+- Smart frequent updates can optionally send notifications when the app automatically switches frequent runtime on or back to standard background mode. These notifications are off by default and require notification permission before the setting is enabled.
 - The app reports available altitude, speed, horizontal accuracy, and battery level with location updates.
 - Location Tracking Details shows app version/build, permission state, current location, accuracy, speed, battery, daily API/widget counters, route requests, queued updates, background mode, Smart diagnostics, mode-specific location-update counters, and recent update logs.
 - Users can request location permission again from Location Tracking Details.
@@ -83,7 +83,7 @@ This document describes the current user-facing and developer-facing feature set
 - Allowed Device List can restrict which devices are allowed to access this device.
 - Unknown visitors can be allowed, ignored, or surfaced through optional local notifications.
 - Unknown visitor notifications start from activation time and are filtered so own, known, allowed, and ignored devices do not create alerts.
-- Frequent background tracking uses local notifications for manual never-ending reminders, temporary-mode expiration, low-battery auto-disable, and optional Smart frequent auto-switch events.
+- Frequent background tracking uses local notifications for manual never-ending reminders, temporary-mode expiration, low-battery auto-disable, and optional Smart frequent auto-switch events. Smart auto-switch notifications are permission-gated and show a denied-state app-settings shortcut when needed.
 
 **For developers:**
 
@@ -178,6 +178,7 @@ This document describes the current user-facing and developer-facing feature set
 
 - Root settings cover tracking/history, unknown visitor alerts, DeviceKey, Smart/manual frequent background access, allowed-device-list entry, app behavior, map type/zoom, navigation transport, server URL, Advanced Options, and Location Tracking Details.
 - Advanced Options include tracking accuracy/sensitivity, Smart frequent threshold/detection/inactivity options, optional Smart mode-change notifications, manual frequent background details, marker effects, accuracy indicators, off-screen arrows, device-list refresh, speed labels, outbox policy, map update intervals, reverse geocoding threshold, route auto-update, and route progress.
+- Smart frequent controls are locked with explanatory copy while manual frequent background updates are active, because manual mode is the effective override until users turn it off.
 - System Settings also exposes the same registered defaults through `Settings.bundle`.
 
 **For developers:**

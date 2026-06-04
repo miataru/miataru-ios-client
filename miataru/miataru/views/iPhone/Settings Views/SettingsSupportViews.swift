@@ -173,6 +173,7 @@ struct AllowedDeviceListStatusCard: View {
             AllowedDeviceListSettingsContent()
         }
         .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.systemGray6))
         .cornerRadius(12)
         .accessibilityIdentifier("location_status_access_control_card")

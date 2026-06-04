@@ -55,9 +55,9 @@ miataruApp.swift
 - background significant-change monitoring
 - frequent background updates with configured distance/accuracy
 
-Foreground tracking uses high accuracy. Background tracking defaults to significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in significant-change mode, activates frequent background updates only after movement above the configured speed threshold, and deactivates again after the shared inactivity window when no update or no relevant movement over the frequent distance filter is observed.
+Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode backed by significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in the standard mode, activates frequent background updates only after movement above the configured speed threshold, and deactivates again after the shared inactivity window when no update or no relevant movement over the frequent distance filter is observed.
 
-Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled.
+Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Smart frequent runtime uses the same frequent-mode distance, delivery-delay, and visitor-check interval policies. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled; the UI locks Smart while the manual override is active.
 
 The location-status UI reports the user-facing background policy separately from the underlying service mode: significant-change, Smart waiting, Smart frequent active, manual frequent active, and foreground/live. Diagnostic counters are persisted by update mode and reset together after 24 hours.
 
@@ -95,7 +95,7 @@ Shared map components live in `views/Common/Map`. Device and group maps reuse ma
 
 `UnknownVisitorAlertService` evaluates visitor history incrementally from activation time, filters own/known/ignored IDs, applies a per-device cooldown, enriches true unknown candidates with cached or batched `GetLocation` data, and schedules local notifications.
 
-`FrequentBackgroundTrackingReminderService` manages reminder, expiry, low-battery auto-disable, and optional Smart frequent mode-change notifications for frequent background tracking. Smart activation/deactivation notifications default to off and are sent only when Smart itself turns frequent runtime on or off.
+`FrequentBackgroundTrackingReminderService` manages reminder, expiry, low-battery auto-disable, and optional Smart frequent mode-change notifications for frequent background tracking. Smart activation/deactivation notifications default to off, request notification permission before the setting is enabled, and are sent only when Smart itself turns frequent runtime on or off.
 
 ## Platform Layout
 

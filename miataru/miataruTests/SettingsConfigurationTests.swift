@@ -105,6 +105,7 @@ struct SettingsConfigurationTests {
             "background_location_updates_section_title",
             "smart_frequent_background_location_updates_title",
             "smart_frequent_background_location_updates_explanation",
+            "smart_frequent_background_locked_by_manual_explanation",
             "smart_frequent_background_speed_threshold_title",
             "smart_frequent_background_speed_threshold_explanation",
             "smart_frequent_background_speed_detection_title",
@@ -115,6 +116,8 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_inactivity_window_explanation",
             "smart_frequent_background_mode_change_notifications_title",
             "smart_frequent_background_mode_change_notifications_explanation",
+            "smart_frequent_background_mode_change_notifications_permission_denied_message",
+            "smart_frequent_background_mode_change_notifications_open_settings_button",
             "smart_frequent_background_activated_notification_title",
             "smart_frequent_background_activated_notification_body",
             "smart_frequent_background_deactivated_notification_title",
@@ -122,8 +125,6 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_waiting_hint",
             "frequent_background_location_updates_title",
             "frequent_background_location_updates_manual_explanation",
-            "frequent_background_location_updates_explanation",
-            "frequent_background_location_updates_central_explanation",
             "frequent_background_location_updates_battery_warning",
             "frequent_background_battery_auto_disable_level_title",
             "frequent_background_battery_auto_disable_level_explanation",
@@ -177,10 +178,11 @@ struct SettingsConfigurationTests {
             "frequent_background_visitor_check_30m_explanation",
             "frequent_background_visitor_check_60m_explanation",
             "frequent_background_location_updates_active_hint_format",
-            "tracking_mode_frequent_background_updates_format",
+            "Location updates in the background use the battery-saving standard mode.",
             "tracking_mode_manual_frequent_background_updates_format",
             "tracking_mode_smart_frequent_background_updates_format",
             "tracking_mode_smart_waiting",
+            "tracking_mode_battery_saving_standard",
             "background_tracking_mode_title",
             "background_tracking_expires_at_label",
             "background_tracking_mode_foreground_live",
@@ -193,6 +195,7 @@ struct SettingsConfigurationTests {
             "location_update_count_significant_change_label",
             "location_update_count_smart_frequent_label",
             "location_update_count_manual_frequent_label",
+            "location_permission_state_title",
             "smart_frequent_background_last_activation_label",
             "smart_frequent_background_no_activation_yet",
             "smart_frequent_background_last_movement_label",
@@ -204,6 +207,7 @@ struct SettingsConfigurationTests {
             "location_update_mode_significant_change",
             "location_update_mode_smart_frequent",
             "location_update_mode_manual_frequent",
+            "2kmh",
             "5kmh",
             "10kmh",
             "15kmh",
@@ -290,6 +294,37 @@ struct SettingsConfigurationTests {
         }
     }
 
+    @Test("App string catalog has no stale or new translation units")
+    func appStringCatalogHasNoStaleOrNewTranslationUnits() throws {
+        let strings = try loadStringCatalog()
+
+        let staleKeys = strings.compactMap { key, rawEntry -> String? in
+            guard let entry = rawEntry as? [String: Any],
+                  entry["extractionState"] as? String == "stale" else {
+                return nil
+            }
+            return key
+        }
+        #expect(staleKeys.isEmpty, "Stale localization keys: \(staleKeys.sorted())")
+
+        var newUnits: [String] = []
+        for (key, rawEntry) in strings {
+            guard let entry = rawEntry as? [String: Any],
+                  let localizations = entry["localizations"] as? [String: Any] else {
+                continue
+            }
+            for (locale, rawLocaleEntry) in localizations {
+                guard let localeEntry = rawLocaleEntry as? [String: Any],
+                      let stringUnit = localeEntry["stringUnit"] as? [String: Any],
+                      stringUnit["state"] as? String == "new" else {
+                    continue
+                }
+                newUnits.append("\(key) [\(locale)]")
+            }
+        }
+        #expect(newUnits.isEmpty, "New localization units: \(newUnits.sorted())")
+    }
+
     @Test("Settings.bundle strings contain renamed labels and picker options for all locales")
     func settingsBundleStringsContainRequiredKeysForAllLocales() throws {
         let requiredKeys = [
@@ -338,6 +373,7 @@ struct SettingsConfigurationTests {
             "100m",
             "50m",
             "25m",
+            "2kmh",
             "5kmh",
             "10kmh",
             "15kmh",
@@ -439,6 +475,7 @@ struct SettingsConfigurationTests {
 
     @Test("Frequent background location update settings normalize and expire as expected")
     func frequentBackgroundLocationUpdateSettingsNormalizeAndExpire() {
+        #expect(SmartFrequentBackgroundSpeedThreshold.normalized(2) == 2)
         #expect(SmartFrequentBackgroundSpeedThreshold.normalized(5) == 5)
         #expect(SmartFrequentBackgroundSpeedThreshold.normalized(10) == 10)
         #expect(SmartFrequentBackgroundSpeedThreshold.normalized(30) == 30)
@@ -881,7 +918,27 @@ struct SettingsConfigurationTests {
 
         #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 10, thresholdKmh: 10))
         #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 9.9, thresholdKmh: 10))
+        #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 2, thresholdKmh: 2))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 1.9, thresholdKmh: 2))
         #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: nil, thresholdKmh: 10))
+        #expect(LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-599),
+            previousLocationUpdateAt: now.addingTimeInterval(-599),
+            inactivityWindow: 600
+        ))
+        #expect(!LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-600),
+            previousLocationUpdateAt: now.addingTimeInterval(-1),
+            inactivityWindow: 600
+        ))
+        #expect(!LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-1),
+            previousLocationUpdateAt: now.addingTimeInterval(-600),
+            inactivityWindow: 600
+        ))
 
         #expect(LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
             now: now,
@@ -960,6 +1017,42 @@ struct SettingsConfigurationTests {
             smartEnabled: true,
             smartRuntimeActive: true
         ) == .foregroundLive)
+
+        let manualEffective = LocationManager.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: false
+        )
+        let smartEffective = LocationManager.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        )
+        #expect(LocationManager.frequentBackgroundLocationDeliveryDelay(
+            applicationState: .background,
+            frequentUpdatesEnabled: manualEffective,
+            deliveryMode: .everyFiveMinutes
+        ) == 300)
+        #expect(LocationManager.frequentBackgroundLocationDeliveryDelay(
+            applicationState: .background,
+            frequentUpdatesEnabled: smartEffective,
+            deliveryMode: .everyFiveMinutes
+        ) == 300)
+        #expect(LocationManager.frequentBackgroundVisitorCheckMinimumInterval(
+            applicationState: .background,
+            frequentUpdatesEnabled: manualEffective,
+            visitorCheckInterval: .tenMinutes
+        ) == 600)
+        #expect(LocationManager.frequentBackgroundVisitorCheckMinimumInterval(
+            applicationState: .background,
+            frequentUpdatesEnabled: smartEffective,
+            visitorCheckInterval: .tenMinutes
+        ) == 600)
+        #expect(LocationManager.frequentBackgroundLocationDeliveryDelay(
+            applicationState: .active,
+            frequentUpdatesEnabled: smartEffective,
+            deliveryMode: .everyFiveMinutes
+        ) == nil)
     }
 
     @Test("Location update mode counters increment and reset after 24 hours")

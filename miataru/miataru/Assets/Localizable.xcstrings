@@ -112,125 +112,6 @@
         }
       }
     },
-    "%@ • %@" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ • %2$@"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
-    "%lld" : {
-      "comment" : "Number of background updates",
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        }
-      }
-    },
     "%lld %@" : {
       "localizations" : {
         "da" : {
@@ -297,14 +178,67 @@
     },
     "%lld/%lld" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%1$lld/%2$lld"
           }
         }
-      },
-      "shouldTranslate" : false
+      }
     },
     "•" : {
       "localizations" : {
@@ -6091,61 +6025,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Strømbesparelse"
+            "value" : "Standard (strømbesparende)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Energiesparmodus"
+            "value" : "Standard (stromsparend)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Battery saving"
+            "value" : "Standard (battery-saving)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ahorro de batería"
+            "value" : "Estándar (ahorro de batería)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Virransäästö"
+            "value" : "Vakio (virransäästö)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Économie de batterie"
+            "value" : "Standard (économie de batterie)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Risparmio batteria"
+            "value" : "Standard (risparmio batteria)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "省電力"
+            "value" : "標準（省電力）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Batterijbesparing"
+            "value" : "Standaard (batterijbesparend)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "省电"
+            "value" : "标准（省电）"
           }
         }
       }
@@ -16019,61 +15953,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer slås fra efter 1 time, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 1 time, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates werden nach 1 Stunde ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Häufigere Hintergrund-Updates werden nach 1 Stunde ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequent background updates turn off after 1 hour, then Miataru returns to significant-change mode."
+            "value" : "Frequent background updates turn off after 1 hour, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 1 hora y Miataru vuelve al modo de cambios significativos."
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 1 hora; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 1 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Tiheät taustapäivitykset poistuvat käytöstä 1 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 1 heure, puis Miataru revient au mode de changements significatifs."
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 1 heure, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 1 ora, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 1 ora; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "1時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates worden na 1 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Frequentere achtergrondupdates worden na 1 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "频繁后台更新会在 1 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16084,61 +16018,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer slås fra efter 2 timer, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 2 timer, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates werden nach 2 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Häufigere Hintergrund-Updates werden nach 2 Stunden ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequent background updates turn off after 2 hours, then Miataru returns to significant-change mode."
+            "value" : "Frequent background updates turn off after 2 hours, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 2 horas y Miataru vuelve al modo de cambios significativos."
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 2 horas; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 2 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Tiheät taustapäivitykset poistuvat käytöstä 2 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 2 heures, puis Miataru revient au mode de changements significatifs."
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 2 heures, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 2 ore, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 2 ore; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "2時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates worden na 2 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Frequentere achtergrondupdates worden na 2 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "频繁后台更新会在 2 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16149,61 +16083,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer slås fra efter 3 timer, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 3 timer, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates werden nach 3 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Häufigere Hintergrund-Updates werden nach 3 Stunden ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequent background updates turn off after 3 hours, then Miataru returns to significant-change mode."
+            "value" : "Frequent background updates turn off after 3 hours, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 3 horas y Miataru vuelve al modo de cambios significativos."
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 3 horas; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 3 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Tiheät taustapäivitykset poistuvat käytöstä 3 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 3 heures, puis Miataru revient au mode de changements significatifs."
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 3 heures, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 3 ore, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 3 ore; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "3時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates worden na 3 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Frequentere achtergrondupdates worden na 3 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "频繁后台更新会在 3 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16214,61 +16148,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard. Hyppigere baggrundsopdateringer slås fra efter 4 timer, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Standard. Hyppigere baggrundsopdateringer slås fra efter 4 timer, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard. Häufigere Hintergrund-Updates werden nach 4 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Standard. Häufigere Hintergrund-Updates werden nach 4 Stunden ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Default. Frequent background updates turn off after 4 hours, then Miataru returns to significant-change mode."
+            "value" : "Default. Frequent background updates turn off after 4 hours, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Predeterminado. Las actualizaciones frecuentes en segundo plano se desactivan después de 4 horas y Miataru vuelve al modo de cambios significativos."
+            "value" : "Predeterminado. Las actualizaciones frecuentes en segundo plano se desactivan después de 4 horas; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oletus. Tiheämmät taustapäivitykset poistuvat käytöstä 4 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Oletus. Tiheät taustapäivitykset poistuvat käytöstä 4 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Par défaut. Les mises à jour fréquentes en arrière-plan se désactivent après 4 heures, puis Miataru revient au mode de changements significatifs."
+            "value" : "Par défaut. Les mises à jour fréquentes en arrière-plan se désactivent après 4 heures, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Predefinito. Gli aggiornamenti frequenti in background si disattivano dopo 4 ore, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Predefinito. Gli aggiornamenti frequenti in background si disattivano dopo 4 ore; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "標準。4時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "標準。4時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standaard. Frequentere achtergrondupdates worden na 4 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Standaard. Frequentere achtergrondupdates worden na 4 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认。4 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "默认。频繁后台更新会在 4 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16279,61 +16213,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer slås fra efter 12 timer, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 12 timer, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates werden nach 12 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Häufigere Hintergrund-Updates werden nach 12 Stunden ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequent background updates turn off after 12 hours, then Miataru returns to significant-change mode."
+            "value" : "Frequent background updates turn off after 12 hours, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 12 horas y Miataru vuelve al modo de cambios significativos."
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 12 horas; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 12 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Tiheät taustapäivitykset poistuvat käytöstä 12 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 12 heures, puis Miataru revient au mode de changements significatifs."
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 12 heures, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 12 ore, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 12 ore; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "12時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates worden na 12 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Frequentere achtergrondupdates worden na 12 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "频繁后台更新会在 12 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16344,61 +16278,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hyppigere baggrundsopdateringer slås fra efter 24 timer, og Miataru vender tilbage til significant-change-tilstand."
+            "value" : "Hyppigere baggrundsopdateringer slås fra efter 24 timer, og Miataru vender tilbage til den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Häufigere Hintergrund-Updates werden nach 24 Stunden ausgeschaltet, danach nutzt Miataru wieder den Significant-Change-Modus."
+            "value" : "Häufigere Hintergrund-Updates werden nach 24 Stunden ausgeschaltet, danach nutzt Miataru wieder den stromsparenden Standardmodus."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequent background updates turn off after 24 hours, then Miataru returns to significant-change mode."
+            "value" : "Frequent background updates turn off after 24 hours, then Miataru returns to the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 24 horas y Miataru vuelve al modo de cambios significativos."
+            "value" : "Las actualizaciones frecuentes en segundo plano se desactivan después de 24 horas; luego Miataru vuelve al modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiheämmät taustapäivitykset poistuvat käytöstä 24 tunnin jälkeen, ja Miataru palaa merkittävän sijaintimuutoksen tilaan."
+            "value" : "Tiheät taustapäivitykset poistuvat käytöstä 24 tunnin jälkeen, minkä jälkeen Miataru palaa akkua säästävään vakiotilaan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 24 heures, puis Miataru revient au mode de changements significatifs."
+            "value" : "Les mises à jour fréquentes en arrière-plan se désactivent après 24 heures, puis Miataru revient au mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 24 ore, poi Miataru torna alla modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti in background si disattivano dopo 24 ore; poi Miataru torna alla modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "24時間後に、より頻繁なバックグラウンド更新をオフにし、Miataru は Significant-Change モードに戻ります。"
+            "value" : "24時間後に高頻度バックグラウンド更新をオフにし、Miataru は省電力の標準モードに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Frequentere achtergrondupdates worden na 24 uur uitgeschakeld, waarna Miataru terugkeert naar de significant-change-modus."
+            "value" : "Frequentere achtergrondupdates worden na 24 uur uitgeschakeld, waarna Miataru terugkeert naar de batterijbesparende standaardmodus."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "24 小时后会关闭更频繁的后台更新，Miataru 会返回显著位置变化模式。"
+            "value" : "频繁后台更新会在 24 小时 后关闭，随后 Miataru 返回省电标准模式。"
           }
         }
       }
@@ -16858,72 +16792,6 @@
         }
       }
     },
-    "frequent_background_location_updates_central_explanation" : {
-      "comment" : "Short explanation for the central frequent background updates toggle in settings",
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Slår hyppigere baggrundsopdateringer til eller fra. Åbn Avancerede indstillinger for at finjustere afstand, varighed, levering og besøgsforespørgsler."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schaltet häufigere Hintergrund-Updates ein oder aus. In den erweiterten Optionen kannst du Distanz, Dauer, Zustellung und Besucherabfragen fein einstellen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turns frequent background updates on or off. Open Advanced Options to fine-tune distance, duration, delivery and visitor checks."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activa o desactiva las actualizaciones en segundo plano más frecuentes. Abre Opciones avanzadas para ajustar distancia, duración, entrega y comprobaciones de visitantes."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ottaa tiheämmät taustapäivitykset käyttöön tai pois käytöstä. Avaa lisäasetukset, jos haluat säätää etäisyyttä, kestoa, toimitusta ja vierailijatarkistuksia."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Active ou désactive les mises à jour en arrière-plan plus fréquentes. Ouvrez les options avancées pour ajuster la distance, la durée, l’envoi et les vérifications des visiteurs."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attiva o disattiva gli aggiornamenti in background più frequenti. Apri le opzioni avanzate per regolare distanza, durata, invio e controlli dei visitatori."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "より頻繁なバックグラウンド更新のオン/オフを切り替えます。距離、期間、送信、訪問者チェックの調整は詳細オプションで行えます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schakelt frequentere achtergrondupdates in of uit. Open Geavanceerde opties om afstand, duur, levering en bezoekerscontroles fijn af te stemmen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开启或关闭更频繁的后台更新。打开高级选项可微调距离、持续时间、发送方式和访客检查。"
-          }
-        }
-      }
-    },
     "frequent_background_location_updates_device_list_notice" : {
       "comment" : "Notice shown above devices while frequent background location updates are active",
       "localizations" : {
@@ -17245,72 +17113,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "永不"
-          }
-        }
-      }
-    },
-    "frequent_background_location_updates_explanation" : {
-      "comment" : "Explanation for frequent background location updates",
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Når denne tilstand er slået fra, bruger Miataru den nuværende batteribesparende significant-change-tilstand. Når den er slået til, forsøger appen at levere opdateringer efter den valgte bevægelsestærskel."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn diese Option ausgeschaltet ist, nutzt Miataru den bisherigen energiesparenden Significant-Change-Modus. Wenn sie eingeschaltet ist, versucht die App, Updates ab der gewählten Bewegungsschwelle zu liefern."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When this is off, Miataru keeps using the current battery-saving significant-change mode. When it is on, the app tries to deliver updates after the selected movement threshold."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuando está desactivado, Miataru sigue usando el modo actual de ahorro de batería con cambios significativos. Cuando está activado, la app intenta entregar actualizaciones después del umbral de movimiento elegido."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kun tämä on pois käytöstä, Miataru käyttää nykyistä akkua säästävää significant-change-tilaa. Kun se on käytössä, sovellus yrittää toimittaa päivityksiä valitun liikkumiskynnyksen jälkeen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lorsque cette option est désactivée, Miataru conserve le mode actuel économe en batterie basé sur les changements significatifs. Lorsqu’elle est activée, l’app essaie d’envoyer des mises à jour après le seuil de déplacement choisi."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando questa opzione è disattivata, Miataru continua a usare l’attuale modalità a risparmio batteria basata sui cambiamenti significativi. Quando è attiva, l’app prova a inviare aggiornamenti dopo la soglia di movimento scelta."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オフの場合、Miataru は現在の省電力な Significant-Change モードを使い続けます。オンの場合、選択した移動しきい値を超えた後に更新を届けようとします。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Als dit uit staat, blijft Miataru de huidige batterijbesparende significant-change-modus gebruiken. Als dit aan staat, probeert de app updates te leveren na de gekozen bewegingsdrempel."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭时，Miataru 会继续使用当前省电的显著位置变化模式。开启时，应用会尝试在达到所选移动阈值后发送更新。"
           }
         }
       }
@@ -21144,72 +20946,6 @@
         }
       }
     },
-    "lm_background_status" : {
-      "comment" : "shown in the Location Status overview for background updates",
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Baggrund"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hintergrund"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Segundo plano"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tausta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrière-plan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Background"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "背景 "
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Achtergrond"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "后台"
-          }
-        }
-      }
-    },
     "lm_foreground_status" : {
       "comment" : "shown in the Location Status overview for foreground updates",
       "localizations" : {
@@ -21916,71 +21652,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "位置跟踪状态"
-          }
-        }
-      }
-    },
-    "Location updates in the background are only detected when they are significant (>500m)." : {
-      "comment" : "Hint for background location update behavior",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokationsopdateringer i baggrunden registreres kun, når de er betydelige (>500 m)."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standort-Updates im Hintergrund werden nur erkannt, wenn sie signifikant sind (>500 m)."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location updates in the background are only detected when they are significant (>500m)."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las actualizaciones de ubicación en segundo plano solo se detectan cuando son significativas (>500 m)."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Taustasijainti päivittyy vain merkittävässä liikkeessä (>500 m)."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les mises à jour de localisation en arrière-plan ne sont détectées que lorsqu’elles sont significatives (>500 m)."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gli aggiornamenti di posizione in background vengono rilevati solo se significativi (>500 m)."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックグラウンドでの位置情報更新は、重要な変化（>500m）があった場合にのみ検出されます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Locatie-updates op de achtergrond worden alleen gedetecteerd als ze significant zijn (>500 m)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "后台位置更新仅在变动明显时检测（>500 米）。"
           }
         }
       }
@@ -22900,61 +22571,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change-opdateringer"
+            "value" : "Standardopdateringer"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-Change-Updates"
+            "value" : "Standardmodus-Updates"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change updates"
+            "value" : "Standard-mode updates"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizaciones por cambios significativos"
+            "value" : "Actualizaciones del modo estándar"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merkittävän muutoksen päivitykset"
+            "value" : "Vakiotilan päivitykset"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mises à jour par changements significatifs"
+            "value" : "Mises à jour du mode standard"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiornamenti per cambiamenti significativi"
+            "value" : "Aggiornamenti modalità standard"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-Change 更新"
+            "value" : "標準モード更新"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change-updates"
+            "value" : "Standaardmodus-updates"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重大变化更新"
+            "value" : "标准模式更新"
           }
         }
       }
@@ -23095,61 +22766,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change"
+            "value" : "Standard"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-Change"
+            "value" : "Standard"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change"
+            "value" : "Standard"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambio significativo"
+            "value" : "Estándar"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merkittävä muutos"
+            "value" : "Vakio"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Changement significatif"
+            "value" : "Standard"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambiamento significativo"
+            "value" : "Standard"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-Change"
+            "value" : "標準"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change"
+            "value" : "Standaard"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重大变化"
+            "value" : "标准"
           }
         }
       }
@@ -26567,70 +26238,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "权限未确定"
-          }
-        }
-      }
-    },
-    "Permission state" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Placeringstilladelsesstatus"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Berechtigungsstatus"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location permission state"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Estado del permiso de ubicación"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sijaintiluvan tila"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "État de l’autorisation de localisation"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stato permesso posizione"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "権限の状態"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Status locatiemachtiging"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置权限状态"
           }
         }
       }
@@ -31042,61 +30649,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru bruger normalt den batteribesparende significant-change-tilstand og starter kun hyppigere baggrundsopdateringer automatisk, når din bevægelse overstiger hastighedsgrænsen."
+            "value" : "Miataru bruger normalt den strømbesparende standardtilstand og starter kun hyppigere baggrundsopdateringer automatisk, når din bevægelse overstiger hastighedsgrænsen."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru nutzt normalerweise den energiesparenden Significant-Change-Modus und startet häufigere Hintergrund-Updates automatisch erst, wenn deine Bewegung die Geschwindigkeitsschwelle überschreitet."
+            "value" : "Miataru nutzt normalerweise den stromsparenden Standardmodus und startet häufigere Hintergrund-Updates automatisch erst, wenn deine Bewegung die Geschwindigkeitsschwelle überschreitet."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru normally uses the battery-saving significant-change mode and only starts more frequent background updates automatically when your movement exceeds the speed threshold."
+            "value" : "Miataru normally uses the battery-saving standard mode and only starts more frequent background updates automatically when your movement exceeds the speed threshold."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru usa normalmente el modo de ahorro de batería por cambios significativos y solo inicia actualizaciones en segundo plano más frecuentes automáticamente cuando tu movimiento supera el umbral de velocidad."
+            "value" : "Miataru normalmente usa el modo estándar de ahorro de batería y solo inicia actualizaciones más frecuentes en segundo plano cuando tu movimiento supera el umbral de velocidad."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru käyttää yleensä akkua säästävää merkittävän muutoksen tilaa ja käynnistää tiheämmät taustapäivitykset automaattisesti vasta, kun liikkeesi ylittää nopeusrajan."
+            "value" : "Miataru käyttää normaalisti akkua säästävää vakiotilaa ja käynnistää tiheämmät taustapäivitykset automaattisesti vasta, kun liikkeesi ylittää nopeusrajan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru utilise normalement le mode économe en batterie à changements significatifs et ne lance automatiquement les mises à jour en arrière-plan plus fréquentes que lorsque votre déplacement dépasse le seuil de vitesse."
+            "value" : "Miataru utilise normalement le mode standard économe en batterie et ne lance automatiquement les mises à jour plus fréquentes en arrière-plan que lorsque votre déplacement dépasse le seuil de vitesse."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru usa normalmente la modalità a risparmio energetico basata sui cambiamenti significativi e avvia automaticamente aggiornamenti in background più frequenti solo quando il movimento supera la soglia di velocità."
+            "value" : "Miataru normalmente usa la modalità standard a risparmio batteria e avvia automaticamente aggiornamenti in background più frequenti solo quando il movimento supera la soglia di velocità."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru は通常、省電力の Significant-Change モードを使用し、移動が速度しきい値を超えたときだけ、より頻繁なバックグラウンド更新を自動開始します。"
+            "value" : "Miataru は通常、省電力の標準モードを使用し、移動が速度しきい値を超えたときだけ、より頻繁なバックグラウンド更新を自動開始します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru gebruikt normaal de batterijbesparende significant-change-modus en start frequentere achtergrondupdates alleen automatisch wanneer je beweging boven de snelheidsdrempel komt."
+            "value" : "Miataru gebruikt normaal de batterijbesparende standaardmodus en start frequentere achtergrondupdates alleen automatisch wanneer je beweging boven de snelheidsdrempel komt."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru 通常使用省电的重大位置变化模式，只有当你的移动速度超过阈值时，才会自动启动更频繁的后台更新。"
+            "value" : "Miataru 通常使用省电标准模式，仅在你的移动超过速度阈值时自动启动更频繁的后台更新。"
           }
         }
       }
@@ -31952,61 +31559,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent venter på bevægelse over hastighedsgrænsen, mens Miataru bruger significant-change-tilstand."
+            "value" : "Smart frequent venter på bevægelse over hastighedsgrænsen, mens Miataru bruger den strømbesparende standardtilstand."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart Frequent wartet auf Bewegung über der Geschwindigkeitsschwelle, während Miataru den Significant-Change-Modus nutzt."
+            "value" : "Smart Frequent wartet auf Bewegung über der Geschwindigkeitsschwelle, während Miataru den stromsparenden Standardmodus nutzt."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent is waiting for movement above the speed threshold while Miataru uses significant-change mode."
+            "value" : "Smart frequent is waiting for movement above the speed threshold while Miataru uses the battery-saving standard mode."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent espera movimiento por encima del umbral de velocidad mientras Miataru usa el modo de cambios significativos."
+            "value" : "Smart frequent espera movimiento por encima del umbral de velocidad mientras Miataru usa el modo estándar de ahorro de batería."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent odottaa nopeusrajan ylittävää liikettä, kun Miataru käyttää merkittävän muutoksen tilaa."
+            "value" : "Älykäs tiheä päivitys odottaa nopeusrajan ylittävää liikettä, kun Miataru käyttää akkua säästävää vakiotilaa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent attend un déplacement au-dessus du seuil de vitesse pendant que Miataru utilise le mode changements significatifs."
+            "value" : "Les mises à jour fréquentes intelligentes attendent un déplacement au-dessus du seuil de vitesse pendant que Miataru utilise le mode standard économe en batterie."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent attende un movimento oltre la soglia di velocità mentre Miataru usa la modalità cambiamenti significativi."
+            "value" : "Gli aggiornamenti frequenti intelligenti attendono un movimento sopra la soglia di velocità mentre Miataru usa la modalità standard a risparmio batteria."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent は、Miataru が Significant-Change モードを使っている間、速度しきい値を超える移動を待機しています。"
+            "value" : "スマート高頻度更新は、Miataru が省電力の標準モードを使っている間、速度しきい値を超える移動を待機しています。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent wacht op beweging boven de snelheidsdrempel terwijl Miataru de significant-change-modus gebruikt."
+            "value" : "Slimme frequente updates wachten op beweging boven de snelheidsdrempel terwijl Miataru de batterijbesparende standaardmodus gebruikt."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart frequent 正在等待超过速度阈值的移动，同时 Miataru 使用重大位置变化模式。"
+            "value" : "智能频繁更新会在 Miataru 使用省电标准模式时等待超过速度阈值的移动。"
           }
         }
       }
@@ -32719,71 +32326,6 @@
         }
       }
     },
-    "Tracking mode: Battery saving (only significant movements)" : {
-      "comment" : "Tracking mode text for background mode",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sporingstilstand: Strømbesparende (kun væsentlige bevægelser)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolgungsmodus: Energiesparmodus (nur signifikante Bewegungen)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tracking mode: Battery saving (only significant movements)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo de seguimiento: ahorro de batería (solo movimientos significativos)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seurantatila: Säästö (vain merkittävät liikkeet)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de suivi : économie de batterie (mouvements significatifs uniquement)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modalità tracciamento: Risparmio batteria (solo movimenti significativi)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "追跡モード：省電力（重要な移動のみ）"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trackingmodus: batterijbesparing (alleen significante bewegingen)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟踪模式：省电（仅显著移动）"
-          }
-        }
-      }
-    },
     "Tracking mode: Live (GPS)" : {
       "comment" : "Tracking mode text for foreground mode",
       "localizations" : {
@@ -32845,72 +32387,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟踪模式：实时（GPS）"
-          }
-        }
-      }
-    },
-    "tracking_mode_frequent_background_updates_format" : {
-      "comment" : "Tracking mode text for frequent background updates",
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sporingstilstand: Hyppigere baggrundsopdateringer (%d m)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolgungsmodus: Häufigere Hintergrund-Updates (%d m)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tracking mode: Frequent background updates (%d m)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo de seguimiento: actualizaciones frecuentes en segundo plano (%d m)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seurantatila: tiheämmät taustapäivitykset (%d m)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de suivi : mises à jour fréquentes en arrière-plan (%d m)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modalità di tracciamento: aggiornamenti frequenti in background (%d m)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "追跡モード: 頻繁なバックグラウンド更新 (%d m)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trackingmodus: frequentere achtergrondupdates (%d m)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟踪模式：更频繁的后台更新（%d 米）"
           }
         }
       }
@@ -35364,6 +34840,461 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缩放以适配群组"
+          }
+        }
+      }
+    },
+    "2kmh" : {
+      "comment" : "Speed value in km/h",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/t"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/u"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 公里/小时"
+          }
+        }
+      }
+    },
+    "Location updates in the background use the battery-saving standard mode." : {
+      "comment" : "Hint for battery-saving standard background location update behavior",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokationsopdateringer i baggrunden bruger den strømbesparende standardtilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Updates im Hintergrund nutzen den stromsparenden Standardmodus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location updates in the background use the battery-saving standard mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones de ubicación en segundo plano usan el modo estándar de ahorro de batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustasijainnin päivitykset käyttävät akkua säästävää vakiotilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour de localisation en arrière-plan utilisent le mode standard économe en batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti della posizione in background usano la modalità standard a risparmio batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドの位置情報更新は、省電力の標準モードを使用します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie-updates op de achtergrond gebruiken de batterijbesparende standaardmodus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台位置更新使用省电标准模式。"
+          }
+        }
+      }
+    },
+    "location_permission_state_title" : {
+      "comment" : "Header for location permission access control section",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokalitetsadgangskontrol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Zugriffskontrolle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Access Control"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control de acceso a ubicación"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sijainnin käyttöoikeuksien hallinta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrôle d’accès à la localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controllo accesso posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報アクセス制御"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietoegangscontrole"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置访问控制"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_locked_by_manual_explanation" : {
+      "comment" : "Explanation shown when Smart frequent updates are locked because manual frequent background updates are active",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuelle hyppige baggrundsopdateringer er aktive. Slå dem fra, før du ændrer smarte hyppige opdateringer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuelle häufige Hintergrund-Updates sind aktiv. Schalte sie aus, bevor du smarte häufige Updates änderst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual frequent background updates are active. Turn them off before changing Smart frequent updates."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes manuales en segundo plano están activas. Desactívalas antes de cambiar las actualizaciones frecuentes inteligentes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuaaliset tiheät taustapäivitykset ovat aktiivisia. Poista ne käytöstä ennen älykkäiden tiheiden päivitysten muuttamista."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes manuelles en arrière-plan sont actives. Désactivez-les avant de modifier les mises à jour fréquentes intelligentes."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti manuali in background sono attivi. Disattivali prima di modificare gli aggiornamenti frequenti intelligenti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動の高頻度バックグラウンド更新が有効です。スマート高頻度更新を変更する前にオフにしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handmatige frequentere achtergrondupdates zijn actief. Schakel ze uit voordat je slimme frequente updates wijzigt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动频繁后台更新已启用。请先将其关闭，再更改智能频繁更新。"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_mode_change_notifications_open_settings_button" : {
+      "comment" : "Button title for opening iOS Settings after Smart frequent notification permission was denied",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn iOS-indstillinger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS-Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS Settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes de iOS"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa iOS-asetukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir les réglages iOS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri impostazioni iOS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS設定を開く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS-instellingen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 iOS 设置"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_mode_change_notifications_permission_denied_message" : {
+      "comment" : "Message shown when Smart frequent mode-change notification permission is denied",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifikationer er ikke tilladt. Åbn iOS-indstillinger for at modtage besked, når Smart hyppige opdateringer skifter tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen sind nicht erlaubt. Öffne die iOS-Einstellungen, um Hinweise zu erhalten, wenn smarte häufige Updates den Modus wechseln."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are not allowed. Open iOS Settings to be notified when Smart frequent updates change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones no están permitidas. Abre Ajustes de iOS para recibir avisos cuando las actualizaciones frecuentes inteligentes cambien de modo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmoituksia ei ole sallittu. Avaa iOS-asetukset, jotta saat ilmoituksen, kun älykkäät tiheät päivitykset vaihtavat tilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notifications ne sont pas autorisées. Ouvrez les réglages iOS pour être averti lorsque les mises à jour fréquentes intelligentes changent de mode."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le notifiche non sono consentite. Apri le impostazioni iOS per ricevere avvisi quando gli aggiornamenti frequenti intelligenti cambiano modalità."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知が許可されていません。スマート高頻度更新のモード変更を通知するには、iOS設定を開いてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meldingen zijn niet toegestaan. Open iOS-instellingen om een melding te krijgen wanneer slimme frequente updates van modus veranderen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知未获允许。请打开 iOS 设置，以便在智能频繁更新切换模式时收到通知。"
+          }
+        }
+      }
+    },
+    "tracking_mode_battery_saving_standard" : {
+      "comment" : "Tracking mode text for battery-saving standard background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sporingstilstand: Standard (strømbesparende)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgungsmodus: Standard (stromsparend)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Standard (battery-saving)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo de seguimiento: estándar (ahorro de batería)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seurantatila: vakio (virransäästö)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de suivi : standard (économie de batterie)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modalità tracciamento: standard (risparmio batteria)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡モード: 標準（省電力）"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackingmodus: standaard (batterijbesparend)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟踪模式：标准（省电）"
           }
         }
       }

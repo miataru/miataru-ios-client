@@ -99,6 +99,7 @@
 "smart_frequent_background_speed_detection_hybrid" = "Hybride";
 "smart_frequent_background_speed_detection_gps_only" = "Alleen gps-snelheid";
 "smart_frequent_background_inactivity_window_title" = "Inactiviteitsvenster";
+"2kmh" = "2 km/u";
 "5kmh" = "5 km/u";
 "10kmh" = "10 km/u";
 "15kmh" = "15 km/u";

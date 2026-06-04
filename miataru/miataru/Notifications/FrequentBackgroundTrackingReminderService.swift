@@ -224,6 +224,10 @@ actor FrequentBackgroundTrackingReminderService {
         }
     }
 
+    func requestSmartFrequentModeChangeNotificationAuthorization() async -> Bool {
+        await ensureAuthorization()
+    }
+
     private static func localizedPercentString(from percent: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent

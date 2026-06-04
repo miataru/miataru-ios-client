@@ -11,6 +11,8 @@ import SwiftUI
 
 struct iPhone_AdvancedOptionsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @State private var isRequestingSmartFrequentNotificationPermission = false
+    @State private var smartFrequentNotificationPermissionDenied = false
 
     var body: some View {
         Form {
@@ -48,10 +50,15 @@ struct iPhone_AdvancedOptionsView: View {
                 Section(header: Text("background_location_updates_section_title")) {
                     Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                         .accessibilityIdentifier("settings_smart_frequent_background_location_updates_toggle")
+                        .disabled(settings.frequentBackgroundLocationUpdatesEnabled)
                     SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
+                    if settings.frequentBackgroundLocationUpdatesEnabled {
+                        SettingsDescriptionText("smart_frequent_background_locked_by_manual_explanation")
+                    }
 
                     if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                         Picker("smart_frequent_background_speed_threshold_title", selection: $settings.smartFrequentBackgroundSpeedThresholdKmh) {
+                            Text("2kmh").tag(2)
                             Text("5kmh").tag(5)
                             Text("10kmh").tag(10)
                             Text("15kmh").tag(15)
@@ -74,9 +81,19 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         SettingsDescriptionText("smart_frequent_background_inactivity_window_explanation")
 
-                        Toggle("smart_frequent_background_mode_change_notifications_title", isOn: $settings.smartFrequentBackgroundModeChangeNotificationsEnabled)
+                        Toggle("smart_frequent_background_mode_change_notifications_title", isOn: smartFrequentModeChangeNotificationsBinding)
                             .accessibilityIdentifier("settings_smart_frequent_background_mode_change_notifications_toggle")
+                            .disabled(isRequestingSmartFrequentNotificationPermission)
                         SettingsDescriptionText("smart_frequent_background_mode_change_notifications_explanation")
+                        if smartFrequentNotificationPermissionDenied {
+                            VStack(alignment: .leading, spacing: 8) {
+                                SettingsWarningText("smart_frequent_background_mode_change_notifications_permission_denied_message")
+                                Button("smart_frequent_background_mode_change_notifications_open_settings_button") {
+                                    LocationManager.shared.openAppSettings()
+                                }
+                                .font(.caption)
+                            }
+                        }
 
                         Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_frequent_background_location_updates_toggle")
@@ -226,6 +243,29 @@ struct iPhone_AdvancedOptionsView: View {
             return "background_location_distance_filter_50m_explanation"
         default:
             return "background_location_distance_filter_100m_explanation"
+        }
+    }
+
+    private var smartFrequentModeChangeNotificationsBinding: Binding<Bool> {
+        Binding(
+            get: { settings.smartFrequentBackgroundModeChangeNotificationsEnabled },
+            set: { updateSmartFrequentModeChangeNotifications($0) }
+        )
+    }
+
+    private func updateSmartFrequentModeChangeNotifications(_ enabled: Bool) {
+        guard enabled else {
+            smartFrequentNotificationPermissionDenied = false
+            settings.smartFrequentBackgroundModeChangeNotificationsEnabled = false
+            return
+        }
+
+        isRequestingSmartFrequentNotificationPermission = true
+        Task { @MainActor in
+            let granted = await FrequentBackgroundTrackingReminderService.shared.requestSmartFrequentModeChangeNotificationAuthorization()
+            settings.smartFrequentBackgroundModeChangeNotificationsEnabled = granted
+            smartFrequentNotificationPermissionDenied = !granted
+            isRequestingSmartFrequentNotificationPermission = false
         }
     }
 

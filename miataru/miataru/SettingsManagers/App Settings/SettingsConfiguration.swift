@@ -142,7 +142,7 @@ enum SettingsDefaultValues {
 }
 
 enum SmartFrequentBackgroundSpeedThreshold {
-    static let allowedValues = [5, 10, 15, 20, 30]
+    static let allowedValues = [2, 5, 10, 15, 20, 30]
 
     static func normalized(_ value: Int) -> Int {
         allowedValues.contains(value) ? value : SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh

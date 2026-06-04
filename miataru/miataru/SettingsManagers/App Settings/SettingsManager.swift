@@ -78,11 +78,12 @@ class SettingsManager: ObservableObject {
     }
     @Published var smartFrequentBackgroundLocationUpdatesEnabled: Bool {
         didSet {
-            defaults.set(smartFrequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
             if !smartFrequentBackgroundLocationUpdatesEnabled,
                frequentBackgroundLocationUpdatesEnabled {
-                frequentBackgroundLocationUpdatesEnabled = false
+                smartFrequentBackgroundLocationUpdatesEnabled = true
+                return
             }
+            defaults.set(smartFrequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
         }
     }
     @Published var smartFrequentBackgroundSpeedThresholdKmh: Int {

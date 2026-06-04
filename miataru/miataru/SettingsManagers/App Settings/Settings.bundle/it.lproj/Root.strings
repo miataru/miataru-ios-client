@@ -99,6 +99,7 @@
 "smart_frequent_background_speed_detection_hybrid" = "Ibrido";
 "smart_frequent_background_speed_detection_gps_only" = "Solo velocità GPS";
 "smart_frequent_background_inactivity_window_title" = "Finestra di inattività";
+"2kmh" = "2 km/h";
 "5kmh" = "5 km/h";
 "10kmh" = "10 km/h";
 "15kmh" = "15 km/h";

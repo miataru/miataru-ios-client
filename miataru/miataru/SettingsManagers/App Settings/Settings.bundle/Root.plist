@@ -141,6 +141,7 @@
 			<string>10</string>
 			<key>Titles</key>
 			<array>
+				<string>2kmh</string>
 				<string>5kmh</string>
 				<string>10kmh</string>
 				<string>15kmh</string>
@@ -149,6 +150,7 @@
 			</array>
 			<key>Values</key>
 			<array>
+				<string>2</string>
 				<string>5</string>
 				<string>10</string>
 				<string>15</string>

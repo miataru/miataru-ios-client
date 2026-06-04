@@ -99,6 +99,7 @@
 "smart_frequent_background_speed_detection_hybrid" = "ハイブリッド";
 "smart_frequent_background_speed_detection_gps_only" = "GPS 速度のみ";
 "smart_frequent_background_inactivity_window_title" = "非アクティブ時間";
+"2kmh" = "2 km/h";
 "5kmh" = "5 km/h";
 "10kmh" = "10 km/h";
 "15kmh" = "15 km/h";

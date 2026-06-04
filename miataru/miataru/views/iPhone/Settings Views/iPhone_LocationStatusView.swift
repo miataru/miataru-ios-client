@@ -68,6 +68,10 @@ struct iPhone_LocationStatusView: View {
             if settings.allowedDeviceListEnabled {
                 AllowedDeviceListStatusCard()
             }
+
+            PermissionStatusView(status: locationManager.authorizationStatus) {
+                locationManager.requestFullLocationAuthorizationAgain()
+            }
             
             // Hinweistext für Hintergrund-Tracking
             if isInBackground {
@@ -196,11 +200,6 @@ struct iPhone_LocationStatusView: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
-            }
-            
-            // Berechtigungs-Status
-            PermissionStatusView(status: locationManager.authorizationStatus) {
-                locationManager.requestFullLocationAuthorizationAgain()
             }
             
             // Background Status
@@ -368,7 +367,7 @@ struct iPhone_LocationStatusView: View {
         case .smartWaiting:
             return NSLocalizedString("smart_frequent_background_waiting_hint", comment: "Hint shown when smart frequent background updates are waiting for movement")
         case .significantChange, .foregroundLive:
-            return NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior")
+            return NSLocalizedString("Location updates in the background use the battery-saving standard mode.", comment: "Hint for battery-saving standard background location update behavior")
         }
     }
     
@@ -400,7 +399,7 @@ struct iPhone_LocationStatusView: View {
         case .smartWaiting:
             return NSLocalizedString("tracking_mode_smart_waiting", comment: "Tracking mode text when smart frequent background updates are waiting")
         case .significantChange:
-            return NSLocalizedString("Tracking mode: Battery saving (only significant movements)", comment: "Tracking mode text for background mode")
+            return NSLocalizedString("tracking_mode_battery_saving_standard", comment: "Tracking mode text for battery-saving standard background mode")
         }
     }
 
@@ -523,7 +522,7 @@ struct PermissionStatusView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Permission state")
+            Text("location_permission_state_title")
                 .font(.headline)
             
             HStack {
@@ -558,6 +557,7 @@ struct PermissionStatusView: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
+        .accessibilityIdentifier("location_status_location_access_control_card")
     }
     
     private var permissionIcon: String {
@@ -616,7 +616,8 @@ struct BackgroundStatusCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "clock.fill")
-                    .foregroundColor(.purple)
+                    .foregroundColor(.blue)
+                    .frame(width: 20)
                 Text(NSLocalizedString("background_status_header", comment: "Header for background location status card"))
                     .font(.headline)
                 Spacer()
@@ -624,62 +625,73 @@ struct BackgroundStatusCard: View {
             
             statusRow(
                 title: NSLocalizedString("background_updates_label", comment: "Label for number of background updates"),
-                value: "\(backgroundManager.backgroundUpdateCount)"
+                value: "\(backgroundManager.backgroundUpdateCount)",
+                icon: "arrow.clockwise.circle.fill"
             )
 
             statusRow(
                 title: NSLocalizedString("location_update_count_foreground_live_label", comment: "Label for foreground live location update count"),
-                value: "\(backgroundManager.locationUpdateModeCounts.foregroundLive)"
+                value: "\(backgroundManager.locationUpdateModeCounts.foregroundLive)",
+                icon: "location.fill"
             )
 
             statusRow(
                 title: NSLocalizedString("location_update_count_significant_change_label", comment: "Label for significant-change location update count"),
-                value: "\(backgroundManager.locationUpdateModeCounts.significantChange)"
+                value: "\(backgroundManager.locationUpdateModeCounts.significantChange)",
+                icon: "leaf.fill"
             )
 
             statusRow(
                 title: NSLocalizedString("location_update_count_smart_frequent_label", comment: "Label for smart frequent location update count"),
-                value: "\(backgroundManager.locationUpdateModeCounts.smartFrequent)"
+                value: "\(backgroundManager.locationUpdateModeCounts.smartFrequent)",
+                icon: "sparkles"
             )
 
             statusRow(
                 title: NSLocalizedString("location_update_count_manual_frequent_label", comment: "Label for manually frequent location update count"),
-                value: "\(backgroundManager.locationUpdateModeCounts.manualFrequent)"
+                value: "\(backgroundManager.locationUpdateModeCounts.manualFrequent)",
+                icon: "hand.tap.fill"
             )
             
             if let lastUpdate = backgroundManager.lastBackgroundUpdate {
                 statusRow(
                     title: NSLocalizedString("last_background_update_label", comment: "Label for timestamp of the last background update"),
-                    value: formatTime(lastUpdate)
+                    value: formatTime(lastUpdate),
+                    icon: "clock.fill"
                 )
             }
 
             statusRow(
                 title: NSLocalizedString("background_tracking_mode_title", comment: "Label for current background tracking mode"),
-                value: backgroundTrackingModeText
+                value: backgroundTrackingModeText,
+                icon: "slider.horizontal.3"
             )
 
             if settings.frequentBackgroundLocationUpdatesEnabled {
                 statusRow(
                     title: NSLocalizedString("background_tracking_expires_at_label", comment: "Label for frequent background tracking expiration time"),
-                    value: backgroundTrackingExpirationText
+                    value: backgroundTrackingExpirationText,
+                    icon: "timer"
                 )
             }
 
             if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                 statusRow(
                     title: NSLocalizedString("smart_frequent_background_last_activation_label", comment: "Label for the latest smart frequent activation reason"),
-                    value: backgroundManager.smartFrequentBackgroundLastActivationReason ?? NSLocalizedString("smart_frequent_background_no_activation_yet", comment: "No smart frequent activation has happened yet")
+                    value: backgroundManager.smartFrequentBackgroundLastActivationReason ?? NSLocalizedString("smart_frequent_background_no_activation_yet", comment: "No smart frequent activation has happened yet"),
+                    icon: "bolt.fill"
                 )
 
                 statusRow(
                     title: NSLocalizedString("smart_frequent_background_last_movement_label", comment: "Label for the latest relevant smart frequent movement"),
-                    value: smartMovementText
+                    value: smartMovementText,
+                    icon: "speedometer"
                 )
 
                 statusRow(
                     title: NSLocalizedString("smart_frequent_background_next_timeout_label", comment: "Label for the next smart frequent inactivity timeout"),
-                    value: smartTimeoutText
+                    value: smartTimeoutText,
+                    icon: "hourglass"
                 )
             }
         }
@@ -696,12 +708,18 @@ struct BackgroundStatusCard: View {
     }
 
     @ViewBuilder
-    private func statusRow(title: String, value: String) -> some View {
+    private func statusRow(title: String, value: String, icon: String) -> some View {
         HStack {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
             Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
             Spacer()
             Text(value)
-                .foregroundColor(.secondary)
+                .font(.caption)
+                .fontWeight(.medium)
                 .multilineTextAlignment(.trailing)
         }
     }

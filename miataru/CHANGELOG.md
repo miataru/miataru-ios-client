@@ -1,8 +1,14 @@
 version 3.2
 - Added the new two-stage Smart Frequent Background Updates policy. Stage 1 (`Smart frequent updates`) keeps standard significant-change background tracking active by default and temporarily starts frequent background updates only after movement above the configured speed threshold is detected.
 - Kept Stage 2 (`Frequent background updates`) as the manual always-on/temporary frequent mode. Manual frequent mode is unlocked by Smart frequent updates and overrides Smart runtime decisions completely.
+- Locked the Smart frequent toggle while manual frequent background mode is active, with localized explanatory text, so users cannot disable the prerequisite while the manual override is still running.
+- Smart frequent mode-change notifications now request and respect notification permission before the setting is enabled, including a denied-state message with an app-settings shortcut.
+- Shared frequent parameters now apply consistently to Smart frequent runtime and manual frequent mode, including movement distance, delayed server delivery, and visitor-history check intervals.
+- Renamed significant-change user-facing copy toward the battery-saving standard background mode and refreshed Location Tracking Details so Location Access Control sits directly below Device Access Control.
+- Restyled the Background Status section to match the upper statistic rows and gave each background status row a distinct icon for scanability.
+- Removed stale and newly extracted string-catalog entries from `Localizable.xcstrings` and added a regression check that keeps the app string catalog free of stale/new translation units.
 - Preserved existing users with manual frequent background updates enabled by migrating them to the new two-stage model with both the Smart prerequisite and manual frequent mode enabled.
-- Added Smart frequent configuration for speed threshold (5, 10, 15, 20, 30 km/h), speed detection mode (Hybrid or GPS-only), and a shared inactivity window (5, 10, 15, 30 minutes).
+- Added Smart frequent configuration for speed threshold (2, 5, 10, 15, 20, 30 km/h), speed detection mode (Hybrid or GPS-only), and a shared inactivity window (5, 10, 15, 30 minutes).
 - Smart frequent runtime now starts from significant-change callbacks, uses valid GPS speed first and derived distance/time speed in Hybrid mode, and stops frequent runtime after the shared inactivity window when no update or no relevant movement over the frequent distance filter occurs.
 - Added optional Smart frequent mode-change notifications, defaulting off, for automatic Smart frequent activation and inactivity-based deactivation. Tapping those notifications opens Advanced Options like the other frequent-background notifications.
 - Expanded Location Tracking Details with distinct background modes (`Significant-change`, `Smart waiting`, `Smart frequent active`, `Manual frequent active`), Smart diagnostics, and persisted location-update counters split by foreground/live, significant-change, Smart frequent, and manual frequent modes with a shared 24-hour reset.

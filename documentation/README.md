@@ -39,6 +39,6 @@ Current frequent-background follow-up records:
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
-- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, navigation, Smart/manual frequent background tracking, update outbox, cache cleanup, and active test automation
+- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, navigation, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
 
 The latest documentation audit is `documentation-audit-2026-05-22.md`.

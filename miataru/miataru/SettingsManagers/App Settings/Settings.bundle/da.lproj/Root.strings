@@ -99,6 +99,7 @@
 "smart_frequent_background_speed_detection_hybrid" = "Hybrid";
 "smart_frequent_background_speed_detection_gps_only" = "Kun GPS-hastighed";
 "smart_frequent_background_inactivity_window_title" = "Inaktivitetsvindue";
+"2kmh" = "2 km/t";
 "5kmh" = "5 km/t";
 "10kmh" = "10 km/t";
 "15kmh" = "15 km/t";

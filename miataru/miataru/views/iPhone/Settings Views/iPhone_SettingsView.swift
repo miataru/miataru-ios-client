@@ -84,7 +84,11 @@ struct iPhone_SettingsView: View {
                     Section(header: Text("background_location_updates_section_title")) {
                         Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_smart_frequent_background_location_updates_central_toggle")
+                            .disabled(settings.frequentBackgroundLocationUpdatesEnabled)
                         SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
+                        if settings.frequentBackgroundLocationUpdatesEnabled {
+                            SettingsDescriptionText("smart_frequent_background_locked_by_manual_explanation")
+                        }
 
                         if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                             Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
@@ -153,14 +157,21 @@ struct iPhone_SettingsView: View {
                 }
 
                 Section(header: Text("advanced_options_and_tracking_status")) {
-                    NavigationLink(destination: iPhone_AdvancedOptionsView()) {
+                    Button {
+                        showAdvancedOptionsFromNavigationRequest = true
+                    } label: {
                         HStack {
                             Image(systemName: "slider.horizontal.3")
                                 .foregroundColor(.blue)
                             Text("advanced_options")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(.secondary)
                         }
-                        .accessibilityIdentifier("settings_advanced_options_link")
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("settings_advanced_options_link")
 
                     NavigationLink(destination: iPhone_LocationStatusView()
                         .navigationTitle("Location Tracking Details")
@@ -170,8 +181,8 @@ struct iPhone_SettingsView: View {
                                 .foregroundColor(.blue)
                             Text("Location Tracking Details")
                         }
-                        .accessibilityIdentifier("settings_location_tracking_details_link")
                     }
+                    .accessibilityIdentifier("settings_location_tracking_details_link")
                 }
             }
             .navigationDestination(isPresented: $showAdvancedOptionsFromNavigationRequest) {
