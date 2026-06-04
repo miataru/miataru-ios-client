@@ -21,7 +21,7 @@ Smart frequent settings live in Advanced Options under the background location s
 - Smart inactivity window: 5, 10, 15, or 30 minutes; default 10 minutes.
 - Smart frequent mode-change notifications: default off.
 
-Hybrid speed detection uses valid `CLLocation.speed` first. If GPS speed is not valid, it derives speed from distance and elapsed time between usable location samples. GPS-only mode ignores derived speed and only uses `CLLocation.speed`.
+Hybrid speed detection uses valid `CLLocation.speed` first. If GPS speed is not valid, it derives speed from distance and elapsed time between usable location samples. GPS-only mode ignores derived speed and only uses `CLLocation.speed`. Smart activation rejects implausible activation speeds above 200 km/h so startup/reset GPS spikes do not switch frequent runtime on.
 
 The inactivity window is shared by both Smart stop conditions:
 
@@ -38,7 +38,7 @@ There is also startup normalization for externally changed settings: if manual f
 
 ## Runtime Implementation
 
-`LocationManager` keeps Smart runtime state in memory only. After relaunch, Smart starts in the waiting state and needs a new qualifying significant-change update before it can activate frequent runtime.
+`LocationManager` keeps Smart runtime state in memory only. After relaunch, Smart starts in the waiting state. The first background location in a fresh process seeds Smart's speed/movement reference and cannot activate frequent runtime by itself; a later qualifying significant-change update can activate Smart once movement is measured against that in-process reference.
 
 The effective frequent background state is:
 
@@ -104,4 +104,4 @@ python3 -c 'import json; json.load(open("miataru/miataru/Assets/Localizable.xcst
 git diff --check
 ```
 
-The unit suite covers defaults, Settings.bundle parity, migration, Smart prerequisite normalization, localization completeness, stale/new string-catalog detection, Hybrid/GPS-only speed detection, activation/deactivation policy, manual override behavior, shared frequent-mode interval behavior, persisted 24-hour mode counters, and Smart mode-change notification scheduling/authorization behavior.
+The unit suite covers defaults, Settings.bundle parity, migration, Smart prerequisite normalization, localization completeness, stale/new string-catalog detection, Hybrid/GPS-only speed detection, startup-reference gating, implausible-speed rejection, activation/deactivation policy, manual override behavior, shared frequent-mode interval behavior, persisted 24-hour mode counters, and Smart mode-change notification scheduling/authorization behavior.

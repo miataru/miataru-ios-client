@@ -13,7 +13,7 @@ The app currently supports iPhone and iPad. Mac-specific view files are present 
 ## Core Features
 
 - Location sharing: foreground high-accuracy updates, a battery-saving standard background mode, Smart frequent background updates, and a manual frequent override mode.
-- Smart frequent background mode: optional two-stage policy that normally waits in the battery-saving standard mode, temporarily starts frequent background updates after movement above a configurable speed threshold, and returns to standard mode after a shared inactivity window.
+- Smart frequent background mode: optional two-stage policy that normally waits in the battery-saving standard mode, temporarily starts frequent background updates after movement above a configurable speed threshold, ignores implausible activation speeds above 200 km/h, and returns to standard mode after a shared inactivity window.
 - Manual frequent background mode: configurable distance filter, duration, delivery delay, visitor-history check interval, reminder/expiration notifications, optional Smart mode-change notifications with notification-permission gating, and low-battery auto-disable.
 - Offline resilience: `updateLocation` calls retry transient failures and then persist to a FIFO outbox with configurable retention and capacity.
 - DeviceKey: create, restore, reset, and recover server-side authentication for location writes, visitor history, slogans, and access-control settings.

@@ -10,11 +10,13 @@ version 3.2
 - Preserved existing users with manual frequent background updates enabled by migrating them to the new two-stage model with both the Smart prerequisite and manual frequent mode enabled.
 - Added Smart frequent configuration for speed threshold (2, 5, 10, 15, 20, 30 km/h), speed detection mode (Hybrid or GPS-only), and a shared inactivity window (5, 10, 15, 30 minutes).
 - Smart frequent runtime now starts from significant-change callbacks, uses valid GPS speed first and derived distance/time speed in Hybrid mode, and stops frequent runtime after the shared inactivity window when no update or no relevant movement over the frequent distance filter occurs.
+- Smart frequent activation is now guarded against confusing startup/update relaunches: the first background location in a fresh process seeds the movement reference instead of activating frequent runtime immediately, and implausible activation speeds above 200 km/h are ignored.
 - Added optional Smart frequent mode-change notifications, defaulting off, for automatic Smart frequent activation and inactivity-based deactivation. Tapping those notifications opens Advanced Options like the other frequent-background notifications.
 - Expanded Location Tracking Details with distinct background modes (`Significant-change`, `Smart waiting`, `Smart frequent active`, `Manual frequent active`), Smart diagnostics, and persisted location-update counters split by foreground/live, significant-change, Smart frequent, and manual frequent modes with a shared 24-hour reset.
 - Added localized labels, explanatory text, notification text, Settings.bundle strings, and option values for all supported locales.
 - Added regression coverage for Smart defaults, migration, Settings.bundle parity, localization completeness, speed detection, activation/deactivation policy, manual override behavior, 24-hour mode counters, and Smart mode-change notification scheduling.
 - Updated the living project documentation, App Store copy source, test catalog/gap matrix, and added a dated Smart frequent background updates implementation note.
+- Updated project metadata for version 3.2 build 4.
 
 version 3.1.19
 - Added 2-hour and 3-hour auto-disable options for frequent background updates in Advanced Options and the iOS Settings.bundle, keeping 4 hours as the default.

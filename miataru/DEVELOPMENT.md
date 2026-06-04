@@ -62,7 +62,7 @@ miataru/
   - foreground high accuracy
   - background significant-change monitoring
   - frequent background updates
-- Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts frequent runtime only after movement above the configured speed threshold, and stops runtime after the shared inactivity window.
+- Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts frequent runtime only after movement above the configured speed threshold from a fresh in-process reference, ignores implausible activation speeds above 200 km/h, and stops runtime after the shared inactivity window.
 - Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
 - Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
 - Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
@@ -187,6 +187,7 @@ xcrun simctl openurl booted miataru://ABCDEF
 - Standard background mode uses significant-change monitoring by design.
 - Enable Smart frequent updates when the app should automatically switch to frequent runtime only after detected movement.
 - Enable manual frequent background updates only when the higher battery cost is acceptable and Smart criteria should be bypassed.
+- After a cold app start/update/reset, the first background location only seeds Smart's movement reference; the next qualifying background movement can activate Smart frequent runtime.
 - Check Smart threshold/detection mode, Smart inactivity window, manual expiration duration, low-battery threshold, and whether the app returned to standard background mode.
 - Location Tracking Details shows the current background mode, Smart activation reason, last relevant Smart movement, next inactivity timeout, and mode-specific update counters.
 

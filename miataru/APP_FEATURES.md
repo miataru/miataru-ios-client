@@ -24,7 +24,7 @@ This document describes the current user-facing and developer-facing feature set
 
 - Location sharing is opt-in and controlled from Settings.
 - Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode.
-- Smart frequent background updates are optional and normally keep the battery-saving standard mode active until movement above a configurable speed threshold is detected.
+- Smart frequent background updates are optional and normally keep the battery-saving standard mode active until movement above a configurable speed threshold is detected. The first background location after app restart/update seeds the Smart movement reference instead of activating immediately, and implausible activation speeds above 200 km/h are ignored.
 - Manual frequent background updates remain available as a second stage after Smart frequent updates are enabled. Manual mode overrides Smart and exposes the same configurable distance, delivery delay, visitor-history check interval, reminders, expiration notifications, and low-battery auto-disable behavior used by Smart frequent runtime.
 - Smart frequent updates can optionally send notifications when the app automatically switches frequent runtime on or back to standard background mode. These notifications are off by default and require notification permission before the setting is enabled.
 - The app reports available altitude, speed, horizontal accuracy, and battery level with location updates.
@@ -34,7 +34,7 @@ This document describes the current user-facing and developer-facing feature set
 **For developers:**
 
 - `LocationManager` resolves service-level tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`) and separately exposes user-facing background states (`significant-change`, `Smart waiting`, `Smart frequent active`, `manual frequent active`, `foreground/live`).
-- Smart frequent settings are represented by `SmartFrequentBackgroundSpeedThreshold`, `SmartFrequentBackgroundSpeedDetectionMode`, `SmartFrequentBackgroundInactivityWindow`, and the opt-in Smart mode-change notification flag in `SettingsManager`.
+- Smart frequent settings are represented by `SmartFrequentBackgroundSpeedThreshold`, `SmartFrequentBackgroundSpeedDetectionMode`, `SmartFrequentBackgroundInactivityWindow`, and the opt-in Smart mode-change notification flag in `SettingsManager`. Smart activation also requires an in-process prior location reference and a plausible speed at or below 200 km/h.
 - Manual frequent settings are represented by `FrequentBackgroundLocationDistanceFilter`, `FrequentBackgroundLocationUpdateDuration`, `FrequentBackgroundLocationDeliveryMode`, `FrequentBackgroundVisitorCheckInterval`, and low-battery threshold values in `SettingsManager`.
 - Existing manual frequent users are migrated so the Smart prerequisite is enabled while preserving manual frequent mode as the effective override.
 - Navigation views register explicit navigation location sessions so active navigation keeps high-quality local updates while lifecycle transitions still apply the correct background policy.

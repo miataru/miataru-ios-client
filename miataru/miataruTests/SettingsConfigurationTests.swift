@@ -921,10 +921,20 @@ struct SettingsConfigurationTests {
         #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 2, thresholdKmh: 2))
         #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 1.9, thresholdKmh: 2))
         #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: nil, thresholdKmh: 10))
+        #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 200, thresholdKmh: 10))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 200.1, thresholdKmh: 10))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: -1, thresholdKmh: 10))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: .infinity, thresholdKmh: 10))
         #expect(LocationManager.canActivateSmartFrequentBackgroundUpdates(
             now: now,
             locationTimestamp: now.addingTimeInterval(-599),
             previousLocationUpdateAt: now.addingTimeInterval(-599),
+            inactivityWindow: 600
+        ))
+        #expect(!LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-1),
+            previousLocationUpdateAt: nil,
             inactivityWindow: 600
         ))
         #expect(!LocationManager.canActivateSmartFrequentBackgroundUpdates(

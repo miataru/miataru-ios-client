@@ -95,6 +95,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let headingSmoothingAlpha: Double = 0.25
     private let headingAccuracyThreshold: Double = 35
     private let headingMinSpeedThreshold: Double = 1.0
+    private static let maximumSmartFrequentActivationSpeedKmh: Double = 200
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -605,7 +606,10 @@ final class LocationManager: NSObject, ObservableObject {
 
     static func shouldActivateSmartFrequentBackgroundUpdates(speedKmh: Double?,
                                                              thresholdKmh: Int) -> Bool {
-        guard let speedKmh, speedKmh.isFinite else {
+        guard let speedKmh,
+              speedKmh.isFinite,
+              speedKmh >= 0,
+              speedKmh <= maximumSmartFrequentActivationSpeedKmh else {
             return false
         }
         return speedKmh >= Double(SmartFrequentBackgroundSpeedThreshold.normalized(thresholdKmh))
@@ -616,11 +620,11 @@ final class LocationManager: NSObject, ObservableObject {
                                                           previousLocationUpdateAt: Date?,
                                                           inactivityWindow: TimeInterval) -> Bool {
         guard inactivityWindow > 0 else { return false }
+        guard let previousLocationUpdateAt else { return false }
         guard now.timeIntervalSince(locationTimestamp) < inactivityWindow else {
             return false
         }
-        if let previousLocationUpdateAt,
-           now.timeIntervalSince(previousLocationUpdateAt) >= inactivityWindow {
+        if now.timeIntervalSince(previousLocationUpdateAt) >= inactivityWindow {
             return false
         }
         return true
