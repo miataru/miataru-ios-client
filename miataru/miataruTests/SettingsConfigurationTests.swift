@@ -55,6 +55,43 @@ struct SettingsConfigurationTests {
         #expect(!defaults.bool(forKey: SettingsKeys.showRouteProgress))
     }
 
+    @Test("Smart frequent migration preserves existing manual frequent users")
+    func smartFrequentMigrationPreservesExistingManualFrequentUsers() throws {
+        let suiteName = "SmartFrequentMigrationTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set(true, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+
+        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: defaults)
+
+        #expect(defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled))
+        #expect(defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled))
+        #expect(defaults.bool(forKey: SettingsMigration.smartFrequentBackgroundV1Marker))
+
+        defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: defaults)
+        #expect(!defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled))
+    }
+
+    @Test("Manual frequent normalization keeps smart prerequisite enabled after migration")
+    func manualFrequentNormalizationKeepsSmartPrerequisiteEnabledAfterMigration() throws {
+        let suiteName = "SmartFrequentPrerequisiteTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set(true, forKey: SettingsMigration.smartFrequentBackgroundV1Marker)
+        defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+        defaults.set(true, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+
+        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: defaults)
+        #expect(!defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled))
+
+        SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: defaults)
+        #expect(defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled))
+        #expect(defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled))
+    }
+
     @Test("Settings localization keys exist for all app locales")
     func settingsLocalizationKeysExistForAllLocales() throws {
         let requiredKeys = [
@@ -66,7 +103,25 @@ struct SettingsConfigurationTests {
             "location_sensitivity_title",
             "location_sensitivity_explanation",
             "background_location_updates_section_title",
+            "smart_frequent_background_location_updates_title",
+            "smart_frequent_background_location_updates_explanation",
+            "smart_frequent_background_speed_threshold_title",
+            "smart_frequent_background_speed_threshold_explanation",
+            "smart_frequent_background_speed_detection_title",
+            "smart_frequent_background_speed_detection_hybrid",
+            "smart_frequent_background_speed_detection_gps_only",
+            "smart_frequent_background_speed_detection_explanation",
+            "smart_frequent_background_inactivity_window_title",
+            "smart_frequent_background_inactivity_window_explanation",
+            "smart_frequent_background_mode_change_notifications_title",
+            "smart_frequent_background_mode_change_notifications_explanation",
+            "smart_frequent_background_activated_notification_title",
+            "smart_frequent_background_activated_notification_body",
+            "smart_frequent_background_deactivated_notification_title",
+            "smart_frequent_background_deactivated_notification_body",
+            "smart_frequent_background_waiting_hint",
             "frequent_background_location_updates_title",
+            "frequent_background_location_updates_manual_explanation",
             "frequent_background_location_updates_explanation",
             "frequent_background_location_updates_central_explanation",
             "frequent_background_location_updates_battery_warning",
@@ -123,11 +178,40 @@ struct SettingsConfigurationTests {
             "frequent_background_visitor_check_60m_explanation",
             "frequent_background_location_updates_active_hint_format",
             "tracking_mode_frequent_background_updates_format",
+            "tracking_mode_manual_frequent_background_updates_format",
+            "tracking_mode_smart_frequent_background_updates_format",
+            "tracking_mode_smart_waiting",
             "background_tracking_mode_title",
             "background_tracking_expires_at_label",
+            "background_tracking_mode_foreground_live",
             "background_tracking_mode_frequent_format",
+            "background_tracking_mode_smart_frequent_format",
+            "background_tracking_mode_smart_waiting",
             "background_tracking_mode_significant_change",
             "background_tracking_expires_never",
+            "location_update_count_foreground_live_label",
+            "location_update_count_significant_change_label",
+            "location_update_count_smart_frequent_label",
+            "location_update_count_manual_frequent_label",
+            "smart_frequent_background_last_activation_label",
+            "smart_frequent_background_no_activation_yet",
+            "smart_frequent_background_last_movement_label",
+            "smart_frequent_background_next_timeout_label",
+            "smart_frequent_background_no_movement_yet",
+            "smart_frequent_background_no_timeout_pending",
+            "smart_frequent_background_activation_speed_format",
+            "smart_frequent_background_activation_movement",
+            "location_update_mode_significant_change",
+            "location_update_mode_smart_frequent",
+            "location_update_mode_manual_frequent",
+            "5kmh",
+            "10kmh",
+            "15kmh",
+            "20kmh",
+            "30kmh",
+            "5minutes",
+            "10minutes",
+            "15minutes",
             "location_track",
             "explanation_location_track",
             "save_location_history_to_server",
@@ -220,6 +304,13 @@ struct SettingsConfigurationTests {
             "activity_type_automotive",
             "location_sensitivity_title",
             "background_location_updates_section_title",
+            "smart_frequent_background_location_updates_title",
+            "smart_frequent_background_speed_threshold_title",
+            "smart_frequent_background_speed_detection_title",
+            "smart_frequent_background_speed_detection_hybrid",
+            "smart_frequent_background_speed_detection_gps_only",
+            "smart_frequent_background_inactivity_window_title",
+            "smart_frequent_background_mode_change_notifications_title",
             "frequent_background_location_updates_title",
             "background_location_distance_filter_title",
             "frequent_background_location_updates_duration_title",
@@ -247,6 +338,14 @@ struct SettingsConfigurationTests {
             "100m",
             "50m",
             "25m",
+            "5kmh",
+            "10kmh",
+            "15kmh",
+            "20kmh",
+            "30kmh",
+            "5minutes",
+            "10minutes",
+            "15minutes",
             "server_url",
             "app_behaviour",
             "deactivate_device_lock",
@@ -307,6 +406,11 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.trackAndReportLocation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.locationActivityType] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.locationSensitivityLevel] as? String == "2")
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled] as? Bool == false)
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh] as? String == "10")
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundSpeedDetectionMode] as? String == "0")
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundInactivityWindow] as? String == "600")
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdatesEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdateDuration] as? String == "14400")
@@ -335,6 +439,17 @@ struct SettingsConfigurationTests {
 
     @Test("Frequent background location update settings normalize and expire as expected")
     func frequentBackgroundLocationUpdateSettingsNormalizeAndExpire() {
+        #expect(SmartFrequentBackgroundSpeedThreshold.normalized(5) == 5)
+        #expect(SmartFrequentBackgroundSpeedThreshold.normalized(10) == 10)
+        #expect(SmartFrequentBackgroundSpeedThreshold.normalized(30) == 30)
+        #expect(SmartFrequentBackgroundSpeedThreshold.normalized(7) == SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh)
+        #expect(SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(SmartFrequentBackgroundSpeedDetectionMode.hybrid.rawValue) == 0)
+        #expect(SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(SmartFrequentBackgroundSpeedDetectionMode.gpsOnly.rawValue) == 1)
+        #expect(SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(12) == SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode)
+        #expect(SmartFrequentBackgroundInactivityWindow.tenMinutes.timeInterval == 600)
+        #expect(SmartFrequentBackgroundInactivityWindow.normalizedRawValue(SmartFrequentBackgroundInactivityWindow.thirtyMinutes.rawValue) == 1_800)
+        #expect(SmartFrequentBackgroundInactivityWindow.normalizedRawValue(123) == SettingsDefaultValues.smartFrequentBackgroundInactivityWindow)
+
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(100) == 100)
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(50) == 50)
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(25) == 25)
@@ -709,6 +824,164 @@ struct SettingsConfigurationTests {
             distanceFilterMeters: 50,
             hasNavigationLocationSession: false
         ) == .foregroundHighAccuracy)
+    }
+
+    @Test("Smart frequent speed detection supports hybrid and GPS-only modes")
+    func smartFrequentSpeedDetectionSupportsHybridAndGPSOnlyModes() {
+        let previous = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5200, longitude: 13.4050),
+            altitude: 0,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 1_000)
+        )
+        let current = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5290, longitude: 13.4050),
+            altitude: 0,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 1_300)
+        )
+        let gpsSpeed = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5290, longitude: 13.4050),
+            altitude: 0,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: 4,
+            timestamp: Date(timeIntervalSince1970: 1_300)
+        )
+
+        let derivedSpeed = LocationManager.smartFrequentBackgroundSpeedKmh(
+            for: current,
+            previousLocation: previous,
+            detectionMode: .hybrid
+        )
+        #expect((derivedSpeed ?? 0) > 10)
+        #expect(LocationManager.smartFrequentBackgroundSpeedKmh(
+            for: current,
+            previousLocation: previous,
+            detectionMode: .gpsOnly
+        ) == nil)
+        let gpsSpeedKmh = LocationManager.smartFrequentBackgroundSpeedKmh(
+            for: gpsSpeed,
+            previousLocation: previous,
+            detectionMode: .hybrid
+        )
+        #expect(abs((gpsSpeedKmh ?? 0) - 14.4) < 0.001)
+    }
+
+    @Test("Smart frequent activation and inactivity policies are threshold based")
+    func smartFrequentActivationAndInactivityPoliciesAreThresholdBased() {
+        let now = Date(timeIntervalSince1970: 10_000)
+
+        #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 10, thresholdKmh: 10))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: 9.9, thresholdKmh: 10))
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(speedKmh: nil, thresholdKmh: 10))
+
+        #expect(LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-600),
+            lastRelevantMovementAt: now,
+            inactivityWindow: 600
+        ))
+        #expect(LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: now,
+            lastRelevantMovementAt: now.addingTimeInterval(-601),
+            inactivityWindow: 600
+        ))
+        #expect(!LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-599),
+            lastRelevantMovementAt: now.addingTimeInterval(-599),
+            inactivityWindow: 600
+        ))
+        #expect(LocationManager.nextSmartFrequentBackgroundInactivityTimeout(
+            lastLocationUpdateAt: now,
+            lastRelevantMovementAt: now.addingTimeInterval(-100),
+            inactivityWindow: 600
+        ) == now.addingTimeInterval(500))
+    }
+
+    @Test("Manual frequent mode overrides smart frequent runtime")
+    func manualFrequentModeOverridesSmartFrequentRuntime() {
+        #expect(LocationManager.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: false
+        ))
+        #expect(LocationManager.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        ))
+        #expect(!LocationManager.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: false
+        ))
+
+        #expect(LocationManager.shouldShowBackgroundLocationIndicator(
+            for: .backgroundFrequent(
+                distanceFilter: 100,
+                desiredAccuracy: kCLLocationAccuracyHundredMeters
+            )
+        ))
+        #expect(!LocationManager.shouldShowBackgroundLocationIndicator(for: .backgroundSignificantChange))
+        #expect(!LocationManager.shouldShowBackgroundLocationIndicator(for: .foregroundHighAccuracy))
+        #expect(!LocationManager.shouldShowBackgroundLocationIndicator(for: .stopped))
+
+        #expect(LocationManager.locationUpdateCounterMode(
+            applicationState: .background,
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        ) == .manualFrequent)
+        #expect(LocationManager.locationUpdateCounterMode(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        ) == .smartFrequent)
+        #expect(LocationManager.locationUpdateCounterMode(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: false
+        ) == .significantChange)
+        #expect(LocationManager.locationUpdateCounterMode(
+            applicationState: .active,
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        ) == .foregroundLive)
+    }
+
+    @Test("Location update mode counters increment and reset after 24 hours")
+    func locationUpdateModeCountersIncrementAndResetAfterTwentyFourHours() {
+        var counts = LocationManager.LocationUpdateModeCounts()
+        counts.increment(.foregroundLive)
+        counts.increment(.significantChange)
+        counts.increment(.smartFrequent)
+        counts.increment(.manualFrequent)
+
+        #expect(counts.foregroundLive == 1)
+        #expect(counts.backgroundTotal == 3)
+
+        let lastReset = Date(timeIntervalSince1970: 1_000)
+        #expect(!LocationManager.shouldResetLocationUpdateMetrics(
+            now: lastReset.addingTimeInterval(86_399),
+            lastReset: lastReset
+        ))
+        #expect(LocationManager.shouldResetLocationUpdateMetrics(
+            now: lastReset.addingTimeInterval(86_400),
+            lastReset: lastReset
+        ))
     }
 
     @Test("Significant-change recovery anchor is kept only for active Always-authorized tracking")

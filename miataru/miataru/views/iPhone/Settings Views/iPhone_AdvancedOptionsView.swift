@@ -46,12 +46,45 @@ struct iPhone_AdvancedOptionsView: View {
                 }
 
                 Section(header: Text("background_location_updates_section_title")) {
-                    Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
-                        .accessibilityIdentifier("settings_frequent_background_location_updates_toggle")
-                    SettingsDescriptionText("frequent_background_location_updates_explanation")
+                    Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
+                        .accessibilityIdentifier("settings_smart_frequent_background_location_updates_toggle")
+                    SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
 
-                    if settings.frequentBackgroundLocationUpdatesEnabled {
-                        SettingsWarningText("frequent_background_location_updates_battery_warning")
+                    if settings.smartFrequentBackgroundLocationUpdatesEnabled {
+                        Picker("smart_frequent_background_speed_threshold_title", selection: $settings.smartFrequentBackgroundSpeedThresholdKmh) {
+                            Text("5kmh").tag(5)
+                            Text("10kmh").tag(10)
+                            Text("15kmh").tag(15)
+                            Text("20kmh").tag(20)
+                            Text("30kmh").tag(30)
+                        }
+                        SettingsDescriptionText("smart_frequent_background_speed_threshold_explanation")
+
+                        Picker("smart_frequent_background_speed_detection_title", selection: $settings.smartFrequentBackgroundSpeedDetectionMode) {
+                            Text("smart_frequent_background_speed_detection_hybrid").tag(SmartFrequentBackgroundSpeedDetectionMode.hybrid.rawValue)
+                            Text("smart_frequent_background_speed_detection_gps_only").tag(SmartFrequentBackgroundSpeedDetectionMode.gpsOnly.rawValue)
+                        }
+                        SettingsDescriptionText("smart_frequent_background_speed_detection_explanation")
+
+                        Picker("smart_frequent_background_inactivity_window_title", selection: $settings.smartFrequentBackgroundInactivityWindow) {
+                            Text("5minutes").tag(SmartFrequentBackgroundInactivityWindow.fiveMinutes.rawValue)
+                            Text("10minutes").tag(SmartFrequentBackgroundInactivityWindow.tenMinutes.rawValue)
+                            Text("15minutes").tag(SmartFrequentBackgroundInactivityWindow.fifteenMinutes.rawValue)
+                            Text("30minutes").tag(SmartFrequentBackgroundInactivityWindow.thirtyMinutes.rawValue)
+                        }
+                        SettingsDescriptionText("smart_frequent_background_inactivity_window_explanation")
+
+                        Toggle("smart_frequent_background_mode_change_notifications_title", isOn: $settings.smartFrequentBackgroundModeChangeNotificationsEnabled)
+                            .accessibilityIdentifier("settings_smart_frequent_background_mode_change_notifications_toggle")
+                        SettingsDescriptionText("smart_frequent_background_mode_change_notifications_explanation")
+
+                        Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                            .accessibilityIdentifier("settings_frequent_background_location_updates_toggle")
+                        SettingsDescriptionText("frequent_background_location_updates_manual_explanation")
+
+                        if settings.frequentBackgroundLocationUpdatesEnabled {
+                            SettingsWarningText("frequent_background_location_updates_battery_warning")
+                        }
 
                         Picker("background_location_distance_filter_title", selection: $settings.frequentBackgroundLocationDistanceFilter) {
                             Text("100m").tag(100)
@@ -60,16 +93,18 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         SettingsDescriptionText(frequentBackgroundDistanceFilterExplanationKey)
 
-                        Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
-                            Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
-                            Text("2hours").tag(FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
-                            Text("3hours").tag(FrequentBackgroundLocationUpdateDuration.threeHours.rawValue)
-                            Text("4hours").tag(FrequentBackgroundLocationUpdateDuration.fourHours.rawValue)
-                            Text("12hours").tag(FrequentBackgroundLocationUpdateDuration.twelveHours.rawValue)
-                            Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
-                            Text("frequent_background_location_updates_duration_unlimited").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
+                        if settings.frequentBackgroundLocationUpdatesEnabled {
+                            Picker("frequent_background_location_updates_duration_title", selection: $settings.frequentBackgroundLocationUpdateDuration) {
+                                Text("1hour").tag(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue)
+                                Text("2hours").tag(FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
+                                Text("3hours").tag(FrequentBackgroundLocationUpdateDuration.threeHours.rawValue)
+                                Text("4hours").tag(FrequentBackgroundLocationUpdateDuration.fourHours.rawValue)
+                                Text("12hours").tag(FrequentBackgroundLocationUpdateDuration.twelveHours.rawValue)
+                                Text("24hours").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
+                                Text("frequent_background_location_updates_duration_unlimited").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
+                            }
+                            SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
                         }
-                        SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
 
                         Picker("frequent_background_battery_auto_disable_level_title", selection: $settings.frequentBackgroundBatteryAutoDisableLevel) {
                             Text(verbatim: "10%").tag(10)

@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "Tærskel for adresseopdatering";
 "reverse_geocode_every_update" = "hver opdatering";
 "navigation_auto_route_update" = "Automatisk ruteopdatering";
+
+"smart_frequent_background_location_updates_title" = "Smarte hyppige opdateringer";
+"smart_frequent_background_speed_threshold_title" = "Hastighedsgrænse";
+"smart_frequent_background_speed_detection_title" = "Hastighedsregistrering";
+"smart_frequent_background_speed_detection_hybrid" = "Hybrid";
+"smart_frequent_background_speed_detection_gps_only" = "Kun GPS-hastighed";
+"smart_frequent_background_inactivity_window_title" = "Inaktivitetsvindue";
+"5kmh" = "5 km/t";
+"10kmh" = "10 km/t";
+"15kmh" = "15 km/t";
+"20kmh" = "20 km/t";
+"30kmh" = "30 km/t";
+"5minutes" = "5 minutter";
+"10minutes" = "10 minutter";
+"15minutes" = "15 minutter";
+"smart_frequent_background_mode_change_notifications_title" = "Notifikationer for smarte hyppige opdateringer";

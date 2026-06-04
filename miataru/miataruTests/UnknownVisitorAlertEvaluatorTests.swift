@@ -556,6 +556,42 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(request.content.body.contains("30"))
     }
 
+    @Test("Smart frequent mode-change notifications are immediate and typed")
+    func smartFrequentModeChangeNotificationsAreImmediateAndTyped() async throws {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.notifySmartFrequentModeChange(isActive: true)
+        await service.notifySmartFrequentModeChange(isActive: false)
+
+        let addedRequests = await notifier.addedRequests
+        #expect(addedRequests.count == 2)
+
+        let activatedRequest = try #require(addedRequests.first)
+        #expect(activatedRequest.identifier == FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationIdentifier)
+        #expect(activatedRequest.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationType)
+        #expect(activatedRequest.trigger == nil)
+        #expect(!activatedRequest.content.title.isEmpty)
+        #expect(!activatedRequest.content.body.isEmpty)
+
+        let deactivatedRequest = try #require(addedRequests.last)
+        #expect(deactivatedRequest.identifier == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationIdentifier)
+        #expect(deactivatedRequest.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationType)
+        #expect(deactivatedRequest.trigger == nil)
+        #expect(!deactivatedRequest.content.title.isEmpty)
+        #expect(!deactivatedRequest.content.body.isEmpty)
+    }
+
+    @Test("Smart frequent mode-change notifications respect denied authorization")
+    func smartFrequentModeChangeNotificationsRespectDeniedAuthorization() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .denied)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.notifySmartFrequentModeChange(isActive: true)
+
+        #expect(await notifier.addedRequests.isEmpty)
+    }
+
     private static func existingReminderRequest() -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.userInfo = [

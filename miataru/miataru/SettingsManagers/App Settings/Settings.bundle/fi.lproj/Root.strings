@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "Osoitepäivityksen kynnys";
 "reverse_geocode_every_update" = "joka päivityksessä";
 "navigation_auto_route_update" = "Automaattinen reitin päivitys";
+
+"smart_frequent_background_location_updates_title" = "Älykkäät tiheät päivitykset";
+"smart_frequent_background_speed_threshold_title" = "Nopeusraja";
+"smart_frequent_background_speed_detection_title" = "Nopeuden tunnistus";
+"smart_frequent_background_speed_detection_hybrid" = "Hybridi";
+"smart_frequent_background_speed_detection_gps_only" = "Vain GPS-nopeus";
+"smart_frequent_background_inactivity_window_title" = "Passiivisuusikkuna";
+"5kmh" = "5 km/h";
+"10kmh" = "10 km/h";
+"15kmh" = "15 km/h";
+"20kmh" = "20 km/h";
+"30kmh" = "30 km/h";
+"5minutes" = "5 minuuttia";
+"10minutes" = "10 minuuttia";
+"15minutes" = "15 minuuttia";
+"smart_frequent_background_mode_change_notifications_title" = "Älykkäiden tiheiden päivitysten ilmoitukset";

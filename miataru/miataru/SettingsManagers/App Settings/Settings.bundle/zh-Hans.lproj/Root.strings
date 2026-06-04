@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "地址更新阈值";
 "reverse_geocode_every_update" = "每次更新";
 "navigation_auto_route_update" = "自动更新路线";
+
+"smart_frequent_background_location_updates_title" = "智能频繁更新";
+"smart_frequent_background_speed_threshold_title" = "速度阈值";
+"smart_frequent_background_speed_detection_title" = "速度检测";
+"smart_frequent_background_speed_detection_hybrid" = "混合";
+"smart_frequent_background_speed_detection_gps_only" = "仅 GPS 速度";
+"smart_frequent_background_inactivity_window_title" = "非活动窗口";
+"5kmh" = "5 公里/小时";
+"10kmh" = "10 公里/小时";
+"15kmh" = "15 公里/小时";
+"20kmh" = "20 公里/小时";
+"30kmh" = "30 公里/小时";
+"5minutes" = "5 分钟";
+"10minutes" = "10 分钟";
+"15minutes" = "15 分钟";
+"smart_frequent_background_mode_change_notifications_title" = "智能频繁更新通知";

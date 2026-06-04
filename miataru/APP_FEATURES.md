@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.1.14**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2**.
 
 ## App Navigation and Views
 
@@ -24,15 +24,19 @@ This document describes the current user-facing and developer-facing feature set
 
 - Location sharing is opt-in and controlled from Settings.
 - Foreground tracking uses high accuracy. Background tracking defaults to energy-conscious significant-change updates.
-- Frequent background updates are optional and expose configurable distance, duration, delivery delay, visitor-history check interval, and low-battery auto-disable.
+- Smart frequent background updates are optional and normally keep the battery-friendly significant-change mode active until movement above a configurable speed threshold is detected.
+- Manual frequent background updates remain available as a second stage after Smart frequent updates are enabled. Manual mode overrides Smart and exposes configurable distance, duration, delivery delay, visitor-history check interval, reminders, expiration notifications, and low-battery auto-disable.
+- Smart frequent updates can optionally send notifications when the app automatically switches frequent runtime on or back to standard background mode. These notifications are off by default.
 - The app reports available altitude, speed, horizontal accuracy, and battery level with location updates.
-- Location Tracking Details shows app version/build, permission state, current location, accuracy, speed, battery, daily API/widget counters, route requests, queued updates, background status, and recent update logs.
+- Location Tracking Details shows app version/build, permission state, current location, accuracy, speed, battery, daily API/widget counters, route requests, queued updates, background mode, Smart diagnostics, mode-specific location-update counters, and recent update logs.
 - Users can request location permission again from Location Tracking Details.
 
 **For developers:**
 
-- `LocationManager` resolves tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`).
-- Frequent background settings are represented by `FrequentBackgroundLocationDistanceFilter`, `FrequentBackgroundLocationUpdateDuration`, `FrequentBackgroundLocationDeliveryMode`, `FrequentBackgroundVisitorCheckInterval`, and low-battery threshold values in `SettingsManager`.
+- `LocationManager` resolves service-level tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`) and separately exposes user-facing background states (`significant-change`, `Smart waiting`, `Smart frequent active`, `manual frequent active`, `foreground/live`).
+- Smart frequent settings are represented by `SmartFrequentBackgroundSpeedThreshold`, `SmartFrequentBackgroundSpeedDetectionMode`, `SmartFrequentBackgroundInactivityWindow`, and the opt-in Smart mode-change notification flag in `SettingsManager`.
+- Manual frequent settings are represented by `FrequentBackgroundLocationDistanceFilter`, `FrequentBackgroundLocationUpdateDuration`, `FrequentBackgroundLocationDeliveryMode`, `FrequentBackgroundVisitorCheckInterval`, and low-battery threshold values in `SettingsManager`.
+- Existing manual frequent users are migrated so the Smart prerequisite is enabled while preserving manual frequent mode as the effective override.
 - Navigation views register explicit navigation location sessions so active navigation keeps high-quality local updates while lifecycle transitions still apply the correct background policy.
 - Visual effects are gated by Low Power Mode and scene phase through `animationsGate()`.
 
@@ -70,7 +74,7 @@ This document describes the current user-facing and developer-facing feature set
 - `DeviceSloganCacheStore` handles slogan fetch/cache/cleanup; `MiataruAppAPI` sanitizes slogan draft/save input.
 - `PersistentDataCleanup` prunes orphaned unknown-device locations, slogans, and widget snapshots.
 
-## DeviceKey, Access Control, and Unknown Visitors
+## DeviceKey, Access Control, Unknown Visitors, and Notifications
 
 **For users:**
 
@@ -79,6 +83,7 @@ This document describes the current user-facing and developer-facing feature set
 - Allowed Device List can restrict which devices are allowed to access this device.
 - Unknown visitors can be allowed, ignored, or surfaced through optional local notifications.
 - Unknown visitor notifications start from activation time and are filtered so own, known, allowed, and ignored devices do not create alerts.
+- Frequent background tracking uses local notifications for manual never-ending reminders, temporary-mode expiration, low-battery auto-disable, and optional Smart frequent auto-switch events.
 
 **For developers:**
 
@@ -86,6 +91,7 @@ This document describes the current user-facing and developer-facing feature set
 - `AllowedDeviceListManager` performs access-control sync through `MiataruAppAPI`.
 - `UnknownVisitorFilter` normalizes the shared unknown visitor filtering logic for iPhone and iPad lists.
 - `UnknownVisitorAlertService` evaluates visitor history incrementally, applies 24-hour per-device cooldown, coalesces in-flight processing, and batches supplemental `GetLocation` enrichment for true unknown candidates.
+- `FrequentBackgroundTrackingReminderService` owns frequent-background reminder, expiration, low-battery, and Smart mode-change notifications. AppDelegate routes all frequent-background notification types to Advanced Options.
 
 ## Group Management
 
@@ -170,8 +176,8 @@ This document describes the current user-facing and developer-facing feature set
 
 **For users:**
 
-- Root settings cover tracking/history, unknown visitor alerts, DeviceKey, frequent background toggle, allowed-device-list entry, app behavior, map type/zoom, navigation transport, server URL, Advanced Options, and Location Tracking Details.
-- Advanced Options include tracking accuracy/sensitivity, frequent background details, marker effects, accuracy indicators, off-screen arrows, device-list refresh, speed labels, outbox policy, map update intervals, reverse geocoding threshold, route auto-update, and route progress.
+- Root settings cover tracking/history, unknown visitor alerts, DeviceKey, Smart/manual frequent background access, allowed-device-list entry, app behavior, map type/zoom, navigation transport, server URL, Advanced Options, and Location Tracking Details.
+- Advanced Options include tracking accuracy/sensitivity, Smart frequent threshold/detection/inactivity options, optional Smart mode-change notifications, manual frequent background details, marker effects, accuracy indicators, off-screen arrows, device-list refresh, speed labels, outbox policy, map update intervals, reverse geocoding threshold, route auto-update, and route progress.
 - System Settings also exposes the same registered defaults through `Settings.bundle`.
 
 **For developers:**
@@ -205,7 +211,7 @@ This document describes the current user-facing and developer-facing feature set
 
 - App strings live primarily in `Assets/Localizable.xcstrings`; system Settings strings live under `Settings.bundle/*.lproj/Root.strings`.
 - `InfoPlist.strings` exists for all supported app locales.
-- Tests check localization key completeness for settings and unknown visitor alert flows.
+- Tests check localization key completeness for settings, Smart frequent explanations/notifications, and unknown visitor alert flows.
 
 ## Testing and Documentation
 

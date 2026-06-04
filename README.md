@@ -2,7 +2,7 @@
 
 **miataru** is an open-source iPhone and iPad app for privacy-focused location sharing, device management, and navigation through Miataru servers chosen by the user.
 
-Current project state: **version 3.1.14**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
+Current project state: **version 3.2**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
 
 ## Overview
 
@@ -12,8 +12,9 @@ The app currently supports iPhone and iPad. Mac-specific view files are present 
 
 ## Core Features
 
-- Location sharing: foreground high-accuracy updates, standard significant-change background updates, and an opt-in frequent background mode.
-- Frequent background mode: configurable movement threshold, duration, delivery delay, visitor-history check interval, reminder/expiration notifications, and low-battery auto-disable.
+- Location sharing: foreground high-accuracy updates, standard significant-change background updates, Smart frequent background updates, and a manual frequent override mode.
+- Smart frequent background mode: optional two-stage policy that normally waits in significant-change mode, temporarily starts frequent background updates after movement above a configurable speed threshold, and returns to standard mode after a shared inactivity window.
+- Manual frequent background mode: configurable distance filter, duration, delivery delay, visitor-history check interval, reminder/expiration notifications, optional Smart mode-change notifications, and low-battery auto-disable.
 - Offline resilience: `updateLocation` calls retry transient failures and then persist to a FIFO outbox with configurable retention and capacity.
 - DeviceKey: create, restore, reset, and recover server-side authentication for location writes, visitor history, slogans, and access-control settings.
 - Allowed Device List: manage device access controls and sync changes immediately from edit flows.
@@ -73,7 +74,7 @@ Live speed labels on map markers are hidden once their location sample is older 
 
 ### Settings
 
-Root settings cover the most common tracking, DeviceKey, privacy, app behavior, map, navigation, and server options. Advanced Options contain high-detail controls for frequent background updates, tracking accuracy/sensitivity, map refresh intervals, reverse geocoding, route progress, route auto-update, marker animation, outbox retention, and outbox capacity.
+Root settings cover the most common tracking, DeviceKey, privacy, app behavior, map, navigation, and server options. Advanced Options contain high-detail controls for Smart frequent and manual frequent background updates, tracking accuracy/sensitivity, map refresh intervals, reverse geocoding, route progress, route auto-update, marker animation, outbox retention, and outbox capacity.
 
 ## Development
 

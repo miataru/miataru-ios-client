@@ -2,7 +2,7 @@
 
 ## Current State
 
-miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.1.14** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
 Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 
@@ -48,14 +48,18 @@ miataruApp.swift
 
 ### Location Tracking
 
-`LocationManager` owns permission state, local GPS updates, heading updates, tracking mode resolution, background behavior, and upload status. It resolves one of four modes:
+`LocationManager` owns permission state, local GPS updates, heading updates, tracking mode resolution, background behavior, and upload status. It resolves one of four service-level modes:
 
 - stopped
 - foreground high accuracy
 - background significant-change monitoring
 - frequent background updates with configured distance/accuracy
 
-Foreground tracking uses high accuracy. Background tracking defaults to significant-change monitoring unless the user opts into frequent background updates. Frequent background mode is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable.
+Foreground tracking uses high accuracy. Background tracking defaults to significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in significant-change mode, activates frequent background updates only after movement above the configured speed threshold, and deactivates again after the shared inactivity window when no update or no relevant movement over the frequent distance filter is observed.
+
+Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled.
+
+The location-status UI reports the user-facing background policy separately from the underlying service mode: significant-change, Smart waiting, Smart frequent active, manual frequent active, and foreground/live. Diagnostic counters are persisted by update mode and reset together after 24 hours.
 
 ### Miataru API Access
 
@@ -91,7 +95,7 @@ Shared map components live in `views/Common/Map`. Device and group maps reuse ma
 
 `UnknownVisitorAlertService` evaluates visitor history incrementally from activation time, filters own/known/ignored IDs, applies a per-device cooldown, enriches true unknown candidates with cached or batched `GetLocation` data, and schedules local notifications.
 
-`FrequentBackgroundTrackingReminderService` manages reminder, expiry, and low-battery auto-disable notifications for frequent background tracking.
+`FrequentBackgroundTrackingReminderService` manages reminder, expiry, low-battery auto-disable, and optional Smart frequent mode-change notifications for frequent background tracking. Smart activation/deactivation notifications default to off and are sent only when Smart itself turns frequent runtime on or off.
 
 ## Platform Layout
 
@@ -129,7 +133,7 @@ Recent 2026 work focused on:
 - DeviceKey, allowed-device list, device slogans, and security status
 - visitor history, unknown visitor alerts, and recent-visitor indicators
 - robust navigation, focused camera behavior, route-progress ghost rendering, and route request limits
-- background tracking controls, retry/outbox resilience, and persistent cleanup
+- Smart/manual background tracking controls, retry/outbox resilience, and persistent cleanup
 - widgets and App Group data synchronization
 - localization coverage across all supported languages
 - active unit/UI/screenshot test infrastructure

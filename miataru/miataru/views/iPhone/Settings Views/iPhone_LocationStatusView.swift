@@ -352,15 +352,7 @@ struct iPhone_LocationStatusView: View {
     
     // Tracking-Modus-Text
     private var trackingModeText: String {
-        if isInBackground {
-            if settings.frequentBackgroundLocationUpdatesEnabled {
-                let format = NSLocalizedString("tracking_mode_frequent_background_updates_format", comment: "Tracking mode text for frequent background updates")
-                return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
-            }
-            return NSLocalizedString("Tracking mode: Battery saving (only significant movements)", comment: "Tracking mode text for background mode")
-        } else {
-            return NSLocalizedString("Tracking mode: Live (GPS)", comment: "Tracking mode text for foreground mode")
-        }
+        trackingModeText(for: locationManager.currentBackgroundTrackingDisplayMode)
     }
     
     // Ist die App im Hintergrund?
@@ -369,11 +361,15 @@ struct iPhone_LocationStatusView: View {
     }
 
     private var backgroundLocationHintText: String {
-        if settings.frequentBackgroundLocationUpdatesEnabled {
+        switch locationManager.currentBackgroundTrackingDisplayMode {
+        case .manualFrequent, .smartFrequent:
             let format = NSLocalizedString("frequent_background_location_updates_active_hint_format", comment: "Hint shown when frequent background updates are active")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        case .smartWaiting:
+            return NSLocalizedString("smart_frequent_background_waiting_hint", comment: "Hint shown when smart frequent background updates are waiting for movement")
+        case .significantChange, .foregroundLive:
+            return NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior")
         }
-        return NSLocalizedString("Location updates in the background are only detected when they are significant (>500m).", comment: "Hint for background location update behavior")
     }
     
     // Log der letzten Updates (Dummy-Implementierung, sollte mit echten Daten aus LocationManager ersetzt werden)
@@ -388,6 +384,23 @@ struct iPhone_LocationStatusView: View {
             return String(format: "%.1f km/h", kilometersPerHour)
         } else {
             return NSLocalizedString("Unknown", comment: "Unknown speed value in Location Tracking Details")
+        }
+    }
+
+    private func trackingModeText(for mode: LocationManager.BackgroundTrackingDisplayMode) -> String {
+        switch mode {
+        case .foregroundLive:
+            return NSLocalizedString("Tracking mode: Live (GPS)", comment: "Tracking mode text for foreground mode")
+        case .manualFrequent:
+            let format = NSLocalizedString("tracking_mode_manual_frequent_background_updates_format", comment: "Tracking mode text for manually enabled frequent background updates")
+            return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        case .smartFrequent:
+            let format = NSLocalizedString("tracking_mode_smart_frequent_background_updates_format", comment: "Tracking mode text for smart frequent background updates")
+            return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        case .smartWaiting:
+            return NSLocalizedString("tracking_mode_smart_waiting", comment: "Tracking mode text when smart frequent background updates are waiting")
+        case .significantChange:
+            return NSLocalizedString("Tracking mode: Battery saving (only significant movements)", comment: "Tracking mode text for background mode")
         }
     }
 
@@ -609,36 +622,65 @@ struct BackgroundStatusCard: View {
                 Spacer()
             }
             
-            HStack {
-                Text(NSLocalizedString("background_updates_label", comment: "Label for number of background updates"))
-                Spacer()
-                Text("\(backgroundManager.backgroundUpdateCount)", comment: "Number of background updates")
-                    .foregroundColor(.secondary)
-            }
+            statusRow(
+                title: NSLocalizedString("background_updates_label", comment: "Label for number of background updates"),
+                value: "\(backgroundManager.backgroundUpdateCount)"
+            )
+
+            statusRow(
+                title: NSLocalizedString("location_update_count_foreground_live_label", comment: "Label for foreground live location update count"),
+                value: "\(backgroundManager.locationUpdateModeCounts.foregroundLive)"
+            )
+
+            statusRow(
+                title: NSLocalizedString("location_update_count_significant_change_label", comment: "Label for significant-change location update count"),
+                value: "\(backgroundManager.locationUpdateModeCounts.significantChange)"
+            )
+
+            statusRow(
+                title: NSLocalizedString("location_update_count_smart_frequent_label", comment: "Label for smart frequent location update count"),
+                value: "\(backgroundManager.locationUpdateModeCounts.smartFrequent)"
+            )
+
+            statusRow(
+                title: NSLocalizedString("location_update_count_manual_frequent_label", comment: "Label for manually frequent location update count"),
+                value: "\(backgroundManager.locationUpdateModeCounts.manualFrequent)"
+            )
             
             if let lastUpdate = backgroundManager.lastBackgroundUpdate {
-                HStack {
-                    Text(NSLocalizedString("last_background_update_label", comment: "Label for timestamp of the last background update"))
-                    Spacer()
-                    Text(formatTime(lastUpdate))
-                        .foregroundColor(.secondary)
-                }
+                statusRow(
+                    title: NSLocalizedString("last_background_update_label", comment: "Label for timestamp of the last background update"),
+                    value: formatTime(lastUpdate)
+                )
             }
 
-            HStack {
-                Text(NSLocalizedString("background_tracking_mode_title", comment: "Label for current background tracking mode"))
-                Spacer()
-                Text(backgroundTrackingModeText)
-                    .foregroundColor(.secondary)
-            }
+            statusRow(
+                title: NSLocalizedString("background_tracking_mode_title", comment: "Label for current background tracking mode"),
+                value: backgroundTrackingModeText
+            )
 
             if settings.frequentBackgroundLocationUpdatesEnabled {
-                HStack {
-                    Text(NSLocalizedString("background_tracking_expires_at_label", comment: "Label for frequent background tracking expiration time"))
-                    Spacer()
-                    Text(backgroundTrackingExpirationText)
-                        .foregroundColor(.secondary)
-                }
+                statusRow(
+                    title: NSLocalizedString("background_tracking_expires_at_label", comment: "Label for frequent background tracking expiration time"),
+                    value: backgroundTrackingExpirationText
+                )
+            }
+
+            if settings.smartFrequentBackgroundLocationUpdatesEnabled {
+                statusRow(
+                    title: NSLocalizedString("smart_frequent_background_last_activation_label", comment: "Label for the latest smart frequent activation reason"),
+                    value: backgroundManager.smartFrequentBackgroundLastActivationReason ?? NSLocalizedString("smart_frequent_background_no_activation_yet", comment: "No smart frequent activation has happened yet")
+                )
+
+                statusRow(
+                    title: NSLocalizedString("smart_frequent_background_last_movement_label", comment: "Label for the latest relevant smart frequent movement"),
+                    value: smartMovementText
+                )
+
+                statusRow(
+                    title: NSLocalizedString("smart_frequent_background_next_timeout_label", comment: "Label for the next smart frequent inactivity timeout"),
+                    value: smartTimeoutText
+                )
             }
         }
         .padding()
@@ -653,12 +695,32 @@ struct BackgroundStatusCard: View {
         return formatter.string(from: date)
     }
 
+    @ViewBuilder
+    private func statusRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.trailing)
+        }
+    }
+
     private var backgroundTrackingModeText: String {
-        if settings.frequentBackgroundLocationUpdatesEnabled {
+        switch backgroundManager.currentBackgroundTrackingDisplayMode {
+        case .foregroundLive:
+            return NSLocalizedString("background_tracking_mode_foreground_live", comment: "Background status text for foreground live mode")
+        case .manualFrequent:
             let format = NSLocalizedString("background_tracking_mode_frequent_format", comment: "Background status text for frequent update mode")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        case .smartFrequent:
+            let format = NSLocalizedString("background_tracking_mode_smart_frequent_format", comment: "Background status text for smart frequent update mode")
+            return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
+        case .smartWaiting:
+            return NSLocalizedString("background_tracking_mode_smart_waiting", comment: "Background status text for smart frequent waiting mode")
+        case .significantChange:
+            return NSLocalizedString("background_tracking_mode_significant_change", comment: "Background status text for significant-change mode")
         }
-        return NSLocalizedString("background_tracking_mode_significant_change", comment: "Background status text for significant-change mode")
     }
 
     private var backgroundTrackingExpirationText: String {
@@ -670,6 +732,20 @@ struct BackgroundStatusCard: View {
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         return formatter.string(from: expiresAt)
+    }
+
+    private var smartMovementText: String {
+        guard let date = backgroundManager.smartFrequentBackgroundLastRelevantMovementAt else {
+            return NSLocalizedString("smart_frequent_background_no_movement_yet", comment: "No smart frequent movement has been recorded yet")
+        }
+        return formatTime(date)
+    }
+
+    private var smartTimeoutText: String {
+        guard let date = backgroundManager.smartFrequentBackgroundNextInactivityTimeoutAt else {
+            return NSLocalizedString("smart_frequent_background_no_timeout_pending", comment: "No smart frequent inactivity timeout is pending")
+        }
+        return formatTime(date)
     }
 }
 #Preview {

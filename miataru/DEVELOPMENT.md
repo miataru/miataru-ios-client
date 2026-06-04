@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current main app metadata is version **3.1.14**. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current main app metadata is version **3.2**. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 
@@ -45,7 +45,7 @@ miataru/
 
 - `miataruApp` applies UI-test launch configuration, settings migration, settings default registration, widget import/sync, persistent cleanup, app lifecycle tracking, deep links, and device detail windows.
 - `AppState` controls full and post-update onboarding.
-- `AppDelegate` manages notification presentation and routes frequent-background notification taps to Advanced Options.
+- `AppDelegate` manages notification presentation and routes frequent-background reminder, expiration, low-battery, and Smart mode-change notification taps to Advanced Options.
 - Rotation lock is controlled by `RotationLockController` and the `prevent_screen_rotation` setting.
 
 ### Settings
@@ -62,7 +62,10 @@ miataru/
   - foreground high accuracy
   - background significant-change monitoring
   - frequent background updates
-- Frequent background mode includes distance, duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
+- Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts frequent runtime only after movement above the configured speed threshold, and stops runtime after the shared inactivity window.
+- Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
+- Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
+- Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
 - Navigation views call `beginNavigationLocationSession()` / `endNavigationLocationSession(_:)` so focused navigation gets immediate local location updates without bypassing lifecycle background policy.
 - `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity-filtered.
 
@@ -182,8 +185,10 @@ xcrun simctl openurl booted miataru://ABCDEF
 ### Background updates not frequent enough
 
 - Standard background mode uses significant-change monitoring by design.
-- Enable frequent background updates only when the higher battery cost is acceptable.
-- Check expiration duration, low-battery threshold, and whether the app returned to standard background mode.
+- Enable Smart frequent updates when the app should automatically switch to frequent runtime only after detected movement.
+- Enable manual frequent background updates only when the higher battery cost is acceptable and Smart criteria should be bypassed.
+- Check Smart threshold/detection mode, Smart inactivity window, manual expiration duration, low-battery threshold, and whether the app returned to standard background mode.
+- Location Tracking Details shows the current background mode, Smart activation reason, last relevant Smart movement, next inactivity timeout, and mode-specific update counters.
 
 ### Queued location updates remain pending
 

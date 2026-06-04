@@ -209,7 +209,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     private static let opensAdvancedSettingsNotificationTypes: Set<String> = [
         FrequentBackgroundTrackingReminderService.notificationType,
         FrequentBackgroundTrackingReminderService.expirationNotificationType,
-        FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType
+        FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType,
+        FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationType,
+        FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationType
     ]
 
     static func didLaunchForLocation(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

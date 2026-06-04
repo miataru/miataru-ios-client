@@ -78,6 +78,10 @@ actor FrequentBackgroundTrackingReminderService {
     static let expirationNotificationType = "frequent_background_tracking_expired"
     static let batteryAutoDisableNotificationIdentifier = "frequent_background_tracking_battery_auto_disabled"
     static let batteryAutoDisableNotificationType = "frequent_background_tracking_battery_auto_disabled"
+    static let smartFrequentActivatedNotificationIdentifier = "smart_frequent_background_tracking_activated"
+    static let smartFrequentActivatedNotificationType = "smart_frequent_background_tracking_activated"
+    static let smartFrequentDeactivatedNotificationIdentifier = "smart_frequent_background_tracking_deactivated"
+    static let smartFrequentDeactivatedNotificationType = "smart_frequent_background_tracking_deactivated"
     static let notificationTypeUserInfoKey = UnknownVisitorAlertService.notificationTypeUserInfoKey
     static let reminderInterval: TimeInterval = 24 * 60 * 60
 
@@ -167,6 +171,56 @@ actor FrequentBackgroundTrackingReminderService {
             try await notifier.add(request)
         } catch {
             debugLog("[FrequentBackgroundTrackingReminderService] Failed scheduling battery auto-disable notification: \(error)")
+        }
+    }
+
+    func notifySmartFrequentModeChange(isActive: Bool) async {
+        guard await ensureAuthorization() else {
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        if isActive {
+            content.title = NSLocalizedString(
+                "smart_frequent_background_activated_notification_title",
+                comment: "Notification title shown when smart frequent background tracking turns frequent updates on"
+            )
+            content.body = NSLocalizedString(
+                "smart_frequent_background_activated_notification_body",
+                comment: "Notification body explaining that movement activated smart frequent background tracking"
+            )
+            content.userInfo = [
+                Self.notificationTypeUserInfoKey: Self.smartFrequentActivatedNotificationType
+            ]
+        } else {
+            content.title = NSLocalizedString(
+                "smart_frequent_background_deactivated_notification_title",
+                comment: "Notification title shown when smart frequent background tracking returns to standard mode"
+            )
+            content.body = NSLocalizedString(
+                "smart_frequent_background_deactivated_notification_body",
+                comment: "Notification body explaining that inactivity stopped smart frequent background tracking"
+            )
+            content.userInfo = [
+                Self.notificationTypeUserInfoKey: Self.smartFrequentDeactivatedNotificationType
+            ]
+        }
+        content.sound = .default
+
+        let identifier = isActive
+            ? Self.smartFrequentActivatedNotificationIdentifier
+            : Self.smartFrequentDeactivatedNotificationIdentifier
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            await notifier.removePendingNotificationRequests(withIdentifiers: [identifier])
+            try await notifier.add(request)
+        } catch {
+            debugLog("[FrequentBackgroundTrackingReminderService] Failed scheduling smart frequent mode-change notification: \(error)")
         }
     }
 

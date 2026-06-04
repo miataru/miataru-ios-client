@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-05-29)
+# Test Catalog (as of 2026-06-04)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **225** (Unit: 209, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **175** (Unit: 159, UI: 16 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -112,6 +112,16 @@ Important project observations:
 | UT-UVA-005 | Permission request enables feature when authorization is granted | Validate activation permission flow | `.notDetermined` + grant returns `.enabled` | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
 | UT-UVA-006 | Denied authorization disables feature activation | Validate denied permission behavior | `.denied` returns `.denied` and no prompt is re-requested | UnknownVisitorAlertService | Unit | actor-based notifier mock + isolated UserDefaults suite | High |
 | UT-UVA-007 | Unknown visitor alert localization keys exist for all app locales | Localization completeness gate | Required keys present and non-empty for all 10 locales | Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
+| UT-FBT-001 | Never-expiring frequent background mode schedules a repeating 24h reminder | Protect manual never-expiring reminder | Active tracking + unlimited manual frequent mode schedules one repeating 24h notification | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
+| UT-FBT-002 | Existing reminder is kept so the 24h timer is not reset repeatedly | Avoid pushing reminder forward | Existing reminder request prevents rescheduling | FrequentBackgroundTrackingReminderService | Unit | pending notification mock | High |
+| UT-FBT-003 | Finite or inactive frequent background mode removes the reminder | Cleanup inactive reminder | Finite/inactive frequent mode cancels pending and delivered reminder notifications | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
+| UT-FBT-004 | Undetermined notification permission is requested before scheduling | Validate permission request path | `.notDetermined` requests alert/sound permission before scheduling | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
+| UT-FBT-005 | Finite frequent background mode schedules one expiration notification | Protect manual finite expiration notice | Finite manual mode schedules one-shot notification at the stored expiration date | FrequentBackgroundTrackingReminderService | Unit | isolated `UserDefaults`, fixed clock | High |
+| UT-FBT-006 | Manual finite mode disable cancels future expiration notification | Cleanup manual disable path | Manual disable removes pending future expiration notification and stored date | FrequentBackgroundTrackingReminderService | Unit | isolated `UserDefaults`, pending notification mock | High |
+| UT-FBT-007 | Automatic finite mode expiry does not cancel due expiration notification | Preserve already-due expiration notice | Expired notification date is cleared without removing the due pending notification | FrequentBackgroundTrackingReminderService | Unit | isolated `UserDefaults`, fixed clock | High |
+| UT-FBT-008 | Low battery auto-disable cancels timers and sends explanatory notification | Protect battery fallback notification | Low battery cleanup cancels reminder/expiration state and sends typed battery notification | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
+| UT-FBT-009 | Smart frequent mode-change notifications are immediate and typed | Protect Smart auto-switch notifications | Smart activation/deactivation notifications are immediate, typed, and non-empty | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
+| UT-FBT-010 | Smart frequent mode-change notifications respect denied authorization | Guard denied notification permission | Denied notification authorization prevents Smart mode-change request scheduling | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | Medium |
 | UT-DSL-001 | Device slogan draft sanitization preserves regular spaces while typing | Protect editable slogan input | Draft sanitization keeps normal spaces so multi-word info text remains typeable | MiataruAppAPI slogan input handling | Unit | Plain strings | High |
 | UT-DSL-002 | Device slogan cleansing trims surrounding whitespace on save | Keep saved slogan normalized | Save sanitization removes leading/trailing whitespace but preserves inner spaces | MiataruAppAPI slogan save handling | Unit | Plain strings | High |
 | UT-SET-001 | Existing-install settings migration applies once and only to targeted keys | Guard one-time upgrade behavior | Migration enables only the targeted booleans and does not reapply after marker is set | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
@@ -124,6 +134,12 @@ Important project observations:
 | UT-SET-008 | Background lifecycle context keeps frequent mode active even before UIKit reports background | Protect background transition race | A background lifecycle event forces `.background`, so frequent background mode starts even if `UIApplication` still reports `.active`; foreground forcing returns high accuracy; `When In Use` authorization remains foreground-only | LocationManager lifecycle tracking policy | Unit | Static app-state/context inputs | High |
 | UT-SET-009 | Location service command plan keeps primary recovery anchor separate from frequent updates | Protect reboot-safe manager separation | Frequent background mode keeps the primary manager on significant-change monitoring while standard updates run on the secondary manager; standard and foreground modes stop secondary frequent updates | LocationManager Core Location manager command plan | Unit | Static tracking modes + authorization-anchor eligibility | High |
 | UT-SET-010 | Primary significant-change callback reasserts active background tracking | Protect frequent background cadence and standard significant-change continuity after primary recovery-anchor callbacks | A primary significant-change callback reasserts frequent background updates only when frequent standard updates were already active in the current process; standard significant-change mode reasserts the recovery anchor after background primary callbacks. Cold reboot/location relaunch, foreground callbacks, mode switches, and secondary callbacks do not trigger the wrong mode. The first stale frequent-background callback after disabling frequent mode may still upload a valid location, but repeated stale callbacks are suppressed after cleanup | LocationManager Core Location manager callback policy | Unit | Static app-state/source/mode-switch inputs | High |
+| UT-SET-011 | Smart frequent migration preserves existing manual frequent users | Preserve pre-3.2 manual frequent state | Migration enables the Smart prerequisite when an existing install already had manual frequent mode enabled | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
+| UT-SET-012 | Manual frequent normalization keeps Smart prerequisite enabled after migration | Protect external Settings.bundle changes | Startup normalization re-enables Smart prerequisite if manual frequent mode was externally enabled after migration | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
+| UT-SET-013 | Smart frequent speed detection supports Hybrid and GPS-only modes | Validate Smart speed source policy | Valid GPS speed wins; Hybrid derives speed from usable distance/time samples; GPS-only ignores derived speed | LocationManager Smart frequent policy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-SET-014 | Smart frequent activation and inactivity policies are threshold based | Validate Smart activation/deactivation policy | Threshold activation and shared inactivity-window deactivation decisions behave at boundaries | LocationManager Smart frequent policy | Unit | fixed dates and static policy inputs | High |
+| UT-SET-015 | Manual frequent mode overrides Smart frequent runtime | Protect Stage 2 override | Manual frequent mode wins over Smart waiting/active states for effective mode and counters | LocationManager Smart/manual frequent policy | Unit | static app-state and preference inputs | High |
+| UT-SET-016 | Location update mode counters increment and reset after 24 hours | Protect mode-specific diagnostics | Foreground/live, significant-change, Smart frequent, and manual frequent counters increment and reset together after 24 hours | LocationManager diagnostics policy | Unit | deterministic counter and fixed dates | High |
 | UT-GEN-001 | example | Placeholder/template | Empty example test without assertions | Base skeleton | Unit | None | Low |
 
 ## 4) Previously Unlinked, Now Active Test Cases
@@ -212,8 +228,9 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Added focused coverage for reboot-safe background tracking policy decisions, background lifecycle mode selection, foreground-only `When In Use` authorization, location-launch detection, and duplicate location callback suppression.
+- Added focused coverage for reboot-safe background tracking policy decisions, Smart frequent activation/deactivation policy, background lifecycle mode selection, foreground-only `When In Use` authorization, location-launch detection, mode-specific update counters, and duplicate location callback suppression.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
+- Added focused coverage for frequent-background reminder, expiration, low-battery, and optional Smart mode-change notifications.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
 

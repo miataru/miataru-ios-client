@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "Drempel voor adresupdates";
 "reverse_geocode_every_update" = "bij elke update";
 "navigation_auto_route_update" = "Automatische route-update";
+
+"smart_frequent_background_location_updates_title" = "Slimme frequente updates";
+"smart_frequent_background_speed_threshold_title" = "Snelheidsdrempel";
+"smart_frequent_background_speed_detection_title" = "Snelheidsdetectie";
+"smart_frequent_background_speed_detection_hybrid" = "Hybride";
+"smart_frequent_background_speed_detection_gps_only" = "Alleen gps-snelheid";
+"smart_frequent_background_inactivity_window_title" = "Inactiviteitsvenster";
+"5kmh" = "5 km/u";
+"10kmh" = "10 km/u";
+"15kmh" = "15 km/u";
+"20kmh" = "20 km/u";
+"30kmh" = "30 km/u";
+"5minutes" = "5 minuten";
+"10minutes" = "10 minuten";
+"15minutes" = "15 minuten";
+"smart_frequent_background_mode_change_notifications_title" = "Meldingen voor slimme frequente updates";

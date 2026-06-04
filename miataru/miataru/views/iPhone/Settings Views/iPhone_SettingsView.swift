@@ -82,11 +82,17 @@ struct iPhone_SettingsView: View {
 
                 if settings.trackAndReportLocation {
                     Section(header: Text("background_location_updates_section_title")) {
-                        Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
-                            .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
-                        SettingsDescriptionText("frequent_background_location_updates_central_explanation")
-                        if settings.frequentBackgroundLocationUpdatesEnabled {
-                            SettingsWarningText("frequent_background_location_updates_battery_warning")
+                        Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
+                            .accessibilityIdentifier("settings_smart_frequent_background_location_updates_central_toggle")
+                        SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
+
+                        if settings.smartFrequentBackgroundLocationUpdatesEnabled {
+                            Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                                .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
+                            SettingsDescriptionText("frequent_background_location_updates_manual_explanation")
+                            if settings.frequentBackgroundLocationUpdatesEnabled {
+                                SettingsWarningText("frequent_background_location_updates_battery_warning")
+                            }
                         }
                     }
                 }

@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "Address update threshold";
 "reverse_geocode_every_update" = "every update";
 "navigation_auto_route_update" = "Automatic route update";
+
+"smart_frequent_background_location_updates_title" = "Smart frequent updates";
+"smart_frequent_background_speed_threshold_title" = "Speed threshold";
+"smart_frequent_background_speed_detection_title" = "Speed detection";
+"smart_frequent_background_speed_detection_hybrid" = "Hybrid";
+"smart_frequent_background_speed_detection_gps_only" = "GPS speed only";
+"smart_frequent_background_inactivity_window_title" = "Inactivity window";
+"5kmh" = "5 km/h";
+"10kmh" = "10 km/h";
+"15kmh" = "15 km/h";
+"20kmh" = "20 km/h";
+"30kmh" = "30 km/h";
+"5minutes" = "5 minutes";
+"10minutes" = "10 minutes";
+"15minutes" = "15 minutes";
+"smart_frequent_background_mode_change_notifications_title" = "Smart frequent update notifications";

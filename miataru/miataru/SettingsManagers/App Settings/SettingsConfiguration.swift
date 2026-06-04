@@ -26,6 +26,11 @@ enum SettingsKeys {
     static let historyNumberOfDays = "history_number_of_days"
     static let locationActivityType = "location_activity_type"
     static let locationSensitivityLevel = "location_sensitivity_level"
+    static let smartFrequentBackgroundLocationUpdatesEnabled = "smart_frequent_background_location_updates_enabled"
+    static let smartFrequentBackgroundSpeedThresholdKmh = "smart_frequent_background_speed_threshold_kmh"
+    static let smartFrequentBackgroundSpeedDetectionMode = "smart_frequent_background_speed_detection_mode"
+    static let smartFrequentBackgroundInactivityWindow = "smart_frequent_background_inactivity_window"
+    static let smartFrequentBackgroundModeChangeNotificationsEnabled = "smart_frequent_background_mode_change_notifications_enabled"
     static let frequentBackgroundLocationUpdatesEnabled = "frequent_background_location_updates_enabled"
     static let frequentBackgroundLocationDistanceFilter = "frequent_background_location_distance_filter"
     static let frequentBackgroundLocationUpdateDuration = "frequent_background_location_update_duration"
@@ -69,6 +74,11 @@ enum SettingsDefaultValues {
     static let historyNumberOfDays = 10_000_000
     static let locationActivityType = 0
     static let locationSensitivityLevel = 2
+    static let smartFrequentBackgroundLocationUpdatesEnabled = false
+    static let smartFrequentBackgroundSpeedThresholdKmh = 10
+    static let smartFrequentBackgroundSpeedDetectionMode = SmartFrequentBackgroundSpeedDetectionMode.hybrid.rawValue
+    static let smartFrequentBackgroundInactivityWindow = SmartFrequentBackgroundInactivityWindow.tenMinutes.rawValue
+    static let smartFrequentBackgroundModeChangeNotificationsEnabled = false
     static let frequentBackgroundLocationUpdatesEnabled = false
     static let frequentBackgroundLocationDistanceFilter = 100
     static let frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.fourHours.rawValue
@@ -105,6 +115,11 @@ enum SettingsDefaultValues {
         SettingsKeys.historyNumberOfDays: String(historyNumberOfDays),
         SettingsKeys.locationActivityType: locationActivityType,
         SettingsKeys.locationSensitivityLevel: locationSensitivityLevel,
+        SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled: smartFrequentBackgroundLocationUpdatesEnabled,
+        SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh: String(smartFrequentBackgroundSpeedThresholdKmh),
+        SettingsKeys.smartFrequentBackgroundSpeedDetectionMode: String(smartFrequentBackgroundSpeedDetectionMode),
+        SettingsKeys.smartFrequentBackgroundInactivityWindow: String(smartFrequentBackgroundInactivityWindow),
+        SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled: smartFrequentBackgroundModeChangeNotificationsEnabled,
         SettingsKeys.frequentBackgroundLocationUpdatesEnabled: frequentBackgroundLocationUpdatesEnabled,
         SettingsKeys.frequentBackgroundLocationDistanceFilter: String(frequentBackgroundLocationDistanceFilter),
         SettingsKeys.frequentBackgroundLocationUpdateDuration: String(frequentBackgroundLocationUpdateDuration),
@@ -124,6 +139,38 @@ enum SettingsDefaultValues {
         SettingsKeys.automaticRouteUpdateDuringNavigation: automaticRouteUpdateDuringNavigation,
         SettingsKeys.allowedDeviceListEnabled: allowedDeviceListEnabled,
     ]
+}
+
+enum SmartFrequentBackgroundSpeedThreshold {
+    static let allowedValues = [5, 10, 15, 20, 30]
+
+    static func normalized(_ value: Int) -> Int {
+        allowedValues.contains(value) ? value : SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh
+    }
+}
+
+enum SmartFrequentBackgroundSpeedDetectionMode: Int, CaseIterable {
+    case hybrid = 0
+    case gpsOnly = 1
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode
+    }
+}
+
+enum SmartFrequentBackgroundInactivityWindow: Int, CaseIterable {
+    case fiveMinutes = 300
+    case tenMinutes = 600
+    case fifteenMinutes = 900
+    case thirtyMinutes = 1_800
+
+    var timeInterval: TimeInterval {
+        TimeInterval(rawValue)
+    }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.smartFrequentBackgroundInactivityWindow
+    }
 }
 
 enum LocationUpdateOutboxRetentionMode: Int {
@@ -220,6 +267,7 @@ enum FrequentBackgroundVisitorCheckInterval: Int, CaseIterable {
 
 enum SettingsMigration {
     static let existingInstallDefaultsV315Marker = "settings_existing_install_defaults_v315_applied"
+    static let smartFrequentBackgroundV1Marker = "settings_smart_frequent_background_v1_applied"
 
     private static let onboardingCompletedKey = "hasCompletedOnboarding"
     private static let postUpdateOnboardingKey = "hasShownPostUpdateOnboarding"
@@ -250,6 +298,24 @@ enum SettingsMigration {
         for key in migratedBooleanKeys {
             defaults.set(true, forKey: key)
         }
+    }
+
+    static func applySmartFrequentBackgroundMigrationIfNeeded(defaults: UserDefaults = .standard) {
+        guard !defaults.bool(forKey: smartFrequentBackgroundV1Marker) else { return }
+        defer {
+            defaults.set(true, forKey: smartFrequentBackgroundV1Marker)
+        }
+
+        normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: defaults)
+    }
+
+    static func normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: UserDefaults = .standard) {
+        guard defaults.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled) != nil,
+              defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled) else {
+            return
+        }
+
+        defaults.set(true, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
     }
 
     static func shouldApplyExistingInstallDefaults(defaults: UserDefaults = .standard) -> Bool {

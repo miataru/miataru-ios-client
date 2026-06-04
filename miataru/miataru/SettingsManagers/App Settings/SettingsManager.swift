@@ -76,8 +76,56 @@ class SettingsManager: ObservableObject {
     @Published var locationSensitivityLevel: Int {
         didSet { defaults.set(locationSensitivityLevel, forKey: SettingsKeys.locationSensitivityLevel) }
     }
+    @Published var smartFrequentBackgroundLocationUpdatesEnabled: Bool {
+        didSet {
+            defaults.set(smartFrequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+            if !smartFrequentBackgroundLocationUpdatesEnabled,
+               frequentBackgroundLocationUpdatesEnabled {
+                frequentBackgroundLocationUpdatesEnabled = false
+            }
+        }
+    }
+    @Published var smartFrequentBackgroundSpeedThresholdKmh: Int {
+        didSet {
+            let normalizedValue = SmartFrequentBackgroundSpeedThreshold.normalized(smartFrequentBackgroundSpeedThresholdKmh)
+            if smartFrequentBackgroundSpeedThresholdKmh != normalizedValue {
+                smartFrequentBackgroundSpeedThresholdKmh = normalizedValue
+                return
+            }
+            defaults.set(String(smartFrequentBackgroundSpeedThresholdKmh), forKey: SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh)
+        }
+    }
+    @Published var smartFrequentBackgroundSpeedDetectionMode: Int {
+        didSet {
+            let normalizedValue = SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(smartFrequentBackgroundSpeedDetectionMode)
+            if smartFrequentBackgroundSpeedDetectionMode != normalizedValue {
+                smartFrequentBackgroundSpeedDetectionMode = normalizedValue
+                return
+            }
+            defaults.set(String(smartFrequentBackgroundSpeedDetectionMode), forKey: SettingsKeys.smartFrequentBackgroundSpeedDetectionMode)
+        }
+    }
+    @Published var smartFrequentBackgroundInactivityWindow: Int {
+        didSet {
+            let normalizedValue = SmartFrequentBackgroundInactivityWindow.normalizedRawValue(smartFrequentBackgroundInactivityWindow)
+            if smartFrequentBackgroundInactivityWindow != normalizedValue {
+                smartFrequentBackgroundInactivityWindow = normalizedValue
+                return
+            }
+            defaults.set(String(smartFrequentBackgroundInactivityWindow), forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow)
+        }
+    }
+    @Published var smartFrequentBackgroundModeChangeNotificationsEnabled: Bool {
+        didSet {
+            defaults.set(smartFrequentBackgroundModeChangeNotificationsEnabled, forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled)
+        }
+    }
     @Published var frequentBackgroundLocationUpdatesEnabled: Bool {
         didSet {
+            if frequentBackgroundLocationUpdatesEnabled,
+               !smartFrequentBackgroundLocationUpdatesEnabled {
+                smartFrequentBackgroundLocationUpdatesEnabled = true
+            }
             defaults.set(frequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
             if frequentBackgroundLocationUpdatesEnabled {
                 if !oldValue || frequentBackgroundLocationUpdatesExpiresAt == nil {
@@ -179,6 +227,14 @@ class SettingsManager: ObservableObject {
     var locationUpdateOutboxRetentionTimeToLive: TimeInterval? {
         let mode = LocationUpdateOutboxRetentionMode(rawValue: locationUpdateOutboxRetentionMode) ?? .twentyFourHours
         return mode.timeToLive
+    }
+
+    var smartFrequentBackgroundSpeedDetectionModeSelection: SmartFrequentBackgroundSpeedDetectionMode {
+        SmartFrequentBackgroundSpeedDetectionMode(rawValue: smartFrequentBackgroundSpeedDetectionMode) ?? .hybrid
+    }
+
+    var smartFrequentBackgroundInactivityWindowSelection: SmartFrequentBackgroundInactivityWindow {
+        SmartFrequentBackgroundInactivityWindow(rawValue: smartFrequentBackgroundInactivityWindow) ?? .tenMinutes
     }
 
     var frequentBackgroundLocationUpdateDurationMode: FrequentBackgroundLocationUpdateDuration {
@@ -297,6 +353,8 @@ class SettingsManager: ObservableObject {
     // MARK: - Initialwerte laden
     init() {
         let d = UserDefaults.standard
+        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: d)
+        SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: d)
         d.register(defaults: SettingsDefaultValues.registrations)
         self.disableDeviceAutolock = d.bool(forKey: SettingsKeys.disableDeviceAutolock)
         self.preventScreenRotation = d.bool(forKey: SettingsKeys.preventScreenRotation)
@@ -314,6 +372,11 @@ class SettingsManager: ObservableObject {
         self.historyNumberOfDays = Self.persistedInt(forKey: SettingsKeys.historyNumberOfDays, defaults: d, defaultValue: SettingsDefaultValues.historyNumberOfDays)
         self.locationActivityType = Self.persistedInt(forKey: SettingsKeys.locationActivityType, defaults: d, defaultValue: SettingsDefaultValues.locationActivityType)
         self.locationSensitivityLevel = Self.persistedInt(forKey: SettingsKeys.locationSensitivityLevel, defaults: d, defaultValue: SettingsDefaultValues.locationSensitivityLevel)
+        self.smartFrequentBackgroundLocationUpdatesEnabled = d.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+        self.smartFrequentBackgroundSpeedThresholdKmh = SmartFrequentBackgroundSpeedThreshold.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh))
+        self.smartFrequentBackgroundSpeedDetectionMode = SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedDetectionMode, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode))
+        self.smartFrequentBackgroundInactivityWindow = SmartFrequentBackgroundInactivityWindow.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundInactivityWindow))
+        self.smartFrequentBackgroundModeChangeNotificationsEnabled = d.bool(forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled)
         self.frequentBackgroundLocationUpdatesEnabled = d.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
         self.frequentBackgroundLocationDistanceFilter = FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
         self.frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration))

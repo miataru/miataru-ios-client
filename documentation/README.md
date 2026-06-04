@@ -29,12 +29,16 @@ Files named with dates, for example `device-history-loading-feedback-2026-04-24.
 
 These files are retained as historical evidence. They should not be edited merely because newer work superseded them. Update or add a new dated note when a follow-up change needs its own reasoning record.
 
+Current frequent-background follow-up records:
+
+- `../miataru/documentation/smart-frequent-background-updates-2026-06-04.md` - Smart frequent background policy, manual override behavior, diagnostics, migration, and optional Smart mode-change notifications.
+
 ## Current Project Facts
 
-- Current app version: `3.1.17`
+- Current app version: `3.2`
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
-- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, navigation, frequent background tracking, update outbox, cache cleanup, and active test automation
+- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, navigation, Smart/manual frequent background tracking, update outbox, cache cleanup, and active test automation
 
 The latest documentation audit is `documentation-audit-2026-05-22.md`.

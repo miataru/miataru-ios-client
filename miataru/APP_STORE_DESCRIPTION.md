@@ -25,8 +25,10 @@ Protect your device with DeviceKey authentication for location updates, visitor 
 Smart Location Tracking:
 * Foreground and background location sharing
 * Efficient significant-change background tracking by default
-* Optional frequent background updates for temporary high-detail tracking
-* Configurable update distance, duration, delivery delay, and low-battery auto-disable
+* Optional Smart frequent updates that automatically switch to high-detail background tracking when movement is detected
+* Manual frequent background updates for temporary or always-on high-detail tracking
+* Configurable speed threshold, update distance, inactivity window, duration, delivery delay, and low-battery auto-disable
+* Optional notifications when Smart frequent updates automatically switch modes
 * Offline queueing for location updates when the network is unavailable
 
 Multi-Device Management:
@@ -75,14 +77,14 @@ Private location sharing on your terms. DeviceKey protection, widgets, route nav
 
 location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-hosted,server
 
-## What's New - Version 3.1.14
+## What's New - Version 3.2
 
-* More reliable route-progress ghost rendering during navigation
-* Safer navigation auto-updates and stale route response handling
-* Live map speed labels now hide when location samples are stale
-* Fixed configurable widget device selection
-* Improved unknown visitor alert filtering and enrichment
-* Startup cleanup for stale cache and widget snapshot data
+* New Smart frequent background update mode
+* Automatic switch from significant-change tracking to frequent updates when movement is detected
+* Shared inactivity window returns Smart frequent updates to standard background tracking
+* Manual frequent mode remains available as an override
+* Optional Smart mode-change notifications
+* Expanded location tracking diagnostics with mode-specific update counters
 
 ## Screenshot Suggestions
 
@@ -94,7 +96,7 @@ location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-h
 
 **Screenshot 4:** QR tab with current-device QR code, DeviceKey action, and visitor history
 
-**Screenshot 5:** Advanced Options showing frequent background tracking and privacy controls
+**Screenshot 5:** Advanced Options showing Smart/manual frequent background tracking and privacy controls
 
 **Screenshot 6:** iPad split view with device or group map
 

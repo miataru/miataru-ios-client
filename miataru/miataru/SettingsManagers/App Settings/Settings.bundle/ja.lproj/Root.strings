@@ -92,3 +92,19 @@
 "reverse_geocoding_threshold" = "住所更新のしきい値";
 "reverse_geocode_every_update" = "更新のたびに";
 "navigation_auto_route_update" = "自動ルート更新";
+
+"smart_frequent_background_location_updates_title" = "スマート高頻度更新";
+"smart_frequent_background_speed_threshold_title" = "速度しきい値";
+"smart_frequent_background_speed_detection_title" = "速度検出";
+"smart_frequent_background_speed_detection_hybrid" = "ハイブリッド";
+"smart_frequent_background_speed_detection_gps_only" = "GPS 速度のみ";
+"smart_frequent_background_inactivity_window_title" = "非アクティブ時間";
+"5kmh" = "5 km/h";
+"10kmh" = "10 km/h";
+"15kmh" = "15 km/h";
+"20kmh" = "20 km/h";
+"30kmh" = "30 km/h";
+"5minutes" = "5分";
+"10minutes" = "10分";
+"15minutes" = "15分";
+"smart_frequent_background_mode_change_notifications_title" = "スマート高頻度更新の通知";

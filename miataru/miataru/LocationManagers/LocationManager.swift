@@ -52,12 +52,21 @@ final class LocationManager: NSObject, ObservableObject {
     @Published var updateLog: [UpdateLogEntry] = []
     @Published var lastBackgroundUpdate: Date?
     @Published var backgroundUpdateCount: Int = 0
+    @Published private(set) var locationUpdateModeCounts = LocationUpdateModeCounts()
+    @Published private(set) var smartFrequentBackgroundRuntimeActive = false
+    @Published private(set) var smartFrequentBackgroundLastActivationReason: String?
+    @Published private(set) var smartFrequentBackgroundLastRelevantMovementAt: Date?
+    @Published private(set) var smartFrequentBackgroundNextInactivityTimeoutAt: Date?
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
     private let frequentBackgroundLocationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
     private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
+    private let foregroundLiveUpdateCountKey = "miataru_locationUpdateCountForegroundLive"
+    private let significantChangeUpdateCountKey = "miataru_locationUpdateCountSignificantChange"
+    private let smartFrequentUpdateCountKey = "miataru_locationUpdateCountSmartFrequent"
+    private let manualFrequentUpdateCountKey = "miataru_locationUpdateCountManualFrequent"
     private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
     private let backgroundMetricsLastResetKey = "miataru_backgroundMetricsLastReset"
     private let lastServerUpdateKey = "miataru_lastServerUpdate"
@@ -65,6 +74,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
     private var frequentBackgroundLocationExpirationTimer: Timer?
+    private var smartFrequentBackgroundInactivityTimer: Timer?
     private var foregroundLocationUpdateTimerTimeframe: Double = 30
     private let networkMonitor = NWPathMonitor()
     private let locationUpdateDeliveryCoordinator = LocationUpdateDeliveryCoordinator.shared
@@ -78,6 +88,9 @@ final class LocationManager: NSObject, ObservableObject {
     private var locationServiceSession: CLServiceSession?
     private var frequentBackgroundActivitySession: CLBackgroundActivitySession?
     private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
+    private var smartFrequentBackgroundSpeedReferenceLocation: CLLocation?
+    private var smartFrequentBackgroundMovementAnchor: CLLocation?
+    private var lastSmartFrequentBackgroundLocationUpdateAt: Date?
     private var lastSmoothedHeading: Double?
     private let headingSmoothingAlpha: Double = 0.25
     private let headingAccuracyThreshold: Double = 35
@@ -95,6 +108,47 @@ final class LocationManager: NSObject, ObservableObject {
         let id = UUID()
         let timestamp: Date
         let mode: String
+    }
+
+    enum LocationUpdateCounterMode: String, CaseIterable, Equatable {
+        case foregroundLive
+        case significantChange
+        case smartFrequent
+        case manualFrequent
+    }
+
+    struct LocationUpdateModeCounts: Equatable {
+        var foregroundLive: Int = 0
+        var significantChange: Int = 0
+        var smartFrequent: Int = 0
+        var manualFrequent: Int = 0
+
+        mutating func increment(_ mode: LocationUpdateCounterMode) {
+            switch mode {
+            case .foregroundLive:
+                foregroundLive += 1
+            case .significantChange:
+                significantChange += 1
+            case .smartFrequent:
+                smartFrequent += 1
+            case .manualFrequent:
+                manualFrequent += 1
+            }
+        }
+
+        var backgroundTotal: Int {
+            significantChange + smartFrequent + manualFrequent
+        }
+
+        static let zero = LocationUpdateModeCounts()
+    }
+
+    enum BackgroundTrackingDisplayMode: Equatable {
+        case foregroundLive
+        case significantChange
+        case smartWaiting
+        case smartFrequent
+        case manualFrequent
     }
 
     struct BackgroundUpdateConfiguration: Equatable {
@@ -200,6 +254,12 @@ final class LocationManager: NSObject, ObservableObject {
         if userDefaults.object(forKey: backgroundUpdateCountKey) != nil {
             backgroundUpdateCount = userDefaults.integer(forKey: backgroundUpdateCountKey)
         }
+        locationUpdateModeCounts = LocationUpdateModeCounts(
+            foregroundLive: userDefaults.integer(forKey: foregroundLiveUpdateCountKey),
+            significantChange: userDefaults.integer(forKey: significantChangeUpdateCountKey),
+            smartFrequent: userDefaults.integer(forKey: smartFrequentUpdateCountKey),
+            manualFrequent: userDefaults.integer(forKey: manualFrequentUpdateCountKey)
+        )
         if let savedDate = userDefaults.object(forKey: lastBackgroundUpdateKey) as? Date {
             lastBackgroundUpdate = savedDate
         }
@@ -214,6 +274,7 @@ final class LocationManager: NSObject, ObservableObject {
     deinit {
         NotificationCenter.default.removeObserver(self)
         frequentBackgroundLocationExpirationTimer?.invalidate()
+        smartFrequentBackgroundInactivityTimer?.invalidate()
         pendingAlwaysAuthorizationRequestTask?.cancel()
         stopLocationServiceSession(reason: "deinit")
         stopFrequentBackgroundActivitySession(reason: "deinit")
@@ -297,6 +358,26 @@ final class LocationManager: NSObject, ObservableObject {
             self.refreshFrequentBackgroundTrackingReminder()
             if self.isTracking {
                 self.applyTrackingMode(reason: "frequent background settings changed")
+            }
+        }
+        .store(in: &cancellables)
+
+        Publishers.CombineLatest4(
+            settings.$smartFrequentBackgroundLocationUpdatesEnabled.removeDuplicates(),
+            settings.$smartFrequentBackgroundSpeedThresholdKmh.removeDuplicates(),
+            settings.$smartFrequentBackgroundSpeedDetectionMode.removeDuplicates(),
+            settings.$smartFrequentBackgroundInactivityWindow.removeDuplicates()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] smartEnabled, _, _, _ in
+            guard let self else { return }
+            if !smartEnabled {
+                self.deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent disabled")
+            } else {
+                self.scheduleSmartFrequentBackgroundInactivityTimer()
+            }
+            if self.isTracking {
+                self.applyTrackingMode(reason: "smart frequent background settings changed")
             }
         }
         .store(in: &cancellables)
@@ -386,6 +467,61 @@ final class LocationManager: NSObject, ObservableObject {
         distanceFilterMeters <= 50 ? kCLLocationAccuracyNearestTenMeters : kCLLocationAccuracyHundredMeters
     }
 
+    static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
+                                                          smartEnabled: Bool,
+                                                          smartRuntimeActive: Bool) -> Bool {
+        manualFrequentEnabled || (smartEnabled && smartRuntimeActive)
+    }
+
+    static func shouldShowBackgroundLocationIndicator(for mode: TrackingMode) -> Bool {
+        if case .backgroundFrequent = mode {
+            return true
+        }
+        return false
+    }
+
+    static func locationUpdateCounterMode(applicationState: UIApplication.State,
+                                          manualFrequentEnabled: Bool,
+                                          smartEnabled: Bool,
+                                          smartRuntimeActive: Bool) -> LocationUpdateCounterMode {
+        guard applicationState != .active else {
+            return .foregroundLive
+        }
+        if manualFrequentEnabled {
+            return .manualFrequent
+        }
+        if smartEnabled && smartRuntimeActive {
+            return .smartFrequent
+        }
+        return .significantChange
+    }
+
+    static func backgroundTrackingDisplayMode(applicationState: UIApplication.State,
+                                              smartEnabled: Bool,
+                                              manualFrequentEnabled: Bool,
+                                              smartRuntimeActive: Bool) -> BackgroundTrackingDisplayMode {
+        guard applicationState != .active else {
+            return .foregroundLive
+        }
+        if manualFrequentEnabled {
+            return .manualFrequent
+        }
+        if smartEnabled && smartRuntimeActive {
+            return .smartFrequent
+        }
+        if smartEnabled {
+            return .smartWaiting
+        }
+        return .significantChange
+    }
+
+    static func shouldResetLocationUpdateMetrics(now: Date,
+                                                 lastReset: Date?,
+                                                 interval: TimeInterval = 24 * 60 * 60) -> Bool {
+        guard let lastReset else { return false }
+        return now.timeIntervalSince(lastReset) >= interval
+    }
+
     static func resolvedTrackingMode(isTracking: Bool,
                                      authorizationStatus: CLAuthorizationStatus,
                                      applicationState: UIApplication.State,
@@ -438,6 +574,76 @@ final class LocationManager: NSObject, ObservableObject {
     static func batteryPercent(from batteryLevel: Float) -> Int? {
         guard batteryLevel >= 0, batteryLevel.isFinite else { return nil }
         return Int((Double(batteryLevel) * 100).rounded(.down))
+    }
+
+    static func smartFrequentBackgroundSpeedKmh(for location: CLLocation,
+                                                previousLocation: CLLocation?,
+                                                detectionMode: SmartFrequentBackgroundSpeedDetectionMode) -> Double? {
+        if location.speed >= 0, location.speed.isFinite {
+            return location.speed * 3.6
+        }
+
+        guard detectionMode == .hybrid,
+              let previousLocation,
+              isUsableForSmartDerivedSpeed(location),
+              isUsableForSmartDerivedSpeed(previousLocation) else {
+            return nil
+        }
+
+        let elapsed = location.timestamp.timeIntervalSince(previousLocation.timestamp)
+        guard elapsed > 0, elapsed <= 30 * 60 else {
+            return nil
+        }
+
+        let distance = location.distance(from: previousLocation)
+        guard distance.isFinite, distance >= 0 else {
+            return nil
+        }
+
+        return (distance / elapsed) * 3.6
+    }
+
+    static func shouldActivateSmartFrequentBackgroundUpdates(speedKmh: Double?,
+                                                             thresholdKmh: Int) -> Bool {
+        guard let speedKmh, speedKmh.isFinite else {
+            return false
+        }
+        return speedKmh >= Double(SmartFrequentBackgroundSpeedThreshold.normalized(thresholdKmh))
+    }
+
+    static func shouldDeactivateSmartFrequentBackgroundUpdates(now: Date,
+                                                               lastLocationUpdateAt: Date?,
+                                                               lastRelevantMovementAt: Date?,
+                                                               inactivityWindow: TimeInterval) -> Bool {
+        guard inactivityWindow > 0 else { return true }
+        if let lastLocationUpdateAt {
+            if now.timeIntervalSince(lastLocationUpdateAt) >= inactivityWindow {
+                return true
+            }
+        }
+        if let lastRelevantMovementAt {
+            if now.timeIntervalSince(lastRelevantMovementAt) >= inactivityWindow {
+                return true
+            }
+        }
+        return false
+    }
+
+    static func nextSmartFrequentBackgroundInactivityTimeout(lastLocationUpdateAt: Date?,
+                                                             lastRelevantMovementAt: Date?,
+                                                             inactivityWindow: TimeInterval) -> Date? {
+        let candidates = [lastLocationUpdateAt, lastRelevantMovementAt]
+            .compactMap { $0?.addingTimeInterval(inactivityWindow) }
+        return candidates.min()
+    }
+
+    private static func isUsableForSmartDerivedSpeed(_ location: CLLocation) -> Bool {
+        let coordinate = location.coordinate
+        return coordinate.latitude.isFinite &&
+        coordinate.longitude.isFinite &&
+        location.timestamp.timeIntervalSince1970.isFinite &&
+        location.horizontalAccuracy >= 0 &&
+        location.horizontalAccuracy <= 300
     }
 
     static func shouldDisableFrequentBackgroundUpdatesForBattery(frequentUpdatesEnabled: Bool,
@@ -576,6 +782,23 @@ final class LocationManager: NSObject, ObservableObject {
             return "frequent background expired during location update"
         }
         return "frequent background mode changed during location update"
+    }
+
+    var currentBackgroundTrackingDisplayMode: BackgroundTrackingDisplayMode {
+        Self.backgroundTrackingDisplayMode(
+            applicationState: UIApplication.shared.applicationState,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartRuntimeActive: smartFrequentBackgroundRuntimeActive
+        )
+    }
+
+    private var effectiveFrequentBackgroundUpdatesEnabled: Bool {
+        Self.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            smartRuntimeActive: smartFrequentBackgroundRuntimeActive
+        )
     }
 
     static func shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
@@ -805,6 +1028,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         handleFrequentBackgroundLocationExpirationIfNeeded()
+        handleSmartFrequentBackgroundInactivityIfNeeded()
         if isTracking, state != .active {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
         }
@@ -820,7 +1044,7 @@ final class LocationManager: NSObject, ObservableObject {
             isTracking: isTracking,
             authorizationStatus: status,
             applicationState: state,
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
             hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty
         )
@@ -832,7 +1056,7 @@ final class LocationManager: NSObject, ObservableObject {
         let shouldMaintainFrequentActivitySession = Self.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: settings.trackAndReportLocation,
             isTracking: isTracking,
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             authorizationStatus: status,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
         )
@@ -840,7 +1064,7 @@ final class LocationManager: NSObject, ObservableObject {
             for: mode,
             shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
         )
-        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
+        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
         syncLocationServiceSession(
             reason: reason,
             shouldMaintainSession: Self.shouldMaintainLocationServiceSession(
@@ -859,6 +1083,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func apply(_ mode: TrackingMode) {
+        syncBackgroundLocationIndicator(for: mode)
         switch mode {
         case .stopped:
             stopAllLocationServices()
@@ -874,6 +1099,12 @@ final class LocationManager: NSObject, ObservableObject {
             )
             startFrequentBackgroundLocationUpdates(configuration: configuration)
         }
+    }
+
+    private func syncBackgroundLocationIndicator(for mode: TrackingMode) {
+        let shouldShowIndicator = Self.shouldShowBackgroundLocationIndicator(for: mode)
+        locationManager.showsBackgroundLocationIndicator = false
+        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = shouldShowIndicator
     }
 
     private func startHighAccuracyUpdates() {
@@ -907,6 +1138,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func startSignificantChangeMonitoring() {
         debugLog("Starting significant-change background updates")
         locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.showsBackgroundLocationIndicator = false
         debugLog("allowsBackgroundLocationUpdates set to true (background)")
         locationManager.stopUpdatingLocation()
         locationManager.startMonitoringSignificantLocationChanges()
@@ -925,6 +1157,7 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundLocationManager.delegate = self
         frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = true
         frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = false
+        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = true
         frequentBackgroundLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
         frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
         frequentBackgroundLocationManager.desiredAccuracy = configuration.desiredAccuracy
@@ -943,6 +1176,7 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
         frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = false
         frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = true
+        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
         frequentBackgroundLocationManager.delegate = nil
         isFrequentBackgroundStandardUpdatesActive = false
     }
@@ -999,7 +1233,7 @@ final class LocationManager: NSObject, ObservableObject {
         applicationState: UIApplication.State
     ) -> Bool {
         guard Self.shouldCleanUpStaleFrequentBackgroundCallback(
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
             updateSourceIsFrequentBackground: updateSource == .frequentBackground
         ) else { return false }
@@ -1027,7 +1261,7 @@ final class LocationManager: NSObject, ObservableObject {
     ) {
         guard Self.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
             applicationState: applicationState,
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
             frequentBackgroundStandardUpdatesActiveInCurrentProcess: isFrequentBackgroundStandardUpdatesActive,
             updateSourceIsPrimary: updateSource == .primary
@@ -1052,7 +1286,7 @@ final class LocationManager: NSObject, ObservableObject {
         )
         guard Self.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
             applicationState: applicationState,
-            frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
             shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor,
             updateSourceIsPrimary: updateSource == .primary
@@ -1091,16 +1325,21 @@ final class LocationManager: NSObject, ObservableObject {
         let thresholdPercent = settings.frequentBackgroundBatteryAutoDisableLevel
         guard let batteryPercent = Self.batteryPercent(from: UIDevice.current.batteryLevel),
               Self.shouldDisableFrequentBackgroundUpdatesForBattery(
-                frequentUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
                 batteryPercent: batteryPercent,
                 thresholdPercent: thresholdPercent
               ) else {
             return false
         }
 
-        settings.frequentBackgroundLocationUpdatesEnabled = false
+        if settings.frequentBackgroundLocationUpdatesEnabled {
+            settings.frequentBackgroundLocationUpdatesEnabled = false
+        }
+        if smartFrequentBackgroundRuntimeActive {
+            deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent battery auto-disable")
+        }
         scheduleFrequentBackgroundLocationExpirationTimer()
-        debugLog("[LocationManager] Frequent background updates disabled because battery is at \(batteryPercent)% (threshold \(thresholdPercent)%)")
+        debugLog("[LocationManager] Effective frequent background updates disabled because battery is at \(batteryPercent)% (threshold \(thresholdPercent)%)")
 
         Task {
             await FrequentBackgroundTrackingReminderService.shared.notifyBatteryAutoDisable(
@@ -1159,6 +1398,222 @@ final class LocationManager: NSObject, ObservableObject {
                 expiresAt: expiresAt
             )
         }
+    }
+
+    private func notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: Bool) {
+        guard settings.smartFrequentBackgroundModeChangeNotificationsEnabled else {
+            return
+        }
+
+        Task {
+            await FrequentBackgroundTrackingReminderService.shared.notifySmartFrequentModeChange(isActive: isActive)
+        }
+    }
+
+    private func updateSmartFrequentBackgroundRuntime(for location: CLLocation,
+                                                      updateSource: LocationUpdateSource,
+                                                      applicationState: UIApplication.State,
+                                                      now: Date = Date()) -> Bool {
+        guard applicationState != .active,
+              settings.smartFrequentBackgroundLocationUpdatesEnabled,
+              !settings.frequentBackgroundLocationUpdatesEnabled else {
+            if settings.frequentBackgroundLocationUpdatesEnabled,
+               smartFrequentBackgroundRuntimeActive {
+                deactivateSmartFrequentBackgroundRuntime(reason: "manual frequent override")
+                return true
+            }
+            updateSmartFrequentBackgroundSpeedReference(with: location)
+            return false
+        }
+
+        let didDeactivateForInactivity = handleSmartFrequentBackgroundInactivityIfNeeded(now: now)
+        let didUpdateMovement = refreshSmartFrequentBackgroundMovementState(for: location, now: now)
+        let speedKmh = Self.smartFrequentBackgroundSpeedKmh(
+            for: location,
+            previousLocation: smartFrequentBackgroundSpeedReferenceLocation,
+            detectionMode: settings.smartFrequentBackgroundSpeedDetectionModeSelection
+        )
+        updateSmartFrequentBackgroundSpeedReference(with: location)
+
+        guard !smartFrequentBackgroundRuntimeActive else {
+            if didUpdateMovement {
+                scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+            }
+            return didDeactivateForInactivity
+        }
+
+        guard updateSource == .primary,
+              Self.shouldActivateSmartFrequentBackgroundUpdates(
+                speedKmh: speedKmh,
+                thresholdKmh: settings.smartFrequentBackgroundSpeedThresholdKmh
+              ),
+              !isBatteryAtOrBelowFrequentBackgroundThreshold() else {
+            return didDeactivateForInactivity
+        }
+
+        activateSmartFrequentBackgroundRuntime(
+            location: location,
+            speedKmh: speedKmh,
+            now: now
+        )
+        return true
+    }
+
+    private func activateSmartFrequentBackgroundRuntime(location: CLLocation,
+                                                        speedKmh: Double?,
+                                                        now: Date) {
+        smartFrequentBackgroundRuntimeActive = true
+        lastSmartFrequentBackgroundLocationUpdateAt = now
+        smartFrequentBackgroundLastRelevantMovementAt = now
+        smartFrequentBackgroundMovementAnchor = location
+        if let speedKmh {
+            smartFrequentBackgroundLastActivationReason = String(
+                format: NSLocalizedString(
+                    "smart_frequent_background_activation_speed_format",
+                    comment: "Smart frequent activation reason with speed in km/h"
+                ),
+                speedKmh
+            )
+        } else {
+            smartFrequentBackgroundLastActivationReason = NSLocalizedString(
+                "smart_frequent_background_activation_movement",
+                comment: "Smart frequent activation reason when movement is detected"
+            )
+        }
+        scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+        debugLog("[LocationManager] Smart frequent background runtime activated speedKmh=\(String(describing: speedKmh))")
+        notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: true)
+    }
+
+    @discardableResult
+    private func deactivateSmartFrequentBackgroundRuntime(reason: String) -> Bool {
+        let wasActive = smartFrequentBackgroundRuntimeActive
+        smartFrequentBackgroundRuntimeActive = false
+        lastSmartFrequentBackgroundLocationUpdateAt = nil
+        smartFrequentBackgroundMovementAnchor = nil
+        smartFrequentBackgroundNextInactivityTimeoutAt = nil
+        smartFrequentBackgroundInactivityTimer?.invalidate()
+        smartFrequentBackgroundInactivityTimer = nil
+        if wasActive {
+            debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
+        }
+        return wasActive
+    }
+
+    private func resetSmartFrequentBackgroundRuntime() {
+        smartFrequentBackgroundRuntimeActive = false
+        smartFrequentBackgroundLastActivationReason = nil
+        smartFrequentBackgroundLastRelevantMovementAt = nil
+        smartFrequentBackgroundNextInactivityTimeoutAt = nil
+        lastSmartFrequentBackgroundLocationUpdateAt = nil
+        smartFrequentBackgroundMovementAnchor = nil
+        smartFrequentBackgroundSpeedReferenceLocation = nil
+        smartFrequentBackgroundInactivityTimer?.invalidate()
+        smartFrequentBackgroundInactivityTimer = nil
+    }
+
+    @discardableResult
+    private func handleSmartFrequentBackgroundInactivityIfNeeded(now: Date = Date()) -> Bool {
+        guard settings.smartFrequentBackgroundLocationUpdatesEnabled,
+              smartFrequentBackgroundRuntimeActive,
+              !settings.frequentBackgroundLocationUpdatesEnabled else {
+            scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+            return false
+        }
+
+        let inactivityWindow = settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        guard Self.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: lastSmartFrequentBackgroundLocationUpdateAt,
+            lastRelevantMovementAt: smartFrequentBackgroundLastRelevantMovementAt,
+            inactivityWindow: inactivityWindow
+        ) else {
+            scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+            return false
+        }
+
+        let didDeactivate = deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent inactivity timeout")
+        if didDeactivate {
+            notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: false)
+        }
+        return didDeactivate
+    }
+
+    @discardableResult
+    private func refreshSmartFrequentBackgroundMovementState(for location: CLLocation,
+                                                             now: Date) -> Bool {
+        guard smartFrequentBackgroundRuntimeActive else { return false }
+        lastSmartFrequentBackgroundLocationUpdateAt = now
+
+        guard let anchor = smartFrequentBackgroundMovementAnchor else {
+            smartFrequentBackgroundMovementAnchor = location
+            smartFrequentBackgroundLastRelevantMovementAt = now
+            return true
+        }
+
+        let distance = location.distance(from: anchor)
+        guard distance.isFinite,
+              distance >= CLLocationDistance(settings.frequentBackgroundLocationDistanceFilter) else {
+            return false
+        }
+
+        smartFrequentBackgroundMovementAnchor = location
+        smartFrequentBackgroundLastRelevantMovementAt = now
+        return true
+    }
+
+    private func scheduleSmartFrequentBackgroundInactivityTimer(now: Date = Date()) {
+        smartFrequentBackgroundInactivityTimer?.invalidate()
+        smartFrequentBackgroundInactivityTimer = nil
+
+        guard settings.smartFrequentBackgroundLocationUpdatesEnabled,
+              smartFrequentBackgroundRuntimeActive,
+              !settings.frequentBackgroundLocationUpdatesEnabled else {
+            smartFrequentBackgroundNextInactivityTimeoutAt = nil
+            return
+        }
+
+        let timeout = Self.nextSmartFrequentBackgroundInactivityTimeout(
+            lastLocationUpdateAt: lastSmartFrequentBackgroundLocationUpdateAt,
+            lastRelevantMovementAt: smartFrequentBackgroundLastRelevantMovementAt,
+            inactivityWindow: settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        )
+        smartFrequentBackgroundNextInactivityTimeoutAt = timeout
+
+        guard let timeout else { return }
+        let interval = timeout.timeIntervalSince(now)
+        guard interval > 0 else {
+            if handleSmartFrequentBackgroundInactivityIfNeeded(now: now), isTracking {
+                applyTrackingMode(reason: "smart frequent inactivity timer")
+            }
+            return
+        }
+
+        let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            if self.handleSmartFrequentBackgroundInactivityIfNeeded(), self.isTracking {
+                self.applyTrackingMode(reason: "smart frequent inactivity timer")
+            }
+        }
+        smartFrequentBackgroundInactivityTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
+    }
+
+    private func updateSmartFrequentBackgroundSpeedReference(with location: CLLocation) {
+        if location.horizontalAccuracy >= 0 {
+            smartFrequentBackgroundSpeedReferenceLocation = location
+        }
+    }
+
+    private func isBatteryAtOrBelowFrequentBackgroundThreshold() -> Bool {
+        guard let batteryPercent = Self.batteryPercent(from: UIDevice.current.batteryLevel) else {
+            return false
+        }
+        return Self.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: batteryPercent,
+            thresholdPercent: settings.frequentBackgroundBatteryAutoDisableLevel
+        )
     }
     
     // MARK: - Server Communication
@@ -1238,7 +1693,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func frequentBackgroundLocationDeliveryDelay(for applicationState: UIApplication.State) -> TimeInterval? {
         guard applicationState != .active,
-              settings.frequentBackgroundLocationUpdatesEnabled else {
+              effectiveFrequentBackgroundUpdatesEnabled else {
             return nil
         }
         return settings.frequentBackgroundLocationDeliveryModeSelection.delay
@@ -1246,7 +1701,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func frequentBackgroundVisitorCheckMinimumInterval(for applicationState: UIApplication.State) -> TimeInterval? {
         guard applicationState != .active,
-              settings.frequentBackgroundLocationUpdatesEnabled else {
+              effectiveFrequentBackgroundUpdatesEnabled else {
             return nil
         }
         return settings.frequentBackgroundVisitorCheckIntervalSelection.minimumInterval
@@ -1301,6 +1756,19 @@ final class LocationManager: NSObject, ObservableObject {
 
 
     // MARK: - Logging
+    private func locationUpdateLogModeText(for mode: LocationUpdateCounterMode) -> String {
+        switch mode {
+        case .foregroundLive:
+            return NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates")
+        case .significantChange:
+            return NSLocalizedString("location_update_mode_significant_change", comment: "Location update log mode for significant-change updates")
+        case .smartFrequent:
+            return NSLocalizedString("location_update_mode_smart_frequent", comment: "Location update log mode for smart frequent updates")
+        case .manualFrequent:
+            return NSLocalizedString("location_update_mode_manual_frequent", comment: "Location update log mode for manually enabled frequent updates")
+        }
+    }
+
     private func addUpdateLogEntry(mode: String) {
         let entry = UpdateLogEntry(timestamp: Date(), mode: mode)
         updateLog.insert(entry, at: 0)
@@ -1377,14 +1845,17 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("[LocationManager] Stopping all location services")
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
+        locationManager.showsBackgroundLocationIndicator = false
         frequentBackgroundLocationManager.stopUpdatingLocation()
         frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
         frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = false
         frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = true
+        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
         frequentBackgroundLocationManager.delegate = nil
         isSignificantChangeRecoveryAnchorActive = false
         isFrequentBackgroundStandardUpdatesActive = false
         shouldAllowNextStaleFrequentBackgroundCallback = false
+        resetSmartFrequentBackgroundRuntime()
         stopLocationServiceSession(reason: "stop all location services")
         stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
@@ -1466,19 +1937,42 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
-    // MARK: - Daily reset at midnight boundary
-    private func maybeResetBackgroundMetricsIfNeeded() {
-        let calendar = Calendar.current
-        let todayStart = calendar.startOfDay(for: Date())
-        let lastReset = (userDefaults.object(forKey: backgroundMetricsLastResetKey) as? Date) ?? todayStart
-        if lastReset < todayStart {
-            backgroundUpdateCount = 0
-            userDefaults.set(0, forKey: backgroundUpdateCountKey)
-            userDefaults.set(todayStart, forKey: backgroundMetricsLastResetKey)
-        } else if userDefaults.object(forKey: backgroundMetricsLastResetKey) == nil {
-            // Initialize baseline on first run
-            userDefaults.set(todayStart, forKey: backgroundMetricsLastResetKey)
+    // MARK: - 24h diagnostics reset
+    private func maybeResetBackgroundMetricsIfNeeded(now: Date = Date()) {
+        let lastReset = userDefaults.object(forKey: backgroundMetricsLastResetKey) as? Date
+        guard let lastReset else {
+            userDefaults.set(now, forKey: backgroundMetricsLastResetKey)
+            return
         }
+
+        guard Self.shouldResetLocationUpdateMetrics(now: now, lastReset: lastReset) else {
+            return
+        }
+
+        backgroundUpdateCount = 0
+        locationUpdateModeCounts = .zero
+        persistLocationUpdateModeCounts()
+        userDefaults.set(0, forKey: backgroundUpdateCountKey)
+        userDefaults.set(now, forKey: backgroundMetricsLastResetKey)
+    }
+
+    private func recordLocationUpdateMetric(mode: LocationUpdateCounterMode, now: Date = Date()) {
+        maybeResetBackgroundMetricsIfNeeded(now: now)
+        locationUpdateModeCounts.increment(mode)
+        if mode != .foregroundLive {
+            lastBackgroundUpdate = now
+            backgroundUpdateCount = locationUpdateModeCounts.backgroundTotal
+            userDefaults.set(backgroundUpdateCount, forKey: backgroundUpdateCountKey)
+            userDefaults.set(now, forKey: lastBackgroundUpdateKey)
+        }
+        persistLocationUpdateModeCounts()
+    }
+
+    private func persistLocationUpdateModeCounts() {
+        userDefaults.set(locationUpdateModeCounts.foregroundLive, forKey: foregroundLiveUpdateCountKey)
+        userDefaults.set(locationUpdateModeCounts.significantChange, forKey: significantChangeUpdateCountKey)
+        userDefaults.set(locationUpdateModeCounts.smartFrequent, forKey: smartFrequentUpdateCountKey)
+        userDefaults.set(locationUpdateModeCounts.manualFrequent, forKey: manualFrequentUpdateCountKey)
     }
 }
 
@@ -1489,10 +1983,21 @@ extension LocationManager: CLLocationManagerDelegate {
             guard let location = locations.last else { return }
             let applicationState = UIApplication.shared.applicationState
             let updateSource = self.locationUpdateSource(for: manager)
-            debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), state=\(applicationState.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled)")
+            let updateCounterMode = Self.locationUpdateCounterMode(
+                applicationState: applicationState,
+                manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+                smartRuntimeActive: smartFrequentBackgroundRuntimeActive
+            )
+            debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
             let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
             let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
-            let didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery
+            let didSwitchSmartFrequentBackgroundMode = self.updateSmartFrequentBackgroundRuntime(
+                for: location,
+                updateSource: updateSource,
+                applicationState: applicationState
+            )
+            let didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery || didSwitchSmartFrequentBackgroundMode
             if self.shouldSuppressAfterCleaningUpStaleFrequentBackgroundCallbackIfNeeded(
                 updateSource: updateSource,
                 didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
@@ -1506,18 +2011,8 @@ extension LocationManager: CLLocationManagerDelegate {
                 didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
             )
             self.latestRawLocation = location
-            let mode = applicationState == .active ? NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates") : NSLocalizedString("lm_background_status", comment: "shown in the Location Status overview for background updates")
-            // Record update arrival whenever app is not active (background or inactive)
-            if applicationState != .active {
-                // Reset counter if a new day window started
-                self.maybeResetBackgroundMetricsIfNeeded()
-                self.lastBackgroundUpdate = Date()
-                self.backgroundUpdateCount += 1
-                self.userDefaults.set(self.backgroundUpdateCount, forKey: self.backgroundUpdateCountKey)
-                if let lastDate = self.lastBackgroundUpdate {
-                    self.userDefaults.set(lastDate, forKey: self.lastBackgroundUpdateKey)
-                }
-            }
+            self.recordLocationUpdateMetric(mode: updateCounterMode)
+            let mode = self.locationUpdateLogModeText(for: updateCounterMode)
             // Only accept updates if distance or accuracy criteria are met
             let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
             var shouldAcceptUpdate = false
