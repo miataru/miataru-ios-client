@@ -130,6 +130,7 @@ cd miataru
 ./scripts/test-unit.sh
 ./scripts/test-ui.sh
 ./scripts/test-functional-ui-serial.sh
+./scripts/restore-test-simulators.sh
 ./scripts/test-screenshots.sh --list
 ./scripts/test-screenshots.sh --test root-qr --device "iPhone 16 Pro Max" --languages en
 ./scripts/test-all.sh
