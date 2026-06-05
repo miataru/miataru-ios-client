@@ -624,6 +624,152 @@ struct SettingsConfigurationTests {
         let context = try #require(entries.last?["context"] as? [String: Any])
         #expect(context["locationLatitude"] as? Double == 52.1235)
         #expect(context["locationLongitude"] as? Double == 13.9877)
+        #expect(exportObject["schemaVersion"] as? Int == LocationDiagnosticsLogStore.schemaVersion)
+        #expect(exportObject["droppedEntryCount"] as? Int == 1)
+        #expect((exportObject["coalescedCounts"] as? [[String: Any]])?.isEmpty == true)
+    }
+
+    @Test("Location diagnostics keeps critical entries while coalescing noisy updates")
+    @MainActor
+    func locationDiagnosticsKeepsCriticalEntriesWhileCoalescingNoisyUpdates() throws {
+        let suiteName = "LocationDiagnosticsCoalescingTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsCoalescingTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let store = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            maxEntries: 3,
+            coalescedCountLimit: 10
+        )
+        store.setEnabled(true)
+        store.append(level: .warning, event: "backgroundTrackingGap", summary: "Gap", result: "suspicious")
+        for index in 1...120 {
+            store.appendCoalesced(
+                level: .info,
+                event: "locationCallback",
+                summary: "Callback",
+                result: "processing",
+                coalescingKey: "locationCallback|background|frequent",
+                context: ["index": .integer(index)],
+                sampleEvery: 25
+            )
+        }
+
+        #expect(store.entries.contains { $0.event == "backgroundTrackingGap" })
+        #expect(store.entries.count <= 3)
+        #expect(store.coalescedCounts.count == 1)
+        #expect(store.coalescedCounts.first?.count == 120)
+
+        let exportData = try store.exportData(appVersion: "9.9", build: "42")
+        let exportObject = try #require(JSONSerialization.jsonObject(with: exportData) as? [String: Any])
+        let coalescedCounts = try #require(exportObject["coalescedCounts"] as? [[String: Any]])
+        #expect(coalescedCounts.first?["count"] as? Int == 120)
+        #expect((exportObject["droppedEntryCount"] as? Int ?? 0) > 0)
+        #expect(exportObject["oldestEntryAt"] != nil)
+    }
+
+    @Test("Location diagnostics loads legacy entry array files")
+    @MainActor
+    func locationDiagnosticsLoadsLegacyEntryArrayFiles() throws {
+        let suiteName = "LocationDiagnosticsLegacyTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsLegacyTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let legacyJSON = """
+        [
+          {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "timestamp": "2026-06-05T12:00:00Z",
+            "level": "info",
+            "event": "legacyEvent",
+            "summary": "Legacy",
+            "result": "stored",
+            "reason": null,
+            "checks": [],
+            "context": {}
+          }
+        ]
+        """
+        try legacyJSON.data(using: .utf8)?.write(to: fileURL, options: .atomic)
+
+        let store = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        #expect(store.entries.count == 1)
+        #expect(store.entries.first?.event == "legacyEvent")
+        #expect(store.entries.first?.retentionClass == .critical)
+        #expect(store.coalescedCounts.isEmpty)
+    }
+
+    @Test("Background forensic gap assessment distinguishes frequent gaps from significant-change idle")
+    func backgroundForensicGapAssessmentDistinguishesFrequentGapsFromSignificantChangeIdle() {
+        let expectedSince = Date(timeIntervalSince1970: 10_000)
+        let now = expectedSince.addingTimeInterval(LocationManager.forensicFrequentBackgroundGapThreshold + 30)
+
+        let frequentState = LocationManager.BackgroundTrackingForensicState(
+            backgroundTrackingExpectedSince: expectedSince,
+            currentExpectedMode: "backgroundFrequent(distanceFilter: 10.0, desiredAccuracy: 10.0)"
+        )
+        let frequentAssessment = LocationManager.backgroundTrackingGapAssessment(
+            state: frequentState,
+            now: now
+        )
+        #expect(frequentAssessment?.kind == .suspicious)
+        #expect(frequentAssessment?.gapSeconds == Int(LocationManager.forensicFrequentBackgroundGapThreshold + 30))
+
+        var observedFrequentState = frequentState
+        observedFrequentState.lastBackgroundCallbackAt = now.addingTimeInterval(-60)
+        #expect(LocationManager.backgroundTrackingGapAssessment(state: observedFrequentState, now: now) == nil)
+
+        let significantState = LocationManager.BackgroundTrackingForensicState(
+            backgroundTrackingExpectedSince: expectedSince,
+            currentExpectedMode: "backgroundSignificantChange"
+        )
+        #expect(LocationManager.backgroundTrackingGapAssessment(state: significantState, now: now)?.kind == .unobservedIdle)
+    }
+
+    @Test("Foreground recovery burst policy only logs inside recovery window with activity")
+    func foregroundRecoveryBurstPolicyOnlyLogsInsideRecoveryWindowWithActivity() {
+        let openedAt = Date(timeIntervalSince1970: 20_000)
+        #expect(LocationManager.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: openedAt,
+            recoveryAlreadyLoggedAt: nil,
+            now: openedAt.addingTimeInterval(5),
+            acceptedCount: 1,
+            uploadCount: 0
+        ))
+        #expect(!LocationManager.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: openedAt,
+            recoveryAlreadyLoggedAt: nil,
+            now: openedAt.addingTimeInterval(5),
+            acceptedCount: 0,
+            uploadCount: 0
+        ))
+        #expect(!LocationManager.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: openedAt,
+            recoveryAlreadyLoggedAt: nil,
+            now: openedAt.addingTimeInterval(LocationManager.forensicForegroundRecoveryBurstWindow + 1),
+            acceptedCount: 1,
+            uploadCount: 0
+        ))
+        #expect(!LocationManager.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: openedAt,
+            recoveryAlreadyLoggedAt: openedAt.addingTimeInterval(1),
+            now: openedAt.addingTimeInterval(5),
+            acceptedCount: 1,
+            uploadCount: 0
+        ))
     }
 
     @Test("Significant-change rearm policy attempts only for eligible fresh builds")

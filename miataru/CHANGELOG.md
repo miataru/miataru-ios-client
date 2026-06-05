@@ -1,5 +1,7 @@
 version 3.2
 - Added an opt-in Location Diagnostics log in Location Tracking Details with a persistent 1000-entry ring buffer, JSON export, rounded location values, and localized UI across all supported app languages.
+- Reworked Location Diagnostics into a compact forensic background-tracking log with critical/sample/coalesced retention, 24-hour evidence metadata, exported coalesced counters, dropped-entry reporting, and legacy log import compatibility.
+- Added persisted background-tracking forensic state, suspicious-gap detection, foreground-recovery-burst evidence, and Location Tracking Details status rows for expected mode, oldest evidence, last background callback, last background upload, and recent gaps.
 - Added a one-time-per-build significant-change monitor re-arm on eligible fresh app/update starts, with visible skipped/attempted status and diagnostic checks for tracking, Always authorization, DeviceKey block state, and build repetition.
 - Kept diagnostics logging cheap while disabled by short-circuiting append calls before diagnostic checks, contexts, and timestamps are built; the visible re-arm status remains available independently of diagnostics logging.
 - Added the new two-stage Smart Frequent Background Updates policy. Stage 1 (`Smart frequent updates`) keeps standard significant-change background tracking active by default and temporarily starts frequent background updates only after movement above the configured speed threshold is detected.

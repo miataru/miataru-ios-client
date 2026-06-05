@@ -58,6 +58,7 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var smartFrequentBackgroundLastRelevantMovementAt: Date?
     @Published private(set) var smartFrequentBackgroundNextInactivityTimeoutAt: Date?
     @Published private(set) var lastSignificantChangeRearmStatus: LocationSignificantChangeRearmStatus?
+    @Published private(set) var backgroundTrackingForensicState = BackgroundTrackingForensicState()
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
@@ -81,6 +82,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let smartFrequentBackgroundSeedTimestampKey = "miataru_smartFrequentBackgroundSeedTimestamp"
     private let significantChangeRearmedBuildIdentifierKey = "miataru_significantChangeRearmedBuildIdentifier"
     private let lastSignificantChangeRearmStatusKey = "miataru_lastSignificantChangeRearmStatus"
+    private let backgroundTrackingForensicStateKey = "miataru_backgroundTrackingForensicState"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
@@ -108,6 +110,8 @@ final class LocationManager: NSObject, ObservableObject {
     private let headingAccuracyThreshold: Double = 35
     private let headingMinSpeedThreshold: Double = 1.0
     private static let maximumSmartFrequentActivationSpeedKmh: Double = 200
+    static let forensicFrequentBackgroundGapThreshold: TimeInterval = 10 * 60
+    static let forensicForegroundRecoveryBurstWindow: TimeInterval = 30
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -154,6 +158,103 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         static let zero = LocationUpdateModeCounts()
+    }
+
+    struct BackgroundTrackingForensicState: Codable, Equatable {
+        var backgroundTrackingExpectedSince: Date?
+        var currentExpectedMode: String?
+        var lastModeAssertionAt: Date?
+        var lastModeAssertionReason: String?
+        var lastServiceAssertionAt: Date?
+        var lastBackgroundCallbackAt: Date?
+        var lastAcceptedBackgroundLocationAt: Date?
+        var lastBackgroundUploadAt: Date?
+        var lastForegroundOpenAt: Date?
+        var lastRestoreAfterLaunchAt: Date?
+        var lastSignificantChangeRearmAt: Date?
+        var lastSmartActivationAt: Date?
+        var lastSmartDeactivationAt: Date?
+        var lastKnownApplicationState: Int?
+        var lastKnownSource: String?
+        var backgroundServicesAsserted: Bool = false
+        var lastBackgroundGapLoggedAt: Date?
+        var pendingForegroundRecoveryStartedAt: Date?
+        var pendingForegroundRecoveryPreviousMode: String?
+        var pendingForegroundRecoveryGapSeconds: Int?
+        var pendingForegroundRecoveryLastBackgroundCallbackAt: Date?
+        var pendingForegroundRecoveryLastBackgroundUploadAt: Date?
+        var pendingForegroundRecoveryBackgroundServicesAsserted: Bool?
+        var foregroundBurstCallbackCount: Int = 0
+        var foregroundBurstAcceptedCount: Int = 0
+        var foregroundBurstUploadCount: Int = 0
+        var foregroundRecoveryBurstLoggedAt: Date?
+
+        init(backgroundTrackingExpectedSince: Date? = nil,
+             currentExpectedMode: String? = nil,
+             lastModeAssertionAt: Date? = nil,
+             lastModeAssertionReason: String? = nil,
+             lastServiceAssertionAt: Date? = nil,
+             lastBackgroundCallbackAt: Date? = nil,
+             lastAcceptedBackgroundLocationAt: Date? = nil,
+             lastBackgroundUploadAt: Date? = nil,
+             lastForegroundOpenAt: Date? = nil,
+             lastRestoreAfterLaunchAt: Date? = nil,
+             lastSignificantChangeRearmAt: Date? = nil,
+             lastSmartActivationAt: Date? = nil,
+             lastSmartDeactivationAt: Date? = nil,
+             lastKnownApplicationState: Int? = nil,
+             lastKnownSource: String? = nil,
+             backgroundServicesAsserted: Bool = false,
+             lastBackgroundGapLoggedAt: Date? = nil,
+             pendingForegroundRecoveryStartedAt: Date? = nil,
+             pendingForegroundRecoveryPreviousMode: String? = nil,
+             pendingForegroundRecoveryGapSeconds: Int? = nil,
+             pendingForegroundRecoveryLastBackgroundCallbackAt: Date? = nil,
+             pendingForegroundRecoveryLastBackgroundUploadAt: Date? = nil,
+             pendingForegroundRecoveryBackgroundServicesAsserted: Bool? = nil,
+             foregroundBurstCallbackCount: Int = 0,
+             foregroundBurstAcceptedCount: Int = 0,
+             foregroundBurstUploadCount: Int = 0,
+             foregroundRecoveryBurstLoggedAt: Date? = nil) {
+            self.backgroundTrackingExpectedSince = backgroundTrackingExpectedSince
+            self.currentExpectedMode = currentExpectedMode
+            self.lastModeAssertionAt = lastModeAssertionAt
+            self.lastModeAssertionReason = lastModeAssertionReason
+            self.lastServiceAssertionAt = lastServiceAssertionAt
+            self.lastBackgroundCallbackAt = lastBackgroundCallbackAt
+            self.lastAcceptedBackgroundLocationAt = lastAcceptedBackgroundLocationAt
+            self.lastBackgroundUploadAt = lastBackgroundUploadAt
+            self.lastForegroundOpenAt = lastForegroundOpenAt
+            self.lastRestoreAfterLaunchAt = lastRestoreAfterLaunchAt
+            self.lastSignificantChangeRearmAt = lastSignificantChangeRearmAt
+            self.lastSmartActivationAt = lastSmartActivationAt
+            self.lastSmartDeactivationAt = lastSmartDeactivationAt
+            self.lastKnownApplicationState = lastKnownApplicationState
+            self.lastKnownSource = lastKnownSource
+            self.backgroundServicesAsserted = backgroundServicesAsserted
+            self.lastBackgroundGapLoggedAt = lastBackgroundGapLoggedAt
+            self.pendingForegroundRecoveryStartedAt = pendingForegroundRecoveryStartedAt
+            self.pendingForegroundRecoveryPreviousMode = pendingForegroundRecoveryPreviousMode
+            self.pendingForegroundRecoveryGapSeconds = pendingForegroundRecoveryGapSeconds
+            self.pendingForegroundRecoveryLastBackgroundCallbackAt = pendingForegroundRecoveryLastBackgroundCallbackAt
+            self.pendingForegroundRecoveryLastBackgroundUploadAt = pendingForegroundRecoveryLastBackgroundUploadAt
+            self.pendingForegroundRecoveryBackgroundServicesAsserted = pendingForegroundRecoveryBackgroundServicesAsserted
+            self.foregroundBurstCallbackCount = foregroundBurstCallbackCount
+            self.foregroundBurstAcceptedCount = foregroundBurstAcceptedCount
+            self.foregroundBurstUploadCount = foregroundBurstUploadCount
+            self.foregroundRecoveryBurstLoggedAt = foregroundRecoveryBurstLoggedAt
+        }
+    }
+
+    enum BackgroundTrackingGapKind: String, Equatable {
+        case suspicious
+        case unobservedIdle
+    }
+
+    struct BackgroundTrackingGapAssessment: Equatable {
+        let kind: BackgroundTrackingGapKind
+        let gapSeconds: Int
+        let lastObservedAt: Date?
     }
 
     enum BackgroundTrackingDisplayMode: Equatable {
@@ -296,6 +397,7 @@ final class LocationManager: NSObject, ObservableObject {
             lastServerUpdate = savedDate
         }
         lastSignificantChangeRearmStatus = loadLastSignificantChangeRearmStatus()
+        backgroundTrackingForensicState = loadBackgroundTrackingForensicState()
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
@@ -312,6 +414,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        recordForensicForegroundOpen(trigger: "app did become active")
         // Update authorization status (in case it changed while app was in background)
         let currentStatus = locationManager.authorizationStatus
         self.authorizationStatus = currentStatus
@@ -967,6 +1070,55 @@ final class LocationManager: NSObject, ObservableObject {
         return candidateKey != lastSubmittedKey
     }
 
+    static func backgroundTrackingGapAssessment(
+        state: BackgroundTrackingForensicState,
+        now: Date,
+        frequentThreshold: TimeInterval = forensicFrequentBackgroundGapThreshold
+    ) -> BackgroundTrackingGapAssessment? {
+        guard let expectedSince = state.backgroundTrackingExpectedSince,
+              let expectedMode = state.currentExpectedMode else {
+            return nil
+        }
+
+        let lastObservedAt = [state.lastBackgroundCallbackAt, state.lastBackgroundUploadAt]
+            .compactMap { $0 }
+            .max()
+        let referenceDate = lastObservedAt ?? expectedSince
+        let gapSeconds = Int(now.timeIntervalSince(referenceDate).rounded(.down))
+        guard gapSeconds >= Int(frequentThreshold) else {
+            return nil
+        }
+
+        if expectedMode.localizedCaseInsensitiveContains("frequent") {
+            return BackgroundTrackingGapAssessment(
+                kind: .suspicious,
+                gapSeconds: gapSeconds,
+                lastObservedAt: lastObservedAt
+            )
+        }
+
+        return BackgroundTrackingGapAssessment(
+            kind: .unobservedIdle,
+            gapSeconds: gapSeconds,
+            lastObservedAt: lastObservedAt
+        )
+    }
+
+    static func shouldLogForegroundRecoveryBurst(foregroundOpenedAt: Date?,
+                                                 recoveryAlreadyLoggedAt: Date?,
+                                                 now: Date,
+                                                 acceptedCount: Int,
+                                                 uploadCount: Int,
+                                                 window: TimeInterval = forensicForegroundRecoveryBurstWindow) -> Bool {
+        guard recoveryAlreadyLoggedAt == nil,
+              let foregroundOpenedAt,
+              now.timeIntervalSince(foregroundOpenedAt) >= 0,
+              now.timeIntervalSince(foregroundOpenedAt) <= window else {
+            return false
+        }
+        return acceptedCount > 0 || uploadCount > 0
+    }
+
     static func frequentBackgroundModeSwitchReason(didExpire: Bool,
                                                    didDisableForBattery: Bool) -> String {
         if didDisableForBattery {
@@ -1170,6 +1322,8 @@ final class LocationManager: NSObject, ObservableObject {
         authorizationStatus = locationManager.authorizationStatus
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
+        backgroundTrackingForensicState.lastRestoreAfterLaunchAt = Date()
+        evaluateBackgroundTrackingGap(trigger: "restore tracking after launch: \(reason)")
 
         guard Self.shouldRestoreTrackingAfterLaunch(
             trackAndReportLocation: settings.trackAndReportLocation,
@@ -1215,6 +1369,8 @@ final class LocationManager: NSObject, ObservableObject {
 
         lastSignificantChangeRearmStatus = decision.status
         persistLastSignificantChangeRearmStatus(decision.status)
+        backgroundTrackingForensicState.lastSignificantChangeRearmAt = decision.status.timestamp
+        persistBackgroundTrackingForensicState()
 
         guard decision.shouldAttempt else {
             diagnosticsLog.append(
@@ -1318,6 +1474,265 @@ final class LocationManager: NSObject, ObservableObject {
         return try? decoder.decode(LocationSignificantChangeRearmStatus.self, from: data)
     }
 
+    private func persistBackgroundTrackingForensicState() {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        if let data = try? encoder.encode(backgroundTrackingForensicState) {
+            userDefaults.set(data, forKey: backgroundTrackingForensicStateKey)
+        }
+    }
+
+    private func loadBackgroundTrackingForensicState() -> BackgroundTrackingForensicState {
+        guard let data = userDefaults.data(forKey: backgroundTrackingForensicStateKey) else {
+            return BackgroundTrackingForensicState()
+        }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return (try? decoder.decode(BackgroundTrackingForensicState.self, from: data)) ?? BackgroundTrackingForensicState()
+    }
+
+    private func trackingModeForensicDescription(_ mode: TrackingMode) -> String {
+        switch mode {
+        case .stopped:
+            return "stopped"
+        case .foregroundHighAccuracy:
+            return "foregroundHighAccuracy"
+        case .backgroundSignificantChange:
+            return "backgroundSignificantChange"
+        case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
+            return "backgroundFrequent(distanceFilter: \(distanceFilter), desiredAccuracy: \(desiredAccuracy))"
+        }
+    }
+
+    private func recordForensicModeResolution(mode: TrackingMode,
+                                              applicationState: UIApplication.State,
+                                              reason: String,
+                                              now: Date = Date()) {
+        let expectedMode = trackingModeForensicDescription(mode)
+        backgroundTrackingForensicState.currentExpectedMode = expectedMode
+        backgroundTrackingForensicState.lastModeAssertionAt = now
+        backgroundTrackingForensicState.lastModeAssertionReason = reason
+        backgroundTrackingForensicState.lastKnownApplicationState = applicationState.rawValue
+
+        switch mode {
+        case .backgroundSignificantChange, .backgroundFrequent:
+            if backgroundTrackingForensicState.backgroundTrackingExpectedSince == nil {
+                backgroundTrackingForensicState.backgroundTrackingExpectedSince = now
+            }
+        case .foregroundHighAccuracy, .stopped:
+            backgroundTrackingForensicState.backgroundTrackingExpectedSince = nil
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func recordForensicServiceAssertion(mode: TrackingMode, now: Date = Date()) {
+        switch mode {
+        case .backgroundSignificantChange, .backgroundFrequent:
+            backgroundTrackingForensicState.lastServiceAssertionAt = now
+            backgroundTrackingForensicState.backgroundServicesAsserted = true
+        case .foregroundHighAccuracy, .stopped:
+            backgroundTrackingForensicState.backgroundServicesAsserted = false
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func recordForensicForegroundOpen(trigger: String, now: Date = Date()) {
+        evaluateBackgroundTrackingGap(trigger: trigger, now: now, prepareForegroundRecovery: true)
+        backgroundTrackingForensicState.lastForegroundOpenAt = now
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func evaluateBackgroundTrackingGap(trigger: String,
+                                               now: Date = Date(),
+                                               prepareForegroundRecovery: Bool = false) {
+        guard let assessment = Self.backgroundTrackingGapAssessment(
+            state: backgroundTrackingForensicState,
+            now: now
+        ) else {
+            if prepareForegroundRecovery {
+                resetPendingForegroundRecovery()
+            }
+            return
+        }
+
+        if let lastLoggedAt = backgroundTrackingForensicState.lastBackgroundGapLoggedAt,
+           now.timeIntervalSince(lastLoggedAt) < Self.forensicFrequentBackgroundGapThreshold {
+            if prepareForegroundRecovery {
+                preparePendingForegroundRecovery(assessment: assessment, now: now)
+            }
+            persistBackgroundTrackingForensicState()
+            return
+        }
+
+        let level: LocationDiagnosticsLogLevel = assessment.kind == .suspicious ? .warning : .info
+        diagnosticsLog.append(
+            level: level,
+            event: "backgroundTrackingGap",
+            summary: assessment.kind == .suspicious ? "Expected background tracking had a long callback/upload gap." : "Significant-change background tracking had no observable wake in this interval.",
+            result: assessment.kind.rawValue,
+            reason: trigger,
+            checks: [
+                LocationDiagnosticsLogStore.check(
+                    "backgroundTrackingExpected",
+                    backgroundTrackingForensicState.backgroundTrackingExpectedSince != nil,
+                    detail: "Expected since \(String(describing: backgroundTrackingForensicState.backgroundTrackingExpectedSince))."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "gapExceedsThreshold",
+                    true,
+                    detail: "\(assessment.gapSeconds)s >= \(Int(Self.forensicFrequentBackgroundGapThreshold))s."
+                )
+            ],
+            context: forensicGapContext(assessment: assessment)
+        )
+        backgroundTrackingForensicState.lastBackgroundGapLoggedAt = now
+        if prepareForegroundRecovery {
+            preparePendingForegroundRecovery(assessment: assessment, now: now)
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func preparePendingForegroundRecovery(assessment: BackgroundTrackingGapAssessment, now: Date) {
+        backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt = now
+        backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode = backgroundTrackingForensicState.currentExpectedMode
+        backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds = assessment.gapSeconds
+        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt = backgroundTrackingForensicState.lastBackgroundCallbackAt
+        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt = backgroundTrackingForensicState.lastBackgroundUploadAt
+        backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted = backgroundTrackingForensicState.backgroundServicesAsserted
+        backgroundTrackingForensicState.foregroundBurstCallbackCount = 0
+        backgroundTrackingForensicState.foregroundBurstAcceptedCount = 0
+        backgroundTrackingForensicState.foregroundBurstUploadCount = 0
+        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = nil
+    }
+
+    private func resetPendingForegroundRecovery() {
+        backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt = nil
+        backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode = nil
+        backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds = nil
+        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt = nil
+        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt = nil
+        backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted = nil
+        backgroundTrackingForensicState.foregroundBurstCallbackCount = 0
+        backgroundTrackingForensicState.foregroundBurstAcceptedCount = 0
+        backgroundTrackingForensicState.foregroundBurstUploadCount = 0
+        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = nil
+    }
+
+    private func forensicGapContext(assessment: BackgroundTrackingGapAssessment) -> [String: LocationDiagnosticsValue] {
+        var context: [String: LocationDiagnosticsValue] = [
+            "gapSeconds": .integer(assessment.gapSeconds),
+            "currentExpectedMode": .string(backgroundTrackingForensicState.currentExpectedMode ?? "unknown"),
+            "backgroundServicesAsserted": .bool(backgroundTrackingForensicState.backgroundServicesAsserted)
+        ]
+        if let expectedSince = backgroundTrackingForensicState.backgroundTrackingExpectedSince {
+            context["backgroundTrackingExpectedSince"] = .string(ISO8601DateFormatter().string(from: expectedSince))
+        }
+        if let lastObservedAt = assessment.lastObservedAt {
+            context["lastObservedBackgroundActivityAt"] = .string(ISO8601DateFormatter().string(from: lastObservedAt))
+        }
+        if let lastCallbackAt = backgroundTrackingForensicState.lastBackgroundCallbackAt {
+            context["lastBackgroundCallbackAt"] = .string(ISO8601DateFormatter().string(from: lastCallbackAt))
+        }
+        if let lastUploadAt = backgroundTrackingForensicState.lastBackgroundUploadAt {
+            context["lastBackgroundUploadAt"] = .string(ISO8601DateFormatter().string(from: lastUploadAt))
+        }
+        return context
+    }
+
+    private func recordForensicLocationCallback(applicationState: UIApplication.State,
+                                                source: LocationUpdateSource,
+                                                timestamp: Date = Date()) {
+        backgroundTrackingForensicState.lastKnownApplicationState = applicationState.rawValue
+        backgroundTrackingForensicState.lastKnownSource = source.rawValue
+        if applicationState == .active {
+            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil,
+               source == .primary {
+                backgroundTrackingForensicState.foregroundBurstCallbackCount += 1
+            }
+        } else {
+            backgroundTrackingForensicState.lastBackgroundCallbackAt = timestamp
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func recordForensicAcceptedLocation(applicationState: UIApplication.State,
+                                                source: LocationUpdateSource,
+                                                timestamp: Date = Date()) {
+        if applicationState == .active {
+            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil,
+               source == .primary {
+                backgroundTrackingForensicState.foregroundBurstAcceptedCount += 1
+                maybeLogForegroundRecoveryBurst(now: timestamp)
+            }
+        } else {
+            backgroundTrackingForensicState.lastAcceptedBackgroundLocationAt = timestamp
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func recordForensicUpload(applicationState: UIApplication.State, timestamp: Date = Date()) {
+        if applicationState == .active {
+            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil {
+                backgroundTrackingForensicState.foregroundBurstUploadCount += 1
+                maybeLogForegroundRecoveryBurst(now: timestamp)
+            }
+        } else {
+            backgroundTrackingForensicState.lastBackgroundUploadAt = timestamp
+        }
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func maybeLogForegroundRecoveryBurst(now: Date = Date()) {
+        guard Self.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt,
+            recoveryAlreadyLoggedAt: backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt,
+            now: now,
+            acceptedCount: backgroundTrackingForensicState.foregroundBurstAcceptedCount,
+            uploadCount: backgroundTrackingForensicState.foregroundBurstUploadCount
+        ) else {
+            return
+        }
+
+        diagnosticsLog.append(
+            level: .warning,
+            event: "foregroundRecoveryBurst",
+            summary: "Foreground opening was followed by accepted/uploaded primary locations after a background gap.",
+            result: "foreground activity after gap",
+            reason: "manual foreground wake",
+            checks: [
+                LocationDiagnosticsLogStore.check(
+                    "withinRecoveryWindow",
+                    true,
+                    detail: "Foreground activity occurred within \(Int(Self.forensicForegroundRecoveryBurstWindow))s."
+                )
+            ],
+            context: foregroundRecoveryContext()
+        )
+        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = now
+        persistBackgroundTrackingForensicState()
+    }
+
+    private func foregroundRecoveryContext() -> [String: LocationDiagnosticsValue] {
+        var context: [String: LocationDiagnosticsValue] = [
+            "previousExpectedMode": .string(backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode ?? "unknown"),
+            "gapSeconds": .integer(backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds ?? 0),
+            "foregroundCallbackCount": .integer(backgroundTrackingForensicState.foregroundBurstCallbackCount),
+            "foregroundAcceptedCount": .integer(backgroundTrackingForensicState.foregroundBurstAcceptedCount),
+            "foregroundUploadCount": .integer(backgroundTrackingForensicState.foregroundBurstUploadCount),
+            "backgroundServicesAsserted": .bool(backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted ?? backgroundTrackingForensicState.backgroundServicesAsserted)
+        ]
+        if let startedAt = backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt {
+            context["foregroundOpenedAt"] = .string(ISO8601DateFormatter().string(from: startedAt))
+        }
+        if let lastCallbackAt = backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt {
+            context["lastBackgroundCallbackAt"] = .string(ISO8601DateFormatter().string(from: lastCallbackAt))
+        }
+        if let lastUploadAt = backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt {
+            context["lastBackgroundUploadAt"] = .string(ISO8601DateFormatter().string(from: lastUploadAt))
+        }
+        return context
+    }
+
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
         let state = Self.effectiveApplicationStateForTracking(
             currentState: UIApplication.shared.applicationState,
@@ -1369,6 +1784,10 @@ final class LocationManager: NSObject, ObservableObject {
             for: mode,
             shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
         )
+        if state != .active {
+            evaluateBackgroundTrackingGap(trigger: reason)
+        }
+        recordForensicModeResolution(mode: mode, applicationState: state, reason: reason)
         debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
         diagnosticsLog.append(
             level: .info,
@@ -1438,6 +1857,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func startHighAccuracyUpdates() {
         debugLog("Calling startHighAccuracyUpdates")
+        recordForensicServiceAssertion(mode: .foregroundHighAccuracy)
         let shouldMaintainPrimarySignificantChangeMonitor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: settings.trackAndReportLocation && isTracking,
             authorizationStatus: locationManager.authorizationStatus,
@@ -1466,6 +1886,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     private func startSignificantChangeMonitoring() {
         debugLog("Starting significant-change background updates")
+        recordForensicServiceAssertion(mode: .backgroundSignificantChange)
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.showsBackgroundLocationIndicator = false
         debugLog("allowsBackgroundLocationUpdates set to true (background)")
@@ -1490,6 +1911,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
+        recordForensicServiceAssertion(mode: .backgroundFrequent(distanceFilter: configuration.distanceFilter, desiredAccuracy: configuration.desiredAccuracy))
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.stopUpdatingLocation()
         locationManager.startMonitoringSignificantLocationChanges()
@@ -1884,6 +2306,8 @@ final class LocationManager: NSObject, ObservableObject {
         }
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
         debugLog("[LocationManager] Smart frequent background runtime activated speedKmh=\(String(describing: speedKmh))")
+        backgroundTrackingForensicState.lastSmartActivationAt = now
+        persistBackgroundTrackingForensicState()
         diagnosticsLog.append(
             level: .warning,
             event: "smartFrequentActivation",
@@ -1913,6 +2337,8 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundInactivityTimer = nil
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
+            backgroundTrackingForensicState.lastSmartDeactivationAt = Date()
+            persistBackgroundTrackingForensicState()
             diagnosticsLog.append(
                 level: .warning,
                 event: "smartFrequentDeactivation",
@@ -2184,13 +2610,14 @@ final class LocationManager: NSObject, ObservableObject {
         switch result {
         case .sent:
             self.markServerUpdateSucceeded()
-            diagnosticsLog.append(
+            recordForensicUpload(applicationState: applicationState)
+            diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationUpload",
                 summary: "Location update sent to server.",
                 result: "sent",
                 reason: nil,
-                checks: [],
+                coalescingKey: "locationUpload|sent|\(applicationState.rawValue)",
                 context: LocationDiagnosticsLogStore.roundedLocationContext(location)
             )
             NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
@@ -2374,6 +2801,7 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - App Lifecycle Hooks
     func appDidEnterForeground() {
         debugLog("[LocationManager] App did enter foreground")
+        recordForensicForegroundOpen(trigger: "app did enter foreground")
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
         guard isTracking else { return }
@@ -2392,6 +2820,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func stopAllLocationServices() {
         debugLog("[LocationManager] Stopping all location services")
+        recordForensicServiceAssertion(mode: .stopped)
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
         locationManager.showsBackgroundLocationIndicator = false
@@ -2552,34 +2981,24 @@ extension LocationManager: CLLocationManagerDelegate {
 
             let applicationState = UIApplication.shared.applicationState
             let updateSource = self.locationUpdateSource(for: manager)
+            self.recordForensicLocationCallback(applicationState: applicationState, source: updateSource)
             debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), processable=\(orderedLocations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
-            self.diagnosticsLog.append(
+            let callbackContext: [String: LocationDiagnosticsValue] = [
+                "source": .string(updateSource.rawValue),
+                "rawCount": .integer(locations.count),
+                "processableCount": .integer(orderedLocations.count),
+                "applicationState": .integer(applicationState.rawValue),
+                "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive)
+            ]
+            self.diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationCallback",
                 summary: "Received CoreLocation location batch.",
                 result: orderedLocations.isEmpty ? "ignored" : "processing",
-                reason: nil,
-                checks: [
-                    LocationDiagnosticsLogStore.check(
-                        "hasProcessableLocations",
-                        !orderedLocations.isEmpty,
-                        detail: "processable=\(orderedLocations.count), raw=\(locations.count)."
-                    ),
-                    LocationDiagnosticsLogStore.check(
-                        "backgroundEligible",
-                        applicationState != .active,
-                        detail: "applicationState=\(applicationState.rawValue)."
-                    )
-                ],
-                context: [
-                    "source": .string(updateSource.rawValue),
-                    "rawCount": .integer(locations.count),
-                    "processableCount": .integer(orderedLocations.count),
-                    "applicationState": .integer(applicationState.rawValue),
-                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
-                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
-                    "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive)
-                ]
+                coalescingKey: "locationCallback|\(applicationState.rawValue)|\(updateSource.rawValue)|manual:\(settings.frequentBackgroundLocationUpdatesEnabled)|smart:\(settings.smartFrequentBackgroundLocationUpdatesEnabled)|runtime:\(smartFrequentBackgroundRuntimeActive)",
+                context: callbackContext
             )
             let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
             let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
@@ -2618,7 +3037,7 @@ extension LocationManager: CLLocationManagerDelegate {
                 self.recordLocationUpdateMetric(mode: updateCounterMode)
                 self.updateCourseHeadingFallbackIfNeeded(from: location)
 
-                guard self.shouldAcceptLocationUpdate(location) else {
+                guard self.shouldAcceptLocationUpdate(location, applicationState: applicationState, updateSource: updateSource) else {
                     continue
                 }
 
@@ -2660,10 +3079,13 @@ extension LocationManager: CLLocationManagerDelegate {
         }
     }
 
-    private func shouldAcceptLocationUpdate(_ location: CLLocation) -> Bool {
+    private func shouldAcceptLocationUpdate(_ location: CLLocation,
+                                            applicationState: UIApplication.State,
+                                            updateSource: LocationUpdateSource) -> Bool {
         let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
         guard let previousLocation = self.currentLocation else {
             debugLog("[LocationManager] First location update accepted.")
+            recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
             diagnosticsLog.append(
                 level: .info,
                 event: "locationAcceptance",
@@ -2684,16 +3106,14 @@ extension LocationManager: CLLocationManagerDelegate {
         let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
         if distance >= minimumDistance {
             debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
-            diagnosticsLog.append(
+            recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
+            diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationAcceptance",
                 summary: "Accepted location update.",
                 result: "accepted",
                 reason: "distance threshold met",
-                checks: [
-                    LocationDiagnosticsLogStore.check("distanceMeetsThreshold", true, detail: "\(distance)m >= \(minimumDistance)m."),
-                    LocationDiagnosticsLogStore.check("accuracyImproved", accuracyImprovement >= significantAccuracyImprovement, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
-                ],
+                coalescingKey: "locationAcceptance|accepted|distance|\(applicationState.rawValue)|\(updateSource.rawValue)",
                 context: diagnosticsLocationContext(location, extra: [
                     ("distanceMeters", .double(distance)),
                     ("minimumDistanceMeters", .double(minimumDistance)),
@@ -2706,16 +3126,14 @@ extension LocationManager: CLLocationManagerDelegate {
         }
         if accuracyImprovement >= significantAccuracyImprovement {
             debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
-            diagnosticsLog.append(
+            recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
+            diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationAcceptance",
                 summary: "Accepted location update.",
                 result: "accepted",
                 reason: "accuracy improvement threshold met",
-                checks: [
-                    LocationDiagnosticsLogStore.check("distanceMeetsThreshold", false, detail: "\(distance)m >= \(minimumDistance)m."),
-                    LocationDiagnosticsLogStore.check("accuracyImproved", true, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
-                ],
+                coalescingKey: "locationAcceptance|accepted|accuracy|\(applicationState.rawValue)|\(updateSource.rawValue)",
                 context: diagnosticsLocationContext(location, extra: [
                     ("distanceMeters", .double(distance)),
                     ("minimumDistanceMeters", .double(minimumDistance)),
@@ -2728,16 +3146,13 @@ extension LocationManager: CLLocationManagerDelegate {
         }
 
         debugLog("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
-        diagnosticsLog.append(
+        diagnosticsLog.appendCoalesced(
             level: .info,
             event: "locationAcceptance",
             summary: "Ignored location update.",
             result: "rejected",
             reason: "distance and accuracy thresholds not met",
-            checks: [
-                LocationDiagnosticsLogStore.check("distanceMeetsThreshold", false, detail: "\(distance)m >= \(minimumDistance)m."),
-                LocationDiagnosticsLogStore.check("accuracyImproved", false, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
-            ],
+            coalescingKey: "locationAcceptance|rejected|thresholds|\(applicationState.rawValue)|\(updateSource.rawValue)",
             context: diagnosticsLocationContext(location, extra: [
                 ("distanceMeters", .double(distance)),
                 ("minimumDistanceMeters", .double(minimumDistance)),
@@ -2781,28 +3196,24 @@ extension LocationManager: CLLocationManagerDelegate {
         if Self.shouldSubmitLocationForUpload(location, lastSubmittedKey: self.lastSubmittedLocationDeduplicationKey) {
             self.lastSubmittedLocationDeduplicationKey = Self.locationSubmissionDeduplicationKey(for: location)
             locationsPendingUpload.append(location)
-            diagnosticsLog.append(
+            diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationUploadDecision",
                 summary: "Location update queued for upload submission.",
                 result: "eligible",
                 reason: "deduplication key is new",
-                checks: [
-                    LocationDiagnosticsLogStore.check("notDuplicateUpload", true, detail: "Location differs from last submitted location.")
-                ],
+                coalescingKey: "locationUploadDecision|eligible",
                 context: LocationDiagnosticsLogStore.roundedLocationContext(location)
             )
         } else {
             debugLog("[LocationManager] Skipping duplicate location upload from parallel location services")
-            diagnosticsLog.append(
+            diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationUploadDecision",
                 summary: "Skipped duplicate location upload.",
                 result: "duplicate",
                 reason: "parallel location services delivered the same location",
-                checks: [
-                    LocationDiagnosticsLogStore.check("notDuplicateUpload", false, detail: "Location matches last submitted location.")
-                ],
+                coalescingKey: "locationUploadDecision|duplicate",
                 context: LocationDiagnosticsLogStore.roundedLocationContext(location)
             )
         }

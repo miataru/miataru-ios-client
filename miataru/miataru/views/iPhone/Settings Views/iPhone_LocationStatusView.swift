@@ -798,9 +798,41 @@ struct LocationDiagnosticsCard: View {
 
             statusRow(
                 title: NSLocalizedString("location_diagnostics_entries_title", comment: "Number of entries in the location diagnostics log"),
-                value: "\(diagnosticsLog.entries.count) / \(LocationDiagnosticsLogStore.defaultMaxEntries)",
+                value: "\(diagnosticsLog.entries.count) / \(LocationDiagnosticsLogStore.defaultMaxEntries) (+\(diagnosticsLog.coalescedCounts.count) summaries)",
                 icon: "list.bullet.rectangle"
             )
+
+            statusRow(
+                title: "Oldest evidence",
+                value: oldestEvidenceText,
+                icon: "calendar"
+            )
+
+            statusRow(
+                title: "Current expected mode",
+                value: locationManager.backgroundTrackingForensicState.currentExpectedMode ?? "unknown",
+                icon: "location"
+            )
+
+            statusRow(
+                title: "Last background callback",
+                value: optionalTime(locationManager.backgroundTrackingForensicState.lastBackgroundCallbackAt),
+                icon: "arrow.down.circle"
+            )
+
+            statusRow(
+                title: "Last background upload",
+                value: optionalTime(locationManager.backgroundTrackingForensicState.lastBackgroundUploadAt),
+                icon: "arrow.up.circle"
+            )
+
+            if let latestGap = latestGapEntry {
+                statusRow(
+                    title: "Latest background gap",
+                    value: "\(latestGap.result) - \(formatTime(latestGap.timestamp))",
+                    icon: latestGap.level == .warning ? "exclamationmark.triangle" : "moon"
+                )
+            }
 
             if let latestEntry = diagnosticsLog.entries.last {
                 statusRow(
@@ -927,7 +959,26 @@ struct LocationDiagnosticsCard: View {
     }
 
     private var recentDiagnosticEntries: [LocationDiagnosticsLogEntry] {
-        Array(diagnosticsLog.entries.suffix(20).reversed())
+        Array(diagnosticsLog.entries.suffix(40))
+            .sorted { lhs, rhs in
+                if lhs.retentionClass != rhs.retentionClass {
+                    return lhs.retentionClass == .critical
+                }
+                return lhs.timestamp > rhs.timestamp
+            }
+            .prefix(20)
+            .map { $0 }
+    }
+
+    private var latestGapEntry: LocationDiagnosticsLogEntry? {
+        diagnosticsLog.entries.last { $0.event == "backgroundTrackingGap" || $0.event == "foregroundRecoveryBurst" }
+    }
+
+    private var oldestEvidenceText: String {
+        guard let oldest = diagnosticsLog.entries.map(\.timestamp).min() else {
+            return "none"
+        }
+        return formatTime(oldest)
     }
 
     private func rearmStatusText(_ status: LocationSignificantChangeRearmStatus) -> String {
@@ -939,6 +990,11 @@ struct LocationDiagnosticsCard: View {
         formatter.dateStyle = .none
         formatter.timeStyle = .medium
         return formatter.string(from: date)
+    }
+
+    private func optionalTime(_ date: Date?) -> String {
+        guard let date else { return "none" }
+        return formatTime(date)
     }
 
     private func color(for level: LocationDiagnosticsLogLevel) -> Color {

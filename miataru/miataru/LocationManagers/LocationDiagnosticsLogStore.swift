@@ -16,6 +16,12 @@ enum LocationDiagnosticsLogLevel: String, Codable, Equatable {
     case error
 }
 
+enum LocationDiagnosticsRetentionClass: String, Codable, Equatable {
+    case critical
+    case sampled
+    case coalesced
+}
+
 enum LocationDiagnosticsValue: Codable, Equatable {
     case bool(Bool)
     case integer(Int)
@@ -74,6 +80,7 @@ struct LocationDiagnosticsLogEntry: Codable, Equatable, Identifiable {
     let id: UUID
     let timestamp: Date
     let level: LocationDiagnosticsLogLevel
+    let retentionClass: LocationDiagnosticsRetentionClass
     let event: String
     let summary: String
     let result: String
@@ -84,6 +91,7 @@ struct LocationDiagnosticsLogEntry: Codable, Equatable, Identifiable {
     init(id: UUID = UUID(),
          timestamp: Date = Date(),
          level: LocationDiagnosticsLogLevel,
+         retentionClass: LocationDiagnosticsRetentionClass = .critical,
          event: String,
          summary: String,
          result: String,
@@ -93,6 +101,7 @@ struct LocationDiagnosticsLogEntry: Codable, Equatable, Identifiable {
         self.id = id
         self.timestamp = timestamp
         self.level = level
+        self.retentionClass = retentionClass
         self.event = event
         self.summary = summary
         self.result = result
@@ -100,15 +109,60 @@ struct LocationDiagnosticsLogEntry: Codable, Equatable, Identifiable {
         self.checks = checks
         self.context = context
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case timestamp
+        case level
+        case retentionClass
+        case event
+        case summary
+        case result
+        case reason
+        case checks
+        case context
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        timestamp = try container.decode(Date.self, forKey: .timestamp)
+        level = try container.decode(LocationDiagnosticsLogLevel.self, forKey: .level)
+        retentionClass = try container.decodeIfPresent(LocationDiagnosticsRetentionClass.self, forKey: .retentionClass) ?? .critical
+        event = try container.decode(String.self, forKey: .event)
+        summary = try container.decode(String.self, forKey: .summary)
+        result = try container.decode(String.self, forKey: .result)
+        reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        checks = try container.decodeIfPresent([LocationDiagnosticsCheck].self, forKey: .checks) ?? []
+        context = try container.decodeIfPresent([String: LocationDiagnosticsValue].self, forKey: .context) ?? [:]
+    }
+}
+
+struct LocationDiagnosticsCoalescedCount: Codable, Equatable, Identifiable {
+    var id: String { key }
+    let key: String
+    let event: String
+    let summary: String
+    let result: String
+    let reason: String?
+    let firstAt: Date
+    var lastAt: Date
+    var count: Int
+    var lastContext: [String: LocationDiagnosticsValue]
 }
 
 struct LocationDiagnosticsExport: Codable, Equatable {
+    let schemaVersion: Int
     let generatedAt: Date
     let appVersion: String
     let build: String
     let maxEntries: Int
+    let criticalRetentionHours: Int
+    let droppedEntryCount: Int
+    let oldestEntryAt: Date?
     let entryCount: Int
     let entries: [LocationDiagnosticsLogEntry]
+    let coalescedCounts: [LocationDiagnosticsCoalescedCount]
 }
 
 struct LocationSignificantChangeRearmStatus: Codable, Equatable {
@@ -127,13 +181,19 @@ struct LocationSignificantChangeRearmStatus: Codable, Equatable {
 final class LocationDiagnosticsLogStore: ObservableObject {
     static let shared = LocationDiagnosticsLogStore()
 
-    static let defaultMaxEntries = 1_000
+    static let schemaVersion = 2
+    static let defaultMaxEntries = 2_500
+    static let criticalRetentionInterval: TimeInterval = 24 * 60 * 60
+    static let defaultCoalescedCountLimit = 250
     static let defaultLogFileName = "location-diagnostics-log.json"
 
     @Published private(set) var entries: [LocationDiagnosticsLogEntry] = []
+    @Published private(set) var coalescedCounts: [LocationDiagnosticsCoalescedCount] = []
+    @Published private(set) var droppedEntryCount: Int = 0
     @Published private(set) var isEnabled: Bool
 
     private let maxEntries: Int
+    private let coalescedCountLimit: Int
     private let userDefaults: UserDefaults
     private let fileURL: URL
     private let fileManager: FileManager
@@ -143,16 +203,21 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     init(userDefaults: UserDefaults = .standard,
          fileURL: URL? = nil,
          maxEntries: Int = LocationDiagnosticsLogStore.defaultMaxEntries,
+         coalescedCountLimit: Int = LocationDiagnosticsLogStore.defaultCoalescedCountLimit,
          fileManager: FileManager = .default) {
         self.userDefaults = userDefaults
         self.fileManager = fileManager
         self.maxEntries = max(1, maxEntries)
+        self.coalescedCountLimit = max(1, coalescedCountLimit)
         self.fileURL = fileURL ?? Self.defaultLogFileURL(fileManager: fileManager)
         self.isEnabled = userDefaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         decoder.dateDecodingStrategy = .iso8601
-        entries = Self.loadEntries(from: self.fileURL, decoder: decoder, fileManager: fileManager)
+        let persistedLog = Self.loadPersistedLog(from: self.fileURL, decoder: decoder, fileManager: fileManager)
+        entries = persistedLog.entries
+        coalescedCounts = persistedLog.coalescedCounts
+        droppedEntryCount = persistedLog.droppedEntryCount
         if entries.count > self.maxEntries {
             trimToLimit()
             persist()
@@ -166,10 +231,13 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func clear() {
         entries = []
+        coalescedCounts = []
+        droppedEntryCount = 0
         try? fileManager.removeItem(at: fileURL)
     }
 
     func append(level: LocationDiagnosticsLogLevel,
+                retentionClass: LocationDiagnosticsRetentionClass = .critical,
                 event: String,
                 summary: String,
                 result: String,
@@ -181,6 +249,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         entries.append(LocationDiagnosticsLogEntry(
             timestamp: timestamp(),
             level: level,
+            retentionClass: retentionClass,
             event: event,
             summary: summary,
             result: result,
@@ -192,16 +261,85 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         persist()
     }
 
+    func appendCoalesced(level: LocationDiagnosticsLogLevel,
+                         event: String,
+                         summary: String,
+                         result: String,
+                         reason: String? = nil,
+                         coalescingKey: String,
+                         context: @autoclosure () -> [String: LocationDiagnosticsValue] = [:],
+                         timestamp: @autoclosure () -> Date = Date(),
+                         sampleEvery sampleInterval: Int = 50) {
+        guard isEnabled else { return }
+
+        let resolvedTimestamp = timestamp()
+        let resolvedContext = context()
+        if let index = coalescedCounts.firstIndex(where: { $0.key == coalescingKey }) {
+            coalescedCounts[index].count += 1
+            coalescedCounts[index].lastAt = resolvedTimestamp
+            coalescedCounts[index].lastContext = resolvedContext
+            if sampleInterval > 0, coalescedCounts[index].count % sampleInterval == 0 {
+                append(
+                    level: level,
+                    retentionClass: .sampled,
+                    event: event,
+                    summary: "\(summary) (sample \(coalescedCounts[index].count))",
+                    result: result,
+                    reason: reason,
+                    context: resolvedContext,
+                    timestamp: resolvedTimestamp
+                )
+                return
+            }
+        } else {
+            coalescedCounts.append(LocationDiagnosticsCoalescedCount(
+                key: coalescingKey,
+                event: event,
+                summary: summary,
+                result: result,
+                reason: reason,
+                firstAt: resolvedTimestamp,
+                lastAt: resolvedTimestamp,
+                count: 1,
+                lastContext: resolvedContext
+            ))
+            append(
+                level: level,
+                retentionClass: .sampled,
+                event: event,
+                summary: "\(summary) (first coalesced sample)",
+                result: result,
+                reason: reason,
+                context: resolvedContext,
+                timestamp: resolvedTimestamp
+            )
+            return
+        }
+
+        trimCoalescedCountsToLimit()
+        persist()
+    }
+
     func makeExport(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown",
                     generatedAt: Date = Date()) -> LocationDiagnosticsExport {
         LocationDiagnosticsExport(
+            schemaVersion: Self.schemaVersion,
             generatedAt: generatedAt,
             appVersion: appVersion,
             build: build,
             maxEntries: maxEntries,
+            criticalRetentionHours: Int(Self.criticalRetentionInterval / 3600),
+            droppedEntryCount: droppedEntryCount,
+            oldestEntryAt: entries.map(\.timestamp).min(),
             entryCount: entries.count,
-            entries: entries
+            entries: entries,
+            coalescedCounts: coalescedCounts.sorted { lhs, rhs in
+                if lhs.lastAt == rhs.lastAt {
+                    return lhs.key < rhs.key
+                }
+                return lhs.lastAt < rhs.lastAt
+            }
         )
     }
 
@@ -240,7 +378,12 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private func persist() {
         do {
             try fileManager.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-            let data = try encoder.encode(entries)
+            let data = try encoder.encode(LocationDiagnosticsPersistedLog(
+                schemaVersion: Self.schemaVersion,
+                entries: entries,
+                coalescedCounts: coalescedCounts,
+                droppedEntryCount: droppedEntryCount
+            ))
             try data.write(to: fileURL, options: .atomic)
         } catch {
             debugLog("[LocationDiagnosticsLogStore] Failed persisting diagnostics log: \(error)")
@@ -249,18 +392,66 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     private func trimToLimit() {
         guard entries.count > maxEntries else { return }
-        entries = Array(entries.suffix(maxEntries))
+        var keptEntries = entries
+        while keptEntries.count > maxEntries,
+              let sampledIndex = keptEntries.firstIndex(where: { $0.retentionClass != .critical }) {
+            keptEntries.remove(at: sampledIndex)
+            droppedEntryCount += 1
+        }
+        if keptEntries.count > maxEntries {
+            let overflowCount = keptEntries.count - maxEntries
+            keptEntries.removeFirst(overflowCount)
+            droppedEntryCount += overflowCount
+        }
+        entries = keptEntries
     }
 
-    private static func loadEntries(from fileURL: URL,
-                                    decoder: JSONDecoder,
-                                    fileManager: FileManager) -> [LocationDiagnosticsLogEntry] {
-        guard fileManager.fileExists(atPath: fileURL.path),
-              let data = try? Data(contentsOf: fileURL),
-              let entries = try? decoder.decode([LocationDiagnosticsLogEntry].self, from: data) else {
-            return []
+    private func trimCoalescedCountsToLimit() {
+        guard coalescedCounts.count > coalescedCountLimit else { return }
+        coalescedCounts.sort { lhs, rhs in
+            if lhs.lastAt == rhs.lastAt {
+                return lhs.key < rhs.key
+            }
+            return lhs.lastAt < rhs.lastAt
         }
-        return entries
+        let overflowCount = coalescedCounts.count - coalescedCountLimit
+        coalescedCounts.removeFirst(overflowCount)
+        droppedEntryCount += overflowCount
+    }
+
+    private static func loadPersistedLog(from fileURL: URL,
+                                         decoder: JSONDecoder,
+                                         fileManager: FileManager) -> LocationDiagnosticsPersistedLog {
+        guard fileManager.fileExists(atPath: fileURL.path),
+              let data = try? Data(contentsOf: fileURL) else {
+            return .empty
+        }
+        if let persistedLog = try? decoder.decode(LocationDiagnosticsPersistedLog.self, from: data) {
+            return persistedLog
+        }
+        if let legacyEntries = try? decoder.decode([LocationDiagnosticsLogEntry].self, from: data) {
+            return LocationDiagnosticsPersistedLog(
+                schemaVersion: 1,
+                entries: legacyEntries,
+                coalescedCounts: [],
+                droppedEntryCount: 0
+            )
+        }
+        return .empty
+    }
+
+    private struct LocationDiagnosticsPersistedLog: Codable, Equatable {
+        let schemaVersion: Int
+        var entries: [LocationDiagnosticsLogEntry]
+        var coalescedCounts: [LocationDiagnosticsCoalescedCount]
+        var droppedEntryCount: Int
+
+        static let empty = LocationDiagnosticsPersistedLog(
+            schemaVersion: LocationDiagnosticsLogStore.schemaVersion,
+            entries: [],
+            coalescedCounts: [],
+            droppedEntryCount: 0
+        )
     }
 
     private static func defaultLogFileURL(fileManager: FileManager) -> URL {
