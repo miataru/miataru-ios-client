@@ -559,6 +559,140 @@ struct SettingsConfigurationTests {
             distanceFilterMeters: 3
         )
         #expect(fallbackConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
+        #expect(SettingsDefaultValues.locationDiagnosticsLoggingEnabled == false)
+        #expect(SettingsDefaultValues.registrations[SettingsKeys.locationDiagnosticsLoggingEnabled] as? Bool == false)
+    }
+
+    @Test("Location diagnostics log is opt-in, persistent, capped, and exports rounded locations")
+    @MainActor
+    func locationDiagnosticsLogIsOptInPersistentCappedAndExportsRoundedLocations() throws {
+        let suiteName = "LocationDiagnosticsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let store = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, maxEntries: 2)
+        #expect(!store.isEnabled)
+        store.append(
+            level: .info,
+            event: "disabled",
+            summary: "Disabled log",
+            result: "ignored"
+        )
+        #expect(store.entries.isEmpty)
+
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.1234567, longitude: 13.9876543),
+            altitude: 0,
+            horizontalAccuracy: 12.34,
+            verticalAccuracy: 8,
+            course: -1,
+            speed: 3.2,
+            timestamp: Date(timeIntervalSince1970: 1_000)
+        )
+
+        store.setEnabled(true)
+        store.append(level: .info, event: "first", summary: "First", result: "stored")
+        store.append(level: .warning, event: "second", summary: "Second", result: "stored")
+        store.append(
+            level: .error,
+            event: "third",
+            summary: "Third",
+            result: "stored",
+            context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+        )
+
+        #expect(store.entries.map(\.event) == ["second", "third"])
+
+        let reloadedStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, maxEntries: 2)
+        #expect(reloadedStore.isEnabled)
+        #expect(reloadedStore.entries.map(\.event) == ["second", "third"])
+
+        let exportData = try reloadedStore.exportData(appVersion: "9.9", build: "42")
+        let exportedString = try #require(String(data: exportData, encoding: .utf8))
+        #expect(!exportedString.localizedCaseInsensitiveContains("devicekey"))
+        let exportObject = try #require(JSONSerialization.jsonObject(with: exportData) as? [String: Any])
+        #expect(exportObject["appVersion"] as? String == "9.9")
+        #expect(exportObject["build"] as? String == "42")
+        #expect(exportObject["entryCount"] as? Int == 2)
+        let entries = try #require(exportObject["entries"] as? [[String: Any]])
+        let context = try #require(entries.last?["context"] as? [String: Any])
+        #expect(context["locationLatitude"] as? Double == 52.1235)
+        #expect(context["locationLongitude"] as? Double == 13.9877)
+    }
+
+    @Test("Significant-change rearm policy attempts only for eligible fresh builds")
+    func significantChangeRearmPolicyAttemptsOnlyForEligibleFreshBuilds() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let allowed = LocationManager.significantChangeRearmDecision(
+            buildIdentifier: "2.0-100",
+            alreadyRearmedBuildIdentifier: nil,
+            reason: "fresh app/update launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            now: now
+        )
+        #expect(allowed.shouldAttempt)
+        #expect(allowed.status.result == .attempted)
+        #expect(allowed.status.reason == "fresh app/update launch")
+        #expect(allowed.status.checks.allSatisfy { $0.passed })
+
+        let repeated = LocationManager.significantChangeRearmDecision(
+            buildIdentifier: "2.0-100",
+            alreadyRearmedBuildIdentifier: "2.0-100",
+            reason: "fresh app/update launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            now: now
+        )
+        #expect(!repeated.shouldAttempt)
+        #expect(repeated.status.result == .skipped)
+        #expect(repeated.status.reason == "already re-armed for this build")
+        #expect(repeated.status.checks.first(where: { $0.name == "buildNotRearmed" })?.passed == false)
+
+        let missingAlways = LocationManager.significantChangeRearmDecision(
+            buildIdentifier: "2.0-101",
+            alreadyRearmedBuildIdentifier: nil,
+            reason: "fresh app/update launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedWhenInUse,
+            deviceKeyAuthBlocked: false,
+            now: now
+        )
+        #expect(!missingAlways.shouldAttempt)
+        #expect(missingAlways.status.reason == "Always authorization missing")
+        #expect(missingAlways.status.checks.first(where: { $0.name == "authorizedAlways" })?.passed == false)
+
+        let disabledTracking = LocationManager.significantChangeRearmDecision(
+            buildIdentifier: "2.0-101",
+            alreadyRearmedBuildIdentifier: nil,
+            reason: "fresh app/update launch",
+            trackAndReportLocation: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            now: now
+        )
+        #expect(!disabledTracking.shouldAttempt)
+        #expect(disabledTracking.status.reason == "location tracking disabled")
+
+        let blockedDeviceKey = LocationManager.significantChangeRearmDecision(
+            buildIdentifier: "2.0-101",
+            alreadyRearmedBuildIdentifier: nil,
+            reason: "fresh app/update launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: true,
+            now: now
+        )
+        #expect(!blockedDeviceKey.shouldAttempt)
+        #expect(blockedDeviceKey.status.reason == "DeviceKey auth blocked")
     }
 
     @Test("Location tracking mode resolver keeps foreground, navigation, and background policies distinct")

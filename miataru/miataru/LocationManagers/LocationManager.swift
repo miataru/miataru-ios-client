@@ -57,6 +57,7 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var smartFrequentBackgroundLastActivationReason: String?
     @Published private(set) var smartFrequentBackgroundLastRelevantMovementAt: Date?
     @Published private(set) var smartFrequentBackgroundNextInactivityTimeoutAt: Date?
+    @Published private(set) var lastSignificantChangeRearmStatus: LocationSignificantChangeRearmStatus?
     
     // MARK: - Private Properties
     private let locationManager = CLLocationManager()
@@ -78,8 +79,11 @@ final class LocationManager: NSObject, ObservableObject {
     private let smartFrequentBackgroundSeedCourseKey = "miataru_smartFrequentBackgroundSeedCourse"
     private let smartFrequentBackgroundSeedSpeedKey = "miataru_smartFrequentBackgroundSeedSpeed"
     private let smartFrequentBackgroundSeedTimestampKey = "miataru_smartFrequentBackgroundSeedTimestamp"
+    private let significantChangeRearmedBuildIdentifierKey = "miataru_significantChangeRearmedBuildIdentifier"
+    private let lastSignificantChangeRearmStatusKey = "miataru_lastSignificantChangeRearmStatus"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
+    private let diagnosticsLog = LocationDiagnosticsLogStore.shared
     private var foregroundLocationTimer: Timer?
     private var frequentBackgroundLocationExpirationTimer: Timer?
     private var smartFrequentBackgroundInactivityTimer: Timer?
@@ -197,6 +201,11 @@ final class LocationManager: NSObject, ObservableObject {
         let secondary: [SecondaryLocationServiceCommand]
     }
 
+    struct SignificantChangeRearmDecision: Equatable {
+        let shouldAttempt: Bool
+        let status: LocationSignificantChangeRearmStatus
+    }
+
     private enum LocationUpdateSource: String {
         case primary
         case frequentBackground
@@ -286,6 +295,7 @@ final class LocationManager: NSObject, ObservableObject {
         if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
             lastServerUpdate = savedDate
         }
+        lastSignificantChangeRearmStatus = loadLastSignificantChangeRearmStatus()
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
@@ -812,6 +822,63 @@ final class LocationManager: NSObject, ObservableObject {
         trackAndReportLocation && !deviceKeyAuthBlocked
     }
 
+    static func significantChangeRearmDecision(buildIdentifier: String,
+                                               alreadyRearmedBuildIdentifier: String?,
+                                               reason: String,
+                                               trackAndReportLocation: Bool,
+                                               authorizationStatus: CLAuthorizationStatus,
+                                               deviceKeyAuthBlocked: Bool,
+                                               now: Date = Date()) -> SignificantChangeRearmDecision {
+        let buildNotRearmed = alreadyRearmedBuildIdentifier != buildIdentifier
+        let checks = [
+            LocationDiagnosticsLogStore.check(
+                "trackingEnabled",
+                trackAndReportLocation,
+                detail: trackAndReportLocation ? "Location tracking is enabled." : "Location tracking is disabled."
+            ),
+            LocationDiagnosticsLogStore.check(
+                "authorizedAlways",
+                authorizationStatus == .authorizedAlways,
+                detail: "Authorization status: \(authorizationStatus.rawValue)."
+            ),
+            LocationDiagnosticsLogStore.check(
+                "deviceKeyNotBlocked",
+                !deviceKeyAuthBlocked,
+                detail: deviceKeyAuthBlocked ? "DeviceKey authentication is blocked." : "DeviceKey authentication is not blocked."
+            ),
+            LocationDiagnosticsLogStore.check(
+                "buildNotRearmed",
+                buildNotRearmed,
+                detail: buildNotRearmed ? "Build has not been re-armed yet." : "Build was already re-armed."
+            )
+        ]
+
+        let skipReason: String?
+        if !trackAndReportLocation {
+            skipReason = "location tracking disabled"
+        } else if authorizationStatus != .authorizedAlways {
+            skipReason = "Always authorization missing"
+        } else if deviceKeyAuthBlocked {
+            skipReason = "DeviceKey auth blocked"
+        } else if !buildNotRearmed {
+            skipReason = "already re-armed for this build"
+        } else {
+            skipReason = nil
+        }
+
+        let status = LocationSignificantChangeRearmStatus(
+            timestamp: now,
+            buildIdentifier: buildIdentifier,
+            result: skipReason == nil ? .attempted : .skipped,
+            reason: skipReason ?? reason,
+            checks: checks
+        )
+        return SignificantChangeRearmDecision(
+            shouldAttempt: skipReason == nil,
+            status: status
+        )
+    }
+
     static func shouldMaintainFrequentBackgroundActivitySession(trackAndReportLocation: Bool,
                                                                 isTracking: Bool,
                                                                 frequentUpdatesEnabled: Bool,
@@ -1117,8 +1184,71 @@ final class LocationManager: NSObject, ObservableObject {
         isTracking = true
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
+        diagnosticsLog.append(
+            level: .info,
+            event: "restoreTrackingAfterLaunch",
+            summary: "Restored tracking after launch.",
+            result: "tracking restored",
+            reason: reason,
+            checks: trackingEligibilityChecks(status: authorizationStatus),
+            context: [
+                "applicationStateContext": .string(String(describing: applicationStateContext)),
+                "authorizationStatus": .integer(Int(authorizationStatus.rawValue)),
+                "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
+            ]
+        )
         applyTrackingMode(reason: "restore tracking after launch: \(reason)", applicationStateContext: applicationStateContext)
         refreshPendingLocationUpdateCount()
+    }
+
+    func rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(buildIdentifier: String, reason: String) {
+        let status = locationManager.authorizationStatus
+        let decision = Self.significantChangeRearmDecision(
+            buildIdentifier: buildIdentifier,
+            alreadyRearmedBuildIdentifier: userDefaults.string(forKey: significantChangeRearmedBuildIdentifierKey),
+            reason: reason,
+            trackAndReportLocation: settings.trackAndReportLocation,
+            authorizationStatus: status,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
+        )
+
+        lastSignificantChangeRearmStatus = decision.status
+        persistLastSignificantChangeRearmStatus(decision.status)
+
+        guard decision.shouldAttempt else {
+            diagnosticsLog.append(
+                level: .info,
+                event: "significantChangeRearm",
+                summary: "Skipped significant-change re-arm.",
+                result: decision.status.result.rawValue,
+                reason: decision.status.reason,
+                checks: decision.status.checks,
+                context: ["buildIdentifier": .string(buildIdentifier)]
+            )
+            return
+        }
+
+        debugLog("[LocationManager] Re-arming significant-change monitor after fresh launch (\(reason))")
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.stopMonitoringSignificantLocationChanges()
+        isSignificantChangeRecoveryAnchorActive = false
+        locationManager.startMonitoringSignificantLocationChanges()
+        isSignificantChangeRecoveryAnchorActive = true
+        userDefaults.set(buildIdentifier, forKey: significantChangeRearmedBuildIdentifierKey)
+
+        diagnosticsLog.append(
+            level: .warning,
+            event: "significantChangeRearm",
+            summary: "Re-armed significant-change monitor with stop/start.",
+            result: decision.status.result.rawValue,
+            reason: decision.status.reason,
+            checks: decision.status.checks,
+            context: [
+                "buildIdentifier": .string(buildIdentifier),
+                "allowsBackgroundLocationUpdates": .bool(locationManager.allowsBackgroundLocationUpdates)
+            ]
+        )
     }
     
     func stopTracking() {
@@ -1140,6 +1270,52 @@ final class LocationManager: NSObject, ObservableObject {
         guard navigationLocationSessionIDs.remove(id) != nil else { return }
         debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
         applyTrackingMode(reason: "end navigation location session")
+    }
+
+    private func trackingEligibilityChecks(status: CLAuthorizationStatus) -> [LocationDiagnosticsCheck] {
+        [
+            LocationDiagnosticsLogStore.check(
+                "trackingEnabled",
+                settings.trackAndReportLocation && isTracking,
+                detail: "trackAndReportLocation=\(settings.trackAndReportLocation), isTracking=\(isTracking)."
+            ),
+            LocationDiagnosticsLogStore.check(
+                "authorizedAlways",
+                status == .authorizedAlways,
+                detail: "Authorization status: \(status.rawValue)."
+            ),
+            LocationDiagnosticsLogStore.check(
+                "deviceKeyNotBlocked",
+                !settings.deviceKeyAuthBlocked,
+                detail: settings.deviceKeyAuthBlocked ? "DeviceKey auth is blocked." : "DeviceKey auth is not blocked."
+            )
+        ]
+    }
+
+    private func diagnosticsLocationContext(_ location: CLLocation,
+                                            extra: [(String, LocationDiagnosticsValue)] = []) -> [String: LocationDiagnosticsValue] {
+        var context = LocationDiagnosticsLogStore.roundedLocationContext(location)
+        for (key, value) in extra {
+            context[key] = value
+        }
+        return context
+    }
+
+    private func persistLastSignificantChangeRearmStatus(_ status: LocationSignificantChangeRearmStatus) {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        if let data = try? encoder.encode(status) {
+            userDefaults.set(data, forKey: lastSignificantChangeRearmStatusKey)
+        }
+    }
+
+    private func loadLastSignificantChangeRearmStatus() -> LocationSignificantChangeRearmStatus? {
+        guard let data = userDefaults.data(forKey: lastSignificantChangeRearmStatusKey) else {
+            return nil
+        }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try? decoder.decode(LocationSignificantChangeRearmStatus.self, from: data)
     }
 
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
@@ -1194,6 +1370,30 @@ final class LocationManager: NSObject, ObservableObject {
             shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
         )
         debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
+        diagnosticsLog.append(
+            level: .info,
+            event: "trackingModeResolution",
+            summary: "Resolved location tracking mode.",
+            result: String(describing: mode),
+            reason: reason,
+            checks: trackingEligibilityChecks(status: status) + [
+                LocationDiagnosticsLogStore.check(
+                    "backgroundEligible",
+                    state != .active && status == .authorizedAlways && isTracking,
+                    detail: "applicationState=\(state.rawValue)."
+                )
+            ],
+            context: [
+                "applicationState": .integer(state.rawValue),
+                "authorizationStatus": .integer(Int(status.rawValue)),
+                "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive),
+                "effectiveFrequent": .bool(effectiveFrequentBackgroundUpdatesEnabled),
+                "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
+                "navigationSessions": .integer(navigationLocationSessionIDs.count)
+            ]
+        )
         syncLocationServiceSession(
             reason: reason,
             shouldMaintainSession: Self.shouldMaintainLocationServiceSession(
@@ -1274,6 +1474,18 @@ final class LocationManager: NSObject, ObservableObject {
         stopFrequentBackgroundStandardUpdates()
         stopHeadingUpdates()
         stopForegroundLocationTimer()
+        diagnosticsLog.append(
+            level: .info,
+            event: "locationServiceStart",
+            summary: "Started significant-change background monitoring.",
+            result: "significant-change active",
+            reason: nil,
+            checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+            context: [
+                "allowsBackgroundLocationUpdates": .bool(locationManager.allowsBackgroundLocationUpdates),
+                "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive)
+            ]
+        )
     }
 
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
@@ -1295,6 +1507,20 @@ final class LocationManager: NSObject, ObservableObject {
         isFrequentBackgroundStandardUpdatesActive = true
         shouldAllowNextStaleFrequentBackgroundCallback = false
         stopForegroundLocationTimer()
+        diagnosticsLog.append(
+            level: .info,
+            event: "locationServiceStart",
+            summary: "Started frequent background location updates.",
+            result: "frequent background active",
+            reason: nil,
+            checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+            context: [
+                "distanceFilterMeters": .double(configuration.distanceFilter),
+                "desiredAccuracy": .double(configuration.desiredAccuracy),
+                "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
+                "secondaryStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive)
+            ]
+        )
     }
 
     private func stopFrequentBackgroundStandardUpdates() {
@@ -1571,18 +1797,59 @@ final class LocationManager: NSObject, ObservableObject {
             return didDeactivateForInactivity
         }
 
-        guard updateSource == .primary,
-              Self.canActivateSmartFrequentBackgroundUpdates(
-                now: now,
-                locationTimestamp: location.timestamp,
-                previousLocationUpdateAt: previousLocationUpdateAt,
-                inactivityWindow: settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
-              ),
-              Self.shouldActivateSmartFrequentBackgroundUpdates(
-                speedKmh: speedKmh,
-                thresholdKmh: settings.smartFrequentBackgroundSpeedThresholdKmh
-              ),
-              !isBatteryAtOrBelowFrequentBackgroundThreshold() else {
+        let sourceIsPrimary = updateSource == .primary
+        let canActivate = Self.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: location.timestamp,
+            previousLocationUpdateAt: previousLocationUpdateAt,
+            inactivityWindow: settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        )
+        let speedActivates = Self.shouldActivateSmartFrequentBackgroundUpdates(
+            speedKmh: speedKmh,
+            thresholdKmh: settings.smartFrequentBackgroundSpeedThresholdKmh
+        )
+        let batteryAboveThreshold = !isBatteryAtOrBelowFrequentBackgroundThreshold()
+
+        guard sourceIsPrimary,
+              canActivate,
+              speedActivates,
+              batteryAboveThreshold else {
+            if diagnosticsLog.isEnabled {
+                let activationChecks = [
+                    LocationDiagnosticsLogStore.check(
+                        "sourceIsPrimary",
+                        sourceIsPrimary,
+                        detail: "Update source: \(updateSource.rawValue)."
+                    ),
+                    LocationDiagnosticsLogStore.check(
+                        "smartCanActivate",
+                        canActivate,
+                        detail: "Previous location timestamp: \(String(describing: previousLocationUpdateAt))."
+                    ),
+                    LocationDiagnosticsLogStore.check(
+                        "speedMeetsThreshold",
+                        speedActivates,
+                        detail: "speedKmh=\(String(describing: speedKmh)), threshold=\(settings.smartFrequentBackgroundSpeedThresholdKmh)."
+                    ),
+                    LocationDiagnosticsLogStore.check(
+                        "batteryAboveThreshold",
+                        batteryAboveThreshold,
+                        detail: "Battery is above frequent background auto-disable threshold."
+                    )
+                ]
+                diagnosticsLog.append(
+                    level: .info,
+                    event: "smartFrequentActivation",
+                    summary: "Smart frequent runtime was not activated.",
+                    result: "blocked",
+                    reason: activationChecks.first(where: { !$0.passed })?.detail,
+                    checks: activationChecks,
+                    context: diagnosticsLocationContext(location, extra: [
+                        ("speedKmh", speedKmh.map { .double($0) } ?? .string("unknown")),
+                        ("thresholdKmh", .integer(settings.smartFrequentBackgroundSpeedThresholdKmh))
+                    ])
+                )
+            }
             return didDeactivateForInactivity
         }
 
@@ -1617,6 +1884,21 @@ final class LocationManager: NSObject, ObservableObject {
         }
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
         debugLog("[LocationManager] Smart frequent background runtime activated speedKmh=\(String(describing: speedKmh))")
+        diagnosticsLog.append(
+            level: .warning,
+            event: "smartFrequentActivation",
+            summary: "Smart frequent runtime activated.",
+            result: "activated",
+            reason: smartFrequentBackgroundLastActivationReason,
+            checks: [
+                LocationDiagnosticsLogStore.check("smartCanActivate", true, detail: "Smart frequent activation criteria passed."),
+                LocationDiagnosticsLogStore.check("batteryAboveThreshold", true, detail: "Battery is above frequent background auto-disable threshold.")
+            ],
+            context: diagnosticsLocationContext(location, extra: [
+                ("speedKmh", speedKmh.map { .double($0) } ?? .string("unknown")),
+                ("distanceFilterMeters", .integer(settings.frequentBackgroundLocationDistanceFilter))
+            ])
+        )
         notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: true)
     }
 
@@ -1631,6 +1913,18 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundInactivityTimer = nil
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
+            diagnosticsLog.append(
+                level: .warning,
+                event: "smartFrequentDeactivation",
+                summary: "Smart frequent runtime deactivated.",
+                result: "deactivated",
+                reason: reason,
+                checks: [],
+                context: [
+                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
+                ]
+            )
         }
         return wasActive
     }
@@ -1828,16 +2122,45 @@ final class LocationManager: NSObject, ObservableObject {
             self.serverUpdateStatus = .failed(
                 NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
             )
+            diagnosticsLog.append(
+                level: .error,
+                event: "locationUpload",
+                summary: "Skipped location upload.",
+                result: "blocked",
+                reason: "DeviceKey auth blocked",
+                checks: [
+                    LocationDiagnosticsLogStore.check("deviceKeyNotBlocked", false, detail: "DeviceKey auth is blocked.")
+                ],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
             return
         }
         guard !settings.miataruServerURL.isEmpty,
               let serverURL = URL(string: settings.miataruServerURL) else {
             self.serverUpdateStatus = .failed("Invalid server configuration")
+            diagnosticsLog.append(
+                level: .error,
+                event: "locationUpload",
+                summary: "Skipped location upload.",
+                result: "failed",
+                reason: "invalid server configuration",
+                checks: [],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
             return
         }
         guard let payload = sanitizedPayload(from: location) else {
             debugLog("[LocationManager] Skipping server update due to invalid location values")
             self.serverUpdateStatus = .failed("Invalid location values")
+            diagnosticsLog.append(
+                level: .error,
+                event: "locationUpload",
+                summary: "Skipped location upload.",
+                result: "failed",
+                reason: "invalid location values",
+                checks: [],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
             return
         }
         let applicationState = UIApplication.shared.applicationState
@@ -1861,6 +2184,15 @@ final class LocationManager: NSObject, ObservableObject {
         switch result {
         case .sent:
             self.markServerUpdateSucceeded()
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationUpload",
+                summary: "Location update sent to server.",
+                result: "sent",
+                reason: nil,
+                checks: [],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
             NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
             Task {
                 await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
@@ -1872,6 +2204,15 @@ final class LocationManager: NSObject, ObservableObject {
             debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
             self.serverUpdateStatus = .idle
             self.refreshPendingLocationUpdateCount()
+            diagnosticsLog.append(
+                level: .warning,
+                event: "locationUpload",
+                summary: "Location update queued for retry/outbox delivery.",
+                result: "queued",
+                reason: nil,
+                checks: [],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
         case .failed(let error):
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 settings.deviceKeyAuthBlocked = true
@@ -1881,6 +2222,15 @@ final class LocationManager: NSObject, ObservableObject {
             } else {
                 self.serverUpdateStatus = .failed(error.localizedDescription)
             }
+            diagnosticsLog.append(
+                level: .error,
+                event: "locationUpload",
+                summary: "Location upload failed.",
+                result: "failed",
+                reason: error.localizedDescription,
+                checks: [],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
         }
     }
 
@@ -2182,12 +2532,55 @@ extension LocationManager: CLLocationManagerDelegate {
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
                 debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
+                self.diagnosticsLog.append(
+                    level: .warning,
+                    event: "locationCallback",
+                    summary: "Ignored CoreLocation location batch.",
+                    result: "ignored",
+                    reason: "empty or invalid batch",
+                    checks: [
+                        LocationDiagnosticsLogStore.check(
+                            "hasProcessableLocations",
+                            false,
+                            detail: "processable=0, raw=\(locations.count)."
+                        )
+                    ],
+                    context: ["rawCount": .integer(locations.count)]
+                )
                 return
             }
 
             let applicationState = UIApplication.shared.applicationState
             let updateSource = self.locationUpdateSource(for: manager)
             debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), processable=\(orderedLocations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
+            self.diagnosticsLog.append(
+                level: .info,
+                event: "locationCallback",
+                summary: "Received CoreLocation location batch.",
+                result: orderedLocations.isEmpty ? "ignored" : "processing",
+                reason: nil,
+                checks: [
+                    LocationDiagnosticsLogStore.check(
+                        "hasProcessableLocations",
+                        !orderedLocations.isEmpty,
+                        detail: "processable=\(orderedLocations.count), raw=\(locations.count)."
+                    ),
+                    LocationDiagnosticsLogStore.check(
+                        "backgroundEligible",
+                        applicationState != .active,
+                        detail: "applicationState=\(applicationState.rawValue)."
+                    )
+                ],
+                context: [
+                    "source": .string(updateSource.rawValue),
+                    "rawCount": .integer(locations.count),
+                    "processableCount": .integer(orderedLocations.count),
+                    "applicationState": .integer(applicationState.rawValue),
+                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                    "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive)
+                ]
+            )
             let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
             let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
             var didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery
@@ -2271,6 +2664,19 @@ extension LocationManager: CLLocationManagerDelegate {
         let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
         guard let previousLocation = self.currentLocation else {
             debugLog("[LocationManager] First location update accepted.")
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationAcceptance",
+                summary: "Accepted first location update.",
+                result: "accepted",
+                reason: "first location update",
+                checks: [
+                    LocationDiagnosticsLogStore.check("hasPreviousLocation", false, detail: "No previous accepted location exists.")
+                ],
+                context: diagnosticsLocationContext(location, extra: [
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
             return true
         }
 
@@ -2278,14 +2684,68 @@ extension LocationManager: CLLocationManagerDelegate {
         let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
         if distance >= minimumDistance {
             debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationAcceptance",
+                summary: "Accepted location update.",
+                result: "accepted",
+                reason: "distance threshold met",
+                checks: [
+                    LocationDiagnosticsLogStore.check("distanceMeetsThreshold", true, detail: "\(distance)m >= \(minimumDistance)m."),
+                    LocationDiagnosticsLogStore.check("accuracyImproved", accuracyImprovement >= significantAccuracyImprovement, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
+                ],
+                context: diagnosticsLocationContext(location, extra: [
+                    ("distanceMeters", .double(distance)),
+                    ("minimumDistanceMeters", .double(minimumDistance)),
+                    ("accuracyImprovementMeters", .double(accuracyImprovement)),
+                    ("minimumAccuracyImprovementMeters", .double(significantAccuracyImprovement)),
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
             return true
         }
         if accuracyImprovement >= significantAccuracyImprovement {
             debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationAcceptance",
+                summary: "Accepted location update.",
+                result: "accepted",
+                reason: "accuracy improvement threshold met",
+                checks: [
+                    LocationDiagnosticsLogStore.check("distanceMeetsThreshold", false, detail: "\(distance)m >= \(minimumDistance)m."),
+                    LocationDiagnosticsLogStore.check("accuracyImproved", true, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
+                ],
+                context: diagnosticsLocationContext(location, extra: [
+                    ("distanceMeters", .double(distance)),
+                    ("minimumDistanceMeters", .double(minimumDistance)),
+                    ("accuracyImprovementMeters", .double(accuracyImprovement)),
+                    ("minimumAccuracyImprovementMeters", .double(significantAccuracyImprovement)),
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
             return true
         }
 
         debugLog("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+        diagnosticsLog.append(
+            level: .info,
+            event: "locationAcceptance",
+            summary: "Ignored location update.",
+            result: "rejected",
+            reason: "distance and accuracy thresholds not met",
+            checks: [
+                LocationDiagnosticsLogStore.check("distanceMeetsThreshold", false, detail: "\(distance)m >= \(minimumDistance)m."),
+                LocationDiagnosticsLogStore.check("accuracyImproved", false, detail: "\(accuracyImprovement)m >= \(significantAccuracyImprovement)m.")
+            ],
+            context: diagnosticsLocationContext(location, extra: [
+                ("distanceMeters", .double(distance)),
+                ("minimumDistanceMeters", .double(minimumDistance)),
+                ("accuracyImprovementMeters", .double(accuracyImprovement)),
+                ("minimumAccuracyImprovementMeters", .double(significantAccuracyImprovement)),
+                ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+            ])
+        )
         return false
     }
 
@@ -2321,8 +2781,30 @@ extension LocationManager: CLLocationManagerDelegate {
         if Self.shouldSubmitLocationForUpload(location, lastSubmittedKey: self.lastSubmittedLocationDeduplicationKey) {
             self.lastSubmittedLocationDeduplicationKey = Self.locationSubmissionDeduplicationKey(for: location)
             locationsPendingUpload.append(location)
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationUploadDecision",
+                summary: "Location update queued for upload submission.",
+                result: "eligible",
+                reason: "deduplication key is new",
+                checks: [
+                    LocationDiagnosticsLogStore.check("notDuplicateUpload", true, detail: "Location differs from last submitted location.")
+                ],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
         } else {
             debugLog("[LocationManager] Skipping duplicate location upload from parallel location services")
+            diagnosticsLog.append(
+                level: .info,
+                event: "locationUploadDecision",
+                summary: "Skipped duplicate location upload.",
+                result: "duplicate",
+                reason: "parallel location services delivered the same location",
+                checks: [
+                    LocationDiagnosticsLogStore.check("notDuplicateUpload", false, detail: "Location matches last submitted location.")
+                ],
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+            )
         }
         self.addUpdateLogEntry(mode: mode)
     }
@@ -2391,11 +2873,29 @@ extension LocationManager: CLLocationManagerDelegate {
                 self.requestAlwaysAuthorizationIfPossible(reason: "authorization changed")
             }
             self.applyTrackingMode(reason: "authorization changed")
+            self.diagnosticsLog.append(
+                level: status == .authorizedAlways ? .info : .warning,
+                event: "authorizationChange",
+                summary: "Location authorization changed.",
+                result: "\(status.rawValue)",
+                reason: nil,
+                checks: self.trackingEligibilityChecks(status: status),
+                context: ["authorizationStatus": .integer(Int(status.rawValue))]
+            )
         }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Task { @MainActor in
             self.serverUpdateStatus = .failed(error.localizedDescription)
+            self.diagnosticsLog.append(
+                level: .error,
+                event: "locationManagerError",
+                summary: "CoreLocation reported an error.",
+                result: "failed",
+                reason: error.localizedDescription,
+                checks: [],
+                context: ["source": .string(self.locationUpdateSource(for: manager).rawValue)]
+            )
         }
     }
 } 

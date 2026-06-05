@@ -45,6 +45,7 @@ enum SettingsKeys {
     static let showRouteProgress = "show_route_progress"
     static let locationUpdateOutboxRetentionMode = "location_update_outbox_retention_mode"
     static let locationUpdateOutboxMaxItems = "location_update_outbox_max_items"
+    static let locationDiagnosticsLoggingEnabled = "location_diagnostics_logging_enabled"
     static let lastOpenedDeviceID = "last_opened_device_id"
     static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
     static let navigationTransportType = "navigation_transport_type"
@@ -92,6 +93,7 @@ enum SettingsDefaultValues {
     static let showRouteProgress = true
     static let locationUpdateOutboxRetentionMode = LocationUpdateOutboxRetentionMode.twentyFourHours.rawValue
     static let locationUpdateOutboxMaxItems = 500
+    static let locationDiagnosticsLoggingEnabled = false
     static let reverseGeocodingThresholdMeters = 1000
     static let navigationTransportType = 2
     static let pulsingMapMarkers = true
@@ -133,6 +135,7 @@ enum SettingsDefaultValues {
         SettingsKeys.showRouteProgress: showRouteProgress,
         SettingsKeys.locationUpdateOutboxRetentionMode: String(locationUpdateOutboxRetentionMode),
         SettingsKeys.locationUpdateOutboxMaxItems: String(locationUpdateOutboxMaxItems),
+        SettingsKeys.locationDiagnosticsLoggingEnabled: locationDiagnosticsLoggingEnabled,
         SettingsKeys.reverseGeocodingThresholdMeters: String(reverseGeocodingThresholdMeters),
         SettingsKeys.navigationTransportType: String(navigationTransportType),
         SettingsKeys.pulsingMapMarkers: pulsingMapMarkers,

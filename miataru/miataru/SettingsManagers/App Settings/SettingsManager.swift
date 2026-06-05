@@ -225,6 +225,15 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(String(locationUpdateOutboxMaxItems), forKey: SettingsKeys.locationUpdateOutboxMaxItems) }
     }
 
+    @Published var locationDiagnosticsLoggingEnabled: Bool {
+        didSet {
+            defaults.set(locationDiagnosticsLoggingEnabled, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+            Task { @MainActor in
+                LocationDiagnosticsLogStore.shared.setEnabled(locationDiagnosticsLoggingEnabled)
+            }
+        }
+    }
+
     var locationUpdateOutboxRetentionTimeToLive: TimeInterval? {
         let mode = LocationUpdateOutboxRetentionMode(rawValue: locationUpdateOutboxRetentionMode) ?? .twentyFourHours
         return mode.timeToLive
@@ -392,6 +401,7 @@ class SettingsManager: ObservableObject {
         self.showRouteProgress = d.bool(forKey: SettingsKeys.showRouteProgress)
         self.locationUpdateOutboxRetentionMode = Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxRetentionMode, defaults: d, defaultValue: SettingsDefaultValues.locationUpdateOutboxRetentionMode)
         self.locationUpdateOutboxMaxItems = Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxMaxItems, defaults: d, defaultValue: SettingsDefaultValues.locationUpdateOutboxMaxItems)
+        self.locationDiagnosticsLoggingEnabled = d.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
         self.lastOpenedDeviceID = d.string(forKey: SettingsKeys.lastOpenedDeviceID)
         self.reverseGeocodingThresholdMeters = Self.persistedInt(forKey: SettingsKeys.reverseGeocodingThresholdMeters, defaults: d, defaultValue: SettingsDefaultValues.reverseGeocodingThresholdMeters)
         self.navigationTransportType = Self.persistedInt(forKey: SettingsKeys.navigationTransportType, defaults: d, defaultValue: SettingsDefaultValues.navigationTransportType)

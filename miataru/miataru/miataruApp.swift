@@ -289,6 +289,10 @@ struct miataruApp: App {
         if SettingsManager.shared.trackAndReportLocation {
             locationManager.restoreTrackingAfterLaunch(reason: "app launch")
         }
+        locationManager.rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(
+            buildIdentifier: Self.currentBuildIdentifier,
+            reason: "fresh app/update launch"
+        )
         // Preserve newer widget-fetched locations before rewriting shared widget data.
         WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
         // Ensure widgets have initial data even before the first update cycle.
@@ -514,6 +518,13 @@ struct miataruApp: App {
                 hasExplicitInitialTab: hasExplicitInitialTab
             )
         }
+    }
+
+    private static var currentBuildIdentifier: String {
+        let bundle = Bundle.main
+        let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+        let build = bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
+        return "\(version)-\(build)"
     }
 
     private static func applyUIScreenshotDeterministicState(defaults: UserDefaults,

@@ -204,6 +204,8 @@ struct iPhone_LocationStatusView: View {
             
             // Background Status
             BackgroundStatusCard()
+
+            LocationDiagnosticsCard()
             
             // Log der letzten Updates
             if !updateLog.isEmpty {
@@ -764,6 +766,190 @@ struct BackgroundStatusCard: View {
             return NSLocalizedString("smart_frequent_background_no_timeout_pending", comment: "No smart frequent inactivity timeout is pending")
         }
         return formatTime(date)
+    }
+}
+
+struct LocationDiagnosticsCard: View {
+    @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var diagnosticsLog = LocationDiagnosticsLogStore.shared
+    @ObservedObject private var locationManager = LocationManager.shared
+    @State private var exportURL: URL?
+    @State private var showShareSheet = false
+    @State private var exportError: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "stethoscope")
+                    .foregroundColor(.blue)
+                    .frame(width: 20)
+                Text("Location diagnostics")
+                    .font(.headline)
+                Spacer()
+                Toggle("Location diagnostics logging", isOn: $settings.locationDiagnosticsLoggingEnabled)
+                    .labelsHidden()
+                    .accessibilityIdentifier("location_diagnostics_logging_toggle")
+            }
+
+            Text("Records selected location-tracking decisions for later export. Existing entries remain until cleared.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            statusRow(
+                title: NSLocalizedString("location_diagnostics_entries_title", comment: "Number of entries in the location diagnostics log"),
+                value: "\(diagnosticsLog.entries.count) / \(LocationDiagnosticsLogStore.defaultMaxEntries)",
+                icon: "list.bullet.rectangle"
+            )
+
+            if let latestEntry = diagnosticsLog.entries.last {
+                statusRow(
+                    title: NSLocalizedString("location_diagnostics_last_event_title", comment: "Title for the latest location diagnostics event"),
+                    value: "\(latestEntry.event): \(latestEntry.result)",
+                    icon: "clock"
+                )
+            }
+
+            if let rearmStatus = locationManager.lastSignificantChangeRearmStatus {
+                statusRow(
+                    title: NSLocalizedString("location_diagnostics_rearm_title", comment: "Title for the significant-change location monitor re-arm status"),
+                    value: rearmStatusText(rearmStatus),
+                    icon: rearmStatus.result == .attempted ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle"
+                )
+            }
+
+            HStack {
+                Button {
+                    exportDiagnostics()
+                } label: {
+                    Label("Export", systemImage: "square.and.arrow.up")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(diagnosticsLog.entries.isEmpty)
+                .accessibilityIdentifier("location_diagnostics_export_button")
+
+                Button(role: .destructive) {
+                    diagnosticsLog.clear()
+                } label: {
+                    Label("Clear", systemImage: "trash")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .disabled(diagnosticsLog.entries.isEmpty)
+                .accessibilityIdentifier("location_diagnostics_clear_button")
+            }
+
+            if let exportError {
+                Text(exportError)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+
+            if !diagnosticsLog.entries.isEmpty {
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Recent diagnostics")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    ForEach(recentDiagnosticEntries) { entry in
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Text(formatTime(entry.timestamp))
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                Text(entry.event)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                Spacer()
+                                Text(entry.result)
+                                    .font(.caption2)
+                                    .foregroundColor(color(for: entry.level))
+                            }
+                            Text(entry.summary)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            if let failedCheck = entry.checks.first(where: { !$0.passed }) {
+                                Text(failedCheck.detail)
+                                    .font(.caption2)
+                                    .foregroundColor(.orange)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            } else if let reason = entry.reason {
+                                Text(reason)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding(.vertical, 3)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .sheet(isPresented: $showShareSheet) {
+            if let exportURL {
+                ActivityView(activityItems: [exportURL])
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func statusRow(title: String, value: String, icon: String) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Spacer()
+            Text(value)
+                .font(.caption)
+                .fontWeight(.medium)
+                .multilineTextAlignment(.trailing)
+        }
+    }
+
+    private func exportDiagnostics() {
+        do {
+            exportURL = try diagnosticsLog.writeTemporaryExportFile()
+            exportError = nil
+            showShareSheet = true
+        } catch {
+            exportError = error.localizedDescription
+        }
+    }
+
+    private var recentDiagnosticEntries: [LocationDiagnosticsLogEntry] {
+        Array(diagnosticsLog.entries.suffix(20).reversed())
+    }
+
+    private func rearmStatusText(_ status: LocationSignificantChangeRearmStatus) -> String {
+        "\(status.result.rawValue) - \(status.reason) - \(formatTime(status.timestamp))"
+    }
+
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .medium
+        return formatter.string(from: date)
+    }
+
+    private func color(for level: LocationDiagnosticsLogLevel) -> Color {
+        switch level {
+        case .info:
+            return .secondary
+        case .warning:
+            return .orange
+        case .error:
+            return .red
+        }
     }
 }
 #Preview {

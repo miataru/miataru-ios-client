@@ -1,4 +1,7 @@
 version 3.2
+- Added an opt-in Location Diagnostics log in Location Tracking Details with a persistent 1000-entry ring buffer, JSON export, rounded location values, and localized UI across all supported app languages.
+- Added a one-time-per-build significant-change monitor re-arm on eligible fresh app/update starts, with visible skipped/attempted status and diagnostic checks for tracking, Always authorization, DeviceKey block state, and build repetition.
+- Kept diagnostics logging cheap while disabled by short-circuiting append calls before diagnostic checks, contexts, and timestamps are built; the visible re-arm status remains available independently of diagnostics logging.
 - Added the new two-stage Smart Frequent Background Updates policy. Stage 1 (`Smart frequent updates`) keeps standard significant-change background tracking active by default and temporarily starts frequent background updates only after movement above the configured speed threshold is detected.
 - Kept Stage 2 (`Frequent background updates`) as the manual always-on/temporary frequent mode. Manual frequent mode is unlocked by Smart frequent updates and overrides Smart runtime decisions completely.
 - Locked the Smart frequent toggle while manual frequent background mode is active, with localized explanatory text, so users cannot disable the prerequisite while the manual override is still running.
