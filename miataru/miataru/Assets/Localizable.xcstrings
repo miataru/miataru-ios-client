@@ -30649,61 +30649,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru bruger normalt den strømbesparende standardtilstand og starter kun hyppigere baggrundsopdateringer automatisk, når din bevægelse overstiger hastighedsgrænsen."
+            "value" : "Når funktionen er slået til, bruger Miataru normalt den strømbesparende standardtilstand og starter kun hyppigere baggrundsopdateringer automatisk, når din bevægelse overstiger hastighedsgrænsen."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru nutzt normalerweise den stromsparenden Standardmodus und startet häufigere Hintergrund-Updates automatisch erst, wenn deine Bewegung die Geschwindigkeitsschwelle überschreitet."
+            "value" : "Wenn diese Option eingeschaltet ist, nutzt Miataru normalerweise den stromsparenden Standardmodus und startet häufigere Hintergrund-Updates automatisch erst, wenn deine Bewegung die Geschwindigkeitsschwelle überschreitet."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru normally uses the battery-saving standard mode and only starts more frequent background updates automatically when your movement exceeds the speed threshold."
+            "value" : "When this option is enabled, Miataru normally uses the battery-saving standard mode and only starts more frequent background updates automatically when your movement exceeds the speed threshold."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru normalmente usa el modo estándar de ahorro de batería y solo inicia actualizaciones más frecuentes en segundo plano cuando tu movimiento supera el umbral de velocidad."
+            "value" : "Cuando esta opción está activada, Miataru normalmente usa el modo estándar de ahorro de batería y solo inicia actualizaciones más frecuentes en segundo plano cuando tu movimiento supera el umbral de velocidad."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru käyttää normaalisti akkua säästävää vakiotilaa ja käynnistää tiheämmät taustapäivitykset automaattisesti vasta, kun liikkeesi ylittää nopeusrajan."
+            "value" : "Kun tämä asetus on käytössä, Miataru käyttää normaalisti akkua säästävää vakiotilaa ja käynnistää tiheämmät taustapäivitykset automaattisesti vasta, kun liikkeesi ylittää nopeusrajan."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru utilise normalement le mode standard économe en batterie et ne lance automatiquement les mises à jour plus fréquentes en arrière-plan que lorsque votre déplacement dépasse le seuil de vitesse."
+            "value" : "Lorsque cette option est activée, Miataru utilise normalement le mode standard économe en batterie et ne lance automatiquement les mises à jour plus fréquentes en arrière-plan que lorsque votre déplacement dépasse le seuil de vitesse."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru normalmente usa la modalità standard a risparmio batteria e avvia automaticamente aggiornamenti in background più frequenti solo quando il movimento supera la soglia di velocità."
+            "value" : "Quando questa opzione è attiva, Miataru normalmente usa la modalità standard a risparmio batteria e avvia automaticamente aggiornamenti in background più frequenti solo quando il movimento supera la soglia di velocità."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru は通常、省電力の標準モードを使用し、移動が速度しきい値を超えたときだけ、より頻繁なバックグラウンド更新を自動開始します。"
+            "value" : "このオプションをオンにすると、Miataru は通常、省電力の標準モードを使用し、移動が速度しきい値を超えたときだけ、より頻繁なバックグラウンド更新を自動開始します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru gebruikt normaal de batterijbesparende standaardmodus en start frequentere achtergrondupdates alleen automatisch wanneer je beweging boven de snelheidsdrempel komt."
+            "value" : "Als deze optie is ingeschakeld, gebruikt Miataru normaal de batterijbesparende standaardmodus en start frequentere achtergrondupdates alleen automatisch wanneer je beweging boven de snelheidsdrempel komt."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru 通常使用省电标准模式，仅在你的移动超过速度阈值时自动启动更频繁的后台更新。"
+            "value" : "启用此选项后，Miataru 通常使用省电标准模式，仅在你的移动超过速度阈值时自动启动更频繁的后台更新。"
           }
         }
       }
