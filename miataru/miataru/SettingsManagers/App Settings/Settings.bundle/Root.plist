@@ -236,12 +236,16 @@
 					<string>100m</string>
 					<string>50m</string>
 					<string>25m</string>
+					<string>10m</string>
+					<string>5m</string>
 				</array>
 				<key>Values</key>
 				<array>
 					<string>100</string>
 					<string>50</string>
 					<string>25</string>
+					<string>10</string>
+					<string>5</string>
 				</array>
 			</dict>
 			<dict>

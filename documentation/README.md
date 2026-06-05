@@ -32,6 +32,7 @@ These files are retained as historical evidence. They should not be edited merel
 Current frequent-background follow-up records:
 
 - `../miataru/documentation/smart-frequent-background-updates-2026-06-04.md` - Smart frequent background policy, manual override behavior, diagnostics, migration, and optional Smart mode-change notifications.
+- `../miataru/documentation/smart-frequent-updatewertung-hardening-2026-06-05.md` - persisted Smart frequent seeding, 5 m/10 m movement thresholds, chronological Core Location batch processing, and battery implications.
 
 ## Current Project Facts
 

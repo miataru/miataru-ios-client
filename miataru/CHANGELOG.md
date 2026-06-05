@@ -4,6 +4,10 @@ version 3.2
 - Locked the Smart frequent toggle while manual frequent background mode is active, with localized explanatory text, so users cannot disable the prerequisite while the manual override is still running.
 - Smart frequent mode-change notifications now request and respect notification permission before the setting is enabled, including a denied-state message with an app-settings shortcut.
 - Shared frequent parameters now apply consistently to Smart frequent runtime and manual frequent mode, including movement distance, delayed server delivery, and visitor-history check intervals.
+- Extended the frequent background movement threshold presets to include 10 m and 5 m while keeping the separate frequent/Smart movement threshold setting and the existing 100 m default.
+- Persisted the last valid raw location as a fresh Smart frequent seed so Smart frequent runtime can activate from the first background update after relaunch when the derived movement is plausible.
+- Hardened Core Location batch handling so `didUpdateLocations` processes all usable locations chronologically, updates Smart state and diagnostics per location, and submits accepted uploads sequentially through the delivery coordinator.
+- Clarified 5 m and 10 m battery implications in localized Advanced Options copy and marked the compact `5m`/`10m` labels as non-translatable string-catalog literals.
 - Renamed significant-change user-facing copy toward the battery-saving standard background mode and refreshed Location Tracking Details so Location Access Control sits directly below Device Access Control.
 - Restyled the Background Status section to match the upper statistic rows and gave each background status row a distinct icon for scanability.
 - Removed stale and newly extracted string-catalog entries from `Localizable.xcstrings` and added a regression check that keeps the app string catalog free of stale/new translation units.
@@ -15,7 +19,8 @@ version 3.2
 - Expanded Location Tracking Details with distinct background modes (`Significant-change`, `Smart waiting`, `Smart frequent active`, `Manual frequent active`), Smart diagnostics, and persisted location-update counters split by foreground/live, significant-change, Smart frequent, and manual frequent modes with a shared 24-hour reset.
 - Added localized labels, explanatory text, notification text, Settings.bundle strings, and option values for all supported locales.
 - Added regression coverage for Smart defaults, migration, Settings.bundle parity, localization completeness, speed detection, activation/deactivation policy, manual override behavior, 24-hour mode counters, and Smart mode-change notification scheduling.
-- Updated the living project documentation, App Store copy source, test catalog/gap matrix, and added a dated Smart frequent background updates implementation note.
+- Added regression coverage for persisted Smart frequent seeding, 5 m/10 m movement threshold normalization, Settings.bundle parity, and chronological multi-location callback processing.
+- Updated the living project documentation, App Store copy source, test catalog/gap matrix, and added dated Smart frequent background updates implementation notes.
 - Updated project metadata for version 3.2 build 4.
 
 version 3.1.19

@@ -217,7 +217,7 @@ enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable {
 }
 
 enum FrequentBackgroundLocationDistanceFilter {
-    static let allowedValues = [100, 50, 25]
+    static let allowedValues = [100, 50, 25, 10, 5]
 
     static func normalized(_ value: Int) -> Int {
         allowedValues.contains(value) ? value : SettingsDefaultValues.frequentBackgroundLocationDistanceFilter

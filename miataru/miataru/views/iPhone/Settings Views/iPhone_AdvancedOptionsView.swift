@@ -107,6 +107,8 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("100m").tag(100)
                             Text("50m").tag(50)
                             Text("25m").tag(25)
+                            Text("10m").tag(10)
+                            Text("5m").tag(5)
                         }
                         SettingsDescriptionText(frequentBackgroundDistanceFilterExplanationKey)
 
@@ -237,6 +239,10 @@ struct iPhone_AdvancedOptionsView: View {
 
     private var frequentBackgroundDistanceFilterExplanationKey: LocalizedStringKey {
         switch settings.frequentBackgroundLocationDistanceFilter {
+        case 5:
+            return "background_location_distance_filter_5m_explanation"
+        case 10:
+            return "background_location_distance_filter_10m_explanation"
         case 25:
             return "background_location_distance_filter_25m_explanation"
         case 50:

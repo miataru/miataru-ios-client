@@ -560,6 +560,71 @@
         }
       }
     },
+    "2kmh" : {
+      "comment" : "Speed value in km/h",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/t"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/h"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 km/u"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 公里/小时"
+          }
+        }
+      }
+    },
     "3hours" : {
       "localizations" : {
         "da" : {
@@ -816,6 +881,10 @@
           }
         }
       }
+    },
+    "5m" : {
+      "comment" : "Compact distance label for five meters; keep unchanged.",
+      "shouldTranslate" : false
     },
     "5minutes" : {
       "comment" : "Duration in minutes",
@@ -1202,6 +1271,10 @@
           }
         }
       }
+    },
+    "10m" : {
+      "comment" : "Compact distance label for ten meters; keep unchanged.",
+      "shouldTranslate" : false
     },
     "10minutes" : {
       "comment" : "Duration in minutes",
@@ -5365,6 +5438,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设备列表自动刷新"
+          }
+        }
+      }
+    },
+    "background_location_distance_filter_5m_explanation" : {
+      "comment" : "Explanation for 5 m frequent background movement threshold",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekstremt responsiv. Accepterer opdateringer efter ca. 5 m og kan bruge markant mere batteri."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extrem reaktionsschnell. Akzeptiert Updates nach etwa 5 m und kann deutlich mehr Akku verbrauchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extremely responsive. Accepts updates after about 5 m and can use significantly more battery."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extremadamente sensible. Acepta actualizaciones tras unos 5 m y puede consumir mucha más batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erittäin reagoiva. Hyväksyy päivitykset noin 5 m jälkeen ja voi kuluttaa selvästi enemmän akkua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extrêmement réactif. Accepte des mises à jour après environ 5 m et peut consommer nettement plus de batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estremamente reattivo. Accetta aggiornamenti dopo circa 5 m e può consumare molta più batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非常に反応が速い設定です。約5 mの移動後に更新を受け入れ、バッテリー消費が大幅に増える場合があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extreem responsief. Accepteert updates na ongeveer 5 m en kan aanzienlijk meer batterij gebruiken."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "极高响应。移动约 5 米后接受更新，可能显著增加电量消耗。"
+          }
+        }
+      }
+    },
+    "background_location_distance_filter_10m_explanation" : {
+      "comment" : "Explanation for 10 m frequent background movement threshold",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meget responsiv. Accepterer opdateringer efter ca. 10 m og kan bruge væsentligt mere batteri."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr reaktionsschnell. Akzeptiert Updates nach etwa 10 m und kann spürbar mehr Akku verbrauchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Very responsive. Accepts updates after about 10 m and can use noticeably more battery."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muy sensible. Acepta actualizaciones tras unos 10 m y puede consumir bastante más batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyvin reagoiva. Hyväksyy päivitykset noin 10 m jälkeen ja voi kuluttaa selvästi enemmän akkua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Très réactif. Accepte des mises à jour après environ 10 m et peut consommer sensiblement plus de batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Molto reattivo. Accetta aggiornamenti dopo circa 10 m e può consumare sensibilmente più batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "とても反応が速い設定です。約10 mの移動後に更新を受け入れ、バッテリー消費が目立って増える場合があります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeer responsief. Accepteert updates na ongeveer 10 m en kan merkbaar meer batterij gebruiken."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高响应。移动约 10 米后接受更新，可能明显增加电量消耗。"
           }
         }
       }
@@ -21656,6 +21859,71 @@
         }
       }
     },
+    "Location updates in the background use the battery-saving standard mode." : {
+      "comment" : "Hint for battery-saving standard background location update behavior",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokationsopdateringer i baggrunden bruger den strømbesparende standardtilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Updates im Hintergrund nutzen den stromsparenden Standardmodus."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location updates in the background use the battery-saving standard mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones de ubicación en segundo plano usan el modo estándar de ahorro de batería."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taustasijainnin päivitykset käyttävät akkua säästävää vakiotilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour de localisation en arrière-plan utilisent le mode standard économe en batterie."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti della posizione in background usano la modalità standard a risparmio batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックグラウンドの位置情報更新は、省電力の標準モードを使用します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie-updates op de achtergrond gebruiken de batterijbesparende standaardmodus."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后台位置更新使用省电标准模式。"
+          }
+        }
+      }
+    },
     "location_permission_open_settings_button" : {
       "comment" : "Button to open Settings for location permission",
       "localizations" : {
@@ -21912,6 +22180,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再次请求位置权限"
+          }
+        }
+      }
+    },
+    "location_permission_state_title" : {
+      "comment" : "Header for location permission access control section",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokalitetsadgangskontrol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Zugriffskontrolle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location Access Control"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control de acceso a ubicación"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sijainnin käyttöoikeuksien hallinta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrôle d’accès à la localisation"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controllo accesso posizione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報アクセス制御"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietoegangscontrole"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置访问控制"
           }
         }
       }
@@ -30773,6 +31106,71 @@
         }
       }
     },
+    "smart_frequent_background_locked_by_manual_explanation" : {
+      "comment" : "Explanation shown when Smart frequent updates are locked because manual frequent background updates are active",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuelle hyppige baggrundsopdateringer er aktive. Slå dem fra, før du ændrer smarte hyppige opdateringer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuelle häufige Hintergrund-Updates sind aktiv. Schalte sie aus, bevor du smarte häufige Updates änderst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual frequent background updates are active. Turn them off before changing Smart frequent updates."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actualizaciones frecuentes manuales en segundo plano están activas. Desactívalas antes de cambiar las actualizaciones frecuentes inteligentes."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuaaliset tiheät taustapäivitykset ovat aktiivisia. Poista ne käytöstä ennen älykkäiden tiheiden päivitysten muuttamista."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour fréquentes manuelles en arrière-plan sont actives. Désactivez-les avant de modifier les mises à jour fréquentes intelligentes."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli aggiornamenti frequenti manuali in background sono attivi. Disattivali prima di modificare gli aggiornamenti frequenti intelligenti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動の高頻度バックグラウンド更新が有効です。スマート高頻度更新を変更する前にオフにしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handmatige frequentere achtergrondupdates zijn actief. Schakel ze uit voordat je slimme frequente updates wijzigt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动频繁后台更新已启用。请先将其关闭，再更改智能频繁更新。"
+          }
+        }
+      }
+    },
     "smart_frequent_background_mode_change_notifications_explanation" : {
       "comment" : "Explanation for smart frequent mode-change notification toggle",
       "localizations" : {
@@ -30834,6 +31232,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "当智能频繁更新自动开启频繁后台更新或切回标准模式时发送通知。默认：关闭。"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_mode_change_notifications_open_settings_button" : {
+      "comment" : "Button title for opening iOS Settings after Smart frequent notification permission was denied",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn iOS-indstillinger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS-Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS Settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes de iOS"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa iOS-asetukset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir les réglages iOS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri impostazioni iOS"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS設定を開く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS-instellingen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 iOS 设置"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_mode_change_notifications_permission_denied_message" : {
+      "comment" : "Message shown when Smart frequent mode-change notification permission is denied",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifikationer er ikke tilladt. Åbn iOS-indstillinger for at modtage besked, når Smart hyppige opdateringer skifter tilstand."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen sind nicht erlaubt. Öffne die iOS-Einstellungen, um Hinweise zu erhalten, wenn smarte häufige Updates den Modus wechseln."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are not allowed. Open iOS Settings to be notified when Smart frequent updates change mode."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notificaciones no están permitidas. Abre Ajustes de iOS para recibir avisos cuando las actualizaciones frecuentes inteligentes cambien de modo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilmoituksia ei ole sallittu. Avaa iOS-asetukset, jotta saat ilmoituksen, kun älykkäät tiheät päivitykset vaihtavat tilaa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notifications ne sont pas autorisées. Ouvrez les réglages iOS pour être averti lorsque les mises à jour fréquentes intelligentes changent de mode."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le notifiche non sono consentite. Apri le impostazioni iOS per ricevere avvisi quando gli aggiornamenti frequenti intelligenti cambiano modalità."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知が許可されていません。スマート高頻度更新のモード変更を通知するには、iOS設定を開いてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meldingen zijn niet toegestaan. Open iOS-instellingen om een melding te krijgen wanneer slimme frequente updates van modus veranderen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知未获允许。请打开 iOS 设置，以便在智能频繁更新切换模式时收到通知。"
           }
         }
       }
@@ -32387,6 +32915,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟踪模式：实时（GPS）"
+          }
+        }
+      }
+    },
+    "tracking_mode_battery_saving_standard" : {
+      "comment" : "Tracking mode text for battery-saving standard background mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sporingstilstand: Standard (strømbesparende)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfolgungsmodus: Standard (stromsparend)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking mode: Standard (battery-saving)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modo de seguimiento: estándar (ahorro de batería)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seurantatila: vakio (virransäästö)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode de suivi : standard (économie de batterie)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modalità tracciamento: standard (risparmio batteria)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追跡モード: 標準（省電力）"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackingmodus: standaard (batterijbesparend)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟踪模式：标准（省电）"
           }
         }
       }
@@ -34840,461 +35433,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缩放以适配群组"
-          }
-        }
-      }
-    },
-    "2kmh" : {
-      "comment" : "Speed value in km/h",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/t"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/h"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 km/u"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 公里/小时"
-          }
-        }
-      }
-    },
-    "Location updates in the background use the battery-saving standard mode." : {
-      "comment" : "Hint for battery-saving standard background location update behavior",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokationsopdateringer i baggrunden bruger den strømbesparende standardtilstand."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standort-Updates im Hintergrund nutzen den stromsparenden Standardmodus."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location updates in the background use the battery-saving standard mode."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las actualizaciones de ubicación en segundo plano usan el modo estándar de ahorro de batería."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Taustasijainnin päivitykset käyttävät akkua säästävää vakiotilaa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les mises à jour de localisation en arrière-plan utilisent le mode standard économe en batterie."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gli aggiornamenti della posizione in background usano la modalità standard a risparmio batteria."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックグラウンドの位置情報更新は、省電力の標準モードを使用します。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Locatie-updates op de achtergrond gebruiken de batterijbesparende standaardmodus."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "后台位置更新使用省电标准模式。"
-          }
-        }
-      }
-    },
-    "location_permission_state_title" : {
-      "comment" : "Header for location permission access control section",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokalitetsadgangskontrol"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standort-Zugriffskontrolle"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Location Access Control"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Control de acceso a ubicación"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sijainnin käyttöoikeuksien hallinta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contrôle d’accès à la localisation"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controllo accesso posizione"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置情報アクセス制御"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Locatietoegangscontrole"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置访问控制"
-          }
-        }
-      }
-    },
-    "smart_frequent_background_locked_by_manual_explanation" : {
-      "comment" : "Explanation shown when Smart frequent updates are locked because manual frequent background updates are active",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Manuelle hyppige baggrundsopdateringer er aktive. Slå dem fra, før du ændrer smarte hyppige opdateringer."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Manuelle häufige Hintergrund-Updates sind aktiv. Schalte sie aus, bevor du smarte häufige Updates änderst."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Manual frequent background updates are active. Turn them off before changing Smart frequent updates."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las actualizaciones frecuentes manuales en segundo plano están activas. Desactívalas antes de cambiar las actualizaciones frecuentes inteligentes."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Manuaaliset tiheät taustapäivitykset ovat aktiivisia. Poista ne käytöstä ennen älykkäiden tiheiden päivitysten muuttamista."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les mises à jour fréquentes manuelles en arrière-plan sont actives. Désactivez-les avant de modifier les mises à jour fréquentes intelligentes."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gli aggiornamenti frequenti manuali in background sono attivi. Disattivali prima di modificare gli aggiornamenti frequenti intelligenti."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動の高頻度バックグラウンド更新が有効です。スマート高頻度更新を変更する前にオフにしてください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Handmatige frequentere achtergrondupdates zijn actief. Schakel ze uit voordat je slimme frequente updates wijzigt."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手动频繁后台更新已启用。请先将其关闭，再更改智能频繁更新。"
-          }
-        }
-      }
-    },
-    "smart_frequent_background_mode_change_notifications_open_settings_button" : {
-      "comment" : "Button title for opening iOS Settings after Smart frequent notification permission was denied",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Åbn iOS-indstillinger"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOS-Einstellungen öffnen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open iOS Settings"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Ajustes de iOS"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avaa iOS-asetukset"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ouvrir les réglages iOS"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apri impostazioni iOS"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOS設定を開く"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open iOS-instellingen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 iOS 设置"
-          }
-        }
-      }
-    },
-    "smart_frequent_background_mode_change_notifications_permission_denied_message" : {
-      "comment" : "Message shown when Smart frequent mode-change notification permission is denied",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notifikationer er ikke tilladt. Åbn iOS-indstillinger for at modtage besked, når Smart hyppige opdateringer skifter tilstand."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen sind nicht erlaubt. Öffne die iOS-Einstellungen, um Hinweise zu erhalten, wenn smarte häufige Updates den Modus wechseln."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notifications are not allowed. Open iOS Settings to be notified when Smart frequent updates change mode."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las notificaciones no están permitidas. Abre Ajustes de iOS para recibir avisos cuando las actualizaciones frecuentes inteligentes cambien de modo."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ilmoituksia ei ole sallittu. Avaa iOS-asetukset, jotta saat ilmoituksen, kun älykkäät tiheät päivitykset vaihtavat tilaa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les notifications ne sont pas autorisées. Ouvrez les réglages iOS pour être averti lorsque les mises à jour fréquentes intelligentes changent de mode."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le notifiche non sono consentite. Apri le impostazioni iOS per ricevere avvisi quando gli aggiornamenti frequenti intelligenti cambiano modalità."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知が許可されていません。スマート高頻度更新のモード変更を通知するには、iOS設定を開いてください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meldingen zijn niet toegestaan. Open iOS-instellingen om een melding te krijgen wanneer slimme frequente updates van modus veranderen."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知未获允许。请打开 iOS 设置，以便在智能频繁更新切换模式时收到通知。"
-          }
-        }
-      }
-    },
-    "tracking_mode_battery_saving_standard" : {
-      "comment" : "Tracking mode text for battery-saving standard background mode",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sporingstilstand: Standard (strømbesparende)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfolgungsmodus: Standard (stromsparend)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tracking mode: Standard (battery-saving)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo de seguimiento: estándar (ahorro de batería)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seurantatila: vakio (virransäästö)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode de suivi : standard (économie de batterie)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modalità tracciamento: standard (risparmio batteria)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "追跡モード: 標準（省電力）"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trackingmodus: standaard (batterijbesparend)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟踪模式：标准（省电）"
           }
         }
       }

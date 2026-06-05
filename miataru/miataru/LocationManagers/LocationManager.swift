@@ -70,6 +70,14 @@ final class LocationManager: NSObject, ObservableObject {
     private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
     private let backgroundMetricsLastResetKey = "miataru_backgroundMetricsLastReset"
     private let lastServerUpdateKey = "miataru_lastServerUpdate"
+    private let smartFrequentBackgroundSeedLatitudeKey = "miataru_smartFrequentBackgroundSeedLatitude"
+    private let smartFrequentBackgroundSeedLongitudeKey = "miataru_smartFrequentBackgroundSeedLongitude"
+    private let smartFrequentBackgroundSeedAltitudeKey = "miataru_smartFrequentBackgroundSeedAltitude"
+    private let smartFrequentBackgroundSeedHorizontalAccuracyKey = "miataru_smartFrequentBackgroundSeedHorizontalAccuracy"
+    private let smartFrequentBackgroundSeedVerticalAccuracyKey = "miataru_smartFrequentBackgroundSeedVerticalAccuracy"
+    private let smartFrequentBackgroundSeedCourseKey = "miataru_smartFrequentBackgroundSeedCourse"
+    private let smartFrequentBackgroundSeedSpeedKey = "miataru_smartFrequentBackgroundSeedSpeed"
+    private let smartFrequentBackgroundSeedTimestampKey = "miataru_smartFrequentBackgroundSeedTimestamp"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private var foregroundLocationTimer: Timer?
@@ -195,6 +203,16 @@ final class LocationManager: NSObject, ObservableObject {
         case unknown
     }
 
+    private struct StaleFrequentBackgroundCallbackCleanupResult {
+        let didCleanUp: Bool
+        let shouldSuppressCallback: Bool
+
+        static let noCleanup = StaleFrequentBackgroundCallbackCleanupResult(
+            didCleanUp: false,
+            shouldSuppressCallback: false
+        )
+    }
+
     struct LocationSubmissionDeduplicationKey: Equatable {
         let timestampSeconds: Int64
         let latitudeMicrodegrees: Int64
@@ -268,6 +286,7 @@ final class LocationManager: NSObject, ObservableObject {
         if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
             lastServerUpdate = savedDate
         }
+        restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
     }
@@ -575,6 +594,75 @@ final class LocationManager: NSObject, ObservableObject {
     static func batteryPercent(from batteryLevel: Float) -> Int? {
         guard batteryLevel >= 0, batteryLevel.isFinite else { return nil }
         return Int((Double(batteryLevel) * 100).rounded(.down))
+    }
+
+    static func processableLocationUpdates(from locations: [CLLocation]) -> [CLLocation] {
+        locations
+            .enumerated()
+            .filter { _, location in
+                let coordinate = location.coordinate
+                return coordinate.latitude.isFinite &&
+                coordinate.longitude.isFinite &&
+                CLLocationCoordinate2DIsValid(coordinate) &&
+                location.timestamp.timeIntervalSince1970.isFinite
+            }
+            .sorted { lhs, rhs in
+                let lhsTimestamp = lhs.element.timestamp
+                let rhsTimestamp = rhs.element.timestamp
+                if lhsTimestamp == rhsTimestamp {
+                    return lhs.offset < rhs.offset
+                }
+                return lhsTimestamp < rhsTimestamp
+            }
+            .map(\.element)
+    }
+
+    static func shouldUsePersistedSmartFrequentBackgroundSeed(now: Date,
+                                                             seedTimestamp: Date,
+                                                             inactivityWindow: TimeInterval) -> Bool {
+        guard inactivityWindow > 0,
+              now.timeIntervalSince1970.isFinite,
+              seedTimestamp.timeIntervalSince1970.isFinite else {
+            return false
+        }
+
+        let age = now.timeIntervalSince(seedTimestamp)
+        return age >= 0 && age < inactivityWindow
+    }
+
+    static func smartFrequentBackgroundSeedLocation(latitude: Double,
+                                                    longitude: Double,
+                                                    altitude: Double,
+                                                    horizontalAccuracy: Double,
+                                                    verticalAccuracy: Double,
+                                                    course: Double,
+                                                    speed: Double,
+                                                    timestamp: Date,
+                                                    now: Date,
+                                                    inactivityWindow: TimeInterval) -> CLLocation? {
+        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        guard latitude.isFinite,
+              longitude.isFinite,
+              CLLocationCoordinate2DIsValid(coordinate),
+              horizontalAccuracy.isFinite,
+              horizontalAccuracy >= 0,
+              shouldUsePersistedSmartFrequentBackgroundSeed(
+                now: now,
+                seedTimestamp: timestamp,
+                inactivityWindow: inactivityWindow
+              ) else {
+            return nil
+        }
+
+        return CLLocation(
+            coordinate: coordinate,
+            altitude: altitude.isFinite ? altitude : 0,
+            horizontalAccuracy: horizontalAccuracy,
+            verticalAccuracy: verticalAccuracy.isFinite ? verticalAccuracy : -1,
+            course: course.isFinite ? course : -1,
+            speed: speed.isFinite ? speed : -1,
+            timestamp: timestamp
+        )
     }
 
     static func smartFrequentBackgroundSpeedKmh(for location: CLLocation,
@@ -1006,6 +1094,7 @@ final class LocationManager: NSObject, ObservableObject {
         ensureAuthorizationIfNeeded()
         isTracking = true
         handleFrequentBackgroundLocationExpirationIfNeeded()
+        restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         applyTrackingMode(reason: "start tracking")
     }
 
@@ -1026,6 +1115,7 @@ final class LocationManager: NSObject, ObservableObject {
 
         ensureAuthorizationIfNeeded()
         isTracking = true
+        restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
         applyTrackingMode(reason: "restore tracking after launch: \(reason)", applicationStateContext: applicationStateContext)
         refreshPendingLocationUpdateCount()
@@ -1266,16 +1356,15 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
-    private func shouldSuppressAfterCleaningUpStaleFrequentBackgroundCallbackIfNeeded(
+    private func cleanUpStaleFrequentBackgroundCallbackIfNeeded(
         updateSource: LocationUpdateSource,
-        didSwitchFrequentBackgroundMode: Bool,
-        applicationState: UIApplication.State
-    ) -> Bool {
+        didSwitchFrequentBackgroundMode: Bool
+    ) -> StaleFrequentBackgroundCallbackCleanupResult {
         guard Self.shouldCleanUpStaleFrequentBackgroundCallback(
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
             updateSourceIsFrequentBackground: updateSource == .frequentBackground
-        ) else { return false }
+        ) else { return .noCleanup }
 
         let shouldSuppressCallback = Self.shouldSuppressStaleFrequentBackgroundCallback(
             allowNextStaleCallback: shouldAllowNextStaleFrequentBackgroundCallback
@@ -1287,10 +1376,10 @@ final class LocationManager: NSObject, ObservableObject {
         stopFrequentBackgroundStandardUpdates()
         stopFrequentBackgroundActivitySession(reason: "stale frequent background callback")
 
-        if isTracking, applicationState != .active {
-            applyTrackingMode(reason: "stale frequent background callback cleanup", applicationStateContext: .forceBackground)
-        }
-        return shouldSuppressCallback
+        return StaleFrequentBackgroundCallbackCleanupResult(
+            didCleanUp: true,
+            shouldSuppressCallback: shouldSuppressCallback
+        )
     }
 
     private func reassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeIfNeeded(
@@ -1645,6 +1734,76 @@ final class LocationManager: NSObject, ObservableObject {
         RunLoop.main.add(timer, forMode: .common)
     }
 
+    private func restorePersistedSmartFrequentBackgroundSeedIfNeeded(now: Date = Date()) {
+        guard smartFrequentBackgroundSpeedReferenceLocation == nil,
+              let seedLocation = persistedSmartFrequentBackgroundSeedLocation(now: now) else {
+            return
+        }
+
+        smartFrequentBackgroundSpeedReferenceLocation = seedLocation
+        debugLog("[LocationManager] Restored Smart frequent seed timestamp=\(seedLocation.timestamp)")
+    }
+
+    private func persistedSmartFrequentBackgroundSeedLocation(now: Date = Date()) -> CLLocation? {
+        guard let latitude = userDefaults.object(forKey: smartFrequentBackgroundSeedLatitudeKey) as? Double,
+              let longitude = userDefaults.object(forKey: smartFrequentBackgroundSeedLongitudeKey) as? Double,
+              let horizontalAccuracy = userDefaults.object(forKey: smartFrequentBackgroundSeedHorizontalAccuracyKey) as? Double,
+              let timestamp = userDefaults.object(forKey: smartFrequentBackgroundSeedTimestampKey) as? Date else {
+            return nil
+        }
+
+        let inactivityWindow = settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        let seedLocation = Self.smartFrequentBackgroundSeedLocation(
+            latitude: latitude,
+            longitude: longitude,
+            altitude: userDefaults.object(forKey: smartFrequentBackgroundSeedAltitudeKey) as? Double ?? 0,
+            horizontalAccuracy: horizontalAccuracy,
+            verticalAccuracy: userDefaults.object(forKey: smartFrequentBackgroundSeedVerticalAccuracyKey) as? Double ?? -1,
+            course: userDefaults.object(forKey: smartFrequentBackgroundSeedCourseKey) as? Double ?? -1,
+            speed: userDefaults.object(forKey: smartFrequentBackgroundSeedSpeedKey) as? Double ?? -1,
+            timestamp: timestamp,
+            now: now,
+            inactivityWindow: inactivityWindow
+        )
+        if seedLocation == nil {
+            clearPersistedSmartFrequentBackgroundSeed()
+        }
+        return seedLocation
+    }
+
+    private func persistSmartFrequentBackgroundSeed(with location: CLLocation) {
+        guard location.coordinate.latitude.isFinite,
+              location.coordinate.longitude.isFinite,
+              CLLocationCoordinate2DIsValid(location.coordinate),
+              location.timestamp.timeIntervalSince1970.isFinite,
+              location.horizontalAccuracy.isFinite,
+              location.horizontalAccuracy >= 0 else {
+            return
+        }
+
+        userDefaults.set(location.coordinate.latitude, forKey: smartFrequentBackgroundSeedLatitudeKey)
+        userDefaults.set(location.coordinate.longitude, forKey: smartFrequentBackgroundSeedLongitudeKey)
+        userDefaults.set(location.altitude.isFinite ? location.altitude : 0, forKey: smartFrequentBackgroundSeedAltitudeKey)
+        userDefaults.set(location.horizontalAccuracy, forKey: smartFrequentBackgroundSeedHorizontalAccuracyKey)
+        userDefaults.set(location.verticalAccuracy.isFinite ? location.verticalAccuracy : -1, forKey: smartFrequentBackgroundSeedVerticalAccuracyKey)
+        userDefaults.set(location.course.isFinite ? location.course : -1, forKey: smartFrequentBackgroundSeedCourseKey)
+        userDefaults.set(location.speed.isFinite ? location.speed : -1, forKey: smartFrequentBackgroundSeedSpeedKey)
+        userDefaults.set(location.timestamp, forKey: smartFrequentBackgroundSeedTimestampKey)
+    }
+
+    private func clearPersistedSmartFrequentBackgroundSeed() {
+        [
+            smartFrequentBackgroundSeedLatitudeKey,
+            smartFrequentBackgroundSeedLongitudeKey,
+            smartFrequentBackgroundSeedAltitudeKey,
+            smartFrequentBackgroundSeedHorizontalAccuracyKey,
+            smartFrequentBackgroundSeedVerticalAccuracyKey,
+            smartFrequentBackgroundSeedCourseKey,
+            smartFrequentBackgroundSeedSpeedKey,
+            smartFrequentBackgroundSeedTimestampKey
+        ].forEach { userDefaults.removeObject(forKey: $0) }
+    }
+
     private func updateSmartFrequentBackgroundSpeedReference(with location: CLLocation) {
         if location.horizontalAccuracy >= 0 {
             smartFrequentBackgroundSpeedReferenceLocation = location
@@ -1664,7 +1823,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Server Communication
     @MainActor
-    private func sendLocationToServer(_ location: CLLocation) {
+    private func sendLocationToServer(_ location: CLLocation) async {
         if settings.deviceKeyAuthBlocked {
             self.serverUpdateStatus = .failed(
                 NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
@@ -1686,47 +1845,41 @@ final class LocationManager: NSObject, ObservableObject {
         let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
         let backgroundTask = beginLocationUploadBackgroundTaskIfNeeded(for: applicationState)
         self.serverUpdateStatus = .updating
-        Task {
-            defer {
-                if let backgroundTask {
-                    Task { @MainActor in
-                        backgroundTask.end()
-                    }
-                }
+        defer {
+            backgroundTask?.end()
+        }
+
+        let result = await locationUpdateDeliveryCoordinator.submit(
+            serverURL: serverURL,
+            payload: payload,
+            enableHistory: settings.saveLocationHistoryOnServer,
+            retentionTime: settings.locationDataRetentionTime,
+            deliveryDelay: deliveryDelay,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval
+        )
+
+        switch result {
+        case .sent:
+            self.markServerUpdateSucceeded()
+            NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
+            Task {
+                await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
+                    serverURL: serverURL,
+                    minimumInterval: visitorCheckMinimumInterval
+                )
             }
-
-            let result = await locationUpdateDeliveryCoordinator.submit(
-                serverURL: serverURL,
-                payload: payload,
-                enableHistory: settings.saveLocationHistoryOnServer,
-                retentionTime: settings.locationDataRetentionTime,
-                deliveryDelay: deliveryDelay,
-                visitorCheckMinimumInterval: visitorCheckMinimumInterval
-            )
-
-            switch result {
-            case .sent:
-                self.markServerUpdateSucceeded()
-                NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
-                Task {
-                    await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
-                        serverURL: serverURL,
-                        minimumInterval: visitorCheckMinimumInterval
-                    )
-                }
-            case .queued:
-                debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
-                self.serverUpdateStatus = .idle
-                self.refreshPendingLocationUpdateCount()
-            case .failed(let error):
-                if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
-                    settings.deviceKeyAuthBlocked = true
-                    settings.deviceKeyAuthBlockedKey = settings.deviceKey
-                    self.stopTracking()
-                    self.serverUpdateStatus = .failed(authMessage)
-                } else {
-                    self.serverUpdateStatus = .failed(error.localizedDescription)
-                }
+        case .queued:
+            debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
+            self.serverUpdateStatus = .idle
+            self.refreshPendingLocationUpdateCount()
+        case .failed(let error):
+            if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
+                settings.deviceKeyAuthBlocked = true
+                settings.deviceKeyAuthBlockedKey = settings.deviceKey
+                self.stopTracking()
+                self.serverUpdateStatus = .failed(authMessage)
+            } else {
+                self.serverUpdateStatus = .failed(error.localizedDescription)
             }
         }
     }
@@ -2026,120 +2179,154 @@ final class LocationManager: NSObject, ObservableObject {
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         Task { @MainActor in
-            guard let location = locations.last else { return }
+            let orderedLocations = Self.processableLocationUpdates(from: locations)
+            guard !orderedLocations.isEmpty else {
+                debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
+                return
+            }
+
             let applicationState = UIApplication.shared.applicationState
             let updateSource = self.locationUpdateSource(for: manager)
-            let updateCounterMode = Self.locationUpdateCounterMode(
-                applicationState: applicationState,
-                manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
-                smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
-                smartRuntimeActive: smartFrequentBackgroundRuntimeActive
-            )
-            debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
+            debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), processable=\(orderedLocations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
             let didExpireFrequentBackgroundUpdates = self.handleFrequentBackgroundLocationExpirationIfNeeded()
             let didDisableFrequentBackgroundUpdatesForBattery = self.disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
-            let didSwitchSmartFrequentBackgroundMode = self.updateSmartFrequentBackgroundRuntime(
-                for: location,
-                updateSource: updateSource,
-                applicationState: applicationState
-            )
-            let didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery || didSwitchSmartFrequentBackgroundMode
-            if self.shouldSuppressAfterCleaningUpStaleFrequentBackgroundCallbackIfNeeded(
-                updateSource: updateSource,
-                didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
-                applicationState: applicationState
-            ) {
-                return
-            }
-            self.reassertStandardSignificantChangeAfterPrimaryCallbackIfNeeded(
-                applicationState: applicationState,
-                updateSource: updateSource,
-                didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
-            )
-            self.latestRawLocation = location
-            self.recordLocationUpdateMetric(mode: updateCounterMode)
-            let mode = self.locationUpdateLogModeText(for: updateCounterMode)
-            // Only accept updates if distance or accuracy criteria are met
-            let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
-            var shouldAcceptUpdate = false
-            if let previousLocation = self.currentLocation {
-                let distance = location.distance(from: previousLocation)
-                let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
-                if distance >= minimumDistance {
-                    shouldAcceptUpdate = true
-                    debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
-                } else if accuracyImprovement >= significantAccuracyImprovement {
-                    shouldAcceptUpdate = true
-                    debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
-                } else {
-                    debugLog("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+            var didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery
+            var didCleanUpStaleFrequentCallback = false
+            var shouldSuppressCallback = false
+            var locationsPendingUpload: [CLLocation] = []
+
+            for location in orderedLocations {
+                let didSwitchSmartFrequentBackgroundMode = self.updateSmartFrequentBackgroundRuntime(
+                    for: location,
+                    updateSource: updateSource,
+                    applicationState: applicationState
+                )
+                didSwitchFrequentBackgroundMode = didSwitchFrequentBackgroundMode || didSwitchSmartFrequentBackgroundMode
+
+                let cleanupResult = self.cleanUpStaleFrequentBackgroundCallbackIfNeeded(
+                    updateSource: updateSource,
+                    didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
+                )
+                didCleanUpStaleFrequentCallback = didCleanUpStaleFrequentCallback || cleanupResult.didCleanUp
+                if cleanupResult.shouldSuppressCallback {
+                    shouldSuppressCallback = true
+                    break
                 }
-            } else {
-                // Always accept the very first location
-                shouldAcceptUpdate = true
-                debugLog("[LocationManager] First location update accepted.")
+
+                self.latestRawLocation = location
+                self.persistSmartFrequentBackgroundSeed(with: location)
+
+                let updateCounterMode = Self.locationUpdateCounterMode(
+                    applicationState: applicationState,
+                    manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                    smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+                    smartRuntimeActive: smartFrequentBackgroundRuntimeActive
+                )
+                self.recordLocationUpdateMetric(mode: updateCounterMode)
+                self.updateCourseHeadingFallbackIfNeeded(from: location)
+
+                guard self.shouldAcceptLocationUpdate(location) else {
+                    continue
+                }
+
+                let mode = self.locationUpdateLogModeText(for: updateCounterMode)
+                self.acceptLocationUpdate(location, mode: mode, locationsPendingUpload: &locationsPendingUpload)
             }
 
-            if (userHeading == nil || !isHeadingValid),
-               location.course >= 0,
-               location.speed >= headingMinSpeedThreshold {
-                userHeading = smoothHeading(normalizedHeading(location.course))
-            }
-            
-            guard shouldAcceptUpdate else {
-                if didSwitchFrequentBackgroundMode, applicationState != .active {
-                    self.applyTrackingMode(reason: Self.frequentBackgroundModeSwitchReason(
-                        didExpire: didExpireFrequentBackgroundUpdates,
-                        didDisableForBattery: didDisableFrequentBackgroundUpdatesForBattery
-                    ))
-                } else {
-                    self.reassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeIfNeeded(
-                        applicationState: applicationState,
-                        updateSource: updateSource,
-                        didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
-                    )
-                }
-                return
-            }
-            self.currentLocation = location
-            self.lastUpdateTime = Date()
-            // Immediately update local cache for own device to enable timely reverse geocoding and UI updates
-            let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : nil
-            let speedValue: Double? = (location.speed >= 0) ? location.speed : nil
-            let batteryLevelRaw = UIDevice.current.batteryLevel
-            let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : nil
-
-            DeviceLocationCacheStore.shared.setLocation(
-                for: thisDeviceIDManager.shared.deviceID,
-                latitude: location.coordinate.latitude,
-                longitude: location.coordinate.longitude,
-                accuracy: location.horizontalAccuracy,
-                timestamp: location.timestamp,
-                batteryLevel: batteryPercent,
-                altitude: altitudeValue,
-                speed: speedValue
-            )
-            if Self.shouldSubmitLocationForUpload(location, lastSubmittedKey: self.lastSubmittedLocationDeduplicationKey) {
-                self.lastSubmittedLocationDeduplicationKey = Self.locationSubmissionDeduplicationKey(for: location)
-                self.sendLocationToServer(location)
-            } else {
-                debugLog("[LocationManager] Skipping duplicate location upload from parallel location services")
-            }
-            self.addUpdateLogEntry(mode: mode)
-            if didSwitchFrequentBackgroundMode, applicationState != .active {
+            if didCleanUpStaleFrequentCallback, isTracking, applicationState != .active {
+                self.applyTrackingMode(reason: "stale frequent background callback cleanup", applicationStateContext: .forceBackground)
+            } else if didSwitchFrequentBackgroundMode, applicationState != .active {
                 self.applyTrackingMode(reason: Self.frequentBackgroundModeSwitchReason(
                     didExpire: didExpireFrequentBackgroundUpdates,
                     didDisableForBattery: didDisableFrequentBackgroundUpdatesForBattery
                 ))
             } else {
+                self.reassertStandardSignificantChangeAfterPrimaryCallbackIfNeeded(
+                    applicationState: applicationState,
+                    updateSource: updateSource,
+                    didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
+                )
                 self.reassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeIfNeeded(
                     applicationState: applicationState,
                     updateSource: updateSource,
                     didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
                 )
             }
+
+            guard !shouldSuppressCallback,
+                  !locationsPendingUpload.isEmpty else {
+                return
+            }
+
+            let uploadLocations = locationsPendingUpload
+            Task { @MainActor in
+                for location in uploadLocations {
+                    await self.sendLocationToServer(location)
+                }
+            }
         }
     }
+
+    private func shouldAcceptLocationUpdate(_ location: CLLocation) -> Bool {
+        let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
+        guard let previousLocation = self.currentLocation else {
+            debugLog("[LocationManager] First location update accepted.")
+            return true
+        }
+
+        let distance = location.distance(from: previousLocation)
+        let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
+        if distance >= minimumDistance {
+            debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+            return true
+        }
+        if accuracyImprovement >= significantAccuracyImprovement {
+            debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+            return true
+        }
+
+        debugLog("[LocationManager] Location update ignored: distance (\(distance)m), accuracy improvement (\(accuracyImprovement)m)")
+        return false
+    }
+
+    private func updateCourseHeadingFallbackIfNeeded(from location: CLLocation) {
+        if (userHeading == nil || !isHeadingValid),
+           location.course >= 0,
+           location.speed >= headingMinSpeedThreshold {
+            userHeading = smoothHeading(normalizedHeading(location.course))
+        }
+    }
+
+    private func acceptLocationUpdate(_ location: CLLocation,
+                                      mode: String,
+                                      locationsPendingUpload: inout [CLLocation]) {
+        self.currentLocation = location
+        self.lastUpdateTime = Date()
+        let altitudeValue: Double? = (location.verticalAccuracy >= 0) ? location.altitude : nil
+        let speedValue: Double? = (location.speed >= 0) ? location.speed : nil
+        let batteryLevelRaw = UIDevice.current.batteryLevel
+        let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : nil
+
+        DeviceLocationCacheStore.shared.setLocation(
+            for: thisDeviceIDManager.shared.deviceID,
+            latitude: location.coordinate.latitude,
+            longitude: location.coordinate.longitude,
+            accuracy: location.horizontalAccuracy,
+            timestamp: location.timestamp,
+            batteryLevel: batteryPercent,
+            altitude: altitudeValue,
+            speed: speedValue
+        )
+
+        if Self.shouldSubmitLocationForUpload(location, lastSubmittedKey: self.lastSubmittedLocationDeduplicationKey) {
+            self.lastSubmittedLocationDeduplicationKey = Self.locationSubmissionDeduplicationKey(for: location)
+            locationsPendingUpload.append(location)
+        } else {
+            debugLog("[LocationManager] Skipping duplicate location upload from parallel location services")
+        }
+        self.addUpdateLogEntry(mode: mode)
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         Task { @MainActor in
             let accuracy = newHeading.headingAccuracy

@@ -135,6 +135,8 @@ struct SettingsConfigurationTests {
             "frequent_background_location_expired_notification_title",
             "frequent_background_location_expired_notification_body",
             "background_location_distance_filter_title",
+            "background_location_distance_filter_5m_explanation",
+            "background_location_distance_filter_10m_explanation",
             "background_location_distance_filter_100m_explanation",
             "background_location_distance_filter_50m_explanation",
             "background_location_distance_filter_25m_explanation",
@@ -471,6 +473,12 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.navigationTransportType] as? String == "2")
         #expect(defaultsByKey[SettingsKeys.automaticRouteUpdateDuringNavigation] as? Bool == true)
         #expect(defaultsByKey[SettingsKeys.showRouteProgress] as? Bool == true)
+
+        let distanceFilterSpecifier = try #require(specifiers.first {
+            $0["Key"] as? String == SettingsKeys.frequentBackgroundLocationDistanceFilter
+        })
+        #expect(distanceFilterSpecifier["Titles"] as? [String] == ["100m", "50m", "25m", "10m", "5m"])
+        #expect(distanceFilterSpecifier["Values"] as? [String] == ["100", "50", "25", "10", "5"])
     }
 
     @Test("Frequent background location update settings normalize and expire as expected")
@@ -490,7 +498,9 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(100) == 100)
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(50) == 50)
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(25) == 25)
-        #expect(FrequentBackgroundLocationDistanceFilter.normalized(10) == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(10) == 10)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(5) == 5)
+        #expect(FrequentBackgroundLocationDistanceFilter.normalized(3) == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
 
         #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.oneHour.rawValue) == 3_600)
         #expect(FrequentBackgroundLocationUpdateDuration.normalizedRawValue(FrequentBackgroundLocationUpdateDuration.twoHours.rawValue) == 7_200)
@@ -541,7 +551,14 @@ struct SettingsConfigurationTests {
             distanceFilterMeters: 10
         )
         #expect(!normalizedConfiguration.usesSignificantChangeMonitoring)
-        #expect(normalizedConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
+        #expect(normalizedConfiguration.distanceFilter == 10)
+        #expect(normalizedConfiguration.desiredAccuracy == kCLLocationAccuracyNearestTenMeters)
+
+        let fallbackConfiguration = LocationManager.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 3
+        )
+        #expect(fallbackConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
     }
 
     @Test("Location tracking mode resolver keeps foreground, navigation, and background policies distinct")
@@ -626,8 +643,8 @@ struct SettingsConfigurationTests {
             distanceFilterMeters: 10,
             hasNavigationLocationSession: true
         ) == .backgroundFrequent(
-            distanceFilter: CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter),
-            desiredAccuracy: kCLLocationAccuracyHundredMeters
+            distanceFilter: 10,
+            desiredAccuracy: kCLLocationAccuracyNearestTenMeters
         ))
 
         #expect(LocationManager.resolvedTrackingMode(
@@ -910,6 +927,94 @@ struct SettingsConfigurationTests {
             detectionMode: .hybrid
         )
         #expect(abs((gpsSpeedKmh ?? 0) - 14.4) < 0.001)
+    }
+
+    @Test("Persisted smart frequent seed is fresh-gated and still rejects implausible activation")
+    func persistedSmartFrequentSeedIsFreshGatedAndRejectsImplausibleActivation() throws {
+        let now = Date(timeIntervalSince1970: 10_000)
+        let seedTimestamp = now.addingTimeInterval(-60)
+        let seed = try #require(LocationManager.smartFrequentBackgroundSeedLocation(
+            latitude: 52.5200,
+            longitude: 13.4050,
+            altitude: 34,
+            horizontalAccuracy: 12,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: seedTimestamp,
+            now: now,
+            inactivityWindow: 600
+        ))
+
+        #expect(LocationManager.smartFrequentBackgroundSeedLocation(
+            latitude: 52.5200,
+            longitude: 13.4050,
+            altitude: 34,
+            horizontalAccuracy: 12,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: now.addingTimeInterval(-600),
+            now: now,
+            inactivityWindow: 600
+        ) == nil)
+        #expect(LocationManager.smartFrequentBackgroundSeedLocation(
+            latitude: 52.5200,
+            longitude: 13.4050,
+            altitude: 34,
+            horizontalAccuracy: 12,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: now.addingTimeInterval(1),
+            now: now,
+            inactivityWindow: 600
+        ) == nil)
+
+        let plausibleMovement = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5218, longitude: 13.4050),
+            altitude: 34,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: now
+        )
+        let plausibleSpeed = LocationManager.smartFrequentBackgroundSpeedKmh(
+            for: plausibleMovement,
+            previousLocation: seed,
+            detectionMode: .hybrid
+        )
+        #expect(LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: plausibleMovement.timestamp,
+            previousLocationUpdateAt: seed.timestamp,
+            inactivityWindow: 600
+        ))
+        #expect(LocationManager.shouldActivateSmartFrequentBackgroundUpdates(
+            speedKmh: plausibleSpeed,
+            thresholdKmh: 10
+        ))
+
+        let implausibleMovement = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.5200, longitude: 13.4050),
+            altitude: 34,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            course: -1,
+            speed: -1,
+            timestamp: now
+        )
+        let implausibleSpeed = LocationManager.smartFrequentBackgroundSpeedKmh(
+            for: implausibleMovement,
+            previousLocation: seed,
+            detectionMode: .hybrid
+        )
+        #expect((implausibleSpeed ?? 0) > 200)
+        #expect(!LocationManager.shouldActivateSmartFrequentBackgroundUpdates(
+            speedKmh: implausibleSpeed,
+            thresholdKmh: 2
+        ))
     }
 
     @Test("Smart frequent activation and inactivity policies are threshold based")
@@ -1240,6 +1345,49 @@ struct SettingsConfigurationTests {
         #expect(LocationManager.shouldSubmitLocationForUpload(location, lastSubmittedKey: nil))
         #expect(!LocationManager.shouldSubmitLocationForUpload(sameCallback, lastSubmittedKey: key))
         #expect(LocationManager.shouldSubmitLocationForUpload(laterCallback, lastSubmittedKey: key))
+    }
+
+    @Test("Location update batches are processed chronologically and skip invalid coordinates")
+    func locationUpdateBatchesAreProcessedChronologically() {
+        let first = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.551086, longitude: 9.993682),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 100)
+        )
+        let second = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.552086, longitude: 9.993682),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 200)
+        )
+        let third = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.553086, longitude: 9.993682),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 300)
+        )
+        let invalid = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: .nan, longitude: 9.993682),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 150)
+        )
+
+        let ordered = LocationManager.processableLocationUpdates(from: [third, invalid, first, second])
+        #expect(ordered.map { Int($0.timestamp.timeIntervalSince1970) } == [100, 200, 300])
     }
 
     @Test("Background battery threshold only disables frequent mode when active and known")
