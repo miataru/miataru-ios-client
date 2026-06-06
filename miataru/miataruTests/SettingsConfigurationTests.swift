@@ -1297,6 +1297,149 @@ struct SettingsConfigurationTests {
         ))
     }
 
+    @Test("Smart frequent activation evidence is quality aware and startup guarded")
+    func smartFrequentActivationEvidenceIsQualityAwareAndStartupGuarded() throws {
+        let firstStationary = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8191, longitude: 10.8078),
+            altitude: 0,
+            horizontalAccuracy: 18.2,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: 0,
+            timestamp: Date(timeIntervalSince1970: 1_000)
+        )
+        let speedOnlyStationary = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8191, longitude: 10.8078),
+            altitude: 0,
+            horizontalAccuracy: 17.9,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: 1.001774549484253,
+            timestamp: Date(timeIntervalSince1970: 1_003)
+        )
+
+        let startupSpeedOnlyEvidence = LocationManager.smartFrequentActivationEvidence(
+            for: speedOnlyStationary,
+            previousLocation: firstStationary,
+            detectionMode: .hybrid,
+            thresholdKmh: 2,
+            frequentDistanceFilterMeters: 10,
+            isStartupBatch: true
+        )
+        #expect(startupSpeedOnlyEvidence.kind == .insufficient)
+
+        let previousWalking = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8193, longitude: 10.8020),
+            altitude: 0,
+            horizontalAccuracy: 2.1,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 2_000)
+        )
+        let currentWalking = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8174, longitude: 10.7958),
+            altitude: 0,
+            horizontalAccuracy: 2.3,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 2_411)
+        )
+        let walkingEvidence = LocationManager.smartFrequentActivationEvidence(
+            for: currentWalking,
+            previousLocation: previousWalking,
+            detectionMode: .hybrid,
+            thresholdKmh: 2,
+            frequentDistanceFilterMeters: 10,
+            isStartupBatch: true
+        )
+        #expect(walkingEvidence.kind == .trustedDerivedSpeed)
+        #expect((walkingEvidence.distanceMeters ?? 0) > 450)
+
+        let sameSecondSpike = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8190, longitude: 10.8077),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 3_000.2)
+        )
+        let spikeAnchor = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8190, longitude: 10.8076),
+            altitude: 0,
+            horizontalAccuracy: 11.4,
+            verticalAccuracy: 5,
+            course: -1,
+            speed: -1,
+            timestamp: Date(timeIntervalSince1970: 3_000)
+        )
+        let spikeEvidence = LocationManager.smartFrequentActivationEvidence(
+            for: sameSecondSpike,
+            previousLocation: spikeAnchor,
+            detectionMode: .hybrid,
+            thresholdKmh: 2,
+            frequentDistanceFilterMeters: 10,
+            isStartupBatch: true
+        )
+        #expect(spikeEvidence.kind == .insufficient)
+
+        let regionEvidence = LocationManager.smartFrequentActivationEvidence(
+            for: speedOnlyStationary,
+            previousLocation: firstStationary,
+            detectionMode: .hybrid,
+            thresholdKmh: 30,
+            frequentDistanceFilterMeters: 10,
+            isStartupBatch: true,
+            regionExitRadiusMeters: 150
+        )
+        #expect(regionEvidence.kind == .regionExit)
+    }
+
+    @Test("Smart frequent exit fence eligibility and radius are automatic")
+    func smartFrequentExitFenceEligibilityAndRadiusAreAutomatic() {
+        #expect(LocationManager.smartFrequentExitFenceRadius(
+            frequentDistanceFilterMeters: 10,
+            maximumRegionMonitoringDistance: 1_000
+        ) == 150)
+        #expect(LocationManager.smartFrequentExitFenceRadius(
+            frequentDistanceFilterMeters: 100,
+            maximumRegionMonitoringDistance: 120
+        ) == 120)
+
+        #expect(LocationManager.shouldMaintainSmartFrequentExitFence(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            smartRuntimeActive: false,
+            regionMonitoringAvailable: true
+        ))
+        #expect(!LocationManager.shouldMaintainSmartFrequentExitFence(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            smartEnabled: true,
+            manualFrequentEnabled: true,
+            smartRuntimeActive: false,
+            regionMonitoringAvailable: true
+        ))
+        #expect(!LocationManager.shouldMaintainSmartFrequentExitFence(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            smartRuntimeActive: true,
+            regionMonitoringAvailable: true
+        ))
+    }
+
     @Test("Smart frequent activation and inactivity policies are threshold based")
     func smartFrequentActivationAndInactivityPoliciesAreThresholdBased() {
         let now = Date(timeIntervalSince1970: 10_000)
