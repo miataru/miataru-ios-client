@@ -333,3 +333,171 @@ version 2.9
 - Auto-refreshing the visitor history list
 - Fixed route progress ghost and segmentation to follow the active navigation direction.
 - Disabled shimmer, pulsing, and UI animations while Low Power Mode is enabled.
+
+version 2.8
+- Added device visitor history support in the client and app, including the inline visitor history on the current-device tab.
+- Added history map playback with timeline overlay, range selection, playback controls, speed control, quick presets, and improved loading/zoom behavior.
+- Fixed history retrieval, request encoding, duplicate history annotation IDs, malformed history entries, timeline range ordering, and polyline rendering between non-adjacent history points.
+- Added distance display and recent-visitor indicators to visitor history, including an eye symbol for devices that recently looked up the current device.
+- Added configurable widgets with device selection, text and map rendering, live location fetching through shared config, and App Group snapshot updates.
+- Fixed widget map refresh reliability, multi-widget map rendering, widget device ID matching, deep-link precedence, and iPad widget deeplinks.
+- Added widget request counters and app/build version display in Location Status.
+- Improved iPad multi-window device selection synchronization and deep-link handling.
+- Added automatic navigation stop when devices are within 50 m and improved mutual-navigation route state updates.
+- Added localized permission and onboarding refinements, missing widget/localization strings, and App Store preview assets.
+
+version 2.7.4
+- Added route direction reversal for navigation.
+- Added iPad bottom accessory support and replaced the iOS 26 navigation tab accessory with a floating overlay to avoid safe-area and hit-testing problems.
+- Improved nearby map-device tap actions, including preloading nearby picks and fixing empty device picker sheets on first presentation.
+- Added timezone offset display to device locations.
+- Improved ghost route projection with device and user speed data.
+- Added quick history presets and map color tweaks.
+- Preserved manual zoom during history playback and deferred redraws while dragging history range selectors.
+- Added fade in/out animations for off-screen device arrows based on map movement.
+- Fixed map marker vertical alignment, iPad safe-area/sidebar gaps, iPad sidebar toggle accessibility, and route info overlay hit testing.
+- Expanded localization coverage and added location permission Info.plist strings for supported locales.
+
+version 2.6
+- Updated map marker rendering for iOS 26 compatibility, moving pulsing visuals behind the marker/label and improving z-order and spacing across annotations.
+- Added route request counting with daily reset and warnings to avoid excessive MapKit route requests.
+- Added settings/status visibility for background update counters, route request counts, speed, battery, and altitude.
+- Added submission and display support for speed, altitude, and battery data when available.
+- Added route progress estimation that shows a remote device's estimated progress along the route with partial route coloring and a transport-style ghost marker.
+- Added route throttling, movement thresholds, transit-mode recalculation, and route-cache bypass on manual navigation reload.
+- Added global settings to control pulsing/shimmering map markers and automatically gate animations in background or Low Power Mode.
+- Improved map marker performance through rasterized caching and better dynamic type, color scheme, and alpha handling.
+- Improved map auto-centering and user-interaction detection across iPhone and iPad maps.
+- Fixed iPad group editing, group detail save/cancel controls, device row refreshes, pulsing circle clipping, map timestamp refresh, and dark-mode tab selected color.
+
+version 2.3
+- Added iOS 26 / Liquid Glass design updates, including updated tab and toolbar behavior, material handling, onboarding background changes, and a refreshed app icon.
+- Added off-screen device arrows on maps and device lists, with tap behavior, distance-based sizing, rotation-aware placement, grouped edge layout, and haptic feedback.
+- Added a navigation-to-device flow from long-press or swipe actions, with route details, custom compass/scale bar, stable auto-centering, proper Apple Maps destination names, and iPad presentation fixes.
+- Added app state restoration for the last opened device map.
+- Added iPad multi-window support for opening devices from context menus and drag operations.
+- Added configurable reverse geocoding with queued lookup handling and placemark caching for device and group rows.
+- Added sharing options for device QR codes and fixed mail composer QR image loading.
+- Improved iPad device, group, settings, drag-and-drop, context-menu, and onboarding behavior.
+- Added battery, altitude, distance, last update, and placemark details to device/group rows where available.
+- Improved map rendering, off-screen arrow visibility, pulsing circle sizing, fixed-width scale bar behavior, and location-permission setup on first launch.
+- Added early accessibility improvements, including VoiceOver-oriented labels and edit controls.
+
+version 2.1
+- Added early iPad device and group views.
+- Added automatic device-list refresh when the current device updates its location, with a setting to toggle this behavior.
+- Added `miataru://` URL scheme support so QR codes scanned with the Camera app can open the app directly.
+- Switched Add Device color selection to a custom color picker.
+- Improved group map zoom behavior, group map padding, map animations, device label readability, and marker shadows.
+- Disabled pulsing animation automatically when more than five devices are shown to improve performance.
+- Fixed localization/cache behavior, wrapped text issues, empty device states, dark-mode onboarding finish button, and bundle display-name handling.
+
+version 2.0
+- Reimplemented the app as a modern Swift/SwiftUI codebase, preserving migration from existing settings and known devices where possible.
+- Added a Swift implementation of the Miataru client library with more robust location encoding and decoding.
+- Reworked known-device handling with observable storage, saved ordering, colors, edit/delete/reorder support, QR display, and QR scanning when adding devices.
+- Added device and group maps with animated markers, accuracy circles, cached last-known locations, distance/age display, map type selection, map bearing persistence, manual zoom behavior, and zoom-to-fit support.
+- Added custom compass and scale bar controls, including localized metric/imperial scale display and tap-to-reset behavior.
+- Added onboarding flows for supported platforms, location permission setup, custom server setup, and location retention options.
+- Added location tracking sensitivity options, a Location Status view, and improved foreground/background location-manager handling.
+- Added group management, group maps, group editing, empty-state handling, and automatic behavior when devices are deleted.
+- Added localized UI strings, error overlays, better map/network error feedback, and App Store screenshots for iPhone and iPad.
+- Added the new Liquid Glass app icon and reorganized project libraries/assets while moving the old iOS app version to the `prior-2.0` branch.
+
+version 1.5.1
+- Improved reliability of background location tracking on iOS 15.
+- Replaced additional deprecated APIs and changed URLSession handling while investigating background-location stability.
+- Fixed dark-mode issues and adjusted location accuracy behavior.
+
+version 1.4
+- Fixed dark-mode settings behavior.
+
+version 1.2.0
+- Raised the minimum supported system to iOS 9.
+- Added and fixed iPhone X support.
+- Fixed an annotation-related issue.
+- Updated location sharing text and made minor App Store release fixes.
+
+version 1.1.8
+- Added the first part of visitor history, including visitor configuration in location/history requests and a device visitor history scene.
+- Fixed bugs for the 1.1.8 release.
+
+version 1.1.7
+- Fixed an iOS 8 location access request bug.
+- Fixed an InAppSettingsKit compile error and made small font-size tweaks.
+
+version 1.1.6b
+- Fixed App Store rejection causes related to iPad landscape handling.
+
+version 1.1.6
+- Added live-updating groups with zoom-to-fit controls.
+- Added group interval updates and location accuracy indicators.
+
+version 1.1.5
+- Added the Groups feature so multiple known devices can be maintained and displayed together on one map.
+
+version 1.1.4
+- Removed table-cell selection highlighting and fixed warnings.
+
+version 1.1.3
+- Fixed a map crash when known devices were spread very far apart.
+
+version 1.1.2
+- Added a device auto-lock disable option.
+- Continued fixing an unexpected restart issue.
+
+version 1.1.1
+- Fixed an occasional settings reset caused by wrong startup behavior.
+- Changed default architecture handling to automatic.
+
+version 1.1.0
+- Added a local notification for cases where Miataru is manually terminated.
+- Fixed the empty-device bug.
+- Updated app icon assets and GitHub/readme packaging.
+
+version 1.0.9
+- Added a link to the Miataru web client to QR code emails.
+
+version 1.0.8
+- Fixed `GetLocationHistory` to use the versioned URL scheme.
+- Fixed an issue where returning from the background could leave the detail view updating incorrectly.
+
+version 1.0.7
+- Added selectable colors for known devices.
+
+version 1.0.6
+- Added custom map annotation pins and expanded color support for pins/history.
+- Added map scale display across maps.
+- Changed history from a fixed number of items to a day-based setting.
+- Improved updates for pins, accuracy changes, detail views on bad connections, and server-side gzip handling.
+
+version 1.0.5
+- Added editing of device names.
+- Added display of location accuracy on the device detail map.
+- Improved iPad device ID and name entry fields.
+
+version 1.0.4
+- Added self-location display on maps.
+- Added sending the device QR code by email.
+- Added device history on iPhone and a setting for how many history items to show.
+- Changed the default Miataru service URL from HTTP to HTTPS.
+- Fixed map type initialization, iPad map scale/zoom, QR scan orientation, map positioning, and continuously updated pin titles.
+
+version 1.0.3
+- Fixed 64-bit ARM architecture support for iPhone 5s.
+
+version 1.0.2
+- Added map type selection and zoom-to-fit on the devices map.
+- Added a default map zoom level setting.
+- Reworked background location behavior to use a background task with synchronous calls.
+- Stopped device location requests correctly when the app enters the background.
+- Added early iPad screens and migrated QR scanning to AVFoundation after removing ZXing.
+
+version 1.0.1
+- Added "time since last location update" to the all-devices map.
+- Displayed how current or old the device detail pin is.
+- Fixed maps showing devices that had already been deleted from Known Devices.
+- Began refactoring shared known-device/date formatting handling.
+
+version 1.0
+- Initial App Store release with device list, maps, history, settings, QR code generation/scanning, Miataru URL handling, location reporting, and first-run configuration.
