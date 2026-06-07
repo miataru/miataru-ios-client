@@ -1,4 +1,6 @@
 version 3.2
+- Hid tracking-dependent Settings and Advanced Options unless location tracking is enabled and iOS grants Always location access, replacing those controls with a localized Always-permission explanation and manual Settings path.
+- Removed the unreliable in-app permission-change button from the Always-permission notice and Location Tracking Details, keeping the guidance text-only so users are not sent into a dead permission flow.
 - Added an opt-in Location Diagnostics log in Location Tracking Details with a persistent 1000-entry ring buffer, JSON export, rounded location values, and localized UI across all supported app languages.
 - Reworked Location Diagnostics into a compact forensic background-tracking log with critical/sample/coalesced retention, 24-hour evidence metadata, exported coalesced counters, dropped-entry reporting, and legacy log import compatibility.
 - Added persisted background-tracking forensic state, suspicious-gap detection, foreground-recovery-burst evidence, and Location Tracking Details status rows for expected mode, oldest evidence, last background callback, last background upload, and recent gaps.

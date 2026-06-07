@@ -11,12 +11,19 @@ import SwiftUI
 
 struct iPhone_AdvancedOptionsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @ObservedObject private var locationManager = LocationManager.shared
     @State private var isRequestingSmartFrequentNotificationPermission = false
     @State private var smartFrequentNotificationPermissionDenied = false
 
     var body: some View {
         Form {
-            if settings.trackAndReportLocation {
+            if trackingPermissionVisibility.showsAlwaysPermissionNotice {
+                Section {
+                    AlwaysLocationPermissionRequiredNotice()
+                }
+            }
+
+            if trackingPermissionVisibility.showsTrackingDependentSettings {
                 Section(header: Text("activity_type_accuracy_settings_title")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("activity_type_tracking_accuracy_title")
@@ -176,21 +183,23 @@ struct iPhone_AdvancedOptionsView: View {
                 Toggle("show_current_speed_on_map", isOn: $settings.showCurrentSpeedOnMap)
                 SettingsDescriptionText("explanation_show_current_speed_on_map")
 
-                Picker("location_update_outbox_retention_title", selection: $settings.locationUpdateOutboxRetentionMode) {
-                    Text("location_update_outbox_retention_24h").tag(LocationUpdateOutboxRetentionMode.twentyFourHours.rawValue)
-                    Text("location_update_outbox_retention_7d").tag(LocationUpdateOutboxRetentionMode.sevenDays.rawValue)
-                    Text("location_update_outbox_retention_30d").tag(LocationUpdateOutboxRetentionMode.thirtyDays.rawValue)
-                    Text("location_update_outbox_retention_unlimited").tag(LocationUpdateOutboxRetentionMode.unlimited.rawValue)
-                }
+                if trackingPermissionVisibility.showsTrackingDependentSettings {
+                    Picker("location_update_outbox_retention_title", selection: $settings.locationUpdateOutboxRetentionMode) {
+                        Text("location_update_outbox_retention_24h").tag(LocationUpdateOutboxRetentionMode.twentyFourHours.rawValue)
+                        Text("location_update_outbox_retention_7d").tag(LocationUpdateOutboxRetentionMode.sevenDays.rawValue)
+                        Text("location_update_outbox_retention_30d").tag(LocationUpdateOutboxRetentionMode.thirtyDays.rawValue)
+                        Text("location_update_outbox_retention_unlimited").tag(LocationUpdateOutboxRetentionMode.unlimited.rawValue)
+                    }
 
-                Picker("location_update_outbox_max_items_title", selection: $settings.locationUpdateOutboxMaxItems) {
-                    Text("500").tag(500)
-                    Text("1000").tag(1000)
-                    Text("2500").tag(2500)
-                    Text("5000").tag(5000)
-                    Text("10000").tag(10_000)
+                    Picker("location_update_outbox_max_items_title", selection: $settings.locationUpdateOutboxMaxItems) {
+                        Text("500").tag(500)
+                        Text("1000").tag(1000)
+                        Text("2500").tag(2500)
+                        Text("5000").tag(5000)
+                        Text("10000").tag(10_000)
+                    }
+                    SettingsDescriptionText("explanation_location_update_outbox_policy")
                 }
-                SettingsDescriptionText("explanation_location_update_outbox_policy")
             }
 
             Section(header: Text("map_configuration")) {
@@ -235,6 +244,13 @@ struct iPhone_AdvancedOptionsView: View {
         .navigationTitle("advanced_options")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("screen_settings_advanced_options")
+    }
+
+    private var trackingPermissionVisibility: TrackingPermissionSettingsVisibility {
+        TrackingPermissionSettingsGate.visibility(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            authorizationStatus: locationManager.authorizationStatus
+        )
     }
 
     private var frequentBackgroundDistanceFilterExplanationKey: LocalizedStringKey {

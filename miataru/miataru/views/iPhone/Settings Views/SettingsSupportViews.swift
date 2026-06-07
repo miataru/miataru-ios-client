@@ -39,6 +39,31 @@ struct SettingsWarningText: View {
     }
 }
 
+struct AlwaysLocationPermissionRequiredNotice: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Image(systemName: "location.badge.exclamationmark")
+                    .foregroundColor(.orange)
+                Text("always_location_permission_required_title")
+                    .font(.headline)
+            }
+
+            Text("always_location_permission_required_message")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("always_location_permission_required_steps")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 4)
+        .accessibilityIdentifier("always_location_permission_required_notice")
+    }
+}
+
 struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
     let expiresAt: Date?
     let action: () -> Void

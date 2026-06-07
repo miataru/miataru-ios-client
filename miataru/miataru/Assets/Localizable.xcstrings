@@ -5314,6 +5314,201 @@
         }
       }
     },
+    "always_location_permission_required_message" : {
+      "comment" : "Explanation that Always location access is required for tracking-dependent settings",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru kræver altid adgang til placering til baggrundssporing, Smart/Frequent Background Updates og pålidelig deling, mens appen er i baggrunden."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru benötigt Standortzugriff „Immer“ für Hintergrund-Tracking, Smart/Frequent Background Updates und zuverlässiges Teilen, während die App im Hintergrund ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru needs Always location access for background tracking, Smart/Frequent Background Updates, and reliable sharing while the app is in the background."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru necesita acceso a la ubicación Siempre para el seguimiento en segundo plano, Smart/Frequent Background Updates y el uso compartido fiable mientras la app está en segundo plano."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru tarvitsee Aina-sijaintiluvan taustaseurantaan, Smart/Frequent Background Updates -toimintoihin ja luotettavaan jakamiseen, kun appi on taustalla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru a besoin de l’accès permanent à la localisation pour le suivi en arrière-plan, Smart/Frequent Background Updates et un partage fiable lorsque l’app est en arrière-plan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru richiede l’accesso alla posizione Sempre per il tracciamento in background, Smart/Frequent Background Updates e la condivisione affidabile mentre l’app è in background."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru には、バックグラウンド追跡、Smart/Frequent Background Updates、アプリがバックグラウンドにある間の確実な共有のために、位置情報の「常に許可」が必要です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru heeft locatietoegang Altijd nodig voor achtergrondtracering, Smart/Frequent Background Updates en betrouwbaar delen terwijl de app op de achtergrond staat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 需要“始终”位置访问权限，才能进行后台跟踪、Smart/Frequent Background Updates，并在应用处于后台时可靠共享位置。"
+          }
+        }
+      }
+    },
+    "always_location_permission_required_steps" : {
+      "comment" : "Instruction path in iOS Settings for enabling Always location permission",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn iOS-indstillinger > Anonymitet & sikkerhed > Lokalitetstjenester > Miataru > Altid."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne iOS-Einstellungen > Datenschutz & Sicherheit > Ortungsdienste > Miataru > Immer."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS Settings > Privacy & Security > Location Services > Miataru > Always."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Ajustes de iOS > Privacidad y seguridad > Localización > Miataru > Siempre."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa iOS-asetukset > Tietosuoja ja suojaus > Sijaintipalvelut > Miataru > Aina."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrez Réglages iOS > Confidentialité et sécurité > Services de localisation > Miataru > Toujours."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri Impostazioni iOS > Privacy e sicurezza > Localizzazione > Miataru > Sempre."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSの設定 > プライバシーとセキュリティ > 位置情報サービス > Miataru > 常に を開いてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS-instellingen > Privacy en beveiliging > Locatievoorzieningen > Miataru > Altijd."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 iOS 设置 > 隐私与安全性 > 定位服务 > Miataru > 始终。"
+          }
+        }
+      }
+    },
+    "always_location_permission_required_title" : {
+      "comment" : "Notice title for missing Always location permission",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altid-adgang til placering kræves"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortzugriff „Immer“ erforderlich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Always Location Access Required"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se requiere ubicación Siempre"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aina-sijaintilupa vaaditaan"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès permanent à la localisation requis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso alla posizione Sempre richiesto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報の「常に許可」が必要です"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietoegang Altijd vereist"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要“始终”位置访问权限"
+          }
+        }
+      }
+    },
     "app_behaviour" : {
       "localizations" : {
         "da" : {

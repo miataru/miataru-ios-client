@@ -92,11 +92,56 @@ struct SettingsConfigurationTests {
         #expect(defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled))
     }
 
+    @Test("Tracking permission visibility requires Always for dependent settings")
+    func trackingPermissionVisibilityRequiresAlwaysForDependentSettings() {
+        let statuses: [CLAuthorizationStatus] = [
+            .authorizedAlways,
+            .authorizedWhenInUse,
+            .denied,
+            .restricted,
+            .notDetermined,
+        ]
+
+        for status in statuses {
+            let visibility = TrackingPermissionSettingsGate.visibility(
+                trackAndReportLocation: false,
+                authorizationStatus: status
+            )
+            #expect(!visibility.showsTrackingDependentSettings, "Disabled tracking should hide dependent settings for status \(status.rawValue)")
+            #expect(!visibility.showsAlwaysPermissionNotice, "Disabled tracking should not show Always notice for status \(status.rawValue)")
+        }
+
+        let alwaysVisibility = TrackingPermissionSettingsGate.visibility(
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways
+        )
+        #expect(alwaysVisibility.showsTrackingDependentSettings)
+        #expect(!alwaysVisibility.showsAlwaysPermissionNotice)
+
+        let missingAlwaysStatuses: [CLAuthorizationStatus] = [
+            .authorizedWhenInUse,
+            .denied,
+            .restricted,
+            .notDetermined,
+        ]
+        for status in missingAlwaysStatuses {
+            let visibility = TrackingPermissionSettingsGate.visibility(
+                trackAndReportLocation: true,
+                authorizationStatus: status
+            )
+            #expect(!visibility.showsTrackingDependentSettings, "Missing Always should hide dependent settings for status \(status.rawValue)")
+            #expect(visibility.showsAlwaysPermissionNotice, "Missing Always should show notice for status \(status.rawValue)")
+        }
+    }
+
     @Test("Settings localization keys exist for all app locales")
     func settingsLocalizationKeysExistForAllLocales() throws {
         let requiredKeys = [
             "advanced_options",
             "advanced_options_and_tracking_status",
+            "always_location_permission_required_title",
+            "always_location_permission_required_message",
+            "always_location_permission_required_steps",
             "activity_type_accuracy_settings_title",
             "activity_type_tracking_accuracy_title",
             "activity_type_accuracy_explanation",

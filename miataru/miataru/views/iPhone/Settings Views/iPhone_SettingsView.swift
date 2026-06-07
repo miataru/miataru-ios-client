@@ -11,6 +11,7 @@ import SwiftUI
 
 struct iPhone_SettingsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     @State private var showingDeviceKeySheet = false
     @State private var showAdvancedOptionsFromNavigationRequest = false
@@ -27,7 +28,7 @@ struct iPhone_SettingsView: View {
                     Toggle("location_track", isOn: $settings.trackAndReportLocation)
                     SettingsDescriptionText("explanation_location_track")
 
-                    if settings.trackAndReportLocation {
+                    if trackingPermissionVisibility.showsTrackingDependentSettings {
                         Toggle("save_location_history_to_server", isOn: $settings.saveLocationHistoryOnServer)
                         SettingsDescriptionText("explanation_save_location_history_to_server")
 
@@ -67,6 +68,8 @@ struct iPhone_SettingsView: View {
                             }
                             SettingsDescriptionText("explanation_store_history_before_autoremove")
                         }
+                    } else if trackingPermissionVisibility.showsAlwaysPermissionNotice {
+                        AlwaysLocationPermissionRequiredNotice()
                     }
 
                     Button {
@@ -80,7 +83,7 @@ struct iPhone_SettingsView: View {
                     }
                 }
 
-                if settings.trackAndReportLocation {
+                if trackingPermissionVisibility.showsTrackingDependentSettings {
                     Section(header: Text("background_location_updates_section_title")) {
                         Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_smart_frequent_background_location_updates_central_toggle")
@@ -235,6 +238,13 @@ struct iPhone_SettingsView: View {
     }
 
     @State private var isUpdatingUnknownVisitorAlerts = false
+
+    private var trackingPermissionVisibility: TrackingPermissionSettingsVisibility {
+        TrackingPermissionSettingsGate.visibility(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            authorizationStatus: locationManager.authorizationStatus
+        )
+    }
 
     private func handleSettingsNavigationRequest(_ request: SettingsNavigationRequest?) {
         guard let request,

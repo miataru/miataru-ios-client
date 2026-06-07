@@ -8,6 +8,7 @@
  */
 
 import Foundation
+import CoreLocation
 
 enum SettingsKeys {
     static let mapType = "map_type"
@@ -142,6 +143,31 @@ enum SettingsDefaultValues {
         SettingsKeys.automaticRouteUpdateDuringNavigation: automaticRouteUpdateDuringNavigation,
         SettingsKeys.allowedDeviceListEnabled: allowedDeviceListEnabled,
     ]
+}
+
+struct TrackingPermissionSettingsVisibility: Equatable {
+    let showsTrackingDependentSettings: Bool
+    let showsAlwaysPermissionNotice: Bool
+}
+
+enum TrackingPermissionSettingsGate {
+    static func visibility(
+        trackAndReportLocation: Bool,
+        authorizationStatus: CLAuthorizationStatus
+    ) -> TrackingPermissionSettingsVisibility {
+        guard trackAndReportLocation else {
+            return TrackingPermissionSettingsVisibility(
+                showsTrackingDependentSettings: false,
+                showsAlwaysPermissionNotice: false
+            )
+        }
+
+        let hasAlwaysAuthorization = authorizationStatus == .authorizedAlways
+        return TrackingPermissionSettingsVisibility(
+            showsTrackingDependentSettings: hasAlwaysAuthorization,
+            showsAlwaysPermissionNotice: !hasAlwaysAuthorization
+        )
+    }
 }
 
 enum SmartFrequentBackgroundSpeedThreshold {

@@ -69,9 +69,7 @@ struct iPhone_LocationStatusView: View {
                 AllowedDeviceListStatusCard()
             }
 
-            PermissionStatusView(status: locationManager.authorizationStatus) {
-                locationManager.requestFullLocationAuthorizationAgain()
-            }
+            PermissionStatusView(status: locationManager.authorizationStatus)
             
             // Hinweistext für Hintergrund-Tracking
             if isInBackground {
@@ -520,7 +518,6 @@ struct ServerStatusRow: View {
 
 struct PermissionStatusView: View {
     let status: CLAuthorizationStatus
-    let requestAction: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -538,22 +535,16 @@ struct PermissionStatusView: View {
                 Spacer()
             }
             
-            if status == .denied || status == .restricted {
-                Text("Open app settings in iOS to change location permission state.")
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
-
             if status != .authorizedAlways {
-                Button {
-                    requestAction()
-                } label: {
-                    Label("location_permission_request_again_button", systemImage: "location.circle")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityIdentifier("location_status_request_permission_button")
+                Text("always_location_permission_required_message")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("always_location_permission_required_steps")
+                    .font(.caption2)
+                    .foregroundColor(status == .denied || status == .restricted ? .red : .secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding()
