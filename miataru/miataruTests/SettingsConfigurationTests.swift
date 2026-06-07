@@ -1549,6 +1549,46 @@ struct SettingsConfigurationTests {
         ))
     }
 
+    @Test("Frequent background callbacks bypass sensitivity while frequent runtime is effective")
+    func frequentBackgroundCallbacksBypassSensitivityWhileFrequentRuntimeIsEffective() {
+        #expect(LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            manualFrequentEnabled: true,
+            smartRuntimePhase: .waiting
+        ))
+        #expect(LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            manualFrequentEnabled: false,
+            smartRuntimePhase: .probing
+        ))
+        #expect(LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            manualFrequentEnabled: false,
+            smartRuntimePhase: .confirmedActive
+        ))
+        #expect(!LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            manualFrequentEnabled: false,
+            smartRuntimePhase: .waiting
+        ))
+        #expect(!LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .active,
+            updateSourceIsFrequentBackground: true,
+            manualFrequentEnabled: true,
+            smartRuntimePhase: .confirmedActive
+        ))
+        #expect(!LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: false,
+            manualFrequentEnabled: true,
+            smartRuntimePhase: .confirmedActive
+        ))
+    }
+
     @Test("Manual frequent mode overrides smart frequent runtime")
     func manualFrequentModeOverridesSmartFrequentRuntime() {
         #expect(LocationManager.effectiveFrequentBackgroundUpdatesEnabled(

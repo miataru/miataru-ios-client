@@ -1115,6 +1115,18 @@ final class LocationManager: NSObject, ObservableObject {
         return distanceMeters >= thresholdMeters
     }
 
+    static func shouldBypassLocationSensitivityForFrequentBackgroundUpload(applicationState: UIApplication.State,
+                                                                           updateSourceIsFrequentBackground: Bool,
+                                                                           manualFrequentEnabled: Bool,
+                                                                           smartRuntimePhase: SmartFrequentRuntimePhase) -> Bool {
+        guard applicationState != .active,
+              updateSourceIsFrequentBackground else {
+            return false
+        }
+
+        return manualFrequentEnabled || smartRuntimePhase != .waiting
+    }
+
     private static func isUsableForSmartDerivedSpeed(_ location: CLLocation) -> Bool {
         let coordinate = location.coordinate
         return coordinate.latitude.isFinite &&
@@ -3796,6 +3808,12 @@ extension LocationManager: CLLocationManagerDelegate {
                                             applicationState: UIApplication.State,
                                             updateSource: LocationUpdateSource) -> Bool {
         let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
+        let shouldBypassSensitivityForFrequentUpload = Self.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: applicationState,
+            updateSourceIsFrequentBackground: updateSource == .frequentBackground,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartRuntimePhase: smartFrequentBackgroundRuntimePhase
+        )
         guard let previousLocation = self.currentLocation else {
             debugLog("[LocationManager] First location update accepted.")
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
@@ -3853,6 +3871,28 @@ extension LocationManager: CLLocationManagerDelegate {
                     ("accuracyImprovementMeters", .double(accuracyImprovement)),
                     ("minimumAccuracyImprovementMeters", .double(significantAccuracyImprovement)),
                     ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
+            return true
+        }
+        if shouldBypassSensitivityForFrequentUpload {
+            debugLog("[LocationManager] Location update accepted: preserving frequent background upload despite sensitivity thresholds")
+            recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
+            diagnosticsLog.appendCoalesced(
+                level: .info,
+                event: "locationAcceptance",
+                summary: "Accepted frequent background location update.",
+                result: "accepted",
+                reason: "frequent background upload preservation",
+                coalescingKey: "locationAcceptance|accepted|frequentBackgroundPreserved|\(applicationState.rawValue)|\(updateSource.rawValue)|manual:\(settings.frequentBackgroundLocationUpdatesEnabled)|smartPhase:\(smartFrequentBackgroundRuntimePhase.rawValue)",
+                context: diagnosticsLocationContext(location, extra: [
+                    ("distanceMeters", .double(distance)),
+                    ("minimumDistanceMeters", .double(minimumDistance)),
+                    ("accuracyImprovementMeters", .double(accuracyImprovement)),
+                    ("minimumAccuracyImprovementMeters", .double(significantAccuracyImprovement)),
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel)),
+                    ("manualFrequentEnabled", .bool(settings.frequentBackgroundLocationUpdatesEnabled)),
+                    ("smartRuntimePhase", .string(smartFrequentBackgroundRuntimePhase.rawValue))
                 ])
             )
             return true

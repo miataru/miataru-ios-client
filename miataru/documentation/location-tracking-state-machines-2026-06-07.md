@@ -202,6 +202,11 @@ Actions:
 - maintain `CLBackgroundActivitySession`;
 - apply frequent delivery-delay and visitor-check cadence settings.
 
+Frequent-background callbacks from the secondary manager bypass the normal
+Location Sensitivity rejection check in this mode. They still pass through the
+shared coordinate/timestamp validation and duplicate-upload key before server
+submission or outbox enqueueing.
+
 Manual frequent duration options are finite or unlimited. If a finite duration
 expires, then manual frequent is disabled and the app falls back to standard
 background mode.
@@ -302,6 +307,12 @@ Actions:
 - write Smart activation diagnostics with result `probing`;
 - do not send the Smart activation notification yet.
 
+Frequent-background callbacks received during `probing` are upload-preserved:
+the normal Location Sensitivity threshold cannot reject them from the upload
+path. Duplicate callbacks with the same timestamp/coordinate key are still
+skipped. A preserved point confirms Smart only if it also crosses the Smart
+movement threshold below.
+
 This is intentional: the device can show the blue location indicator before the
 user receives a Smart active notification. The notification waits for confirmed
 movement.
@@ -357,6 +368,11 @@ current Smart movement anchor, then:
 While `confirmedActive`, the app stays in frequent background mode as long as
 relevant movement continues inside the inactivity window.
 
+Frequent-background callbacks remain upload-preserved in `confirmedActive`.
+Location Sensitivity can still reduce foreground/standard-background UI churn,
+but it does not drop points that Core Location delivered from the active
+frequent background manager.
+
 Relevant movement updates the Smart movement anchor when:
 
 ```text
@@ -404,6 +420,22 @@ All modes share the same accepted-location and upload path.
 Core Location batches are filtered for valid coordinates/timestamps and then
 processed chronologically. Each accepted location can update local cache,
 diagnostics, counters, and upload decisions.
+
+Location Sensitivity normally rejects accepted-location candidates that moved
+less than the configured UI threshold and did not improve accuracy enough.
+There is one deliberate background exception:
+
+```text
+if app is not active
+and callback source is the secondary frequent-background manager
+and (manual frequent is enabled OR Smart phase is probing/confirmedActive):
+    accept for the shared upload path even when Location Sensitivity thresholds are not met
+```
+
+This prevents Smart probing/active and manual frequent tracking from receiving
+Core Location points that never reach the server. The exception does not bypass
+invalid-coordinate filtering, stale frequent callback suppression, upload
+deduplication, delivery delay, visitor cadence, or outbox retry policy.
 
 Upload deduplication uses:
 
