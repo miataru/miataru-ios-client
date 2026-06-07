@@ -10,6 +10,7 @@ version 3.2
 - Kept Stage 2 (`Frequent background updates`) as the manual always-on/temporary frequent mode. Manual frequent mode is unlocked by Smart frequent updates and overrides Smart runtime decisions completely.
 - Locked the Smart frequent toggle while manual frequent background mode is active, with localized explanatory text, so users cannot disable the prerequisite while the manual override is still running.
 - Smart frequent mode-change notifications now request and respect notification permission before the setting is enabled, including a denied-state message with an app-settings shortcut.
+- Smart frequent mode-change and unknown visitor notifications now use Miataru's bundled confirmation/cancel sounds instead of the default iOS notification sound.
 - Shared frequent parameters now apply consistently to Smart frequent runtime and manual frequent mode, including movement distance, delayed server delivery, and visitor-history check intervals.
 - Extended the frequent background movement threshold presets to include 10 m and 5 m while keeping the separate frequent/Smart movement threshold setting and the existing 100 m default.
 - Persisted the last valid raw location as a fresh Smart frequent seed so Smart frequent runtime can activate from the first background update after relaunch when the derived movement is plausible.

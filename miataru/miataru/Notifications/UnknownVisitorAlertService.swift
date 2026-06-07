@@ -408,7 +408,7 @@ actor UnknownVisitorAlertService {
                 comment: "Notification title for unknown visitor alert"
             )
             content.body = body
-            content.sound = .default
+            content.sound = MiataruNotificationSounds.unknownVisitor
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.unknownVisitorNotificationType,
                 Self.notificationDeviceIDUserInfoKey: candidate.deviceID,

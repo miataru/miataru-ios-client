@@ -169,6 +169,7 @@ struct UnknownVisitorAlertEvaluatorTests {
         #expect(locationRequests == [[UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID)]])
         #expect(addedRequests.count == 1)
         #expect(addedRequests.first?.content.userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
+        #expect(addedRequests.first?.content.sound == MiataruNotificationSounds.unknownVisitor)
     }
 
     @Test("Known visitors do not trigger alert enrichment")
@@ -571,6 +572,7 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(activatedRequest.identifier == FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationIdentifier)
         #expect(activatedRequest.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationType)
         #expect(activatedRequest.trigger == nil)
+        #expect(activatedRequest.content.sound == MiataruNotificationSounds.smartFrequentActivated)
         #expect(!activatedRequest.content.title.isEmpty)
         #expect(!activatedRequest.content.body.isEmpty)
 
@@ -578,6 +580,7 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(deactivatedRequest.identifier == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationIdentifier)
         #expect(deactivatedRequest.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationType)
         #expect(deactivatedRequest.trigger == nil)
+        #expect(deactivatedRequest.content.sound == MiataruNotificationSounds.smartFrequentDeactivated)
         #expect(!deactivatedRequest.content.title.isEmpty)
         #expect(!deactivatedRequest.content.body.isEmpty)
     }

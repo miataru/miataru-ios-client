@@ -192,6 +192,7 @@ actor FrequentBackgroundTrackingReminderService {
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.smartFrequentActivatedNotificationType
             ]
+            content.sound = MiataruNotificationSounds.smartFrequentActivated
         } else {
             content.title = NSLocalizedString(
                 "smart_frequent_background_deactivated_notification_title",
@@ -204,8 +205,8 @@ actor FrequentBackgroundTrackingReminderService {
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.smartFrequentDeactivatedNotificationType
             ]
+            content.sound = MiataruNotificationSounds.smartFrequentDeactivated
         }
-        content.sound = .default
 
         let identifier = isActive
             ? Self.smartFrequentActivatedNotificationIdentifier
