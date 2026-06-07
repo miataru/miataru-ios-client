@@ -1477,8 +1477,22 @@ struct SettingsConfigurationTests {
             previousLocationUpdateAt: now.addingTimeInterval(-600),
             inactivityWindow: 600
         ))
+        #expect(LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-1),
+            previousLocationUpdateAt: nil,
+            inactivityWindow: 600,
+            evidenceKind: .trustedGPSSpeed
+        ))
+        #expect(LocationManager.canActivateSmartFrequentBackgroundUpdates(
+            now: now,
+            locationTimestamp: now.addingTimeInterval(-1),
+            previousLocationUpdateAt: now.addingTimeInterval(-600),
+            inactivityWindow: 600,
+            evidenceKind: .trustedGPSSpeed
+        ))
 
-        #expect(LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+        #expect(!LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
             now: now,
             lastLocationUpdateAt: now.addingTimeInterval(-600),
             lastRelevantMovementAt: now,
@@ -1501,6 +1515,38 @@ struct SettingsConfigurationTests {
             lastRelevantMovementAt: now.addingTimeInterval(-100),
             inactivityWindow: 600
         ) == now.addingTimeInterval(500))
+
+        let anchor = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.0, longitude: 10.0),
+            altitude: 0,
+            horizontalAccuracy: 4,
+            verticalAccuracy: -1,
+            course: -1,
+            speed: -1,
+            timestamp: now
+        )
+        let candidate = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.0001, longitude: 10.0),
+            altitude: 0,
+            horizontalAccuracy: 12,
+            verticalAccuracy: -1,
+            course: -1,
+            speed: -1,
+            timestamp: now.addingTimeInterval(10)
+        )
+        #expect(LocationManager.smartFrequentMovementDistanceThreshold(
+            frequentDistanceFilterMeters: 10,
+            from: anchor,
+            to: candidate
+        ) == 12)
+        #expect(LocationManager.shouldConfirmSmartFrequentBackgroundMovement(
+            distanceMeters: 12,
+            thresholdMeters: 12
+        ))
+        #expect(!LocationManager.shouldConfirmSmartFrequentBackgroundMovement(
+            distanceMeters: 11.9,
+            thresholdMeters: 12
+        ))
     }
 
     @Test("Manual frequent mode overrides smart frequent runtime")

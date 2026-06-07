@@ -30,6 +30,7 @@ actor LocationUpdateDeliveryCoordinator {
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
     typealias VisitorProcessor = (URL, TimeInterval?) async -> Void
+    typealias FlushObserver = (LocationUpdateOutboxItem, String, Date) async -> Void
 
     private struct FlushResult {
         let didReachBatchLimit: Bool
@@ -50,6 +51,7 @@ actor LocationUpdateDeliveryCoordinator {
     private let flushInterval: TimeInterval
     private let deferredFlushDelay: TimeInterval
     private let visitorProcessor: VisitorProcessor
+    private let flushObserver: FlushObserver
 
     private var periodicFlushTask: Task<Void, Never>?
     private var deferredFlushTask: Task<Void, Never>?
@@ -62,7 +64,8 @@ actor LocationUpdateDeliveryCoordinator {
         flushInterval: TimeInterval = 60,
         deferredFlushDelay: TimeInterval = 1,
         updateSender: UpdateSender? = nil,
-        visitorProcessor: VisitorProcessor? = nil
+        visitorProcessor: VisitorProcessor? = nil,
+        flushObserver: FlushObserver? = nil
     ) {
         self.outboxStore = outboxStore
         self.flushBatchSize = max(1, flushBatchSize)
@@ -82,6 +85,26 @@ actor LocationUpdateDeliveryCoordinator {
             await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
                 serverURL: serverURL,
                 minimumInterval: minimumInterval
+            )
+        }
+        self.flushObserver = flushObserver ?? { item, trigger, flushedAt in
+            LocationDiagnosticsLogStore.shared.append(
+                level: .info,
+                event: "locationUpload",
+                summary: "Queued location update sent to server.",
+                result: "flushed",
+                reason: trigger,
+                checks: [],
+                context: [
+                    "locationTimestamp": .string(item.payload.Timestamp),
+                    "enqueuedAt": .string(ISO8601DateFormatter().string(from: item.enqueuedAt)),
+                    "flushedAt": .string(ISO8601DateFormatter().string(from: flushedAt)),
+                    "attemptCount": .integer(item.attemptCount),
+                    "serverURL": .string(item.serverURLString),
+                    "enableHistory": .bool(item.enableHistory),
+                    "retentionTime": .integer(item.retentionTime)
+                ],
+                timestamp: flushedAt
             )
         }
     }
@@ -279,6 +302,7 @@ actor LocationUpdateDeliveryCoordinator {
                     await notifyOutboxDidChange()
                     processedCount += 1
                     await notifyOwnLocationUpdateDidSend()
+                    await flushObserver(head, trigger, Date())
                     Task { await visitorProcessor(serverURL, head.visitorCheckMinimumInterval) }
                     continue
                 }

@@ -75,8 +75,15 @@ struct MiataruRequestExecutorTests {
         #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.serverError(statusCode: 503, message: "unavailable")) == true)
         #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.requestFailed(URLError(.networkConnectionLost))) == true)
         #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.serverError(statusCode: 403, message: "forbidden")) == false)
+        #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.invalidResponse(nil)) == true)
+        #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.invalidResponse(HTTPURLResponse(
+            url: URL(string: "https://example.org")!,
+            statusCode: 401,
+            httpVersion: nil,
+            headerFields: nil
+        ))) == false)
         #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.invalidURL) == false)
-        #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.decodingError(NSError(domain: "test", code: 1))) == false)
+        #expect(MiataruRetryClassifier.isRetryable(MiataruAPIClient.APIError.decodingError(NSError(domain: "test", code: 1))) == true)
     }
 
     @Test("Retries are exhausted and final error is thrown")

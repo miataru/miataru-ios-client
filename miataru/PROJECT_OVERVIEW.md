@@ -55,7 +55,7 @@ miataruApp.swift
 - background significant-change monitoring
 - frequent background updates with configured distance/accuracy
 
-Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode backed by significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in the standard mode, activates frequent background updates only after movement above the configured speed threshold, ignores implausible activation speeds above 200 km/h, and deactivates again after the shared inactivity window when no update or no relevant movement over the frequent distance filter is observed. A fresh app process seeds its Smart movement reference from the first background update before activation is allowed, which avoids automatic Smart activation immediately after app restart or update.
+Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode backed by significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in the standard mode, enters a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, confirms active frequent mode only after accepted frequent-background movement, and deactivates again after the shared inactivity window when no relevant movement is confirmed. Missing frequent callbacks are treated as watchdog/reassert recovery, not as stillness. The full if-then resolver and Smart phase machine are documented in `documentation/location-tracking-state-machines-2026-06-07.md`.
 
 Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Smart frequent runtime uses the same frequent-mode distance, delivery-delay, and visitor-check interval policies. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled; the UI locks Smart while the manual override is active.
 
@@ -65,7 +65,7 @@ The location-status UI reports the user-facing background policy separately from
 
 The local `MiataruAPIClient` package exposes typed protocol calls. App code uses `MiataruAppAPI` wrappers for centralized retry behavior, cache ingestion, DeviceKey handling, and app-level side effects.
 
-Transient network and server failures are classified by `MiataruRetryClassifier`. Reads, writes, and `updateLocation` each retry once with short jittered backoff. Failed `updateLocation` payloads are persisted in `LocationUpdateOutboxStore` and drained by `LocationUpdateDeliveryCoordinator` without rewriting original event metadata.
+Transient network and server failures are classified by `MiataruRetryClassifier`. Reads, writes, and `updateLocation` each retry once with short jittered backoff. Uncertain `updateLocation` failures, including decoding errors and invalid responses without clear 401/403 auth context, are persisted in `LocationUpdateOutboxStore` and drained by `LocationUpdateDeliveryCoordinator` without rewriting original event metadata.
 
 ### Device Identity, DeviceKey, and Access Control
 

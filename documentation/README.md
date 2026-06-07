@@ -34,6 +34,7 @@ Current frequent-background follow-up records:
 - `../miataru/documentation/smart-frequent-background-updates-2026-06-04.md` - Smart frequent background policy, manual override behavior, diagnostics, migration, and optional Smart mode-change notifications.
 - `../miataru/documentation/smart-frequent-updatewertung-hardening-2026-06-05.md` - persisted Smart frequent seeding, 5 m/10 m movement thresholds, chronological Core Location batch processing, and battery implications.
 - `../miataru/documentation/smart-frequent-exit-fence-and-quality-gate-2026-06-06.md` - hidden Smart waiting exit fence, quality-aware activation evidence, and reboot/startup speed-noise guard.
+- `../miataru/documentation/location-tracking-state-machines-2026-06-07.md` - canonical if-then state-machine reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and update upload/outbox behavior.
 
 ## Current Project Facts
 

@@ -62,10 +62,11 @@ miataru/
   - foreground high accuracy
   - background significant-change monitoring
   - frequent background updates
-- Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts frequent runtime only after movement above the configured speed threshold from a fresh in-process reference, ignores implausible activation speeds above 200 km/h, and stops runtime after the shared inactivity window.
+- Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, sends the activation notification only after accepted frequent-background movement confirms the runtime, and stops runtime after the shared inactivity window without treating missing frequent callbacks as stillness.
 - Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
 - Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
 - Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
+- `documentation/location-tracking-state-machines-2026-06-07.md` is the canonical if-then reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and upload/outbox behavior.
 - Navigation views call `beginNavigationLocationSession()` / `endNavigationLocationSession(_:)` so focused navigation gets immediate local location updates without bypassing lifecycle background policy.
 - `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity-filtered.
 
@@ -74,8 +75,8 @@ miataru/
 - `MiataruAPIClient` is the local Swift package that encodes/decodes Miataru API requests.
 - `MiataruAppAPI` is the app-facing wrapper. Use it for app target calls so retry behavior, DeviceKey handling, counters, and cache ingestion remain centralized.
 - `MiataruRetryPolicy` retries reads, writes, and `updateLocation` once with short jittered backoff.
-- Retryable failures: transient `URLError` values, HTTP `408`, `429`, and `5xx`.
-- Non-retryable failures: invalid URL, encoding/decoding errors, auth/ACL failures, and other functional `4xx`.
+- Retryable failures: transient `URLError` values, HTTP `408`, `429`, `5xx`, decoding errors, and invalid responses without clear 401/403 auth context.
+- Non-retryable failures: invalid URL, encoding errors, auth/ACL failures, and clear 401/403 invalid responses.
 
 ### Location Update Outbox
 

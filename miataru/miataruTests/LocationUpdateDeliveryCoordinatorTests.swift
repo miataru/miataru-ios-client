@@ -56,6 +56,78 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 1)
     }
 
+    @Test("Submit queues update after uncertain decoding failure")
+    func submitQueuesAfterDecodingFailure() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [
+            .failure(MiataruAPIClient.APIError.decodingError(NSError(domain: "decode", code: 1)))
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "decode-failed"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .queued = result {
+        } else {
+            Issue.record("Expected decoding failure to queue original payload")
+        }
+
+        let snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["decode-failed"])
+    }
+
+    @Test("Submit queues update after uncertain invalid response")
+    func submitQueuesAfterInvalidResponse() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [
+            .failure(MiataruAPIClient.APIError.invalidResponse(nil))
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "invalid-response"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .queued = result {
+        } else {
+            Issue.record("Expected invalid response to queue original payload")
+        }
+
+        let snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["invalid-response"])
+    }
+
     @Test("Submit appends behind pending outbox instead of bypassing order")
     func submitAppendsBehindPendingOutbox() async throws {
         let tempURL = temporaryOutboxURL()
@@ -250,6 +322,44 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(records.first?.minimumInterval == 600)
     }
 
+    @Test("Flush observer receives original queued payload metadata")
+    func flushObserverReceivesOriginalQueuedPayloadMetadata() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "original-timestamp"),
+            enableHistory: false,
+            retentionTime: 90
+        )
+
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let flushObserver = RecordingFlushObserver()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            flushObserver: { item, trigger, flushedAt in
+                await flushObserver.record(item: item, trigger: trigger, flushedAt: flushedAt)
+            }
+        )
+
+        await coordinator.flushOutboxNow()
+
+        let records = await flushObserver.recordsSnapshot()
+        #expect(records.count == 1)
+        #expect(records.first?.timestamp == "original-timestamp")
+        #expect(records.first?.trigger == "manual")
+        #expect(records.first?.enableHistory == false)
+        #expect(records.first?.retentionTime == 90)
+    }
+
     @Test("Manual full flush drains more than one batch")
     func manualFullFlushDrainsMoreThanOneBatch() async throws {
         let tempURL = temporaryOutboxURL()
@@ -384,6 +494,42 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 1)
     }
 
+    @Test("Submit does not queue clear auth invalid response")
+    func submitDoesNotQueueClearAuthInvalidResponse() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [
+            .failure(MiataruAPIClient.APIError.invalidResponse(Self.httpResponse(statusCode: 401)))
+        ])
+
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "auth-failed"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .failed = result {
+        } else {
+            Issue.record("Expected clear auth invalid response to fail without queueing")
+        }
+
+        #expect(await store.count() == 0)
+        #expect(await sender.callCount == 1)
+    }
+
     @Test("Pending outbox can be sent to changed server URL")
     func pendingOutboxCanBeSentToChangedServerURL() async throws {
         let tempURL = temporaryOutboxURL()
@@ -510,6 +656,15 @@ struct LocationUpdateDeliveryCoordinatorTests {
         return directory.appendingPathComponent("locationUpdateOutbox.json")
     }
 
+    private static func httpResponse(statusCode: Int) -> HTTPURLResponse {
+        HTTPURLResponse(
+            url: URL(string: "https://example.org")!,
+            statusCode: statusCode,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+    }
+
     private static let noOpVisitorProcessor: LocationUpdateDeliveryCoordinator.VisitorProcessor = { _, _ in }
 }
 
@@ -564,6 +719,32 @@ private actor RecordingVisitorProcessor {
 
     func record(url: URL, minimumInterval: TimeInterval?) {
         records.append(Record(urlString: url.absoluteString, minimumInterval: minimumInterval))
+    }
+
+    func recordsSnapshot() -> [Record] {
+        records
+    }
+}
+
+private actor RecordingFlushObserver {
+    struct Record: Sendable {
+        let timestamp: String
+        let trigger: String
+        let flushedAt: Date
+        let enableHistory: Bool
+        let retentionTime: Int
+    }
+
+    private var records: [Record] = []
+
+    func record(item: LocationUpdateOutboxItem, trigger: String, flushedAt: Date) {
+        records.append(Record(
+            timestamp: item.payload.Timestamp,
+            trigger: trigger,
+            flushedAt: flushedAt,
+            enableHistory: item.enableHistory,
+            retentionTime: item.retentionTime
+        ))
     }
 
     func recordsSnapshot() -> [Record] {

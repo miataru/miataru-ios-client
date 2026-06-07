@@ -61,10 +61,15 @@ enum MiataruRetryClassifier {
             return isRetryableHTTPStatus(statusCode)
         case .invalidResponse(let response):
             if let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                return isRetryableHTTPStatus(statusCode)
+                if statusCode == 401 || statusCode == 403 {
+                    return false
+                }
+                return true
             }
-            return false
-        case .invalidURL, .encodingError, .decodingError:
+            return true
+        case .decodingError:
+            return true
+        case .invalidURL, .encodingError:
             return false
         }
     }
