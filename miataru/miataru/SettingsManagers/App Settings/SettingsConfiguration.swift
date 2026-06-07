@@ -220,6 +220,10 @@ enum LocationUpdateOutboxRetentionMode: Int {
             return nil
         }
     }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.locationUpdateOutboxRetentionMode
+    }
 }
 
 enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable {

@@ -38,7 +38,7 @@ version 3.2
 - Added regression coverage for Smart defaults, migration, Settings.bundle parity, localization completeness, speed detection, activation/deactivation policy, manual override behavior, 24-hour mode counters, and Smart mode-change notification scheduling.
 - Added regression coverage for persisted Smart frequent seeding, 5 m/10 m movement threshold normalization, Settings.bundle parity, and chronological multi-location callback processing.
 - Updated the living project documentation, App Store copy source, test catalog/gap matrix, and added dated Smart frequent background updates implementation notes.
-- Updated project metadata for version 3.2 build 4.
+- Updated project metadata for version 3.2 build 9.
 
 version 3.1.19
 - Added 2-hour and 3-hour auto-disable options for frequent background updates in Advanced Options and the iOS Settings.bundle, keeping 4 hours as the default.

@@ -574,6 +574,36 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)
     }
 
+    @Test("App activation refresh imports external tracking and frequent defaults")
+    func appActivationRefreshImportsExternalTrackingAndFrequentDefaults() throws {
+        let suiteName = "SettingsActivationRefreshTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.register(defaults: SettingsDefaultValues.registrations)
+
+        let manager = SettingsManager(defaults: defaults)
+        let now = Date(timeIntervalSince1970: 50_000)
+
+        #expect(!manager.trackAndReportLocation)
+        #expect(!manager.frequentBackgroundLocationUpdatesEnabled)
+        #expect(!manager.smartFrequentBackgroundLocationUpdatesEnabled)
+
+        defaults.set(true, forKey: SettingsKeys.trackAndReportLocation)
+        defaults.set(true, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+        defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+        defaults.set("7200", forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration)
+        defaults.set("3", forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter)
+
+        #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
+        #expect(manager.trackAndReportLocation)
+        #expect(manager.frequentBackgroundLocationUpdatesEnabled)
+        #expect(manager.smartFrequentBackgroundLocationUpdatesEnabled)
+        #expect(manager.frequentBackgroundLocationUpdateDuration == FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
+        #expect(manager.frequentBackgroundLocationDistanceFilter == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
+        #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == now.addingTimeInterval(7_200))
+        #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
+    }
+
     @Test("Background location configuration preserves significant-change default")
     func backgroundLocationConfigurationPreservesSignificantChangeDefault() {
         let defaultConfiguration = LocationManager.backgroundUpdateConfiguration(
@@ -1862,6 +1892,63 @@ struct SettingsConfigurationTests {
         #expect(AppDelegate.shouldRestoreLocationLaunch([.location: true], didRestore: false))
         #expect(!AppDelegate.shouldRestoreLocationLaunch([.location: true], didRestore: true))
         #expect(!AppDelegate.shouldRestoreLocationLaunch(nil, didRestore: false))
+    }
+
+    @Test("Tracking reconcile disables unavailable authorization but keeps When-In-Use intent")
+    func trackingReconcileDisablesUnavailableAuthorizationButKeepsWhenInUseIntent() {
+        #expect(LocationManager.shouldDisableTrackingPreference(authorizationStatus: .denied))
+        #expect(LocationManager.shouldDisableTrackingPreference(authorizationStatus: .restricted))
+        #expect(!LocationManager.shouldDisableTrackingPreference(authorizationStatus: .authorizedWhenInUse))
+        #expect(!LocationManager.shouldDisableTrackingPreference(authorizationStatus: .authorizedAlways))
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .denied,
+            isTracking: true
+        ) == .stopAuthorizationUnavailable)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .restricted,
+            isTracking: false
+        ) == .stopAuthorizationUnavailable)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedWhenInUse,
+            isTracking: false
+        ) == .startTracking)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: false
+        ) == .startTracking)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: true
+        ) == .applyTrackingMode)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: false,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: true
+        ) == .stopTrackingDisabled)
+
+        #expect(LocationManager.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: true,
+            authorizationStatus: .authorizedAlways,
+            isTracking: true
+        ) == .stopDeviceKeyBlocked)
     }
 
     @Test("Duplicate location callbacks are suppressed before upload")

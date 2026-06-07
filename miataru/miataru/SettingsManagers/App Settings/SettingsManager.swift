@@ -11,7 +11,8 @@ import Foundation
 import Combine
 
 class SettingsManager: ObservableObject {
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
+    private var isApplyingExternalDefaultsRefresh = false
     
     // MARK: - Properties
     @Published var disableDeviceAutolock: Bool {
@@ -41,7 +42,7 @@ class SettingsManager: ObservableObject {
         didSet { 
             defaults.set(trackAndReportLocation, forKey: SettingsKeys.trackAndReportLocation)
             // Check location permissions when tracking is enabled
-            if trackAndReportLocation {
+            if trackAndReportLocation && !isApplyingExternalDefaultsRefresh {
                 checkAndRequestLocationPermissions()
             }
         }
@@ -361,8 +362,9 @@ class SettingsManager: ObservableObject {
     }
     
     // MARK: - Initialwerte laden
-    init() {
-        let d = UserDefaults.standard
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        let d = defaults
         SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: d)
         SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: d)
         d.register(defaults: SettingsDefaultValues.registrations)
@@ -417,6 +419,90 @@ class SettingsManager: ObservableObject {
     // MARK: - Synchronize
     func synchronize() {
         defaults.synchronize()
+    }
+
+    @discardableResult
+    func refreshFromUserDefaultsForAppActivation(now: Date = Date()) -> Bool {
+        defaults.register(defaults: SettingsDefaultValues.registrations)
+
+        var changed = false
+        func assignIfChanged<T: Equatable>(_ keyPath: ReferenceWritableKeyPath<SettingsManager, T>, _ newValue: T) {
+            guard self[keyPath: keyPath] != newValue else { return }
+            self[keyPath: keyPath] = newValue
+            changed = true
+        }
+
+        isApplyingExternalDefaultsRefresh = true
+        defer { isApplyingExternalDefaultsRefresh = false }
+
+        assignIfChanged(\.disableDeviceAutolock, defaults.bool(forKey: SettingsKeys.disableDeviceAutolock))
+        assignIfChanged(\.preventScreenRotation, defaults.bool(forKey: SettingsKeys.preventScreenRotation))
+        assignIfChanged(\.indicateAccuracyOnMap, defaults.bool(forKey: SettingsKeys.indicateAccuracyOnMap))
+        assignIfChanged(\.groupsZoomToFit, defaults.bool(forKey: SettingsKeys.groupsZoomToFit))
+        assignIfChanged(\.miataruServerURL, defaults.string(forKey: SettingsKeys.miataruServerURL) ?? SettingsDefaultValues.miataruServerURL)
+        assignIfChanged(\.trackAndReportLocation, defaults.bool(forKey: SettingsKeys.trackAndReportLocation))
+        assignIfChanged(\.saveLocationHistoryOnServer, defaults.bool(forKey: SettingsKeys.saveLocationHistoryOnServer))
+        assignIfChanged(\.locationDataRetentionTime, Self.persistedInt(forKey: SettingsKeys.locationDataRetentionTime, defaults: defaults, defaultValue: SettingsDefaultValues.locationDataRetentionTime))
+        assignIfChanged(\.mapType, Self.persistedInt(forKey: SettingsKeys.mapType, defaults: defaults, defaultValue: SettingsDefaultValues.mapType))
+        assignIfChanged(\.mapUpdateInterval, Self.persistedInt(forKey: SettingsKeys.mapUpdateInterval, defaults: defaults, defaultValue: SettingsDefaultValues.mapUpdateInterval))
+        assignIfChanged(\.outsideMapUpdateInterval, Self.persistedInt(forKey: SettingsKeys.outsideMapUpdateInterval, defaults: defaults, defaultValue: SettingsDefaultValues.outsideMapUpdateInterval))
+        assignIfChanged(\.mapZoomLevel, Self.persistedInt(forKey: SettingsKeys.mapZoomLevel, defaults: defaults, defaultValue: SettingsDefaultValues.mapZoomLevel))
+        assignIfChanged(\.historyNumberOfDays, Self.persistedInt(forKey: SettingsKeys.historyNumberOfDays, defaults: defaults, defaultValue: SettingsDefaultValues.historyNumberOfDays))
+        assignIfChanged(\.locationActivityType, Self.persistedInt(forKey: SettingsKeys.locationActivityType, defaults: defaults, defaultValue: SettingsDefaultValues.locationActivityType))
+        assignIfChanged(\.locationSensitivityLevel, Self.persistedInt(forKey: SettingsKeys.locationSensitivityLevel, defaults: defaults, defaultValue: SettingsDefaultValues.locationSensitivityLevel))
+        let frequentEnabledBeforeRefresh = frequentBackgroundLocationUpdatesEnabled
+        let frequentDurationBeforeRefresh = frequentBackgroundLocationUpdateDuration
+
+        assignIfChanged(\.smartFrequentBackgroundSpeedThresholdKmh, SmartFrequentBackgroundSpeedThreshold.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh)))
+        assignIfChanged(\.smartFrequentBackgroundSpeedDetectionMode, SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedDetectionMode, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode)))
+        assignIfChanged(\.smartFrequentBackgroundInactivityWindow, SmartFrequentBackgroundInactivityWindow.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundInactivityWindow)))
+        assignIfChanged(\.smartFrequentBackgroundModeChangeNotificationsEnabled, defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled))
+        assignIfChanged(\.frequentBackgroundLocationDistanceFilter, FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)))
+        assignIfChanged(\.frequentBackgroundLocationUpdateDuration, FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration)))
+        assignIfChanged(\.frequentBackgroundBatteryAutoDisableLevel, FrequentBackgroundBatteryAutoDisableLevel.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel)))
+        assignIfChanged(\.frequentBackgroundLocationDeliveryMode, FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode)))
+        assignIfChanged(\.frequentBackgroundVisitorCheckInterval, FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)))
+
+        let externalFrequentEnabled = defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+        let externalSmartEnabled = defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled) || externalFrequentEnabled
+        assignIfChanged(\.frequentBackgroundLocationUpdatesEnabled, externalFrequentEnabled)
+        assignIfChanged(\.smartFrequentBackgroundLocationUpdatesEnabled, externalSmartEnabled)
+
+        let shouldRefreshFrequentExpiration = externalFrequentEnabled && (
+            !frequentEnabledBeforeRefresh ||
+            frequentDurationBeforeRefresh != frequentBackgroundLocationUpdateDuration ||
+            frequentBackgroundLocationUpdatesExpiresAt == nil
+        )
+        if shouldRefreshFrequentExpiration {
+            assignIfChanged(
+                \.frequentBackgroundLocationUpdatesExpiresAt,
+                frequentBackgroundLocationUpdateDurationMode.expirationDate(from: now)
+            )
+        }
+
+        assignIfChanged(\.autoRefreshDeviceList, defaults.bool(forKey: SettingsKeys.autoRefreshDeviceList))
+        assignIfChanged(\.unknownVisitorAlertsEnabled, defaults.bool(forKey: SettingsKeys.unknownVisitorAlertsEnabled))
+        assignIfChanged(\.showCurrentSpeedOnMap, defaults.bool(forKey: SettingsKeys.showCurrentSpeedOnMap))
+        assignIfChanged(\.showOffscreenArrowsForOtherDevices, defaults.bool(forKey: SettingsKeys.showOffscreenArrowsForOtherDevices))
+        assignIfChanged(\.showRouteProgress, defaults.bool(forKey: SettingsKeys.showRouteProgress))
+        assignIfChanged(\.locationUpdateOutboxRetentionMode, LocationUpdateOutboxRetentionMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxRetentionMode, defaults: defaults, defaultValue: SettingsDefaultValues.locationUpdateOutboxRetentionMode)))
+        assignIfChanged(\.locationUpdateOutboxMaxItems, Self.persistedInt(forKey: SettingsKeys.locationUpdateOutboxMaxItems, defaults: defaults, defaultValue: SettingsDefaultValues.locationUpdateOutboxMaxItems))
+        assignIfChanged(\.locationDiagnosticsLoggingEnabled, defaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled))
+        assignIfChanged(\.reverseGeocodingThresholdMeters, Self.persistedInt(forKey: SettingsKeys.reverseGeocodingThresholdMeters, defaults: defaults, defaultValue: SettingsDefaultValues.reverseGeocodingThresholdMeters))
+        assignIfChanged(\.navigationTransportType, Self.persistedInt(forKey: SettingsKeys.navigationTransportType, defaults: defaults, defaultValue: SettingsDefaultValues.navigationTransportType))
+        assignIfChanged(\.pulsingMapMarkers, defaults.bool(forKey: SettingsKeys.pulsingMapMarkers))
+        assignIfChanged(\.automaticRouteUpdateDuringNavigation, defaults.bool(forKey: SettingsKeys.automaticRouteUpdateDuringNavigation))
+        assignIfChanged(\.allowedDeviceListEnabled, defaults.bool(forKey: SettingsKeys.allowedDeviceListEnabled))
+
+        let frequentWasEnabled = frequentBackgroundLocationUpdatesEnabled
+        let expirationWas = frequentBackgroundLocationUpdatesExpiresAt
+        ensureFrequentBackgroundLocationUpdatesExpiration(now: now)
+        if frequentWasEnabled != frequentBackgroundLocationUpdatesEnabled ||
+            expirationWas != frequentBackgroundLocationUpdatesExpiresAt {
+            changed = true
+        }
+
+        return changed
     }
 
     func refreshFrequentBackgroundLocationUpdatesExpiration(now: Date = Date()) {

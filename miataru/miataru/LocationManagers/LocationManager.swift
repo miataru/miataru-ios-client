@@ -353,6 +353,14 @@ final class LocationManager: NSObject, ObservableObject {
         case forceBackground
     }
 
+    enum TrackingReconcileAction: String, Equatable {
+        case stopTrackingDisabled
+        case stopDeviceKeyBlocked
+        case stopAuthorizationUnavailable
+        case startTracking
+        case applyTrackingMode
+    }
+
     enum PrimaryLocationServiceCommand: Equatable {
         case stopUpdatingLocation
         case stopMonitoringSignificantLocationChanges
@@ -485,27 +493,11 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("App did become active")
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did become active")
-        // Update authorization status (in case it changed while app was in background)
-        let currentStatus = locationManager.authorizationStatus
-        self.authorizationStatus = currentStatus
-        
-        // If permission is denied/restricted but toggle is on, update it
-        if (currentStatus == .denied || currentStatus == .restricted) && settings.trackAndReportLocation {
-            debugLog("Permission still denied/restricted after returning from Settings, setting trackAndReportLocation to false")
-            settings.trackAndReportLocation = false
-        }
-        
-        // Re-check permission escalation / first-time prompt if needed
-        handleFrequentBackgroundLocationExpirationIfNeeded()
-        refreshFrequentBackgroundTrackingReminder()
-        ensureAuthorizationIfNeeded()
-        if !isTracking,
-           settings.trackAndReportLocation,
-           !settings.deviceKeyAuthBlocked {
-            startTracking()
-        } else if isTracking {
-            applyTrackingMode(reason: "app did become active")
-        }
+        reconcileTrackingState(
+            reason: "app did become active",
+            applicationStateContext: .forceForeground,
+            refreshExternalSettings: true
+        )
         Task {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
         }
@@ -1195,6 +1187,27 @@ final class LocationManager: NSObject, ObservableObject {
         trackAndReportLocation && !deviceKeyAuthBlocked
     }
 
+    static func trackingReconcileAction(trackAndReportLocation: Bool,
+                                        deviceKeyAuthBlocked: Bool,
+                                        authorizationStatus: CLAuthorizationStatus,
+                                        isTracking: Bool) -> TrackingReconcileAction {
+        guard trackAndReportLocation else {
+            return .stopTrackingDisabled
+        }
+        guard !deviceKeyAuthBlocked else {
+            return .stopDeviceKeyBlocked
+        }
+
+        if shouldDisableTrackingPreference(authorizationStatus: authorizationStatus) {
+            return .stopAuthorizationUnavailable
+        }
+        return isTracking ? .applyTrackingMode : .startTracking
+    }
+
+    static func shouldDisableTrackingPreference(authorizationStatus: CLAuthorizationStatus) -> Bool {
+        authorizationStatus == .denied || authorizationStatus == .restricted
+    }
+
     static func significantChangeRearmDecision(buildIdentifier: String,
                                                alreadyRearmedBuildIdentifier: String?,
                                                reason: String,
@@ -1572,7 +1585,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     // MARK: - Tracking Control
-    func startTracking() {
+    func startTracking(applicationStateContext: TrackingApplicationStateContext = .current) {
         debugLog("startTracking called")
         if settings.deviceKeyAuthBlocked {
             debugLog("startTracking blocked due to DeviceKey auth failure")
@@ -1581,10 +1594,33 @@ final class LocationManager: NSObject, ObservableObject {
             return
         }
         ensureAuthorizationIfNeeded()
+        let status = locationManager.authorizationStatus
+        authorizationStatus = status
+        if Self.shouldDisableTrackingPreference(authorizationStatus: status) {
+            debugLog("startTracking disabled because location authorization is denied/restricted")
+            isTracking = false
+            if settings.trackAndReportLocation {
+                settings.trackAndReportLocation = false
+            }
+            stopAllLocationServices()
+            diagnosticsLog.append(
+                level: .warning,
+                event: "trackingReconcile",
+                summary: "Tracking was disabled because location authorization is unavailable.",
+                result: TrackingReconcileAction.stopAuthorizationUnavailable.rawValue,
+                reason: "start tracking",
+                checks: trackingEligibilityChecks(status: status),
+                context: [
+                    "authorizationStatus": .integer(Int(status.rawValue)),
+                    "trackAndReportLocation": .bool(settings.trackAndReportLocation)
+                ]
+            )
+            return
+        }
         isTracking = true
         handleFrequentBackgroundLocationExpirationIfNeeded()
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
-        applyTrackingMode(reason: "start tracking")
+        applyTrackingMode(reason: "start tracking", applicationStateContext: applicationStateContext)
     }
 
     func restoreTrackingAfterLaunch(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
@@ -2006,6 +2042,88 @@ final class LocationManager: NSObject, ObservableObject {
         return context
     }
 
+    @discardableResult
+    private func reconcileTrackingState(reason: String,
+                                        applicationStateContext: TrackingApplicationStateContext = .current,
+                                        refreshExternalSettings: Bool = false) -> TrackingReconcileAction {
+        let didRefreshExternalSettings: Bool
+        if refreshExternalSettings {
+            didRefreshExternalSettings = settings.refreshFromUserDefaultsForAppActivation()
+        } else {
+            didRefreshExternalSettings = false
+        }
+        if didRefreshExternalSettings {
+            diagnosticsLog.append(
+                level: .info,
+                event: "externalSettingsRefresh",
+                summary: "Refreshed app settings from UserDefaults during activation.",
+                result: "changed",
+                reason: reason,
+                checks: [],
+                context: [
+                    "trackAndReportLocation": .bool(settings.trackAndReportLocation),
+                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                    "locationDiagnosticsLoggingEnabled": .bool(settings.locationDiagnosticsLoggingEnabled)
+                ]
+            )
+        }
+
+        let status = locationManager.authorizationStatus
+        authorizationStatus = status
+        handleFrequentBackgroundLocationExpirationIfNeeded()
+        refreshFrequentBackgroundTrackingReminder()
+        let action = Self.trackingReconcileAction(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
+            authorizationStatus: status,
+            isTracking: isTracking
+        )
+        let effectiveReason = didRefreshExternalSettings ? "\(reason) after external settings refresh" : reason
+        let diagnosticsLevel: LocationDiagnosticsLogLevel
+        switch action {
+        case .stopAuthorizationUnavailable, .stopDeviceKeyBlocked:
+            diagnosticsLevel = .warning
+        default:
+            diagnosticsLevel = .info
+        }
+
+        diagnosticsLog.append(
+            level: diagnosticsLevel,
+            event: "trackingReconcile",
+            summary: "Reconciled tracking preference with current authorization and lifecycle state.",
+            result: action.rawValue,
+            reason: effectiveReason,
+            checks: trackingEligibilityChecks(status: status),
+            context: [
+                "applicationStateContext": .string(String(describing: applicationStateContext)),
+                "authorizationStatus": .integer(Int(status.rawValue)),
+                "trackAndReportLocation": .bool(settings.trackAndReportLocation),
+                "isTracking": .bool(isTracking),
+                "deviceKeyAuthBlocked": .bool(settings.deviceKeyAuthBlocked),
+                "externalSettingsRefreshed": .bool(didRefreshExternalSettings)
+            ]
+        )
+
+        switch action {
+        case .stopAuthorizationUnavailable:
+            isTracking = false
+            if settings.trackAndReportLocation {
+                settings.trackAndReportLocation = false
+            }
+            stopAllLocationServices()
+        case .stopTrackingDisabled, .stopDeviceKeyBlocked:
+            isTracking = false
+            stopAllLocationServices()
+        case .startTracking:
+            startTracking(applicationStateContext: applicationStateContext)
+        case .applyTrackingMode:
+            applyTrackingMode(reason: effectiveReason, applicationStateContext: applicationStateContext)
+        }
+
+        return action
+    }
+
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
         let state = Self.effectiveApplicationStateForTracking(
             currentState: UIApplication.shared.applicationState,
@@ -2026,9 +2144,10 @@ final class LocationManager: NSObject, ObservableObject {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
         }
 
-        if status == .denied || status == .restricted {
+        if Self.shouldDisableTrackingPreference(authorizationStatus: status) {
+            debugLog("Location permission denied/restricted; disabling trackAndReportLocation and stopping services")
+            isTracking = false
             if settings.trackAndReportLocation {
-                debugLog("Location permission denied/restricted, setting trackAndReportLocation to false")
                 settings.trackAndReportLocation = false
             }
         }
@@ -3510,20 +3629,18 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("[LocationManager] App did enter foreground")
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did enter foreground")
-        handleFrequentBackgroundLocationExpirationIfNeeded()
-        refreshFrequentBackgroundTrackingReminder()
-        guard isTracking else { return }
         // Check daily reset on foreground entry so UI reflects a new day immediately
         maybeResetBackgroundMetricsIfNeeded()
-        applyTrackingMode(reason: "app did enter foreground", applicationStateContext: .forceForeground)
+        reconcileTrackingState(
+            reason: "app did enter foreground",
+            applicationStateContext: .forceForeground,
+            refreshExternalSettings: true
+        )
     }
 
     func appDidEnterBackground() {
         debugLog("[LocationManager] App did enter background")
-        handleFrequentBackgroundLocationExpirationIfNeeded()
-        refreshFrequentBackgroundTrackingReminder()
-        guard isTracking else { return }
-        applyTrackingMode(reason: "app did enter background", applicationStateContext: .forceBackground)
+        reconcileTrackingState(reason: "app did enter background", applicationStateContext: .forceBackground)
     }
 
     private func stopAllLocationServices() {
@@ -4025,18 +4142,11 @@ extension LocationManager: CLLocationManagerDelegate {
                 break
             }
 
-            // If permission is denied or restricted, update the setting to reflect the actual state
-            if status == .denied || status == .restricted {
-                if settings.trackAndReportLocation {
-                    debugLog("Location permission denied/restricted, setting trackAndReportLocation to false")
-                    settings.trackAndReportLocation = false
-                }
-            }
             if status == .authorizedWhenInUse,
                settings.trackAndReportLocation {
                 self.requestAlwaysAuthorizationIfPossible(reason: "authorization changed")
             }
-            self.applyTrackingMode(reason: "authorization changed")
+            self.reconcileTrackingState(reason: "authorization changed")
             self.diagnosticsLog.append(
                 level: status == .authorizedAlways ? .info : .warning,
                 event: "authorizationChange",
