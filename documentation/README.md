@@ -36,6 +36,7 @@ Current frequent-background follow-up records:
 - `../miataru/documentation/smart-frequent-exit-fence-and-quality-gate-2026-06-06.md` - hidden Smart waiting exit fence, quality-aware activation evidence, and reboot/startup speed-noise guard.
 - `../miataru/documentation/location-tracking-state-machines-2026-06-07.md` - canonical if-then state-machine reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and update upload/outbox behavior.
 - `location-manager-modularization-2026-06-08.md` - LocationManager facade split, policy compatibility boundary, background-forensics recorder, Core Location service controller, validation, and deferred Smart runtime extraction.
+- `../miataru/documentation/smart-frequent-accuracy-recovery-2026-06-08.md` - Smart frequent 100 m accuracy recovery, coarse-fix rejection, temporary 10 m Core Location boost, cooldown, side effects, and regression coverage.
 
 ## Current Project Facts
 

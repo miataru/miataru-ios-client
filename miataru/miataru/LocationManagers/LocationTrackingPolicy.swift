@@ -16,6 +16,12 @@ enum LocationTrackingPolicy {
         let desiredAccuracy: CLLocationAccuracy
     }
 
+    struct AccuracyRecoveryEvaluation: Equatable {
+        let poorAccuracyStreak: Int
+        let shouldStartRecovery: Bool
+        let shouldStopRecovery: Bool
+    }
+
     enum BackgroundTrackingDisplayMode: Equatable {
         case foregroundLive
         case significantChange
@@ -82,8 +88,26 @@ enum LocationTrackingPolicy {
         }
     }
 
+    static let frequentBackgroundAccuracyRecoveryDistanceFilterMeters = 10
+    static let frequentBackgroundAccuracyRecoveryTriggerDistanceFilterMeters = 100
+    static let frequentBackgroundAccuracyRecoveryPoorAccuracyThreshold: CLLocationAccuracy = 300
+    static let frequentBackgroundAccuracyRecoveryImmediateAccuracyThreshold: CLLocationAccuracy = 1_000
+    static let frequentBackgroundAccuracyRecoveryTargetAccuracy: CLLocationAccuracy = 100
+    static let frequentBackgroundAccuracyRecoveryDuration: TimeInterval = 120
+    static let frequentBackgroundAccuracyRecoveryCooldown: TimeInterval = 10 * 60
+
     static func backgroundUpdateConfiguration(frequentUpdatesEnabled: Bool,
                                               distanceFilterMeters: Int) -> BackgroundUpdateConfiguration {
+        backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters,
+            accuracyRecoveryActive: false
+        )
+    }
+
+    static func backgroundUpdateConfiguration(frequentUpdatesEnabled: Bool,
+                                              distanceFilterMeters: Int,
+                                              accuracyRecoveryActive: Bool) -> BackgroundUpdateConfiguration {
         guard frequentUpdatesEnabled else {
             return BackgroundUpdateConfiguration(
                 usesSignificantChangeMonitoring: true,
@@ -93,6 +117,15 @@ enum LocationTrackingPolicy {
         }
 
         let normalizedDistance = FrequentBackgroundLocationDistanceFilter.normalized(distanceFilterMeters)
+        if accuracyRecoveryActive,
+           normalizedDistance == frequentBackgroundAccuracyRecoveryTriggerDistanceFilterMeters {
+            return BackgroundUpdateConfiguration(
+                usesSignificantChangeMonitoring: false,
+                distanceFilter: CLLocationDistance(frequentBackgroundAccuracyRecoveryDistanceFilterMeters),
+                desiredAccuracy: kCLLocationAccuracyNearestTenMeters
+            )
+        }
+
         return BackgroundUpdateConfiguration(
             usesSignificantChangeMonitoring: false,
             distanceFilter: CLLocationDistance(normalizedDistance),
@@ -158,6 +191,24 @@ enum LocationTrackingPolicy {
                                      frequentUpdatesEnabled: Bool,
                                      distanceFilterMeters: Int,
                                      hasNavigationLocationSession: Bool) -> TrackingMode {
+        resolvedTrackingMode(
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters,
+            hasNavigationLocationSession: hasNavigationLocationSession,
+            accuracyRecoveryActive: false
+        )
+    }
+
+    static func resolvedTrackingMode(isTracking: Bool,
+                                     authorizationStatus: CLAuthorizationStatus,
+                                     applicationState: UIApplication.State,
+                                     frequentUpdatesEnabled: Bool,
+                                     distanceFilterMeters: Int,
+                                     hasNavigationLocationSession: Bool,
+                                     accuracyRecoveryActive: Bool) -> TrackingMode {
         guard isTracking else { return .stopped }
 
         switch authorizationStatus {
@@ -178,7 +229,8 @@ enum LocationTrackingPolicy {
 
         let configuration = backgroundUpdateConfiguration(
             frequentUpdatesEnabled: frequentUpdatesEnabled,
-            distanceFilterMeters: distanceFilterMeters
+            distanceFilterMeters: distanceFilterMeters,
+            accuracyRecoveryActive: accuracyRecoveryActive
         )
         if configuration.usesSignificantChangeMonitoring {
             return .backgroundSignificantChange
@@ -396,6 +448,112 @@ enum LocationTrackingPolicy {
         !frequentUpdatesEnabled &&
         !didSwitchFrequentBackgroundMode &&
         shouldMaintainRecoveryAnchor
+    }
+
+    static func maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: Int) -> CLLocationAccuracy {
+        max(CLLocationAccuracy(FrequentBackgroundLocationDistanceFilter.normalized(distanceFilterMeters)), 50)
+    }
+
+    static func isFrequentBackgroundLocationAccuracyAcceptable(applicationState: UIApplication.State,
+                                                              updateSourceIsFrequentBackground: Bool,
+                                                              horizontalAccuracy: CLLocationAccuracy,
+                                                              distanceFilterMeters: Int) -> Bool {
+        guard applicationState != .active,
+              updateSourceIsFrequentBackground else {
+            return true
+        }
+        guard horizontalAccuracy.isFinite,
+              horizontalAccuracy >= 0 else {
+            return false
+        }
+        return horizontalAccuracy <= maximumAcceptedFrequentBackgroundAccuracy(
+            distanceFilterMeters: distanceFilterMeters
+        )
+    }
+
+    static func isFrequentBackgroundAccuracyRecoveryEligible(applicationState: UIApplication.State,
+                                                            manualFrequentEnabled: Bool,
+                                                            smartEnabled: Bool,
+                                                            smartRuntimeActive: Bool,
+                                                            distanceFilterMeters: Int) -> Bool {
+        applicationState != .active &&
+        !manualFrequentEnabled &&
+        smartEnabled &&
+        smartRuntimeActive &&
+        FrequentBackgroundLocationDistanceFilter.normalized(distanceFilterMeters) == frequentBackgroundAccuracyRecoveryTriggerDistanceFilterMeters
+    }
+
+    static func accuracyRecoveryEvaluation(applicationState: UIApplication.State,
+                                           manualFrequentEnabled: Bool,
+                                           smartEnabled: Bool,
+                                           smartRuntimeActive: Bool,
+                                           distanceFilterMeters: Int,
+                                           horizontalAccuracy: CLLocationAccuracy,
+                                           currentPoorAccuracyStreak: Int,
+                                           recoveryActive: Bool,
+                                           recoveryStartedAt: Date?,
+                                           lastRecoveryEndedAt: Date?,
+                                           now: Date,
+                                           recoveryDuration: TimeInterval = frequentBackgroundAccuracyRecoveryDuration,
+                                           cooldown: TimeInterval = frequentBackgroundAccuracyRecoveryCooldown) -> AccuracyRecoveryEvaluation {
+        let poorAccuracyStreak: Int
+        if horizontalAccuracy.isFinite,
+           horizontalAccuracy > frequentBackgroundAccuracyRecoveryPoorAccuracyThreshold {
+            poorAccuracyStreak = max(0, currentPoorAccuracyStreak) + 1
+        } else {
+            poorAccuracyStreak = 0
+        }
+
+        let shouldStopForQuality = recoveryActive &&
+        horizontalAccuracy.isFinite &&
+        horizontalAccuracy >= 0 &&
+        horizontalAccuracy <= frequentBackgroundAccuracyRecoveryTargetAccuracy
+
+        let shouldStopForTimeout: Bool
+        if recoveryActive,
+           let recoveryStartedAt,
+           recoveryDuration > 0 {
+            shouldStopForTimeout = now.timeIntervalSince(recoveryStartedAt) >= recoveryDuration
+        } else {
+            shouldStopForTimeout = false
+        }
+
+        guard isFrequentBackgroundAccuracyRecoveryEligible(
+            applicationState: applicationState,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartEnabled: smartEnabled,
+            smartRuntimeActive: smartRuntimeActive,
+            distanceFilterMeters: distanceFilterMeters
+        ) else {
+            return AccuracyRecoveryEvaluation(
+                poorAccuracyStreak: poorAccuracyStreak,
+                shouldStartRecovery: false,
+                shouldStopRecovery: shouldStopForQuality || shouldStopForTimeout
+            )
+        }
+
+        let cooldownElapsed: Bool
+        if let lastRecoveryEndedAt,
+           cooldown > 0 {
+            cooldownElapsed = now.timeIntervalSince(lastRecoveryEndedAt) >= cooldown
+        } else {
+            cooldownElapsed = true
+        }
+
+        let shouldStartRecovery = !recoveryActive &&
+        cooldownElapsed &&
+        horizontalAccuracy.isFinite &&
+        horizontalAccuracy >= 0 &&
+        (
+            horizontalAccuracy >= frequentBackgroundAccuracyRecoveryImmediateAccuracyThreshold ||
+            poorAccuracyStreak >= 2
+        )
+
+        return AccuracyRecoveryEvaluation(
+            poorAccuracyStreak: poorAccuracyStreak,
+            shouldStartRecovery: shouldStartRecovery,
+            shouldStopRecovery: shouldStopForQuality || shouldStopForTimeout
+        )
     }
 
     private static func backgroundDesiredAccuracy(for distanceFilterMeters: Int) -> CLLocationAccuracy {

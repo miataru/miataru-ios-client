@@ -11,6 +11,8 @@ Miataru 3.2 changes frequent background tracking from one flat manual toggle int
 
 Smart frequent updates keep the battery-saving standard background mode, backed by significant-change monitoring, as the normal state. When a significant-change update shows movement above the configured speed threshold, Smart temporarily starts frequent background updates. Frequent runtime is stopped again when the shared inactivity window expires because no location update arrived or because no relevant movement over the configured frequent distance filter was observed.
 
+When Smart frequent runtime is active with the default 100 m frequent distance filter, Miataru now treats very coarse frequent-background fixes as an accuracy-recovery signal instead of accepting them as the current location. A fix at or above 1000 m horizontal accuracy starts a temporary 10 m / nearest-ten-meters recovery immediately; two consecutive fixes above 300 m start the same recovery. The temporary boost ends after the first fix at or below 100 m or after 120 seconds, then enters a 10 minute cooldown.
+
 ## User-Facing Behavior
 
 Smart frequent settings live in Advanced Options under the background location section:
@@ -49,6 +51,8 @@ manual frequent enabled OR (Smart enabled AND Smart runtime active)
 Smart activation only happens from primary significant-change callbacks while the app is not active. Smart runtime does not activate from foreground/live updates or from secondary frequent-manager callbacks.
 
 Battery auto-disable acts on the effective frequent state. For manual frequent mode it turns off the manual preference; for Smart frequent runtime it only stops the Smart runtime and leaves the user's Smart preference intact.
+
+Frequent-background callbacks delivered during Smart runtime must still meet the accuracy quality gate before they update `currentLocation`, Smart seeds, speed references, movement anchors, or uploads. In background frequent mode the accepted horizontal accuracy is `max(configured frequent distance filter, 50 m)`, so the default 100 m mode accepts a 28.6 m fix but rejects a 1414 m fix. Rejected coarse fixes are logged diagnostically and may start accuracy recovery, but they are not uploaded and cannot become Smart exit-fence centers.
 
 ## Notifications
 

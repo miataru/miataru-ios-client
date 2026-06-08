@@ -61,7 +61,10 @@ else if authorization is not authorizedAlways:
 else if app is active:
     mode = foregroundHighAccuracy
 else if effective frequent background updates are enabled:
-    mode = backgroundFrequent(distanceFilter, desiredAccuracy)
+    if Smart 100 m accuracy recovery is active:
+        mode = backgroundFrequent(10 m, nearest-ten-meters)
+    else:
+        mode = backgroundFrequent(distanceFilter, desiredAccuracy)
 else:
     mode = backgroundSignificantChange
 ```
@@ -204,8 +207,8 @@ Actions:
 
 Frequent-background callbacks from the secondary manager bypass the normal
 Location Sensitivity rejection check in this mode. They still pass through the
-shared coordinate/timestamp validation and duplicate-upload key before server
-submission or outbox enqueueing.
+shared coordinate/timestamp validation, frequent-background accuracy quality
+gate, and duplicate-upload key before server submission or outbox enqueueing.
 
 Manual frequent duration options are finite or unlimited. If a finite duration
 expires, then manual frequent is disabled and the app falls back to standard
@@ -346,6 +349,51 @@ Missing frequent callbacks are treated as recovery evidence, not as stillness.
 The normal inactivity path is reserved for the case where callbacks continue but
 no relevant movement is confirmed within the configured inactivity window.
 
+### Accuracy Recovery
+
+Smart frequent has an additional accuracy-recovery layer for the default 100 m
+frequent distance filter. It is internal only: the user's configured 100 m
+filter remains unchanged in Settings and diagnostics.
+
+Accuracy recovery is eligible only when:
+
+```text
+app is not active
+and Smart frequent is enabled
+and manual frequent is off
+and Smart runtime is probing/confirmedActive
+and the configured frequent distance filter is 100 m
+```
+
+Poor frequent-background fixes still count as delivered callbacks for the
+runtime recovery watchdog, but they do not automatically become accepted app
+locations.
+
+Recovery starts when either condition is true:
+
+```text
+horizontalAccuracy >= 1000 m
+or two consecutive frequent-background fixes have horizontalAccuracy > 300 m
+```
+
+While recovery is active, the service-level frequent configuration is
+temporarily boosted to:
+
+```text
+distanceFilter = 10 m
+desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+```
+
+Recovery stops when the first frequent-background fix has
+`horizontalAccuracy <= 100 m` or when 120 seconds elapse. After recovery stops,
+Miataru returns to the normal 100 m frequent configuration and will not start
+another accuracy recovery attempt for 10 minutes.
+
+If iOS still delivers only coarse positions during recovery, the normal Smart
+inactivity and watchdog paths decide whether to keep reasserting frequent
+tracking or return to Smart waiting. This is preferred over uploading a wrong
+1 km-class position.
+
 ### Confirmation
 
 `probing` switches to `confirmedActive` only when an accepted location comes
@@ -448,8 +496,27 @@ and (manual frequent is enabled OR Smart phase is probing/confirmedActive):
 
 This prevents Smart probing/active and manual frequent tracking from receiving
 Core Location points that never reach the server. The exception does not bypass
-invalid-coordinate filtering, stale frequent callback suppression, upload
-deduplication, delivery delay, visitor cadence, or outbox retry policy.
+invalid-coordinate filtering, stale frequent callback suppression, frequent
+background accuracy quality checks, upload deduplication, delivery delay,
+visitor cadence, or outbox retry policy.
+
+For frequent-background callbacks while the app is not active, horizontal
+accuracy must be at least as good as:
+
+```text
+max(configuredFrequentDistanceFilter, 50 m)
+```
+
+At the default 100 m filter this means a frequent-background fix must have
+`horizontalAccuracy <= 100 m` before it can update `currentLocation`, seed Smart
+state, refresh speed/movement anchors, or enter the upload/outbox path. A
+28.6 m fix is accepted; a 1414 m fix is rejected and logged as
+`locationAcceptance|rejected|accuracyQuality`. The numeric 1414 m value is not a
+threshold, just an example of a very coarse fix from real diagnostics.
+
+Smart-derived state anchors are additionally capped at 300 m horizontal
+accuracy, so 1000 m-class fixes cannot become speed references, movement
+anchors, persisted Smart seeds, or Smart exit-fence centers.
 
 Upload deduplication uses:
 
@@ -485,6 +552,8 @@ The diagnostics log records:
 - Smart runtime phase transitions;
 - Smart activation evidence;
 - Smart recovery watchdog reassertions;
+- Smart frequent accuracy recovery start/stop events;
+- frequent-background accuracy-quality rejections;
 - frequent manager background/indicator/session state;
 - upload queued/sent/failed/flushed state;
 - API error category and retryability for failed uploads;

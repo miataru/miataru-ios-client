@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **201** (Unit: 186, UI: 15 incl. 10 screenshot captures)
+- Actively linked app test cases: **204** (Unit: 189, UI: 15 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -136,6 +136,9 @@ Important project observations:
 | UT-LTP-005 | Background lifecycle context keeps frequent mode active even before UIKit reports background | Protect background transition race | Forced background/foreground contexts override current UIKit state for tracking reconciliation | LocationTrackingPolicy | Unit | Static app-state/context inputs | High |
 | UT-LTP-006 | Manual frequent mode overrides smart frequent runtime | Protect Stage 2 override | Manual frequent mode wins over Smart runtime for effective mode, display mode, counters, and delivery intervals | LocationTrackingPolicy | Unit | Static app-state and preference inputs | High |
 | UT-LTP-007 | Significant-change recovery anchor is kept only for active Always-authorized tracking | Protect recovery/session eligibility | Recovery anchor, Always service session, frequent activity session, restore, reconcile, and battery-disable policies stay gated | LocationTrackingPolicy | Unit | Static authorization/preference inputs | High |
+| UT-LTP-008 | Frequent background accuracy recovery temporarily uses precise configuration for 100m mode | Protect Smart frequent recovery boost | 100 m Smart frequent recovery uses 10 m / nearest-ten-meters while non-trigger filters keep their configured behavior | LocationTrackingPolicy | Unit | Static configuration inputs | High |
+| UT-LTP-009 | Frequent background accuracy quality gates uploads and current location updates | Protect coarse-fix rejection | Background frequent callbacks reject invalid/coarse accuracy, accept 28.6 m at the 100 m filter, and leave foreground/primary callbacks unchanged | LocationTrackingPolicy | Unit | Static app-state/source/accuracy inputs | High |
+| UT-LTP-010 | Smart frequent accuracy recovery starts stops and cools down | Protect recovery trigger lifecycle | 1414 m starts immediately, two >300 m fixes start recovery, manual mode is ineligible, <=100 m stops, 120 s timeout stops, and cooldown blocks restart | LocationTrackingPolicy | Unit | Fixed dates and static policy inputs | High |
 | UT-SFB-001 | Smart frequent speed detection supports hybrid and GPS-only modes | Validate Smart speed source policy | Valid GPS speed wins; Hybrid derives speed from usable distance/time samples; GPS-only ignores derived speed | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures | High |
 | UT-SFB-002 | Persisted smart frequent seed is fresh-gated and still rejects implausible activation | Protect first-background-update Smart activation after relaunch | Fresh seeds can satisfy freshness, while stale/future seeds and implausible derived speeds do not activate | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures + fixed dates | High |
 | UT-SFB-003 | Smart frequent activation evidence is quality aware and startup guarded | Protect activation evidence gates | Trusted GPS, region exit, derived movement, startup-batch, same-second, and low-quality evidence behave at boundaries | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures | High |
@@ -245,7 +248,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics persistence/logging, and duplicate location callback suppression.
+- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, Smart frequent accuracy recovery, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics persistence/logging, and duplicate location callback suppression.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Added focused coverage for frequent-background reminder, expiration, low-battery, optional Smart mode-change notifications, and Smart notification permission gating.
 - Added string-catalog QA for stale/new translation-unit cleanup in addition to required-key localization completeness.

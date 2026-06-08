@@ -76,6 +76,7 @@ enum SmartFrequentBackgroundPolicy {
     static let maximumActivationSpeedKmh: Double = 200
     static let runtimeWatchdogInterval: TimeInterval = 75
     static let maximumRuntimeRecoveryAttempts = 2
+    static let maximumUsableLocationAccuracy: CLLocationAccuracy = 300
 
     static func newestExitFenceAnchor(from candidates: [CLLocation?]) -> CLLocation? {
         candidates
@@ -438,7 +439,7 @@ enum SmartFrequentBackgroundPolicy {
         coordinate.longitude.isFinite &&
         location.timestamp.timeIntervalSince1970.isFinite &&
         location.horizontalAccuracy >= 0 &&
-        location.horizontalAccuracy <= 300
+        location.horizontalAccuracy <= maximumUsableLocationAccuracy
     }
 
     private static func isUsableForFenceAnchor(_ location: CLLocation) -> Bool {
@@ -449,6 +450,6 @@ enum SmartFrequentBackgroundPolicy {
         location.timestamp.timeIntervalSince1970.isFinite &&
         location.horizontalAccuracy.isFinite &&
         location.horizontalAccuracy >= 0 &&
-        location.horizontalAccuracy <= 300
+        location.horizontalAccuracy <= maximumUsableLocationAccuracy
     }
 }

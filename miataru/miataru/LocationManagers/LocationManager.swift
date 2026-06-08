@@ -82,6 +82,11 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundLastFrequentCallbackAt: Date?
     private var smartFrequentBackgroundRecoveryAttemptCount = 0
     private var smartFrequentBackgroundWatchdogTimer: Timer?
+    private var frequentBackgroundAccuracyRecoveryTimer: Timer?
+    private var frequentBackgroundAccuracyRecoveryActive = false
+    private var frequentBackgroundPoorAccuracyStreak = 0
+    private var frequentBackgroundAccuracyRecoveryStartedAt: Date?
+    private var frequentBackgroundAccuracyRecoveryEndedAt: Date?
     private var smartFrequentBackgroundActivationNotificationDelivered = false
     private var smartFrequentBackgroundLastMovementLocationKey: LocationSubmissionDeduplicationKey?
     private var smartFrequentBackgroundLastMovementDistanceMeters: CLLocationDistance?
@@ -158,6 +163,7 @@ final class LocationManager: NSObject, ObservableObject {
         NotificationCenter.default.removeObserver(self)
         frequentBackgroundLocationExpirationTimer?.invalidate()
         smartFrequentBackgroundInactivityTimer?.invalidate()
+        frequentBackgroundAccuracyRecoveryTimer?.invalidate()
         pendingAlwaysAuthorizationRequestTask?.cancel()
         coreLocationServices.stopLocationServiceSession(reason: "deinit")
         coreLocationServices.stopFrequentBackgroundActivitySession(reason: "deinit")
@@ -845,6 +851,7 @@ final class LocationManager: NSObject, ObservableObject {
         if isTracking, state != .active {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
         }
+        syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: state)
 
         if Self.shouldDisableTrackingPreference(authorizationStatus: status) {
             debugLog("Location permission denied/restricted; disabling trackAndReportLocation and stopping services")
@@ -860,7 +867,8 @@ final class LocationManager: NSObject, ObservableObject {
             applicationState: state,
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
-            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty
+            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty,
+            accuracyRecoveryActive: frequentBackgroundAccuracyRecoveryActive
         )
         let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: settings.trackAndReportLocation && isTracking,
@@ -904,6 +912,7 @@ final class LocationManager: NSObject, ObservableObject {
                 "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive),
                 "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
                 "effectiveFrequent": .bool(effectiveFrequentBackgroundUpdatesEnabled),
+                "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
                 "navigationSessions": .integer(navigationLocationSessionIDs.count)
             ]
@@ -1017,6 +1026,7 @@ final class LocationManager: NSObject, ObservableObject {
                 "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
                 "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
                 "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive),
+                "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue)
             ]
         )
@@ -1366,6 +1376,160 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
+    private func syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: UIApplication.State) {
+        guard Self.isFrequentBackgroundAccuracyRecoveryEligible(
+            applicationState: applicationState,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
+            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
+        ) else {
+            resetFrequentBackgroundAccuracyRecoveryState()
+            return
+        }
+    }
+
+    @discardableResult
+    private func handleFrequentBackgroundAccuracyRecovery(for location: CLLocation,
+                                                          updateSource: LocationUpdateSource,
+                                                          applicationState: UIApplication.State,
+                                                          now: Date) -> Bool {
+        guard updateSource == .frequentBackground,
+              applicationState != .active else {
+            return false
+        }
+
+        let evaluation = Self.frequentBackgroundAccuracyRecoveryEvaluation(
+            applicationState: applicationState,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
+            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
+            horizontalAccuracy: location.horizontalAccuracy,
+            currentPoorAccuracyStreak: frequentBackgroundPoorAccuracyStreak,
+            recoveryActive: frequentBackgroundAccuracyRecoveryActive,
+            recoveryStartedAt: frequentBackgroundAccuracyRecoveryStartedAt,
+            lastRecoveryEndedAt: frequentBackgroundAccuracyRecoveryEndedAt,
+            now: now
+        )
+        frequentBackgroundPoorAccuracyStreak = evaluation.poorAccuracyStreak
+
+        if evaluation.shouldStopRecovery {
+            let reason = Self.isFrequentBackgroundLocationAccuracyAcceptable(
+                applicationState: applicationState,
+                updateSourceIsFrequentBackground: true,
+                horizontalAccuracy: location.horizontalAccuracy,
+                distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
+            ) ? "frequent background accuracy recovered" : "frequent background accuracy recovery timeout"
+            return stopFrequentBackgroundAccuracyRecovery(reason: reason, location: location, now: now)
+        }
+
+        if evaluation.shouldStartRecovery {
+            startFrequentBackgroundAccuracyRecovery(location: location, now: now)
+            return true
+        }
+
+        return false
+    }
+
+    private func startFrequentBackgroundAccuracyRecovery(location: CLLocation,
+                                                         now: Date) {
+        guard !frequentBackgroundAccuracyRecoveryActive else { return }
+        frequentBackgroundAccuracyRecoveryActive = true
+        frequentBackgroundAccuracyRecoveryStartedAt = now
+        frequentBackgroundAccuracyRecoveryTimer?.invalidate()
+        scheduleFrequentBackgroundAccuracyRecoveryTimer()
+
+        diagnosticsLog.append(
+            level: .warning,
+            event: "frequentBackgroundAccuracyRecovery",
+            summary: "Started frequent background accuracy recovery.",
+            result: "started",
+            reason: "frequent background location accuracy is poor",
+            checks: [],
+            context: diagnosticsLocationContext(location, extra: [
+                ("configuredDistanceFilterMeters", .integer(settings.frequentBackgroundLocationDistanceFilter)),
+                ("recoveryDistanceFilterMeters", .integer(LocationTrackingPolicy.frequentBackgroundAccuracyRecoveryDistanceFilterMeters)),
+                ("poorAccuracyStreak", .integer(frequentBackgroundPoorAccuracyStreak))
+            ]),
+            timestamp: now
+        )
+
+        applyTrackingMode(reason: "frequent background accuracy recovery", applicationStateContext: .forceBackground)
+        coreLocationServices.requestFrequentBackgroundLocation()
+    }
+
+    @discardableResult
+    private func stopFrequentBackgroundAccuracyRecovery(reason: String,
+                                                        location: CLLocation? = nil,
+                                                        now: Date = Date()) -> Bool {
+        guard frequentBackgroundAccuracyRecoveryActive else {
+            frequentBackgroundPoorAccuracyStreak = 0
+            return false
+        }
+
+        frequentBackgroundAccuracyRecoveryActive = false
+        frequentBackgroundPoorAccuracyStreak = 0
+        frequentBackgroundAccuracyRecoveryStartedAt = nil
+        frequentBackgroundAccuracyRecoveryEndedAt = now
+        frequentBackgroundAccuracyRecoveryTimer?.invalidate()
+        frequentBackgroundAccuracyRecoveryTimer = nil
+
+        var context: [String: LocationDiagnosticsValue] = [
+            "configuredDistanceFilterMeters": .integer(settings.frequentBackgroundLocationDistanceFilter),
+            "cooldownSeconds": .integer(Int(LocationTrackingPolicy.frequentBackgroundAccuracyRecoveryCooldown))
+        ]
+        if let location {
+            context.merge(diagnosticsLocationContext(location)) { _, new in new }
+        }
+
+        diagnosticsLog.append(
+            level: .info,
+            event: "frequentBackgroundAccuracyRecovery",
+            summary: "Stopped frequent background accuracy recovery.",
+            result: "stopped",
+            reason: reason,
+            checks: [],
+            context: context,
+            timestamp: now
+        )
+
+        applyTrackingMode(reason: reason, applicationStateContext: .forceBackground)
+        return true
+    }
+
+    private func resetFrequentBackgroundAccuracyRecoveryState() {
+        frequentBackgroundAccuracyRecoveryActive = false
+        frequentBackgroundPoorAccuracyStreak = 0
+        frequentBackgroundAccuracyRecoveryStartedAt = nil
+        frequentBackgroundAccuracyRecoveryTimer?.invalidate()
+        frequentBackgroundAccuracyRecoveryTimer = nil
+    }
+
+    private func scheduleFrequentBackgroundAccuracyRecoveryTimer() {
+        frequentBackgroundAccuracyRecoveryTimer?.invalidate()
+        let timer = Timer(timeInterval: Self.frequentBackgroundAccuracyRecoveryDuration, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.stopFrequentBackgroundAccuracyRecovery(
+                reason: "frequent background accuracy recovery timeout",
+                now: Date()
+            )
+        }
+        frequentBackgroundAccuracyRecoveryTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
+    }
+
+    private func isUsableForSmartFrequentBackgroundState(_ location: CLLocation) -> Bool {
+        let coordinate = location.coordinate
+        return coordinate.latitude.isFinite &&
+        coordinate.longitude.isFinite &&
+        CLLocationCoordinate2DIsValid(coordinate) &&
+        location.timestamp.timeIntervalSince1970.isFinite &&
+        location.horizontalAccuracy.isFinite &&
+        location.horizontalAccuracy >= 0 &&
+        location.horizontalAccuracy <= Self.maximumSmartFrequentBackgroundStateAccuracy
+    }
+
     private func updateSmartFrequentBackgroundRuntime(for location: CLLocation,
                                                       updateSource: LocationUpdateSource,
                                                       applicationState: UIApplication.State,
@@ -1378,12 +1542,16 @@ final class LocationManager: NSObject, ObservableObject {
                 deactivateSmartFrequentBackgroundRuntime(reason: "manual frequent override")
                 return true
             }
-            updateSmartFrequentBackgroundSpeedReference(with: location)
+            if isUsableForSmartFrequentBackgroundState(location) {
+                updateSmartFrequentBackgroundSpeedReference(with: location)
+            }
             return false
         }
 
         guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState) else {
-            updateSmartFrequentBackgroundSpeedReference(with: location)
+            if isUsableForSmartFrequentBackgroundState(location) {
+                updateSmartFrequentBackgroundSpeedReference(with: location)
+            }
             return false
         }
 
@@ -1391,6 +1559,12 @@ final class LocationManager: NSObject, ObservableObject {
             now: now,
             applicationState: applicationState
         )
+        if smartFrequentBackgroundRuntimeActive {
+            lastSmartFrequentBackgroundLocationUpdateAt = now
+        }
+        guard isUsableForSmartFrequentBackgroundState(location) else {
+            return didDeactivateForInactivity
+        }
         let previousLocationUpdateAt = smartFrequentBackgroundSpeedReferenceLocation?.timestamp
         let didUpdateMovement = refreshSmartFrequentBackgroundMovementState(for: location, now: now)
         let activationEvidence = Self.smartFrequentActivationEvidence(
@@ -1639,6 +1813,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundInactivityTimer = nil
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
+        resetFrequentBackgroundAccuracyRecoveryState()
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
             recordForensicSmartDeactivation()
@@ -1681,6 +1856,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundInactivityTimer = nil
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
+        resetFrequentBackgroundAccuracyRecoveryState()
     }
 
     @discardableResult
@@ -1926,7 +2102,8 @@ final class LocationManager: NSObject, ObservableObject {
               CLLocationCoordinate2DIsValid(location.coordinate),
               location.timestamp.timeIntervalSince1970.isFinite,
               location.horizontalAccuracy.isFinite,
-              location.horizontalAccuracy >= 0 else {
+              location.horizontalAccuracy >= 0,
+              location.horizontalAccuracy <= Self.maximumSmartFrequentBackgroundStateAccuracy else {
             return
         }
 
@@ -1954,7 +2131,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func updateSmartFrequentBackgroundSpeedReference(with location: CLLocation) {
-        if location.horizontalAccuracy >= 0 {
+        if isUsableForSmartFrequentBackgroundState(location) {
             smartFrequentBackgroundSpeedReferenceLocation = location
         }
     }
@@ -2352,6 +2529,12 @@ extension LocationManager: CLLocationManagerDelegate {
                     updateSource: updateSource,
                     now: sampleProcessingNow
                 )
+                self.handleFrequentBackgroundAccuracyRecovery(
+                    for: location,
+                    updateSource: updateSource,
+                    applicationState: applicationState,
+                    now: sampleProcessingNow
+                )
 
                 let didSwitchSmartFrequentBackgroundMode = self.updateSmartFrequentBackgroundRuntime(
                     for: location,
@@ -2445,6 +2628,33 @@ extension LocationManager: CLLocationManagerDelegate {
             manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             smartRuntimePhase: smartFrequentBackgroundRuntimePhase
         )
+        guard Self.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: applicationState,
+            updateSourceIsFrequentBackground: updateSource == .frequentBackground,
+            horizontalAccuracy: location.horizontalAccuracy,
+            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
+        ) else {
+            let maximumAccuracy = Self.maximumAcceptedFrequentBackgroundAccuracy(
+                distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter
+            )
+            debugLog("[LocationManager] Location update ignored: frequent background accuracy \(location.horizontalAccuracy)m exceeds maximum \(maximumAccuracy)m")
+            diagnosticsLog.appendCoalesced(
+                level: .warning,
+                event: "locationAcceptance",
+                summary: "Ignored frequent background location update.",
+                result: "rejected",
+                reason: "frequent background accuracy threshold not met",
+                coalescingKey: "locationAcceptance|rejected|accuracyQuality|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                context: diagnosticsLocationContext(location, extra: [
+                    ("maximumAccuracyMeters", .double(maximumAccuracy)),
+                    ("distanceFilterMeters", .integer(settings.frequentBackgroundLocationDistanceFilter)),
+                    ("accuracyRecoveryActive", .bool(frequentBackgroundAccuracyRecoveryActive)),
+                    ("poorAccuracyStreak", .integer(frequentBackgroundPoorAccuracyStreak)),
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
+            return false
+        }
         guard let previousLocation = self.currentLocation else {
             debugLog("[LocationManager] First location update accepted.")
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)

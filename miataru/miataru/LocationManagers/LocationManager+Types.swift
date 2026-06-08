@@ -19,8 +19,10 @@ extension LocationManager {
     static let forensicForegroundRecoveryBurstWindow: TimeInterval = LocationBackgroundForensics.foregroundRecoveryBurstWindow
     static let smartFrequentBackgroundRuntimeWatchdogInterval: TimeInterval = SmartFrequentBackgroundPolicy.runtimeWatchdogInterval
     static let maximumSmartFrequentBackgroundRuntimeRecoveryAttempts = SmartFrequentBackgroundPolicy.maximumRuntimeRecoveryAttempts
+    static let maximumSmartFrequentBackgroundStateAccuracy: CLLocationAccuracy = SmartFrequentBackgroundPolicy.maximumUsableLocationAccuracy
     static let smartFrequentBackgroundProbeWatchdogInterval = smartFrequentBackgroundRuntimeWatchdogInterval
     static let maximumSmartFrequentBackgroundProbeRecoveryAttempts = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts
+    static let frequentBackgroundAccuracyRecoveryDuration: TimeInterval = LocationTrackingPolicy.frequentBackgroundAccuracyRecoveryDuration
 
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -43,6 +45,7 @@ extension LocationManager {
     typealias BackgroundTrackingGapAssessment = LocationBackgroundForensics.GapAssessment
     typealias BackgroundTrackingDisplayMode = LocationTrackingPolicy.BackgroundTrackingDisplayMode
     typealias BackgroundUpdateConfiguration = LocationTrackingPolicy.BackgroundUpdateConfiguration
+    typealias FrequentBackgroundAccuracyRecoveryEvaluation = LocationTrackingPolicy.AccuracyRecoveryEvaluation
     typealias TrackingMode = LocationTrackingPolicy.TrackingMode
     typealias SmartFrequentRuntimePhase = SmartFrequentBackgroundPolicy.RuntimePhase
     typealias SmartFrequentActivationEvidenceKind = SmartFrequentBackgroundPolicy.ActivationEvidenceKind

@@ -22,6 +22,16 @@ extension LocationManager {
         )
     }
 
+    static func backgroundUpdateConfiguration(frequentUpdatesEnabled: Bool,
+                                              distanceFilterMeters: Int,
+                                              accuracyRecoveryActive: Bool) -> BackgroundUpdateConfiguration {
+        LocationTrackingPolicy.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters,
+            accuracyRecoveryActive: accuracyRecoveryActive
+        )
+    }
+
     static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
                                                           smartEnabled: Bool,
                                                           smartRuntimeActive: Bool) -> Bool {
@@ -83,6 +93,24 @@ extension LocationManager {
             frequentUpdatesEnabled: frequentUpdatesEnabled,
             distanceFilterMeters: distanceFilterMeters,
             hasNavigationLocationSession: hasNavigationLocationSession
+        )
+    }
+
+    static func resolvedTrackingMode(isTracking: Bool,
+                                     authorizationStatus: CLAuthorizationStatus,
+                                     applicationState: UIApplication.State,
+                                     frequentUpdatesEnabled: Bool,
+                                     distanceFilterMeters: Int,
+                                     hasNavigationLocationSession: Bool,
+                                     accuracyRecoveryActive: Bool) -> TrackingMode {
+        LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters,
+            hasNavigationLocationSession: hasNavigationLocationSession,
+            accuracyRecoveryActive: accuracyRecoveryActive
         )
     }
 
@@ -301,6 +329,64 @@ extension LocationManager {
             updateSourceIsFrequentBackground: updateSourceIsFrequentBackground,
             manualFrequentEnabled: manualFrequentEnabled,
             smartRuntimePhase: smartRuntimePhase
+        )
+    }
+
+    static func maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: Int) -> CLLocationAccuracy {
+        LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(
+            distanceFilterMeters: distanceFilterMeters
+        )
+    }
+
+    static func isFrequentBackgroundLocationAccuracyAcceptable(applicationState: UIApplication.State,
+                                                              updateSourceIsFrequentBackground: Bool,
+                                                              horizontalAccuracy: CLLocationAccuracy,
+                                                              distanceFilterMeters: Int) -> Bool {
+        LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: applicationState,
+            updateSourceIsFrequentBackground: updateSourceIsFrequentBackground,
+            horizontalAccuracy: horizontalAccuracy,
+            distanceFilterMeters: distanceFilterMeters
+        )
+    }
+
+    static func isFrequentBackgroundAccuracyRecoveryEligible(applicationState: UIApplication.State,
+                                                            manualFrequentEnabled: Bool,
+                                                            smartEnabled: Bool,
+                                                            smartRuntimeActive: Bool,
+                                                            distanceFilterMeters: Int) -> Bool {
+        LocationTrackingPolicy.isFrequentBackgroundAccuracyRecoveryEligible(
+            applicationState: applicationState,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartEnabled: smartEnabled,
+            smartRuntimeActive: smartRuntimeActive,
+            distanceFilterMeters: distanceFilterMeters
+        )
+    }
+
+    static func frequentBackgroundAccuracyRecoveryEvaluation(applicationState: UIApplication.State,
+                                                            manualFrequentEnabled: Bool,
+                                                            smartEnabled: Bool,
+                                                            smartRuntimeActive: Bool,
+                                                            distanceFilterMeters: Int,
+                                                            horizontalAccuracy: CLLocationAccuracy,
+                                                            currentPoorAccuracyStreak: Int,
+                                                            recoveryActive: Bool,
+                                                            recoveryStartedAt: Date?,
+                                                            lastRecoveryEndedAt: Date?,
+                                                            now: Date) -> FrequentBackgroundAccuracyRecoveryEvaluation {
+        LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: applicationState,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartEnabled: smartEnabled,
+            smartRuntimeActive: smartRuntimeActive,
+            distanceFilterMeters: distanceFilterMeters,
+            horizontalAccuracy: horizontalAccuracy,
+            currentPoorAccuracyStreak: currentPoorAccuracyStreak,
+            recoveryActive: recoveryActive,
+            recoveryStartedAt: recoveryStartedAt,
+            lastRecoveryEndedAt: lastRecoveryEndedAt,
+            now: now
         )
     }
 

@@ -14,6 +14,14 @@ struct LocationTrackingPolicyTests {
         #expect(defaultConfiguration.usesSignificantChangeMonitoring)
         #expect(defaultConfiguration.distanceFilter == kCLDistanceFilterNone)
 
+        let hundredMeterConfiguration = LocationTrackingPolicy.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 100
+        )
+        #expect(!hundredMeterConfiguration.usesSignificantChangeMonitoring)
+        #expect(hundredMeterConfiguration.distanceFilter == 100)
+        #expect(hundredMeterConfiguration.desiredAccuracy == kCLLocationAccuracyHundredMeters)
+
         let frequentConfiguration = LocationTrackingPolicy.backgroundUpdateConfiguration(
             frequentUpdatesEnabled: true,
             distanceFilterMeters: 50
@@ -37,6 +45,187 @@ struct LocationTrackingPolicyTests {
         #expect(fallbackConfiguration.distanceFilter == CLLocationDistance(SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
         #expect(SettingsDefaultValues.locationDiagnosticsLoggingEnabled == false)
         #expect(SettingsDefaultValues.registrations[SettingsKeys.locationDiagnosticsLoggingEnabled] as? Bool == false)
+    }
+
+    @Test("Frequent background accuracy recovery temporarily uses precise configuration for 100m mode")
+    func frequentBackgroundAccuracyRecoveryUsesPreciseConfigurationForHundredMeterMode() {
+        let recoveryConfiguration = LocationTrackingPolicy.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 100,
+            accuracyRecoveryActive: true
+        )
+        #expect(!recoveryConfiguration.usesSignificantChangeMonitoring)
+        #expect(recoveryConfiguration.distanceFilter == 10)
+        #expect(recoveryConfiguration.desiredAccuracy == kCLLocationAccuracyNearestTenMeters)
+
+        let nonTriggerConfiguration = LocationTrackingPolicy.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            accuracyRecoveryActive: true
+        )
+        #expect(nonTriggerConfiguration.distanceFilter == 50)
+        #expect(nonTriggerConfiguration.desiredAccuracy == kCLLocationAccuracyNearestTenMeters)
+
+        #expect(LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 100,
+            hasNavigationLocationSession: false,
+            accuracyRecoveryActive: true
+        ) == .backgroundFrequent(distanceFilter: 10, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
+    }
+
+    @Test("Frequent background accuracy quality gates uploads and current location updates")
+    func frequentBackgroundAccuracyQualityGatesUploadsAndCurrentLocationUpdates() {
+        #expect(LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: 100) == 100)
+        #expect(LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: 10) == 50)
+
+        #expect(LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            horizontalAccuracy: 28.6,
+            distanceFilterMeters: 100
+        ))
+        #expect(!LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            horizontalAccuracy: 1_414,
+            distanceFilterMeters: 100
+        ))
+        #expect(LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .active,
+            updateSourceIsFrequentBackground: true,
+            horizontalAccuracy: 1_414,
+            distanceFilterMeters: 100
+        ))
+        #expect(LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: false,
+            horizontalAccuracy: 1_414,
+            distanceFilterMeters: 100
+        ))
+        #expect(!LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            horizontalAccuracy: -1,
+            distanceFilterMeters: 100
+        ))
+    }
+
+    @Test("Smart frequent accuracy recovery starts stops and cools down")
+    func smartFrequentAccuracyRecoveryStartsStopsAndCoolsDown() {
+        let now = Date(timeIntervalSince1970: 10_000)
+        let immediate = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 1_414,
+            currentPoorAccuracyStreak: 0,
+            recoveryActive: false,
+            recoveryStartedAt: nil,
+            lastRecoveryEndedAt: nil,
+            now: now
+        )
+        #expect(immediate.poorAccuracyStreak == 1)
+        #expect(immediate.shouldStartRecovery)
+        #expect(!immediate.shouldStopRecovery)
+
+        let firstPoor = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 301,
+            currentPoorAccuracyStreak: 0,
+            recoveryActive: false,
+            recoveryStartedAt: nil,
+            lastRecoveryEndedAt: nil,
+            now: now
+        )
+        #expect(firstPoor.poorAccuracyStreak == 1)
+        #expect(!firstPoor.shouldStartRecovery)
+
+        let secondPoor = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 301,
+            currentPoorAccuracyStreak: firstPoor.poorAccuracyStreak,
+            recoveryActive: false,
+            recoveryStartedAt: nil,
+            lastRecoveryEndedAt: nil,
+            now: now.addingTimeInterval(1)
+        )
+        #expect(secondPoor.poorAccuracyStreak == 2)
+        #expect(secondPoor.shouldStartRecovery)
+
+        let manualMode = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 1_414,
+            currentPoorAccuracyStreak: 0,
+            recoveryActive: false,
+            recoveryStartedAt: nil,
+            lastRecoveryEndedAt: nil,
+            now: now
+        )
+        #expect(!manualMode.shouldStartRecovery)
+
+        let cooldown = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 1_414,
+            currentPoorAccuracyStreak: 0,
+            recoveryActive: false,
+            recoveryStartedAt: nil,
+            lastRecoveryEndedAt: now.addingTimeInterval(-60),
+            now: now
+        )
+        #expect(!cooldown.shouldStartRecovery)
+
+        let recovered = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 80,
+            currentPoorAccuracyStreak: 2,
+            recoveryActive: true,
+            recoveryStartedAt: now.addingTimeInterval(-30),
+            lastRecoveryEndedAt: nil,
+            now: now
+        )
+        #expect(recovered.poorAccuracyStreak == 0)
+        #expect(recovered.shouldStopRecovery)
+
+        let timedOut = LocationTrackingPolicy.accuracyRecoveryEvaluation(
+            applicationState: .background,
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            distanceFilterMeters: 100,
+            horizontalAccuracy: 800,
+            currentPoorAccuracyStreak: 2,
+            recoveryActive: true,
+            recoveryStartedAt: now.addingTimeInterval(-121),
+            lastRecoveryEndedAt: nil,
+            now: now
+        )
+        #expect(timedOut.shouldStopRecovery)
     }
 
     @Test("Location tracking mode resolver keeps foreground, navigation, and background policies distinct")

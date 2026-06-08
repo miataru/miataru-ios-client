@@ -73,6 +73,7 @@ miataru/
   - background significant-change monitoring
   - frequent background updates
 - Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, sends the activation notification only after accepted frequent-background movement confirms the runtime, and stops runtime after the shared inactivity window without treating missing frequent callbacks as stillness.
+- Smart frequent accuracy recovery is internal to the default 100 m frequent filter: very coarse frequent-background fixes are rejected from upload/state, can temporarily boost Core Location to 10 m / nearest-ten-meters, and then return to the configured 100 m mode after a good fix or timeout.
 - Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
 - Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
 - Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
@@ -200,6 +201,7 @@ xcrun simctl openurl booted miataru://ABCDEF
 - Enable Smart frequent updates when the app should automatically switch to frequent runtime only after detected movement.
 - Enable manual frequent background updates only when the higher battery cost is acceptable and Smart criteria should be bypassed.
 - After a cold app start/update/reset, the first background location only seeds Smart's movement reference; the next qualifying background movement can activate Smart frequent runtime.
+- For Smart frequent with the default 100 m distance filter, very coarse frequent-background fixes are rejected from upload/state and can trigger a temporary 10 m accuracy recovery. Check diagnostics for `frequentBackgroundAccuracyRecovery` and `locationAcceptance|rejected|accuracyQuality` entries.
 - Check Smart threshold/detection mode, Smart inactivity window, manual expiration duration, low-battery threshold, and whether the app returned to standard background mode.
 - Location Tracking Details shows the current background mode, Smart activation reason, last relevant Smart movement, next inactivity timeout, and mode-specific update counters.
 
