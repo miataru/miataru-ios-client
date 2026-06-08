@@ -7,6 +7,7 @@ version 3.2
 - Removed the unreliable in-app permission-change button from the Always-permission notice and Location Tracking Details, keeping the guidance text-only so users are not sent into a dead permission flow.
 - Added an opt-in Location Diagnostics log in Location Tracking Details with a persistent 1000-entry ring buffer, JSON export, rounded location values, and localized UI across all supported app languages.
 - Reworked Location Diagnostics into a compact forensic background-tracking log with critical/sample/coalesced retention, 24-hour evidence metadata, exported coalesced counters, dropped-entry reporting, and legacy log import compatibility.
+- Moved Location Diagnostics out of the normal Location Tracking Details flow into a hidden sheet opened by triple-tapping the version section, with UI coverage for the hidden entry point.
 - Added persisted background-tracking forensic state, suspicious-gap detection, foreground-recovery-burst evidence, and Location Tracking Details status rows for expected mode, oldest evidence, last background callback, last background upload, and recent gaps.
 - Added a one-time-per-build significant-change monitor re-arm on eligible fresh app/update starts, with visible skipped/attempted status and diagnostic checks for tracking, Always authorization, DeviceKey block state, and build repetition.
 - Kept diagnostics logging cheap while disabled by short-circuiting append calls before diagnostic checks, contexts, and timestamps are built; the visible re-arm status remains available independently of diagnostics logging.

@@ -58,6 +58,33 @@ final class ExtendedUITests: XCTestCase {
     }
 
     @MainActor
+    func testLocationDiagnosticsSheetOpensFromVersionTripleTap() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
+
+        let locationDetailsLink = app.descendants(matching: .any)["settings_location_tracking_details_link"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: locationDetailsLink, maxSwipes: 10), "Location tracking details link should be reachable")
+        tapElement(locationDetailsLink)
+
+        let diagnosticsSheet = app.descendants(matching: .any)["location_diagnostics_sheet"].firstMatch
+        XCTAssertFalse(diagnosticsSheet.exists, "Location diagnostics sheet should be hidden by default")
+
+        let versionSection = app.descendants(matching: .any)["location_status_version_section"].firstMatch
+        XCTAssertTrue(versionSection.waitForExistence(timeout: 10), "Version section should exist on the tracking details screen")
+        tripleTapElement(versionSection)
+
+        XCTAssertTrue(diagnosticsSheet.waitForExistence(timeout: 10), "Location diagnostics sheet should open after triple-tapping the version section")
+        XCTAssertTrue(app.switches["location_diagnostics_logging_toggle"].waitForExistence(timeout: 5), "Diagnostics logging toggle should be visible in the sheet")
+
+        let doneButton = app.buttons["location_diagnostics_done_button"]
+        XCTAssertTrue(doneButton.waitForExistence(timeout: 5), "Diagnostics sheet should expose a Done button")
+        doneButton.tap()
+        XCTAssertTrue(waitForNonExistence(of: diagnosticsSheet, timeout: 5), "Location diagnostics sheet should close after tapping Done")
+    }
+
+    @MainActor
     func testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen() throws {
         let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
 
@@ -130,6 +157,20 @@ final class ExtendedUITests: XCTestCase {
             return
         }
 
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    @MainActor
+    private func tripleTapElement(_ element: XCUIElement) {
+        XCTAssertTrue(element.waitForExistence(timeout: 5), "Element should exist before triple-tapping")
+
+        if element.waitForHittable(timeout: 2) {
+            element.tap(withNumberOfTaps: 3, numberOfTouches: 1)
+            return
+        }
+
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 

@@ -21,6 +21,7 @@ struct iPhone_LocationStatusView: View {
     @ObservedObject private var apiRequestCounter = APIRequestCounter.shared
     @ObservedObject private var settings = SettingsManager.shared
     @State private var isFlushingQueuedLocationUpdates = false
+    @State private var showingLocationDiagnosticsSheet = false
     // Legacy @AppStorage fields removed in favor of RouteRequestCounter
     
     var body: some View {
@@ -38,6 +39,12 @@ struct iPhone_LocationStatusView: View {
             .padding()
             .background(Color(.systemGray6))
             .cornerRadius(12)
+            .contentShape(Rectangle())
+            .onTapGesture(count: 3) {
+                showingLocationDiagnosticsSheet = true
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("location_status_version_section")
             // Status-Header
             HStack {
                 Image(systemName: statusIcon)
@@ -202,8 +209,6 @@ struct iPhone_LocationStatusView: View {
             
             // Background Status
             BackgroundStatusCard()
-
-            LocationDiagnosticsCard()
             
             // Log der letzten Updates
             if !updateLog.isEmpty {
@@ -241,6 +246,25 @@ struct iPhone_LocationStatusView: View {
         }
         .safeAreaInset(edge: .top) {
             Color.clear.frame(height: 10)
+        }
+        .sheet(isPresented: $showingLocationDiagnosticsSheet) {
+            NavigationStack {
+                ScrollView {
+                    LocationDiagnosticsCard()
+                        .padding()
+                }
+                .accessibilityIdentifier("location_diagnostics_sheet")
+                .navigationTitle("Location diagnostics")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            showingLocationDiagnosticsSheet = false
+                        }
+                        .accessibilityIdentifier("location_diagnostics_done_button")
+                    }
+                }
+            }
         }
         .accessibilityIdentifier("screen_location_tracking_details")
         .onAppear {
