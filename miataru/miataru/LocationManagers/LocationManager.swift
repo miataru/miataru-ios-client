@@ -14,25 +14,6 @@ import MiataruAPIClient
 import UIKit
 import Network
 
-@MainActor
-private final class LocationBackgroundTaskToken {
-    private var identifier: UIBackgroundTaskIdentifier = .invalid
-
-    init(name: String) {
-        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
-            Task { @MainActor in
-                self?.end()
-            }
-        }
-    }
-
-    func end() {
-        guard identifier != .invalid else { return }
-        UIApplication.shared.endBackgroundTask(identifier)
-        identifier = .invalid
-    }
-}
-
 /// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
 final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
@@ -65,13 +46,6 @@ final class LocationManager: NSObject, ObservableObject {
     private let locationManager = CLLocationManager()
     private let frequentBackgroundLocationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
-    private let backgroundUpdateCountKey = "miataru_backgroundUpdateCount"
-    private let foregroundLiveUpdateCountKey = "miataru_locationUpdateCountForegroundLive"
-    private let significantChangeUpdateCountKey = "miataru_locationUpdateCountSignificantChange"
-    private let smartFrequentUpdateCountKey = "miataru_locationUpdateCountSmartFrequent"
-    private let manualFrequentUpdateCountKey = "miataru_locationUpdateCountManualFrequent"
-    private let lastBackgroundUpdateKey = "miataru_lastBackgroundUpdate"
-    private let backgroundMetricsLastResetKey = "miataru_backgroundMetricsLastReset"
     private let lastServerUpdateKey = "miataru_lastServerUpdate"
     private let smartFrequentBackgroundSeedLatitudeKey = "miataru_smartFrequentBackgroundSeedLatitude"
     private let smartFrequentBackgroundSeedLongitudeKey = "miataru_smartFrequentBackgroundSeedLongitude"
@@ -87,6 +61,8 @@ final class LocationManager: NSObject, ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
+    private let locationUpdateMetricsStore = LocationUpdateMetricsStore()
+    private let locationUpdateUploadService = LocationUpdateUploadService()
     private var foregroundLocationTimer: Timer?
     private var frequentBackgroundLocationExpirationTimer: Timer?
     private var smartFrequentBackgroundInactivityTimer: Timer?
@@ -116,21 +92,17 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundLastMovementThresholdMeters: CLLocationDistance?
     private var smartFrequentBackgroundStartupGuardPending = true
     private var isSmartFrequentExitFenceActive = false
-    private var lastSmoothedHeading: Double?
-    private let headingSmoothingAlpha: Double = 0.25
-    private let headingAccuracyThreshold: Double = 35
-    private let headingMinSpeedThreshold: Double = 1.0
-    private static let maximumSmartFrequentActivationSpeedKmh: Double = 200
-    static let smartFrequentExitFenceIdentifier = "miataru.smartFrequentExitFence"
-    static let defaultSmartFrequentExitFenceRadius: CLLocationDistance = 150
-    static let minimumSmartFrequentDerivedSpeedElapsed: TimeInterval = 5
-    static let maximumTrustedSmartFrequentSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy = 2
-    static let maximumLocationSampleFutureSkew: TimeInterval = 60
-    static let maximumLocationSampleAge: TimeInterval = 10 * 60
-    static let forensicFrequentBackgroundGapThreshold: TimeInterval = 10 * 60
-    static let forensicForegroundRecoveryBurstWindow: TimeInterval = 30
-    static let smartFrequentBackgroundRuntimeWatchdogInterval: TimeInterval = 75
-    static let maximumSmartFrequentBackgroundRuntimeRecoveryAttempts = 2
+    private var headingSmoother = HeadingSmoother()
+    static let smartFrequentExitFenceIdentifier = SmartFrequentBackgroundPolicy.exitFenceIdentifier
+    static let defaultSmartFrequentExitFenceRadius: CLLocationDistance = SmartFrequentBackgroundPolicy.defaultExitFenceRadius
+    static let minimumSmartFrequentDerivedSpeedElapsed: TimeInterval = SmartFrequentBackgroundPolicy.minimumDerivedSpeedElapsed
+    static let maximumTrustedSmartFrequentSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy = SmartFrequentBackgroundPolicy.maximumTrustedSpeedAccuracyMetersPerSecond
+    static let maximumLocationSampleFutureSkew: TimeInterval = LocationSamplePolicy.maximumFutureSkew
+    static let maximumLocationSampleAge: TimeInterval = LocationSamplePolicy.maximumAge
+    static let forensicFrequentBackgroundGapThreshold: TimeInterval = LocationBackgroundForensics.frequentBackgroundGapThreshold
+    static let forensicForegroundRecoveryBurstWindow: TimeInterval = LocationBackgroundForensics.foregroundRecoveryBurstWindow
+    static let smartFrequentBackgroundRuntimeWatchdogInterval: TimeInterval = SmartFrequentBackgroundPolicy.runtimeWatchdogInterval
+    static let maximumSmartFrequentBackgroundRuntimeRecoveryAttempts = SmartFrequentBackgroundPolicy.maximumRuntimeRecoveryAttempts
     static let smartFrequentBackgroundProbeWatchdogInterval = smartFrequentBackgroundRuntimeWatchdogInterval
     static let maximumSmartFrequentBackgroundProbeRecoveryAttempts = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts
     
@@ -148,260 +120,26 @@ final class LocationManager: NSObject, ObservableObject {
         let mode: String
     }
 
-    enum LocationUpdateCounterMode: String, CaseIterable, Equatable {
-        case foregroundLive
-        case significantChange
-        case smartFrequent
-        case manualFrequent
-    }
-
-    struct LocationUpdateModeCounts: Equatable {
-        var foregroundLive: Int = 0
-        var significantChange: Int = 0
-        var smartFrequent: Int = 0
-        var manualFrequent: Int = 0
-
-        mutating func increment(_ mode: LocationUpdateCounterMode) {
-            switch mode {
-            case .foregroundLive:
-                foregroundLive += 1
-            case .significantChange:
-                significantChange += 1
-            case .smartFrequent:
-                smartFrequent += 1
-            case .manualFrequent:
-                manualFrequent += 1
-            }
-        }
-
-        var backgroundTotal: Int {
-            significantChange + smartFrequent + manualFrequent
-        }
-
-        static let zero = LocationUpdateModeCounts()
-    }
-
-    struct BackgroundTrackingForensicState: Codable, Equatable {
-        var backgroundTrackingExpectedSince: Date?
-        var currentExpectedMode: String?
-        var lastModeAssertionAt: Date?
-        var lastModeAssertionReason: String?
-        var lastServiceAssertionAt: Date?
-        var lastBackgroundCallbackAt: Date?
-        var lastAcceptedBackgroundLocationAt: Date?
-        var lastBackgroundUploadAt: Date?
-        var lastForegroundOpenAt: Date?
-        var lastRestoreAfterLaunchAt: Date?
-        var lastSignificantChangeRearmAt: Date?
-        var lastSmartActivationAt: Date?
-        var lastSmartDeactivationAt: Date?
-        var lastKnownApplicationState: Int?
-        var lastKnownSource: String?
-        var backgroundServicesAsserted: Bool = false
-        var lastBackgroundGapLoggedAt: Date?
-        var pendingForegroundRecoveryStartedAt: Date?
-        var pendingForegroundRecoveryPreviousMode: String?
-        var pendingForegroundRecoveryGapSeconds: Int?
-        var pendingForegroundRecoveryLastBackgroundCallbackAt: Date?
-        var pendingForegroundRecoveryLastBackgroundUploadAt: Date?
-        var pendingForegroundRecoveryBackgroundServicesAsserted: Bool?
-        var foregroundBurstCallbackCount: Int = 0
-        var foregroundBurstAcceptedCount: Int = 0
-        var foregroundBurstUploadCount: Int = 0
-        var foregroundRecoveryBurstLoggedAt: Date?
-
-        init(backgroundTrackingExpectedSince: Date? = nil,
-             currentExpectedMode: String? = nil,
-             lastModeAssertionAt: Date? = nil,
-             lastModeAssertionReason: String? = nil,
-             lastServiceAssertionAt: Date? = nil,
-             lastBackgroundCallbackAt: Date? = nil,
-             lastAcceptedBackgroundLocationAt: Date? = nil,
-             lastBackgroundUploadAt: Date? = nil,
-             lastForegroundOpenAt: Date? = nil,
-             lastRestoreAfterLaunchAt: Date? = nil,
-             lastSignificantChangeRearmAt: Date? = nil,
-             lastSmartActivationAt: Date? = nil,
-             lastSmartDeactivationAt: Date? = nil,
-             lastKnownApplicationState: Int? = nil,
-             lastKnownSource: String? = nil,
-             backgroundServicesAsserted: Bool = false,
-             lastBackgroundGapLoggedAt: Date? = nil,
-             pendingForegroundRecoveryStartedAt: Date? = nil,
-             pendingForegroundRecoveryPreviousMode: String? = nil,
-             pendingForegroundRecoveryGapSeconds: Int? = nil,
-             pendingForegroundRecoveryLastBackgroundCallbackAt: Date? = nil,
-             pendingForegroundRecoveryLastBackgroundUploadAt: Date? = nil,
-             pendingForegroundRecoveryBackgroundServicesAsserted: Bool? = nil,
-             foregroundBurstCallbackCount: Int = 0,
-             foregroundBurstAcceptedCount: Int = 0,
-             foregroundBurstUploadCount: Int = 0,
-             foregroundRecoveryBurstLoggedAt: Date? = nil) {
-            self.backgroundTrackingExpectedSince = backgroundTrackingExpectedSince
-            self.currentExpectedMode = currentExpectedMode
-            self.lastModeAssertionAt = lastModeAssertionAt
-            self.lastModeAssertionReason = lastModeAssertionReason
-            self.lastServiceAssertionAt = lastServiceAssertionAt
-            self.lastBackgroundCallbackAt = lastBackgroundCallbackAt
-            self.lastAcceptedBackgroundLocationAt = lastAcceptedBackgroundLocationAt
-            self.lastBackgroundUploadAt = lastBackgroundUploadAt
-            self.lastForegroundOpenAt = lastForegroundOpenAt
-            self.lastRestoreAfterLaunchAt = lastRestoreAfterLaunchAt
-            self.lastSignificantChangeRearmAt = lastSignificantChangeRearmAt
-            self.lastSmartActivationAt = lastSmartActivationAt
-            self.lastSmartDeactivationAt = lastSmartDeactivationAt
-            self.lastKnownApplicationState = lastKnownApplicationState
-            self.lastKnownSource = lastKnownSource
-            self.backgroundServicesAsserted = backgroundServicesAsserted
-            self.lastBackgroundGapLoggedAt = lastBackgroundGapLoggedAt
-            self.pendingForegroundRecoveryStartedAt = pendingForegroundRecoveryStartedAt
-            self.pendingForegroundRecoveryPreviousMode = pendingForegroundRecoveryPreviousMode
-            self.pendingForegroundRecoveryGapSeconds = pendingForegroundRecoveryGapSeconds
-            self.pendingForegroundRecoveryLastBackgroundCallbackAt = pendingForegroundRecoveryLastBackgroundCallbackAt
-            self.pendingForegroundRecoveryLastBackgroundUploadAt = pendingForegroundRecoveryLastBackgroundUploadAt
-            self.pendingForegroundRecoveryBackgroundServicesAsserted = pendingForegroundRecoveryBackgroundServicesAsserted
-            self.foregroundBurstCallbackCount = foregroundBurstCallbackCount
-            self.foregroundBurstAcceptedCount = foregroundBurstAcceptedCount
-            self.foregroundBurstUploadCount = foregroundBurstUploadCount
-            self.foregroundRecoveryBurstLoggedAt = foregroundRecoveryBurstLoggedAt
-        }
-    }
-
-    enum BackgroundTrackingGapKind: String, Equatable {
-        case suspicious
-        case unobservedIdle
-    }
-
-    struct BackgroundTrackingGapAssessment: Equatable {
-        let kind: BackgroundTrackingGapKind
-        let gapSeconds: Int
-        let lastObservedAt: Date?
-    }
-
-    enum BackgroundTrackingDisplayMode: Equatable {
-        case foregroundLive
-        case significantChange
-        case smartWaiting
-        case smartFrequent
-        case manualFrequent
-    }
-
-    struct BackgroundUpdateConfiguration: Equatable {
-        let usesSignificantChangeMonitoring: Bool
-        let distanceFilter: CLLocationDistance
-        let desiredAccuracy: CLLocationAccuracy
-    }
-
-    enum TrackingMode: Equatable {
-        case stopped
-        case foregroundHighAccuracy
-        case backgroundSignificantChange
-        case backgroundFrequent(distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
-    }
-
-    enum SmartFrequentRuntimePhase: String, Equatable {
-        case waiting
-        case probing
-        case confirmedActive
-    }
-
-    enum SmartFrequentActivationEvidenceKind: String, Equatable {
-        case regionExit
-        case trustedGPSSpeed
-        case trustedDerivedSpeed
-        case insufficient
-    }
-
-    enum LocationSampleProcessingDecision: String, Equatable {
-        case process
-        case invalid
-        case futureDated
-        case stale
-        case outOfOrder
-    }
-
-    enum SmartFrequentBackgroundWatchdogAction: String, Equatable {
-        case ignore
-        case wait
-        case reassert
-        case deactivate
-    }
-
-    struct SmartFrequentActivationEvidence: Equatable {
-        let kind: SmartFrequentActivationEvidenceKind
-        let speedKmh: Double?
-        let distanceMeters: CLLocationDistance?
-        let elapsedSeconds: TimeInterval?
-        let speedAccuracyMetersPerSecond: CLLocationSpeedAccuracy?
-        let reason: String
-
-        var activates: Bool {
-            kind != .insufficient
-        }
-
-        static func regionExit(radiusMeters: CLLocationDistance) -> SmartFrequentActivationEvidence {
-            SmartFrequentActivationEvidence(
-                kind: .regionExit,
-                speedKmh: nil,
-                distanceMeters: radiusMeters,
-                elapsedSeconds: nil,
-                speedAccuracyMetersPerSecond: nil,
-                reason: "Exited Smart wake region."
-            )
-        }
-
-        static func insufficient(_ reason: String,
-                                 speedKmh: Double? = nil,
-                                 distanceMeters: CLLocationDistance? = nil,
-                                 elapsedSeconds: TimeInterval? = nil,
-                                 speedAccuracyMetersPerSecond: CLLocationSpeedAccuracy? = nil) -> SmartFrequentActivationEvidence {
-            SmartFrequentActivationEvidence(
-                kind: .insufficient,
-                speedKmh: speedKmh,
-                distanceMeters: distanceMeters,
-                elapsedSeconds: elapsedSeconds,
-                speedAccuracyMetersPerSecond: speedAccuracyMetersPerSecond,
-                reason: reason
-            )
-        }
-    }
-
-    enum TrackingApplicationStateContext: Equatable {
-        case current
-        case forceForeground
-        case forceBackground
-    }
-
-    enum TrackingReconcileAction: String, Equatable {
-        case stopTrackingDisabled
-        case stopDeviceKeyBlocked
-        case stopAuthorizationUnavailable
-        case startTracking
-        case applyTrackingMode
-    }
-
-    enum PrimaryLocationServiceCommand: Equatable {
-        case stopUpdatingLocation
-        case stopMonitoringSignificantLocationChanges
-        case startMonitoringSignificantLocationChanges
-        case startUpdatingLocation(allowsBackground: Bool, distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
-    }
-
-    enum SecondaryLocationServiceCommand: Equatable {
-        case stopUpdatingLocation
-        case stopMonitoringSignificantLocationChanges
-        case startUpdatingLocation(allowsBackground: Bool, distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
-    }
-
-    struct LocationServiceCommandPlan: Equatable {
-        let primary: [PrimaryLocationServiceCommand]
-        let secondary: [SecondaryLocationServiceCommand]
-    }
-
-    struct SignificantChangeRearmDecision: Equatable {
-        let shouldAttempt: Bool
-        let status: LocationSignificantChangeRearmStatus
-    }
+    typealias LocationUpdateCounterMode = LocationUpdateMetricsStore.CounterMode
+    typealias LocationUpdateModeCounts = LocationUpdateMetricsStore.ModeCounts
+    typealias BackgroundTrackingForensicState = LocationBackgroundForensics.State
+    typealias BackgroundTrackingGapKind = LocationBackgroundForensics.GapKind
+    typealias BackgroundTrackingGapAssessment = LocationBackgroundForensics.GapAssessment
+    typealias BackgroundTrackingDisplayMode = LocationTrackingPolicy.BackgroundTrackingDisplayMode
+    typealias BackgroundUpdateConfiguration = LocationTrackingPolicy.BackgroundUpdateConfiguration
+    typealias TrackingMode = LocationTrackingPolicy.TrackingMode
+    typealias SmartFrequentRuntimePhase = SmartFrequentBackgroundPolicy.RuntimePhase
+    typealias SmartFrequentActivationEvidenceKind = SmartFrequentBackgroundPolicy.ActivationEvidenceKind
+    typealias LocationSampleProcessingDecision = LocationSamplePolicy.ProcessingDecision
+    typealias SmartFrequentBackgroundWatchdogAction = SmartFrequentBackgroundPolicy.WatchdogAction
+    typealias SmartFrequentActivationEvidence = SmartFrequentBackgroundPolicy.ActivationEvidence
+    typealias TrackingApplicationStateContext = LocationTrackingPolicy.ApplicationStateContext
+    typealias TrackingReconcileAction = LocationTrackingPolicy.ReconcileAction
+    typealias PrimaryLocationServiceCommand = LocationTrackingPolicy.PrimaryLocationServiceCommand
+    typealias SecondaryLocationServiceCommand = LocationTrackingPolicy.SecondaryLocationServiceCommand
+    typealias LocationServiceCommandPlan = LocationTrackingPolicy.ServiceCommandPlan
+    typealias SignificantChangeRearmDecision = LocationBackgroundForensics.SignificantChangeRearmDecision
+    typealias LocationSubmissionDeduplicationKey = LocationSamplePolicy.SubmissionDeduplicationKey
 
     private enum LocationUpdateSource: String {
         case primary
@@ -417,12 +155,6 @@ final class LocationManager: NSObject, ObservableObject {
             didCleanUp: false,
             shouldSuppressCallback: false
         )
-    }
-
-    struct LocationSubmissionDeduplicationKey: Equatable {
-        let timestampSeconds: Int64
-        let latitudeMicrodegrees: Int64
-        let longitudeMicrodegrees: Int64
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
@@ -475,19 +207,7 @@ final class LocationManager: NSObject, ObservableObject {
         refreshFrequentBackgroundTrackingReminder()
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
-        // Load persisted background update metrics
-        if userDefaults.object(forKey: backgroundUpdateCountKey) != nil {
-            backgroundUpdateCount = userDefaults.integer(forKey: backgroundUpdateCountKey)
-        }
-        locationUpdateModeCounts = LocationUpdateModeCounts(
-            foregroundLive: userDefaults.integer(forKey: foregroundLiveUpdateCountKey),
-            significantChange: userDefaults.integer(forKey: significantChangeUpdateCountKey),
-            smartFrequent: userDefaults.integer(forKey: smartFrequentUpdateCountKey),
-            manualFrequent: userDefaults.integer(forKey: manualFrequentUpdateCountKey)
-        )
-        if let savedDate = userDefaults.object(forKey: lastBackgroundUpdateKey) as? Date {
-            lastBackgroundUpdate = savedDate
-        }
+        applyLocationUpdateMetricsSnapshot(locationUpdateMetricsStore.load())
         // Load persisted lastServerUpdate
         if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
             lastServerUpdate = savedDate
@@ -641,103 +361,63 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     private static func activityTypeFrom(_ value: Int) -> CLActivityType {
-        switch value {
-        case 1: return .automotiveNavigation
-        case 2: return .fitness
-        case 3: return .otherNavigation
-        case 4:
-#if swift(>=5.0)
-            if #available(iOS 12.0, *) {
-                return .airborne
-            } else {
-                return .other
-            }
-#else
-            return .other
-#endif
-        default: return .other
-        }
+        LocationTrackingPolicy.activityType(from: value)
     }
 
     static func backgroundUpdateConfiguration(frequentUpdatesEnabled: Bool,
                                               distanceFilterMeters: Int) -> BackgroundUpdateConfiguration {
-        guard frequentUpdatesEnabled else {
-            return BackgroundUpdateConfiguration(
-                usesSignificantChangeMonitoring: true,
-                distanceFilter: kCLDistanceFilterNone,
-                desiredAccuracy: kCLLocationAccuracyHundredMeters
-            )
-        }
-
-        let normalizedDistance = FrequentBackgroundLocationDistanceFilter.normalized(distanceFilterMeters)
-        return BackgroundUpdateConfiguration(
-            usesSignificantChangeMonitoring: false,
-            distanceFilter: CLLocationDistance(normalizedDistance),
-            desiredAccuracy: backgroundDesiredAccuracy(for: normalizedDistance)
+        LocationTrackingPolicy.backgroundUpdateConfiguration(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            distanceFilterMeters: distanceFilterMeters
         )
-    }
-
-    private static func backgroundDesiredAccuracy(for distanceFilterMeters: Int) -> CLLocationAccuracy {
-        distanceFilterMeters <= 50 ? kCLLocationAccuracyNearestTenMeters : kCLLocationAccuracyHundredMeters
     }
 
     static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
                                                           smartEnabled: Bool,
                                                           smartRuntimeActive: Bool) -> Bool {
-        manualFrequentEnabled || (smartEnabled && smartRuntimeActive)
+        LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartEnabled: smartEnabled,
+            smartRuntimeActive: smartRuntimeActive
+        )
     }
 
     static func shouldShowBackgroundLocationIndicator(for mode: TrackingMode) -> Bool {
-        if case .backgroundFrequent = mode {
-            return true
-        }
-        return false
+        LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: mode)
     }
 
     static func locationUpdateCounterMode(applicationState: UIApplication.State,
                                           manualFrequentEnabled: Bool,
                                           smartEnabled: Bool,
                                           smartRuntimeActive: Bool) -> LocationUpdateCounterMode {
-        guard applicationState != .active else {
-            return .foregroundLive
-        }
-        if manualFrequentEnabled {
-            return .manualFrequent
-        }
-        if smartEnabled && smartRuntimeActive {
-            return .smartFrequent
-        }
-        return .significantChange
+        LocationTrackingPolicy.locationUpdateCounterMode(
+            applicationState: applicationState,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartEnabled: smartEnabled,
+            smartRuntimeActive: smartRuntimeActive
+        )
     }
 
     static func backgroundTrackingDisplayMode(applicationState: UIApplication.State,
                                               smartEnabled: Bool,
                                               manualFrequentEnabled: Bool,
                                               smartRuntimeActive: Bool) -> BackgroundTrackingDisplayMode {
-        guard applicationState != .active else {
-            return .foregroundLive
-        }
-        if manualFrequentEnabled {
-            return .manualFrequent
-        }
-        if smartEnabled && smartRuntimeActive {
-            return .smartFrequent
-        }
-        if smartEnabled {
-            return .smartWaiting
-        }
-        return .significantChange
+        LocationTrackingPolicy.backgroundTrackingDisplayMode(
+            applicationState: applicationState,
+            smartEnabled: smartEnabled,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartRuntimeActive: smartRuntimeActive
+        )
     }
 
     static func shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.State) -> Bool {
-        applicationState == .background
+        LocationTrackingPolicy.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState)
     }
 
     static func shouldResetLocationUpdateMetrics(now: Date,
                                                  lastReset: Date?,
                                                  interval: TimeInterval = 24 * 60 * 60) -> Bool {
-        guard let lastReset else { return false }
-        return now.timeIntervalSince(lastReset) >= interval
+        LocationUpdateMetricsStore.shouldReset(now: now, lastReset: lastReset, interval: interval)
     }
 
     static func resolvedTrackingMode(isTracking: Bool,
@@ -746,73 +426,27 @@ final class LocationManager: NSObject, ObservableObject {
                                      frequentUpdatesEnabled: Bool,
                                      distanceFilterMeters: Int,
                                      hasNavigationLocationSession: Bool) -> TrackingMode {
-        guard isTracking else { return .stopped }
-
-        switch authorizationStatus {
-        case .authorizedAlways:
-            break
-        case .authorizedWhenInUse:
-            return applicationState == .active ? .foregroundHighAccuracy : .stopped
-        default:
-            return .stopped
-        }
-
-        if applicationState == .active {
-            if hasNavigationLocationSession {
-                return .foregroundHighAccuracy
-            }
-            return .foregroundHighAccuracy
-        }
-
-        let configuration = backgroundUpdateConfiguration(
+        LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            applicationState: applicationState,
             frequentUpdatesEnabled: frequentUpdatesEnabled,
-            distanceFilterMeters: distanceFilterMeters
-        )
-        if configuration.usesSignificantChangeMonitoring {
-            return .backgroundSignificantChange
-        }
-        return .backgroundFrequent(
-            distanceFilter: configuration.distanceFilter,
-            desiredAccuracy: configuration.desiredAccuracy
+            distanceFilterMeters: distanceFilterMeters,
+            hasNavigationLocationSession: hasNavigationLocationSession
         )
     }
 
     static func effectiveApplicationStateForTracking(currentState: UIApplication.State,
                                                      context: TrackingApplicationStateContext) -> UIApplication.State {
-        switch context {
-        case .current:
-            return currentState
-        case .forceForeground:
-            return .active
-        case .forceBackground:
-            return .background
-        }
+        LocationTrackingPolicy.effectiveApplicationState(currentState: currentState, context: context)
     }
 
     static func batteryPercent(from batteryLevel: Float) -> Int? {
-        guard batteryLevel >= 0, batteryLevel.isFinite else { return nil }
-        return Int((Double(batteryLevel) * 100).rounded(.down))
+        LocationTrackingPolicy.batteryPercent(from: batteryLevel)
     }
 
     static func processableLocationUpdates(from locations: [CLLocation]) -> [CLLocation] {
-        locations
-            .enumerated()
-            .filter { _, location in
-                let coordinate = location.coordinate
-                return coordinate.latitude.isFinite &&
-                coordinate.longitude.isFinite &&
-                CLLocationCoordinate2DIsValid(coordinate) &&
-                location.timestamp.timeIntervalSince1970.isFinite
-            }
-            .sorted { lhs, rhs in
-                let lhsTimestamp = lhs.element.timestamp
-                let rhsTimestamp = rhs.element.timestamp
-                if lhsTimestamp == rhsTimestamp {
-                    return lhs.offset < rhs.offset
-                }
-                return lhsTimestamp < rhsTimestamp
-            }
-            .map(\.element)
+        LocationSamplePolicy.processableLocationUpdates(from: locations)
     }
 
     static func locationSampleProcessingDecision(for location: CLLocation,
@@ -822,70 +456,29 @@ final class LocationManager: NSObject, ObservableObject {
                                                  smartReferenceLocation: CLLocation?,
                                                  maximumAge: TimeInterval = maximumLocationSampleAge,
                                                  futureTolerance: TimeInterval = maximumLocationSampleFutureSkew) -> LocationSampleProcessingDecision {
-        let coordinate = location.coordinate
-        guard coordinate.latitude.isFinite,
-              coordinate.longitude.isFinite,
-              CLLocationCoordinate2DIsValid(coordinate),
-              location.timestamp.timeIntervalSince1970.isFinite,
-              now.timeIntervalSince1970.isFinite else {
-            return .invalid
-        }
-
-        let age = now.timeIntervalSince(location.timestamp)
-        if futureTolerance >= 0, age < -futureTolerance {
-            return .futureDated
-        }
-        if maximumAge > 0, age > maximumAge {
-            return .stale
-        }
-        if let latestReferenceTimestamp = newestValidLocationTimestamp([
-            latestRawLocation,
-            currentLocation,
-            smartReferenceLocation
-        ]),
-           location.timestamp < latestReferenceTimestamp {
-            return .outOfOrder
-        }
-        return .process
+        LocationSamplePolicy.processingDecision(
+            for: location,
+            now: now,
+            latestRawLocation: latestRawLocation,
+            currentLocation: currentLocation,
+            smartReferenceLocation: smartReferenceLocation,
+            maximumAge: maximumAge,
+            futureTolerance: futureTolerance
+        )
     }
 
     static func newestSmartFrequentExitFenceAnchor(from candidates: [CLLocation?]) -> CLLocation? {
-        candidates
-            .compactMap { $0 }
-            .filter { isUsableForSmartFenceAnchor($0) }
-            .max { lhs, rhs in
-                if lhs.timestamp == rhs.timestamp {
-                    return lhs.horizontalAccuracy > rhs.horizontalAccuracy
-                }
-                return lhs.timestamp < rhs.timestamp
-            }
-    }
-
-    private static func newestValidLocationTimestamp(_ locations: [CLLocation?]) -> Date? {
-        locations
-            .compactMap { $0 }
-            .filter { location in
-                let coordinate = location.coordinate
-                return coordinate.latitude.isFinite &&
-                coordinate.longitude.isFinite &&
-                CLLocationCoordinate2DIsValid(coordinate) &&
-                location.timestamp.timeIntervalSince1970.isFinite
-            }
-            .map(\.timestamp)
-            .max()
+        SmartFrequentBackgroundPolicy.newestExitFenceAnchor(from: candidates)
     }
 
     static func shouldUsePersistedSmartFrequentBackgroundSeed(now: Date,
                                                              seedTimestamp: Date,
                                                              inactivityWindow: TimeInterval) -> Bool {
-        guard inactivityWindow > 0,
-              now.timeIntervalSince1970.isFinite,
-              seedTimestamp.timeIntervalSince1970.isFinite else {
-            return false
-        }
-
-        let age = now.timeIntervalSince(seedTimestamp)
-        return age >= 0 && age < inactivityWindow
+        SmartFrequentBackgroundPolicy.shouldUsePersistedSeed(
+            now: now,
+            seedTimestamp: seedTimestamp,
+            inactivityWindow: inactivityWindow
+        )
     }
 
     static func smartFrequentBackgroundSeedLocation(latitude: Double,
@@ -898,69 +491,36 @@ final class LocationManager: NSObject, ObservableObject {
                                                     timestamp: Date,
                                                     now: Date,
                                                     inactivityWindow: TimeInterval) -> CLLocation? {
-        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        guard latitude.isFinite,
-              longitude.isFinite,
-              CLLocationCoordinate2DIsValid(coordinate),
-              horizontalAccuracy.isFinite,
-              horizontalAccuracy >= 0,
-              shouldUsePersistedSmartFrequentBackgroundSeed(
-                now: now,
-                seedTimestamp: timestamp,
-                inactivityWindow: inactivityWindow
-              ) else {
-            return nil
-        }
-
-        return CLLocation(
-            coordinate: coordinate,
-            altitude: altitude.isFinite ? altitude : 0,
+        SmartFrequentBackgroundPolicy.seedLocation(
+            latitude: latitude,
+            longitude: longitude,
+            altitude: altitude,
             horizontalAccuracy: horizontalAccuracy,
-            verticalAccuracy: verticalAccuracy.isFinite ? verticalAccuracy : -1,
-            course: course.isFinite ? course : -1,
-            speed: speed.isFinite ? speed : -1,
-            timestamp: timestamp
+            verticalAccuracy: verticalAccuracy,
+            course: course,
+            speed: speed,
+            timestamp: timestamp,
+            now: now,
+            inactivityWindow: inactivityWindow
         )
     }
 
     static func smartFrequentBackgroundSpeedKmh(for location: CLLocation,
                                                 previousLocation: CLLocation?,
                                                 detectionMode: SmartFrequentBackgroundSpeedDetectionMode) -> Double? {
-        if location.speed >= 0, location.speed.isFinite {
-            return location.speed * 3.6
-        }
-
-        guard detectionMode == .hybrid,
-              let previousLocation,
-              isUsableForSmartDerivedSpeed(location),
-              isUsableForSmartDerivedSpeed(previousLocation) else {
-            return nil
-        }
-
-        let elapsed = location.timestamp.timeIntervalSince(previousLocation.timestamp)
-        guard elapsed > 0, elapsed <= 30 * 60 else {
-            return nil
-        }
-
-        let distance = location.distance(from: previousLocation)
-        guard distance.isFinite, distance >= 0 else {
-            return nil
-        }
-
-        return (distance / elapsed) * 3.6
+        SmartFrequentBackgroundPolicy.speedKmh(
+            for: location,
+            previousLocation: previousLocation,
+            detectionMode: detectionMode
+        )
     }
 
     static func smartFrequentExitFenceRadius(frequentDistanceFilterMeters: Int,
                                              maximumRegionMonitoringDistance: CLLocationDistance) -> CLLocationDistance {
-        let desiredRadius = max(
-            defaultSmartFrequentExitFenceRadius,
-            CLLocationDistance(FrequentBackgroundLocationDistanceFilter.normalized(frequentDistanceFilterMeters))
+        SmartFrequentBackgroundPolicy.exitFenceRadius(
+            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
+            maximumRegionMonitoringDistance: maximumRegionMonitoringDistance
         )
-        guard maximumRegionMonitoringDistance.isFinite,
-              maximumRegionMonitoringDistance > 0 else {
-            return desiredRadius
-        }
-        return min(desiredRadius, maximumRegionMonitoringDistance)
     }
 
     static func shouldMaintainSmartFrequentExitFence(trackAndReportLocation: Bool,
@@ -971,14 +531,16 @@ final class LocationManager: NSObject, ObservableObject {
                                                      manualFrequentEnabled: Bool,
                                                      smartRuntimeActive: Bool,
                                                      regionMonitoringAvailable: Bool) -> Bool {
-        trackAndReportLocation &&
-        isTracking &&
-        authorizationStatus == .authorizedAlways &&
-        !deviceKeyAuthBlocked &&
-        smartEnabled &&
-        !manualFrequentEnabled &&
-        !smartRuntimeActive &&
-        regionMonitoringAvailable
+        SmartFrequentBackgroundPolicy.shouldMaintainExitFence(
+            trackAndReportLocation: trackAndReportLocation,
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            smartEnabled: smartEnabled,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartRuntimeActive: smartRuntimeActive,
+            regionMonitoringAvailable: regionMonitoringAvailable
+        )
     }
 
     static func smartFrequentActivationEvidence(for location: CLLocation,
@@ -988,147 +550,20 @@ final class LocationManager: NSObject, ObservableObject {
                                                 frequentDistanceFilterMeters: Int,
                                                 isStartupBatch: Bool,
                                                 regionExitRadiusMeters: CLLocationDistance? = nil) -> SmartFrequentActivationEvidence {
-        if let regionExitRadiusMeters {
-            return .regionExit(radiusMeters: regionExitRadiusMeters)
-        }
-
-        let normalizedThreshold = Double(SmartFrequentBackgroundSpeedThreshold.normalized(thresholdKmh))
-        let gpsSpeedKmh = gpsSmartFrequentSpeedKmh(for: location)
-        let displacement = smartFrequentDisplacementEvidence(
-            from: previousLocation,
-            to: location,
-            frequentDistanceFilterMeters: frequentDistanceFilterMeters
-        )
-
-        if let gpsSpeedKmh,
-           gpsSpeedKmh >= normalizedThreshold,
-           gpsSpeedKmh <= maximumSmartFrequentActivationSpeedKmh {
-            let speedAccuracy = location.speedAccuracy
-            let speedAccuracyTrusted = speedAccuracy.isFinite &&
-            speedAccuracy >= 0 &&
-            speedAccuracy <= maximumTrustedSmartFrequentSpeedAccuracyMetersPerSecond
-
-            if speedAccuracyTrusted && (!isStartupBatch || displacement.isTrusted) {
-                return SmartFrequentActivationEvidence(
-                    kind: .trustedGPSSpeed,
-                    speedKmh: gpsSpeedKmh,
-                    distanceMeters: displacement.distanceMeters,
-                    elapsedSeconds: displacement.elapsedSeconds,
-                    speedAccuracyMetersPerSecond: speedAccuracy,
-                    reason: "GPS speed accuracy is trusted."
-                )
-            }
-
-            if !isStartupBatch && displacement.isTrusted {
-                return SmartFrequentActivationEvidence(
-                    kind: .trustedGPSSpeed,
-                    speedKmh: gpsSpeedKmh,
-                    distanceMeters: displacement.distanceMeters,
-                    elapsedSeconds: displacement.elapsedSeconds,
-                    speedAccuracyMetersPerSecond: speedAccuracy.isFinite ? speedAccuracy : nil,
-                    reason: "GPS speed was confirmed by displacement."
-                )
-            }
-        }
-
-        guard detectionMode == .hybrid,
-              let derivedSpeedKmh = displacement.speedKmh else {
-            return .insufficient(
-                "No trusted Smart activation evidence.",
-                speedKmh: gpsSpeedKmh,
-                distanceMeters: displacement.distanceMeters,
-                elapsedSeconds: displacement.elapsedSeconds,
-                speedAccuracyMetersPerSecond: location.speedAccuracy.isFinite ? location.speedAccuracy : nil
-            )
-        }
-
-        guard derivedSpeedKmh >= normalizedThreshold,
-              derivedSpeedKmh <= maximumSmartFrequentActivationSpeedKmh,
-              displacement.isTrusted else {
-            return .insufficient(
-                "Derived speed or displacement did not pass Smart quality thresholds.",
-                speedKmh: derivedSpeedKmh,
-                distanceMeters: displacement.distanceMeters,
-                elapsedSeconds: displacement.elapsedSeconds,
-                speedAccuracyMetersPerSecond: location.speedAccuracy.isFinite ? location.speedAccuracy : nil
-            )
-        }
-
-        return SmartFrequentActivationEvidence(
-            kind: .trustedDerivedSpeed,
-            speedKmh: derivedSpeedKmh,
-            distanceMeters: displacement.distanceMeters,
-            elapsedSeconds: displacement.elapsedSeconds,
-            speedAccuracyMetersPerSecond: location.speedAccuracy.isFinite ? location.speedAccuracy : nil,
-            reason: "Derived speed is backed by trusted displacement."
-        )
-    }
-
-    private struct SmartFrequentDisplacementEvidence {
-        let distanceMeters: CLLocationDistance?
-        let elapsedSeconds: TimeInterval?
-        let speedKmh: Double?
-        let isTrusted: Bool
-    }
-
-    private static func gpsSmartFrequentSpeedKmh(for location: CLLocation) -> Double? {
-        guard location.speed >= 0,
-              location.speed.isFinite else {
-            return nil
-        }
-        return location.speed * 3.6
-    }
-
-    private static func smartFrequentDisplacementEvidence(from previousLocation: CLLocation?,
-                                                          to location: CLLocation,
-                                                          frequentDistanceFilterMeters: Int) -> SmartFrequentDisplacementEvidence {
-        guard let previousLocation,
-              isUsableForSmartDerivedSpeed(location),
-              isUsableForSmartDerivedSpeed(previousLocation) else {
-            return SmartFrequentDisplacementEvidence(
-                distanceMeters: nil,
-                elapsedSeconds: nil,
-                speedKmh: nil,
-                isTrusted: false
-            )
-        }
-
-        let elapsed = location.timestamp.timeIntervalSince(previousLocation.timestamp)
-        let distance = location.distance(from: previousLocation)
-        guard elapsed.isFinite,
-              distance.isFinite,
-              elapsed >= minimumSmartFrequentDerivedSpeedElapsed,
-              elapsed <= 30 * 60,
-              distance >= 0 else {
-            return SmartFrequentDisplacementEvidence(
-                distanceMeters: distance.isFinite ? distance : nil,
-                elapsedSeconds: elapsed.isFinite ? elapsed : nil,
-                speedKmh: nil,
-                isTrusted: false
-            )
-        }
-
-        let movementThreshold = CLLocationDistance(FrequentBackgroundLocationDistanceFilter.normalized(frequentDistanceFilterMeters))
-        let combinedAccuracy = max(0, location.horizontalAccuracy) + max(0, previousLocation.horizontalAccuracy)
-        let noiseAdjustedThreshold = max(movementThreshold, combinedAccuracy * 1.25)
-        let isTrusted = distance >= noiseAdjustedThreshold
-        return SmartFrequentDisplacementEvidence(
-            distanceMeters: distance,
-            elapsedSeconds: elapsed,
-            speedKmh: (distance / elapsed) * 3.6,
-            isTrusted: isTrusted
+        SmartFrequentBackgroundPolicy.activationEvidence(
+            for: location,
+            previousLocation: previousLocation,
+            detectionMode: detectionMode,
+            thresholdKmh: thresholdKmh,
+            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
+            isStartupBatch: isStartupBatch,
+            regionExitRadiusMeters: regionExitRadiusMeters
         )
     }
 
     static func shouldActivateSmartFrequentBackgroundUpdates(speedKmh: Double?,
                                                              thresholdKmh: Int) -> Bool {
-        guard let speedKmh,
-              speedKmh.isFinite,
-              speedKmh >= 0,
-              speedKmh <= maximumSmartFrequentActivationSpeedKmh else {
-            return false
-        }
-        return speedKmh >= Double(SmartFrequentBackgroundSpeedThreshold.normalized(thresholdKmh))
+        SmartFrequentBackgroundPolicy.shouldActivate(speedKmh: speedKmh, thresholdKmh: thresholdKmh)
     }
 
     static func canActivateSmartFrequentBackgroundUpdates(now: Date,
@@ -1136,62 +571,53 @@ final class LocationManager: NSObject, ObservableObject {
                                                           previousLocationUpdateAt: Date?,
                                                           inactivityWindow: TimeInterval,
                                                           evidenceKind: SmartFrequentActivationEvidenceKind = .trustedDerivedSpeed) -> Bool {
-        guard inactivityWindow > 0 else { return false }
-        guard now.timeIntervalSince(locationTimestamp) < inactivityWindow else {
-            return false
-        }
-
-        switch evidenceKind {
-        case .regionExit, .trustedGPSSpeed:
-            return true
-        case .trustedDerivedSpeed:
-            guard let previousLocationUpdateAt else { return false }
-            return now.timeIntervalSince(previousLocationUpdateAt) < inactivityWindow
-        case .insufficient:
-            return false
-        }
+        SmartFrequentBackgroundPolicy.canActivate(
+            now: now,
+            locationTimestamp: locationTimestamp,
+            previousLocationUpdateAt: previousLocationUpdateAt,
+            inactivityWindow: inactivityWindow,
+            evidenceKind: evidenceKind
+        )
     }
 
     static func shouldDeactivateSmartFrequentBackgroundUpdates(now: Date,
                                                                lastLocationUpdateAt: Date?,
                                                                lastRelevantMovementAt: Date?,
                                                                inactivityWindow: TimeInterval) -> Bool {
-        guard inactivityWindow > 0 else { return true }
-        guard let lastLocationUpdateAt,
-              now.timeIntervalSince(lastLocationUpdateAt) < inactivityWindow,
-              let lastRelevantMovementAt else {
-            return false
-        }
-        return now.timeIntervalSince(lastRelevantMovementAt) >= inactivityWindow
+        SmartFrequentBackgroundPolicy.shouldDeactivate(
+            now: now,
+            lastLocationUpdateAt: lastLocationUpdateAt,
+            lastRelevantMovementAt: lastRelevantMovementAt,
+            inactivityWindow: inactivityWindow
+        )
     }
 
     static func nextSmartFrequentBackgroundInactivityTimeout(lastLocationUpdateAt: Date?,
                                                              lastRelevantMovementAt: Date?,
                                                              inactivityWindow: TimeInterval) -> Date? {
-        guard inactivityWindow > 0 else { return nil }
-        return lastRelevantMovementAt?.addingTimeInterval(inactivityWindow)
+        SmartFrequentBackgroundPolicy.nextInactivityTimeout(
+            lastLocationUpdateAt: lastLocationUpdateAt,
+            lastRelevantMovementAt: lastRelevantMovementAt,
+            inactivityWindow: inactivityWindow
+        )
     }
 
     static func smartFrequentMovementDistanceThreshold(frequentDistanceFilterMeters: Int,
                                                        from previousLocation: CLLocation?,
                                                        to location: CLLocation) -> CLLocationDistance {
-        let movementThreshold = CLLocationDistance(FrequentBackgroundLocationDistanceFilter.normalized(frequentDistanceFilterMeters))
-        let accuracyThresholds = [previousLocation?.horizontalAccuracy, location.horizontalAccuracy]
-            .compactMap { $0 }
-            .filter { $0.isFinite && $0 >= 0 }
-        let accuracyNoiseThreshold = accuracyThresholds.max() ?? 0
-        return max(movementThreshold, accuracyNoiseThreshold)
+        SmartFrequentBackgroundPolicy.movementDistanceThreshold(
+            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
+            from: previousLocation,
+            to: location
+        )
     }
 
     static func shouldConfirmSmartFrequentBackgroundMovement(distanceMeters: CLLocationDistance?,
                                                              thresholdMeters: CLLocationDistance) -> Bool {
-        guard let distanceMeters,
-              distanceMeters.isFinite,
-              thresholdMeters.isFinite,
-              thresholdMeters >= 0 else {
-            return false
-        }
-        return distanceMeters >= thresholdMeters
+        SmartFrequentBackgroundPolicy.shouldConfirmMovement(
+            distanceMeters: distanceMeters,
+            thresholdMeters: thresholdMeters
+        )
     }
 
     static func smartFrequentBackgroundWatchdogAction(phase: SmartFrequentRuntimePhase,
@@ -1203,91 +629,78 @@ final class LocationManager: NSObject, ObservableObject {
                                                       now: Date,
                                                       interval: TimeInterval = smartFrequentBackgroundRuntimeWatchdogInterval,
                                                       maximumRecoveryAttempts: Int = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts) -> SmartFrequentBackgroundWatchdogAction {
-        guard phase != .waiting,
-              smartEnabled,
-              !manualFrequentEnabled,
-              interval > 0 else {
-            return .ignore
-        }
-
-        let reference = lastFrequentCallbackAt ?? runtimeStartedAt ?? now
-        guard now.timeIntervalSince(reference) >= interval else {
-            return .wait
-        }
-
-        return recoveryAttemptCount < maximumRecoveryAttempts ? .reassert : .deactivate
+        SmartFrequentBackgroundPolicy.watchdogAction(
+            phase: phase,
+            smartEnabled: smartEnabled,
+            manualFrequentEnabled: manualFrequentEnabled,
+            lastFrequentCallbackAt: lastFrequentCallbackAt,
+            runtimeStartedAt: runtimeStartedAt,
+            recoveryAttemptCount: recoveryAttemptCount,
+            now: now,
+            interval: interval,
+            maximumRecoveryAttempts: maximumRecoveryAttempts
+        )
     }
 
     static func shouldBypassLocationSensitivityForFrequentBackgroundUpload(applicationState: UIApplication.State,
                                                                            updateSourceIsFrequentBackground: Bool,
                                                                            manualFrequentEnabled: Bool,
                                                                            smartRuntimePhase: SmartFrequentRuntimePhase) -> Bool {
-        guard applicationState != .active,
-              updateSourceIsFrequentBackground else {
-            return false
-        }
-
-        return manualFrequentEnabled || smartRuntimePhase != .waiting
-    }
-
-    private static func isUsableForSmartDerivedSpeed(_ location: CLLocation) -> Bool {
-        let coordinate = location.coordinate
-        return coordinate.latitude.isFinite &&
-        coordinate.longitude.isFinite &&
-        location.timestamp.timeIntervalSince1970.isFinite &&
-        location.horizontalAccuracy >= 0 &&
-        location.horizontalAccuracy <= 300
+        LocationSamplePolicy.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: applicationState,
+            updateSourceIsFrequentBackground: updateSourceIsFrequentBackground,
+            manualFrequentEnabled: manualFrequentEnabled,
+            smartRuntimePhase: smartRuntimePhase
+        )
     }
 
     static func shouldDisableFrequentBackgroundUpdatesForBattery(frequentUpdatesEnabled: Bool,
                                                                  batteryPercent: Int?,
                                                                  thresholdPercent: Int) -> Bool {
-        guard frequentUpdatesEnabled,
-              let batteryPercent else {
-            return false
-        }
-
-        let normalizedThreshold = FrequentBackgroundBatteryAutoDisableLevel.normalized(thresholdPercent)
-        return batteryPercent <= normalizedThreshold
+        LocationTrackingPolicy.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            batteryPercent: batteryPercent,
+            thresholdPercent: thresholdPercent
+        )
     }
 
     static func frequentBackgroundLocationDeliveryDelay(applicationState: UIApplication.State,
                                                         frequentUpdatesEnabled: Bool,
                                                         deliveryMode: FrequentBackgroundLocationDeliveryMode) -> TimeInterval? {
-        guard applicationState != .active,
-              frequentUpdatesEnabled else {
-            return nil
-        }
-        return deliveryMode.delay
+        LocationTrackingPolicy.frequentBackgroundLocationDeliveryDelay(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            deliveryMode: deliveryMode
+        )
     }
 
     static func frequentBackgroundVisitorCheckMinimumInterval(applicationState: UIApplication.State,
                                                               frequentUpdatesEnabled: Bool,
                                                               visitorCheckInterval: FrequentBackgroundVisitorCheckInterval) -> TimeInterval? {
-        guard applicationState != .active,
-              frequentUpdatesEnabled else {
-            return nil
-        }
-        return visitorCheckInterval.minimumInterval
+        LocationTrackingPolicy.frequentBackgroundVisitorCheckMinimumInterval(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            visitorCheckInterval: visitorCheckInterval
+        )
     }
 
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
                                                               authorizationStatus: CLAuthorizationStatus,
                                                               deviceKeyAuthBlocked: Bool) -> Bool {
-        guard trackAndReportLocation,
-              !deviceKeyAuthBlocked else {
-            return false
-        }
-
-        return authorizationStatus == .authorizedAlways
+        LocationTrackingPolicy.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: trackAndReportLocation,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+        )
     }
 
     static func shouldMaintainLocationServiceSession(trackAndReportLocation: Bool,
                                                      isTracking: Bool,
                                                      authorizationStatus: CLAuthorizationStatus,
                                                      deviceKeyAuthBlocked: Bool) -> Bool {
-        shouldMaintainSignificantChangeRecoveryAnchor(
-            trackAndReportLocation: trackAndReportLocation && isTracking,
+        LocationTrackingPolicy.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: trackAndReportLocation,
+            isTracking: isTracking,
             authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked
         )
@@ -1295,28 +708,26 @@ final class LocationManager: NSObject, ObservableObject {
 
     static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
                                                   deviceKeyAuthBlocked: Bool) -> Bool {
-        trackAndReportLocation && !deviceKeyAuthBlocked
+        LocationTrackingPolicy.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: trackAndReportLocation,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+        )
     }
 
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
                                         isTracking: Bool) -> TrackingReconcileAction {
-        guard trackAndReportLocation else {
-            return .stopTrackingDisabled
-        }
-        guard !deviceKeyAuthBlocked else {
-            return .stopDeviceKeyBlocked
-        }
-
-        if shouldDisableTrackingPreference(authorizationStatus: authorizationStatus) {
-            return .stopAuthorizationUnavailable
-        }
-        return isTracking ? .applyTrackingMode : .startTracking
+        LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: trackAndReportLocation,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            authorizationStatus: authorizationStatus,
+            isTracking: isTracking
+        )
     }
 
     static func shouldDisableTrackingPreference(authorizationStatus: CLAuthorizationStatus) -> Bool {
-        authorizationStatus == .denied || authorizationStatus == .restricted
+        LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: authorizationStatus)
     }
 
     static func significantChangeRearmDecision(buildIdentifier: String,
@@ -1326,53 +737,14 @@ final class LocationManager: NSObject, ObservableObject {
                                                authorizationStatus: CLAuthorizationStatus,
                                                deviceKeyAuthBlocked: Bool,
                                                now: Date = Date()) -> SignificantChangeRearmDecision {
-        let buildNotRearmed = alreadyRearmedBuildIdentifier != buildIdentifier
-        let checks = [
-            LocationDiagnosticsLogStore.check(
-                "trackingEnabled",
-                trackAndReportLocation,
-                detail: trackAndReportLocation ? "Location tracking is enabled." : "Location tracking is disabled."
-            ),
-            LocationDiagnosticsLogStore.check(
-                "authorizedAlways",
-                authorizationStatus == .authorizedAlways,
-                detail: "Authorization status: \(authorizationStatus.rawValue)."
-            ),
-            LocationDiagnosticsLogStore.check(
-                "deviceKeyNotBlocked",
-                !deviceKeyAuthBlocked,
-                detail: deviceKeyAuthBlocked ? "DeviceKey authentication is blocked." : "DeviceKey authentication is not blocked."
-            ),
-            LocationDiagnosticsLogStore.check(
-                "buildNotRearmed",
-                buildNotRearmed,
-                detail: buildNotRearmed ? "Build has not been re-armed yet." : "Build was already re-armed."
-            )
-        ]
-
-        let skipReason: String?
-        if !trackAndReportLocation {
-            skipReason = "location tracking disabled"
-        } else if authorizationStatus != .authorizedAlways {
-            skipReason = "Always authorization missing"
-        } else if deviceKeyAuthBlocked {
-            skipReason = "DeviceKey auth blocked"
-        } else if !buildNotRearmed {
-            skipReason = "already re-armed for this build"
-        } else {
-            skipReason = nil
-        }
-
-        let status = LocationSignificantChangeRearmStatus(
-            timestamp: now,
+        LocationBackgroundForensics.significantChangeRearmDecision(
             buildIdentifier: buildIdentifier,
-            result: skipReason == nil ? .attempted : .skipped,
-            reason: skipReason ?? reason,
-            checks: checks
-        )
-        return SignificantChangeRearmDecision(
-            shouldAttempt: skipReason == nil,
-            status: status
+            alreadyRearmedBuildIdentifier: alreadyRearmedBuildIdentifier,
+            reason: reason,
+            trackAndReportLocation: trackAndReportLocation,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            now: now
         )
     }
 
@@ -1381,87 +753,30 @@ final class LocationManager: NSObject, ObservableObject {
                                                                 frequentUpdatesEnabled: Bool,
                                                                 authorizationStatus: CLAuthorizationStatus,
                                                                 deviceKeyAuthBlocked: Bool) -> Bool {
-        trackAndReportLocation &&
-        isTracking &&
-        frequentUpdatesEnabled &&
-        authorizationStatus == .authorizedAlways &&
-        !deviceKeyAuthBlocked
+        LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: trackAndReportLocation,
+            isTracking: isTracking,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            authorizationStatus: authorizationStatus,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+        )
     }
 
     static func locationServiceCommandPlan(for mode: TrackingMode,
                                            shouldMaintainRecoveryAnchor: Bool) -> LocationServiceCommandPlan {
-        let secondaryStopCommands: [SecondaryLocationServiceCommand] = [
-            .stopUpdatingLocation,
-            .stopMonitoringSignificantLocationChanges
-        ]
-
-        switch mode {
-        case .stopped:
-            return LocationServiceCommandPlan(
-                primary: [.stopUpdatingLocation, .stopMonitoringSignificantLocationChanges],
-                secondary: secondaryStopCommands
-            )
-        case .foregroundHighAccuracy:
-            let foregroundPrimaryCommands: [PrimaryLocationServiceCommand] = [
-                shouldMaintainRecoveryAnchor ? .startMonitoringSignificantLocationChanges : .stopMonitoringSignificantLocationChanges,
-                .startUpdatingLocation(
-                    allowsBackground: false,
-                    distanceFilter: kCLDistanceFilterNone,
-                    desiredAccuracy: kCLLocationAccuracyBestForNavigation
-                )
-            ]
-            return LocationServiceCommandPlan(
-                primary: foregroundPrimaryCommands,
-                secondary: secondaryStopCommands
-            )
-        case .backgroundSignificantChange:
-            return LocationServiceCommandPlan(
-                primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
-                secondary: secondaryStopCommands
-            )
-        case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
-            return LocationServiceCommandPlan(
-                primary: [
-                    .stopUpdatingLocation,
-                    shouldMaintainRecoveryAnchor ? .startMonitoringSignificantLocationChanges : .stopMonitoringSignificantLocationChanges
-                ],
-                secondary: [
-                    .stopMonitoringSignificantLocationChanges,
-                    .startUpdatingLocation(
-                        allowsBackground: true,
-                        distanceFilter: distanceFilter,
-                        desiredAccuracy: desiredAccuracy
-                    )
-                ]
-            )
-        }
+        LocationTrackingPolicy.locationServiceCommandPlan(
+            for: mode,
+            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
+        )
     }
 
     static func locationSubmissionDeduplicationKey(for location: CLLocation) -> LocationSubmissionDeduplicationKey? {
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-        let timestamp = location.timestamp.timeIntervalSince1970
-        guard latitude.isFinite,
-              longitude.isFinite,
-              timestamp.isFinite else {
-            return nil
-        }
-
-        return LocationSubmissionDeduplicationKey(
-            timestampSeconds: Int64(timestamp.rounded(.down)),
-            latitudeMicrodegrees: Int64((latitude * 1_000_000).rounded()),
-            longitudeMicrodegrees: Int64((longitude * 1_000_000).rounded())
-        )
+        LocationSamplePolicy.submissionDeduplicationKey(for: location)
     }
 
     static func shouldSubmitLocationForUpload(_ location: CLLocation,
                                               lastSubmittedKey: LocationSubmissionDeduplicationKey?) -> Bool {
-        guard let candidateKey = locationSubmissionDeduplicationKey(for: location),
-              let lastSubmittedKey else {
-            return true
-        }
-
-        return candidateKey != lastSubmittedKey
+        LocationSamplePolicy.shouldSubmitLocationForUpload(location, lastSubmittedKey: lastSubmittedKey)
     }
 
     static func backgroundTrackingGapAssessment(
@@ -1469,32 +784,10 @@ final class LocationManager: NSObject, ObservableObject {
         now: Date,
         frequentThreshold: TimeInterval = forensicFrequentBackgroundGapThreshold
     ) -> BackgroundTrackingGapAssessment? {
-        guard let expectedSince = state.backgroundTrackingExpectedSince,
-              let expectedMode = state.currentExpectedMode else {
-            return nil
-        }
-
-        let lastObservedAt = [state.lastBackgroundCallbackAt, state.lastBackgroundUploadAt]
-            .compactMap { $0 }
-            .max()
-        let referenceDate = lastObservedAt ?? expectedSince
-        let gapSeconds = Int(now.timeIntervalSince(referenceDate).rounded(.down))
-        guard gapSeconds >= Int(frequentThreshold) else {
-            return nil
-        }
-
-        if expectedMode.localizedCaseInsensitiveContains("frequent") {
-            return BackgroundTrackingGapAssessment(
-                kind: .suspicious,
-                gapSeconds: gapSeconds,
-                lastObservedAt: lastObservedAt
-            )
-        }
-
-        return BackgroundTrackingGapAssessment(
-            kind: .unobservedIdle,
-            gapSeconds: gapSeconds,
-            lastObservedAt: lastObservedAt
+        LocationBackgroundForensics.gapAssessment(
+            state: state,
+            now: now,
+            frequentThreshold: frequentThreshold
         )
     }
 
@@ -1504,24 +797,22 @@ final class LocationManager: NSObject, ObservableObject {
                                                  acceptedCount: Int,
                                                  uploadCount: Int,
                                                  window: TimeInterval = forensicForegroundRecoveryBurstWindow) -> Bool {
-        guard recoveryAlreadyLoggedAt == nil,
-              let foregroundOpenedAt,
-              now.timeIntervalSince(foregroundOpenedAt) >= 0,
-              now.timeIntervalSince(foregroundOpenedAt) <= window else {
-            return false
-        }
-        return acceptedCount > 0 || uploadCount > 0
+        LocationBackgroundForensics.shouldLogForegroundRecoveryBurst(
+            foregroundOpenedAt: foregroundOpenedAt,
+            recoveryAlreadyLoggedAt: recoveryAlreadyLoggedAt,
+            now: now,
+            acceptedCount: acceptedCount,
+            uploadCount: uploadCount,
+            window: window
+        )
     }
 
     static func frequentBackgroundModeSwitchReason(didExpire: Bool,
                                                    didDisableForBattery: Bool) -> String {
-        if didDisableForBattery {
-            return "frequent background battery auto-disable during location update"
-        }
-        if didExpire {
-            return "frequent background expired during location update"
-        }
-        return "frequent background mode changed during location update"
+        LocationTrackingPolicy.frequentBackgroundModeSwitchReason(
+            didExpire: didExpire,
+            didDisableForBattery: didDisableForBattery
+        )
     }
 
     var currentBackgroundTrackingDisplayMode: BackgroundTrackingDisplayMode {
@@ -1548,23 +839,27 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundStandardUpdatesActiveInCurrentProcess: Bool,
         updateSourceIsPrimary: Bool
     ) -> Bool {
-        updateSourceIsPrimary &&
-        applicationState != .active &&
-        frequentUpdatesEnabled &&
-        !didSwitchFrequentBackgroundMode &&
-        frequentBackgroundStandardUpdatesActiveInCurrentProcess
+        LocationTrackingPolicy.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
+            frequentBackgroundStandardUpdatesActiveInCurrentProcess: frequentBackgroundStandardUpdatesActiveInCurrentProcess,
+            updateSourceIsPrimary: updateSourceIsPrimary
+        )
     }
 
     static func shouldCleanUpStaleFrequentBackgroundCallback(frequentUpdatesEnabled: Bool,
                                                              didSwitchFrequentBackgroundMode: Bool,
                                                              updateSourceIsFrequentBackground: Bool) -> Bool {
-        updateSourceIsFrequentBackground &&
-        !frequentUpdatesEnabled &&
-        !didSwitchFrequentBackgroundMode
+        LocationTrackingPolicy.shouldCleanUpStaleFrequentBackgroundCallback(
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
+            updateSourceIsFrequentBackground: updateSourceIsFrequentBackground
+        )
     }
 
     static func shouldSuppressStaleFrequentBackgroundCallback(allowNextStaleCallback: Bool) -> Bool {
-        !allowNextStaleCallback
+        LocationTrackingPolicy.shouldSuppressStaleFrequentBackgroundCallback(allowNextStaleCallback: allowNextStaleCallback)
     }
 
     static func shouldReassertStandardSignificantChangeAfterPrimaryCallback(
@@ -1574,11 +869,13 @@ final class LocationManager: NSObject, ObservableObject {
         shouldMaintainRecoveryAnchor: Bool,
         updateSourceIsPrimary: Bool
     ) -> Bool {
-        updateSourceIsPrimary &&
-        applicationState != .active &&
-        !frequentUpdatesEnabled &&
-        !didSwitchFrequentBackgroundMode &&
-        shouldMaintainRecoveryAnchor
+        LocationTrackingPolicy.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
+            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor,
+            updateSourceIsPrimary: updateSourceIsPrimary
+        )
     }
     
     // MARK: - Permissions
@@ -1931,7 +1228,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func latestLocationSampleReferenceTimestamp() -> Date? {
-        Self.newestValidLocationTimestamp([
+        LocationSamplePolicy.newestValidLocationTimestamp([
             latestRawLocation,
             currentLocation,
             smartFrequentBackgroundSpeedReferenceLocation
@@ -3577,7 +2874,27 @@ final class LocationManager: NSObject, ObservableObject {
             )
             return
         }
-        guard let payload = sanitizedPayload(from: location) else {
+        let applicationState = UIApplication.shared.applicationState
+        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
+        let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
+        self.serverUpdateStatus = .updating
+
+        let submission = await locationUpdateUploadService.submit(
+            location: location,
+            serverURL: serverURL,
+            deviceID: thisDeviceIDManager.shared.deviceID,
+            deviceKey: settings.deviceKey,
+            enableHistory: settings.saveLocationHistoryOnServer,
+            retentionTime: settings.locationDataRetentionTime,
+            deliveryDelay: deliveryDelay,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            applicationState: applicationState,
+            batteryLevel: UIDevice.current.batteryLevel
+        )
+
+        let result: LocationUpdateDeliveryCoordinator.SubmitResult
+        switch submission {
+        case .invalidPayload:
             debugLog("[LocationManager] Skipping server update due to invalid location values")
             self.serverUpdateStatus = .failed("Invalid location values")
             diagnosticsLog.append(
@@ -3590,24 +2907,9 @@ final class LocationManager: NSObject, ObservableObject {
                 context: LocationDiagnosticsLogStore.roundedLocationContext(location)
             )
             return
+        case .delivery(let deliveryResult):
+            result = deliveryResult
         }
-        let applicationState = UIApplication.shared.applicationState
-        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
-        let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
-        let backgroundTask = beginLocationUploadBackgroundTaskIfNeeded(for: applicationState)
-        self.serverUpdateStatus = .updating
-        defer {
-            backgroundTask?.end()
-        }
-
-        let result = await locationUpdateDeliveryCoordinator.submit(
-            serverURL: serverURL,
-            payload: payload,
-            enableHistory: settings.saveLocationHistoryOnServer,
-            retentionTime: settings.locationDataRetentionTime,
-            deliveryDelay: deliveryDelay,
-            visitorCheckMinimumInterval: visitorCheckMinimumInterval
-        )
 
         switch result {
         case .sent:
@@ -3667,37 +2969,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     static func apiErrorDiagnosticCategory(_ error: Error) -> String {
-        guard let apiError = error as? MiataruAPIClient.APIError else {
-            let nsError = error as NSError
-            return "\(nsError.domain)#\(nsError.code)"
-        }
-
-        switch apiError {
-        case .invalidURL:
-            return "invalidURL"
-        case .invalidResponse(let response):
-            if let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                return "invalidResponse#\(statusCode)"
-            }
-            return "invalidResponse"
-        case .encodingError(let underlyingError):
-            let nsError = underlyingError as NSError
-            return "encodingError#\(nsError.domain)#\(nsError.code)"
-        case .decodingError(let underlyingError):
-            let nsError = underlyingError as NSError
-            return "decodingError#\(nsError.domain)#\(nsError.code)"
-        case .requestFailed(let underlyingError):
-            let nsError = underlyingError as NSError
-            return "requestFailed#\(nsError.domain)#\(nsError.code)"
-        case .serverError(let statusCode, _):
-            return "serverError#\(statusCode)"
-        }
-    }
-
-    @MainActor
-    private func beginLocationUploadBackgroundTaskIfNeeded(for applicationState: UIApplication.State) -> LocationBackgroundTaskToken? {
-        guard applicationState != .active else { return nil }
-        return LocationBackgroundTaskToken(name: "MiataruLocationUpdate")
+        LocationUpdateUploadService.apiErrorDiagnosticCategory(error)
     }
 
     private func frequentBackgroundLocationDeliveryDelay(for applicationState: UIApplication.State) -> TimeInterval? {
@@ -3732,38 +3004,6 @@ final class LocationManager: NSObject, ObservableObject {
             }
         }
     }
-    
-
-    /// Creates a sanitized payload to avoid encoding failures from NaN/inf values.
-    private func sanitizedPayload(from location: CLLocation) -> UpdateLocationPayload? {
-        let longitude = location.coordinate.longitude
-        let latitude = location.coordinate.latitude
-        let accuracy = location.horizontalAccuracy
-        guard longitude.isFinite, latitude.isFinite, accuracy.isFinite, accuracy >= 0 else {
-            return nil
-        }
-
-        let altitudeValue: Double? = (location.verticalAccuracy >= 0 && location.altitude.isFinite) ? location.altitude : nil
-        let speedValue: Double? = (location.speed >= 0 && location.speed.isFinite) ? location.speed : nil
-        let batteryLevelRaw = UIDevice.current.batteryLevel
-        let batteryPercent: Double? = (batteryLevelRaw >= 0 && batteryLevelRaw.isFinite) ? Double(Int(batteryLevelRaw * 100)) : nil
-        let timestamp = location.timestamp.timeIntervalSince1970
-        guard timestamp.isFinite else { return nil }
-
-        return UpdateLocationPayload(
-            Device: thisDeviceIDManager.shared.deviceID,
-            DeviceKey: settings.deviceKey,
-            Timestamp: String(Int64(timestamp)),
-            Longitude: longitude,
-            Latitude: latitude,
-            HorizontalAccuracy: accuracy,
-            Speed: speedValue,
-            BatteryLevel: batteryPercent,
-            Altitude: altitudeValue
-        )
-    }
-
-
     // MARK: - Logging
     private func locationUpdateLogModeText(for mode: LocationUpdateCounterMode) -> String {
         switch mode {
@@ -3896,94 +3136,28 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.stopUpdatingHeading()
         isHeadingValid = false
         userHeading = nil
-        lastSmoothedHeading = nil
-    }
-
-    private func normalizedHeading(_ heading: Double) -> Double {
-        let normalized = heading.truncatingRemainder(dividingBy: 360)
-        return normalized < 0 ? normalized + 360 : normalized
-    }
-
-    private func smoothHeading(_ newHeading: Double) -> Double {
-        let normalized = normalizedHeading(newHeading)
-        guard let last = lastSmoothedHeading else {
-            lastSmoothedHeading = normalized
-            return normalized
-        }
-        let delta = normalized - last
-        let wrappedDelta: Double = {
-            if delta > 180 { return delta - 360 }
-            if delta < -180 { return delta + 360 }
-            return delta
-        }()
-        let smoothed = normalizedHeading(last + wrappedDelta * headingSmoothingAlpha)
-        lastSmoothedHeading = smoothed
-        return smoothed
-    }
-
-    private func blendedHeading(compass: Double, course: Double?, speed: Double?) -> Double {
-        let normalizedCompass = normalizedHeading(compass)
-        guard let course, course >= 0, let speed, speed >= headingMinSpeedThreshold else {
-            return normalizedCompass
-        }
-        let normalizedCourse = normalizedHeading(course)
-        let weight = min(max(speed / 4.0, 0.0), 1.0)
-        let delta = normalizedCourse - normalizedCompass
-        let wrappedDelta: Double = {
-            if delta > 180 { return delta - 360 }
-            if delta < -180 { return delta + 360 }
-            return delta
-        }()
-        return normalizedHeading(normalizedCompass + wrappedDelta * weight)
+        headingSmoother.reset()
     }
     
     private func mappedSensitivityValues(for level: Int) -> (distance: CLLocationDistance, accuracy: CLLocationAccuracy) {
-        switch level {
-        case 1: return (3, 2)
-        case 2: return (5, 5)
-        case 3: return (10, 10)
-        case 4: return (25, 20)
-        case 5: return (50, 40)
-        default: return (5, 5)
-        }
+        LocationSamplePolicy.sensitivityValues(for: level)
     }
 
     // MARK: - 24h diagnostics reset
     private func maybeResetBackgroundMetricsIfNeeded(now: Date = Date()) {
-        let lastReset = userDefaults.object(forKey: backgroundMetricsLastResetKey) as? Date
-        guard let lastReset else {
-            userDefaults.set(now, forKey: backgroundMetricsLastResetKey)
-            return
+        if let snapshot = locationUpdateMetricsStore.resetIfNeeded(now: now) {
+            applyLocationUpdateMetricsSnapshot(snapshot)
         }
-
-        guard Self.shouldResetLocationUpdateMetrics(now: now, lastReset: lastReset) else {
-            return
-        }
-
-        backgroundUpdateCount = 0
-        locationUpdateModeCounts = .zero
-        persistLocationUpdateModeCounts()
-        userDefaults.set(0, forKey: backgroundUpdateCountKey)
-        userDefaults.set(now, forKey: backgroundMetricsLastResetKey)
     }
 
     private func recordLocationUpdateMetric(mode: LocationUpdateCounterMode, now: Date = Date()) {
-        maybeResetBackgroundMetricsIfNeeded(now: now)
-        locationUpdateModeCounts.increment(mode)
-        if mode != .foregroundLive {
-            lastBackgroundUpdate = now
-            backgroundUpdateCount = locationUpdateModeCounts.backgroundTotal
-            userDefaults.set(backgroundUpdateCount, forKey: backgroundUpdateCountKey)
-            userDefaults.set(now, forKey: lastBackgroundUpdateKey)
-        }
-        persistLocationUpdateModeCounts()
+        applyLocationUpdateMetricsSnapshot(locationUpdateMetricsStore.record(mode: mode, now: now))
     }
 
-    private func persistLocationUpdateModeCounts() {
-        userDefaults.set(locationUpdateModeCounts.foregroundLive, forKey: foregroundLiveUpdateCountKey)
-        userDefaults.set(locationUpdateModeCounts.significantChange, forKey: significantChangeUpdateCountKey)
-        userDefaults.set(locationUpdateModeCounts.smartFrequent, forKey: smartFrequentUpdateCountKey)
-        userDefaults.set(locationUpdateModeCounts.manualFrequent, forKey: manualFrequentUpdateCountKey)
+    private func applyLocationUpdateMetricsSnapshot(_ snapshot: LocationUpdateMetricsSnapshot) {
+        backgroundUpdateCount = snapshot.backgroundUpdateCount
+        locationUpdateModeCounts = snapshot.modeCounts
+        lastBackgroundUpdate = snapshot.lastBackgroundUpdate
     }
 }
 
@@ -4258,8 +3432,8 @@ extension LocationManager: CLLocationManagerDelegate {
     private func updateCourseHeadingFallbackIfNeeded(from location: CLLocation) {
         if (userHeading == nil || !isHeadingValid),
            location.course >= 0,
-           location.speed >= headingMinSpeedThreshold {
-            userHeading = smoothHeading(normalizedHeading(location.course))
+           location.speed >= HeadingSmoother.defaultMinimumCourseSpeed {
+            userHeading = headingSmoother.smooth(location.course)
         }
     }
 
@@ -4318,22 +3492,22 @@ extension LocationManager: CLLocationManagerDelegate {
                 isHeadingValid = false
                 return
             }
-            isHeadingValid = accuracy <= headingAccuracyThreshold
+            isHeadingValid = accuracy <= HeadingSmoother.defaultAccuracyThreshold
             let headingReferenceLocation = latestRawLocation ?? currentLocation
             if isHeadingValid {
                 let rawHeading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
-                let blended = blendedHeading(
+                let blended = headingSmoother.blended(
                     compass: rawHeading,
                     course: headingReferenceLocation?.course,
                     speed: headingReferenceLocation?.speed
                 )
-                userHeading = smoothHeading(blended)
+                userHeading = headingSmoother.smooth(blended)
             } else if let course = headingReferenceLocation?.course,
                       let speed = headingReferenceLocation?.speed,
                       course >= 0,
-                      speed >= headingMinSpeedThreshold {
+                      speed >= HeadingSmoother.defaultMinimumCourseSpeed {
                 // Fallback to smoothed course when compass quality is poor.
-                userHeading = smoothHeading(normalizedHeading(course))
+                userHeading = headingSmoother.smooth(course)
             }
         }
     }
