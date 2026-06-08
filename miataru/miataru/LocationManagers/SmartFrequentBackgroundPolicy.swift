@@ -10,7 +10,7 @@ import CoreLocation
 import UIKit
 
 enum SmartFrequentBackgroundPolicy {
-    enum RuntimePhase: String, Equatable {
+    enum RuntimePhase: String, Codable, Equatable {
         case waiting
         case probing
         case confirmedActive
@@ -451,5 +451,58 @@ enum SmartFrequentBackgroundPolicy {
         location.horizontalAccuracy.isFinite &&
         location.horizontalAccuracy >= 0 &&
         location.horizontalAccuracy <= maximumUsableLocationAccuracy
+    }
+}
+
+struct SmartFrequentBackgroundRuntimeMarker: Codable, Equatable {
+    let phase: SmartFrequentBackgroundPolicy.RuntimePhase
+    let confirmedAt: Date
+    let lastRelevantMovementAt: Date?
+    let activationNotificationDelivered: Bool
+}
+
+struct SmartFrequentBackgroundRuntimeMarkerStore {
+    private static let markerKey = "miataru_smartFrequentBackgroundRuntimeMarker"
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    func load() -> SmartFrequentBackgroundRuntimeMarker? {
+        guard let data = defaults.data(forKey: Self.markerKey) else {
+            return nil
+        }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let marker = try? decoder.decode(SmartFrequentBackgroundRuntimeMarker.self, from: data),
+              marker.phase == .confirmedActive else {
+            clear()
+            return nil
+        }
+        return marker
+    }
+
+    func save(_ marker: SmartFrequentBackgroundRuntimeMarker) {
+        guard marker.phase == .confirmedActive else {
+            clear()
+            return
+        }
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        if let data = try? encoder.encode(marker) {
+            defaults.set(data, forKey: Self.markerKey)
+        }
+    }
+
+    func clear() {
+        defaults.removeObject(forKey: Self.markerKey)
+    }
+
+    func consume() -> SmartFrequentBackgroundRuntimeMarker? {
+        let marker = load()
+        clear()
+        return marker
     }
 }

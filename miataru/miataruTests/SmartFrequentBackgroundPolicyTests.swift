@@ -466,6 +466,42 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(!LocationTrackingPolicy.shouldEvaluateSmartFrequentRuntime(applicationState: .active))
     }
 
+    @Test("Smart frequent confirmed runtime marker persists, consumes, and rejects non-confirmed phases")
+    func smartFrequentConfirmedRuntimeMarkerPersistsConsumesAndRejectsNonConfirmedPhases() throws {
+        let suiteName = "SmartFrequentRuntimeMarkerTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+        }
+
+        let store = SmartFrequentBackgroundRuntimeMarkerStore(defaults: defaults)
+        let confirmedAt = Date(timeIntervalSince1970: 10_000)
+        let movementAt = confirmedAt.addingTimeInterval(-30)
+        let confirmedMarker = SmartFrequentBackgroundRuntimeMarker(
+            phase: .confirmedActive,
+            confirmedAt: confirmedAt,
+            lastRelevantMovementAt: movementAt,
+            activationNotificationDelivered: true
+        )
+
+        store.save(confirmedMarker)
+        #expect(store.load() == confirmedMarker)
+        #expect(store.consume() == confirmedMarker)
+        #expect(store.load() == nil)
+
+        store.save(SmartFrequentBackgroundRuntimeMarker(
+            phase: .probing,
+            confirmedAt: confirmedAt,
+            lastRelevantMovementAt: movementAt,
+            activationNotificationDelivered: true
+        ))
+        #expect(store.load() == nil)
+
+        store.save(confirmedMarker)
+        store.clear()
+        #expect(store.load() == nil)
+    }
+
     @Test("Smart frequent exit fence anchor uses newest usable location")
     func smartFrequentExitFenceAnchorUsesNewestUsableLocation() throws {
         func location(timestamp: TimeInterval, accuracy: Double, latitude: Double = 49.8190) -> CLLocation {

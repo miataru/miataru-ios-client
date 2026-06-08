@@ -62,6 +62,7 @@ final class LocationManager: NSObject, ObservableObject {
     private let settings = SettingsManager.shared
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
     private let backgroundForensicsRecorder = LocationBackgroundForensicsRecorder()
+    private let smartFrequentBackgroundRuntimeMarkerStore = SmartFrequentBackgroundRuntimeMarkerStore()
     private let locationUpdateMetricsStore = LocationUpdateMetricsStore()
     private let locationUpdateUploadService = LocationUpdateUploadService()
     private var foregroundLocationTimer: Timer?
@@ -492,6 +493,7 @@ final class LocationManager: NSObject, ObservableObject {
         ensureAuthorizationIfNeeded()
         isTracking = true
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
+        consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: reason)
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
         diagnosticsLog.append(
             level: .info,
@@ -1366,14 +1368,104 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
-    private func notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: Bool) {
+    private func notifySmartFrequentBackgroundModeChangeIfEnabled(
+        isActive: Bool,
+        deactivationReason: FrequentBackgroundTrackingReminderService.SmartFrequentDeactivationReason = .inactivity
+    ) {
         guard settings.smartFrequentBackgroundModeChangeNotificationsEnabled else {
             return
         }
 
         Task {
-            await FrequentBackgroundTrackingReminderService.shared.notifySmartFrequentModeChange(isActive: isActive)
+            await FrequentBackgroundTrackingReminderService.shared.notifySmartFrequentModeChange(
+                isActive: isActive,
+                deactivationReason: deactivationReason
+            )
         }
+    }
+
+    private func persistConfirmedSmartFrequentBackgroundRuntimeMarker(confirmedAt: Date) {
+        let marker = SmartFrequentBackgroundRuntimeMarker(
+            phase: .confirmedActive,
+            confirmedAt: confirmedAt,
+            lastRelevantMovementAt: smartFrequentBackgroundLastRelevantMovementAt,
+            activationNotificationDelivered: smartFrequentBackgroundActivationNotificationDelivered
+        )
+        smartFrequentBackgroundRuntimeMarkerStore.save(marker)
+    }
+
+    private func clearPersistedSmartFrequentBackgroundRuntimeMarker() {
+        smartFrequentBackgroundRuntimeMarkerStore.clear()
+    }
+
+    private func consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: String) {
+        guard let marker = smartFrequentBackgroundRuntimeMarkerStore.consume() else {
+            return
+        }
+
+        let shouldNotify = marker.phase == .confirmedActive &&
+        marker.activationNotificationDelivered &&
+        settings.smartFrequentBackgroundModeChangeNotificationsEnabled &&
+        settings.smartFrequentBackgroundLocationUpdatesEnabled &&
+        !settings.frequentBackgroundLocationUpdatesEnabled &&
+        authorizationStatus == .authorizedAlways &&
+        settings.trackAndReportLocation &&
+        isTracking &&
+        !settings.deviceKeyAuthBlocked
+
+        diagnosticsLog.append(
+            level: shouldNotify ? .warning : .info,
+            event: "smartFrequentRestartRecovery",
+            summary: "Consumed persisted Smart frequent runtime marker after launch.",
+            result: shouldNotify ? "notified" : "ignored",
+            reason: reason,
+            checks: [
+                LocationDiagnosticsLogStore.check(
+                    "confirmedActiveMarker",
+                    marker.phase == .confirmedActive,
+                    detail: "Persisted phase: \(marker.phase.rawValue)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "modeChangeNotificationsEnabled",
+                    settings.smartFrequentBackgroundModeChangeNotificationsEnabled,
+                    detail: "Smart frequent mode-change notifications enabled: \(settings.smartFrequentBackgroundModeChangeNotificationsEnabled)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "smartEnabled",
+                    settings.smartFrequentBackgroundLocationUpdatesEnabled,
+                    detail: "Smart frequent enabled: \(settings.smartFrequentBackgroundLocationUpdatesEnabled)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "manualFrequentDisabled",
+                    !settings.frequentBackgroundLocationUpdatesEnabled,
+                    detail: "Manual frequent enabled: \(settings.frequentBackgroundLocationUpdatesEnabled)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "authorizedAlways",
+                    authorizationStatus == .authorizedAlways,
+                    detail: "Authorization status: \(authorizationStatus.rawValue)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "trackingRestored",
+                    settings.trackAndReportLocation && isTracking && !settings.deviceKeyAuthBlocked,
+                    detail: "Tracking restored: \(settings.trackAndReportLocation && isTracking && !settings.deviceKeyAuthBlocked)."
+                )
+            ],
+            context: [
+                "confirmedAt": .string(ISO8601DateFormatter().string(from: marker.confirmedAt)),
+                "lastRelevantMovementAt": marker.lastRelevantMovementAt.map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("unknown"),
+                "activationNotificationDelivered": .bool(marker.activationNotificationDelivered)
+            ]
+        )
+
+        guard shouldNotify else {
+            return
+        }
+
+        notifySmartFrequentBackgroundModeChangeIfEnabled(
+            isActive: false,
+            deactivationReason: .restartRecovery
+        )
     }
 
     private func syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: UIApplication.State) {
@@ -1772,6 +1864,7 @@ final class LocationManager: NSObject, ObservableObject {
             now: now
         )
         smartFrequentBackgroundActivationNotificationDelivered = true
+        persistConfirmedSmartFrequentBackgroundRuntimeMarker(confirmedAt: now)
         notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: true)
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
         scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
@@ -1814,6 +1907,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
         resetFrequentBackgroundAccuracyRecoveryState()
+        clearPersistedSmartFrequentBackgroundRuntimeMarker()
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
             recordForensicSmartDeactivation()
@@ -1857,6 +1951,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
         resetFrequentBackgroundAccuracyRecoveryState()
+        clearPersistedSmartFrequentBackgroundRuntimeMarker()
     }
 
     @discardableResult

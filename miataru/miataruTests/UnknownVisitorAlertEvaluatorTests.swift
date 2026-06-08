@@ -585,6 +585,30 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(!deactivatedRequest.content.body.isEmpty)
     }
 
+    @Test("Smart frequent restart recovery deactivation notification uses restart-specific body")
+    func smartFrequentRestartRecoveryDeactivationNotificationUsesRestartSpecificBody() async throws {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = FrequentBackgroundTrackingReminderService(notifier: notifier)
+
+        await service.notifySmartFrequentModeChange(isActive: false)
+        await service.notifySmartFrequentModeChange(
+            isActive: false,
+            deactivationReason: .restartRecovery
+        )
+
+        let addedRequests = await notifier.addedRequests
+        #expect(addedRequests.count == 2)
+
+        let inactivityRequest = try #require(addedRequests.first)
+        let restartRequest = try #require(addedRequests.last)
+        #expect(restartRequest.identifier == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationIdentifier)
+        #expect(restartRequest.content.userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String == FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationType)
+        #expect(restartRequest.trigger == nil)
+        #expect(restartRequest.content.sound == MiataruNotificationSounds.smartFrequentDeactivated)
+        #expect(!restartRequest.content.body.isEmpty)
+        #expect(restartRequest.content.body != inactivityRequest.content.body)
+    }
+
     @Test("Smart frequent mode-change notifications respect denied authorization")
     func smartFrequentModeChangeNotificationsRespectDeniedAuthorization() async {
         let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .denied)

@@ -72,6 +72,11 @@ struct LiveFrequentBackgroundTrackingReminderNotifier: FrequentBackgroundTrackin
 actor FrequentBackgroundTrackingReminderService {
     static let shared = FrequentBackgroundTrackingReminderService()
 
+    enum SmartFrequentDeactivationReason {
+        case inactivity
+        case restartRecovery
+    }
+
     static let notificationIdentifier = "frequent_background_tracking_reminder"
     static let notificationType = "frequent_background_tracking_reminder"
     static let expirationNotificationIdentifier = "frequent_background_tracking_expired"
@@ -174,7 +179,10 @@ actor FrequentBackgroundTrackingReminderService {
         }
     }
 
-    func notifySmartFrequentModeChange(isActive: Bool) async {
+    func notifySmartFrequentModeChange(
+        isActive: Bool,
+        deactivationReason: SmartFrequentDeactivationReason = .inactivity
+    ) async {
         guard await ensureAuthorization() else {
             return
         }
@@ -198,10 +206,18 @@ actor FrequentBackgroundTrackingReminderService {
                 "smart_frequent_background_deactivated_notification_title",
                 comment: "Notification title shown when smart frequent background tracking returns to standard mode"
             )
-            content.body = NSLocalizedString(
-                "smart_frequent_background_deactivated_notification_body",
-                comment: "Notification body explaining that inactivity stopped smart frequent background tracking"
-            )
+            switch deactivationReason {
+            case .inactivity:
+                content.body = NSLocalizedString(
+                    "smart_frequent_background_deactivated_notification_body",
+                    comment: "Notification body explaining that inactivity stopped smart frequent background tracking"
+                )
+            case .restartRecovery:
+                content.body = NSLocalizedString(
+                    "smart_frequent_background_restart_recovery_notification_body",
+                    comment: "Notification body explaining that app restart returned smart frequent background tracking to standard mode"
+                )
+            }
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.smartFrequentDeactivatedNotificationType
             ]

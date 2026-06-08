@@ -31373,6 +31373,71 @@
         }
       }
     },
+    "smart_frequent_background_restart_recovery_notification_body" : {
+      "comment" : "Notification body explaining that app restart returned smart frequent background tracking to standard mode",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru blev startet igen og bruger standard baggrundssporing, indtil Smart Frequent registrerer bevægelse igen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru wurde neu gestartet und nutzt wieder die Standard-Hintergrundverfolgung, bis Smart Frequent erneut Bewegung erkennt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru restarted and is using standard background tracking again until Smart Frequent detects movement again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru se reinició y vuelve a usar el seguimiento estándar en segundo plano hasta que Smart Frequent detecte movimiento de nuevo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru käynnistyi uudelleen ja käyttää taas tavallista taustaseurantaa, kunnes Smart Frequent havaitsee liikettä uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru a redémarré et utilise à nouveau le suivi standard en arrière-plan jusqu'à ce que Smart Frequent détecte de nouveau un déplacement."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru è stato riavviato e usa di nuovo il tracciamento standard in background finché Smart Frequent non rileva di nuovo movimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru が再起動したため、Smart Frequent が再び移動を検出するまで標準のバックグラウンド追跡を使用します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru is opnieuw gestart en gebruikt weer standaard achtergrondtracking totdat Smart Frequent opnieuw beweging detecteert."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 已重新启动，并再次使用标准后台跟踪，直到 Smart Frequent 再次检测到移动。"
+          }
+        }
+      }
+    },
     "smart_frequent_background_inactivity_window_explanation" : {
       "comment" : "Explanation for smart frequent inactivity window",
       "localizations" : {
