@@ -303,7 +303,7 @@ Actions:
 - show the background location indicator;
 - seed the movement anchor;
 - schedule the inactivity timer;
-- schedule the probe watchdog;
+- schedule the runtime watchdog;
 - write Smart activation diagnostics with result `probing`;
 - do not send the Smart activation notification yet.
 
@@ -317,12 +317,14 @@ This is intentional: the device can show the blue location indicator before the
 user receives a Smart active notification. The notification waits for confirmed
 movement.
 
-### Probe Watchdog
+### Runtime Watchdog
 
-After entering `probing`, the watchdog checks after 75 seconds.
+After entering `probing`, the watchdog checks after 75 seconds. The watchdog
+continues after confirmation, so `confirmedActive` remains protected against a
+silent loss of frequent-background callbacks.
 
-If a frequent-background callback arrived within the watchdog window, then the
-watchdog is rescheduled while the runtime remains probing.
+If a processable frequent-background sample arrived within the watchdog window,
+then the watchdog is rescheduled and the recovery attempt counter is reset.
 
 If no frequent-background callback arrived, then:
 
@@ -340,6 +342,8 @@ else:
 ```
 
 Missing frequent callbacks are treated as recovery evidence, not as stillness.
+The normal inactivity path is reserved for the case where callbacks continue but
+no relevant movement is confirmed within the configured inactivity window.
 
 ### Confirmation
 
@@ -359,7 +363,7 @@ current Smart movement anchor, then:
 - switch phase to `confirmedActive`;
 - send exactly one Smart activation notification if Smart mode-change
   notifications are enabled;
-- cancel the probe watchdog;
+- keep the runtime watchdog scheduled;
 - keep the inactivity timer aligned to relevant movement;
 - log Smart activation diagnostics with result `confirmedActive`.
 
@@ -388,6 +392,12 @@ lastRelevantMovementAt + configured inactivity window
 The configured inactivity window can be 5, 10, 15, or 30 minutes and defaults
 to 10 minutes.
 
+If frequent-background callbacks stop while `confirmedActive`, the runtime
+watchdog treats that as a gap and reasserts the frequent manager up to two
+times. Exhaustion returns Smart silently to `waiting` and restores standard
+background tracking/fence behavior without sending a Smart deactivation
+notification.
+
 ### Deactivation
 
 Smart runtime returns to `waiting` when:
@@ -398,7 +408,7 @@ Smart runtime returns to `waiting` when:
 - manual frequent is turned on;
 - DeviceKey/auth blocks tracking;
 - low-battery auto-disable applies to effective frequent mode;
-- the probe watchdog exhausts its recovery attempts.
+- the runtime watchdog exhausts its recovery attempts.
 
 Deactivation actions:
 
@@ -418,8 +428,11 @@ foreground recovery or failed probing.
 All modes share the same accepted-location and upload path.
 
 Core Location batches are filtered for valid coordinates/timestamps and then
-processed chronologically. Each accepted location can update local cache,
-diagnostics, counters, and upload decisions.
+processed chronologically. Samples that are implausibly future-dated, too old,
+or older than the freshest already accepted raw/current/Smart reference
+location are rejected before they can update local cache, Smart seed state,
+fence anchors, diagnostics counters, or upload decisions. Delayed but still
+fresh significant-change wake locations remain processable.
 
 Location Sensitivity normally rejects accepted-location candidates that moved
 less than the configured UI threshold and did not improve accuracy enough.

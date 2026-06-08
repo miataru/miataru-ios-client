@@ -1624,6 +1624,78 @@ struct SettingsConfigurationTests {
         ))
     }
 
+    @Test("Smart frequent runtime watchdog recovers active callback gaps")
+    func smartFrequentRuntimeWatchdogRecoversActiveCallbackGaps() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let inactivityWindow: TimeInterval = 600
+
+        #expect(!LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-inactivityWindow - 1),
+            lastRelevantMovementAt: now.addingTimeInterval(-inactivityWindow - 1),
+            inactivityWindow: inactivityWindow
+        ))
+        #expect(LocationManager.shouldDeactivateSmartFrequentBackgroundUpdates(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-10),
+            lastRelevantMovementAt: now.addingTimeInterval(-inactivityWindow - 1),
+            inactivityWindow: inactivityWindow
+        ))
+
+        #expect(LocationManager.smartFrequentBackgroundWatchdogAction(
+            phase: .probing,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            lastFrequentCallbackAt: nil,
+            runtimeStartedAt: now.addingTimeInterval(-LocationManager.smartFrequentBackgroundRuntimeWatchdogInterval - 1),
+            recoveryAttemptCount: 0,
+            now: now
+        ) == .reassert)
+        #expect(LocationManager.smartFrequentBackgroundWatchdogAction(
+            phase: .confirmedActive,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            lastFrequentCallbackAt: now.addingTimeInterval(-LocationManager.smartFrequentBackgroundRuntimeWatchdogInterval - 1),
+            runtimeStartedAt: now.addingTimeInterval(-200),
+            recoveryAttemptCount: 0,
+            now: now
+        ) == .reassert)
+        #expect(LocationManager.smartFrequentBackgroundWatchdogAction(
+            phase: .confirmedActive,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            lastFrequentCallbackAt: now.addingTimeInterval(-10),
+            runtimeStartedAt: now.addingTimeInterval(-200),
+            recoveryAttemptCount: 1,
+            now: now
+        ) == .wait)
+        #expect(LocationManager.smartFrequentBackgroundWatchdogAction(
+            phase: .confirmedActive,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            lastFrequentCallbackAt: now.addingTimeInterval(-LocationManager.smartFrequentBackgroundRuntimeWatchdogInterval - 1),
+            runtimeStartedAt: now.addingTimeInterval(-200),
+            recoveryAttemptCount: LocationManager.maximumSmartFrequentBackgroundRuntimeRecoveryAttempts,
+            now: now
+        ) == .deactivate)
+        #expect(LocationManager.smartFrequentBackgroundWatchdogAction(
+            phase: .waiting,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            lastFrequentCallbackAt: nil,
+            runtimeStartedAt: now.addingTimeInterval(-200),
+            recoveryAttemptCount: 0,
+            now: now
+        ) == .ignore)
+    }
+
+    @Test("Smart frequent runtime is evaluated only in background")
+    func smartFrequentRuntimeIsEvaluatedOnlyInBackground() {
+        #expect(LocationManager.shouldEvaluateSmartFrequentRuntime(applicationState: .background))
+        #expect(!LocationManager.shouldEvaluateSmartFrequentRuntime(applicationState: .inactive))
+        #expect(!LocationManager.shouldEvaluateSmartFrequentRuntime(applicationState: .active))
+    }
+
     @Test("Frequent background callbacks bypass sensitivity while frequent runtime is effective")
     func frequentBackgroundCallbacksBypassSensitivityWhileFrequentRuntimeIsEffective() {
         #expect(LocationManager.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
@@ -2029,6 +2101,95 @@ struct SettingsConfigurationTests {
 
         let ordered = LocationManager.processableLocationUpdates(from: [third, invalid, first, second])
         #expect(ordered.map { Int($0.timestamp.timeIntervalSince1970) } == [100, 200, 300])
+    }
+
+    @Test("Location samples reject stale future and out-of-order timestamps")
+    func locationSamplesRejectStaleFutureAndOutOfOrderTimestamps() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        func location(timestamp: Date) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 49.8190, longitude: 10.8077),
+                altitude: 0,
+                horizontalAccuracy: 5,
+                verticalAccuracy: 5,
+                course: -1,
+                speed: -1,
+                timestamp: timestamp
+            )
+        }
+
+        let latest = location(timestamp: now.addingTimeInterval(-60))
+        #expect(LocationManager.locationSampleProcessingDecision(
+            for: location(timestamp: now.addingTimeInterval(-5 * 60)),
+            now: now,
+            latestRawLocation: nil,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .process)
+        #expect(LocationManager.locationSampleProcessingDecision(
+            for: location(timestamp: now.addingTimeInterval(-LocationManager.maximumLocationSampleAge - 1)),
+            now: now,
+            latestRawLocation: nil,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .stale)
+        #expect(LocationManager.locationSampleProcessingDecision(
+            for: location(timestamp: now.addingTimeInterval(LocationManager.maximumLocationSampleFutureSkew + 1)),
+            now: now,
+            latestRawLocation: nil,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .futureDated)
+        #expect(LocationManager.locationSampleProcessingDecision(
+            for: location(timestamp: now.addingTimeInterval(-120)),
+            now: now,
+            latestRawLocation: latest,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .outOfOrder)
+        #expect(LocationManager.locationSampleProcessingDecision(
+            for: location(timestamp: now.addingTimeInterval(-30)),
+            now: now,
+            latestRawLocation: latest,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .process)
+    }
+
+    @Test("Smart frequent exit fence anchor uses newest usable location")
+    func smartFrequentExitFenceAnchorUsesNewestUsableLocation() throws {
+        func location(timestamp: TimeInterval, accuracy: Double, latitude: Double = 49.8190) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: 10.8077),
+                altitude: 0,
+                horizontalAccuracy: accuracy,
+                verticalAccuracy: 5,
+                course: -1,
+                speed: -1,
+                timestamp: Date(timeIntervalSince1970: timestamp)
+            )
+        }
+
+        let olderRaw = location(timestamp: 100, accuracy: 3)
+        let current = location(timestamp: 200, accuracy: 25)
+        let smartReference = location(timestamp: 150, accuracy: 7)
+        let tooInaccurate = location(timestamp: 300, accuracy: 500)
+
+        let anchor = try #require(LocationManager.newestSmartFrequentExitFenceAnchor(from: [
+            olderRaw,
+            current,
+            smartReference,
+            tooInaccurate
+        ]))
+        #expect(anchor.timestamp == current.timestamp)
+
+        let worseSameTimestamp = location(timestamp: 400, accuracy: 30)
+        let betterSameTimestamp = location(timestamp: 400, accuracy: 5, latitude: 49.8200)
+        let sameTimestampAnchor = try #require(LocationManager.newestSmartFrequentExitFenceAnchor(from: [
+            worseSameTimestamp,
+            betterSameTimestamp
+        ]))
+        #expect(sameTimestampAnchor.coordinate.latitude == betterSameTimestamp.coordinate.latitude)
     }
 
     @Test("Background battery threshold only disables frequent mode when active and known")

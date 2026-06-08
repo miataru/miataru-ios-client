@@ -125,10 +125,14 @@ final class LocationManager: NSObject, ObservableObject {
     static let defaultSmartFrequentExitFenceRadius: CLLocationDistance = 150
     static let minimumSmartFrequentDerivedSpeedElapsed: TimeInterval = 5
     static let maximumTrustedSmartFrequentSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy = 2
+    static let maximumLocationSampleFutureSkew: TimeInterval = 60
+    static let maximumLocationSampleAge: TimeInterval = 10 * 60
     static let forensicFrequentBackgroundGapThreshold: TimeInterval = 10 * 60
     static let forensicForegroundRecoveryBurstWindow: TimeInterval = 30
-    static let smartFrequentBackgroundProbeWatchdogInterval: TimeInterval = 75
-    static let maximumSmartFrequentBackgroundProbeRecoveryAttempts = 2
+    static let smartFrequentBackgroundRuntimeWatchdogInterval: TimeInterval = 75
+    static let maximumSmartFrequentBackgroundRuntimeRecoveryAttempts = 2
+    static let smartFrequentBackgroundProbeWatchdogInterval = smartFrequentBackgroundRuntimeWatchdogInterval
+    static let maximumSmartFrequentBackgroundProbeRecoveryAttempts = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts
     
     // MARK: - Server Update Status
     enum ServerUpdateStatus {
@@ -306,6 +310,21 @@ final class LocationManager: NSObject, ObservableObject {
         case trustedGPSSpeed
         case trustedDerivedSpeed
         case insufficient
+    }
+
+    enum LocationSampleProcessingDecision: String, Equatable {
+        case process
+        case invalid
+        case futureDated
+        case stale
+        case outOfOrder
+    }
+
+    enum SmartFrequentBackgroundWatchdogAction: String, Equatable {
+        case ignore
+        case wait
+        case reassert
+        case deactivate
     }
 
     struct SmartFrequentActivationEvidence: Equatable {
@@ -710,6 +729,10 @@ final class LocationManager: NSObject, ObservableObject {
         return .significantChange
     }
 
+    static func shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.State) -> Bool {
+        applicationState == .background
+    }
+
     static func shouldResetLocationUpdateMetrics(now: Date,
                                                  lastReset: Date?,
                                                  interval: TimeInterval = 24 * 60 * 60) -> Bool {
@@ -790,6 +813,66 @@ final class LocationManager: NSObject, ObservableObject {
                 return lhsTimestamp < rhsTimestamp
             }
             .map(\.element)
+    }
+
+    static func locationSampleProcessingDecision(for location: CLLocation,
+                                                 now: Date,
+                                                 latestRawLocation: CLLocation?,
+                                                 currentLocation: CLLocation?,
+                                                 smartReferenceLocation: CLLocation?,
+                                                 maximumAge: TimeInterval = maximumLocationSampleAge,
+                                                 futureTolerance: TimeInterval = maximumLocationSampleFutureSkew) -> LocationSampleProcessingDecision {
+        let coordinate = location.coordinate
+        guard coordinate.latitude.isFinite,
+              coordinate.longitude.isFinite,
+              CLLocationCoordinate2DIsValid(coordinate),
+              location.timestamp.timeIntervalSince1970.isFinite,
+              now.timeIntervalSince1970.isFinite else {
+            return .invalid
+        }
+
+        let age = now.timeIntervalSince(location.timestamp)
+        if futureTolerance >= 0, age < -futureTolerance {
+            return .futureDated
+        }
+        if maximumAge > 0, age > maximumAge {
+            return .stale
+        }
+        if let latestReferenceTimestamp = newestValidLocationTimestamp([
+            latestRawLocation,
+            currentLocation,
+            smartReferenceLocation
+        ]),
+           location.timestamp < latestReferenceTimestamp {
+            return .outOfOrder
+        }
+        return .process
+    }
+
+    static func newestSmartFrequentExitFenceAnchor(from candidates: [CLLocation?]) -> CLLocation? {
+        candidates
+            .compactMap { $0 }
+            .filter { isUsableForSmartFenceAnchor($0) }
+            .max { lhs, rhs in
+                if lhs.timestamp == rhs.timestamp {
+                    return lhs.horizontalAccuracy > rhs.horizontalAccuracy
+                }
+                return lhs.timestamp < rhs.timestamp
+            }
+    }
+
+    private static func newestValidLocationTimestamp(_ locations: [CLLocation?]) -> Date? {
+        locations
+            .compactMap { $0 }
+            .filter { location in
+                let coordinate = location.coordinate
+                return coordinate.latitude.isFinite &&
+                coordinate.longitude.isFinite &&
+                CLLocationCoordinate2DIsValid(coordinate) &&
+                location.timestamp.timeIntervalSince1970.isFinite
+            }
+            .map(\.timestamp)
+            .max()
     }
 
     static func shouldUsePersistedSmartFrequentBackgroundSeed(now: Date,
@@ -1074,7 +1157,11 @@ final class LocationManager: NSObject, ObservableObject {
                                                                lastRelevantMovementAt: Date?,
                                                                inactivityWindow: TimeInterval) -> Bool {
         guard inactivityWindow > 0 else { return true }
-        guard let lastRelevantMovementAt else { return false }
+        guard let lastLocationUpdateAt,
+              now.timeIntervalSince(lastLocationUpdateAt) < inactivityWindow,
+              let lastRelevantMovementAt else {
+            return false
+        }
         return now.timeIntervalSince(lastRelevantMovementAt) >= inactivityWindow
     }
 
@@ -1105,6 +1192,30 @@ final class LocationManager: NSObject, ObservableObject {
             return false
         }
         return distanceMeters >= thresholdMeters
+    }
+
+    static func smartFrequentBackgroundWatchdogAction(phase: SmartFrequentRuntimePhase,
+                                                      smartEnabled: Bool,
+                                                      manualFrequentEnabled: Bool,
+                                                      lastFrequentCallbackAt: Date?,
+                                                      runtimeStartedAt: Date?,
+                                                      recoveryAttemptCount: Int,
+                                                      now: Date,
+                                                      interval: TimeInterval = smartFrequentBackgroundRuntimeWatchdogInterval,
+                                                      maximumRecoveryAttempts: Int = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts) -> SmartFrequentBackgroundWatchdogAction {
+        guard phase != .waiting,
+              smartEnabled,
+              !manualFrequentEnabled,
+              interval > 0 else {
+            return .ignore
+        }
+
+        let reference = lastFrequentCallbackAt ?? runtimeStartedAt ?? now
+        guard now.timeIntervalSince(reference) >= interval else {
+            return .wait
+        }
+
+        return recoveryAttemptCount < maximumRecoveryAttempts ? .reassert : .deactivate
     }
 
     static func shouldBypassLocationSensitivityForFrequentBackgroundUpload(applicationState: UIApplication.State,
@@ -1766,6 +1877,67 @@ final class LocationManager: NSObject, ObservableObject {
         return context
     }
 
+    private func shouldProcessLocationSample(_ location: CLLocation,
+                                             now: Date,
+                                             applicationState: UIApplication.State,
+                                             updateSource: LocationUpdateSource) -> Bool {
+        let decision = Self.locationSampleProcessingDecision(
+            for: location,
+            now: now,
+            latestRawLocation: latestRawLocation,
+            currentLocation: currentLocation,
+            smartReferenceLocation: smartFrequentBackgroundSpeedReferenceLocation
+        )
+        guard decision == .process else {
+            diagnosticsLog.append(
+                level: .warning,
+                event: "locationSample",
+                summary: "Skipped CoreLocation sample before state processing.",
+                result: decision.rawValue,
+                reason: locationSampleRejectionReason(decision),
+                checks: [
+                    LocationDiagnosticsLogStore.check(
+                        "sampleProcessable",
+                        false,
+                        detail: "Decision: \(decision.rawValue)."
+                    )
+                ],
+                context: diagnosticsLocationContext(location, extra: [
+                    ("source", .string(updateSource.rawValue)),
+                    ("applicationState", .integer(applicationState.rawValue)),
+                    ("maximumAgeSeconds", .integer(Int(Self.maximumLocationSampleAge))),
+                    ("futureToleranceSeconds", .integer(Int(Self.maximumLocationSampleFutureSkew))),
+                    ("latestReferenceTimestamp", latestLocationSampleReferenceTimestamp().map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("unknown"))
+                ])
+            )
+            return false
+        }
+        return true
+    }
+
+    private func locationSampleRejectionReason(_ decision: LocationSampleProcessingDecision) -> String {
+        switch decision {
+        case .process:
+            return "sample accepted"
+        case .invalid:
+            return "invalid coordinate or timestamp"
+        case .futureDated:
+            return "future-dated location sample"
+        case .stale:
+            return "stale location sample"
+        case .outOfOrder:
+            return "out-of-order location sample"
+        }
+    }
+
+    private func latestLocationSampleReferenceTimestamp() -> Date? {
+        Self.newestValidLocationTimestamp([
+            latestRawLocation,
+            currentLocation,
+            smartFrequentBackgroundSpeedReferenceLocation
+        ])
+    }
+
     private func persistLastSignificantChangeRearmStatus(_ status: LocationSignificantChangeRearmStatus) {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -2139,7 +2311,9 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         handleFrequentBackgroundLocationExpirationIfNeeded()
-        handleSmartFrequentBackgroundInactivityIfNeeded()
+        if Self.shouldEvaluateSmartFrequentRuntime(applicationState: state) {
+            handleSmartFrequentBackgroundInactivityIfNeeded(applicationState: state)
+        }
         if isTracking, state != .active {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
         }
@@ -2322,6 +2496,7 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundLocationManager.startUpdatingLocation()
         isFrequentBackgroundStandardUpdatesActive = true
         shouldAllowNextStaleFrequentBackgroundCallback = false
+        scheduleSmartFrequentBackgroundWatchdogIfNeeded()
         stopForegroundLocationTimer()
         diagnosticsLog.append(
             level: .info,
@@ -2572,9 +2747,11 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func smartFrequentExitFenceAnchorLocation() -> CLLocation? {
-        [latestRawLocation, currentLocation, smartFrequentBackgroundSpeedReferenceLocation]
-            .compactMap { $0 }
-            .first { Self.isUsableForSmartFenceAnchor($0) }
+        Self.newestSmartFrequentExitFenceAnchor(from: [
+            latestRawLocation,
+            currentLocation,
+            smartFrequentBackgroundSpeedReferenceLocation
+        ])
     }
 
     private static func isUsableForSmartFenceAnchor(_ location: CLLocation) -> Bool {
@@ -2764,8 +2941,7 @@ final class LocationManager: NSObject, ObservableObject {
                                                       applicationState: UIApplication.State,
                                                       isStartupBatch: Bool = false,
                                                       now: Date = Date()) -> Bool {
-        guard applicationState != .active,
-              settings.smartFrequentBackgroundLocationUpdatesEnabled,
+        guard settings.smartFrequentBackgroundLocationUpdatesEnabled,
               !settings.frequentBackgroundLocationUpdatesEnabled else {
             if settings.frequentBackgroundLocationUpdatesEnabled,
                smartFrequentBackgroundRuntimeActive {
@@ -2776,7 +2952,15 @@ final class LocationManager: NSObject, ObservableObject {
             return false
         }
 
-        let didDeactivateForInactivity = handleSmartFrequentBackgroundInactivityIfNeeded(now: now)
+        guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState) else {
+            updateSmartFrequentBackgroundSpeedReference(with: location)
+            return false
+        }
+
+        let didDeactivateForInactivity = handleSmartFrequentBackgroundInactivityIfNeeded(
+            now: now,
+            applicationState: applicationState
+        )
         let previousLocationUpdateAt = smartFrequentBackgroundSpeedReferenceLocation?.timestamp
         let didUpdateMovement = refreshSmartFrequentBackgroundMovementState(for: location, now: now)
         let activationEvidence = Self.smartFrequentActivationEvidence(
@@ -2962,7 +3146,7 @@ final class LocationManager: NSObject, ObservableObject {
                                                                now: Date = Date()) {
         guard smartFrequentBackgroundRuntimePhase == .probing,
               updateSource == .frequentBackground,
-              applicationState != .active else {
+              Self.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState) else {
             return
         }
 
@@ -2987,8 +3171,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundActivationNotificationDelivered = true
         notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: true)
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
-        smartFrequentBackgroundWatchdogTimer?.invalidate()
-        smartFrequentBackgroundWatchdogTimer = nil
+        scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
         diagnosticsLog.append(
             level: .warning,
             event: "smartFrequentActivation",
@@ -3008,9 +3191,10 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @discardableResult
-    private func deactivateSmartFrequentBackgroundRuntime(reason: String) -> Bool {
+    private func deactivateSmartFrequentBackgroundRuntime(reason: String,
+                                                          sendsModeChangeNotification: Bool = true) -> Bool {
         let wasActive = smartFrequentBackgroundRuntimeActive
-        let shouldNotifyDeactivation = wasActive && smartFrequentBackgroundActivationNotificationDelivered
+        let shouldNotifyDeactivation = wasActive && smartFrequentBackgroundActivationNotificationDelivered && sendsModeChangeNotification
         transitionSmartFrequentBackgroundRuntime(to: .waiting, reason: reason)
         lastSmartFrequentBackgroundLocationUpdateAt = nil
         smartFrequentBackgroundMovementAnchor = nil
@@ -3072,11 +3256,15 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @discardableResult
-    private func handleSmartFrequentBackgroundInactivityIfNeeded(now: Date = Date()) -> Bool {
+    private func handleSmartFrequentBackgroundInactivityIfNeeded(now: Date = Date(),
+                                                                 applicationState: UIApplication.State = UIApplication.shared.applicationState) -> Bool {
         guard settings.smartFrequentBackgroundLocationUpdatesEnabled,
               smartFrequentBackgroundRuntimeActive,
               !settings.frequentBackgroundLocationUpdatesEnabled else {
             scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+            return false
+        }
+        guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState) else {
             return false
         }
 
@@ -3152,7 +3340,10 @@ final class LocationManager: NSObject, ObservableObject {
         guard let timeout else { return }
         let interval = timeout.timeIntervalSince(now)
         guard interval > 0 else {
-            if handleSmartFrequentBackgroundInactivityIfNeeded(now: now), isTracking {
+            guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+                return
+            }
+            if handleSmartFrequentBackgroundInactivityIfNeeded(now: now, applicationState: .background), isTracking {
                 applyTrackingMode(reason: "smart frequent inactivity timer")
             }
             return
@@ -3160,7 +3351,10 @@ final class LocationManager: NSObject, ObservableObject {
 
         let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
             guard let self else { return }
-            if self.handleSmartFrequentBackgroundInactivityIfNeeded(), self.isTracking {
+            guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+                return
+            }
+            if self.handleSmartFrequentBackgroundInactivityIfNeeded(applicationState: .background), self.isTracking {
                 self.applyTrackingMode(reason: "smart frequent inactivity timer")
             }
         }
@@ -3172,13 +3366,13 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
 
-        guard smartFrequentBackgroundRuntimePhase == .probing,
+        guard smartFrequentBackgroundRuntimePhase != .waiting,
               settings.smartFrequentBackgroundLocationUpdatesEnabled,
               !settings.frequentBackgroundLocationUpdatesEnabled else {
             return
         }
 
-        let timer = Timer(timeInterval: Self.smartFrequentBackgroundProbeWatchdogInterval, repeats: false) { [weak self] _ in
+        let timer = Timer(timeInterval: Self.smartFrequentBackgroundRuntimeWatchdogInterval, repeats: false) { [weak self] _ in
             guard let self else { return }
             self.handleSmartFrequentBackgroundWatchdog(now: Date())
         }
@@ -3193,33 +3387,46 @@ final class LocationManager: NSObject, ObservableObject {
             return
         }
         smartFrequentBackgroundLastFrequentCallbackAt = now
-        if smartFrequentBackgroundRuntimePhase == .probing {
-            scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
-        }
+        smartFrequentBackgroundRecoveryAttemptCount = 0
+        scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
     }
 
     private func handleSmartFrequentBackgroundWatchdog(now: Date = Date()) {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
 
-        guard smartFrequentBackgroundRuntimePhase == .probing,
-              settings.smartFrequentBackgroundLocationUpdatesEnabled,
-              !settings.frequentBackgroundLocationUpdatesEnabled else {
+        guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
             return
         }
 
-        let probeReference = smartFrequentBackgroundLastFrequentCallbackAt ?? smartFrequentBackgroundProbeStartedAt ?? now
-        if now.timeIntervalSince(probeReference) < Self.smartFrequentBackgroundProbeWatchdogInterval {
+        let runtimeReference = smartFrequentBackgroundLastFrequentCallbackAt ??
+        smartFrequentBackgroundProbeStartedAt ??
+        smartFrequentBackgroundLastRelevantMovementAt
+        switch Self.smartFrequentBackgroundWatchdogAction(
+            phase: smartFrequentBackgroundRuntimePhase,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            lastFrequentCallbackAt: smartFrequentBackgroundLastFrequentCallbackAt,
+            runtimeStartedAt: runtimeReference,
+            recoveryAttemptCount: smartFrequentBackgroundRecoveryAttemptCount,
+            now: now
+        ) {
+        case .ignore:
+            return
+        case .wait:
             scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
             return
-        }
-
-        guard smartFrequentBackgroundRecoveryAttemptCount < Self.maximumSmartFrequentBackgroundProbeRecoveryAttempts else {
-            let didDeactivate = deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent recovery watchdog exhausted")
+        case .deactivate:
+            let didDeactivate = deactivateSmartFrequentBackgroundRuntime(
+                reason: "smart frequent recovery watchdog exhausted",
+                sendsModeChangeNotification: false
+            )
             if didDeactivate, isTracking {
                 applyTrackingMode(reason: "smart frequent recovery watchdog exhausted", applicationStateContext: .forceBackground)
             }
             return
+        case .reassert:
+            break
         }
 
         smartFrequentBackgroundRecoveryAttemptCount += 1
@@ -3232,7 +3439,7 @@ final class LocationManager: NSObject, ObservableObject {
             checks: [],
             context: [
                 "attempt": .integer(smartFrequentBackgroundRecoveryAttemptCount),
-                "maximumAttempts": .integer(Self.maximumSmartFrequentBackgroundProbeRecoveryAttempts),
+                "maximumAttempts": .integer(Self.maximumSmartFrequentBackgroundRuntimeRecoveryAttempts),
                 "phase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
                 "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
                 "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
@@ -3811,7 +4018,6 @@ extension LocationManager: CLLocationManagerDelegate {
             applicationState != .active &&
             updateSource == .primary
             self.recordForensicLocationCallback(applicationState: applicationState, source: updateSource)
-            self.recordSmartFrequentBackgroundFrequentCallbackIfNeeded(updateSource: updateSource)
             debugLog("[LocationManager] didUpdateLocations source=\(updateSource.rawValue), count=\(locations.count), processable=\(orderedLocations.count), state=\(applicationState.rawValue), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive)")
             let callbackContext: [String: LocationDiagnosticsValue] = [
                 "source": .string(updateSource.rawValue),
@@ -3840,11 +4046,26 @@ extension LocationManager: CLLocationManagerDelegate {
             var locationsPendingUpload: [CLLocation] = []
 
             for location in orderedLocations {
+                let sampleProcessingNow = Date()
+                guard self.shouldProcessLocationSample(
+                    location,
+                    now: sampleProcessingNow,
+                    applicationState: applicationState,
+                    updateSource: updateSource
+                ) else {
+                    continue
+                }
+                self.recordSmartFrequentBackgroundFrequentCallbackIfNeeded(
+                    updateSource: updateSource,
+                    now: sampleProcessingNow
+                )
+
                 let didSwitchSmartFrequentBackgroundMode = self.updateSmartFrequentBackgroundRuntime(
                     for: location,
                     updateSource: updateSource,
                     applicationState: applicationState,
-                    isStartupBatch: isSmartFrequentStartupBatch
+                    isStartupBatch: isSmartFrequentStartupBatch,
+                    now: sampleProcessingNow
                 )
                 didSwitchFrequentBackgroundMode = didSwitchFrequentBackgroundMode || didSwitchSmartFrequentBackgroundMode
 
