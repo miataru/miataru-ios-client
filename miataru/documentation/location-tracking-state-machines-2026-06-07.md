@@ -338,7 +338,8 @@ if recovery attempts < 2:
 else:
     deactivate Smart runtime back to waiting
     reapply background tracking
-    do not send Smart activation or deactivation notification
+    send Smart deactivation notification if the runtime was confirmed active
+    and mode-change notifications are enabled
 ```
 
 Missing frequent callbacks are treated as recovery evidence, not as stillness.
@@ -394,9 +395,9 @@ to 10 minutes.
 
 If frequent-background callbacks stop while `confirmedActive`, the runtime
 watchdog treats that as a gap and reasserts the frequent manager up to two
-times. Exhaustion returns Smart silently to `waiting` and restores standard
-background tracking/fence behavior without sending a Smart deactivation
-notification.
+times. Exhaustion returns Smart to `waiting`, restores standard background
+tracking/fence behavior, and sends the Smart deactivation notification when the
+confirmed runtime previously sent the Smart activation notification.
 
 ### Deactivation
 

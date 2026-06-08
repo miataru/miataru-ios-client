@@ -2715,8 +2715,7 @@ final class LocationManager: NSObject, ObservableObject {
             return
         case .deactivate:
             let didDeactivate = deactivateSmartFrequentBackgroundRuntime(
-                reason: "smart frequent recovery watchdog exhausted",
-                sendsModeChangeNotification: false
+                reason: "smart frequent recovery watchdog exhausted"
             )
             if didDeactivate, isTracking {
                 applyTrackingMode(reason: "smart frequent recovery watchdog exhausted", applicationStateContext: .forceBackground)

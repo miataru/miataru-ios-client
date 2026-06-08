@@ -59,7 +59,7 @@ Battery auto-disable acts on the effective frequent state. For manual frequent m
 - low-battery auto-disable notification;
 - optional Smart frequent mode-change notifications.
 
-Smart mode-change notifications are sent only when enabled by the user. Enabling them requests notification permission first; denied permission leaves the setting off and the UI offers a shortcut to the app's system settings. They fire when Smart itself activates frequent runtime after detected movement or deactivates frequent runtime because the inactivity window elapsed. Manual overrides, disabling Smart in Settings, and battery auto-disable do not send the Smart mode-change notification.
+Smart mode-change notifications are sent only when enabled by the user. Enabling them requests notification permission first; denied permission leaves the setting off and the UI offers a shortcut to the app's system settings. They fire when Smart itself activates frequent runtime after detected movement, deactivates frequent runtime because the inactivity window elapsed, or returns to standard mode after the frequent callback recovery watchdog is exhausted. Manual overrides, disabling Smart in Settings, and battery auto-disable do not send the Smart mode-change notification.
 
 All frequent-background notification taps route to Advanced Options through `AppDelegate` and `AppNavigationCoordinator`.
 
