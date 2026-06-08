@@ -16,6 +16,17 @@ miataruApp.swift
 ├── OnboardingContainerView
 ├── LocationManagers/
 │   ├── LocationManager.swift
+│   ├── LocationManager+Types.swift
+│   ├── LocationManager+PolicyCompatibility.swift
+│   ├── LocationTrackingPolicy.swift
+│   ├── SmartFrequentBackgroundPolicy.swift
+│   ├── LocationSamplePolicy.swift
+│   ├── LocationBackgroundForensics.swift
+│   ├── LocationBackgroundForensicsRecorder.swift
+│   ├── CoreLocationServiceController.swift
+│   ├── LocationUpdateUploadService.swift
+│   ├── LocationUpdateMetricsStore.swift
+│   ├── HeadingSmoother.swift
 │   ├── DeviceLocationRefresher.swift
 │   └── RouteCacheStore.swift
 ├── Networking/
@@ -48,7 +59,18 @@ miataruApp.swift
 
 ### Location Tracking
 
-`LocationManager` owns permission state, local GPS updates, heading updates, tracking mode resolution, background behavior, and upload status. It resolves one of four service-level modes:
+`LocationManager` is the app-facing ObservableObject facade for permission state, local GPS updates, heading updates, app lifecycle hooks, Core Location delegate glue, published UI state, and upload status. It keeps the public API stable while delegating pure decisions and small stateful responsibilities to focused internal components:
+
+- `LocationTrackingPolicy` resolves service modes, background configuration, service command plans, restore/reconcile decisions, delivery intervals, and low-battery frequent-mode disablement.
+- `SmartFrequentBackgroundPolicy` owns Smart runtime phase decisions, activation evidence, speed/derived movement checks, exit-fence behavior, inactivity timeouts, and watchdog recovery.
+- `LocationSamplePolicy` owns location batch sorting, invalid/stale/future/out-of-order sample rejection, sensitivity bypass, and upload deduplication keys.
+- `LocationBackgroundForensics` owns background gap assessment, foreground-recovery burst decisions, and significant-change re-arm policy.
+- `LocationManager+Types` and `LocationManager+PolicyCompatibility` keep UI-facing nested names, typealiases, and existing static policy wrappers stable while the facade shrinks.
+- `LocationBackgroundForensicsRecorder` persists forensic state, significant-change re-arm status, and gap/recovery-burst evidence.
+- `CoreLocationServiceController` applies the selected tracking mode to the primary and frequent `CLLocationManager` instances, Core Location service sessions, background indicator state, and stale frequent-callback cleanup.
+- `LocationUpdateUploadService`, `LocationUpdateMetricsStore`, and `HeadingSmoother` encapsulate upload payload/background-task handling, 24-hour counter persistence, and heading/course smoothing.
+
+The service-level resolver still produces one of four modes:
 
 - stopped
 - foreground high accuracy

@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **199** (Unit: 184, UI: 15 incl. 10 screenshot captures)
+- Actively linked app test cases: **201** (Unit: 186, UI: 15 incl. 10 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -151,6 +151,8 @@ Important project observations:
 | UT-LBF-001 | Background forensic gap assessment distinguishes frequent gaps from significant-change idle | Protect diagnostics gap classification | Frequent callback gaps and significant-change idle windows classify separately | LocationBackgroundForensics | Unit | fixed dates and forensic state | Medium |
 | UT-LBF-002 | Foreground recovery burst policy only logs inside recovery window with activity | Protect recovery-burst diagnostics | Foreground recovery bursts require activity inside the configured recovery window | LocationBackgroundForensics | Unit | fixed dates and counters | Medium |
 | UT-LBF-003 | Significant-change rearm policy attempts only for eligible fresh builds | Protect one-time rearm policy | Re-arm attempts are gated by build identifier, tracking, authorization, DeviceKey block state, and reason | LocationBackgroundForensics | Unit | Static policy inputs + fixed dates | High |
+| UT-LBF-004 | Background forensics recorder persists rearm status and build marker | Protect recorder persistence | Significant-change re-arm status, build marker, and forensic state survive recorder reloads with isolated defaults | LocationBackgroundForensicsRecorder | Unit | isolated `UserDefaults` suite + fixed dates | High |
+| UT-LBF-005 | Background forensics recorder logs foreground recovery burst after a gap | Protect recorder diagnostics | A foreground open after a background gap prepares recovery tracking and logs callback/accepted/upload burst evidence once activity arrives | LocationBackgroundForensicsRecorder | Unit | isolated diagnostics log + fixed dates | Medium |
 | UT-LMS-001 | Location update mode counters increment and reset after 24 hours | Protect mode-specific diagnostics | Foreground/live, significant-change, Smart frequent, and manual frequent counters increment and reset together after 24 hours | LocationUpdateMetricsStore | Unit | deterministic counter and fixed dates | High |
 | UT-SET-011 | Smart frequent migration preserves existing manual frequent users | Preserve pre-3.2 manual frequent state | Migration enables the Smart prerequisite when an existing install already had manual frequent mode enabled | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
 | UT-SET-012 | Manual frequent normalization keeps Smart prerequisite enabled after migration | Protect external Settings.bundle changes | Startup normalization re-enables Smart prerequisite if manual frequent mode was externally enabled after migration | SettingsMigration | Unit | isolated `UserDefaults` suite | High |
@@ -243,7 +245,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics, and duplicate location callback suppression.
+- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics persistence/logging, and duplicate location callback suppression.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Added focused coverage for frequent-background reminder, expiration, low-battery, optional Smart mode-change notifications, and Smart notification permission gating.
 - Added string-catalog QA for stale/new translation-unit cleanup in addition to required-key localization completeness.

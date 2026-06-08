@@ -43,8 +43,11 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var backgroundTrackingForensicState = BackgroundTrackingForensicState()
     
     // MARK: - Private Properties
-    private let locationManager = CLLocationManager()
-    private let frequentBackgroundLocationManager = CLLocationManager()
+    private let coreLocationServices = CoreLocationServiceController()
+    private var locationManager: CLLocationManager { coreLocationServices.primaryManager }
+    private var frequentBackgroundLocationManager: CLLocationManager { coreLocationServices.frequentBackgroundManager }
+    private var isSignificantChangeRecoveryAnchorActive: Bool { coreLocationServices.isSignificantChangeRecoveryAnchorActive }
+    private var isFrequentBackgroundStandardUpdatesActive: Bool { coreLocationServices.isFrequentBackgroundStandardUpdatesActive }
     private let userDefaults = UserDefaults.standard
     private let lastServerUpdateKey = "miataru_lastServerUpdate"
     private let smartFrequentBackgroundSeedLatitudeKey = "miataru_smartFrequentBackgroundSeedLatitude"
@@ -55,12 +58,10 @@ final class LocationManager: NSObject, ObservableObject {
     private let smartFrequentBackgroundSeedCourseKey = "miataru_smartFrequentBackgroundSeedCourse"
     private let smartFrequentBackgroundSeedSpeedKey = "miataru_smartFrequentBackgroundSeedSpeed"
     private let smartFrequentBackgroundSeedTimestampKey = "miataru_smartFrequentBackgroundSeedTimestamp"
-    private let significantChangeRearmedBuildIdentifierKey = "miataru_significantChangeRearmedBuildIdentifier"
-    private let lastSignificantChangeRearmStatusKey = "miataru_lastSignificantChangeRearmStatus"
-    private let backgroundTrackingForensicStateKey = "miataru_backgroundTrackingForensicState"
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
+    private let backgroundForensicsRecorder = LocationBackgroundForensicsRecorder()
     private let locationUpdateMetricsStore = LocationUpdateMetricsStore()
     private let locationUpdateUploadService = LocationUpdateUploadService()
     private var foregroundLocationTimer: Timer?
@@ -73,11 +74,6 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var pendingLocationUpdateCount: Int = 0
     private var pendingAlwaysAuthorizationRequestTask: Task<Void, Never>?
     private var didAttemptAlwaysAuthorizationInCurrentSession = false
-    private var isSignificantChangeRecoveryAnchorActive = false
-    private var isFrequentBackgroundStandardUpdatesActive = false
-    private var shouldAllowNextStaleFrequentBackgroundCallback = false
-    private var locationServiceSession: CLServiceSession?
-    private var frequentBackgroundActivitySession: CLBackgroundActivitySession?
     private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
     private var smartFrequentBackgroundSpeedReferenceLocation: CLLocation?
     private var smartFrequentBackgroundMovementAnchor: CLLocation?
@@ -93,54 +89,6 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundStartupGuardPending = true
     private var isSmartFrequentExitFenceActive = false
     private var headingSmoother = HeadingSmoother()
-    static let smartFrequentExitFenceIdentifier = SmartFrequentBackgroundPolicy.exitFenceIdentifier
-    static let defaultSmartFrequentExitFenceRadius: CLLocationDistance = SmartFrequentBackgroundPolicy.defaultExitFenceRadius
-    static let minimumSmartFrequentDerivedSpeedElapsed: TimeInterval = SmartFrequentBackgroundPolicy.minimumDerivedSpeedElapsed
-    static let maximumTrustedSmartFrequentSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy = SmartFrequentBackgroundPolicy.maximumTrustedSpeedAccuracyMetersPerSecond
-    static let maximumLocationSampleFutureSkew: TimeInterval = LocationSamplePolicy.maximumFutureSkew
-    static let maximumLocationSampleAge: TimeInterval = LocationSamplePolicy.maximumAge
-    static let forensicFrequentBackgroundGapThreshold: TimeInterval = LocationBackgroundForensics.frequentBackgroundGapThreshold
-    static let forensicForegroundRecoveryBurstWindow: TimeInterval = LocationBackgroundForensics.foregroundRecoveryBurstWindow
-    static let smartFrequentBackgroundRuntimeWatchdogInterval: TimeInterval = SmartFrequentBackgroundPolicy.runtimeWatchdogInterval
-    static let maximumSmartFrequentBackgroundRuntimeRecoveryAttempts = SmartFrequentBackgroundPolicy.maximumRuntimeRecoveryAttempts
-    static let smartFrequentBackgroundProbeWatchdogInterval = smartFrequentBackgroundRuntimeWatchdogInterval
-    static let maximumSmartFrequentBackgroundProbeRecoveryAttempts = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts
-    
-    // MARK: - Server Update Status
-    enum ServerUpdateStatus {
-        case idle
-        case updating
-        case success
-        case failed(String)
-    }
-    
-    struct UpdateLogEntry: Identifiable {
-        let id = UUID()
-        let timestamp: Date
-        let mode: String
-    }
-
-    typealias LocationUpdateCounterMode = LocationUpdateMetricsStore.CounterMode
-    typealias LocationUpdateModeCounts = LocationUpdateMetricsStore.ModeCounts
-    typealias BackgroundTrackingForensicState = LocationBackgroundForensics.State
-    typealias BackgroundTrackingGapKind = LocationBackgroundForensics.GapKind
-    typealias BackgroundTrackingGapAssessment = LocationBackgroundForensics.GapAssessment
-    typealias BackgroundTrackingDisplayMode = LocationTrackingPolicy.BackgroundTrackingDisplayMode
-    typealias BackgroundUpdateConfiguration = LocationTrackingPolicy.BackgroundUpdateConfiguration
-    typealias TrackingMode = LocationTrackingPolicy.TrackingMode
-    typealias SmartFrequentRuntimePhase = SmartFrequentBackgroundPolicy.RuntimePhase
-    typealias SmartFrequentActivationEvidenceKind = SmartFrequentBackgroundPolicy.ActivationEvidenceKind
-    typealias LocationSampleProcessingDecision = LocationSamplePolicy.ProcessingDecision
-    typealias SmartFrequentBackgroundWatchdogAction = SmartFrequentBackgroundPolicy.WatchdogAction
-    typealias SmartFrequentActivationEvidence = SmartFrequentBackgroundPolicy.ActivationEvidence
-    typealias TrackingApplicationStateContext = LocationTrackingPolicy.ApplicationStateContext
-    typealias TrackingReconcileAction = LocationTrackingPolicy.ReconcileAction
-    typealias PrimaryLocationServiceCommand = LocationTrackingPolicy.PrimaryLocationServiceCommand
-    typealias SecondaryLocationServiceCommand = LocationTrackingPolicy.SecondaryLocationServiceCommand
-    typealias LocationServiceCommandPlan = LocationTrackingPolicy.ServiceCommandPlan
-    typealias SignificantChangeRearmDecision = LocationBackgroundForensics.SignificantChangeRearmDecision
-    typealias LocationSubmissionDeduplicationKey = LocationSamplePolicy.SubmissionDeduplicationKey
-
     private enum LocationUpdateSource: String {
         case primary
         case frequentBackground
@@ -162,19 +110,7 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Init
     override private init() {
         super.init()
-        locationManager.delegate = self
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.showsBackgroundLocationIndicator = false
-        locationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
-        frequentBackgroundLocationManager.delegate = self
-        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = true
-        frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = false
-        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
-        frequentBackgroundLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
-        if CLLocationManager.headingAvailable() {
-            locationManager.headingFilter = 1
-        }
+        coreLocationServices.configure(delegate: self, activityType: Self.activityTypeFrom(settings.locationActivityType))
         // Enable battery monitoring to report battery percentage with location updates
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
@@ -212,8 +148,7 @@ final class LocationManager: NSObject, ObservableObject {
         if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
             lastServerUpdate = savedDate
         }
-        lastSignificantChangeRearmStatus = loadLastSignificantChangeRearmStatus()
-        backgroundTrackingForensicState = loadBackgroundTrackingForensicState()
+        syncBackgroundForensicsSnapshot()
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
@@ -224,8 +159,8 @@ final class LocationManager: NSObject, ObservableObject {
         frequentBackgroundLocationExpirationTimer?.invalidate()
         smartFrequentBackgroundInactivityTimer?.invalidate()
         pendingAlwaysAuthorizationRequestTask?.cancel()
-        stopLocationServiceSession(reason: "deinit")
-        stopFrequentBackgroundActivitySession(reason: "deinit")
+        coreLocationServices.stopLocationServiceSession(reason: "deinit")
+        coreLocationServices.stopFrequentBackgroundActivitySession(reason: "deinit")
     }
     
     @objc private func appDidBecomeActive() {
@@ -350,8 +285,7 @@ final class LocationManager: NSObject, ObservableObject {
             .sink { [weak self] newValue in
                 guard let self = self else { return }
                 let activityType = Self.activityTypeFrom(newValue)
-                self.locationManager.activityType = activityType
-                self.frequentBackgroundLocationManager.activityType = activityType
+                self.coreLocationServices.updateActivityType(activityType)
                 if self.isTracking {
                     // Restart location updates to apply new activityType immediately
                     self.applyTrackingMode(reason: "activity type changed")
@@ -360,461 +294,6 @@ final class LocationManager: NSObject, ObservableObject {
             .store(in: &cancellables)
     }
     
-    private static func activityTypeFrom(_ value: Int) -> CLActivityType {
-        LocationTrackingPolicy.activityType(from: value)
-    }
-
-    static func backgroundUpdateConfiguration(frequentUpdatesEnabled: Bool,
-                                              distanceFilterMeters: Int) -> BackgroundUpdateConfiguration {
-        LocationTrackingPolicy.backgroundUpdateConfiguration(
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            distanceFilterMeters: distanceFilterMeters
-        )
-    }
-
-    static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
-                                                          smartEnabled: Bool,
-                                                          smartRuntimeActive: Bool) -> Bool {
-        LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
-            manualFrequentEnabled: manualFrequentEnabled,
-            smartEnabled: smartEnabled,
-            smartRuntimeActive: smartRuntimeActive
-        )
-    }
-
-    static func shouldShowBackgroundLocationIndicator(for mode: TrackingMode) -> Bool {
-        LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: mode)
-    }
-
-    static func locationUpdateCounterMode(applicationState: UIApplication.State,
-                                          manualFrequentEnabled: Bool,
-                                          smartEnabled: Bool,
-                                          smartRuntimeActive: Bool) -> LocationUpdateCounterMode {
-        LocationTrackingPolicy.locationUpdateCounterMode(
-            applicationState: applicationState,
-            manualFrequentEnabled: manualFrequentEnabled,
-            smartEnabled: smartEnabled,
-            smartRuntimeActive: smartRuntimeActive
-        )
-    }
-
-    static func backgroundTrackingDisplayMode(applicationState: UIApplication.State,
-                                              smartEnabled: Bool,
-                                              manualFrequentEnabled: Bool,
-                                              smartRuntimeActive: Bool) -> BackgroundTrackingDisplayMode {
-        LocationTrackingPolicy.backgroundTrackingDisplayMode(
-            applicationState: applicationState,
-            smartEnabled: smartEnabled,
-            manualFrequentEnabled: manualFrequentEnabled,
-            smartRuntimeActive: smartRuntimeActive
-        )
-    }
-
-    static func shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.State) -> Bool {
-        LocationTrackingPolicy.shouldEvaluateSmartFrequentRuntime(applicationState: applicationState)
-    }
-
-    static func shouldResetLocationUpdateMetrics(now: Date,
-                                                 lastReset: Date?,
-                                                 interval: TimeInterval = 24 * 60 * 60) -> Bool {
-        LocationUpdateMetricsStore.shouldReset(now: now, lastReset: lastReset, interval: interval)
-    }
-
-    static func resolvedTrackingMode(isTracking: Bool,
-                                     authorizationStatus: CLAuthorizationStatus,
-                                     applicationState: UIApplication.State,
-                                     frequentUpdatesEnabled: Bool,
-                                     distanceFilterMeters: Int,
-                                     hasNavigationLocationSession: Bool) -> TrackingMode {
-        LocationTrackingPolicy.resolvedTrackingMode(
-            isTracking: isTracking,
-            authorizationStatus: authorizationStatus,
-            applicationState: applicationState,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            distanceFilterMeters: distanceFilterMeters,
-            hasNavigationLocationSession: hasNavigationLocationSession
-        )
-    }
-
-    static func effectiveApplicationStateForTracking(currentState: UIApplication.State,
-                                                     context: TrackingApplicationStateContext) -> UIApplication.State {
-        LocationTrackingPolicy.effectiveApplicationState(currentState: currentState, context: context)
-    }
-
-    static func batteryPercent(from batteryLevel: Float) -> Int? {
-        LocationTrackingPolicy.batteryPercent(from: batteryLevel)
-    }
-
-    static func processableLocationUpdates(from locations: [CLLocation]) -> [CLLocation] {
-        LocationSamplePolicy.processableLocationUpdates(from: locations)
-    }
-
-    static func locationSampleProcessingDecision(for location: CLLocation,
-                                                 now: Date,
-                                                 latestRawLocation: CLLocation?,
-                                                 currentLocation: CLLocation?,
-                                                 smartReferenceLocation: CLLocation?,
-                                                 maximumAge: TimeInterval = maximumLocationSampleAge,
-                                                 futureTolerance: TimeInterval = maximumLocationSampleFutureSkew) -> LocationSampleProcessingDecision {
-        LocationSamplePolicy.processingDecision(
-            for: location,
-            now: now,
-            latestRawLocation: latestRawLocation,
-            currentLocation: currentLocation,
-            smartReferenceLocation: smartReferenceLocation,
-            maximumAge: maximumAge,
-            futureTolerance: futureTolerance
-        )
-    }
-
-    static func newestSmartFrequentExitFenceAnchor(from candidates: [CLLocation?]) -> CLLocation? {
-        SmartFrequentBackgroundPolicy.newestExitFenceAnchor(from: candidates)
-    }
-
-    static func shouldUsePersistedSmartFrequentBackgroundSeed(now: Date,
-                                                             seedTimestamp: Date,
-                                                             inactivityWindow: TimeInterval) -> Bool {
-        SmartFrequentBackgroundPolicy.shouldUsePersistedSeed(
-            now: now,
-            seedTimestamp: seedTimestamp,
-            inactivityWindow: inactivityWindow
-        )
-    }
-
-    static func smartFrequentBackgroundSeedLocation(latitude: Double,
-                                                    longitude: Double,
-                                                    altitude: Double,
-                                                    horizontalAccuracy: Double,
-                                                    verticalAccuracy: Double,
-                                                    course: Double,
-                                                    speed: Double,
-                                                    timestamp: Date,
-                                                    now: Date,
-                                                    inactivityWindow: TimeInterval) -> CLLocation? {
-        SmartFrequentBackgroundPolicy.seedLocation(
-            latitude: latitude,
-            longitude: longitude,
-            altitude: altitude,
-            horizontalAccuracy: horizontalAccuracy,
-            verticalAccuracy: verticalAccuracy,
-            course: course,
-            speed: speed,
-            timestamp: timestamp,
-            now: now,
-            inactivityWindow: inactivityWindow
-        )
-    }
-
-    static func smartFrequentBackgroundSpeedKmh(for location: CLLocation,
-                                                previousLocation: CLLocation?,
-                                                detectionMode: SmartFrequentBackgroundSpeedDetectionMode) -> Double? {
-        SmartFrequentBackgroundPolicy.speedKmh(
-            for: location,
-            previousLocation: previousLocation,
-            detectionMode: detectionMode
-        )
-    }
-
-    static func smartFrequentExitFenceRadius(frequentDistanceFilterMeters: Int,
-                                             maximumRegionMonitoringDistance: CLLocationDistance) -> CLLocationDistance {
-        SmartFrequentBackgroundPolicy.exitFenceRadius(
-            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
-            maximumRegionMonitoringDistance: maximumRegionMonitoringDistance
-        )
-    }
-
-    static func shouldMaintainSmartFrequentExitFence(trackAndReportLocation: Bool,
-                                                     isTracking: Bool,
-                                                     authorizationStatus: CLAuthorizationStatus,
-                                                     deviceKeyAuthBlocked: Bool,
-                                                     smartEnabled: Bool,
-                                                     manualFrequentEnabled: Bool,
-                                                     smartRuntimeActive: Bool,
-                                                     regionMonitoringAvailable: Bool) -> Bool {
-        SmartFrequentBackgroundPolicy.shouldMaintainExitFence(
-            trackAndReportLocation: trackAndReportLocation,
-            isTracking: isTracking,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
-            smartEnabled: smartEnabled,
-            manualFrequentEnabled: manualFrequentEnabled,
-            smartRuntimeActive: smartRuntimeActive,
-            regionMonitoringAvailable: regionMonitoringAvailable
-        )
-    }
-
-    static func smartFrequentActivationEvidence(for location: CLLocation,
-                                                previousLocation: CLLocation?,
-                                                detectionMode: SmartFrequentBackgroundSpeedDetectionMode,
-                                                thresholdKmh: Int,
-                                                frequentDistanceFilterMeters: Int,
-                                                isStartupBatch: Bool,
-                                                regionExitRadiusMeters: CLLocationDistance? = nil) -> SmartFrequentActivationEvidence {
-        SmartFrequentBackgroundPolicy.activationEvidence(
-            for: location,
-            previousLocation: previousLocation,
-            detectionMode: detectionMode,
-            thresholdKmh: thresholdKmh,
-            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
-            isStartupBatch: isStartupBatch,
-            regionExitRadiusMeters: regionExitRadiusMeters
-        )
-    }
-
-    static func shouldActivateSmartFrequentBackgroundUpdates(speedKmh: Double?,
-                                                             thresholdKmh: Int) -> Bool {
-        SmartFrequentBackgroundPolicy.shouldActivate(speedKmh: speedKmh, thresholdKmh: thresholdKmh)
-    }
-
-    static func canActivateSmartFrequentBackgroundUpdates(now: Date,
-                                                          locationTimestamp: Date,
-                                                          previousLocationUpdateAt: Date?,
-                                                          inactivityWindow: TimeInterval,
-                                                          evidenceKind: SmartFrequentActivationEvidenceKind = .trustedDerivedSpeed) -> Bool {
-        SmartFrequentBackgroundPolicy.canActivate(
-            now: now,
-            locationTimestamp: locationTimestamp,
-            previousLocationUpdateAt: previousLocationUpdateAt,
-            inactivityWindow: inactivityWindow,
-            evidenceKind: evidenceKind
-        )
-    }
-
-    static func shouldDeactivateSmartFrequentBackgroundUpdates(now: Date,
-                                                               lastLocationUpdateAt: Date?,
-                                                               lastRelevantMovementAt: Date?,
-                                                               inactivityWindow: TimeInterval) -> Bool {
-        SmartFrequentBackgroundPolicy.shouldDeactivate(
-            now: now,
-            lastLocationUpdateAt: lastLocationUpdateAt,
-            lastRelevantMovementAt: lastRelevantMovementAt,
-            inactivityWindow: inactivityWindow
-        )
-    }
-
-    static func nextSmartFrequentBackgroundInactivityTimeout(lastLocationUpdateAt: Date?,
-                                                             lastRelevantMovementAt: Date?,
-                                                             inactivityWindow: TimeInterval) -> Date? {
-        SmartFrequentBackgroundPolicy.nextInactivityTimeout(
-            lastLocationUpdateAt: lastLocationUpdateAt,
-            lastRelevantMovementAt: lastRelevantMovementAt,
-            inactivityWindow: inactivityWindow
-        )
-    }
-
-    static func smartFrequentMovementDistanceThreshold(frequentDistanceFilterMeters: Int,
-                                                       from previousLocation: CLLocation?,
-                                                       to location: CLLocation) -> CLLocationDistance {
-        SmartFrequentBackgroundPolicy.movementDistanceThreshold(
-            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
-            from: previousLocation,
-            to: location
-        )
-    }
-
-    static func shouldConfirmSmartFrequentBackgroundMovement(distanceMeters: CLLocationDistance?,
-                                                             thresholdMeters: CLLocationDistance) -> Bool {
-        SmartFrequentBackgroundPolicy.shouldConfirmMovement(
-            distanceMeters: distanceMeters,
-            thresholdMeters: thresholdMeters
-        )
-    }
-
-    static func smartFrequentBackgroundWatchdogAction(phase: SmartFrequentRuntimePhase,
-                                                      smartEnabled: Bool,
-                                                      manualFrequentEnabled: Bool,
-                                                      lastFrequentCallbackAt: Date?,
-                                                      runtimeStartedAt: Date?,
-                                                      recoveryAttemptCount: Int,
-                                                      now: Date,
-                                                      interval: TimeInterval = smartFrequentBackgroundRuntimeWatchdogInterval,
-                                                      maximumRecoveryAttempts: Int = maximumSmartFrequentBackgroundRuntimeRecoveryAttempts) -> SmartFrequentBackgroundWatchdogAction {
-        SmartFrequentBackgroundPolicy.watchdogAction(
-            phase: phase,
-            smartEnabled: smartEnabled,
-            manualFrequentEnabled: manualFrequentEnabled,
-            lastFrequentCallbackAt: lastFrequentCallbackAt,
-            runtimeStartedAt: runtimeStartedAt,
-            recoveryAttemptCount: recoveryAttemptCount,
-            now: now,
-            interval: interval,
-            maximumRecoveryAttempts: maximumRecoveryAttempts
-        )
-    }
-
-    static func shouldBypassLocationSensitivityForFrequentBackgroundUpload(applicationState: UIApplication.State,
-                                                                           updateSourceIsFrequentBackground: Bool,
-                                                                           manualFrequentEnabled: Bool,
-                                                                           smartRuntimePhase: SmartFrequentRuntimePhase) -> Bool {
-        LocationSamplePolicy.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
-            applicationState: applicationState,
-            updateSourceIsFrequentBackground: updateSourceIsFrequentBackground,
-            manualFrequentEnabled: manualFrequentEnabled,
-            smartRuntimePhase: smartRuntimePhase
-        )
-    }
-
-    static func shouldDisableFrequentBackgroundUpdatesForBattery(frequentUpdatesEnabled: Bool,
-                                                                 batteryPercent: Int?,
-                                                                 thresholdPercent: Int) -> Bool {
-        LocationTrackingPolicy.shouldDisableFrequentBackgroundUpdatesForBattery(
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            batteryPercent: batteryPercent,
-            thresholdPercent: thresholdPercent
-        )
-    }
-
-    static func frequentBackgroundLocationDeliveryDelay(applicationState: UIApplication.State,
-                                                        frequentUpdatesEnabled: Bool,
-                                                        deliveryMode: FrequentBackgroundLocationDeliveryMode) -> TimeInterval? {
-        LocationTrackingPolicy.frequentBackgroundLocationDeliveryDelay(
-            applicationState: applicationState,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            deliveryMode: deliveryMode
-        )
-    }
-
-    static func frequentBackgroundVisitorCheckMinimumInterval(applicationState: UIApplication.State,
-                                                              frequentUpdatesEnabled: Bool,
-                                                              visitorCheckInterval: FrequentBackgroundVisitorCheckInterval) -> TimeInterval? {
-        LocationTrackingPolicy.frequentBackgroundVisitorCheckMinimumInterval(
-            applicationState: applicationState,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            visitorCheckInterval: visitorCheckInterval
-        )
-    }
-
-    static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
-                                                              authorizationStatus: CLAuthorizationStatus,
-                                                              deviceKeyAuthBlocked: Bool) -> Bool {
-        LocationTrackingPolicy.shouldMaintainSignificantChangeRecoveryAnchor(
-            trackAndReportLocation: trackAndReportLocation,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
-        )
-    }
-
-    static func shouldMaintainLocationServiceSession(trackAndReportLocation: Bool,
-                                                     isTracking: Bool,
-                                                     authorizationStatus: CLAuthorizationStatus,
-                                                     deviceKeyAuthBlocked: Bool) -> Bool {
-        LocationTrackingPolicy.shouldMaintainLocationServiceSession(
-            trackAndReportLocation: trackAndReportLocation,
-            isTracking: isTracking,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
-        )
-    }
-
-    static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
-                                                  deviceKeyAuthBlocked: Bool) -> Bool {
-        LocationTrackingPolicy.shouldRestoreTrackingAfterLaunch(
-            trackAndReportLocation: trackAndReportLocation,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
-        )
-    }
-
-    static func trackingReconcileAction(trackAndReportLocation: Bool,
-                                        deviceKeyAuthBlocked: Bool,
-                                        authorizationStatus: CLAuthorizationStatus,
-                                        isTracking: Bool) -> TrackingReconcileAction {
-        LocationTrackingPolicy.trackingReconcileAction(
-            trackAndReportLocation: trackAndReportLocation,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
-            authorizationStatus: authorizationStatus,
-            isTracking: isTracking
-        )
-    }
-
-    static func shouldDisableTrackingPreference(authorizationStatus: CLAuthorizationStatus) -> Bool {
-        LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: authorizationStatus)
-    }
-
-    static func significantChangeRearmDecision(buildIdentifier: String,
-                                               alreadyRearmedBuildIdentifier: String?,
-                                               reason: String,
-                                               trackAndReportLocation: Bool,
-                                               authorizationStatus: CLAuthorizationStatus,
-                                               deviceKeyAuthBlocked: Bool,
-                                               now: Date = Date()) -> SignificantChangeRearmDecision {
-        LocationBackgroundForensics.significantChangeRearmDecision(
-            buildIdentifier: buildIdentifier,
-            alreadyRearmedBuildIdentifier: alreadyRearmedBuildIdentifier,
-            reason: reason,
-            trackAndReportLocation: trackAndReportLocation,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
-            now: now
-        )
-    }
-
-    static func shouldMaintainFrequentBackgroundActivitySession(trackAndReportLocation: Bool,
-                                                                isTracking: Bool,
-                                                                frequentUpdatesEnabled: Bool,
-                                                                authorizationStatus: CLAuthorizationStatus,
-                                                                deviceKeyAuthBlocked: Bool) -> Bool {
-        LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
-            trackAndReportLocation: trackAndReportLocation,
-            isTracking: isTracking,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
-        )
-    }
-
-    static func locationServiceCommandPlan(for mode: TrackingMode,
-                                           shouldMaintainRecoveryAnchor: Bool) -> LocationServiceCommandPlan {
-        LocationTrackingPolicy.locationServiceCommandPlan(
-            for: mode,
-            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor
-        )
-    }
-
-    static func locationSubmissionDeduplicationKey(for location: CLLocation) -> LocationSubmissionDeduplicationKey? {
-        LocationSamplePolicy.submissionDeduplicationKey(for: location)
-    }
-
-    static func shouldSubmitLocationForUpload(_ location: CLLocation,
-                                              lastSubmittedKey: LocationSubmissionDeduplicationKey?) -> Bool {
-        LocationSamplePolicy.shouldSubmitLocationForUpload(location, lastSubmittedKey: lastSubmittedKey)
-    }
-
-    static func backgroundTrackingGapAssessment(
-        state: BackgroundTrackingForensicState,
-        now: Date,
-        frequentThreshold: TimeInterval = forensicFrequentBackgroundGapThreshold
-    ) -> BackgroundTrackingGapAssessment? {
-        LocationBackgroundForensics.gapAssessment(
-            state: state,
-            now: now,
-            frequentThreshold: frequentThreshold
-        )
-    }
-
-    static func shouldLogForegroundRecoveryBurst(foregroundOpenedAt: Date?,
-                                                 recoveryAlreadyLoggedAt: Date?,
-                                                 now: Date,
-                                                 acceptedCount: Int,
-                                                 uploadCount: Int,
-                                                 window: TimeInterval = forensicForegroundRecoveryBurstWindow) -> Bool {
-        LocationBackgroundForensics.shouldLogForegroundRecoveryBurst(
-            foregroundOpenedAt: foregroundOpenedAt,
-            recoveryAlreadyLoggedAt: recoveryAlreadyLoggedAt,
-            now: now,
-            acceptedCount: acceptedCount,
-            uploadCount: uploadCount,
-            window: window
-        )
-    }
-
-    static func frequentBackgroundModeSwitchReason(didExpire: Bool,
-                                                   didDisableForBattery: Bool) -> String {
-        LocationTrackingPolicy.frequentBackgroundModeSwitchReason(
-            didExpire: didExpire,
-            didDisableForBattery: didDisableForBattery
-        )
-    }
-
     var currentBackgroundTrackingDisplayMode: BackgroundTrackingDisplayMode {
         Self.backgroundTrackingDisplayMode(
             applicationState: UIApplication.shared.applicationState,
@@ -832,52 +311,6 @@ final class LocationManager: NSObject, ObservableObject {
         )
     }
 
-    static func shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
-        applicationState: UIApplication.State,
-        frequentUpdatesEnabled: Bool,
-        didSwitchFrequentBackgroundMode: Bool,
-        frequentBackgroundStandardUpdatesActiveInCurrentProcess: Bool,
-        updateSourceIsPrimary: Bool
-    ) -> Bool {
-        LocationTrackingPolicy.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
-            applicationState: applicationState,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
-            frequentBackgroundStandardUpdatesActiveInCurrentProcess: frequentBackgroundStandardUpdatesActiveInCurrentProcess,
-            updateSourceIsPrimary: updateSourceIsPrimary
-        )
-    }
-
-    static func shouldCleanUpStaleFrequentBackgroundCallback(frequentUpdatesEnabled: Bool,
-                                                             didSwitchFrequentBackgroundMode: Bool,
-                                                             updateSourceIsFrequentBackground: Bool) -> Bool {
-        LocationTrackingPolicy.shouldCleanUpStaleFrequentBackgroundCallback(
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
-            updateSourceIsFrequentBackground: updateSourceIsFrequentBackground
-        )
-    }
-
-    static func shouldSuppressStaleFrequentBackgroundCallback(allowNextStaleCallback: Bool) -> Bool {
-        LocationTrackingPolicy.shouldSuppressStaleFrequentBackgroundCallback(allowNextStaleCallback: allowNextStaleCallback)
-    }
-
-    static func shouldReassertStandardSignificantChangeAfterPrimaryCallback(
-        applicationState: UIApplication.State,
-        frequentUpdatesEnabled: Bool,
-        didSwitchFrequentBackgroundMode: Bool,
-        shouldMaintainRecoveryAnchor: Bool,
-        updateSourceIsPrimary: Bool
-    ) -> Bool {
-        LocationTrackingPolicy.shouldReassertStandardSignificantChangeAfterPrimaryCallback(
-            applicationState: applicationState,
-            frequentUpdatesEnabled: frequentUpdatesEnabled,
-            didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode,
-            shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor,
-            updateSourceIsPrimary: updateSourceIsPrimary
-        )
-    }
-    
     // MARK: - Permissions
     func requestLocationPermission() {
         switch locationManager.authorizationStatus {
@@ -1039,8 +472,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
-        backgroundTrackingForensicState.lastRestoreAfterLaunchAt = Date()
-        evaluateBackgroundTrackingGap(trigger: "restore tracking after launch: \(reason)")
+        recordForensicRestoreAfterLaunch(trigger: "restore tracking after launch: \(reason)")
 
         guard Self.shouldRestoreTrackingAfterLaunch(
             trackAndReportLocation: settings.trackAndReportLocation,
@@ -1075,19 +507,16 @@ final class LocationManager: NSObject, ObservableObject {
 
     func rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(buildIdentifier: String, reason: String) {
         let status = locationManager.authorizationStatus
-        let decision = Self.significantChangeRearmDecision(
+        let decision = backgroundForensicsRecorder.significantChangeRearmDecision(
             buildIdentifier: buildIdentifier,
-            alreadyRearmedBuildIdentifier: userDefaults.string(forKey: significantChangeRearmedBuildIdentifierKey),
             reason: reason,
             trackAndReportLocation: settings.trackAndReportLocation,
             authorizationStatus: status,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
         )
 
-        lastSignificantChangeRearmStatus = decision.status
-        persistLastSignificantChangeRearmStatus(decision.status)
-        backgroundTrackingForensicState.lastSignificantChangeRearmAt = decision.status.timestamp
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordSignificantChangeRearmStatus(decision.status)
+        syncBackgroundForensicsSnapshot()
 
         guard decision.shouldAttempt else {
             diagnosticsLog.append(
@@ -1103,12 +532,8 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         debugLog("[LocationManager] Re-arming significant-change monitor after fresh launch (\(reason))")
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.stopMonitoringSignificantLocationChanges()
-        isSignificantChangeRecoveryAnchorActive = false
-        locationManager.startMonitoringSignificantLocationChanges()
-        isSignificantChangeRecoveryAnchorActive = true
-        userDefaults.set(buildIdentifier, forKey: significantChangeRearmedBuildIdentifierKey)
+        coreLocationServices.rearmSignificantChangeMonitorAfterFreshLaunch()
+        backgroundForensicsRecorder.markSignificantChangeRearmed(buildIdentifier: buildIdentifier)
 
         diagnosticsLog.append(
             level: .warning,
@@ -1235,280 +660,86 @@ final class LocationManager: NSObject, ObservableObject {
         ])
     }
 
-    private func persistLastSignificantChangeRearmStatus(_ status: LocationSignificantChangeRearmStatus) {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        if let data = try? encoder.encode(status) {
-            userDefaults.set(data, forKey: lastSignificantChangeRearmStatusKey)
-        }
+    private func syncBackgroundForensicsSnapshot() {
+        lastSignificantChangeRearmStatus = backgroundForensicsRecorder.lastSignificantChangeRearmStatus
+        backgroundTrackingForensicState = backgroundForensicsRecorder.state
     }
 
-    private func loadLastSignificantChangeRearmStatus() -> LocationSignificantChangeRearmStatus? {
-        guard let data = userDefaults.data(forKey: lastSignificantChangeRearmStatusKey) else {
-            return nil
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try? decoder.decode(LocationSignificantChangeRearmStatus.self, from: data)
-    }
-
-    private func persistBackgroundTrackingForensicState() {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        if let data = try? encoder.encode(backgroundTrackingForensicState) {
-            userDefaults.set(data, forKey: backgroundTrackingForensicStateKey)
-        }
-    }
-
-    private func loadBackgroundTrackingForensicState() -> BackgroundTrackingForensicState {
-        guard let data = userDefaults.data(forKey: backgroundTrackingForensicStateKey) else {
-            return BackgroundTrackingForensicState()
-        }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return (try? decoder.decode(BackgroundTrackingForensicState.self, from: data)) ?? BackgroundTrackingForensicState()
-    }
-
-    private func trackingModeForensicDescription(_ mode: TrackingMode) -> String {
-        switch mode {
-        case .stopped:
-            return "stopped"
-        case .foregroundHighAccuracy:
-            return "foregroundHighAccuracy"
-        case .backgroundSignificantChange:
-            return "backgroundSignificantChange"
-        case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
-            return "backgroundFrequent(distanceFilter: \(distanceFilter), desiredAccuracy: \(desiredAccuracy))"
-        }
+    private func recordForensicRestoreAfterLaunch(trigger: String, now: Date = Date()) {
+        backgroundForensicsRecorder.recordRestoreAfterLaunch(trigger: trigger, now: now)
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicModeResolution(mode: TrackingMode,
                                               applicationState: UIApplication.State,
                                               reason: String,
                                               now: Date = Date()) {
-        let expectedMode = trackingModeForensicDescription(mode)
-        backgroundTrackingForensicState.currentExpectedMode = expectedMode
-        backgroundTrackingForensicState.lastModeAssertionAt = now
-        backgroundTrackingForensicState.lastModeAssertionReason = reason
-        backgroundTrackingForensicState.lastKnownApplicationState = applicationState.rawValue
-
-        switch mode {
-        case .backgroundSignificantChange, .backgroundFrequent:
-            if backgroundTrackingForensicState.backgroundTrackingExpectedSince == nil {
-                backgroundTrackingForensicState.backgroundTrackingExpectedSince = now
-            }
-        case .foregroundHighAccuracy, .stopped:
-            backgroundTrackingForensicState.backgroundTrackingExpectedSince = nil
-        }
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordModeResolution(
+            mode: mode,
+            applicationState: applicationState,
+            reason: reason,
+            now: now
+        )
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicServiceAssertion(mode: TrackingMode, now: Date = Date()) {
-        switch mode {
-        case .backgroundSignificantChange, .backgroundFrequent:
-            backgroundTrackingForensicState.lastServiceAssertionAt = now
-            backgroundTrackingForensicState.backgroundServicesAsserted = true
-        case .foregroundHighAccuracy, .stopped:
-            backgroundTrackingForensicState.backgroundServicesAsserted = false
-        }
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordServiceAssertion(mode: mode, now: now)
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicForegroundOpen(trigger: String, now: Date = Date()) {
-        evaluateBackgroundTrackingGap(trigger: trigger, now: now, prepareForegroundRecovery: true)
-        backgroundTrackingForensicState.lastForegroundOpenAt = now
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordForegroundOpen(trigger: trigger, now: now)
+        syncBackgroundForensicsSnapshot()
     }
 
     private func evaluateBackgroundTrackingGap(trigger: String,
                                                now: Date = Date(),
                                                prepareForegroundRecovery: Bool = false) {
-        guard let assessment = Self.backgroundTrackingGapAssessment(
-            state: backgroundTrackingForensicState,
-            now: now
-        ) else {
-            if prepareForegroundRecovery {
-                resetPendingForegroundRecovery()
-            }
-            return
-        }
-
-        if let lastLoggedAt = backgroundTrackingForensicState.lastBackgroundGapLoggedAt,
-           now.timeIntervalSince(lastLoggedAt) < Self.forensicFrequentBackgroundGapThreshold {
-            if prepareForegroundRecovery {
-                preparePendingForegroundRecovery(assessment: assessment, now: now)
-            }
-            persistBackgroundTrackingForensicState()
-            return
-        }
-
-        let level: LocationDiagnosticsLogLevel = assessment.kind == .suspicious ? .warning : .info
-        diagnosticsLog.append(
-            level: level,
-            event: "backgroundTrackingGap",
-            summary: assessment.kind == .suspicious ? "Expected background tracking had a long callback/upload gap." : "Significant-change background tracking had no observable wake in this interval.",
-            result: assessment.kind.rawValue,
-            reason: trigger,
-            checks: [
-                LocationDiagnosticsLogStore.check(
-                    "backgroundTrackingExpected",
-                    backgroundTrackingForensicState.backgroundTrackingExpectedSince != nil,
-                    detail: "Expected since \(String(describing: backgroundTrackingForensicState.backgroundTrackingExpectedSince))."
-                ),
-                LocationDiagnosticsLogStore.check(
-                    "gapExceedsThreshold",
-                    true,
-                    detail: "\(assessment.gapSeconds)s >= \(Int(Self.forensicFrequentBackgroundGapThreshold))s."
-                )
-            ],
-            context: forensicGapContext(assessment: assessment)
+        backgroundForensicsRecorder.evaluateGap(
+            trigger: trigger,
+            now: now,
+            prepareForegroundRecovery: prepareForegroundRecovery
         )
-        backgroundTrackingForensicState.lastBackgroundGapLoggedAt = now
-        if prepareForegroundRecovery {
-            preparePendingForegroundRecovery(assessment: assessment, now: now)
-        }
-        persistBackgroundTrackingForensicState()
-    }
-
-    private func preparePendingForegroundRecovery(assessment: BackgroundTrackingGapAssessment, now: Date) {
-        backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt = now
-        backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode = backgroundTrackingForensicState.currentExpectedMode
-        backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds = assessment.gapSeconds
-        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt = backgroundTrackingForensicState.lastBackgroundCallbackAt
-        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt = backgroundTrackingForensicState.lastBackgroundUploadAt
-        backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted = backgroundTrackingForensicState.backgroundServicesAsserted
-        backgroundTrackingForensicState.foregroundBurstCallbackCount = 0
-        backgroundTrackingForensicState.foregroundBurstAcceptedCount = 0
-        backgroundTrackingForensicState.foregroundBurstUploadCount = 0
-        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = nil
-    }
-
-    private func resetPendingForegroundRecovery() {
-        backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt = nil
-        backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode = nil
-        backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds = nil
-        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt = nil
-        backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt = nil
-        backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted = nil
-        backgroundTrackingForensicState.foregroundBurstCallbackCount = 0
-        backgroundTrackingForensicState.foregroundBurstAcceptedCount = 0
-        backgroundTrackingForensicState.foregroundBurstUploadCount = 0
-        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = nil
-    }
-
-    private func forensicGapContext(assessment: BackgroundTrackingGapAssessment) -> [String: LocationDiagnosticsValue] {
-        var context: [String: LocationDiagnosticsValue] = [
-            "gapSeconds": .integer(assessment.gapSeconds),
-            "currentExpectedMode": .string(backgroundTrackingForensicState.currentExpectedMode ?? "unknown"),
-            "backgroundServicesAsserted": .bool(backgroundTrackingForensicState.backgroundServicesAsserted)
-        ]
-        if let expectedSince = backgroundTrackingForensicState.backgroundTrackingExpectedSince {
-            context["backgroundTrackingExpectedSince"] = .string(ISO8601DateFormatter().string(from: expectedSince))
-        }
-        if let lastObservedAt = assessment.lastObservedAt {
-            context["lastObservedBackgroundActivityAt"] = .string(ISO8601DateFormatter().string(from: lastObservedAt))
-        }
-        if let lastCallbackAt = backgroundTrackingForensicState.lastBackgroundCallbackAt {
-            context["lastBackgroundCallbackAt"] = .string(ISO8601DateFormatter().string(from: lastCallbackAt))
-        }
-        if let lastUploadAt = backgroundTrackingForensicState.lastBackgroundUploadAt {
-            context["lastBackgroundUploadAt"] = .string(ISO8601DateFormatter().string(from: lastUploadAt))
-        }
-        return context
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicLocationCallback(applicationState: UIApplication.State,
                                                 source: LocationUpdateSource,
                                                 timestamp: Date = Date()) {
-        backgroundTrackingForensicState.lastKnownApplicationState = applicationState.rawValue
-        backgroundTrackingForensicState.lastKnownSource = source.rawValue
-        if applicationState == .active {
-            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil,
-               source == .primary {
-                backgroundTrackingForensicState.foregroundBurstCallbackCount += 1
-            }
-        } else {
-            backgroundTrackingForensicState.lastBackgroundCallbackAt = timestamp
-        }
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordLocationCallback(
+            applicationState: applicationState,
+            sourceRawValue: source.rawValue,
+            isPrimarySource: source == .primary,
+            timestamp: timestamp
+        )
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicAcceptedLocation(applicationState: UIApplication.State,
                                                 source: LocationUpdateSource,
                                                 timestamp: Date = Date()) {
-        if applicationState == .active {
-            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil,
-               source == .primary {
-                backgroundTrackingForensicState.foregroundBurstAcceptedCount += 1
-                maybeLogForegroundRecoveryBurst(now: timestamp)
-            }
-        } else {
-            backgroundTrackingForensicState.lastAcceptedBackgroundLocationAt = timestamp
-        }
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordAcceptedLocation(
+            applicationState: applicationState,
+            isPrimarySource: source == .primary,
+            timestamp: timestamp
+        )
+        syncBackgroundForensicsSnapshot()
     }
 
     private func recordForensicUpload(applicationState: UIApplication.State, timestamp: Date = Date()) {
-        if applicationState == .active {
-            if backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt != nil {
-                backgroundTrackingForensicState.foregroundBurstUploadCount += 1
-                maybeLogForegroundRecoveryBurst(now: timestamp)
-            }
-        } else {
-            backgroundTrackingForensicState.lastBackgroundUploadAt = timestamp
-        }
-        persistBackgroundTrackingForensicState()
+        backgroundForensicsRecorder.recordUpload(applicationState: applicationState, timestamp: timestamp)
+        syncBackgroundForensicsSnapshot()
     }
 
-    private func maybeLogForegroundRecoveryBurst(now: Date = Date()) {
-        guard Self.shouldLogForegroundRecoveryBurst(
-            foregroundOpenedAt: backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt,
-            recoveryAlreadyLoggedAt: backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt,
-            now: now,
-            acceptedCount: backgroundTrackingForensicState.foregroundBurstAcceptedCount,
-            uploadCount: backgroundTrackingForensicState.foregroundBurstUploadCount
-        ) else {
-            return
-        }
-
-        diagnosticsLog.append(
-            level: .warning,
-            event: "foregroundRecoveryBurst",
-            summary: "Foreground opening was followed by accepted/uploaded primary locations after a background gap.",
-            result: "foreground activity after gap",
-            reason: "manual foreground wake",
-            checks: [
-                LocationDiagnosticsLogStore.check(
-                    "withinRecoveryWindow",
-                    true,
-                    detail: "Foreground activity occurred within \(Int(Self.forensicForegroundRecoveryBurstWindow))s."
-                )
-            ],
-            context: foregroundRecoveryContext()
-        )
-        backgroundTrackingForensicState.foregroundRecoveryBurstLoggedAt = now
-        persistBackgroundTrackingForensicState()
+    private func recordForensicSmartActivation(at timestamp: Date) {
+        backgroundForensicsRecorder.recordSmartActivation(at: timestamp)
+        syncBackgroundForensicsSnapshot()
     }
 
-    private func foregroundRecoveryContext() -> [String: LocationDiagnosticsValue] {
-        var context: [String: LocationDiagnosticsValue] = [
-            "previousExpectedMode": .string(backgroundTrackingForensicState.pendingForegroundRecoveryPreviousMode ?? "unknown"),
-            "gapSeconds": .integer(backgroundTrackingForensicState.pendingForegroundRecoveryGapSeconds ?? 0),
-            "foregroundCallbackCount": .integer(backgroundTrackingForensicState.foregroundBurstCallbackCount),
-            "foregroundAcceptedCount": .integer(backgroundTrackingForensicState.foregroundBurstAcceptedCount),
-            "foregroundUploadCount": .integer(backgroundTrackingForensicState.foregroundBurstUploadCount),
-            "backgroundServicesAsserted": .bool(backgroundTrackingForensicState.pendingForegroundRecoveryBackgroundServicesAsserted ?? backgroundTrackingForensicState.backgroundServicesAsserted)
-        ]
-        if let startedAt = backgroundTrackingForensicState.pendingForegroundRecoveryStartedAt {
-            context["foregroundOpenedAt"] = .string(ISO8601DateFormatter().string(from: startedAt))
-        }
-        if let lastCallbackAt = backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundCallbackAt {
-            context["lastBackgroundCallbackAt"] = .string(ISO8601DateFormatter().string(from: lastCallbackAt))
-        }
-        if let lastUploadAt = backgroundTrackingForensicState.pendingForegroundRecoveryLastBackgroundUploadAt {
-            context["lastBackgroundUploadAt"] = .string(ISO8601DateFormatter().string(from: lastUploadAt))
-        }
-        return context
+    private func recordForensicSmartDeactivation(at timestamp: Date = Date()) {
+        backgroundForensicsRecorder.recordSmartDeactivation(at: timestamp)
+        syncBackgroundForensicsSnapshot()
     }
 
     @discardableResult
@@ -1677,7 +908,7 @@ final class LocationManager: NSObject, ObservableObject {
                 "navigationSessions": .integer(navigationLocationSessionIDs.count)
             ]
         )
-        syncLocationServiceSession(
+        coreLocationServices.syncLocationServiceSession(
             reason: reason,
             shouldMaintainSession: Self.shouldMaintainLocationServiceSession(
                 trackAndReportLocation: settings.trackAndReportLocation,
@@ -1686,7 +917,7 @@ final class LocationManager: NSObject, ObservableObject {
                 deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
             )
         )
-        syncFrequentBackgroundActivitySession(
+        coreLocationServices.syncFrequentBackgroundActivitySession(
             reason: reason,
             shouldMaintainSession: shouldMaintainFrequentActivitySession
         )
@@ -1716,8 +947,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func syncBackgroundLocationIndicator(for mode: TrackingMode) {
         let shouldShowIndicator = Self.shouldShowBackgroundLocationIndicator(for: mode)
-        locationManager.showsBackgroundLocationIndicator = false
-        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = shouldShowIndicator
+        coreLocationServices.syncBackgroundLocationIndicator(shouldShowIndicator: shouldShowIndicator)
     }
 
     private func startHighAccuracyUpdates() {
@@ -1728,18 +958,9 @@ final class LocationManager: NSObject, ObservableObject {
             authorizationStatus: locationManager.authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
         )
-        if shouldMaintainPrimarySignificantChangeMonitor {
-            debugLog("[LocationManager] Keeping primary significant-change monitor active during foreground tracking")
-            locationManager.startMonitoringSignificantLocationChanges()
-        } else {
-            locationManager.stopMonitoringSignificantLocationChanges()
-        }
-        stopFrequentBackgroundStandardUpdates()
-        locationManager.allowsBackgroundLocationUpdates = false
-        debugLog("allowsBackgroundLocationUpdates set to false (foreground)")
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.distanceFilter = kCLDistanceFilterNone
-        locationManager.startUpdatingLocation()
+        coreLocationServices.startHighAccuracyUpdates(
+            shouldMaintainPrimarySignificantChangeMonitor: shouldMaintainPrimarySignificantChangeMonitor
+        )
         startHeadingUpdatesIfAvailable()
         if foregroundLocationTimer == nil {
             debugLog("App is active, will start foreground location timer")
@@ -1752,12 +973,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func startSignificantChangeMonitoring() {
         debugLog("Starting significant-change background updates")
         recordForensicServiceAssertion(mode: .backgroundSignificantChange)
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.showsBackgroundLocationIndicator = false
-        debugLog("allowsBackgroundLocationUpdates set to true (background)")
-        locationManager.stopUpdatingLocation()
-        locationManager.startMonitoringSignificantLocationChanges()
-        stopFrequentBackgroundStandardUpdates()
+        coreLocationServices.startSignificantChangeMonitoring()
         stopHeadingUpdates()
         stopForegroundLocationTimer()
         diagnosticsLog.append(
@@ -1777,22 +993,13 @@ final class LocationManager: NSObject, ObservableObject {
     private func startFrequentBackgroundLocationUpdates(configuration: BackgroundUpdateConfiguration) {
         debugLog("Starting frequent background updates with distanceFilter=\(configuration.distanceFilter)m")
         recordForensicServiceAssertion(mode: .backgroundFrequent(distanceFilter: configuration.distanceFilter, desiredAccuracy: configuration.desiredAccuracy))
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.stopUpdatingLocation()
-        locationManager.startMonitoringSignificantLocationChanges()
         // Keep the primary manager registered for significant-change relaunch; run frequent standard updates separately.
         stopHeadingUpdates()
-        frequentBackgroundLocationManager.delegate = self
-        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = true
-        frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = false
-        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = true
-        frequentBackgroundLocationManager.activityType = Self.activityTypeFrom(settings.locationActivityType)
-        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
-        frequentBackgroundLocationManager.desiredAccuracy = configuration.desiredAccuracy
-        frequentBackgroundLocationManager.distanceFilter = configuration.distanceFilter
-        frequentBackgroundLocationManager.startUpdatingLocation()
-        isFrequentBackgroundStandardUpdatesActive = true
-        shouldAllowNextStaleFrequentBackgroundCallback = false
+        coreLocationServices.startFrequentBackgroundLocationUpdates(
+            configuration: configuration,
+            delegate: self,
+            activityType: Self.activityTypeFrom(settings.locationActivityType)
+        )
         scheduleSmartFrequentBackgroundWatchdogIfNeeded()
         stopForegroundLocationTimer()
         diagnosticsLog.append(
@@ -1809,69 +1016,10 @@ final class LocationManager: NSObject, ObservableObject {
                 "secondaryStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive),
                 "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
                 "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
-                "frequentActivitySessionActive": .bool(frequentBackgroundActivitySession != nil),
+                "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive),
                 "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue)
             ]
         )
-    }
-
-    private func stopFrequentBackgroundStandardUpdates() {
-        if isFrequentBackgroundStandardUpdatesActive {
-            shouldAllowNextStaleFrequentBackgroundCallback = true
-        }
-        frequentBackgroundLocationManager.stopUpdatingLocation()
-        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
-        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = false
-        frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = true
-        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
-        frequentBackgroundLocationManager.delegate = nil
-        isFrequentBackgroundStandardUpdatesActive = false
-    }
-
-    private func syncFrequentBackgroundActivitySession(reason: String, shouldMaintainSession: Bool) {
-        if shouldMaintainSession {
-            startFrequentBackgroundActivitySessionIfNeeded(reason: reason)
-        } else {
-            stopFrequentBackgroundActivitySession(reason: reason)
-        }
-    }
-
-    private func syncLocationServiceSession(reason: String, shouldMaintainSession: Bool) {
-        if shouldMaintainSession {
-            startLocationServiceSessionIfNeeded(reason: reason)
-        } else {
-            stopLocationServiceSession(reason: reason)
-        }
-    }
-
-    private func startLocationServiceSessionIfNeeded(reason: String) {
-        guard locationServiceSession == nil else { return }
-        debugLog("[LocationManager] Starting Always CLServiceSession (\(reason))")
-        locationServiceSession = CLServiceSession(authorization: .always)
-    }
-
-    private func stopLocationServiceSession(reason: String) {
-        guard let locationServiceSession else { return }
-        debugLog("[LocationManager] Stopping Always CLServiceSession (\(reason))")
-        locationServiceSession.invalidate()
-        self.locationServiceSession = nil
-    }
-
-    private func startFrequentBackgroundActivitySessionIfNeeded(reason: String) {
-        if frequentBackgroundActivitySession == nil {
-            debugLog("[LocationManager] Starting frequent background CLBackgroundActivitySession (\(reason))")
-            frequentBackgroundActivitySession = CLBackgroundActivitySession()
-        } else {
-            debugLog("[LocationManager] Keeping frequent background activity session active (\(reason))")
-        }
-    }
-
-    private func stopFrequentBackgroundActivitySession(reason: String) {
-        if let activitySession = frequentBackgroundActivitySession {
-            debugLog("[LocationManager] Stopping frequent background CLBackgroundActivitySession (\(reason))")
-            activitySession.invalidate()
-            frequentBackgroundActivitySession = nil
-        }
     }
 
     private func cleanUpStaleFrequentBackgroundCallbackIfNeeded(
@@ -1885,14 +1033,13 @@ final class LocationManager: NSObject, ObservableObject {
         ) else { return .noCleanup }
 
         let shouldSuppressCallback = Self.shouldSuppressStaleFrequentBackgroundCallback(
-            allowNextStaleCallback: shouldAllowNextStaleFrequentBackgroundCallback
+            allowNextStaleCallback: coreLocationServices.consumeAllowNextStaleFrequentBackgroundCallback()
         )
-        shouldAllowNextStaleFrequentBackgroundCallback = false
 
         let handling = shouldSuppressCallback ? "suppressing repeated stale location" : "location remains eligible for upload"
         debugLog("[LocationManager] Cleaning up stale frequent background callback while frequent mode is disabled; \(handling)")
-        stopFrequentBackgroundStandardUpdates()
-        stopFrequentBackgroundActivitySession(reason: "stale frequent background callback")
+        coreLocationServices.stopFrequentBackgroundStandardUpdates()
+        coreLocationServices.stopFrequentBackgroundActivitySession(reason: "stale frequent background callback")
 
         return StaleFrequentBackgroundCallbackCleanupResult(
             didCleanUp: true,
@@ -1939,17 +1086,17 @@ final class LocationManager: NSObject, ObservableObject {
         ) else { return }
 
         debugLog("[LocationManager] Reasserting standard significant-change tracking after primary background callback")
-        locationManager.allowsBackgroundLocationUpdates = true
-        startSignificantChangeRecoveryAnchor(reason: "standard significant-change callback reassert")
+        coreLocationServices.allowPrimaryBackgroundLocationUpdates()
+        coreLocationServices.startSignificantChangeRecoveryAnchor(reason: "standard significant-change callback reassert")
     }
 
     private func ensureSignificantChangeRecoveryAnchorIfNeeded(reason: String, shouldMaintainRecoveryAnchor: Bool) {
         guard shouldMaintainRecoveryAnchor else {
-            stopSignificantChangeRecoveryAnchor(reason: "recovery anchor no longer eligible: \(reason)")
+            coreLocationServices.stopSignificantChangeRecoveryAnchor(reason: "recovery anchor no longer eligible: \(reason)")
             return
         }
 
-        startSignificantChangeRecoveryAnchor(reason: "recovery anchor: \(reason)")
+        coreLocationServices.startSignificantChangeRecoveryAnchor(reason: "recovery anchor: \(reason)")
     }
 
     private func reconcileSmartFrequentExitFence(reason: String,
@@ -2127,20 +1274,6 @@ final class LocationManager: NSObject, ObservableObject {
             now: now
         )
         applyTrackingMode(reason: "smart frequent exit-fence", applicationStateContext: .forceBackground)
-    }
-
-    private func startSignificantChangeRecoveryAnchor(reason: String) {
-        let action = isSignificantChangeRecoveryAnchorActive ? "Reasserting" : "Starting"
-        debugLog("[LocationManager] \(action) primary significant-change recovery anchor (\(reason))")
-        locationManager.startMonitoringSignificantLocationChanges()
-        isSignificantChangeRecoveryAnchorActive = true
-    }
-
-    private func stopSignificantChangeRecoveryAnchor(reason: String) {
-        let action = isSignificantChangeRecoveryAnchorActive ? "Stopping" : "Reasserting stopped"
-        debugLog("[LocationManager] \(action) primary significant-change recovery anchor (\(reason))")
-        locationManager.stopMonitoringSignificantLocationChanges()
-        isSignificantChangeRecoveryAnchorActive = false
     }
 
     @discardableResult
@@ -2374,8 +1507,7 @@ final class LocationManager: NSObject, ObservableObject {
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
         scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
         debugLog("[LocationManager] Smart frequent background probe started evidence=\(evidence.kind.rawValue), speedKmh=\(String(describing: evidence.speedKmh))")
-        backgroundTrackingForensicState.lastSmartActivationAt = now
-        persistBackgroundTrackingForensicState()
+        recordForensicSmartActivation(at: now)
         diagnosticsLog.append(
             level: .warning,
             event: "smartFrequentActivation",
@@ -2509,8 +1641,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer = nil
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
-            backgroundTrackingForensicState.lastSmartDeactivationAt = Date()
-            persistBackgroundTrackingForensicState()
+            recordForensicSmartDeactivation()
             diagnosticsLog.append(
                 level: .warning,
                 event: "smartFrequentDeactivation",
@@ -2740,14 +1871,14 @@ final class LocationManager: NSObject, ObservableObject {
                 "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
                 "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
                 "frequentStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive),
-                "frequentActivitySessionActive": .bool(frequentBackgroundActivitySession != nil)
+                "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive)
             ],
             timestamp: now
         )
 
         if isTracking {
             applyTrackingMode(reason: "smart frequent recovery watchdog", applicationStateContext: .forceBackground)
-            frequentBackgroundLocationManager.requestLocation()
+            coreLocationServices.requestFrequentBackgroundLocation()
         }
         scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
     }
@@ -3033,7 +2164,7 @@ final class LocationManager: NSObject, ObservableObject {
             guard let self = self else { return }
             if UIApplication.shared.applicationState == .active && self.isTracking {
                 debugLog("[Timer] Requesting location...")
-                self.locationManager.requestLocation()
+                self.coreLocationServices.requestPrimaryLocation()
             } else {
                 debugLog("[Timer] Not active or not tracking, skipping requestLocation")
             }
@@ -3092,22 +2223,11 @@ final class LocationManager: NSObject, ObservableObject {
     private func stopAllLocationServices() {
         debugLog("[LocationManager] Stopping all location services")
         recordForensicServiceAssertion(mode: .stopped)
-        locationManager.stopUpdatingLocation()
-        locationManager.stopMonitoringSignificantLocationChanges()
-        locationManager.showsBackgroundLocationIndicator = false
-        frequentBackgroundLocationManager.stopUpdatingLocation()
-        frequentBackgroundLocationManager.stopMonitoringSignificantLocationChanges()
-        frequentBackgroundLocationManager.allowsBackgroundLocationUpdates = false
-        frequentBackgroundLocationManager.pausesLocationUpdatesAutomatically = true
-        frequentBackgroundLocationManager.showsBackgroundLocationIndicator = false
-        frequentBackgroundLocationManager.delegate = nil
-        isSignificantChangeRecoveryAnchorActive = false
-        isFrequentBackgroundStandardUpdatesActive = false
-        shouldAllowNextStaleFrequentBackgroundCallback = false
+        coreLocationServices.stopManagedLocationUpdates()
         stopSmartFrequentExitFence(reason: "stop all location services")
         resetSmartFrequentBackgroundRuntime()
-        stopLocationServiceSession(reason: "stop all location services")
-        stopFrequentBackgroundActivitySession(reason: "stop all location services")
+        coreLocationServices.stopLocationServiceSession(reason: "stop all location services")
+        coreLocationServices.stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
         stopForegroundLocationTimer()
     }
@@ -3128,11 +2248,11 @@ final class LocationManager: NSObject, ObservableObject {
             userHeading = nil
             return
         }
-        locationManager.startUpdatingHeading()
+        coreLocationServices.startHeadingUpdatesIfAvailable()
     }
 
     private func stopHeadingUpdates() {
-        locationManager.stopUpdatingHeading()
+        coreLocationServices.stopHeadingUpdates()
         isHeadingValid = false
         userHeading = nil
         headingSmoother.reset()

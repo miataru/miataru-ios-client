@@ -35,7 +35,7 @@ miataru/
 │   ├── iPhone/                      # iPhone tabs, devices, QR, settings, onboarding
 │   ├── iPad/                        # iPad split views, groups, device windows
 │   └── Mac/                         # Preview/scaffolding only
-├── LocationManagers/                # LocationManager, DeviceLocationRefresher, RouteCacheStore
+├── LocationManagers/                # Location facade, tracking policies, upload, metrics, route cache
 ├── Networking/                      # MiataruAppAPI, retry policy, request executor, update outbox
 ├── Notifications/                   # Unknown visitor alerts, frequent-background reminders
 ├── SettingsManagers/                # Settings, device/group stores, caches, widget sync, cleanup
@@ -48,7 +48,11 @@ miataru/
 
 ## Data Flow
 
-Location updates are coordinated by `LocationManager`. Direct sends use `MiataruAppAPI.updateLocation`; transient failures are retried and then queued by `LocationUpdateDeliveryCoordinator` / `LocationUpdateOutboxStore`. Queued updates retain their original event payload and are flushed on app activation, network recovery, periodic timer, manual flush, delayed frequent-background delivery, or server-URL retargeting.
+Location updates are coordinated by `LocationManager`, which now acts as the ObservableObject facade for permission state, app lifecycle hooks, Core Location delegates, and UI-facing published state. Pure decision logic lives in focused internal policy types under `LocationManagers/`: `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, and `LocationBackgroundForensics`. Stateful helpers such as `LocationUpdateUploadService`, `LocationUpdateMetricsStore`, and `HeadingSmoother` keep upload, counters, and heading behavior out of the facade.
+
+The facade is split across small implementation files without changing app-facing names: `LocationManager+Types.swift` preserves nested status types and typealiases, and `LocationManager+PolicyCompatibility.swift` keeps the existing static policy entry points available for tests and call sites. `LocationBackgroundForensicsRecorder` owns persisted background-forensics state, significant-change re-arm status, and foreground-recovery logging. `CoreLocationServiceController` owns the primary/frequent `CLLocationManager` instances, Core Location service/activity sessions, recovery-anchor state, and stale frequent-callback cleanup.
+
+Location upload still uses the same delivery path: direct sends use `MiataruAppAPI.updateLocation`; transient failures are retried and then queued by `LocationUpdateDeliveryCoordinator` / `LocationUpdateOutboxStore`. Queued updates retain their original event payload and are flushed on app activation, network recovery, periodic timer, manual flush, delayed frequent-background delivery, or server-URL retargeting.
 
 Successful `GetLocation` and `GetLocationHistory` responses are centrally ingested into `DeviceLocationCacheStore`, `DeviceSloganCacheStore`, recent-visitor state, and widget payloads. This avoids per-view cache drift and preserves newer samples when data is written by the widget extension.
 

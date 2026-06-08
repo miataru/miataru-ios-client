@@ -28,7 +28,7 @@ miataru/
 │   ├── iPhone/                      # iPhone tabs and flows
 │   ├── iPad/                        # iPad tabs, split views, device windows
 │   └── Mac/                         # Preview/scaffolding only
-├── LocationManagers/                # Tracking, refresh, route cache
+├── LocationManagers/                # Location facade, policies, upload, metrics, refresh, route cache
 ├── Networking/                      # API wrappers, retry, outbox
 ├── Notifications/                   # Unknown visitor and frequent-background notifications
 ├── SettingsManagers/                # Settings, stores, caches, widget sync, cleanup
@@ -57,7 +57,17 @@ miataru/
 
 ### Location Tracking
 
-- `LocationManager` resolves tracking mode centrally:
+- `LocationManager` remains the app-facing ObservableObject facade for permission state, app lifecycle hooks, `startTracking` / `stopTracking`, Core Location delegate glue, and published UI state.
+- Pure location decisions are split into internal policy types:
+  - `LocationTrackingPolicy` covers service modes, background configuration, command plans, restore/reconcile decisions, delivery intervals, and battery-disable policy.
+  - `SmartFrequentBackgroundPolicy` covers Smart runtime phases, activation evidence, speed/derived movement checks, exit-fence radius, inactivity, and watchdog recovery.
+  - `LocationSamplePolicy` covers batch ordering, stale/future/out-of-order rejection, sensitivity bypass, and upload deduplication.
+  - `LocationBackgroundForensics` covers gap assessment, foreground-recovery bursts, and significant-change re-arm decisions.
+- Stateful location helpers are kept small: `LocationUpdateUploadService` builds payloads and protects background uploads, `LocationUpdateMetricsStore` owns the 24-hour counter persistence, and `HeadingSmoother` owns heading/course smoothing.
+- `LocationManager+Types.swift` keeps nested UI/status names and typealiases stable, while `LocationManager+PolicyCompatibility.swift` keeps old static policy wrapper entry points available during the refactor.
+- `LocationBackgroundForensicsRecorder` owns persisted background forensic state, significant-change re-arm status, gap/recovery-burst recording, and related `UserDefaults` keys.
+- `CoreLocationServiceController` owns the primary/frequent `CLLocationManager` instances, `CLServiceSession`, `CLBackgroundActivitySession`, recovery-anchor state, background-indicator sync, and stale frequent-callback cleanup. `LocationManager` still chooses the policy mode and remains the delegate glue.
+- The facade resolves tracking mode centrally:
   - stopped
   - foreground high accuracy
   - background significant-change monitoring

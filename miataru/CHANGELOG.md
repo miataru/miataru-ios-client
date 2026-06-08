@@ -1,5 +1,7 @@
 version 3.2
 - Refactored the large `LocationManager` into focused location tracking policy, Smart frequent policy, sample policy, background forensics, upload service, metrics store, and heading smoothing components while preserving the existing app-facing API and behavior.
+- Further split `LocationManager` by moving nested UI/status types into `LocationManager+Types`, moving compatibility policy wrappers into `LocationManager+PolicyCompatibility`, and extracting persisted background-forensics recording plus Core Location service orchestration into dedicated components.
+- Added regression coverage for the background-forensics recorder, including persisted significant-change re-arm status, persisted forensic state, duplicate gap suppression, and foreground-recovery burst logging.
 - Split the location tracking regression tests into focused policy suites for tracking, Smart frequent runtime, sample filtering, background forensics, and metrics, so future changes can exercise the extracted logic directly.
 - Hid tracking-dependent Settings and Advanced Options unless location tracking is enabled and iOS grants Always location access, replacing those controls with a localized Always-permission explanation and manual Settings path.
 - Removed the unreliable in-app permission-change button from the Always-permission notice and Location Tracking Details, keeping the guidance text-only so users are not sent into a dead permission flow.

@@ -1,10 +1,23 @@
 import CoreLocation
+import Foundation
 import Testing
 import UIKit
 @testable import miataru
 
 @Suite("Location background forensics tests")
 struct LocationBackgroundForensicsTests {
+    private func makeRecorderFixture() throws -> (LocationBackgroundForensicsRecorder, LocationDiagnosticsLogStore, UserDefaults, String, URL) {
+        let suiteName = "LocationBackgroundForensicsRecorderTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("location-forensics-recorder-\(UUID().uuidString).json")
+        let diagnosticsLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, maxEntries: 50)
+        let recorder = LocationBackgroundForensicsRecorder(userDefaults: defaults, diagnosticsLog: diagnosticsLog)
+        return (recorder, diagnosticsLog, defaults, suiteName, fileURL)
+    }
+
     @Test("Background forensic gap assessment distinguishes frequent gaps from significant-change idle")
     func backgroundForensicGapAssessmentDistinguishesFrequentGapsFromSignificantChangeIdle() {
         let expectedSince = Date(timeIntervalSince1970: 10_000)
@@ -132,5 +145,86 @@ struct LocationBackgroundForensicsTests {
         )
         #expect(!blockedDeviceKey.shouldAttempt)
         #expect(blockedDeviceKey.status.reason == "DeviceKey auth blocked")
+    }
+
+    @Test("Recorder persists rearm status and build marker")
+    func recorderPersistsRearmStatusAndBuildMarker() throws {
+        let (recorder, diagnosticsLog, defaults, suiteName, fileURL) = try makeRecorderFixture()
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        let now = Date(timeIntervalSince1970: 30_000)
+        let decision = recorder.significantChangeRearmDecision(
+            buildIdentifier: "3.0-1",
+            reason: "fresh launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            now: now
+        )
+        #expect(decision.shouldAttempt)
+
+        recorder.recordSignificantChangeRearmStatus(decision.status)
+        recorder.markSignificantChangeRearmed(buildIdentifier: "3.0-1")
+
+        let reloadedRecorder = LocationBackgroundForensicsRecorder(userDefaults: defaults, diagnosticsLog: diagnosticsLog)
+        #expect(reloadedRecorder.lastSignificantChangeRearmStatus == decision.status)
+        #expect(reloadedRecorder.state.lastSignificantChangeRearmAt == now)
+
+        let repeatedDecision = reloadedRecorder.significantChangeRearmDecision(
+            buildIdentifier: "3.0-1",
+            reason: "fresh launch",
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            now: now.addingTimeInterval(1)
+        )
+        #expect(!repeatedDecision.shouldAttempt)
+        #expect(repeatedDecision.status.reason == "already re-armed for this build")
+    }
+
+    @Test("Recorder logs foreground recovery burst after background gap")
+    func recorderLogsForegroundRecoveryBurstAfterBackgroundGap() throws {
+        let (recorder, diagnosticsLog, defaults, suiteName, fileURL) = try makeRecorderFixture()
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        let startedAt = Date(timeIntervalSince1970: 40_000)
+        let openedAt = startedAt.addingTimeInterval(LocationBackgroundForensics.frequentBackgroundGapThreshold + 1)
+        let frequentMode = LocationTrackingPolicy.TrackingMode.backgroundFrequent(
+            distanceFilter: 10,
+            desiredAccuracy: kCLLocationAccuracyNearestTenMeters
+        )
+
+        recorder.recordModeResolution(
+            mode: frequentMode,
+            applicationState: .background,
+            reason: "background tracking",
+            now: startedAt
+        )
+        recorder.recordServiceAssertion(mode: frequentMode, now: startedAt)
+        recorder.recordForegroundOpen(trigger: "app did enter foreground", now: openedAt)
+        recorder.recordLocationCallback(
+            applicationState: .active,
+            sourceRawValue: "primary",
+            isPrimarySource: true,
+            timestamp: openedAt.addingTimeInterval(1)
+        )
+        recorder.recordAcceptedLocation(
+            applicationState: .active,
+            isPrimarySource: true,
+            timestamp: openedAt.addingTimeInterval(2)
+        )
+
+        #expect(recorder.state.pendingForegroundRecoveryStartedAt == openedAt)
+        #expect(recorder.state.foregroundBurstCallbackCount == 1)
+        #expect(recorder.state.foregroundBurstAcceptedCount == 1)
+        #expect(recorder.state.foregroundRecoveryBurstLoggedAt == openedAt.addingTimeInterval(2))
+        #expect(diagnosticsLog.entries.contains { $0.event == "backgroundTrackingGap" })
+        #expect(diagnosticsLog.entries.contains { $0.event == "foregroundRecoveryBurst" })
     }
 }
