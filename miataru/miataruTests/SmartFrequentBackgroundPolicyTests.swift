@@ -394,6 +394,47 @@ struct SmartFrequentBackgroundPolicyTests {
         ))
     }
 
+    @Test("Smart frequent inactivity timer action avoids stale callback recursion")
+    func smartFrequentInactivityTimerActionAvoidsStaleCallbackRecursion() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let inactivityWindow: TimeInterval = 600
+
+        #expect(SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-inactivityWindow - 1),
+            lastRelevantMovementAt: now.addingTimeInterval(-inactivityWindow - 1),
+            inactivityWindow: inactivityWindow
+        ) == .none)
+
+        #expect(SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-10),
+            lastRelevantMovementAt: now.addingTimeInterval(-inactivityWindow - 1),
+            inactivityWindow: inactivityWindow
+        ) == .expired)
+
+        #expect(SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-10),
+            lastRelevantMovementAt: now.addingTimeInterval(-100),
+            inactivityWindow: inactivityWindow
+        ) == .schedule(now.addingTimeInterval(500)))
+
+        #expect(SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: nil,
+            lastRelevantMovementAt: now.addingTimeInterval(-100),
+            inactivityWindow: inactivityWindow
+        ) == .none)
+
+        #expect(SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: now.addingTimeInterval(-10),
+            lastRelevantMovementAt: nil,
+            inactivityWindow: inactivityWindow
+        ) == .none)
+    }
+
     @Test("Smart frequent runtime watchdog recovers active callback gaps")
     func smartFrequentRuntimeWatchdogRecoversActiveCallbackGaps() {
         let now = Date(timeIntervalSince1970: 20_000)

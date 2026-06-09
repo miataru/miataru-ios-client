@@ -280,6 +280,18 @@ extension LocationManager {
         )
     }
 
+    static func smartFrequentBackgroundInactivityTimerAction(now: Date,
+                                                            lastLocationUpdateAt: Date?,
+                                                            lastRelevantMovementAt: Date?,
+                                                            inactivityWindow: TimeInterval) -> SmartFrequentBackgroundInactivityTimerAction {
+        SmartFrequentBackgroundPolicy.inactivityTimerAction(
+            now: now,
+            lastLocationUpdateAt: lastLocationUpdateAt,
+            lastRelevantMovementAt: lastRelevantMovementAt,
+            inactivityWindow: inactivityWindow
+        )
+    }
+
     static func smartFrequentMovementDistanceThreshold(frequentDistanceFilterMeters: Int,
                                                        from previousLocation: CLLocation?,
                                                        to location: CLLocation) -> CLLocationDistance {

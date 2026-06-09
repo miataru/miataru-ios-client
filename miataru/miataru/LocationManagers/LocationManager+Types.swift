@@ -51,6 +51,7 @@ extension LocationManager {
     typealias SmartFrequentActivationEvidenceKind = SmartFrequentBackgroundPolicy.ActivationEvidenceKind
     typealias LocationSampleProcessingDecision = LocationSamplePolicy.ProcessingDecision
     typealias SmartFrequentBackgroundWatchdogAction = SmartFrequentBackgroundPolicy.WatchdogAction
+    typealias SmartFrequentBackgroundInactivityTimerAction = SmartFrequentBackgroundPolicy.InactivityTimerAction
     typealias SmartFrequentActivationEvidence = SmartFrequentBackgroundPolicy.ActivationEvidence
     typealias TrackingApplicationStateContext = LocationTrackingPolicy.ApplicationStateContext
     typealias TrackingReconcileAction = LocationTrackingPolicy.ReconcileAction

@@ -30,6 +30,12 @@ enum SmartFrequentBackgroundPolicy {
         case deactivate
     }
 
+    enum InactivityTimerAction: Equatable {
+        case none
+        case schedule(Date)
+        case expired
+    }
+
     struct ActivationEvidence: Equatable {
         let kind: ActivationEvidenceKind
         let speedKmh: Double?
@@ -322,6 +328,22 @@ enum SmartFrequentBackgroundPolicy {
             return false
         }
         return now.timeIntervalSince(lastRelevantMovementAt) >= inactivityWindow
+    }
+
+    static func inactivityTimerAction(now: Date,
+                                      lastLocationUpdateAt: Date?,
+                                      lastRelevantMovementAt: Date?,
+                                      inactivityWindow: TimeInterval) -> InactivityTimerAction {
+        guard inactivityWindow > 0,
+              inactivityWindow.isFinite,
+              let lastLocationUpdateAt,
+              let lastRelevantMovementAt,
+              now.timeIntervalSince(lastLocationUpdateAt) < inactivityWindow else {
+            return .none
+        }
+
+        let timeout = lastRelevantMovementAt.addingTimeInterval(inactivityWindow)
+        return timeout <= now ? .expired : .schedule(timeout)
     }
 
     static func nextInactivityTimeout(lastLocationUpdateAt: Date?,

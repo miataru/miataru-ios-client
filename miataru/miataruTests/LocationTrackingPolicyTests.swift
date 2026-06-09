@@ -80,6 +80,7 @@ struct LocationTrackingPolicyTests {
     @Test("Frequent background accuracy quality gates uploads and current location updates")
     func frequentBackgroundAccuracyQualityGatesUploadsAndCurrentLocationUpdates() {
         #expect(LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: 100) == 100)
+        #expect(LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: 25) == 50)
         #expect(LocationTrackingPolicy.maximumAcceptedFrequentBackgroundAccuracy(distanceFilterMeters: 10) == 50)
 
         #expect(LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
@@ -87,6 +88,12 @@ struct LocationTrackingPolicyTests {
             updateSourceIsFrequentBackground: true,
             horizontalAccuracy: 28.6,
             distanceFilterMeters: 100
+        ))
+        #expect(!LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
+            applicationState: .background,
+            updateSourceIsFrequentBackground: true,
+            horizontalAccuracy: 69.4,
+            distanceFilterMeters: 25
         ))
         #expect(!LocationTrackingPolicy.isFrequentBackgroundLocationAccuracyAcceptable(
             applicationState: .background,

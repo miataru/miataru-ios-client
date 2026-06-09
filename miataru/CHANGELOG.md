@@ -27,8 +27,10 @@ version 3.2
 - Added a Smart frequent runtime watchdog that remains active through `probing` and `confirmedActive`, reasserts frequent background updates after missing frequent callbacks, logs recovery diagnostics, and falls back to waiting after repeated recovery attempts without sending misleading activation/deactivation notifications.
 - Fixed Smart frequent watchdog fallback so a confirmed active runtime now sends the optional Smart deactivation notification when recovery attempts are exhausted and Miataru returns to standard background tracking.
 - Changed Smart frequent inactivity handling so deactivation is based on missing relevant movement within the selected inactivity window; missing frequent callbacks are treated as recovery cases instead of stillness.
+- Fixed a Smart frequent inactivity-timer recursion that could crash while entering background after a stale frequent-callback gap; stale gaps now clear the inactivity timer, emit a coalesced diagnostic, and remain watchdog recovery cases.
 - Preserved secondary frequent-background callbacks for upload in manual frequent and Smart `probing`/`confirmedActive` phases, so the normal Location Sensitivity filter cannot drop Core Location points before server delivery or outbox enqueueing.
 - Added Smart frequent accuracy recovery for the default 100 m frequent filter: very coarse background fixes are rejected from upload/state, can temporarily boost Core Location to 10 m / nearest-ten-meters, then return to the configured 100 m mode after a good fix or timeout with cooldown.
+- Added regression coverage for the Smart frequent inactivity-timer action and documented the 25 m frequent-background accuracy gate, including rejection of a 69.4 m fix in 25 m mode.
 - Hardened `updateLocation` delivery so decoding errors and unclear invalid responses are queued in the persistent FIFO outbox with original payload metadata, while clear 401/403 auth responses remain non-retryable.
 - Documented the location tracking if-then state machines for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and upload/outbox behavior.
 - Expanded Smart frequent diagnostics and regression coverage for exit-fence eligibility/radius, activation evidence, stationary reboot noise, same-second speed spikes, walking displacement activation, and unchanged manual/significant-change behavior.
@@ -46,7 +48,7 @@ version 3.2
 - Added regression coverage for Smart defaults, migration, Settings.bundle parity, localization completeness, speed detection, activation/deactivation policy, manual override behavior, 24-hour mode counters, and Smart mode-change notification scheduling.
 - Added regression coverage for persisted Smart frequent seeding, 5 m/10 m movement threshold normalization, Settings.bundle parity, and chronological multi-location callback processing.
 - Updated the living project documentation, App Store copy source, test catalog/gap matrix, and added dated Smart frequent background updates implementation notes.
-- Updated project metadata for version 3.2 build 9.
+- Updated project metadata for version 3.2 build 12.
 
 version 3.1.19
 - Added 2-hour and 3-hour auto-disable options for frequent background updates in Advanced Options and the iOS Settings.bundle, keeping 4 hours as the default.

@@ -2025,20 +2025,27 @@ final class LocationManager: NSObject, ObservableObject {
         guard settings.smartFrequentBackgroundLocationUpdatesEnabled,
               smartFrequentBackgroundRuntimeActive,
               !settings.frequentBackgroundLocationUpdatesEnabled else {
-            smartFrequentBackgroundNextInactivityTimeoutAt = nil
+            setSmartFrequentBackgroundNextInactivityTimeout(nil)
             return
         }
 
-        let timeout = Self.nextSmartFrequentBackgroundInactivityTimeout(
+        let inactivityWindow = settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        switch Self.smartFrequentBackgroundInactivityTimerAction(
+            now: now,
             lastLocationUpdateAt: lastSmartFrequentBackgroundLocationUpdateAt,
             lastRelevantMovementAt: smartFrequentBackgroundLastRelevantMovementAt,
-            inactivityWindow: settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
-        )
-        smartFrequentBackgroundNextInactivityTimeoutAt = timeout
+            inactivityWindow: inactivityWindow
+        ) {
+        case .none:
+            setSmartFrequentBackgroundNextInactivityTimeout(nil)
+            logSmartFrequentInactivityTimerNotScheduledForStaleCallbackGap(
+                now: now,
+                inactivityWindow: inactivityWindow
+            )
+            return
 
-        guard let timeout else { return }
-        let interval = timeout.timeIntervalSince(now)
-        guard interval > 0 else {
+        case .expired:
+            setSmartFrequentBackgroundNextInactivityTimeout(nil)
             guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
                 return
             }
@@ -2046,19 +2053,62 @@ final class LocationManager: NSObject, ObservableObject {
                 applyTrackingMode(reason: "smart frequent inactivity timer")
             }
             return
-        }
 
-        let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
-            guard let self else { return }
-            guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+        case .schedule(let timeout):
+            setSmartFrequentBackgroundNextInactivityTimeout(timeout)
+
+            let interval = timeout.timeIntervalSince(now)
+            guard interval > 0 else {
                 return
             }
-            if self.handleSmartFrequentBackgroundInactivityIfNeeded(applicationState: .background), self.isTracking {
-                self.applyTrackingMode(reason: "smart frequent inactivity timer")
+
+            let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
+                guard let self else { return }
+                guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+                    return
+                }
+                if self.handleSmartFrequentBackgroundInactivityIfNeeded(applicationState: .background), self.isTracking {
+                    self.applyTrackingMode(reason: "smart frequent inactivity timer")
+                }
             }
+            smartFrequentBackgroundInactivityTimer = timer
+            RunLoop.main.add(timer, forMode: .common)
         }
-        smartFrequentBackgroundInactivityTimer = timer
-        RunLoop.main.add(timer, forMode: .common)
+    }
+
+    private func setSmartFrequentBackgroundNextInactivityTimeout(_ timeout: Date?) {
+        guard smartFrequentBackgroundNextInactivityTimeoutAt != timeout else { return }
+        smartFrequentBackgroundNextInactivityTimeoutAt = timeout
+    }
+
+    private func logSmartFrequentInactivityTimerNotScheduledForStaleCallbackGap(now: Date,
+                                                                                inactivityWindow: TimeInterval) {
+        guard inactivityWindow > 0,
+              let lastLocationUpdateAt = lastSmartFrequentBackgroundLocationUpdateAt,
+              let lastRelevantMovementAt = smartFrequentBackgroundLastRelevantMovementAt,
+              now.timeIntervalSince(lastLocationUpdateAt) >= inactivityWindow,
+              lastRelevantMovementAt.addingTimeInterval(inactivityWindow) <= now else {
+            return
+        }
+
+        let formatter = ISO8601DateFormatter()
+        diagnosticsLog.appendCoalesced(
+            level: .info,
+            event: "smartFrequentInactivityTimer",
+            summary: "Smart frequent inactivity timer was not scheduled.",
+            result: "notScheduled",
+            reason: "stale callback gap prevents inactivity evaluation",
+            coalescingKey: "smartFrequentInactivityTimer|notScheduled|staleCallbackGap",
+            context: [
+                "lastLocationUpdateAt": .string(formatter.string(from: lastLocationUpdateAt)),
+                "lastRelevantMovementAt": .string(formatter.string(from: lastRelevantMovementAt)),
+                "lastLocationUpdateAgeSeconds": .double(now.timeIntervalSince(lastLocationUpdateAt)),
+                "lastRelevantMovementAgeSeconds": .double(now.timeIntervalSince(lastRelevantMovementAt)),
+                "inactivityWindowSeconds": .double(inactivityWindow),
+                "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue)
+            ],
+            timestamp: now
+        )
     }
 
     private func scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: Date = Date()) {
