@@ -154,6 +154,8 @@ struct LocationDiagnosticsCoalescedCount: Codable, Equatable, Identifiable {
 struct LocationDiagnosticsExport: Codable, Equatable {
     let schemaVersion: Int
     let generatedAt: Date
+    let diagnosticsSourceID: String
+    let exportID: String
     let appVersion: String
     let build: String
     let maxEntries: Int
@@ -181,7 +183,7 @@ struct LocationSignificantChangeRearmStatus: Codable, Equatable {
 final class LocationDiagnosticsLogStore: ObservableObject {
     static let shared = LocationDiagnosticsLogStore()
 
-    static let schemaVersion = 2
+    static let schemaVersion = 3
     static let defaultMaxEntries = 2_500
     static let criticalRetentionInterval: TimeInterval = 24 * 60 * 60
     static let defaultCoalescedCountLimit = 250
@@ -197,6 +199,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private let userDefaults: UserDefaults
     private let fileURL: URL
     private let fileManager: FileManager
+    private let diagnosticsSourceID: String
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -211,6 +214,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         self.coalescedCountLimit = max(1, coalescedCountLimit)
         self.fileURL = fileURL ?? Self.defaultLogFileURL(fileManager: fileManager)
         self.isEnabled = userDefaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        self.diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         decoder.dateDecodingStrategy = .iso8601
@@ -322,10 +326,13 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func makeExport(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown",
-                    generatedAt: Date = Date()) -> LocationDiagnosticsExport {
+                    generatedAt: Date = Date(),
+                    exportID: String = UUID().uuidString) -> LocationDiagnosticsExport {
         LocationDiagnosticsExport(
             schemaVersion: Self.schemaVersion,
             generatedAt: generatedAt,
+            diagnosticsSourceID: diagnosticsSourceID,
+            exportID: exportID,
             appVersion: appVersion,
             build: build,
             maxEntries: maxEntries,
@@ -426,17 +433,11 @@ final class LocationDiagnosticsLogStore: ObservableObject {
               let data = try? Data(contentsOf: fileURL) else {
             return .empty
         }
-        if let persistedLog = try? decoder.decode(LocationDiagnosticsPersistedLog.self, from: data) {
+        if let persistedLog = try? decoder.decode(LocationDiagnosticsPersistedLog.self, from: data),
+           persistedLog.schemaVersion == schemaVersion {
             return persistedLog
         }
-        if let legacyEntries = try? decoder.decode([LocationDiagnosticsLogEntry].self, from: data) {
-            return LocationDiagnosticsPersistedLog(
-                schemaVersion: 1,
-                entries: legacyEntries,
-                coalescedCounts: [],
-                droppedEntryCount: 0
-            )
-        }
+        try? fileManager.removeItem(at: fileURL)
         return .empty
     }
 
@@ -460,6 +461,17 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         return baseURL
             .appendingPathComponent("LocationDiagnostics", isDirectory: true)
             .appendingPathComponent(defaultLogFileName)
+    }
+
+    private static func loadOrCreateDiagnosticsSourceID(userDefaults: UserDefaults) -> String {
+        if let existingID = userDefaults.string(forKey: SettingsKeys.locationDiagnosticsSourceID),
+           UUID(uuidString: existingID) != nil {
+            return existingID
+        }
+
+        let newID = UUID().uuidString
+        userDefaults.set(newID, forKey: SettingsKeys.locationDiagnosticsSourceID)
+        return newID
     }
 
     private static func round(_ value: Double, places: Int) -> Double {

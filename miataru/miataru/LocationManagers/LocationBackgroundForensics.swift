@@ -104,6 +104,8 @@ enum LocationBackgroundForensics {
         let kind: GapKind
         let gapSeconds: Int
         let lastObservedAt: Date?
+        let referenceAt: Date
+        let referenceReason: String
     }
 
     struct SignificantChangeRearmDecision: Equatable {
@@ -182,7 +184,16 @@ enum LocationBackgroundForensics {
         let lastObservedAt = [state.lastBackgroundCallbackAt, state.lastBackgroundUploadAt]
             .compactMap { $0 }
             .max()
-        let referenceDate = lastObservedAt ?? expectedSince
+        let referenceDate: Date
+        let referenceReason: String
+        if let lastObservedAt,
+           lastObservedAt > expectedSince {
+            referenceDate = lastObservedAt
+            referenceReason = "lastObservedBackgroundActivityAt"
+        } else {
+            referenceDate = expectedSince
+            referenceReason = "backgroundTrackingExpectedSince"
+        }
         let gapSeconds = Int(now.timeIntervalSince(referenceDate).rounded(.down))
         guard gapSeconds >= Int(frequentThreshold) else {
             return nil
@@ -192,14 +203,18 @@ enum LocationBackgroundForensics {
             return GapAssessment(
                 kind: .suspicious,
                 gapSeconds: gapSeconds,
-                lastObservedAt: lastObservedAt
+                lastObservedAt: lastObservedAt,
+                referenceAt: referenceDate,
+                referenceReason: referenceReason
             )
         }
 
         return GapAssessment(
             kind: .unobservedIdle,
             gapSeconds: gapSeconds,
-            lastObservedAt: lastObservedAt
+            lastObservedAt: lastObservedAt,
+            referenceAt: referenceDate,
+            referenceReason: referenceReason
         )
     }
 

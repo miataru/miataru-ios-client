@@ -33,10 +33,32 @@ struct LocationBackgroundForensicsTests {
         )
         #expect(frequentAssessment?.kind == .suspicious)
         #expect(frequentAssessment?.gapSeconds == Int(LocationBackgroundForensics.frequentBackgroundGapThreshold + 30))
+        #expect(frequentAssessment?.referenceAt == expectedSince)
+        #expect(frequentAssessment?.referenceReason == "backgroundTrackingExpectedSince")
 
         var observedFrequentState = frequentState
         observedFrequentState.lastBackgroundCallbackAt = now.addingTimeInterval(-60)
         #expect(LocationBackgroundForensics.gapAssessment(state: observedFrequentState, now: now) == nil)
+
+        var oldObservedState = frequentState
+        oldObservedState.lastBackgroundUploadAt = expectedSince.addingTimeInterval(-120)
+        let oldObservedAssessment = LocationBackgroundForensics.gapAssessment(
+            state: oldObservedState,
+            now: now
+        )
+        #expect(oldObservedAssessment?.gapSeconds == Int(LocationBackgroundForensics.frequentBackgroundGapThreshold + 30))
+        #expect(oldObservedAssessment?.referenceAt == expectedSince)
+        #expect(oldObservedAssessment?.referenceReason == "backgroundTrackingExpectedSince")
+
+        var staleButRecentExpectedState = frequentState
+        staleButRecentExpectedState.lastBackgroundCallbackAt = expectedSince.addingTimeInterval(30)
+        let staleButRecentExpectedAssessment = LocationBackgroundForensics.gapAssessment(
+            state: staleButRecentExpectedState,
+            now: now.addingTimeInterval(30)
+        )
+        #expect(staleButRecentExpectedAssessment?.gapSeconds == Int(LocationBackgroundForensics.frequentBackgroundGapThreshold + 30))
+        #expect(staleButRecentExpectedAssessment?.referenceAt == staleButRecentExpectedState.lastBackgroundCallbackAt)
+        #expect(staleButRecentExpectedAssessment?.referenceReason == "lastObservedBackgroundActivityAt")
 
         let significantState = LocationBackgroundForensics.State(
             backgroundTrackingExpectedSince: expectedSince,
@@ -224,7 +246,9 @@ struct LocationBackgroundForensicsTests {
         #expect(recorder.state.foregroundBurstCallbackCount == 1)
         #expect(recorder.state.foregroundBurstAcceptedCount == 1)
         #expect(recorder.state.foregroundRecoveryBurstLoggedAt == openedAt.addingTimeInterval(2))
-        #expect(diagnosticsLog.entries.contains { $0.event == "backgroundTrackingGap" })
+        let gapEntry = try #require(diagnosticsLog.entries.first { $0.event == "backgroundTrackingGap" })
+        #expect(gapEntry.context["gapReferenceReason"] == .string("backgroundTrackingExpectedSince"))
+        #expect(gapEntry.context["gapReferenceAt"] == .string(ISO8601DateFormatter().string(from: startedAt)))
         #expect(diagnosticsLog.entries.contains { $0.event == "foregroundRecoveryBurst" })
     }
 }

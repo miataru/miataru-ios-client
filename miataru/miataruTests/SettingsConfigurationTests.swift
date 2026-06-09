@@ -661,6 +661,10 @@ struct SettingsConfigurationTests {
         #expect(exportObject["appVersion"] as? String == "9.9")
         #expect(exportObject["build"] as? String == "42")
         #expect(exportObject["entryCount"] as? Int == 2)
+        let diagnosticsSourceID = try #require(exportObject["diagnosticsSourceID"] as? String)
+        let exportID = try #require(exportObject["exportID"] as? String)
+        #expect(UUID(uuidString: diagnosticsSourceID) != nil)
+        #expect(UUID(uuidString: exportID) != nil)
         let entries = try #require(exportObject["entries"] as? [[String: Any]])
         let context = try #require(entries.last?["context"] as? [String: Any])
         #expect(context["locationLatitude"] as? Double == 52.1235)
@@ -668,6 +672,11 @@ struct SettingsConfigurationTests {
         #expect(exportObject["schemaVersion"] as? Int == LocationDiagnosticsLogStore.schemaVersion)
         #expect(exportObject["droppedEntryCount"] as? Int == 1)
         #expect((exportObject["coalescedCounts"] as? [[String: Any]])?.isEmpty == true)
+
+        let secondExportData = try reloadedStore.exportData(appVersion: "9.9", build: "42")
+        let secondExportObject = try #require(JSONSerialization.jsonObject(with: secondExportData) as? [String: Any])
+        #expect(secondExportObject["diagnosticsSourceID"] as? String == diagnosticsSourceID)
+        #expect(secondExportObject["exportID"] as? String != exportID)
     }
 
     @Test("Location diagnostics keeps critical entries while coalescing noisy updates")
@@ -716,15 +725,15 @@ struct SettingsConfigurationTests {
         #expect(exportObject["oldestEntryAt"] != nil)
     }
 
-    @Test("Location diagnostics loads legacy entry array files")
+    @Test("Location diagnostics keeps only current schema logs")
     @MainActor
-    func locationDiagnosticsLoadsLegacyEntryArrayFiles() throws {
-        let suiteName = "LocationDiagnosticsLegacyTests.\(UUID().uuidString)"
+    func locationDiagnosticsKeepsOnlyCurrentSchemaLogs() throws {
+        let suiteName = "LocationDiagnosticsSchemaRetentionTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
         let directoryURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LocationDiagnosticsLegacyTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("LocationDiagnosticsSchemaRetentionTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directoryURL) }
         let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
@@ -744,13 +753,48 @@ struct SettingsConfigurationTests {
           }
         ]
         """
-        try legacyJSON.data(using: .utf8)?.write(to: fileURL, options: .atomic)
+        try #require(legacyJSON.data(using: .utf8)).write(to: fileURL, options: .atomic)
 
-        let store = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
-        #expect(store.entries.count == 1)
-        #expect(store.entries.first?.event == "legacyEvent")
-        #expect(store.entries.first?.retentionClass == .critical)
-        #expect(store.coalescedCounts.isEmpty)
+        let legacyStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        #expect(legacyStore.entries.isEmpty)
+        #expect(legacyStore.coalescedCounts.isEmpty)
+        #expect(legacyStore.droppedEntryCount == 0)
+        #expect(!FileManager.default.fileExists(atPath: fileURL.path))
+
+        let oldSchemaJSON = """
+        {
+          "schemaVersion": 2,
+          "entries": [
+            {
+              "id": "00000000-0000-0000-0000-000000000002",
+              "timestamp": "2026-06-05T12:00:00Z",
+              "level": "info",
+              "retentionClass": "critical",
+              "event": "oldSchemaEvent",
+              "summary": "Old",
+              "result": "stored",
+              "reason": null,
+              "checks": [],
+              "context": {}
+            }
+          ],
+          "coalescedCounts": [],
+          "droppedEntryCount": 4
+        }
+        """
+        try #require(oldSchemaJSON.data(using: .utf8)).write(to: fileURL, options: .atomic)
+        let oldSchemaStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        #expect(oldSchemaStore.entries.isEmpty)
+        #expect(oldSchemaStore.coalescedCounts.isEmpty)
+        #expect(oldSchemaStore.droppedEntryCount == 0)
+        #expect(!FileManager.default.fileExists(atPath: fileURL.path))
+
+        let currentStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        currentStore.setEnabled(true)
+        currentStore.append(level: .info, event: "currentSchemaEvent", summary: "Current", result: "stored")
+        let reloadedCurrentStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        #expect(reloadedCurrentStore.entries.count == 1)
+        #expect(reloadedCurrentStore.entries.first?.event == "currentSchemaEvent")
     }
 
     private func loadStringCatalog() throws -> [String: Any] {

@@ -47,6 +47,7 @@ enum SettingsKeys {
     static let locationUpdateOutboxRetentionMode = "location_update_outbox_retention_mode"
     static let locationUpdateOutboxMaxItems = "location_update_outbox_max_items"
     static let locationDiagnosticsLoggingEnabled = "location_diagnostics_logging_enabled"
+    static let locationDiagnosticsSourceID = "location_diagnostics_source_id"
     static let lastOpenedDeviceID = "last_opened_device_id"
     static let reverseGeocodingThresholdMeters = "reverse_geocoding_threshold_meters"
     static let navigationTransportType = "navigation_transport_type"

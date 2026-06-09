@@ -1167,16 +1167,29 @@ final class LocationManager: NSObject, ObservableObject {
         region.notifyOnExit = true
         locationManager.startMonitoring(for: region)
         isSmartFrequentExitFenceActive = true
-        diagnosticsLog.append(
-            level: .info,
-            event: "smartFrequentExitFence",
-            summary: "Started Smart frequent exit-fence monitoring.",
-            result: "active",
-            reason: reason,
-            context: diagnosticsLocationContext(anchorLocation, extra: [
-                ("radiusMeters", .double(radius))
-            ])
-        )
+        let context = diagnosticsLocationContext(anchorLocation, extra: [
+            ("radiusMeters", .double(radius))
+        ])
+        if reason == "location update" {
+            diagnosticsLog.appendCoalesced(
+                level: .info,
+                event: "smartFrequentExitFence",
+                summary: "Started Smart frequent exit-fence monitoring.",
+                result: "active",
+                reason: reason,
+                coalescingKey: "smartFrequentExitFence|active|locationUpdate",
+                context: context
+            )
+        } else {
+            diagnosticsLog.append(
+                level: .info,
+                event: "smartFrequentExitFence",
+                summary: "Started Smart frequent exit-fence monitoring.",
+                result: "active",
+                reason: reason,
+                context: context
+            )
+        }
     }
 
     private func stopSmartFrequentExitFence(reason: String) {
@@ -1191,13 +1204,24 @@ final class LocationManager: NSObject, ObservableObject {
             locationManager.stopMonitoring(for: region)
         }
         isSmartFrequentExitFenceActive = false
-        diagnosticsLog.append(
-            level: .info,
-            event: "smartFrequentExitFence",
-            summary: "Stopped Smart frequent exit-fence monitoring.",
-            result: "stopped",
-            reason: reason
-        )
+        if reason.hasPrefix("recenter:") {
+            diagnosticsLog.appendCoalesced(
+                level: .info,
+                event: "smartFrequentExitFence",
+                summary: "Stopped Smart frequent exit-fence monitoring.",
+                result: "stopped",
+                reason: reason,
+                coalescingKey: "smartFrequentExitFence|stopped|recenter"
+            )
+        } else {
+            diagnosticsLog.append(
+                level: .info,
+                event: "smartFrequentExitFence",
+                summary: "Stopped Smart frequent exit-fence monitoring.",
+                result: "stopped",
+                reason: reason
+            )
+        }
     }
 
     private func smartFrequentExitFenceRegion() -> CLCircularRegion? {
@@ -1282,6 +1306,11 @@ final class LocationManager: NSObject, ObservableObject {
 
             stopSmartFrequentExitFence(reason: "Smart frequent recovery-fence triggered")
             smartFrequentExitFenceRecoveryAwaitingLocationUpdate = true
+            var recoveryContext = smartFrequentRecoveryDiagnosticsContext(
+                now: now,
+                recoveryAttemptCount: smartFrequentBackgroundRecoveryAttemptCount
+            )
+            recoveryContext["radiusMeters"] = .double(radius)
             diagnosticsLog.append(
                 level: .warning,
                 event: "smartFrequentRecovery",
@@ -1295,14 +1324,7 @@ final class LocationManager: NSObject, ObservableObject {
                     comment: "Diagnostics reason when Smart frequent recovery was triggered by a recovery fence exit"
                 ),
                 checks: [],
-                context: [
-                    "phase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
-                    "radiusMeters": .double(radius),
-                    "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
-                    "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
-                    "frequentStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive),
-                    "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive)
-                ],
+                context: recoveryContext,
                 timestamp: now
             )
             applyTrackingMode(reason: "smart frequent recovery-fence", applicationStateContext: .forceBackground)
@@ -1952,7 +1974,8 @@ final class LocationManager: NSObject, ObservableObject {
 
     @discardableResult
     private func deactivateSmartFrequentBackgroundRuntime(reason: String,
-                                                          sendsModeChangeNotification: Bool = true) -> Bool {
+                                                          sendsModeChangeNotification: Bool = true,
+                                                          diagnosticsContext: [String: LocationDiagnosticsValue] = [:]) -> Bool {
         let wasActive = smartFrequentBackgroundRuntimeActive
         let shouldNotifyDeactivation = wasActive && smartFrequentBackgroundActivationNotificationDelivered && sendsModeChangeNotification
         transitionSmartFrequentBackgroundRuntime(to: .waiting, reason: reason)
@@ -1976,6 +1999,11 @@ final class LocationManager: NSObject, ObservableObject {
         if wasActive {
             debugLog("[LocationManager] Smart frequent background runtime deactivated: \(reason)")
             recordForensicSmartDeactivation()
+            var context: [String: LocationDiagnosticsValue] = [
+                "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
+            ]
+            context.merge(diagnosticsContext) { _, new in new }
             diagnosticsLog.append(
                 level: .warning,
                 event: "smartFrequentDeactivation",
@@ -1983,10 +2011,7 @@ final class LocationManager: NSObject, ObservableObject {
                 result: "deactivated",
                 reason: reason,
                 checks: [],
-                context: [
-                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
-                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
-                ]
+                context: context
             )
             if shouldNotifyDeactivation {
                 notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: false)
@@ -2207,6 +2232,26 @@ final class LocationManager: NSObject, ObservableObject {
         scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
     }
 
+    private func smartFrequentRecoveryDiagnosticsContext(now: Date,
+                                                         recoveryAttemptCount: Int,
+                                                         watchdogReference: Date? = nil) -> [String: LocationDiagnosticsValue] {
+        SmartFrequentBackgroundPolicy.recoveryDiagnosticsContext(
+            now: now,
+            recoveryAttemptCount: recoveryAttemptCount,
+            maximumRecoveryAttempts: Self.maximumSmartFrequentBackgroundRuntimeRecoveryAttempts,
+            phase: smartFrequentBackgroundRuntimePhase,
+            frequentManagerAllowsBackground: frequentBackgroundLocationManager.allowsBackgroundLocationUpdates,
+            frequentManagerShowsIndicator: frequentBackgroundLocationManager.showsBackgroundLocationIndicator,
+            frequentStandardUpdatesActive: isFrequentBackgroundStandardUpdatesActive,
+            frequentActivitySessionActive: coreLocationServices.frequentBackgroundActivitySessionActive,
+            lastFrequentCallbackAt: smartFrequentBackgroundLastFrequentCallbackAt,
+            lastBackgroundUploadAt: backgroundForensicsRecorder.state.lastBackgroundUploadAt,
+            runtimeStartedAt: smartFrequentBackgroundProbeStartedAt,
+            lastRelevantMovementAt: smartFrequentBackgroundLastRelevantMovementAt,
+            watchdogReference: watchdogReference
+        )
+    }
+
     private func handleSmartFrequentBackgroundWatchdog(now: Date = Date()) {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
@@ -2233,8 +2278,14 @@ final class LocationManager: NSObject, ObservableObject {
             scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
             return
         case .deactivate:
+            let diagnosticsContext = smartFrequentRecoveryDiagnosticsContext(
+                now: now,
+                recoveryAttemptCount: smartFrequentBackgroundRecoveryAttemptCount,
+                watchdogReference: runtimeReference
+            )
             let didDeactivate = deactivateSmartFrequentBackgroundRuntime(
-                reason: "smart frequent recovery watchdog exhausted"
+                reason: "smart frequent recovery watchdog exhausted",
+                diagnosticsContext: diagnosticsContext
             )
             if didDeactivate, isTracking {
                 applyTrackingMode(reason: "smart frequent recovery watchdog exhausted", applicationStateContext: .forceBackground)
@@ -2245,6 +2296,11 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         smartFrequentBackgroundRecoveryAttemptCount += 1
+        let diagnosticsContext = smartFrequentRecoveryDiagnosticsContext(
+            now: now,
+            recoveryAttemptCount: smartFrequentBackgroundRecoveryAttemptCount,
+            watchdogReference: runtimeReference
+        )
         diagnosticsLog.append(
             level: .warning,
             event: "smartFrequentRecovery",
@@ -2252,15 +2308,7 @@ final class LocationManager: NSObject, ObservableObject {
             result: "reasserted",
             reason: "frequent background callback watchdog",
             checks: [],
-            context: [
-                "attempt": .integer(smartFrequentBackgroundRecoveryAttemptCount),
-                "maximumAttempts": .integer(Self.maximumSmartFrequentBackgroundRuntimeRecoveryAttempts),
-                "phase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
-                "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
-                "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
-                "frequentStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive),
-                "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive)
-            ],
+            context: diagnosticsContext,
             timestamp: now
         )
 

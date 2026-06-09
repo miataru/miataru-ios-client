@@ -282,7 +282,9 @@ final class LocationBackgroundForensicsRecorder {
         var context: [String: LocationDiagnosticsValue] = [
             "gapSeconds": .integer(assessment.gapSeconds),
             "currentExpectedMode": .string(state.currentExpectedMode ?? "unknown"),
-            "backgroundServicesAsserted": .bool(state.backgroundServicesAsserted)
+            "backgroundServicesAsserted": .bool(state.backgroundServicesAsserted),
+            "gapReferenceAt": .string(ISO8601DateFormatter().string(from: assessment.referenceAt)),
+            "gapReferenceReason": .string(assessment.referenceReason)
         ]
         if let expectedSince = state.backgroundTrackingExpectedSince {
             context["backgroundTrackingExpectedSince"] = .string(ISO8601DateFormatter().string(from: expectedSince))

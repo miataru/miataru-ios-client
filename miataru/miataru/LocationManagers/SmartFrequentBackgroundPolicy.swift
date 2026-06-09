@@ -398,6 +398,61 @@ enum SmartFrequentBackgroundPolicy {
         return recoveryAttemptCount < maximumRecoveryAttempts ? .reassert : .deactivate
     }
 
+    static func recoveryDiagnosticsContext(now: Date,
+                                           recoveryAttemptCount: Int,
+                                           maximumRecoveryAttempts: Int = maximumRuntimeRecoveryAttempts,
+                                           phase: RuntimePhase,
+                                           frequentManagerAllowsBackground: Bool,
+                                           frequentManagerShowsIndicator: Bool,
+                                           frequentStandardUpdatesActive: Bool,
+                                           frequentActivitySessionActive: Bool,
+                                           lastFrequentCallbackAt: Date?,
+                                           lastBackgroundUploadAt: Date?,
+                                           runtimeStartedAt: Date?,
+                                           lastRelevantMovementAt: Date?,
+                                           watchdogReference: Date? = nil) -> [String: LocationDiagnosticsValue] {
+        let formatter = ISO8601DateFormatter()
+        let reference = watchdogReference
+            ?? lastFrequentCallbackAt
+            ?? runtimeStartedAt
+            ?? lastRelevantMovementAt
+        var context: [String: LocationDiagnosticsValue] = [
+            "attempt": .integer(recoveryAttemptCount),
+            "recoveryAttemptCount": .integer(recoveryAttemptCount),
+            "maximumAttempts": .integer(maximumRecoveryAttempts),
+            "maximumRecoveryAttempts": .integer(maximumRecoveryAttempts),
+            "phase": .string(phase.rawValue),
+            "frequentManagerAllowsBackground": .bool(frequentManagerAllowsBackground),
+            "frequentManagerShowsIndicator": .bool(frequentManagerShowsIndicator),
+            "frequentStandardUpdatesActive": .bool(frequentStandardUpdatesActive),
+            "frequentActivitySessionActive": .bool(frequentActivitySessionActive)
+        ]
+
+        if let lastFrequentCallbackAt {
+            context["lastFrequentCallbackAt"] = .string(formatter.string(from: lastFrequentCallbackAt))
+            context["lastFrequentCallbackAgeSeconds"] = .double(now.timeIntervalSince(lastFrequentCallbackAt))
+        } else {
+            context["lastFrequentCallbackAt"] = .string("unknown")
+        }
+
+        if let lastBackgroundUploadAt {
+            context["lastBackgroundUploadAt"] = .string(formatter.string(from: lastBackgroundUploadAt))
+            context["lastBackgroundUploadAgeSeconds"] = .double(now.timeIntervalSince(lastBackgroundUploadAt))
+        } else {
+            context["lastBackgroundUploadAt"] = .string("unknown")
+        }
+
+        if let reference {
+            context["watchdogReferenceAt"] = .string(formatter.string(from: reference))
+            context["secondsSinceWatchdogReference"] = .double(now.timeIntervalSince(reference))
+        } else {
+            context["watchdogReferenceAt"] = .string("unknown")
+            context["secondsSinceWatchdogReference"] = .string("unknown")
+        }
+
+        return context
+    }
+
     private struct DisplacementEvidence {
         let distanceMeters: CLLocationDistance?
         let elapsedSeconds: TimeInterval?

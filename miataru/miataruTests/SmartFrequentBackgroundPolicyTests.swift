@@ -484,6 +484,15 @@ struct SmartFrequentBackgroundPolicyTests {
             phase: .confirmedActive,
             smartEnabled: true,
             manualFrequentEnabled: false,
+            lastFrequentCallbackAt: now.addingTimeInterval(-10),
+            runtimeStartedAt: now.addingTimeInterval(-200),
+            recoveryAttemptCount: SmartFrequentBackgroundPolicy.maximumRuntimeRecoveryAttempts,
+            now: now
+        ) == .wait)
+        #expect(SmartFrequentBackgroundPolicy.watchdogAction(
+            phase: .confirmedActive,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
             lastFrequentCallbackAt: now.addingTimeInterval(-SmartFrequentBackgroundPolicy.runtimeWatchdogInterval - 1),
             runtimeStartedAt: now.addingTimeInterval(-200),
             recoveryAttemptCount: SmartFrequentBackgroundPolicy.maximumRuntimeRecoveryAttempts,
@@ -498,6 +507,47 @@ struct SmartFrequentBackgroundPolicyTests {
             recoveryAttemptCount: 0,
             now: now
         ) == .ignore)
+    }
+
+    @Test("Smart frequent recovery diagnostics context includes watchdog timing")
+    func smartFrequentRecoveryDiagnosticsContextIncludesWatchdogTiming() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let lastFrequentCallbackAt = now.addingTimeInterval(-120)
+        let lastBackgroundUploadAt = now.addingTimeInterval(-240)
+        let watchdogReference = now.addingTimeInterval(-300)
+        let formatter = ISO8601DateFormatter()
+
+        let context = SmartFrequentBackgroundPolicy.recoveryDiagnosticsContext(
+            now: now,
+            recoveryAttemptCount: 2,
+            maximumRecoveryAttempts: 3,
+            phase: .confirmedActive,
+            frequentManagerAllowsBackground: true,
+            frequentManagerShowsIndicator: false,
+            frequentStandardUpdatesActive: true,
+            frequentActivitySessionActive: true,
+            lastFrequentCallbackAt: lastFrequentCallbackAt,
+            lastBackgroundUploadAt: lastBackgroundUploadAt,
+            runtimeStartedAt: now.addingTimeInterval(-500),
+            lastRelevantMovementAt: now.addingTimeInterval(-600),
+            watchdogReference: watchdogReference
+        )
+
+        #expect(context["attempt"] == .integer(2))
+        #expect(context["recoveryAttemptCount"] == .integer(2))
+        #expect(context["maximumAttempts"] == .integer(3))
+        #expect(context["maximumRecoveryAttempts"] == .integer(3))
+        #expect(context["phase"] == .string("confirmedActive"))
+        #expect(context["frequentManagerAllowsBackground"] == .bool(true))
+        #expect(context["frequentManagerShowsIndicator"] == .bool(false))
+        #expect(context["frequentStandardUpdatesActive"] == .bool(true))
+        #expect(context["frequentActivitySessionActive"] == .bool(true))
+        #expect(context["lastFrequentCallbackAt"] == .string(formatter.string(from: lastFrequentCallbackAt)))
+        #expect(context["lastFrequentCallbackAgeSeconds"] == .double(120))
+        #expect(context["lastBackgroundUploadAt"] == .string(formatter.string(from: lastBackgroundUploadAt)))
+        #expect(context["lastBackgroundUploadAgeSeconds"] == .double(240))
+        #expect(context["watchdogReferenceAt"] == .string(formatter.string(from: watchdogReference)))
+        #expect(context["secondsSinceWatchdogReference"] == .double(300))
     }
 
     @Test("Smart frequent runtime is evaluated only in background")
