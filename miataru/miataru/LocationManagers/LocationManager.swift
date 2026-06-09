@@ -94,6 +94,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundLastMovementThresholdMeters: CLLocationDistance?
     private var smartFrequentBackgroundStartupGuardPending = true
     private var isSmartFrequentExitFenceActive = false
+    private var smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
     private var headingSmoother = HeadingSmoother()
     private enum LocationUpdateSource: String {
         case primary
@@ -1123,7 +1124,10 @@ final class LocationManager: NSObject, ObservableObject {
             manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
             regionMonitoringAvailable: regionMonitoringAvailable
-        ) && applicationState != .active
+        ) &&
+        applicationState != .active &&
+        smartFrequentBackgroundRuntimePhase != .probing &&
+        !smartFrequentExitFenceRecoveryAwaitingLocationUpdate
 
         guard shouldMaintainFence else {
             stopSmartFrequentExitFence(reason: "not eligible: \(reason)")
@@ -1240,15 +1244,74 @@ final class LocationManager: NSObject, ObservableObject {
         }
         let radius = circularRegion.radius
         let batteryAboveThreshold = !isBatteryAtOrBelowFrequentBackgroundThreshold()
-        let shouldActivate = applicationState != .active &&
+        let baseEligibility = applicationState != .active &&
         isTracking &&
         settings.trackAndReportLocation &&
         locationManager.authorizationStatus == .authorizedAlways &&
         !settings.deviceKeyAuthBlocked &&
         settings.smartFrequentBackgroundLocationUpdatesEnabled &&
         !settings.frequentBackgroundLocationUpdatesEnabled &&
-        !smartFrequentBackgroundRuntimeActive &&
         batteryAboveThreshold
+
+        if smartFrequentBackgroundRuntimeActive {
+            guard baseEligibility else {
+                diagnosticsLog.append(
+                    level: .info,
+                    event: "smartFrequentExitFence",
+                    summary: NSLocalizedString(
+                        "location_diagnostics_smart_frequent_recovery_fence_blocked_summary",
+                        comment: "Diagnostics summary when Smart frequent recovery fence cannot reassert frequent background updates"
+                    ),
+                    result: "blocked",
+                    reason: batteryAboveThreshold ? NSLocalizedString(
+                        "location_diagnostics_smart_frequent_recovery_ineligible_reason",
+                        comment: "Diagnostics reason when Smart frequent recovery is not currently eligible"
+                    ) : "Battery is at or below frequent background threshold.",
+                    context: [
+                        "applicationState": .integer(applicationState.rawValue),
+                        "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                        "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                        "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive),
+                        "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
+                        "radiusMeters": .double(radius)
+                    ]
+                )
+                reconcileSmartFrequentExitFence(reason: "recovery-fence exit blocked")
+                return
+            }
+
+            stopSmartFrequentExitFence(reason: "Smart frequent recovery-fence triggered")
+            smartFrequentExitFenceRecoveryAwaitingLocationUpdate = true
+            diagnosticsLog.append(
+                level: .warning,
+                event: "smartFrequentRecovery",
+                summary: NSLocalizedString(
+                    "location_diagnostics_smart_frequent_recovery_fence_reasserted_summary",
+                    comment: "Diagnostics summary when a Smart frequent recovery fence reasserts frequent background updates"
+                ),
+                result: "reasserted",
+                reason: NSLocalizedString(
+                    "location_diagnostics_smart_frequent_recovery_fence_exit_reason",
+                    comment: "Diagnostics reason when Smart frequent recovery was triggered by a recovery fence exit"
+                ),
+                checks: [],
+                context: [
+                    "phase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
+                    "radiusMeters": .double(radius),
+                    "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
+                    "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator),
+                    "frequentStandardUpdatesActive": .bool(isFrequentBackgroundStandardUpdatesActive),
+                    "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive)
+                ],
+                timestamp: now
+            )
+            applyTrackingMode(reason: "smart frequent recovery-fence", applicationStateContext: .forceBackground)
+            coreLocationServices.requestFrequentBackgroundLocation()
+            scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
+            return
+        }
+
+        let shouldActivate = baseEligibility
 
         guard shouldActivate else {
             diagnosticsLog.append(
@@ -1756,6 +1819,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundLastMovementLocationKey = nil
         smartFrequentBackgroundLastMovementDistanceMeters = nil
         smartFrequentBackgroundLastMovementThresholdMeters = nil
+        smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
         if let speedKmh = evidence.speedKmh {
             smartFrequentBackgroundLastActivationReason = String(
                 format: NSLocalizedString(
@@ -1901,6 +1965,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundLastMovementLocationKey = nil
         smartFrequentBackgroundLastMovementDistanceMeters = nil
         smartFrequentBackgroundLastMovementThresholdMeters = nil
+        smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
         smartFrequentBackgroundNextInactivityTimeoutAt = nil
         smartFrequentBackgroundInactivityTimer?.invalidate()
         smartFrequentBackgroundInactivityTimer = nil
@@ -1946,6 +2011,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundLastMovementLocationKey = nil
         smartFrequentBackgroundLastMovementDistanceMeters = nil
         smartFrequentBackgroundLastMovementThresholdMeters = nil
+        smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
         smartFrequentBackgroundInactivityTimer?.invalidate()
         smartFrequentBackgroundInactivityTimer = nil
         smartFrequentBackgroundWatchdogTimer?.invalidate()
@@ -1989,6 +2055,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundLastMovementThresholdMeters = nil
         guard smartFrequentBackgroundRuntimeActive else { return false }
         lastSmartFrequentBackgroundLocationUpdateAt = now
+        smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
 
         guard let anchor = smartFrequentBackgroundMovementAnchor else {
             smartFrequentBackgroundMovementAnchor = location

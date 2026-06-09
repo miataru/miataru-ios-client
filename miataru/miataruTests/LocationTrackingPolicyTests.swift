@@ -414,8 +414,8 @@ struct LocationTrackingPolicyTests {
         ])
     }
 
-    @Test("Primary significant-change callback reasserts frequent background only for active runtime sessions")
-    func primarySignificantChangeCallbackOnlyReassertsActiveFrequentRuntimeSessions() {
+    @Test("Primary significant-change callback reasserts frequent background for effective frequent sessions")
+    func primarySignificantChangeCallbackReassertsEffectiveFrequentSessions() {
         #expect(LocationTrackingPolicy.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
             applicationState: .background,
             frequentUpdatesEnabled: true,
@@ -424,7 +424,7 @@ struct LocationTrackingPolicyTests {
             updateSourceIsPrimary: true
         ))
 
-        #expect(!LocationTrackingPolicy.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
+        #expect(LocationTrackingPolicy.shouldReassertFrequentBackgroundUpdatesAfterPrimarySignificantChangeCallback(
             applicationState: .background,
             frequentUpdatesEnabled: true,
             didSwitchFrequentBackgroundMode: false,

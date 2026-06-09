@@ -273,7 +273,7 @@ struct SmartFrequentBackgroundPolicyTests {
             smartRuntimeActive: false,
             regionMonitoringAvailable: true
         ))
-        #expect(!SmartFrequentBackgroundPolicy.shouldMaintainExitFence(
+        #expect(SmartFrequentBackgroundPolicy.shouldMaintainExitFence(
             trackAndReportLocation: true,
             isTracking: true,
             authorizationStatus: .authorizedAlways,

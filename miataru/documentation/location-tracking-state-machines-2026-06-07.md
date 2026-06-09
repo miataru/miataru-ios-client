@@ -447,6 +447,12 @@ times. Exhaustion returns Smart to `waiting`, restores standard background
 tracking/fence behavior, and sends the Smart deactivation notification when the
 confirmed runtime previously sent the Smart activation notification.
 
+Because a normal timer cannot wake an iOS app after suspension, `confirmedActive`
+also keeps a Smart recovery exit-fence around the latest usable movement anchor.
+If that region exits before frequent callbacks resume, the exit event reasserts
+frequent background updates, requests a fresh secondary-manager location, and
+waits for a real location callback before arming the next recovery fence.
+
 ### Deactivation
 
 Smart runtime returns to `waiting` when:

@@ -190,7 +190,7 @@ enum SmartFrequentBackgroundPolicy {
                                         deviceKeyAuthBlocked: Bool,
                                         smartEnabled: Bool,
                                         manualFrequentEnabled: Bool,
-                                        smartRuntimeActive: Bool,
+                                        smartRuntimeActive _: Bool,
                                         regionMonitoringAvailable: Bool) -> Bool {
         trackAndReportLocation &&
         isTracking &&
@@ -198,7 +198,6 @@ enum SmartFrequentBackgroundPolicy {
         !deviceKeyAuthBlocked &&
         smartEnabled &&
         !manualFrequentEnabled &&
-        !smartRuntimeActive &&
         regionMonitoringAvailable
     }
 

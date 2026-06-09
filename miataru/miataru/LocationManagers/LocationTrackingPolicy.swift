@@ -414,14 +414,13 @@ enum LocationTrackingPolicy {
         applicationState: UIApplication.State,
         frequentUpdatesEnabled: Bool,
         didSwitchFrequentBackgroundMode: Bool,
-        frequentBackgroundStandardUpdatesActiveInCurrentProcess: Bool,
+        frequentBackgroundStandardUpdatesActiveInCurrentProcess _: Bool,
         updateSourceIsPrimary: Bool
     ) -> Bool {
         updateSourceIsPrimary &&
         applicationState != .active &&
         frequentUpdatesEnabled &&
-        !didSwitchFrequentBackgroundMode &&
-        frequentBackgroundStandardUpdatesActiveInCurrentProcess
+        !didSwitchFrequentBackgroundMode
     }
 
     static func shouldCleanUpStaleFrequentBackgroundCallback(frequentUpdatesEnabled: Bool,

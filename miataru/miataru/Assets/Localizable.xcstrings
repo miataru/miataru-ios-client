@@ -24008,6 +24008,266 @@
         }
       }
     },
+    "location_diagnostics_smart_frequent_recovery_fence_blocked_summary" : {
+      "comment" : "Diagnostics summary when Smart frequent recovery fence cannot reassert frequent background updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent-gendannelseszonen genaktiverede ikke runtime."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Smart-Frequent-Wiederherstellungsgrenze hat die Laufzeit nicht erneut aktiviert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent recovery-fence event did not reassert runtime."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zona de recuperación de Smart frequent no reactivó el tiempo de ejecución."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent -palautusraja ei käynnistänyt ajonaikaista tilaa uudelleen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La zone de récupération Smart frequent n’a pas réasserti l’exécution."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il perimetro di recupero Smart frequent non ha riattivato il runtime."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent の復旧フェンスはランタイムを再アサートしませんでした。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De Smart frequent-herstelzone heeft de runtime niet opnieuw geactiveerd."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent 恢复围栏未重新断言运行状态。"
+          }
+        }
+      }
+    },
+    "location_diagnostics_smart_frequent_recovery_fence_exit_reason" : {
+      "comment" : "Diagnostics reason when Smart frequent recovery was triggered by a recovery fence exit",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exit fra Smart frequent-gendannelseszone"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-Frequent-Wiederherstellungsgrenze verlassen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent recovery-fence exit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salida de la zona de recuperación de Smart frequent"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent -palautusrajalta poistuminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortie de la zone de récupération Smart frequent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uscita dal perimetro di recupero Smart frequent"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent 復旧フェンスの退出"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent-herstelzone verlaten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent 恢复围栏退出"
+          }
+        }
+      }
+    },
+    "location_diagnostics_smart_frequent_recovery_fence_reasserted_summary" : {
+      "comment" : "Diagnostics summary when a Smart frequent recovery fence reasserts frequent background updates",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genaktiverede Smart frequent-baggrundsopdateringer efter exit fra gendannelseszone."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-Frequent-Hintergrundupdates nach Verlassen der Wiederherstellungsgrenze erneut aktiviert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reasserted Smart frequent background updates after recovery-fence exit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se reactivaron las actualizaciones frecuentes en segundo plano de Smart frequent tras salir de la zona de recuperación."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent -taustapäivitykset käynnistettiin uudelleen palautusrajalta poistumisen jälkeen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mises à jour fréquentes en arrière-plan Smart frequent réasserties après sortie de la zone de récupération."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiornamenti frequenti in background Smart frequent riattivati dopo l’uscita dal perimetro di recupero."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復旧フェンスの退出後、Smart frequent のバックグラウンド更新を再アサートしました。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent-achtergrondupdates opnieuw geactiveerd na verlaten van herstelzone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出恢复围栏后已重新断言 Smart frequent 后台更新。"
+          }
+        }
+      }
+    },
+    "location_diagnostics_smart_frequent_recovery_ineligible_reason" : {
+      "comment" : "Diagnostics reason when Smart frequent recovery is not currently eligible",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent-gendannelse er ikke berettiget."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-Frequent-Wiederherstellung ist derzeit nicht zulässig."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent recovery is not eligible."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La recuperación de Smart frequent no es elegible."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent -palautus ei ole käytettävissä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La récupération Smart frequent n’est pas éligible."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il recupero Smart frequent non è idoneo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent の復旧は対象外です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent-herstel komt niet in aanmerking."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart frequent 恢复当前不符合条件。"
+          }
+        }
+      }
+    },
     "location_permission_open_settings_button" : {
       "comment" : "Button to open Settings for location permission",
       "localizations" : {
