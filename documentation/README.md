@@ -18,6 +18,8 @@ This directory contains both living documentation and dated implementation recor
 - `test-katalog.md` - active unit/UI/screenshot test inventory
 - `test-gap-matrix.md` - risk-based coverage and backlog matrix
 - `screenshot-test-workflow.md` - deterministic screenshot capture workflow
+- `AppIntentsPreparation.md` - Siri/Shortcuts architecture notes, found models/services, assumptions, risks, and deferred place-intent work
+- `AppIntentsManualTestPlan.md` - manual Siri/Shortcuts validation checklist for "Person finden" and "Route zu Person"
 - `test-build-repair-report-2026-02-27.md` - historical report for test wiring repair
 - `device-id-name-ambiguity-handling-2026-05-27.md` - Device ID duplicate blocking and duplicate-name disambiguation
 
@@ -45,6 +47,6 @@ Current frequent-background follow-up records:
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
-- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, navigation, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
+- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, App Intents/Siri/Shortcuts, navigation, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
 
 The latest documentation audit is `documentation-audit-2026-05-22.md`.

@@ -1,4 +1,12 @@
 version 3.2
+- Added the first App Intents layer for Siri and Shortcuts, exposing configured current-location-authorized devices as user-friendly person choices.
+- Switched the shipping shortcut parameters to dynamic string options to avoid Shortcuts runtime failures when persisting dynamic `AppEntity` selections.
+- Added the "Find Person" App Intent and App Shortcut to fetch a person's last known server location on demand with privacy-friendly dialog output.
+- Added the "Route to Person" App Intent and App Shortcut to open Apple Maps at the person's last known coordinate without leaking raw DeviceIDs in the route URL.
+- Added `IntentLocationService` as a narrow, testable adapter over `KnownDeviceStore`, `MiataruAppAPI.getLocation`, and cached placemark data instead of coupling App Intents to SwiftUI views or view models.
+- Localized the new App Intent titles, descriptions, parameters, dialogs, errors, shortcut titles, and snippet-preparation strings across all supported app locales.
+- Documented the App Intents architecture, privacy assumptions, deferred places/nearby intent work, and manual Siri/Shortcuts validation plan.
+- Added App Intent regression coverage for entity mapping, visibility filtering, API-location mapping, missing-location and unauthorized errors, Apple Maps URL privacy, and localization completeness.
 - Refactored the large `LocationManager` into focused location tracking policy, Smart frequent policy, sample policy, background forensics, upload service, metrics store, and heading smoothing components while preserving the existing app-facing API and behavior.
 - Further split `LocationManager` by moving nested UI/status types into `LocationManager+Types`, moving compatibility policy wrappers into `LocationManager+PolicyCompatibility`, and extracting persisted background-forensics recording plus Core Location service orchestration into dedicated components.
 - Added regression coverage for the background-forensics recorder, including persisted significant-change re-arm status, persisted forensic state, duplicate gap suppression, and foreground-recovery burst logging.

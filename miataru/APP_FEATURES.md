@@ -162,6 +162,25 @@ This document describes the current user-facing and developer-facing feature set
 - `WidgetDataSyncCoordinator` preserves newer widget-written locations during app sync and imports newer widget locations into the app cache on startup/foreground activation.
 - Widget map snapshots are stored under the App Group `Library/Caches/WidgetSnapshots` directory.
 
+## Siri and Shortcuts
+
+**For users:**
+
+- Shortcuts can ask Miataru for the last known location of a configured person/device.
+- Shortcuts can open Apple Maps with a route to that last known location.
+- Suggested people are limited to already configured devices with current-location access.
+- Spoken/dialog output uses display names, age, and coarse place context, not raw DeviceIDs or DeviceKeys.
+
+**For developers:**
+
+- App Intent code lives under `AppIntents/` and is split into entities, queries, intents, shortcut registration, and a prepared snippet view.
+- `TrackedPersonEntity` intentionally presents known devices as "Person" to Siri and Shortcuts.
+- `TrackedPersonQuery` reads from `IntentLocationService` and filters out blank IDs and devices without current-location access.
+- The shipping `FindPersonLocationIntent` and `OpenRouteToPersonIntent` parameters use `TrackedPersonOptionsProvider` dynamic string options so Shortcuts can persist selected devices without hitting dynamic `AppEntity` identifier registration errors.
+- `IntentLocationService` is the narrow adapter between App Intents and existing app logic: `KnownDeviceStore`, `MiataruAppAPI.getLocation`, and `DeviceLocationCacheStore` placemark data.
+- `OpenRouteToPersonIntent` opens Apple Maps with coordinates. The existing `miataru://<DEVICE_ID>` link remains documented as device navigation, not route navigation.
+- Place entities and the "is person near place" intent are deferred until Miataru has a persisted places data source.
+
 ## Onboarding Flow
 
 **For users:**

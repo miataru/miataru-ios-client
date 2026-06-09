@@ -39,6 +39,13 @@ miataruApp.swift
 │   ├── UnknownVisitorAlertService.swift
 │   ├── UnknownVisitorFilter.swift
 │   └── FrequentBackgroundTrackingReminderService.swift
+├── AppIntents/
+│   ├── Entities/
+│   ├── Queries/
+│   ├── Intents/
+│   └── MiataruAppShortcutsProvider.swift
+├── Services/
+│   └── IntentLocationService.swift
 ├── SettingsManagers/
 │   ├── App Settings/
 │   ├── Devices/
@@ -107,6 +114,14 @@ The widget extension contains text and map widgets. Device selection is AppInten
 
 Widgets can use cached app data and, when configured, live server fetches via shared server URL, known device IDs, own device ID, and own DeviceKey.
 
+### App Intents, Siri, and Shortcuts
+
+The first App Intents layer prepares configured Miataru devices as user-friendly `TrackedPersonEntity` values. Queries are backed by `KnownDeviceStore` through `IntentLocationService` and only return records with a non-empty DeviceID and current-location access. The shipping shortcut parameters currently use `TrackedPersonOptionsProvider` dynamic string options because Shortcuts can fail to serialize dynamic `AppEntity` selections with "not a registered AppEntity identifier" runtime errors.
+
+`FindPersonLocationIntent` fetches the latest server location on demand through `MiataruAppAPI.getLocation`, reuses cached placemark context from `DeviceLocationCacheStore`, and returns privacy-friendly dialog text. `OpenRouteToPersonIntent` fetches the same latest location and opens Apple Maps with a destination coordinate. Dialogs and route URLs avoid DeviceKeys, raw DeviceIDs, and full API responses.
+
+The prepared snippet view is not currently wired to `ShowsSnippetView` because the locally available AppIntents API marks that protocol as iOS 26+. Place entities and the "is person near place" shortcut are deferred until a real persisted places source exists.
+
 ### Maps and Navigation
 
 Shared map components live in `views/Common/Map`. Device and group maps reuse marker rendering, accuracy circles, compass, scale bar, off-screen arrows, route style, and speed/relative-time helpers.
@@ -157,6 +172,7 @@ Recent 2026 work focused on:
 - robust navigation, focused camera behavior, route-progress ghost rendering, and route request limits
 - Smart/manual background tracking controls, retry/outbox resilience, and persistent cleanup
 - widgets and App Group data synchronization
+- App Intents for Siri and Shortcuts around existing known-device/location services
 - localization coverage across all supported languages
 - active unit/UI/screenshot test infrastructure
 

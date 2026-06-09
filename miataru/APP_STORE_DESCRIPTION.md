@@ -55,6 +55,11 @@ Widgets:
 * Keep device selection synced with the app
 * Use cached map snapshots and shared app data for quick glanceable updates
 
+Siri and Shortcuts:
+* Ask for the last known location of configured devices as people
+* Open Apple Maps routes to a person's last known location
+* Keep shortcut output privacy-friendly without exposing raw device identifiers
+
 Designed for iPhone and iPad:
 * Native SwiftUI interface
 * Dedicated iPad layout with split views and device windows
@@ -71,7 +76,7 @@ Download miataru and use location sharing on your own terms.
 
 ## Promotional Text (170 characters max)
 
-Private location sharing on your terms. DeviceKey protection, widgets, route navigation, and self-hosted Miataru server support.
+Private location sharing on your terms with DeviceKey protection, widgets, Siri Shortcuts, route navigation, and self-hosted server support.
 
 ## Keywords (100 characters max)
 
@@ -79,6 +84,7 @@ location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-h
 
 ## What's New - Version 3.2
 
+* New Siri and Shortcuts actions for finding a person and opening a route
 * New Smart frequent background update mode
 * Automatic switch from significant-change tracking to frequent updates when movement is detected
 * Shared inactivity window returns Smart frequent updates to standard background tracking
