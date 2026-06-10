@@ -29,6 +29,37 @@ struct DeviceLinkResolverTests {
         #expect(DeviceLinkResolver.deviceID(from: url) == "device_abc-123")
     }
 
+    @Test("Navigation miataru URI parses destination options")
+    func navigationMiataruURIParsesDestinationOptions() throws {
+        let url = try #require(URL(string: "miataru://Device_abc-123?action=navigate&direction=userToDevice&presentation=focused"))
+
+        #expect(
+            DeviceLinkResolver.destination(from: url) == .navigation(
+                "Device_abc-123",
+                options: DeviceNavigationLaunchOptions(
+                    direction: .userToDevice,
+                    presentation: .focused
+                )
+            )
+        )
+        #expect(DeviceLinkResolver.deviceID(from: url) == "Device_abc-123")
+    }
+
+    @Test("Navigation URL generation uses canonical action query")
+    func navigationURLGenerationUsesCanonicalActionQuery() throws {
+        let url = DeviceLinkResolver.navigationURL(for: "Device_abc-123")
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        #expect(components.scheme == "miataru")
+        #expect(components.host == "Device_abc-123")
+        #expect(queryItems["action"] == "navigate")
+        #expect(queryItems["direction"] == "userToDevice")
+        #expect(queryItems["presentation"] == "focused")
+    }
+
     @Test("Wrong URI scheme is ignored")
     func wrongSchemeIsIgnored() throws {
         let url = try #require(URL(string: "https://device_abc-123"))
@@ -158,6 +189,39 @@ struct DeviceLinkResolverTests {
         #expect(coordinator.addDeviceRequest?.source == .general)
     }
 
+    @Test("Navigation device link routing opens known navigation and adds unknown devices")
+    func navigationDeviceLinkRoutingOpensKnownNavigationAndAddsUnknown() {
+        let coordinator = AppNavigationCoordinator.shared
+        clearCoordinatorRequests(coordinator)
+
+        let store = KnownDeviceStore.shared
+        let canonicalID = "KnownNav-\(UUID().uuidString)"
+        store.removeDevice(byID: canonicalID)
+        defer {
+            store.removeDevice(byID: canonicalID)
+            clearCoordinatorRequests(coordinator)
+        }
+
+        let device = KnownDevice(name: "Known Navigation Device", deviceID: canonicalID, color: UIColor.systemGreen)
+        #expect(store.add(device: device))
+
+        coordinator.openDeviceLink(.navigation(canonicalID.lowercased(), options: .defaultDeepLink))
+        #expect(coordinator.deviceNavigationOpenRequest?.deviceID == canonicalID)
+        #expect(coordinator.deviceNavigationOpenRequest?.options == .defaultDeepLink)
+        #expect(coordinator.deviceOpenRequest == nil)
+        #expect(coordinator.addDeviceRequest == nil)
+
+        if let request = coordinator.deviceNavigationOpenRequest {
+            coordinator.consumeDeviceNavigationOpenRequest(request)
+        }
+
+        let unknownID = "UnknownNav-\(UUID().uuidString)"
+        let lowercaseUnknownID = unknownID.lowercased()
+        coordinator.openDeviceLink(.navigation(lowercaseUnknownID, options: .defaultDeepLink))
+        #expect(coordinator.addDeviceRequest?.deviceID == lowercaseUnknownID)
+        #expect(coordinator.addDeviceRequest?.source == .general)
+    }
+
     @Test("Unknown visitor add requests preserve source and case")
     func unknownVisitorAddRequestPreservesSourceAndCase() {
         let coordinator = AppNavigationCoordinator.shared
@@ -204,6 +268,9 @@ struct DeviceLinkResolverTests {
     private func clearCoordinatorRequests(_ coordinator: AppNavigationCoordinator) {
         if let request = coordinator.deviceOpenRequest {
             coordinator.consumeDeviceOpenRequest(request)
+        }
+        if let request = coordinator.deviceNavigationOpenRequest {
+            coordinator.consumeDeviceNavigationOpenRequest(request)
         }
         if let request = coordinator.addDeviceRequest {
             coordinator.consumeAddDeviceRequest(request)

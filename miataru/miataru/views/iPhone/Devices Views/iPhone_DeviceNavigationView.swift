@@ -55,6 +55,7 @@ private struct TargetLocationFetchRequest {
 
 struct iPhone_DeviceNavigationView: View {
     var device: KnownDevice
+    var launchOptions: DeviceNavigationLaunchOptions = .standard
 
     @EnvironmentObject private var routeInfoState: RouteInfoState
     @Environment(\.dismiss) private var dismiss
@@ -100,6 +101,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var navigationOverlayViewModel: NavigationOverlayViewModel? = nil
     @State private var hasLocationUpdateSinceLastAutoUpdate: Bool = false
     @State private var lastOverlayStepIndex: Int? = nil
+    @State private var hasAppliedLaunchOptions: Bool = false
+    @State private var hasActivatedLaunchPresentation: Bool = false
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
     @State private var isNavigationMode: Bool = false
@@ -280,7 +283,9 @@ struct iPhone_DeviceNavigationView: View {
             isAutoCenteringEnabled = true
             // Ensure auto-update lock state follows global setting for new navigation
             isAutoRouteUpdateLocked = settings.automaticRouteUpdateDuringNavigation
-            isRouteFromDeviceToUser = true // Reset to non-reversed (standard: device → user)
+            hasAppliedLaunchOptions = false
+            hasActivatedLaunchPresentation = false
+            applyLaunchOptionsIfNeeded()
             navigationOverlayViewModel = nil
             navigationOverlayCancellables.removeAll()
             lastOverlayStepIndex = nil
@@ -434,6 +439,7 @@ struct iPhone_DeviceNavigationView: View {
             )
             .onAppear {
                 isViewActive = true
+                applyLaunchOptionsIfNeeded()
                 navigationFeedbackGate.isViewActive = true
                 navigationFeedbackGate.isRouteFromDeviceToUser = isRouteFromDeviceToUser
                 navigationFeedbackGate.isNavigationMode = isNavigationMode
@@ -1000,6 +1006,7 @@ struct iPhone_DeviceNavigationView: View {
                         applyStaticRouteSummary(for: first)
                         // Refresh overlay with new route - this ensures overlay matches the route direction
                         refreshNavigationOverlayForCurrentRoute()
+                        activateLaunchPresentationIfReady()
                         // Remember inputs used for this route calculation
                         lastRouteUserCoordinate = user
                         lastRouteDeviceCoordinate = device
@@ -1607,6 +1614,23 @@ struct iPhone_DeviceNavigationView: View {
         resetZoomToFitBoth()
     }
 
+    private func applyLaunchOptionsIfNeeded() {
+        guard !hasAppliedLaunchOptions else { return }
+        hasAppliedLaunchOptions = true
+        isRouteFromDeviceToUser = launchOptions.direction == .deviceToUser
+        navigationFeedbackGate.isRouteFromDeviceToUser = isRouteFromDeviceToUser
+    }
+
+    private func activateLaunchPresentationIfReady() {
+        guard !hasActivatedLaunchPresentation,
+              launchOptions.presentation == .focused,
+              !isRouteFromDeviceToUser,
+              route != nil else { return }
+        hasActivatedLaunchPresentation = true
+        hideChromeIfNeeded()
+        enableNavigationMode()
+    }
+
     private func handleMapDoubleTap() {
         // Double-tap to focus on user device only when route is reversed (user → selected device).
         guard !isRouteFromDeviceToUser else { return }
@@ -2133,6 +2157,7 @@ extension iPhone_DeviceNavigationView {
                 setRouteForRendering(cached.route)
                 applyStaticRouteSummary(for: cached.route)
                 refreshNavigationOverlayForCurrentRoute()
+                activateLaunchPresentationIfReady()
                 // Align last-route inputs so existing change detection logic works
                 lastRouteUserCoordinate = cached.userCoordinate
                 lastRouteDeviceCoordinate = cached.deviceCoordinate

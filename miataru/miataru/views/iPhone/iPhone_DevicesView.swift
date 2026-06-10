@@ -32,7 +32,7 @@ struct iPhone_DevicesView: View {
     @State private var navigationPath: [NavigationDestination] = [] // Typed navigation path for device/group IDs
     @State private var didAutoNavigateFromSavedDevice: Bool = false
     @State private var hasPerformedInitialAutoNavigate: Bool = false
-    @State private var navigationTargetDevice: KnownDevice? = nil
+    @State private var navigationTarget: DeviceNavigationTarget? = nil
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
     @Environment(\.scenePhase) private var scenePhase
     @Namespace private var zoomTransitionNamespace
@@ -48,255 +48,9 @@ struct iPhone_DevicesView: View {
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            List {
-                if !unknownVisitors.isEmpty {
-                    Section(header: Text("unknown_visitors_section_title")) {
-                        ForEach(unknownVisitors, id: \.uniqueID) { visitor in
-                            UnknownVisitorRow(
-                                visitor: visitor,
-                                onShowActions: {
-                                    appNavigation.presentUnknownDeviceActions(visitor.DeviceID, visitDate: visitor.TimeStampDate)
-                                },
-                                onIgnore: {
-                                    // Ignore action
-                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                }
-                            )
-                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                Button {
-                                    appNavigation.openAddDevice(visitor.DeviceID, source: .unknownVisitor)
-                                } label: {
-                                    Label(
-                                        settings.allowedDeviceListEnabled
-                                            ? "unknown_visitor_add_and_allow"
-                                            : "add",
-                                        systemImage: "plus.circle"
-                                    )
-                                }
-                                .tint(.green)
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    ignoredStore.addIgnored(deviceID: visitor.DeviceID)
-                                } label: {
-                                    Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
-                                }
-                            }
-                        }
-                    }
-                }
-                if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
-                    Section {
-                        FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
-                            AppNavigationCoordinator.shared.openAdvancedSettings()
-                        }
-                    }
-                }
-
-                Section {
-                    ForEach(store.devices) { device in
-                        if editMode == .inactive {
-                            NavigationLink(value: NavigationDestination.device(device.DeviceID)) {
-                                DeviceRowView(device: device, cache: cache, showsSlogan: true)
-                                    .matchedTransitionSource(
-                                        id: MiataruZoomTransitionSource.device(device.DeviceID),
-                                        in: zoomTransitionNamespace
-                                    )
-                            }
-                            .accessibilityIdentifier(
-                                device.DeviceID == thisDeviceIDManager.shared.deviceID
-                                    ? "devices_row_this_device"
-                                    : "devices_row_\(device.DeviceID)"
-                            )
-                            .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await removeDevice(deviceID: device.DeviceID)
-                                    }
-                                } label: {
-                                    Label("delete_device", systemImage: "trash")
-                                }
-                            }
-                            .swipeActions(edge: .leading) {
-                                if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
-                                    Button {
-                                        navigationTargetDevice = device
-                                    } label: {
-                                        Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
-                                    }
-                                    .tint(.green)
-                                }
-                                Button {
-                                    editingDevice = device
-                                } label: {
-                                    Label("edit_device_swipe", systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
-                        } else {
-                            DeviceRowView(device: device, cache: cache, showsSlogan: true)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    editingDevice = device
-                                    selectedDeviceID = device.DeviceID
-                                }
-                                .listRowBackground(selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground))
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        Task {
-                                            await removeDevice(deviceID: device.DeviceID)
-                                        }
-                                    } label: {
-                                        Label("delete_device", systemImage: "trash")
-                                    }
-                                }
-                                .swipeActions(edge: .leading) {
-                                    if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
-                                        Button {
-                                            navigationTargetDevice = device
-                                        } label: {
-                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
-                                        }
-                                        .tint(.green)
-                                    }
-                                    Button {
-                                        editingDevice = device
-                                    } label: {
-                                        Label("edit_device_swipe", systemImage: "pencil")
-                                    }
-                                    .tint(.blue)
-                                }
-                        }
-                    }
-                    .onMove { indices, newOffset in
-                        store.move(fromOffsets: indices, toOffset: newOffset)
-                    }
-                    .onDelete { indices in
-                        Task {
-                            for index in indices {
-                                await removeDevice(deviceID: store.devices[index].DeviceID)
-                            }
-                        }
-                    }
-                }
-                Section {
-                    if groupStore.groups.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(NSLocalizedString("No groups yet", comment: "Shown when there are no groups in the list"))
-                                .font(.headline)
-                            Text(NSLocalizedString("Tap the + button to create a new group.", comment: "Instruction to create a new group when none exist"))
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.vertical, 6)
-                    } else {
-                        ForEach(groupStore.groups) { group in
-                            NavigationLink(value: NavigationDestination.group(group.id)) {
-                                GroupRowView(group: group)
-                                    .matchedTransitionSource(
-                                        id: MiataruZoomTransitionSource.group(group.id),
-                                        in: zoomTransitionNamespace
-                                    )
-                            }
-                            .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    if let index = groupStore.groups.firstIndex(where: { $0.id == group.id }) {
-                                        groupStore.remove(atOffsets: IndexSet(integer: index))
-                                    }
-                                } label: {
-                                    Label("delete_group", systemImage: "trash")
-                                }
-                            }
-                            .swipeActions(edge: .leading) {
-                                Button {
-                                    editingGroup = group
-                                    selectedGroupID = group.id
-                                } label: {
-                                    Label {
-                                        Text(NSLocalizedString("edit_group", comment: "Edit group"))
-                                    } icon: {
-                                        Image(systemName: "pencil")
-                                    }
-                                }
-                                .tint(.blue)
-                            }
-                        }
-                        .onMove { indices, newOffset in
-                            groupStore.move(fromOffsets: indices, toOffset: newOffset)
-                        }
-                        .onDelete { indices in
-                            groupStore.remove(atOffsets: indices)
-                        }
-                    }
-                } header: {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Divider()
-                        HStack(spacing: 12) {
-                            Text(NSLocalizedString("groups", comment: "Section header for the groups list"))
-                                .font(.headline)
-                            Spacer()
-                            Button {
-                                groupEditMode = groupEditMode == .active ? .inactive : .active
-                            } label: {
-                                if groupEditMode == .active {
-                                    Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
-                                } else {
-                                    /*Image(systemName: "pencil")
-                                        .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
-                                        .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
-                                */
-                                }
-                            }
-                            .disabled(groupStore.groups.isEmpty)
-                            Button(action: { showingAddGroup = true }) {
-                                Image(systemName: "plus")
-                                    .padding(8)
-                                    .background {
-                                        if #available(iOS 26.0, *) {
-                                            Color.clear.glassEffect(in: .circle)
-                                        } else {
-                                            Circle().fill(.ultraThinMaterial)
-                                        }
-                                    }
-                                    .clipShape(Circle())
-                                    .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
-                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
-                                    .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .textCase(nil)
-                }
-                .environment(\.editMode, $groupEditMode)
-            }
-            .environment(\.editMode, $editMode)
+            devicesList
             .navigationTitle("devices")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        editMode = editMode == .active ? .inactive : .active
-                    } label: {
-                        if editMode == .active {
-                            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
-                        } else {
-                            Image(systemName: "pencil")
-                                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
-                                .accessibilityHint(Text(NSLocalizedString("devicelist_editbutton_hint", comment: "Enters edit mode for the device list")))
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddDevice = true }) {
-                        Image(systemName: "plus")
-                            .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
-                            .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
-                    }
-                    .accessibilityIdentifier("devices_add_button")
-                }
-            }
+            .toolbar { devicesToolbar }
             .navigationDestination(for: NavigationDestination.self) { destination in
                 switch destination {
                 case .device(let deviceID):
@@ -327,8 +81,8 @@ struct iPhone_DevicesView: View {
                     }
                 }
             }
-            .navigationDestination(item: $navigationTargetDevice) { device in
-                iPhone_DeviceNavigationView(device: device)
+            .navigationDestination(item: $navigationTarget) { target in
+                iPhone_DeviceNavigationView(device: target.device, launchOptions: target.launchOptions)
             }
             .sheet(isPresented: $showingAddDevice) {
                 iPhone_AddDeviceView(store: store, isPresented: $showingAddDevice, prefillDeviceID: prefillDeviceID)
@@ -357,104 +111,469 @@ struct iPhone_DevicesView: View {
                 }
             }
             .refreshable {
-                let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
-                await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
-                await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
-                if success { Haptic.notifySuccess() }
+                await refreshDeviceListFromPull()
             }
             .onAppear {
-                isVisible = true
-                if !isUITesting,
-                   !hasPerformedInitialAutoNavigate,
-                   navigationPath.isEmpty,
-                   let lastID = settings.lastOpenedDeviceID,
-                   store.devices.contains(where: { $0.DeviceID == lastID }) {
-                    navigationPath.append(.device(lastID))
-                    didAutoNavigateFromSavedDevice = true
-                }
-                hasPerformedInitialAutoNavigate = true
-
-                Task {
-                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
-                    await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
-                }
-                handleDeviceOpenRequest(appNavigation.deviceOpenRequest)
+                handleAppear()
             }
             .onDisappear {
                 isVisible = false
             }
             .onReceive(NotificationCenter.default.publisher(for: .didSendOwnLocationUpdate)) { _ in
-                Task {
-                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
-                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
-                    await refreshUnknownVisitorSupplementalDataIfNeeded()
-                }
+                handleOwnLocationUpdateSent()
             }
             
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-                Task {
-                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
-                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
-                    await refreshUnknownVisitorSupplementalDataIfNeeded()
-                }
-
-                // Re-assert deep link navigation after activation to beat any restored navigation stack state.
-                if !isUITesting,
-                   let requestedID = settings.lastOpenedDeviceID,
-                   store.devices.contains(where: { $0.DeviceID == requestedID }),
-                   navigationPath.last != .device(requestedID) {
-                    Task { @MainActor in
-                        navigationPath = []
-                        await Task.yield()
-                        try? await Task.sleep(nanoseconds: 180_000_000)
-                        guard settings.lastOpenedDeviceID == requestedID else { return }
-                        navigationPath = [.device(requestedID)]
-                    }
-                }
+                handleAppDidBecomeActive()
             }
-            .task(id: "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)") {
-                let seconds = max(5.0, Double(settings.outsideMapUpdateInterval))
-                let interval = UInt64(seconds * 1_000_000_000)
-                while !Task.isCancelled {
-                    try? await Task.sleep(nanoseconds: interval)
-                    guard isVisible,
-                          UIApplication.shared.applicationState == .active else { continue }
-                    _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: true)
-                    await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
-                    await refreshUnknownVisitorSupplementalDataIfNeeded()
-                }
+            .task(id: autoRefreshTaskID) {
+                await runAutoRefreshLoop()
             }
             .onChange(of: scenePhase) { _, newPhase in
-                if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
-                    settings.lastOpenedDeviceID = nil
-                }
+                handleScenePhaseChange(newPhase)
             }
             .onChange(of: settings.lastOpenedDeviceID) { _, newDeviceID in
-                guard !isUITesting else { return }
-                guard let deviceID = newDeviceID,
-                      store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
-                let requestedID = deviceID
-                Task { @MainActor in
-                    // If we’re already showing the requested device (normal in-app navigation),
-                    // do nothing to avoid a visible pop/push animation.
-                    if navigationPath.last == .device(requestedID) {
-                        return
-                    }
-
-                    // Clear first, then set after a short delay to override any restored navigation state.
-                    navigationPath = []
-                    await Task.yield()
-                    try? await Task.sleep(nanoseconds: 180_000_000)
-                    // Guard against a stale delayed task (e.g. multiple widget taps).
-                    guard settings.lastOpenedDeviceID == requestedID else { return }
-                    navigationPath = [.device(requestedID)]
-                }
+                handleLastOpenedDeviceIDChange(newDeviceID)
             }
             .onChange(of: appNavigation.deviceOpenRequest) { _, request in
                 handleDeviceOpenRequest(request)
             }
+            .onChange(of: appNavigation.deviceNavigationOpenRequest) { _, request in
+                handleDeviceNavigationOpenRequest(request)
+            }
             // Intentionally do not reset didAutoNavigateFromSavedDevice on
             // changes to lastOpenedDeviceID to avoid unintended re-pushes
+        }
+    }
+
+    private var autoRefreshTaskID: String {
+        "\(settings.outsideMapUpdateInterval)-\(settings.autoRefreshDeviceList)"
+    }
+
+    @MainActor
+    private func refreshDeviceListFromPull() async {
+        let success = await DeviceLocationRefresher.shared.refreshAllDeviceLocations(forceGeocoding: true)
+        await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
+        await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
+        if success { Haptic.notifySuccess() }
+    }
+
+    @MainActor
+    private func handleAppear() {
+        isVisible = true
+        if !isUITesting,
+           !hasPerformedInitialAutoNavigate,
+           navigationPath.isEmpty,
+           let lastID = settings.lastOpenedDeviceID,
+           store.devices.contains(where: { $0.DeviceID == lastID }) {
+            navigationPath.append(.device(lastID))
+            didAutoNavigateFromSavedDevice = true
+        }
+        hasPerformedInitialAutoNavigate = true
+
+        Task {
+            await visitorHistoryViewModel.refreshIfNeeded(isVisible: true, force: true)
+            await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
+        }
+        handleDeviceOpenRequest(appNavigation.deviceOpenRequest)
+        handleDeviceNavigationOpenRequest(appNavigation.deviceNavigationOpenRequest)
+    }
+
+    @MainActor
+    private func handleOwnLocationUpdateSent() {
+        Task {
+            _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+            await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+            await refreshUnknownVisitorSupplementalDataIfNeeded()
+        }
+    }
+
+    @MainActor
+    private func handleAppDidBecomeActive() {
+        Task {
+            _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: isVisible)
+            await visitorHistoryViewModel.refreshIfNeeded(isVisible: isVisible)
+            await refreshUnknownVisitorSupplementalDataIfNeeded()
+        }
+        reassertLastOpenedDeviceAfterActivation()
+    }
+
+    @MainActor
+    private func reassertLastOpenedDeviceAfterActivation() {
+        guard !isUITesting,
+              let requestedID = settings.lastOpenedDeviceID,
+              store.devices.contains(where: { $0.DeviceID == requestedID }),
+              navigationPath.last != .device(requestedID) else { return }
+
+        Task { @MainActor in
+            navigationPath = []
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            guard settings.lastOpenedDeviceID == requestedID else { return }
+            navigationPath = [.device(requestedID)]
+        }
+    }
+
+    @MainActor
+    private func runAutoRefreshLoop() async {
+        let seconds = max(5.0, Double(settings.outsideMapUpdateInterval))
+        let interval = UInt64(seconds * 1_000_000_000)
+        while !Task.isCancelled {
+            try? await Task.sleep(nanoseconds: interval)
+            guard isVisible,
+                  UIApplication.shared.applicationState == .active else { continue }
+            _ = await DeviceLocationRefresher.shared.refreshIfNeeded(isVisible: true)
+            await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
+            await refreshUnknownVisitorSupplementalDataIfNeeded()
+        }
+    }
+
+    @MainActor
+    private func handleScenePhaseChange(_ newPhase: ScenePhase) {
+        if (newPhase == .inactive || newPhase == .background) && navigationPath.isEmpty {
+            settings.lastOpenedDeviceID = nil
+        }
+    }
+
+    @MainActor
+    private func handleLastOpenedDeviceIDChange(_ newDeviceID: String?) {
+        guard !isUITesting else { return }
+        guard let deviceID = newDeviceID,
+              store.devices.contains(where: { $0.DeviceID == deviceID }) else { return }
+        let requestedID = deviceID
+        Task { @MainActor in
+            if navigationPath.last == .device(requestedID) {
+                return
+            }
+
+            navigationPath = []
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            guard settings.lastOpenedDeviceID == requestedID else { return }
+            navigationPath = [.device(requestedID)]
+        }
+    }
+
+    private var devicesList: some View {
+        List {
+            unknownVisitorsSection
+            frequentLocationUpdatesSection
+            devicesSection
+            groupsSection
+        }
+        .environment(\.editMode, $editMode)
+    }
+
+    @ViewBuilder
+    private var unknownVisitorsSection: some View {
+        if !unknownVisitors.isEmpty {
+            Section(header: Text("unknown_visitors_section_title")) {
+                ForEach(unknownVisitors, id: \.uniqueID) { visitor in
+                    unknownVisitorRow(for: visitor)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var frequentLocationUpdatesSection: some View {
+        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+            Section {
+                FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
+                    AppNavigationCoordinator.shared.openAdvancedSettings()
+                }
+            }
+        }
+    }
+
+    private var devicesSection: some View {
+        Section {
+            ForEach(store.devices) { device in
+                deviceRow(for: device)
+            }
+            .onMove { indices, newOffset in
+                store.move(fromOffsets: indices, toOffset: newOffset)
+            }
+            .onDelete { indices in
+                Task {
+                    for index in indices {
+                        await removeDevice(deviceID: store.devices[index].DeviceID)
+                    }
+                }
+            }
+        }
+    }
+
+    private var groupsSection: some View {
+        Section {
+            groupRows
+        } header: {
+            groupSectionHeader
+        }
+        .environment(\.editMode, $groupEditMode)
+    }
+
+    @ViewBuilder
+    private var groupRows: some View {
+        if groupStore.groups.isEmpty {
+            emptyGroupsView
+        } else {
+            ForEach(groupStore.groups) { group in
+                groupRow(for: group)
+            }
+            .onMove { indices, newOffset in
+                groupStore.move(fromOffsets: indices, toOffset: newOffset)
+            }
+            .onDelete { indices in
+                groupStore.remove(atOffsets: indices)
+            }
+        }
+    }
+
+    private var emptyGroupsView: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(NSLocalizedString("No groups yet", comment: "Shown when there are no groups in the list"))
+                .font(.headline)
+            Text(NSLocalizedString("Tap the + button to create a new group.", comment: "Instruction to create a new group when none exist"))
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var groupSectionHeader: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Divider()
+            HStack(spacing: 12) {
+                Text(NSLocalizedString("groups", comment: "Section header for the groups list"))
+                    .font(.headline)
+                Spacer()
+                groupEditButton
+                addGroupButton
+            }
+        }
+        .textCase(nil)
+    }
+
+    private var groupEditButton: some View {
+        Button {
+            groupEditMode = groupEditMode == .active ? .inactive : .active
+        } label: {
+            groupEditButtonLabel
+        }
+        .disabled(groupStore.groups.isEmpty)
+    }
+
+    @ViewBuilder
+    private var groupEditButtonLabel: some View {
+        if groupEditMode == .active {
+            Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+        } else {
+            EmptyView()
+        }
+    }
+
+    private var addGroupButton: some View {
+        Button(action: { showingAddGroup = true }) {
+            Image(systemName: "plus")
+                .padding(8)
+                .background {
+                    if #available(iOS 26.0, *) {
+                        Color.clear.glassEffect(in: .circle)
+                    } else {
+                        Circle().fill(.ultraThinMaterial)
+                    }
+                }
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
+                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
+                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ToolbarContentBuilder
+    private var devicesToolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button {
+                editMode = editMode == .active ? .inactive : .active
+            } label: {
+                deviceEditButtonLabel
+            }
+        }
+        ToolbarItem(placement: .navigationBarTrailing) {
+            addDeviceButton
+        }
+    }
+
+    @ViewBuilder
+    private var deviceEditButtonLabel: some View {
+        if editMode == .active {
+            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
+        } else {
+            Image(systemName: "pencil")
+                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
+                .accessibilityHint(Text(NSLocalizedString("devicelist_editbutton_hint", comment: "Enters edit mode for the device list")))
+        }
+    }
+
+    private var addDeviceButton: some View {
+        Button(action: { showingAddDevice = true }) {
+            Image(systemName: "plus")
+                .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
+                .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
+        }
+        .accessibilityIdentifier("devices_add_button")
+    }
+
+    private func unknownVisitorRow(for visitor: MiataruVisitor) -> some View {
+        UnknownVisitorRow(
+            visitor: visitor,
+            onShowActions: {
+                appNavigation.presentUnknownDeviceActions(visitor.DeviceID, visitDate: visitor.TimeStampDate)
+            },
+            onIgnore: {
+                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+            }
+        )
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            Button {
+                appNavigation.openAddDevice(visitor.DeviceID, source: .unknownVisitor)
+            } label: {
+                Label(
+                    settings.allowedDeviceListEnabled
+                        ? "unknown_visitor_add_and_allow"
+                        : "add",
+                    systemImage: "plus.circle"
+                )
+            }
+            .tint(.green)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                ignoredStore.addIgnored(deviceID: visitor.DeviceID)
+            } label: {
+                Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+            }
+        }
+    }
+
+    private func groupRow(for group: DeviceGroup) -> some View {
+        NavigationLink(value: NavigationDestination.group(group.id)) {
+            GroupRowView(group: group)
+                .matchedTransitionSource(
+                    id: MiataruZoomTransitionSource.group(group.id),
+                    in: zoomTransitionNamespace
+                )
+        }
+        .listRowBackground(selectedGroupID == group.id ? Color(.systemGray) : Color(.systemBackground))
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                if let index = groupStore.groups.firstIndex(where: { $0.id == group.id }) {
+                    groupStore.remove(atOffsets: IndexSet(integer: index))
+                }
+            } label: {
+                Label("delete_group", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading) {
+            Button {
+                editingGroup = group
+                selectedGroupID = group.id
+            } label: {
+                Label("edit_group", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
+    }
+
+    @ViewBuilder
+    private func deviceRow(for device: KnownDevice) -> some View {
+        if editMode == .inactive {
+            activeDeviceRow(for: device)
+        } else {
+            editableDeviceRow(for: device)
+        }
+    }
+
+    private func activeDeviceRow(for device: KnownDevice) -> some View {
+        NavigationLink(value: NavigationDestination.device(device.DeviceID)) {
+            DeviceRowView(device: device, cache: cache, showsSlogan: true)
+                .matchedTransitionSource(
+                    id: MiataruZoomTransitionSource.device(device.DeviceID),
+                    in: zoomTransitionNamespace
+                )
+        }
+        .accessibilityIdentifier(deviceAccessibilityIdentifier(for: device))
+        .listRowBackground(deviceRowBackground(for: device))
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            deleteDeviceButton(for: device)
+        }
+        .swipeActions(edge: .leading) {
+            navigationSwipeButton(for: device)
+            editDeviceSwipeButton(for: device)
+        }
+    }
+
+    private func editableDeviceRow(for device: KnownDevice) -> some View {
+        DeviceRowView(device: device, cache: cache, showsSlogan: true)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                editingDevice = device
+                selectedDeviceID = device.DeviceID
+            }
+            .listRowBackground(deviceRowBackground(for: device))
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                deleteDeviceButton(for: device)
+            }
+            .swipeActions(edge: .leading) {
+                navigationSwipeButton(for: device)
+                editDeviceSwipeButton(for: device)
+            }
+    }
+
+    private func deviceAccessibilityIdentifier(for device: KnownDevice) -> String {
+        device.DeviceID == thisDeviceIDManager.shared.deviceID
+            ? "devices_row_this_device"
+            : "devices_row_\(device.DeviceID)"
+    }
+
+    private func deviceRowBackground(for device: KnownDevice) -> Color {
+        selectedDeviceID == device.DeviceID ? Color(.systemGray) : Color(.systemBackground)
+    }
+
+    private func canNavigate(to device: KnownDevice) -> Bool {
+        device.DeviceID != thisDeviceIDManager.shared.deviceID && cache.getLocation(for: device.DeviceID) != nil
+    }
+
+    @ViewBuilder
+    private func navigationSwipeButton(for device: KnownDevice) -> some View {
+        if canNavigate(to: device) {
+            Button {
+                navigationTarget = DeviceNavigationTarget(device: device)
+            } label: {
+                Label("navigation", systemImage: "location")
+            }
+            .tint(.green)
+        }
+    }
+
+    private func editDeviceSwipeButton(for device: KnownDevice) -> some View {
+        Button {
+            editingDevice = device
+        } label: {
+            Label("edit_device_swipe", systemImage: "pencil")
+        }
+        .tint(.blue)
+    }
+
+    private func deleteDeviceButton(for device: KnownDevice) -> some View {
+        Button(role: .destructive) {
+            Task {
+                await removeDevice(deviceID: device.DeviceID)
+            }
+        } label: {
+            Label("delete_device", systemImage: "trash")
         }
     }
     
@@ -490,6 +609,25 @@ struct iPhone_DevicesView: View {
             navigationPath = [.device(deviceID)]
             settings.lastOpenedDeviceID = deviceID
             appNavigation.consumeDeviceOpenRequest(request)
+        }
+    }
+
+    @MainActor
+    private func handleDeviceNavigationOpenRequest(_ request: DeviceNavigationOpenRequest?) {
+        guard let request else { return }
+        guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: request.deviceID, store: store),
+              let device = store.devices.first(where: { $0.DeviceID == deviceID }) else {
+            appNavigation.consumeDeviceNavigationOpenRequest(request)
+            return
+        }
+
+        Task { @MainActor in
+            navigationPath = []
+            navigationTarget = nil
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            navigationTarget = DeviceNavigationTarget(device: device, launchOptions: request.options)
+            appNavigation.consumeDeviceNavigationOpenRequest(request)
         }
     }
 
@@ -591,6 +729,25 @@ struct iPhone_DevicesView: View {
 private enum NavigationDestination: Hashable {
     case device(String)
     case group(String)
+}
+
+private struct DeviceNavigationTarget: Identifiable, Hashable {
+    let id = UUID()
+    let device: KnownDevice
+    let launchOptions: DeviceNavigationLaunchOptions
+
+    init(device: KnownDevice, launchOptions: DeviceNavigationLaunchOptions = .standard) {
+        self.device = device
+        self.launchOptions = launchOptions
+    }
+
+    static func == (lhs: DeviceNavigationTarget, rhs: DeviceNavigationTarget) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 struct UnknownVisitorRow: View {

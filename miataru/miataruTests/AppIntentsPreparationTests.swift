@@ -138,6 +138,53 @@ struct AppIntentsPreparationTests {
         #expect(!url.absoluteString.contains("Steffi"))
     }
 
+    @Test("Miataru navigation URL uses device ID and focused user-to-device mode")
+    func miataruNavigationURLUsesDeviceIDAndFocusedMode() throws {
+        let location = IntentPersonLocation(
+            personID: "DEVICE-1",
+            displayName: "Steffi",
+            latitude: 52.52,
+            longitude: 13.405,
+            timestamp: Date(timeIntervalSince1970: 1_780_000_000),
+            horizontalAccuracy: 12,
+            placeDescription: "Berlin"
+        )
+
+        let url = OpenMiataruNavigationToPersonIntent.miataruNavigationURL(for: location)
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        #expect(components.scheme == "miataru")
+        #expect(components.host == "DEVICE-1")
+        #expect(queryItems["action"] == "navigate")
+        #expect(queryItems["direction"] == "userToDevice")
+        #expect(queryItems["presentation"] == "focused")
+        #expect(!url.absoluteString.contains("Steffi"))
+    }
+
+    @Test("Miataru navigation intent opens app and resolves an internal navigation destination")
+    func miataruNavigationIntentOpensAppAndResolvesInternalDestination() {
+        let location = IntentPersonLocation(
+            personID: "DEVICE-1",
+            displayName: "Steffi",
+            latitude: 52.52,
+            longitude: 13.405,
+            timestamp: Date(timeIntervalSince1970: 1_780_000_000),
+            horizontalAccuracy: 12,
+            placeDescription: "Berlin"
+        )
+
+        #expect(OpenMiataruNavigationToPersonIntent.openAppWhenRun)
+        #expect(
+            OpenMiataruNavigationToPersonIntent.miataruNavigationDestination(for: location) == .navigation(
+                "DEVICE-1",
+                options: .defaultDeepLink
+            )
+        )
+    }
+
     @Test("Frequent tracking start requires normal location tracking")
     func frequentTrackingStartRequiresNormalLocationTracking() async {
         let controller = FakeFrequentTrackingController(
@@ -254,7 +301,16 @@ struct AppIntentsPreparationTests {
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         let strings = try #require(json?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
-        let intentKeys = strings.keys.filter { $0.hasPrefix("intent_") }.sorted()
+        let appIntentExtractionKeys = [
+            "Open Apple Maps route to ${person}",
+            "Open Miataru navigation to ${person}",
+            "Start frequent tracking",
+            "Stop frequent tracking"
+        ]
+        let intentKeys = (
+            strings.keys.filter { $0.hasPrefix("intent_") }
+                + appIntentExtractionKeys.filter { strings[$0] != nil }
+        ).sorted()
 
         #expect(!intentKeys.isEmpty)
 

@@ -406,7 +406,7 @@ struct miataruApp: App {
     }
 
     private func handleIncomingURL(_ url: URL) {
-        guard let deviceID = DeviceLinkResolver.deviceID(from: url) else { return }
+        guard let destination = DeviceLinkResolver.destination(from: url) else { return }
 
         Task { @MainActor in
             // When resuming from background, SwiftUI may restore navigation state after the URL
@@ -414,12 +414,18 @@ struct miataruApp: App {
             await Task.yield()
             try? await Task.sleep(nanoseconds: 180_000_000)
 
+            let deviceID: String
+            switch destination {
+            case .device(let rawDeviceID), .navigation(let rawDeviceID, _):
+                deviceID = rawDeviceID
+            }
+
             if DeviceLinkResolver.canonicalKnownDeviceID(for: deviceID) != nil {
                 showAddDeviceSheet = false
                 pendingDeviceID = nil
                 pendingAddDeviceSource = .general
             }
-            appNavigation.openDeviceLink(deviceID)
+            appNavigation.openDeviceLink(destination)
         }
     }
 

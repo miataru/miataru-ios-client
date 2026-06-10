@@ -2,15 +2,18 @@ version 3.2
 - Added the first App Intents layer for Siri and Shortcuts, exposing configured current-location-authorized devices as user-friendly person choices.
 - Switched the shipping shortcut parameters to dynamic string options to avoid Shortcuts runtime failures when persisting dynamic `AppEntity` selections.
 - Added the "Find Person" App Intent and App Shortcut to fetch a person's last known server location on demand with privacy-friendly dialog output.
-- Added the "Route to Person" App Intent and App Shortcut to open Apple Maps at the person's last known coordinate without leaking raw DeviceIDs in the route URL.
+- Renamed the existing route App Intent and App Shortcut to "Route in Apple Maps", keeping its Apple Maps handoff on coordinate-only URLs without leaking raw DeviceIDs.
+- Added the "Navigation in Miataru" App Intent and App Shortcut to open Miataru's internal navigation from the user device to the selected target device.
+- Added structured Miataru navigation links (`miataru://<DeviceID>?action=navigate&direction=userToDevice&presentation=focused`) while keeping old `miataru://<DeviceID>` links opening the device view.
+- Fixed the Miataru navigation shortcut for Shortcuts by opening Miataru directly and handing the parsed navigation request to the app coordinator instead of asking Shortcuts to open the custom URL scheme.
 - Added parameterless "Start Frequent Tracking" and "Stop Frequent Tracking" App Intents and App Shortcuts for controlling the manual frequent background tracking override without opening the app.
 - Start Frequent Tracking now requires normal tracking, an unblocked DeviceKey state, and Always location authorization, then renews the configured manual frequent duration; Stop Frequent Tracking clears only the manual override and leaves normal tracking untouched.
 - Added `IntentLocationService` as a narrow, testable adapter over `KnownDeviceStore`, `MiataruAppAPI.getLocation`, and cached placemark data instead of coupling App Intents to SwiftUI views or view models.
 - Added `IntentFrequentTrackingService` as the intent-facing adapter for frequent tracking validation, expiration refresh, localization, and location-mode reconciliation.
-- Localized the new App Intent titles, descriptions, parameters, dialogs, errors, shortcut titles, and snippet-preparation strings across all supported app locales.
+- Localized the new App Intent titles, descriptions, parameters, dialogs, errors, shortcut titles, snippet-preparation strings, and AppIntents-extracted summary strings across all supported app locales.
 - Documented the App Intents architecture, privacy assumptions, deferred places/nearby intent work, and manual Siri/Shortcuts validation plan.
 - Documented the iOS 27 App Actions follow-up as future App Intents schema, Spotlight indexing, view annotation, and AppIntentsTesting work rather than a separate implementation path.
-- Added App Intent regression coverage for entity mapping, visibility filtering, API-location mapping, missing-location and unauthorized errors, Apple Maps URL privacy, and localization completeness.
+- Added App Intent regression coverage for entity mapping, visibility filtering, API-location mapping, missing-location and unauthorized errors, Apple Maps URL privacy, Miataru navigation URL generation, Shortcuts foreground handoff, and localization completeness.
 - Added App Intent regression coverage for frequent-tracking prerequisite failures, expiration renewal, idempotent stop behavior, and localization completeness.
 - Refactored the large `LocationManager` into focused location tracking policy, Smart frequent policy, sample policy, background forensics, upload service, metrics store, and heading smoothing components while preserving the existing app-facing API and behavior.
 - Further split `LocationManager` by moving nested UI/status types into `LocationManager+Types`, moving compatibility policy wrappers into `LocationManager+PolicyCompatibility`, and extracting persisted background-forensics recording plus Core Location service orchestration into dedicated components.

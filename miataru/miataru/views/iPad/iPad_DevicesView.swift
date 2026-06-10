@@ -25,7 +25,7 @@ struct iPad_DevicesView: View {
     @State private var isVisible: Bool = false
     @State private var mapViewKey: UUID = UUID() // Force map view refresh when device changes
     @State private var lastSelectedDeviceID: String? = nil // Track last non-nil selection to avoid unnecessary resets
-    @State private var navigationTargetDevice: KnownDevice? = nil
+    @State private var navigationTarget: DeviceNavigationTarget? = nil
     @State private var isUpdatingFromDeepLink = false // Track if we're updating selection from deep link (to prevent circular updates)
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
@@ -130,7 +130,7 @@ struct iPad_DevicesView: View {
                                         }
                                         if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                             Button {
-                                                navigationTargetDevice = device
+                                                navigationTarget = DeviceNavigationTarget(device: device)
                                             } label: {
                                                 Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                                     .labelStyle(.titleAndIcon)
@@ -153,7 +153,7 @@ struct iPad_DevicesView: View {
                                     .swipeActions(edge: .leading) {
                                         if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                             Button {
-                                                navigationTargetDevice = device
+                                                navigationTarget = DeviceNavigationTarget(device: device)
                                             } label: {
                                                 Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
                                             }
@@ -244,6 +244,7 @@ struct iPad_DevicesView: View {
                     await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                 }
                 handleDeviceOpenRequest(appNavigation.deviceOpenRequest)
+                handleDeviceNavigationOpenRequest(appNavigation.deviceNavigationOpenRequest)
             }
             .onDisappear {
                 isVisible = false
@@ -290,6 +291,9 @@ struct iPad_DevicesView: View {
             .onChange(of: appNavigation.deviceOpenRequest) { _, request in
                 handleDeviceOpenRequest(request)
             }
+            .onChange(of: appNavigation.deviceNavigationOpenRequest) { _, request in
+                handleDeviceNavigationOpenRequest(request)
+            }
         } detail: {
             NavigationStack {
                 if let selectedID = (selection ?? lastSelectedDeviceID), let device = store.devices.first(where: { $0.DeviceID == selectedID }) {
@@ -302,8 +306,8 @@ struct iPad_DevicesView: View {
                         shouldUpdateLastOpenedDeviceID: isUpdatingFromDeepLink
                     )
                     .id(mapViewKey)
-                    .navigationDestination(item: $navigationTargetDevice) { device in
-                        iPhone_DeviceNavigationView(device: device)
+                    .navigationDestination(item: $navigationTarget) { target in
+                        iPhone_DeviceNavigationView(device: target.device, launchOptions: target.launchOptions)
                     }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
@@ -372,7 +376,7 @@ struct iPad_DevicesView: View {
         }
         .onChange(of: selection) { _, newSelection in
             if let newSelection = newSelection, newSelection != lastSelectedDeviceID {
-                navigationTargetDevice = nil
+                navigationTarget = nil
                 lastSelectedDeviceID = newSelection
                 mapViewKey = UUID()
             }
@@ -422,6 +426,26 @@ struct iPad_DevicesView: View {
                 try? await Task.sleep(nanoseconds: 200_000_000)
                 isUpdatingFromDeepLink = false
             }
+        }
+    }
+
+    @MainActor
+    private func handleDeviceNavigationOpenRequest(_ request: DeviceNavigationOpenRequest?) {
+        guard let request else { return }
+        guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: request.deviceID, store: store),
+              let device = store.devices.first(where: { $0.DeviceID == deviceID }) else {
+            appNavigation.consumeDeviceNavigationOpenRequest(request)
+            return
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            selection = deviceID
+            lastSelectedDeviceID = deviceID
+            mapViewKey = UUID()
+            navigationTarget = DeviceNavigationTarget(device: device, launchOptions: request.options)
+            appNavigation.consumeDeviceNavigationOpenRequest(request)
         }
     }
 
@@ -518,6 +542,25 @@ struct iPad_DevicesView: View {
         }
     }
 
+}
+
+private struct DeviceNavigationTarget: Identifiable, Hashable {
+    let id = UUID()
+    let device: KnownDevice
+    let launchOptions: DeviceNavigationLaunchOptions
+
+    init(device: KnownDevice, launchOptions: DeviceNavigationLaunchOptions = .standard) {
+        self.device = device
+        self.launchOptions = launchOptions
+    }
+
+    static func == (lhs: DeviceNavigationTarget, rhs: DeviceNavigationTarget) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 struct iPadSidebarListHeader: View {

@@ -22258,8 +22258,268 @@
         }
       }
     },
+    "intent_open_miataru_navigation_to_person_description" : {
+      "comment" : "Description for the App Intent that opens Miataru's in-app navigation to a tracked person",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbner Miataru-navigation til en persons senest kendte placering."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet die Miataru-Navigation zum letzten bekannten Standort einer Person."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens Miataru navigation to the last known location of a person."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre la navegación de Miataru a la última ubicación conocida de una persona."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa Miataru-navigoinnin henkilön viimeisimpään tunnettuun sijaintiin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre la navigation Miataru vers la dernière position connue d’une personne."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apre la navigazione Miataru verso l’ultima posizione conosciuta di una persona."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人の最後に確認された位置へのMiataruナビゲーションを開きます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opent Miataru-navigatie naar de laatst bekende locatie van een persoon."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Miataru 导航，前往某人最后已知位置。"
+          }
+        }
+      }
+    },
+    "intent_open_miataru_navigation_to_person_dialog_format" : {
+      "comment" : "Dialog format when opening Miataru navigation to a tracked person. Argument: display name.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbner Miataru-navigation til %@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru-Navigation zu %@ wird geöffnet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening Miataru navigation to %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abriendo la navegación de Miataru a %@."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avataan Miataru-navigointi kohteeseen %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouverture de la navigation Miataru vers %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apro la navigazione Miataru verso %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@さんへのMiataruナビゲーションを開きます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru-navigatie naar %@ wordt geopend."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在打开前往 %@ 的 Miataru 导航。"
+          }
+        }
+      }
+    },
+    "intent_open_miataru_navigation_to_person_shortcut_title" : {
+      "comment" : "Short title for the Miataru in-app navigation App Shortcut",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation i Miataru"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation in Miataru"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation in Miataru"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navegación en Miataru"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigointi Miatarussa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation dans Miataru"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigazione in Miataru"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruでナビゲーション"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigatie in Miataru"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 导航"
+          }
+        }
+      }
+    },
+    "intent_open_miataru_navigation_to_person_title" : {
+      "comment" : "Title for the App Intent that opens Miataru's in-app navigation to a tracked person",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation i Miataru"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation in Miataru"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation in Miataru"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navegación en Miataru"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigointi Miatarussa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation dans Miataru"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigazione in Miataru"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruでナビゲーション"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigatie in Miataru"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 导航"
+          }
+        }
+      }
+    },
     "intent_open_route_to_person_description" : {
-      "comment" : "Description for the App Intent that opens a route to a tracked person",
+      "comment" : "Description for the App Intent that opens an Apple Maps route to a tracked person",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -22329,61 +22589,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbner en rute til %@."
+            "value" : "Åbner en Apple Maps-rute til %@."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route zu %@ wird geöffnet."
+            "value" : "Apple-Karten-Route zu %@ wird geöffnet."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opening a route to %@."
+            "value" : "Opening an Apple Maps route to %@."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abriendo una ruta a %@."
+            "value" : "Abriendo una ruta en Mapas a %@."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avataan reitti kohteeseen %@."
+            "value" : "Avataan Apple Kartat -reitti kohteeseen %@."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouverture d’un itinéraire vers %@."
+            "value" : "Ouverture d’un itinéraire Apple Plans vers %@."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apro un percorso verso %@."
+            "value" : "Apro un percorso in Mappe di Apple verso %@."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@さんへの経路を開きます。"
+            "value" : "%@さんへの経路をAppleマップで開きます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route naar %@ wordt geopend."
+            "value" : "Apple Kaarten-route naar %@ wordt geopend."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在打开前往 %@ 的路线。"
+            "value" : "正在 Apple 地图中打开前往 %@ 的路线。"
           }
         }
       }
@@ -22454,131 +22714,131 @@
       }
     },
     "intent_open_route_to_person_shortcut_title" : {
-      "comment" : "Short title for the route to person App Shortcut",
+      "comment" : "Short title for the Apple Maps route App Shortcut",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rute til person"
+            "value" : "Apple Maps-rute"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route zu Person"
+            "value" : "Route in Apple Karten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route to Person"
+            "value" : "Route in Apple Maps"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ruta a persona"
+            "value" : "Ruta en Mapas"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reitti henkilölle"
+            "value" : "Apple Kartat -reitti"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Itinéraire vers personne"
+            "value" : "Itinéraire Plans"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Percorso verso persona"
+            "value" : "Percorso in Mappe"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人への経路"
+            "value" : "Appleマップの経路"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route naar persoon"
+            "value" : "Route in Apple Kaarten"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "前往人员路线"
+            "value" : "Apple 地图路线"
           }
         }
       }
     },
     "intent_open_route_to_person_title" : {
-      "comment" : "Title for the App Intent that opens a route to a tracked person",
+      "comment" : "Title for the App Intent that opens an Apple Maps route to a tracked person",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbn rute til person"
+            "value" : "Rute i Apple Maps"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route zu Person öffnen"
+            "value" : "Route in Apple Karten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Route to Person"
+            "value" : "Route in Apple Maps"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir ruta a persona"
+            "value" : "Ruta en Mapas"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa reitti henkilölle"
+            "value" : "Apple Kartat -reitti"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir l’itinéraire vers une personne"
+            "value" : "Itinéraire dans Plans"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri percorso verso persona"
+            "value" : "Percorso in Mappe"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人への経路を開く"
+            "value" : "Appleマップの経路"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route naar persoon openen"
+            "value" : "Route in Apple Kaarten"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开前往人员的路线"
+            "value" : "Apple 地图路线"
           }
         }
       }
@@ -29311,66 +29571,130 @@
         }
       }
     },
-    "Open route to ${person}" : {
+    "Open Apple Maps route to ${person}" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbn rute til ${person}"
+            "value" : "Åbn Apple Maps-rute til ${person}"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route zu ${person} öffnen"
+            "value" : "Apple Maps-Route zu ${person} öffnen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open route to ${person}"
+            "value" : "Open Apple Maps route to ${person}"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir ruta a ${person}"
+            "value" : "Abrir ruta de Apple Maps a ${person}"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa reitti henkilölle ${person}"
+            "value" : "Avaa Apple Maps -reitti henkilölle ${person}"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir l’itinéraire vers ${person}"
+            "value" : "Ouvrir l’itinéraire Apple Maps vers ${person}"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri il percorso verso ${person}"
+            "value" : "Apri itinerario Apple Maps verso ${person}"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "${person}への経路を開く"
+            "value" : "${person}へのApple Maps経路を開く"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Route naar ${person} openen"
+            "value" : "Open Apple Maps-route naar ${person}"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开前往${person}的路线"
+            "value" : "打开前往 ${person} 的 Apple 地图路线"
+          }
+        }
+      }
+    },
+    "Open Miataru navigation to ${person}" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn Miataru-navigation til ${person}"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru-Navigation zu ${person} öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Miataru navigation to ${person}"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir navegación de Miataru a ${person}"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avaa Miataru-navigointi henkilölle ${person}"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir la navigation Miataru vers ${person}"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri navigazione Miataru verso ${person}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${person}へのMiataruナビゲーションを開く"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Miataru-navigatie naar ${person}"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开前往 ${person} 的 Miataru 导航"
           }
         }
       }
@@ -35597,10 +35921,132 @@
       }
     },
     "Start frequent tracking" : {
-
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start hyppig sporing"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start frequent tracking"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar seguimiento frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aloita tiheä seuranta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer le suivi fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia tracciamento frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高頻度追跡を開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking starten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始频繁跟踪"
+          }
+        }
+      }
     },
     "Stop frequent tracking" : {
-
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop hyppig sporing"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung stoppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop frequent tracking"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener seguimiento frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lopeta tiheä seuranta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrêter le suivi fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interrompi tracciamento frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高頻度追跡を停止"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking stoppen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止频繁跟踪"
+          }
+        }
+      }
     },
     "store location history" : {
       "localizations" : {

@@ -9,15 +9,87 @@
 
 import Foundation
 
+enum DeviceNavigationRouteDirection: String, CaseIterable, Equatable {
+    case userToDevice
+    case deviceToUser
+
+    init(queryValue: String?) {
+        guard let queryValue else {
+            self = .userToDevice
+            return
+        }
+        self = Self.allCases.first { $0.rawValue.lowercased() == queryValue.lowercased() } ?? .userToDevice
+    }
+}
+
+enum DeviceNavigationPresentation: String, CaseIterable, Equatable {
+    case focused
+    case overview
+
+    init(queryValue: String?) {
+        guard let queryValue else {
+            self = .focused
+            return
+        }
+        self = Self.allCases.first { $0.rawValue.lowercased() == queryValue.lowercased() } ?? .focused
+    }
+}
+
+struct DeviceNavigationLaunchOptions: Equatable {
+    let direction: DeviceNavigationRouteDirection
+    let presentation: DeviceNavigationPresentation
+
+    static let standard = DeviceNavigationLaunchOptions(
+        direction: .deviceToUser,
+        presentation: .overview
+    )
+
+    static let defaultDeepLink = DeviceNavigationLaunchOptions(
+        direction: .userToDevice,
+        presentation: .focused
+    )
+}
+
+enum DeviceLinkDestination: Equatable {
+    case device(String)
+    case navigation(String, options: DeviceNavigationLaunchOptions)
+}
+
 enum DeviceLinkResolver {
     static let miataruScheme = "miataru"
     static let canonicalPrefix = "miataru://"
+    private static let actionQueryItemName = "action"
+    private static let navigationActionValue = "navigate"
+    private static let directionQueryItemName = "direction"
+    private static let presentationQueryItemName = "presentation"
 
     static func urlString(for deviceID: String) -> String {
         "\(canonicalPrefix)\(deviceID)"
     }
 
+    static func navigationURL(for deviceID: String, options: DeviceNavigationLaunchOptions = .defaultDeepLink) -> URL {
+        var components = URLComponents(string: urlString(for: deviceID))!
+        components.queryItems = [
+            URLQueryItem(name: actionQueryItemName, value: navigationActionValue),
+            URLQueryItem(name: directionQueryItemName, value: options.direction.rawValue),
+            URLQueryItem(name: presentationQueryItemName, value: options.presentation.rawValue)
+        ]
+        return components.url!
+    }
+
+    static func navigationURLString(for deviceID: String, options: DeviceNavigationLaunchOptions = .defaultDeepLink) -> String {
+        navigationURL(for: deviceID, options: options).absoluteString
+    }
+
     static func deviceID(from url: URL) -> String? {
+        guard let destination = destination(from: url) else { return nil }
+        switch destination {
+        case .device(let deviceID), .navigation(let deviceID, _):
+            return deviceID
+        }
+    }
+
+    static func destination(from url: URL) -> DeviceLinkDestination? {
         guard url.scheme?.lowercased() == miataruScheme else { return nil }
 
         let rawDeviceID: String
@@ -27,7 +99,10 @@ enum DeviceLinkResolver {
             rawDeviceID = url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         }
 
-        return trimmedDeviceID(rawDeviceID)
+        guard let deviceID = trimmedDeviceID(rawDeviceID) else { return nil }
+        guard navigationActionRequested(in: url) else { return .device(deviceID) }
+
+        return .navigation(deviceID, options: navigationOptions(from: url))
     }
 
     static func deviceID(fromCanonicalCode rawValue: String) -> String? {
@@ -55,5 +130,23 @@ enum DeviceLinkResolver {
         return store.devices.first {
             self.normalizedDeviceID($0.DeviceID) == normalizedDeviceID
         }?.DeviceID
+    }
+
+    private static func navigationActionRequested(in url: URL) -> Bool {
+        queryValue(for: actionQueryItemName, in: url)?.lowercased() == navigationActionValue
+    }
+
+    private static func navigationOptions(from url: URL) -> DeviceNavigationLaunchOptions {
+        DeviceNavigationLaunchOptions(
+            direction: DeviceNavigationRouteDirection(queryValue: queryValue(for: directionQueryItemName, in: url)),
+            presentation: DeviceNavigationPresentation(queryValue: queryValue(for: presentationQueryItemName, in: url))
+        )
+    }
+
+    private static func queryValue(for name: String, in url: URL) -> String? {
+        URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?
+            .first { $0.name.lowercased() == name.lowercased() }?
+            .value
     }
 }

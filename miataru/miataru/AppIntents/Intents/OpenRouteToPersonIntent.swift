@@ -13,14 +13,14 @@ import Foundation
 struct OpenRouteToPersonIntent: AppIntent {
     static var title: LocalizedStringResource = LocalizedStringResource(
         "intent_open_route_to_person_title",
-        defaultValue: "Open Route to Person",
-        comment: "Title for the App Intent that opens a route to a tracked person"
+        defaultValue: "Route in Apple Maps",
+        comment: "Title for the App Intent that opens an Apple Maps route to a tracked person"
     )
     static var description = IntentDescription(
         LocalizedStringResource(
             "intent_open_route_to_person_description",
             defaultValue: "Opens Apple Maps with directions to the last known location of a person.",
-            comment: "Description for the App Intent that opens a route to a tracked person"
+            comment: "Description for the App Intent that opens an Apple Maps route to a tracked person"
         )
     )
     static var openAppWhenRun: Bool = false
@@ -36,7 +36,7 @@ struct OpenRouteToPersonIntent: AppIntent {
     var person: String
 
     static var parameterSummary: some ParameterSummary {
-        Summary("Open route to \(\.$person)")
+        Summary("Open Apple Maps route to \(\.$person)")
     }
 
     func perform() async throws -> some IntentResult & OpensIntent & ProvidesDialog {

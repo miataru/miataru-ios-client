@@ -29,6 +29,12 @@ struct DeviceOpenRequest: Equatable, Identifiable {
     let deviceID: String
 }
 
+struct DeviceNavigationOpenRequest: Equatable, Identifiable {
+    let id = UUID()
+    let deviceID: String
+    let options: DeviceNavigationLaunchOptions
+}
+
 enum AddDeviceRequestSource: Equatable {
     case general
     case unknownVisitor
@@ -58,6 +64,7 @@ final class AppNavigationCoordinator: ObservableObject {
     @Published private(set) var rootDestination: AppRootNavigationDestination?
     @Published private(set) var settingsRequest: SettingsNavigationRequest?
     @Published private(set) var deviceOpenRequest: DeviceOpenRequest?
+    @Published private(set) var deviceNavigationOpenRequest: DeviceNavigationOpenRequest?
     @Published private(set) var addDeviceRequest: AddDeviceRequest?
     @Published private(set) var unknownDeviceActionRequest: UnknownDeviceActionRequest?
 
@@ -71,7 +78,16 @@ final class AppNavigationCoordinator: ObservableObject {
         guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) else { return }
         rootDestination = .devices
         SettingsManager.shared.lastOpenedDeviceID = deviceID
+        deviceNavigationOpenRequest = nil
         deviceOpenRequest = DeviceOpenRequest(deviceID: deviceID)
+    }
+
+    func openKnownDeviceNavigation(_ rawDeviceID: String, options: DeviceNavigationLaunchOptions = .defaultDeepLink) {
+        guard let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) else { return }
+        rootDestination = .devices
+        SettingsManager.shared.lastOpenedDeviceID = nil
+        deviceOpenRequest = nil
+        deviceNavigationOpenRequest = DeviceNavigationOpenRequest(deviceID: deviceID, options: options)
     }
 
     func openDeviceLink(_ rawDeviceID: String) {
@@ -82,9 +98,24 @@ final class AppNavigationCoordinator: ObservableObject {
         }
     }
 
+    func openDeviceLink(_ destination: DeviceLinkDestination) {
+        switch destination {
+        case .device(let rawDeviceID):
+            openDeviceLink(rawDeviceID)
+        case .navigation(let rawDeviceID, let options):
+            if let deviceID = DeviceLinkResolver.canonicalKnownDeviceID(for: rawDeviceID) {
+                openKnownDeviceNavigation(deviceID, options: options)
+            } else if let deviceID = DeviceLinkResolver.trimmedDeviceID(rawDeviceID) {
+                openAddDevice(deviceID)
+            }
+        }
+    }
+
     func openAddDevice(_ rawDeviceID: String, source: AddDeviceRequestSource = .general) {
         guard let deviceID = DeviceLinkResolver.trimmedDeviceID(rawDeviceID) else { return }
         rootDestination = .devices
+        deviceOpenRequest = nil
+        deviceNavigationOpenRequest = nil
         addDeviceRequest = AddDeviceRequest(deviceID: deviceID, source: source)
     }
 
@@ -121,6 +152,11 @@ final class AppNavigationCoordinator: ObservableObject {
     func consumeDeviceOpenRequest(_ request: DeviceOpenRequest) {
         guard deviceOpenRequest?.id == request.id else { return }
         deviceOpenRequest = nil
+    }
+
+    func consumeDeviceNavigationOpenRequest(_ request: DeviceNavigationOpenRequest) {
+        guard deviceNavigationOpenRequest?.id == request.id else { return }
+        deviceNavigationOpenRequest = nil
     }
 
     func consumeAddDeviceRequest(_ request: AddDeviceRequest) {

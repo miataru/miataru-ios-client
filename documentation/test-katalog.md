@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-06-09)
+# Test Catalog (as of 2026-06-10)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **215** (Unit: 199, UI: 16 incl. 10 screenshot captures)
+- Actively linked app test cases: **228** (Unit: 211, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -87,13 +87,18 @@ Important project observations:
 | UT-DLR-011 | Device link routing opens known devices and adds unknown devices | Validate external URI branching | Known URI opens stored canonical device, unknown URI opens add-device sheet preserving input case | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
 | UT-DLR-012 | Unknown visitor add requests preserve source and case | Protect Add Device prefill behavior | Unknown visitor action opens Add Device with source `unknownVisitor` and the original Device ID casing | AppNavigationCoordinator | Unit | Shared coordinator cleanup | High |
 | UT-DLR-013 | Unknown visitor notification routes by known state | Validate notification-tap branching | Unknown notification shows action dialog preserving input case, known notification opens device | AppNavigationCoordinator | Unit | Shared store, cleanup via defer | High |
+| UT-DLR-014 | Navigation miataru URI parses destination options | Protect in-app navigation deep links | `miataru://<DeviceID>?action=navigate&direction=userToDevice&presentation=focused` resolves to a navigation destination with focused launch options | DeviceLinkResolver | Unit | URL fixture | High |
+| UT-DLR-015 | Navigation URL generation uses canonical action query | Protect internal link generation | Generated Miataru navigation links include the canonical host DeviceID and action/direction/presentation query items | DeviceLinkResolver | Unit | URLComponents fixture | High |
+| UT-DLR-016 | Navigation device link routing opens known navigation and adds unknown devices | Validate navigation URI branching | Known navigation links publish a navigation request; unknown navigation links still enter Add Device flow preserving input case | AppNavigationCoordinator | Unit | Shared store/coordinator cleanup | High |
 | UT-AIP-001 | KnownDevice maps to tracked person entity | Protect App Entity mapping | `KnownDevice` display name, DeviceID, and current-location access map to `IntentPersonRecord` and `TrackedPersonEntity` | App Intents / IntentLocationService | Unit | KnownDevice fixture | High |
 | UT-AIP-002 | Suggested people only include visible devices with current location access | Enforce Siri/Shortcuts visibility boundary | Blank IDs and devices without current-location access are filtered out | App Intents / TrackedPersonQuery source | Unit | Fake intent provider | High |
 | UT-AIP-003 | API location payload maps to intent person location | Protect location DTO mapping | `MiataruLocationData` maps to `IntentLocationPayload` and `IntentPersonLocation` with cached place text | App Intents / IntentLocationService | Unit | MiataruLocationData fixture | High |
 | UT-AIP-004 | Latest location throws when no location exists | Validate no-location error | Visible person with no payload throws `.noLocationAvailable` | App Intents / IntentLocationService | Unit | Fake intent provider | High |
 | UT-AIP-005 | Person without current location access is not visible and cannot be queried | Validate authorization privacy boundary | Hidden person is not suggested, cannot resolve as entity, and throws `.unauthorized` on stale shortcut execution | App Intents / IntentLocationService | Unit | Fake intent provider | High |
 | UT-AIP-006 | Apple Maps URL uses coordinates and does not leak person identifiers | Prevent DeviceID/name leakage in route action | Maps URL contains only destination coordinates and no person ID/name | App Intents / OpenRouteToPersonIntent | Unit | IntentPersonLocation fixture | High |
-| UT-AIP-007 | App Intent localization keys exist for all app locales | Enforce App Intent localization completeness | Every `intent_` string-catalog key has a non-empty value for all 10 app locales | App Intents / Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
+| UT-AIP-007 | App Intent localization keys exist for all app locales | Enforce App Intent localization completeness | Every `intent_` string-catalog key and known AppIntents-extracted summary key has a non-empty value for all 10 app locales | App Intents / Localizable string-catalog QA | Unit | JSON parse of `Localizable.xcstrings` | High |
+| UT-AIP-008 | Miataru navigation URL uses device ID and focused user-to-device mode | Protect in-app navigation handoff | The Miataru navigation intent creates a `miataru://` link with DeviceID, `action=navigate`, `direction=userToDevice`, `presentation=focused`, and no display-name leakage | App Intents / OpenMiataruNavigationToPersonIntent | Unit | IntentPersonLocation fixture | High |
+| UT-AIP-009 | Miataru navigation intent opens app and resolves an internal navigation destination | Protect Shortcuts execution path | The Miataru navigation intent requests app foregrounding and resolves the generated Deep Link into a structured internal navigation destination | App Intents / OpenMiataruNavigationToPersonIntent | Unit | IntentPersonLocation fixture | High |
 | UT-MRE-001 | Retries once for transient network error and succeeds | Validate retry path | first timedOut fails, second succeeds, 1 sleep recorded | MiataruRequestExecutor | Unit | injected sleep + deterministic jitter | High |
 | UT-MRE-002 | Does not retry for non-retryable auth error | Validate non-retry path | `401` serverError throws without retry | MiataruRequestExecutor | Unit | APIError simulation | High |
 | UT-MRE-003 | Classifier marks transient statuses and URL errors as retryable | Validate classification table | 408/429/5xx + transient URLError are retryable; auth/invalid/decoding are not | MiataruRetryClassifier | Unit | APIError + URLError cases | High |
