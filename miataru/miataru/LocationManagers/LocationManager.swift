@@ -337,6 +337,12 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
+    func authorizationStatusForIntent() -> CLAuthorizationStatus {
+        let status = locationManager.authorizationStatus
+        authorizationStatus = status
+        return status
+    }
+
     func requestFullLocationAuthorizationAgain() {
         pendingAlwaysAuthorizationRequestTask?.cancel()
         pendingAlwaysAuthorizationRequestTask = nil
@@ -831,6 +837,11 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         return action
+    }
+
+    @discardableResult
+    func reconcileTrackingStateForIntent(reason: String) -> TrackingReconcileAction {
+        reconcileTrackingState(reason: reason)
     }
 
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {

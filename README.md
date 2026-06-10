@@ -22,7 +22,7 @@ The app currently supports iPhone and iPad. Mac-specific view files are present 
 - Device info: display and edit short device slogans, show security status, and cache location/slogan metadata centrally.
 - Maps and navigation: device/group maps, accuracy circles, off-screen arrows, route planning, live ETA, route-progress ghost rendering in standard navigation, focused double-tap navigation, turn-by-turn overlay, haptics, and sound cues.
 - QR and deep links: show the current device QR code, scan Miataru URLs, share IDs, and open `miataru://<DEVICE_ID>` links.
-- Siri and Shortcuts: App Intents expose configured, current-location-authorized devices as privacy-friendly person choices for finding the last known location and opening an Apple Maps route without exposing raw DeviceIDs in dialogs.
+- Siri and Shortcuts: App Intents expose configured, current-location-authorized devices as privacy-friendly person choices for finding the last known location and opening an Apple Maps route without exposing raw DeviceIDs in dialogs. Additional parameterless shortcuts start and stop the manual frequent background tracking override without changing the main tracking preference.
 - Widgets: text and map widgets use AppIntent device selection, shared App Group configuration, cached map snapshots, and live fallback fetches where configured.
 - Tests: unit, functional UI, and screenshot suites are split into dedicated schemes and scripts.
 
@@ -59,7 +59,7 @@ Location upload still uses the same delivery path: direct sends use `MiataruAppA
 
 Successful `GetLocation` and `GetLocationHistory` responses are centrally ingested into `DeviceLocationCacheStore`, `DeviceSloganCacheStore`, recent-visitor state, and widget payloads. This avoids per-view cache drift and preserves newer samples when data is written by the widget extension.
 
-Siri and Shortcuts use `IntentLocationService` as a narrow adapter over `KnownDeviceStore`, `MiataruAppAPI.getLocation`, and cached placemark data. App Intents offer only configured devices with current-location access, speak display names and coarse location context, and use Apple Maps coordinates for route opening rather than leaking DeviceIDs. The first shipping shortcuts use dynamic string options for device selection to avoid Shortcuts runtime issues with dynamic `AppEntity` identifiers.
+Siri and Shortcuts use `IntentLocationService` as a narrow adapter over `KnownDeviceStore`, `MiataruAppAPI.getLocation`, and cached placemark data. App Intents offer only configured devices with current-location access, speak display names and coarse location context, and use Apple Maps coordinates for route opening rather than leaking DeviceIDs. The first shipping person shortcuts use dynamic string options for device selection to avoid Shortcuts runtime issues with dynamic `AppEntity` identifiers. `IntentFrequentTrackingService` exposes start/stop actions for the manual frequent background tracking override; start requires normal tracking, an unblocked DeviceKey state, and Always location authorization, while stop leaves standard tracking unchanged.
 
 App-owned persistent data lives under Application Support and the shared App Group. `PersistentDataCleanup` prunes orphaned unknown-device location/slogan cache entries and stale widget snapshots on startup and after relevant device-list changes.
 
@@ -122,14 +122,14 @@ Third-party license notes are tracked in `3rd party licenses.md`.
 - The app talks to the Miataru server configured by the user.
 - DeviceKey protects server-side writes and sensitive reads when configured.
 - Allowed Device List can restrict which devices may access this device.
-- Siri and Shortcuts actions only suggest configured devices with current-location access and avoid raw DeviceIDs, DeviceKeys, or full server responses in spoken/dialog output.
+- Siri and Shortcuts actions only suggest configured devices with current-location access and avoid raw DeviceIDs, DeviceKeys, or full server responses in spoken/dialog output. Frequent tracking shortcuts are parameterless and only report tracking state, expiration, and prerequisite errors.
 - Unknown visitor alerts are opt-in and start from activation time, avoiding retroactive notifications.
 - Local caches are app-owned and pruned; widget data is shared only through the configured App Group.
 - No analytics or third-party tracking SDK is part of the app codebase.
 
 ## Documentation
 
-The living documentation is maintained in this README, `miataru/PROJECT_OVERVIEW.md`, `miataru/APP_FEATURES.md`, `miataru/DEVELOPMENT.md`, and the test documentation under `documentation/`. Dated implementation notes in `documentation/` and `miataru/documentation/` are retained as historical design records.
+The living documentation is maintained in this README, `miataru/PROJECT_OVERVIEW.md`, `miataru/APP_FEATURES.md`, `miataru/DEVELOPMENT.md`, `miataru/CHANGELOG.md`, `miataru/APP_STORE_DESCRIPTION.md`, and the test documentation under `documentation/`. Dated implementation notes in `documentation/` and `miataru/documentation/` are retained as historical design records.
 
 ## License
 

@@ -7,6 +7,7 @@
  * Created by Codex on 09.06.26.
  */
 
+import CoreLocation
 import Foundation
 import MiataruAPIClient
 import Testing
@@ -137,6 +138,116 @@ struct AppIntentsPreparationTests {
         #expect(!url.absoluteString.contains("Steffi"))
     }
 
+    @Test("Frequent tracking start requires normal location tracking")
+    func frequentTrackingStartRequiresNormalLocationTracking() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(locationTrackingEnabled: false)
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        await expectFrequentTrackingError(.locationTrackingDisabled) {
+            _ = try await service.startFrequentTracking()
+        }
+
+        #expect(controller.startCallCount == 0)
+        #expect(controller.reconcileReasons.isEmpty)
+    }
+
+    @Test("Frequent tracking start fails while DeviceKey auth is blocked")
+    func frequentTrackingStartFailsWhileDeviceKeyAuthIsBlocked() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(deviceKeyAuthBlocked: true)
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        await expectFrequentTrackingError(.deviceKeyBlocked) {
+            _ = try await service.startFrequentTracking()
+        }
+
+        #expect(controller.startCallCount == 0)
+        #expect(controller.reconcileReasons.isEmpty)
+    }
+
+    @Test("Frequent tracking start requires Always location authorization")
+    func frequentTrackingStartRequiresAlwaysLocationAuthorization() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(authorizationStatus: .authorizedWhenInUse)
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        await expectFrequentTrackingError(.alwaysAuthorizationRequired) {
+            _ = try await service.startFrequentTracking()
+        }
+
+        #expect(controller.startCallCount == 0)
+        #expect(controller.reconcileReasons.isEmpty)
+    }
+
+    @Test("Frequent tracking start enables manual frequent mode using configured duration")
+    func frequentTrackingStartEnablesManualFrequentModeUsingConfiguredDuration() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(durationMode: .oneHour)
+        )
+        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+
+        let result = try await service.startFrequentTracking()
+        let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.oneHour.expirationDate(from: now))
+
+        #expect(!result.wasAlreadyActive)
+        #expect(result.durationMode == .oneHour)
+        #expect(result.expiresAt == expectedExpiration)
+        #expect(controller.currentState.manualFrequentTrackingEnabled)
+        #expect(controller.currentState.frequentTrackingExpiresAt == expectedExpiration)
+        #expect(controller.startCallCount == 1)
+        #expect(controller.reconcileReasons == ["start frequent tracking intent"])
+    }
+
+    @Test("Frequent tracking start renews active manual frequent expiration")
+    func frequentTrackingStartRenewsActiveManualFrequentExpiration() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let oldExpiration = now.addingTimeInterval(60)
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(
+                manualFrequentTrackingEnabled: true,
+                frequentTrackingExpiresAt: oldExpiration,
+                durationMode: .fourHours
+            )
+        )
+        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+
+        let result = try await service.startFrequentTracking()
+        let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: now))
+
+        #expect(result.wasAlreadyActive)
+        #expect(result.expiresAt == expectedExpiration)
+        #expect(controller.currentState.frequentTrackingExpiresAt == expectedExpiration)
+    }
+
+    @Test("Frequent tracking stop disables manual frequent mode and is idempotent")
+    func frequentTrackingStopDisablesManualFrequentModeAndIsIdempotent() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(
+                manualFrequentTrackingEnabled: true,
+                frequentTrackingExpiresAt: Date(timeIntervalSince1970: 1_800_000_000)
+            )
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        let firstResult = await service.stopFrequentTracking()
+        let secondResult = await service.stopFrequentTracking()
+
+        #expect(firstResult.wasActive)
+        #expect(!secondResult.wasActive)
+        #expect(!controller.currentState.manualFrequentTrackingEnabled)
+        #expect(controller.currentState.frequentTrackingExpiresAt == nil)
+        #expect(controller.stopCallCount == 2)
+        #expect(controller.reconcileReasons == [
+            "stop frequent tracking intent",
+            "stop frequent tracking intent"
+        ])
+    }
+
     @Test("App Intent localization keys exist for all app locales")
     func appIntentLocalizationKeysExistForAllAppLocales() throws {
         let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
@@ -183,11 +294,86 @@ struct AppIntentsPreparationTests {
         }
     }
 
+    private func expectFrequentTrackingError(
+        _ expectedError: IntentFrequentTrackingError,
+        operation: () async throws -> Void
+    ) async {
+        do {
+            try await operation()
+            Issue.record("Expected \(expectedError), but operation succeeded")
+        } catch let error as IntentFrequentTrackingError {
+            #expect(error == expectedError)
+        } catch {
+            Issue.record("Expected \(expectedError), but got \(error)")
+        }
+    }
+
+    private func frequentTrackingState(
+        locationTrackingEnabled: Bool = true,
+        deviceKeyAuthBlocked: Bool = false,
+        authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
+        manualFrequentTrackingEnabled: Bool = false,
+        frequentTrackingExpiresAt: Date? = nil,
+        durationMode: FrequentBackgroundLocationUpdateDuration = .fourHours
+    ) -> IntentFrequentTrackingState {
+        IntentFrequentTrackingState(
+            locationTrackingEnabled: locationTrackingEnabled,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            authorizationStatus: authorizationStatus,
+            manualFrequentTrackingEnabled: manualFrequentTrackingEnabled,
+            frequentTrackingExpiresAt: frequentTrackingExpiresAt,
+            durationMode: durationMode
+        )
+    }
+
     private func repoRootURL() -> URL {
         URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
+    }
+}
+
+private final class FakeFrequentTrackingController: IntentFrequentTrackingControlling {
+    var currentState: IntentFrequentTrackingState
+    var startCallCount = 0
+    var stopCallCount = 0
+    var reconcileReasons: [String] = []
+
+    init(state: IntentFrequentTrackingState) {
+        self.currentState = state
+    }
+
+    func state() async -> IntentFrequentTrackingState {
+        currentState
+    }
+
+    func startManualFrequentTracking(now: Date) async {
+        startCallCount += 1
+        currentState = IntentFrequentTrackingState(
+            locationTrackingEnabled: currentState.locationTrackingEnabled,
+            deviceKeyAuthBlocked: currentState.deviceKeyAuthBlocked,
+            authorizationStatus: currentState.authorizationStatus,
+            manualFrequentTrackingEnabled: true,
+            frequentTrackingExpiresAt: currentState.durationMode.expirationDate(from: now),
+            durationMode: currentState.durationMode
+        )
+    }
+
+    func stopManualFrequentTracking() async {
+        stopCallCount += 1
+        currentState = IntentFrequentTrackingState(
+            locationTrackingEnabled: currentState.locationTrackingEnabled,
+            deviceKeyAuthBlocked: currentState.deviceKeyAuthBlocked,
+            authorizationStatus: currentState.authorizationStatus,
+            manualFrequentTrackingEnabled: false,
+            frequentTrackingExpiresAt: nil,
+            durationMode: currentState.durationMode
+        )
+    }
+
+    func reconcileTrackingState(reason: String) async {
+        reconcileReasons.append(reason)
     }
 }
 

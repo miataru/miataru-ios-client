@@ -85,6 +85,7 @@ location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-h
 ## What's New - Version 3.2
 
 * New Siri and Shortcuts actions for finding a person and opening a route
+* New Shortcuts actions to start or stop manual frequent background tracking without opening the app
 * New Smart frequent background update mode
 * Automatic switch from significant-change tracking to frequent updates when movement is detected
 * Shared inactivity window returns Smart frequent updates to standard background tracking

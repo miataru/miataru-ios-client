@@ -40,5 +40,33 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             ),
             systemImageName: "point.topleft.down.curvedto.point.bottomright.up"
         )
+
+        AppShortcut(
+            intent: StartFrequentTrackingIntent(),
+            phrases: [
+                "Start frequent tracking in \(.applicationName)",
+                "Enable frequent tracking in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_start_frequent_tracking_shortcut_title",
+                defaultValue: "Start Frequent",
+                comment: "Short title for the start frequent tracking App Shortcut"
+            ),
+            systemImageName: "location.fill"
+        )
+
+        AppShortcut(
+            intent: StopFrequentTrackingIntent(),
+            phrases: [
+                "Stop frequent tracking in \(.applicationName)",
+                "Disable frequent tracking in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_stop_frequent_tracking_shortcut_title",
+                defaultValue: "Stop Frequent",
+                comment: "Short title for the stop frequent tracking App Shortcut"
+            ),
+            systemImageName: "location.slash"
+        )
     }
 }

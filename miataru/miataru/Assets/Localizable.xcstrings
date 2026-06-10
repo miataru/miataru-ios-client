@@ -21478,6 +21478,201 @@
         }
       }
     },
+    "intent_frequent_tracking_error_always_authorization_required" : {
+      "comment" : "Error shown when frequent background tracking is started without Always location authorization",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig baggrundssporing kræver altid adgang til placering. Åbn Miataru, og tillad Altid-adgang, før du starter den."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Hintergrundverfolgung benötigt Immer-Zugriff auf den Standort. Öffne Miataru und erlaube Immer-Zugriff, bevor du sie startest."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent background tracking needs Always location access. Open Miataru and allow Always access before starting it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente en segundo plano necesita acceso Siempre a la ubicación. Abre Miataru y permite el acceso Siempre antes de iniciarlo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä taustaseuranta tarvitsee aina sallitun sijaintioikeuden. Avaa Miataru ja salli aina käyttö ennen sen käynnistämistä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent en arrière-plan nécessite l’accès permanent à la position. Ouvrez Miataru et autorisez l’accès permanent avant de le démarrer."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente in background richiede l’accesso Sempre alla posizione. Apri Miataru e consenti l’accesso Sempre prima di avviarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁なバックグラウンド追跡には、位置情報の「常に許可」が必要です。開始する前にMiataruを開き、「常に許可」を有効にしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente achtergrondtracking heeft Altijd-toegang tot locatie nodig. Open Miataru en sta Altijd-toegang toe voordat je dit start."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁后台跟踪需要“始终”位置访问权限。请先打开 Miataru 并允许“始终”访问，然后再启动。"
+          }
+        }
+      }
+    },
+    "intent_frequent_tracking_error_device_key_blocked" : {
+      "comment" : "Error shown when frequent tracking is started while DeviceKey authentication blocks tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru stoppede sporingen, fordi DeviceKey-godkendelsen mislykkedes. Åbn Miataru for at opdatere din DeviceKey."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru hat die Verfolgung gestoppt, weil die DeviceKey-Authentifizierung fehlgeschlagen ist. Öffne Miataru, um deinen DeviceKey zu aktualisieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru stopped tracking because DeviceKey authentication failed. Open Miataru to update your DeviceKey."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru detuvo el seguimiento porque falló la autenticación de DeviceKey. Abre Miataru para actualizar tu DeviceKey."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru lopetti seurannan, koska DeviceKey-todennus epäonnistui. Avaa Miataru päivittääksesi DeviceKey-avaimesi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru a arrêté le suivi, car l’authentification DeviceKey a échoué. Ouvrez Miataru pour mettre à jour votre DeviceKey."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru ha interrotto il tracciamento perché l’autenticazione DeviceKey non è riuscita. Apri Miataru per aggiornare la tua DeviceKey."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DeviceKey認証に失敗したため、Miataruは追跡を停止しました。Miataruを開いてDeviceKeyを更新してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru heeft tracking gestopt omdat DeviceKey-verificatie is mislukt. Open Miataru om je DeviceKey bij te werken."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于 DeviceKey 认证失败，Miataru 已停止跟踪。请打开 Miataru 更新你的 DeviceKey。"
+          }
+        }
+      }
+    },
+    "intent_frequent_tracking_error_tracking_disabled" : {
+      "comment" : "Error shown when frequent tracking is started while normal location tracking is disabled",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokationssporing er slået fra. Slå lokationssporing til i Miataru, før du starter hyppig sporing."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standortverfolgung ist ausgeschaltet. Aktiviere die Standortverfolgung in Miataru, bevor du häufige Verfolgung startest."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location tracking is off. Turn on location tracking in Miataru before starting frequent tracking."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento de ubicación está desactivado. Activa el seguimiento de ubicación en Miataru antes de iniciar el seguimiento frecuente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sijainnin seuranta on pois päältä. Ota sijainnin seuranta käyttöön Miatarussa ennen tiheän seurannan käynnistämistä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi de position est désactivé. Activez le suivi de position dans Miataru avant de démarrer le suivi fréquent."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento della posizione è disattivato. Attivalo in Miataru prima di avviare il tracciamento frequente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置情報の追跡がオフです。頻繁な追跡を開始する前に、Miataruで位置情報の追跡をオンにしてください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatietracking staat uit. Schakel locatietracking in Miataru in voordat je frequente tracking start."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "位置跟踪已关闭。请先在 Miataru 中打开位置跟踪，然后再启动频繁跟踪。"
+          }
+        }
+      }
+    },
     "intent_location_age_less_than_minute" : {
       "comment" : "Age text for a location younger than one minute",
       "localizations" : {
@@ -22514,6 +22709,656 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上次更新：%@ 前"
+          }
+        }
+      }
+    },
+    "intent_start_frequent_tracking_description" : {
+      "comment" : "Description for the App Intent that starts manual frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starter Miatarus hyppigere baggrundssporing med den aktuelle varighedsindstilling."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startet Miatarus häufigere Hintergrundverfolgung mit der aktuellen Dauer-Einstellung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts Miataru's more frequent background tracking using the current duration setting."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia el seguimiento en segundo plano más frecuente de Miataru usando la duración configurada actualmente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käynnistää Miatarun tiheämmän taustaseurannan nykyisellä kestoasetuksella."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarre le suivi plus fréquent en arrière-plan de Miataru avec le réglage de durée actuel."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia il tracciamento in background più frequente di Miataru usando la durata attuale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の期間設定を使って、Miataruのより頻繁なバックグラウンド追跡を開始します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Miataru's frequentere achtergrondtracking met de huidige duurinstelling."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用当前持续时间设置启动 Miataru 更频繁的后台跟踪。"
+          }
+        }
+      }
+    },
+    "intent_start_frequent_tracking_dialog_unlimited" : {
+      "comment" : "Dialog shown when starting frequent tracking with unlimited duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig sporing er aktiv, indtil du stopper den."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung ist aktiv, bis du sie stoppst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent tracking is active until you stop it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente está activo hasta que lo detengas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä seuranta on käytössä, kunnes pysäytät sen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent est actif jusqu’à ce que vous l’arrêtiez."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente è attivo finché non lo interrompi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡は停止するまで有効です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking is actief totdat je deze stopt."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁跟踪将保持启用，直到你停止它。"
+          }
+        }
+      }
+    },
+    "intent_start_frequent_tracking_dialog_until_format" : {
+      "comment" : "Dialog shown when starting frequent tracking with an expiration date. Argument: localized expiration date.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig sporing er aktiv indtil %@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung ist bis %@ aktiv."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent tracking is active until %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente está activo hasta %@."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä seuranta on käytössä ajankohtaan %@ asti."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent est actif jusqu’au %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente è attivo fino al %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡は%@まで有効です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking is actief tot %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁跟踪将启用至 %@。"
+          }
+        }
+      }
+    },
+    "intent_start_frequent_tracking_shortcut_title" : {
+      "comment" : "Short title for the start frequent tracking App Shortcut",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start hyppig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufig starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Frequent"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käynnistä tiheä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁追跡を開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start frequent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动频繁跟踪"
+          }
+        }
+      }
+    },
+    "intent_start_frequent_tracking_title" : {
+      "comment" : "Title for the App Intent that starts manual frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start hyppig sporing"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Frequent Tracking"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar seguimiento frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käynnistä tiheä seuranta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer le suivi fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia tracciamento frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡を開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking starten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动频繁跟踪"
+          }
+        }
+      }
+    },
+    "intent_stop_frequent_tracking_description" : {
+      "comment" : "Description for the App Intent that stops manual frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopper Miatarus hyppigere baggrundssporing og lader standardsporing være uændret."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stoppt Miatarus häufigere Hintergrundverfolgung und lässt die Standardverfolgung unverändert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stops Miataru's more frequent background tracking and keeps standard tracking unchanged."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detiene el seguimiento en segundo plano más frecuente de Miataru y mantiene sin cambios el seguimiento estándar."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pysäyttää Miatarun tiheämmän taustaseurannan ja pitää tavallisen seurannan ennallaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrête le suivi plus fréquent en arrière-plan de Miataru et garde le suivi standard inchangé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interrompe il tracciamento in background più frequente di Miataru e lascia invariato il tracciamento standard."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruのより頻繁なバックグラウンド追跡を停止し、標準の追跡は変更しません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopt Miataru's frequentere achtergrondtracking en laat standaardtracking ongewijzigd."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止 Miataru 更频繁的后台跟踪，并保持标准跟踪不变。"
+          }
+        }
+      }
+    },
+    "intent_stop_frequent_tracking_dialog_already_stopped" : {
+      "comment" : "Dialog shown when frequent tracking was already stopped",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig sporing var allerede slået fra."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung war bereits ausgeschaltet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent tracking was already off."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente ya estaba desactivado."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä seuranta oli jo pois päältä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent était déjà désactivé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente era già disattivato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡はすでにオフです。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking stond al uit."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁跟踪已关闭。"
+          }
+        }
+      }
+    },
+    "intent_stop_frequent_tracking_dialog_stopped" : {
+      "comment" : "Dialog shown when frequent tracking has been stopped from an App Intent",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hyppig sporing er stoppet. Standardsporing er uændret."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung wurde gestoppt. Die Standardverfolgung bleibt unverändert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent tracking stopped. Standard tracking is unchanged."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El seguimiento frecuente se detuvo. El seguimiento estándar no cambió."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiheä seuranta pysäytettiin. Tavallinen seuranta pysyy ennallaan."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le suivi fréquent est arrêté. Le suivi standard reste inchangé."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tracciamento frequente è stato interrotto. Il tracciamento standard resta invariato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡を停止しました。標準の追跡は変更されません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking is gestopt. Standaardtracking blijft ongewijzigd."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频繁跟踪已停止。标准跟踪保持不变。"
+          }
+        }
+      }
+    },
+    "intent_stop_frequent_tracking_shortcut_title" : {
+      "comment" : "Short title for the stop frequent tracking App Shortcut",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop hyppig"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufig stoppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Frequent"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pysäytä tiheä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrêter fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ferma frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁追跡を停止"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop frequent"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止频繁跟踪"
+          }
+        }
+      }
+    },
+    "intent_stop_frequent_tracking_title" : {
+      "comment" : "Title for the App Intent that stops manual frequent background tracking",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop hyppig sporing"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Häufige Verfolgung stoppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Frequent Tracking"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener seguimiento frecuente"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pysäytä tiheä seuranta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrêter le suivi fréquent"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interrompi tracciamento frequente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻繁な追跡を停止"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequente tracking stoppen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止频繁跟踪"
           }
         }
       }
@@ -34750,6 +35595,12 @@
           }
         }
       }
+    },
+    "Start frequent tracking" : {
+
+    },
+    "Stop frequent tracking" : {
+
     },
     "store location history" : {
       "localizations" : {
