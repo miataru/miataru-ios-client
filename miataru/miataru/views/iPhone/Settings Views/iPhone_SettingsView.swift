@@ -172,6 +172,8 @@ struct iPhone_SettingsView: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundColor(.secondary)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("settings_advanced_options_link")

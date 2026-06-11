@@ -212,7 +212,7 @@ These cases were previously located under `miataru.xcodeproj/*.swift` and are no
 | DT-UI-001 | testLaunchWithCompletedOnboardingShowsRootTabs | Stable launch state | Launch with completed onboarding, tab root visible, no alert | App Bootstrap / Tab Root | UI (XCTest) | Yes |
 | DT-UI-002 | testDevicesAddSheetCanOpenAndCancel | Basic device flow validation | Open add-device sheet and close via cancel | Device List / Add Device | UI (XCTest) | Yes |
 | DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Protect settings onboarding action | Opens tracking details from settings and verifies the onboarding action remains reachable without alerts | Settings / Tracking Details | UI (XCTest) | Yes |
-| DT-UI-004 | testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen | Protect settings reorganization | Verifies Advanced Options is reachable and advanced-only controls no longer appear on the root settings screen | Settings / Advanced Options | UI (XCTest) | Yes |
+| DT-UI-004 | testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen | Protect settings reorganization and row hitbox | Verifies Advanced Options is reachable by tapping row whitespace and advanced-only controls no longer appear on the root settings screen | Settings / Advanced Options | UI (XCTest) | Yes |
 | DT-UI-005 | testQRCodeTabShowsDeviceKeyAction | Validate QR core action | Open QR tab, device key action available and tappable | QR Screen / Device Key | UI (XCTest) | Yes |
 
 ## 5) Screenshot Test Inventory (`miataruScreenshotUITests`)

@@ -97,7 +97,7 @@ final class ExtendedUITests: XCTestCase {
         let pulsingToggle = app.descendants(matching: .any)["settings_pulsing_map_markers_toggle"].firstMatch
         XCTAssertFalse(pulsingToggle.exists, "Advanced-only toggle should not be visible on the root settings screen")
 
-        tapElement(advancedOptionsLink)
+        advancedOptionsLink.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
 
         XCTAssertTrue(pulsingToggle.waitForExistence(timeout: 10), "Moved advanced toggle should be visible on the advanced options screen")
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert after opening advanced options")

@@ -1,3 +1,8 @@
+version 3.2.1
+- Fixed the root Settings `Advanced Options` row so the full whitespace of the row is tappable, not only the icon/text label.
+- Strengthened the Advanced Options UI regression test to tap the whitespace near the right edge of the row before verifying navigation.
+- Updated project metadata for version 3.2.1 build 1.
+
 version 3.2
 - Added the first App Intents layer for Siri and Shortcuts, exposing configured current-location-authorized devices as user-friendly person choices.
 - Switched the shipping shortcut parameters to dynamic string options to avoid Shortcuts runtime failures when persisting dynamic `AppEntity` selections.
