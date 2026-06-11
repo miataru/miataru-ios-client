@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-06-10)
+# Test Catalog (as of 2026-06-11)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **228** (Unit: 211, UI: 17 incl. 11 screenshot captures)
+- Actively linked app test cases: **237** (Unit: 220, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -55,6 +55,15 @@ Important project observations:
 | UT-RGC-005 | Ghost uses polyline length when reported route distance is larger | Geometry-distance fallback | Reported route distance larger than polyline length still returns a valid destination ghost | RouteGhostCalculator | Unit | FakeRoute, MKPolyline geometry | High |
 | UT-RGC-006 | Ghost uses polyline length when reported route distance is smaller | Geometry-distance fallback | Reported route distance smaller than polyline length still returns a valid destination ghost | RouteGhostCalculator | Unit | FakeRoute, MKPolyline geometry | High |
 | UT-RGC-007 | Presentation policy uses fresh route start instead of stale sample timestamps | Cached-route visibility | Fresh `routeSummarySeedDate` keeps ghost presentation eligible despite old server sample timestamps | RouteGhostPresentationPolicy | Unit | Fixed route start/time | High |
+| UT-HAN-001 | Empty history returns an empty analysis | Empty state | No samples -> no buckets, no dates, no distance | HistoryAnalyzer | Unit | Empty sample array | High |
+| UT-HAN-002 | Single point creates one bucket without derived distance or speed | Degenerate one-point state | One sample -> one bucket, altitude preserved, no derived speed/distance | HistoryAnalyzer | Unit | Deterministic sample | High |
+| UT-HAN-003 | Same timestamps do not derive speed | Timestamp quality gate | Two positions with equal timestamps -> no speed/distance | HistoryAnalyzer | Unit | Deterministic samples | High |
+| UT-HAN-004 | Missing speed is derived from distance and time | Derived speed path | Usable coordinates over time produce derived km/h and distance | HistoryAnalyzer | Unit | Deterministic samples | High |
+| UT-HAN-005 | Plausible provided speed is preferred | GPS speed path | Provided 12 m/s maps to 43.2 km/h | HistoryAnalyzer | Unit | Deterministic samples | Medium |
+| UT-HAN-006 | Speed outliers are ignored | Outlier filtering | >90 m/s and implausible jump are suppressed | HistoryAnalyzer | Unit | Deterministic samples | High |
+| UT-HAN-007 | Bad horizontal accuracy suppresses speed and distance | Accuracy quality gate | 250 m accuracy prevents speed/distance metrics | HistoryAnalyzer | Unit | Deterministic samples | High |
+| UT-HAN-008 | Missing altitude leaves altitude graph empty | Altitude empty state | No altitude values -> altitude buckets and min/max absent | HistoryAnalyzer | Unit | Deterministic samples | Medium |
+| UT-HAN-009 | Large history is bucketed | Performance shape | 10,000 samples -> 240 buckets with speed/altitude data | HistoryAnalyzer | Unit | Synthetic 10k-sample fixture | High |
 | UT-RCS-001 | Set and get cached route by key | Cache baseline behavior | set/get by key returns route | RouteCacheStore | Unit | `RouteCacheStore.shared`, FakeRoute | High |
 | UT-RCS-002 | isValid returns true when both endpoints moved less than threshold and on-route | Normal validity behavior | Small endpoint movement + on-route -> true | RouteCacheStore | Unit | Threshold + offRouteThreshold | High |
 | UT-RCS-003 | isValid returns false when either endpoint moved beyond threshold | Invalidate on large movement | Endpoint moved far -> false | RouteCacheStore | Unit | Movement delta > 100m | High |
@@ -262,6 +271,7 @@ Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
 - Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, Smart frequent accuracy recovery, stale inactivity-timer callback-gap decisions, 25 m accuracy-gate behavior, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics persistence/logging, and duplicate location callback suppression.
+- Added focused coverage for `HistoryAnalyzer` edge cases: empty/single-point histories, duplicate timestamps, derived speed, provided speed, outlier filtering, poor horizontal accuracy, missing altitude, and 10,000-sample bucketing. History graph rendering, hide/restore interaction, and 10,000-point map/panel responsiveness still need UI or integration coverage.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Added focused coverage for frequent-background reminder, expiration, low-battery, optional Smart mode-change notifications, and Smart notification permission gating.
 - Added string-catalog QA for stale/new translation-unit cleanup in addition to required-key localization completeness.

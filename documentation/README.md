@@ -40,13 +40,14 @@ Current frequent-background follow-up records:
 - `location-manager-modularization-2026-06-08.md` - LocationManager facade split, policy compatibility boundary, background-forensics recorder, Core Location service controller, validation, and deferred Smart runtime extraction.
 - `../miataru/documentation/smart-frequent-accuracy-recovery-2026-06-08.md` - Smart frequent 100 m accuracy recovery, coarse-fix rejection, temporary 10 m Core Location boost, cooldown, side effects, and regression coverage.
 - `../miataru/documentation/smart-frequent-inactivity-timer-recursion-fix-2026-06-09.md` - Smart frequent inactivity-timer stale-callback recursion fix, diagnostics, and 25 m accuracy-gate regression coverage.
+- `../miataru/documentation/device-history-analysis-panel-2026-06-11.md` - compact device-history speed/altitude analysis panel, hide/restore behavior, caching strategy, and 10,000-point performance guardrails.
 
 ## Current Project Facts
 
-- Current app version: `3.2`
+- Current app version: `3.2.1`
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
-- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, App Intents/Siri/Shortcuts, navigation, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
+- Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, App Intents/Siri/Shortcuts, navigation, device history analytics, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
 
 The latest documentation audit is `documentation-audit-2026-05-22.md`.

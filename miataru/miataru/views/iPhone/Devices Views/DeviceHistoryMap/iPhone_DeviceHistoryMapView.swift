@@ -16,6 +16,11 @@ import UIKit
 #endif
 
 struct iPhone_DeviceHistoryMapView: View {
+    private enum HistoryPanelVisibility {
+        case visible
+        case hidden
+    }
+
     @Environment(\.animationsAllowed) private var animationsAllowed
 
     let device: KnownDevice
@@ -44,6 +49,7 @@ struct iPhone_DeviceHistoryMapView: View {
     /// The committed range used for map rendering - only updates when dragging ends
     @State private var displayRange: ClosedRange<Double>? = nil
     @State private var scrubTimestamp: Double? = nil
+    @State private var historyPanelVisibility: HistoryPanelVisibility = .visible
     // Playback
     @State private var isPlaying = false
     @State private var playbackTask: Task<Void, Never>?
@@ -100,6 +106,17 @@ struct iPhone_DeviceHistoryMapView: View {
         return viewModel.closest(to: scrubTimestamp, in: selectedRange)
     }
 
+    private var currentAnalysisBucketIndex: Int? {
+        guard let analysis = viewModel.historyAnalysis else { return nil }
+        let timestamp = scrubTimestamp ?? selectedRange?.upperBound ?? timelineBounds?.upperBound
+        guard let timestamp else { return nil }
+        return analysis.bucketIndex(for: Date(timeIntervalSince1970: timestamp))
+    }
+
+    private var currentAnalysisBucket: HistoryMetricBucket? {
+        viewModel.historyAnalysis?.bucket(at: currentAnalysisBucketIndex)
+    }
+
     private var deviceLocationTimestampPublisher: AnyPublisher<Date?, Never> {
         locationCache.$locations
             .map { locations in
@@ -148,17 +165,22 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     var body: some View {
-        let fullVisibleHistory = visibleHistory
+        let visibleHistoryCount = viewModel.visibleHistoryCount(in: displayRange)
         let selectedEntry = selectedTimelineEntry
-        let mapHistory = playbackAdjustedHistory(baseHistory: fullVisibleHistory, selectedEntry: selectedEntry)
-        let useDownsampling = !isPlaying && mapHistory.count > 300
+        let fullVisibleHistory = (isPlaying || visibleHistoryCount <= 300) ? visibleHistory : []
+        let mapHistory = isPlaying
+            ? playbackAdjustedHistory(baseHistory: fullVisibleHistory, selectedEntry: selectedEntry)
+            : fullVisibleHistory
+        let useDownsampling = !isPlaying && visibleHistoryCount > 300
         // Only downsample annotations (markers), NOT the polyline source
         // This preserves the actual route shape while reducing marker count
         let annotations = useDownsampling
-            ? viewModel.downsample(mapHistory, selected: selectedEntry)
+            ? viewModel.downsampledVisibleHistory(in: displayRange, selected: selectedEntry)
             : mapHistory
         // Always use full history for polyline to show accurate path
-        let polylineSegments = viewModel.polylineSegments(from: mapHistory)
+        let polylineSegments = isPlaying
+            ? viewModel.polylineSegments(from: mapHistory)
+            : viewModel.polylineSegments(in: displayRange)
 
         Map(position: $cameraPosition) {
             ForEach(Array(polylineSegments.enumerated()), id: \.offset) { _, segment in
@@ -249,7 +271,7 @@ struct iPhone_DeviceHistoryMapView: View {
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 24)
                     }
-                } else if fullVisibleHistory.isEmpty {
+                } else if visibleHistoryCount == 0 {
                     ErrorOverlay(
                         message: NSLocalizedString("history_no_data_in_range", comment: "No history entries inside selected time range"),
                         visible: true
@@ -277,17 +299,13 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
 
                 if let bounds = timelineBounds, !viewModel.history.isEmpty {
-                    if isPlaying {
-                        // Collapsed view: only play button
-                        collapsedPlaybackButton
-                            .padding(.horizontal, 16)
-                    } else {
-                        // Expanded view: all controls
+                    switch historyPanelVisibility {
+                    case .visible:
                         quickRangePicker(bounds: bounds)
                             .padding(.horizontal, 16)
                             .transition(animationsAllowed ? .opacity.combined(with: .move(edge: .bottom)) : .identity)
 
-                        DeviceHistoryTimelineOverlay(
+                        HistoryMetricsPanel(
                             fullRange: bounds,
                             selection: Binding(
                                 get: { selectedRange ?? bounds },
@@ -302,8 +320,12 @@ struct iPhone_DeviceHistoryMapView: View {
                                 }
                             ),
                             ticks: timelineTicks,
-                            selectedCount: fullVisibleHistory.count,
+                            selectedCount: visibleHistoryCount,
                             totalCount: viewModel.history.count,
+                            analysis: viewModel.historyAnalysis,
+                            currentBucketIndex: currentAnalysisBucketIndex,
+                            currentSpeedKmh: currentAnalysisBucket?.averageSpeedKmh,
+                            currentAltitudeMeters: currentAnalysisBucket?.averageAltitudeMeters,
                             isPlaying: isPlaying,
                             playbackSpeed: playbackSpeed,
                             onPlayPause: togglePlayback,
@@ -315,15 +337,21 @@ struct iPhone_DeviceHistoryMapView: View {
                             onScrubBegan: handleScrubBegan,
                             onScrubEnded: handleScrubEnded,
                             onSelectionDragBegan: handleSelectionDragBegan,
-                            onSelectionDragEnded: handleSelectionDragEnded
+                            onSelectionDragEnded: handleSelectionDragEnded,
+                            onHidePanel: hideHistoryPanel
                         )
                         .padding(.horizontal, 16)
                         .transition(animationsAllowed ? .opacity.combined(with: .move(edge: .bottom)) : .identity)
+                    case .hidden:
+                        HistoryPanelRestorePill(onRestore: restoreHistoryPanel)
+                            .padding(.horizontal, 16)
+                            .transition(animationsAllowed ? .opacity.combined(with: .move(edge: .bottom)) : .identity)
                     }
                 }
             }
             .padding(.bottom, 16)
             .animation(animationsAllowed ? .easeInOut(duration: 0.3) : nil, value: isPlaying)
+            .animation(animationsAllowed ? .easeInOut(duration: 0.25) : nil, value: historyPanelVisibility)
         }
         .overlay {
             if showSpeedOverlay {
@@ -341,9 +369,11 @@ struct iPhone_DeviceHistoryMapView: View {
             debouncedRegionTask?.cancel()
             debouncedFocusTask?.cancel()
             speedOverlayTask?.cancel()
+            viewModel.cancelAnalysis()
         }
         .onReceive(viewModel.$history) { _ in
             initializeTimelineIfNeeded()
+            scheduleHistoryAnalysis()
             updateRegionIfUserCameraAllows(animated: false)
             stopPlayback()
         }
@@ -366,6 +396,7 @@ struct iPhone_DeviceHistoryMapView: View {
             // Only update displayRange (and thus the map) when not dragging
             if isSelectionDragging { return }
             displayRange = newValue
+            scheduleHistoryAnalysis()
             scheduleRegionUpdate(animated: false)
             if isPlaying {
                 startPlayback()
@@ -624,6 +655,17 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     @MainActor
+    private func scheduleHistoryAnalysis() {
+        guard let bounds = timelineBounds, !viewModel.history.isEmpty else {
+            viewModel.cancelAnalysis()
+            return
+        }
+
+        let range = selectedRange ?? bounds
+        viewModel.scheduleAnalysis(in: range)
+    }
+
+    @MainActor
     private func updateRegion(animated: Bool = true, using entries: [MiataruLocationData]? = nil, useDefaultZoom: Bool = false) {
         let points = entries ?? visibleHistory
         guard let firstPoint = points.first else { return }
@@ -695,15 +737,9 @@ struct iPhone_DeviceHistoryMapView: View {
         }
     }
 
-    private func color(for entry: MiataruLocationData, within entries: [MiataruLocationData]) -> Color {
-        // Use the full history to keep a consistent color mapping regardless of timeline selection
-        let reference = viewModel.history.isEmpty ? entries : viewModel.history
-        guard !reference.isEmpty else { return .blue }
-        let timestamps = reference.map { $0.TimestampDate.timeIntervalSince1970 }
-        guard let minTimestamp = timestamps.min(), let maxTimestamp = timestamps.max() else { return .blue }
-        let total = maxTimestamp - minTimestamp
-        let diff = entry.TimestampDate.timeIntervalSince1970 - minTimestamp
-        let ratio = total > 0 ? diff / total : 0
+    private func color(for entry: MiataruLocationData, within _: [MiataruLocationData]) -> Color {
+        let timestamp = entry.TimestampDate.timeIntervalSince1970
+        guard let ratio = viewModel.historyColorRatio(for: timestamp) else { return .blue }
         return Self.historyColor(for: ratio)
     }
 
@@ -937,7 +973,28 @@ struct iPhone_DeviceHistoryMapView: View {
         isSelectionDragging = false
         // Commit the selection to displayRange - this triggers the map update
         displayRange = selectedRange
+        scheduleHistoryAnalysis()
         scheduleRegionUpdate(animated: false, useDefaultZoom: false, delayMs: 60)
+    }
+
+    private func hideHistoryPanel() {
+        if animationsAllowed {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                historyPanelVisibility = .hidden
+            }
+        } else {
+            historyPanelVisibility = .hidden
+        }
+    }
+
+    private func restoreHistoryPanel() {
+        if animationsAllowed {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                historyPanelVisibility = .visible
+            }
+        } else {
+            historyPanelVisibility = .visible
+        }
     }
 
     private func togglePlayback() {

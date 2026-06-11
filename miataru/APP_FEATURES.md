@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2.1**.
 
 ## App Navigation and Views
 
@@ -118,6 +118,8 @@ This document describes the current user-facing and developer-facing feature set
 
 - Maps show device markers, accuracy circles, relative time, distance, and optional speed labels.
 - Live speed labels disappear when the backing location sample is older than five minutes.
+- Device history maps include a compact analysis panel with a speed histogram, altitude sparkline, current playhead speed/altitude values, distance and range summaries, and the existing range timeline.
+- The history analysis panel can be hidden with a downward swipe on its handle and restored from a small bottom pill without stopping playback or changing the visible route.
 - Off-screen arrows point toward devices outside the current region.
 - Navigation can show route, ETA, distance, arrival time, route progress, turn-by-turn instructions, haptics, and sound cues.
 - Standard `device -> user` navigation can show completed/remaining route segments plus a moving ghost marker.
@@ -126,6 +128,9 @@ This document describes the current user-facing and developer-facing feature set
 **For developers:**
 
 - Shared map components live in `views/Common/Map`.
+- `iPhone_DeviceHistoryMapView` owns the history map, selection range, scrub timestamp, playback, and panel visibility state. `HistoryMetricsPanel` adds the compact graph rows while preserving `TimelineRangeSlider`.
+- `HistoryAnalyzer` is a pure history-metric pipeline. It sorts samples, filters invalid coordinates/accuracy/speed, derives missing speed from distance/time, buckets values by time, and returns speed, altitude, and distance summaries for UI rendering.
+- `DeviceHistoryMapViewModel` caches prepared analysis sources, per-range analysis results, visible-history counts, downsampled annotations, and polyline segments so large 10,000-point histories stay responsive while scrubbing, hiding/restoring the panel, and updating playback state.
 - `RouteCacheStore` caches routes by device, transport, and direction with endpoint and off-route validation.
 - `NavigationRouteRefreshPolicy` centralizes reroute decisions.
 - `RouteGhostCalculator` uses direction-specific timestamp/speed sources and polyline geometry for route-progress splitting.

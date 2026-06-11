@@ -2,7 +2,7 @@
 
 ## Current State
 
-miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2.1** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
 Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 
@@ -126,6 +126,8 @@ The prepared snippet view is not currently wired to `ShowsSnippetView` because t
 
 Shared map components live in `views/Common/Map`. Device and group maps reuse marker rendering, accuracy circles, compass, scale bar, off-screen arrows, route style, and speed/relative-time helpers.
 
+The iPhone device history map keeps the existing MapKit route, point annotation, range selection, scrubber, and playback model, and extends the bottom timeline panel with compact speed and altitude analysis. `HistoryAnalyzer` maps `MiataruLocationData` into neutral samples, filters invalid speed/accuracy data, derives speed where possible, and produces time buckets for a speed histogram and altitude sparkline. `DeviceHistoryMapViewModel` prepares and caches analysis sources, per-range analysis results, visible-history counts, downsampled annotations, and polyline segments so 10,000-point histories do not rebuild full map or graph data on each scrub or panel-state update. The panel can be hidden with a downward swipe on its handle and restored from a bottom pill without interrupting playback.
+
 `iPhone_DeviceNavigationView` coordinates `MKRoute`, `RouteCacheStore`, `NavigationRouteRefreshPolicy`, route overlays, ETA updates, focused navigation, and `NavigationOverlayKit` instructions. Standard `device -> user` navigation can show a route-progress ghost; focused double-tap navigation deliberately keeps only the base route and optional mutual-navigation overlay.
 
 ### Notifications
@@ -170,6 +172,7 @@ Recent 2026 work focused on:
 - DeviceKey, allowed-device list, device slogans, and security status
 - visitor history, unknown visitor alerts, and recent-visitor indicators
 - robust navigation, focused camera behavior, route-progress ghost rendering, and route request limits
+- compact device history speed/altitude analytics, hideable history controls, and 10,000-point history performance caching
 - Smart/manual background tracking controls, retry/outbox resilience, and persistent cleanup
 - widgets and App Group data synchronization
 - App Intents for Siri and Shortcuts around existing known-device/location services

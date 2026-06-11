@@ -1,4 +1,9 @@
 version 3.2.1
+- Added compact speed and altitude analysis to the iPhone device history map panel, including a speed histogram, altitude sparkline, synchronized playhead values, summary metrics, and localized accessibility strings.
+- Added a hideable history panel with a bottom restore pill so the map remains usable while playback, route, points, and selected marker state continue independently.
+- Cached device-history analysis, visible-history counts, downsampled map annotations, polyline segments, and marker color ratios so 10,000-point histories no longer force repeated full-history recalculation during panel, scrub, and map updates.
+- Hardened history metric analysis for empty histories, one-point histories, duplicate timestamps, missing speed/altitude values, bad horizontal accuracy, and speed outliers.
+- Added focused `HistoryAnalyzerTests` coverage for the compact history analysis model and documented the remaining UI/gesture coverage gaps.
 - Fixed the root Settings `Advanced Options` row so the full whitespace of the row is tappable, not only the icon/text label.
 - Strengthened the Advanced Options UI regression test to tap the whitespace near the right edge of the row before verifying navigation.
 - Updated project metadata for version 3.2.1 build 1.
