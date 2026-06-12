@@ -48,8 +48,6 @@ struct HistoryMetricsPanel: View {
 
     private var panelContent: some View {
         VStack(alignment: .leading, spacing: 8) {
-            panelHandle
-
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -102,6 +100,11 @@ struct HistoryMetricsPanel: View {
                 }
                 .opacity(hasAnyMetrics ? 1 : 0.48)
             }
+            .contentShape(Rectangle())
+            .simultaneousGesture(panelDismissGesture)
+            .accessibilityAction(named: Text(NSLocalizedString("history_panel_hide_accessibility", comment: "Accessibility label to hide the history panel"))) {
+                onHidePanel()
+            }
 
             TimelineRangeSlider(
                 range: fullRange,
@@ -140,25 +143,6 @@ struct HistoryMetricsPanel: View {
             .padding(.horizontal, 8)
         }
         .padding(12)
-    }
-
-    private var panelHandle: some View {
-        ZStack {
-            Color.clear
-            Capsule()
-                .frame(width: 38, height: 5)
-                .foregroundStyle(.secondary.opacity(0.35))
-        }
-        .frame(height: 28)
-        .frame(maxWidth: .infinity)
-        .contentShape(Rectangle())
-        .gesture(panelDismissGesture)
-            .onTapGesture(perform: onHidePanel)
-            .accessibilityLabel(Text(NSLocalizedString("history_panel_hide_accessibility", comment: "Accessibility label to hide the history panel")))
-            .accessibilityAddTraits(.isButton)
-            .accessibilityAction(named: Text(NSLocalizedString("history_panel_hide_accessibility", comment: "Accessibility label to hide the history panel"))) {
-                onHidePanel()
-            }
     }
 
     private var panelDismissGesture: some Gesture {

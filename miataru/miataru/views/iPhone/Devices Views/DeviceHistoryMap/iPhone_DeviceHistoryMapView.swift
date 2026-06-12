@@ -50,6 +50,7 @@ struct iPhone_DeviceHistoryMapView: View {
     @State private var displayRange: ClosedRange<Double>? = nil
     @State private var scrubTimestamp: Double? = nil
     @State private var historyPanelVisibility: HistoryPanelVisibility = .visible
+    @State private var historyPanelAutoHideTask: Task<Void, Never>?
     // Playback
     @State private var isPlaying = false
     @State private var playbackTask: Task<Void, Never>?
@@ -69,6 +70,8 @@ struct iPhone_DeviceHistoryMapView: View {
     private let playbackContextPadding = 50
     private let activeHistoryCacheReuseWindow: TimeInterval = 3
     private let locationTriggeredRefreshThrottle: TimeInterval = 10
+    private let historyPanelAutoHideDelayNanoseconds: UInt64 = 5_000_000_000
+    private let maximumPlaybackStepDelayNanoseconds: UInt64 = 2_000_000_000
 
     /// Uses displayRange (committed range) for map rendering to avoid constant updates during dragging
     private var visibleHistory: [MiataruLocationData] {
@@ -244,6 +247,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
             if (zoomChanged || centerChanged) && !suppressed {
                 hasUserAdjustedMapCamera = true
+                scheduleHistoryPanelAutoHide(restartExisting: false)
             }
 
             if isPlaying && zoomChanged && !suppressed {
@@ -369,6 +373,7 @@ struct iPhone_DeviceHistoryMapView: View {
             debouncedRegionTask?.cancel()
             debouncedFocusTask?.cancel()
             speedOverlayTask?.cancel()
+            cancelHistoryPanelAutoHide()
             viewModel.cancelAnalysis()
         }
         .onReceive(viewModel.$history) { _ in
@@ -422,24 +427,69 @@ struct iPhone_DeviceHistoryMapView: View {
 
     @ViewBuilder
     private func quickRangePicker(bounds: ClosedRange<Double>) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(quickRanges, id: \.key) { item in
-                    let isSelected = isQuickRangeSelected(duration: item.duration, bounds: bounds)
-                    Button {
-                        applyQuickRange(duration: item.duration, bounds: bounds)
-                    } label: {
-                        Text(NSLocalizedString(item.key, comment: "Quick picker option for a fixed time range"))
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .frame(minWidth: 70)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(isSelected ? .accentColor : .secondary)
-                    .accessibilityIdentifier(item.key)
+        let visibleQuickRanges = meaningfulQuickRanges(for: bounds)
+
+        HStack(spacing: 4) {
+            ForEach(visibleQuickRanges, id: \.key) { item in
+                let isSelected = isQuickRangeSelected(duration: item.duration, bounds: bounds)
+                Button {
+                    applyQuickRange(duration: item.duration, bounds: bounds)
+                } label: {
+                    Text(NSLocalizedString(item.key, comment: "Quick picker option for a fixed time range"))
+                        .font(.caption2.weight(isSelected ? .semibold : .medium))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 6)
+                        .foregroundStyle(isSelected ? Color.primary : Color.secondary)
+                        .background {
+                            if isSelected {
+                                quickRangeSelectedBackground
+                            }
+                        }
                 }
+                .buttonStyle(.plain)
+                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .accessibilityIdentifier(item.key)
             }
+        }
+        .padding(4)
+        .background(quickRangePickerBackground)
+        .clipShape(Capsule(style: .continuous))
+        .shadow(color: Color.black.opacity(0.10), radius: 8, x: 0, y: 4)
+    }
+
+    @ViewBuilder
+    private var quickRangePickerBackground: some View {
+        if #available(iOS 26.0, *) {
+            Color.clear
+                .glassEffect(in: .capsule)
+        } else {
+            Capsule(style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
+    }
+
+    private var quickRangeSelectedBackground: some View {
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .fill(Color.accentColor.opacity(0.18))
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color.accentColor.opacity(0.28), lineWidth: 0.75)
+            }
+    }
+
+    private func meaningfulQuickRanges(for bounds: ClosedRange<Double>) -> [(key: String, duration: TimeInterval)] {
+        let availableDuration = max(bounds.upperBound - bounds.lowerBound, 0)
+        let epsilon: TimeInterval = 1
+
+        return quickRanges.filter { item in
+            if item.duration == Double.greatestFiniteMagnitude {
+                return true
+            }
+
+            return item.duration < availableDuration - epsilon
         }
     }
 
@@ -840,6 +890,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func selectEntryFromMap(_ entry: MiataruLocationData) {
         let timestamp = entry.TimestampDate.timeIntervalSince1970
+        scheduleHistoryPanelAutoHide(restartExisting: true)
         stopPlayback()
         guard scrubTimestamp != timestamp else {
             hasUserScrubbed = true
@@ -978,6 +1029,7 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     private func hideHistoryPanel() {
+        cancelHistoryPanelAutoHide()
         if animationsAllowed {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                 historyPanelVisibility = .hidden
@@ -988,6 +1040,7 @@ struct iPhone_DeviceHistoryMapView: View {
     }
 
     private func restoreHistoryPanel() {
+        cancelHistoryPanelAutoHide()
         if animationsAllowed {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                 historyPanelVisibility = .visible
@@ -997,7 +1050,31 @@ struct iPhone_DeviceHistoryMapView: View {
         }
     }
 
+    private func scheduleHistoryPanelAutoHide(restartExisting: Bool) {
+        guard historyPanelVisibility == .visible else { return }
+
+        if restartExisting {
+            cancelHistoryPanelAutoHide()
+        } else if historyPanelAutoHideTask != nil {
+            return
+        }
+
+        historyPanelAutoHideTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: historyPanelAutoHideDelayNanoseconds)
+            guard !Task.isCancelled else { return }
+            historyPanelAutoHideTask = nil
+            guard historyPanelVisibility == .visible else { return }
+            hideHistoryPanel()
+        }
+    }
+
+    private func cancelHistoryPanelAutoHide() {
+        historyPanelAutoHideTask?.cancel()
+        historyPanelAutoHideTask = nil
+    }
+
     private func togglePlayback() {
+        scheduleHistoryPanelAutoHide(restartExisting: true)
         if isPlaying {
             // Mark current position so resume continues from here
             hasUserScrubbed = true
@@ -1014,6 +1091,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func handleLongPressSpeedUp() {
         guard isPlaying else { return }
+        scheduleHistoryPanelAutoHide(restartExisting: true)
         // Cycle through 1x → 2x → 4x → 8x → 1x
         switch playbackSpeed {
         case 1.0:
@@ -1067,18 +1145,23 @@ struct iPhone_DeviceHistoryMapView: View {
         isPlaying = true
         playbackTask = Task {
             var currentStartIndex = startIndex
-            let baseDelay: UInt64 = 2_000_000_000
             playbackLoop: while !Task.isCancelled && isPlaying {
-                for entry in entries[currentStartIndex...] {
+                for index in currentStartIndex..<entries.count {
+                    let entry = entries[index]
+                    let nextEntry = index + 1 < entries.count ? entries[index + 1] : nil
                     if Task.isCancelled || !isPlaying { break playbackLoop }
                     await MainActor.run {
                         isPlaybackStepping = true
                         scrubTimestamp = entry.TimestampDate.timeIntervalSince1970
                         focusOnEntry(entry, within: entries)
                     }
-                    // Read speed dynamically on each step to allow real-time speed changes
-                    let currentSpeed = await MainActor.run { playbackSpeed }
-                    let adjustedDelay = UInt64(Double(baseDelay) / currentSpeed)
+                    // Read playback speed dynamically so long-press changes take effect immediately.
+                    let currentPlaybackSpeed = await MainActor.run { playbackSpeed }
+                    let adjustedDelay = playbackDelayNanoseconds(
+                        from: entry,
+                        to: nextEntry,
+                        playbackSpeed: currentPlaybackSpeed
+                    )
                     try? await Task.sleep(nanoseconds: adjustedDelay)
                     await MainActor.run {
                         isPlaybackStepping = false
@@ -1092,6 +1175,28 @@ struct iPhone_DeviceHistoryMapView: View {
                 isPlaybackStepping = false
             }
         }
+    }
+
+    private func playbackDelayNanoseconds(
+        from entry: MiataruLocationData,
+        to nextEntry: MiataruLocationData?,
+        playbackSpeed: Double
+    ) -> UInt64 {
+        let effectivePlaybackSpeed = max(playbackSpeed, 1)
+        let maximumDelay = Double(maximumPlaybackStepDelayNanoseconds) / effectivePlaybackSpeed
+
+        guard let nextEntry else {
+            return UInt64(maximumDelay.rounded())
+        }
+
+        let elapsedSeconds = nextEntry.TimestampDate.timeIntervalSince(entry.TimestampDate)
+        guard elapsedSeconds.isFinite, elapsedSeconds > 0 else {
+            return 0
+        }
+
+        let measuredDelay = elapsedSeconds * 1_000_000_000 / effectivePlaybackSpeed
+        let clampedDelay = min(measuredDelay, maximumDelay)
+        return UInt64(clampedDelay.rounded())
     }
 
     private func stopPlayback() {

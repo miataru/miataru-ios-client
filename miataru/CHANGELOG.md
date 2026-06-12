@@ -3,10 +3,14 @@ version 3.2.1
 - Added a hideable history panel with a bottom restore pill so the map remains usable while playback, route, points, and selected marker state continue independently.
 - Cached device-history analysis, visible-history counts, downsampled map annotations, polyline segments, and marker color ratios so 10,000-point histories no longer force repeated full-history recalculation during panel, scrub, and map updates.
 - Hardened history metric analysis for empty histories, one-point histories, duplicate timestamps, missing speed/altitude values, bad horizontal accuracy, and speed outliers.
+- Restyled the iPhone history quick-range picker as a compact glass segmented control, hiding range segments that are not meaningful for the loaded history span.
+- Removed the visible history-panel drag handle while keeping the downward swipe gesture available on the upper panel content so timeline scrubbing remains isolated.
+- Added automatic history-panel hiding after direct map interaction, marker selection, or playback control use, with the existing restore pill remaining available.
+- Changed history playback pacing to follow the timestamp gap between adjacent history samples, while clamping long gaps to the configured maximum step interval and preserving the 1x/2x/4x/8x speed control.
 - Added focused `HistoryAnalyzerTests` coverage for the compact history analysis model and documented the remaining UI/gesture coverage gaps.
 - Fixed the root Settings `Advanced Options` row so the full whitespace of the row is tappable, not only the icon/text label.
 - Strengthened the Advanced Options UI regression test to tap the whitespace near the right edge of the row before verifying navigation.
-- Updated project metadata for version 3.2.1 build 1.
+- Updated project metadata for version 3.2.1 build 2.
 
 version 3.2
 - Added the first App Intents layer for Siri and Shortcuts, exposing configured current-location-authorized devices as user-friendly person choices.

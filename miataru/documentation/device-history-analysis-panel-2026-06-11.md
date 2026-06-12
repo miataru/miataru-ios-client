@@ -4,7 +4,7 @@
 
 The iPhone device history map now keeps the existing route, annotation, playback, selected range, and timeline behavior, and extends the lower history panel with compact speed and altitude analysis. The analysis is deliberately secondary to the map: speed is rendered as a small histogram, altitude as a sparkline, and the existing timeline remains the main interaction control.
 
-The panel can be hidden with a downward swipe on its handle. While hidden, a small restore pill remains at the bottom of the map. Tapping the pill or swiping it upward restores the full panel. Playback continues while the panel is hidden and does not force the panel open again.
+The panel can be hidden with a downward swipe on the upper panel content. While hidden, a small restore pill remains at the bottom of the map. Tapping the pill or swiping it upward restores the full panel. Playback continues while the panel is hidden and does not force the panel open again.
 
 ## Data Flow
 
@@ -25,9 +25,17 @@ Stored history data currently does not include vertical accuracy. Altitude value
 
 ## Interaction
 
-The hide gesture is attached to the panel handle only. It no longer performs live panel dragging; the swipe is recognized on gesture end and then hides the panel. This avoids per-frame SwiftUI state updates while the map and analysis graphs are visible.
+The visible panel handle was removed after real-device testing. The hide gesture is now attached to the upper panel content, excluding the timeline range slider, so users can still swipe down to dismiss the panel while timeline scrubbing and range dragging keep their original gestures. The gesture no longer performs live panel dragging; the swipe is recognized on gesture end and then hides the panel. This avoids per-frame SwiftUI state updates while the map and analysis graphs are visible.
 
 The restore pill is implemented as a direct SwiftUI view with an explicit capsule hit shape, tap gesture, upward drag gesture, and accessibility action. It is not a nested `Button` plus competing drag gesture, which keeps the hidden-state restore path reliable inside the map overlay.
+
+The full panel also schedules a lightweight 5-second auto-hide after direct map camera movement, marker selection, play/pause, or playback speed changes. Playback ticks, scrubber movement, and range-drag updates do not restart this timer, so analysis and route rendering stay independent of the panel visibility state.
+
+Quick range controls are rendered as a compact glass segmented control. Only ranges that are shorter than the loaded history span are shown, while the full-range option remains available.
+
+## Playback Timing
+
+History playback no longer assigns the same delay to every history sample. Each step uses the timestamp difference between the current sample and the following sample, divided by the selected playback speed. Long gaps are clamped to the previous maximum step delay, also divided by playback speed, so sparse history ranges do not stall playback for minutes. Duplicate or non-increasing timestamps produce a zero-delay step instead of blocking the playback loop.
 
 ## Performance Guardrails
 
@@ -49,6 +57,10 @@ The map still renders full route geometry for the selected range. Only point ann
 - `xcodebuild test -project miataru/miataru.xcodeproj -scheme miataru -destination id=9701FE64-5BE0-4377-8E82-14C43F80E6C9 -only-testing:miataruTests/HistoryAnalyzerTests`
 
 The focused analyzer suite covers empty history, one-point history, duplicate timestamps, derived speed, provided speed, speed outliers, bad horizontal accuracy, missing altitude, and 10,000-sample bucketing.
+
+Follow-up validation on 2026-06-12 rebuilt the app after the compact range picker, hidden-handle swipe behavior, auto-hide timer, and timestamp-paced playback changes:
+
+- `xcodebuild build -project miataru/miataru.xcodeproj -scheme miataru -destination id=9701FE64-5BE0-4377-8E82-14C43F80E6C9`
 
 ## Remaining Follow-Up
 
