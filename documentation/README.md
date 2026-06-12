@@ -1,6 +1,8 @@
 # Documentation Map
 
-This directory contains both living documentation and dated implementation records.
+This directory is the canonical project documentation root. Do not add new project documentation under `miataru/documentation/`.
+
+The current structure favors living topic references over many small dated notes. Older notes that covered the same topic have been coalesced into the topic documents below, with their source filenames retained inside each consolidated document for traceability.
 
 ## Canonical Living Documents
 
@@ -13,41 +15,48 @@ This directory contains both living documentation and dated implementation recor
 - `../3rd party licenses.md` - dependency license summary
 - `../miataru/Libraries/MiataruClientSwift/README.md` - local Miataru API client usage
 
+## Consolidated Topic References
+
+- `app-intents-current-shortcuts-and-manual-validation.md` - current Siri/Shortcuts implementation, service boundaries, privacy rules, App Intents test coverage, and manual validation.
+- `Intent-Sprint/` - separate iOS 26 schema-readiness roadmap for App Intents, Entity/Intent Schemas, IndexedEntity/Spotlight, IntentValueQuery, View Annotations, and AppIntentsTesting.
+- `location-tracking-smart-frequent-background.md` - tracking resolver, foreground/background modes, manual frequent updates, Smart frequent runtime, diagnostics, retry/outbox behavior, notification sounds, and LocationManager modularization.
+- `navigation-routing-and-mutual-navigation.md` - route camera behavior, heading refresh, mutual navigation UI, live ETA, compact arrival state, route ghost stabilization, and focused navigation.
+- `device-history-cache-map-and-analysis.md` - history loading, cache refresh, user camera priority, and compact speed/altitude analysis.
+- `device-security-devicekey-and-allowed-list.md` - DeviceKey recovery, emergency reset, security status, Allowed Device List read/sync behavior, onboarding DeviceKey flow, and location-permission touchpoints.
+- `unknown-visitors-alerts-and-history.md` - unknown visitor alerts, filtering, enrichment, allowed-list handoff, add-device locking, case preservation, visitor-history refresh, and slogan display.
+- `device-list-cache-slogans-and-settings.md` - device-list refresh behavior, central location/slogan cache ingest, DeviceID/name ambiguity, slogan cleansing, and settings refactor.
+- `persistent-data-cleanup-and-widgets.md` - app-owned cache cleanup, widget device selection, widget/app cache synchronization, and related validation.
+
 ## Test Documentation
 
-- `test-katalog.md` - active unit/UI/screenshot test inventory
-- `test-gap-matrix.md` - risk-based coverage and backlog matrix
-- `screenshot-test-workflow.md` - deterministic screenshot capture workflow
-- `AppIntentsPreparation.md` - Siri/Shortcuts architecture notes, found models/services, assumptions, risks, and deferred place-intent work
-- `AppIntentsManualTestPlan.md` - manual Siri/Shortcuts validation checklist for "Person finden" and "Route zu Person"
-- `test-build-repair-report-2026-02-27.md` - historical report for test wiring repair
-- `device-id-name-ambiguity-handling-2026-05-27.md` - Device ID duplicate blocking and duplicate-name disambiguation
+- `test-katalog.md` - active unit/UI/screenshot test inventory.
+- `test-gap-matrix.md` - risk-based coverage and backlog matrix.
+- `screenshot-test-workflow.md` - deterministic screenshot capture workflow.
+- `test-build-repair-report-2026-02-27.md` - historical report for test wiring repair.
 
 When tests change, update `test-katalog.md` and `test-gap-matrix.md` together.
 
-## Historical Implementation Notes
+## Standalone Historical Notes And Audits
 
-Files named with dates, for example `device-history-loading-feedback-2026-04-24.md`, document a specific investigation, implementation, or fix at that time. The same applies to dated files under `../miataru/documentation/`.
+These records are still useful but are not broad enough to merge into a topic reference yet:
 
-These files are retained as historical evidence. They should not be edited merely because newer work superseded them. Update or add a new dated note when a follow-up change needs its own reasoning record.
+- `documentation-audit-2026-05-22.md` - audit of previous documentation placement and maintenance risks.
+- `rotation-lock-deprecation-fix-2026-03-03.md` - rotation lock deprecation fix note.
+- `settings-advanced-options-hitbox-2026-06-11.md` - Advanced Options hitbox bug fix note.
+- `audits/ipad-iphone-audit-2026-03-04.md` - iPad/iPhone parity audit.
 
-Current frequent-background follow-up records:
+## Maintenance Rules
 
-- `../miataru/documentation/smart-frequent-background-updates-2026-06-04.md` - Smart frequent background policy, manual override behavior, diagnostics, migration, and optional Smart mode-change notifications.
-- `../miataru/documentation/smart-frequent-updatewertung-hardening-2026-06-05.md` - persisted Smart frequent seeding, 5 m/10 m movement thresholds, chronological Core Location batch processing, and battery implications.
-- `../miataru/documentation/smart-frequent-exit-fence-and-quality-gate-2026-06-06.md` - hidden Smart waiting exit fence, quality-aware activation evidence, and reboot/startup speed-noise guard.
-- `../miataru/documentation/location-tracking-state-machines-2026-06-07.md` - canonical if-then state-machine reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and update upload/outbox behavior.
-- `location-manager-modularization-2026-06-08.md` - LocationManager facade split, policy compatibility boundary, background-forensics recorder, Core Location service controller, validation, and deferred Smart runtime extraction.
-- `../miataru/documentation/smart-frequent-accuracy-recovery-2026-06-08.md` - Smart frequent 100 m accuracy recovery, coarse-fix rejection, temporary 10 m Core Location boost, cooldown, side effects, and regression coverage.
-- `../miataru/documentation/smart-frequent-inactivity-timer-recursion-fix-2026-06-09.md` - Smart frequent inactivity-timer stale-callback recursion fix, diagnostics, and 25 m accuracy-gate regression coverage.
-- `../miataru/documentation/device-history-analysis-panel-2026-06-11.md` - compact device-history speed/altitude analysis panel, hide/restore behavior, caching strategy, and 10,000-point performance guardrails.
+- Keep `documentation/` as the single documentation root.
+- Keep `Intent-Sprint/` separate from the current App Intents implementation reference.
+- Prefer updating a consolidated topic reference when a change extends an existing topic.
+- Add a new dated note only for one-off investigations or fixes that do not clearly belong to an existing topic.
+- When a dated note becomes part of a broader topic, merge its information into the relevant topic document, retain the source filename in "Source Notes Consolidated", then remove the superseded note.
 
 ## Current Project Facts
 
-- Current app version: `3.2.1`
+- Current app version: `3.2.2`
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
 - Primary current domains: DeviceKey, allowed-device list, unknown visitors, widgets, App Intents/Siri/Shortcuts, navigation, device history analytics, Smart/manual frequent background tracking, string-catalog QA, update outbox, cache cleanup, and active test automation
-
-The latest documentation audit is `documentation-audit-2026-05-22.md`.

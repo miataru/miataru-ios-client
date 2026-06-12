@@ -79,7 +79,7 @@ miataru/
 - Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
 - Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
 - Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
-- `documentation/location-tracking-state-machines-2026-06-07.md` is the canonical if-then reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and upload/outbox behavior.
+- `documentation/location-tracking-smart-frequent-background.md` is the canonical if-then reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and upload/outbox behavior.
 - Navigation views call `beginNavigationLocationSession()` / `endNavigationLocationSession(_:)` so focused navigation gets immediate local location updates without bypassing lifecycle background policy.
 - `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity-filtered.
 

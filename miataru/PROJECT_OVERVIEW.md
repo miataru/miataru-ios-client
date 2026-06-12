@@ -2,7 +2,7 @@
 
 ## Current State
 
-miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2.1** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2.2** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
 Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 
@@ -84,7 +84,7 @@ The service-level resolver still produces one of four modes:
 - background significant-change monitoring
 - frequent background updates with configured distance/accuracy
 
-Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode backed by significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in the standard mode, enters a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, confirms active frequent mode only after accepted frequent-background movement, and deactivates again after the shared inactivity window when no relevant movement is confirmed. Missing frequent callbacks are treated as watchdog/reassert recovery, not as stillness. The full if-then resolver and Smart phase machine are documented in `documentation/location-tracking-state-machines-2026-06-07.md`.
+Foreground tracking uses high accuracy. Background tracking defaults to the battery-saving standard mode backed by significant-change monitoring. Smart frequent updates add a policy layer on top of that default: when enabled, Smart waits in the standard mode, enters a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, confirms active frequent mode only after accepted frequent-background movement, and deactivates again after the shared inactivity window when no relevant movement is confirmed. Missing frequent callbacks are treated as watchdog/reassert recovery, not as stillness. The full if-then resolver and Smart phase machine are documented in `documentation/location-tracking-smart-frequent-background.md`.
 
 Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Smart frequent runtime uses the same frequent-mode distance, delivery-delay, and visitor-check interval policies. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled; the UI locks Smart while the manual override is active.
 

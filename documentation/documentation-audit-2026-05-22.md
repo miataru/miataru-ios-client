@@ -18,7 +18,7 @@ Reviewed as canonical living documentation:
 - `3rd party licenses.md`
 - `miataru/Libraries/MiataruClientSwift/README.md`
 
-Dated implementation notes under `documentation/` and `miataru/documentation/` were treated as historical records. Third-party package READMEs under `miataru/Libraries/*` were not rewritten except for the project-owned `MiataruClientSwift` README.
+Dated implementation notes under `documentation/` were treated as historical records. Third-party package READMEs under `miataru/Libraries/*` were not rewritten except for the project-owned `MiataruClientSwift` README.
 
 ## Commit Review Summary
 

@@ -1,3 +1,7 @@
+version 3.2.2
+- Updated project metadata for version 3.2.2 build 1.
+- Consolidated project documentation under the root `documentation/` folder and coalesced related implementation notes into topic references.
+
 version 3.2.1
 - Changed the default server-side location history retention from 24 hours to 30 minutes across runtime defaults, iOS Settings, and regression coverage.
 - Added compact speed and altitude analysis to the iPhone device history map panel, including a speed histogram, altitude sparkline, synchronized playhead values, summary metrics, and localized accessibility strings.

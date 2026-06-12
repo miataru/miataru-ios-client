@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2.1**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2.2**.
 
 ## App Navigation and Views
 
@@ -33,7 +33,7 @@ This document describes the current user-facing and developer-facing feature set
 
 **For developers:**
 
-- `LocationManager` resolves service-level tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`) and separately exposes user-facing background states (`significant-change`, `Smart waiting`, `Smart frequent active`, `manual frequent active`, `foreground/live`). The canonical if-then behavior is documented in `documentation/location-tracking-state-machines-2026-06-07.md`.
+- `LocationManager` resolves service-level tracking mode centrally (`stopped`, `foregroundHighAccuracy`, `backgroundSignificantChange`, `backgroundFrequent`) and separately exposes user-facing background states (`significant-change`, `Smart waiting`, `Smart frequent active`, `manual frequent active`, `foreground/live`). The canonical if-then behavior is documented in `documentation/location-tracking-smart-frequent-background.md`.
 - `LocationManager` is intentionally a facade: tracking decisions are implemented in `LocationTrackingPolicy`, Smart runtime behavior in `SmartFrequentBackgroundPolicy`, sample filtering/deduplication in `LocationSamplePolicy`, and background diagnostic decisions in `LocationBackgroundForensics`.
 - `LocationManager+Types` preserves UI-facing nested names and typealiases, while `LocationManager+PolicyCompatibility` keeps existing static policy wrappers available for tests and call sites.
 - `LocationBackgroundForensicsRecorder` owns forensic persistence, significant-change re-arm status, and recovery-burst recording. `CoreLocationServiceController` owns primary/frequent `CLLocationManager` configuration, Core Location service sessions, background-indicator sync, and stale frequent-callback state.
@@ -257,4 +257,4 @@ This document describes the current user-facing and developer-facing feature set
 
 ## Historical Platform Drift Decision
 
-The 2026-03-04 iPad/iPhone audit aligned important behavior across form factors while keeping one intentional product difference: iPhone groups remain integrated in Devices, while iPad keeps a dedicated Groups tab. The dated audit remains in `miataru/documentation/audits/ipad-iphone-audit-2026-03-04.md`.
+The 2026-03-04 iPad/iPhone audit aligned important behavior across form factors while keeping one intentional product difference: iPhone groups remain integrated in Devices, while iPad keeps a dedicated Groups tab. The dated audit remains in `documentation/audits/ipad-iphone-audit-2026-03-04.md`.

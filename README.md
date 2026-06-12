@@ -2,7 +2,7 @@
 
 **miataru** is an open-source iPhone and iPad app for privacy-focused location sharing, device management, and navigation through Miataru servers chosen by the user.
 
-Current project state: **version 3.2**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
+Current project state: **version 3.2.2**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
 
 ## Overview
 
@@ -129,7 +129,7 @@ Third-party license notes are tracked in `3rd party licenses.md`.
 
 ## Documentation
 
-The living documentation is maintained in this README, `miataru/PROJECT_OVERVIEW.md`, `miataru/APP_FEATURES.md`, `miataru/DEVELOPMENT.md`, `miataru/CHANGELOG.md`, `miataru/APP_STORE_DESCRIPTION.md`, and the test documentation under `documentation/`. Dated implementation notes in `documentation/` and `miataru/documentation/` are retained as historical design records.
+The living documentation is maintained in this README, `miataru/PROJECT_OVERVIEW.md`, `miataru/APP_FEATURES.md`, `miataru/DEVELOPMENT.md`, `miataru/CHANGELOG.md`, `miataru/APP_STORE_DESCRIPTION.md`, and the topic/test documentation under `documentation/`. `documentation/README.md` is the canonical map for consolidated topic references and remaining standalone historical notes.
 
 ## License
 
