@@ -20112,6 +20112,138 @@
         }
       }
     },
+    "history_altitude_graph_label" : {
+      "comment" : "Accessibility label for the compact altitude graph in history",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Højdeprofil"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höhenprofil"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitude profile"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de altitud"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korkeusprofiili"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil d’altitude"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profilo altimetrico"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高度プロファイル"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoogteprofiel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "海拔剖面"
+          }
+        }
+      }
+    },
+    "history_graph_no_data" : {
+      "comment" : "Accessibility value when a compact history graph has no usable data",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen data"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei tietoja"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune donnée"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun dato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen gegevens"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无数据"
+          }
+        }
+      }
+    },
     "history_load_failed" : {
       "comment" : "Could not load history.\nHistory load failed message",
       "localizations" : {
@@ -20242,6 +20374,270 @@
         }
       }
     },
+    "history_metric_altitude" : {
+      "comment" : "Compact altitude metric label in the history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Højde"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höhe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitude"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitud"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korkeus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitude"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altitudine"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高度"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoogte"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "海拔"
+          }
+        }
+      }
+    },
+    "history_metric_distance" : {
+      "comment" : "Compact distance metric label in the history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afstand"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distanz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distance"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distancia"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etäisyys"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distance"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distanza"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距離"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afstand"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "距离"
+          }
+        }
+      }
+    },
+    "history_metric_max_speed" : {
+      "comment" : "Compact maximum speed metric label in the history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "maks."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "máx."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最大"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "max"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最大"
+          }
+        }
+      }
+    },
+    "history_metric_speed" : {
+      "comment" : "Compact speed metric label in the history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fart"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tempo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocidad"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nopeus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vitesse"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocità"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snelheid"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        }
+      }
+    },
     "history_no_data" : {
       "comment" : "No history available placeholder",
       "localizations" : {
@@ -20368,6 +20764,204 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所选范围内没有历史记录。"
+          }
+        }
+      }
+    },
+    "history_panel_hide_accessibility" : {
+      "comment" : "Accessibility label to hide the history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skjul historik"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf ausblenden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide history"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar historial"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piilota historia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer l’historique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascondi cronologia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴を非表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschiedenis verbergen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏历史记录"
+          }
+        }
+      }
+    },
+    "history_panel_restore" : {
+      "comment" : "Button title to restore the hidden history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historik"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cronologia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschiedenis"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史记录"
+          }
+        }
+      }
+    },
+    "history_panel_restore_accessibility" : {
+      "comment" : "Accessibility label to restore the hidden history analysis panel",
+      "extractionState" : "manual",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis historik"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf einblenden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show history"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar historial"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näytä historia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher l’historique"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra cronologia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴を表示"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschiedenis tonen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示历史记录"
           }
         }
       }
@@ -20698,600 +21292,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部"
-          }
-        }
-      }
-    },
-    "history_altitude_graph_label" : {
-      "comment" : "Accessibility label for the compact altitude graph in history",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Højdeprofil"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Höhenprofil"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altitude profile"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Perfil de altitud"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Korkeusprofiili"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profil d’altitude"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profilo altimetrico"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "高度プロファイル"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoogteprofiel"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "海拔剖面"
-          }
-        }
-      }
-    },
-    "history_graph_no_data" : {
-      "comment" : "Accessibility value when a compact history graph has no usable data",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen data"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Daten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No data"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin datos"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei tietoja"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune donnée"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessun dato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "データなし"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen gegevens"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无数据"
-          }
-        }
-      }
-    },
-    "history_metric_altitude" : {
-      "comment" : "Compact altitude metric label in the history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Højde"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Höhe"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altitude"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altitud"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Korkeus"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altitude"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altitudine"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "高度"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoogte"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "海拔"
-          }
-        }
-      }
-    },
-    "history_metric_distance" : {
-      "comment" : "Compact distance metric label in the history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afstand"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Distanz"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Distance"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Distancia"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Etäisyys"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Distance"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Distanza"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "距離"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afstand"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "距离"
-          }
-        }
-      }
-    },
-    "history_metric_max_speed" : {
-      "comment" : "Compact maximum speed metric label in the history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "maks."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "máx."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最大"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "max"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最大"
-          }
-        }
-      }
-    },
-    "history_metric_speed" : {
-      "comment" : "Compact speed metric label in the history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fart"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tempo"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Velocidad"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nopeus"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vitesse"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Velocità"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "速度"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Snelheid"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "速度"
-          }
-        }
-      }
-    },
-    "history_panel_hide_accessibility" : {
-      "comment" : "Accessibility label to hide the history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skjul historik"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verlauf ausblenden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hide history"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocultar historial"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piilota historia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Masquer l’historique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nascondi cronologia"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴を非表示"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geschiedenis verbergen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐藏历史记录"
-          }
-        }
-      }
-    },
-    "history_panel_restore" : {
-      "comment" : "Button title to restore the hidden history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historik"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verlauf"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "History"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historial"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cronologia"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geschiedenis"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "历史记录"
-          }
-        }
-      }
-    },
-    "history_panel_restore_accessibility" : {
-      "comment" : "Accessibility label to restore the hidden history analysis panel",
-      "extractionState" : "manual",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vis historik"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verlauf einblenden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show history"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar historial"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Näytä historia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher l’historique"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra cronologia"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴を表示"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geschiedenis tonen"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示历史记录"
           }
         }
       }
@@ -21879,73 +21879,203 @@
         }
       }
     },
-    "intent_find_person_description" : {
-      "comment" : "Description for the App Intent that finds a tracked person's latest location",
+    "intent_device_fallback_name" : {
+      "comment" : "Fallback display name for a device without a device name",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Viser den senest kendte placering for en person."
+            "value" : "Enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt den letzten bekannten Standort einer Person."
+            "value" : "Gerät"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows the last known location of a person."
+            "value" : "Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra la última ubicación conocida de una persona."
+            "value" : "Dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Näyttää henkilön viimeisimmän tunnetun sijainnin."
+            "value" : "Laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche la dernière position connue d’une personne."
+            "value" : "Appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra l’ultima posizione conosciuta di una persona."
+            "value" : "Dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人の最後に確認された位置情報を表示します。"
+            "value" : "デバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toont de laatst bekende locatie van een persoon."
+            "value" : "Apparaat"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示某人的最后已知位置。"
+            "value" : "设备"
           }
         }
       }
     },
-    "intent_find_person_dialog_format" : {
-      "comment" : "Dialog format for a tracked person's latest location. Arguments: display name, age text, place description.",
+    "intent_device_location_snippet_age_format" : {
+      "comment" : "Snippet age format. Argument: age text.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seneste opdatering: for %@ siden"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Aktualisierung: vor %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last update: %@ ago"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última actualización: hace %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viimeisin päivitys: %@ sitten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dernière mise à jour : il y a %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultimo aggiornamento: %@ fa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終更新: %@前"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laatste update: %@ geleden"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次更新：%@ 前"
+          }
+        }
+      }
+    },
+    "intent_find_device_description" : {
+      "comment" : "Description for the App Intent that finds a tracked device's latest location",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viser den senest kendte placering for en enhed."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt den letzten bekannten Standort eines Geräts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows the last known location of a device."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra la última ubicación conocida de un dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Näyttää laitteen viimeisimmän tunnetun sijainnin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affiche la dernière position connue d’un appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostra l’ultima posizione conosciuta di un dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの最後に確認された位置情報を表示します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toont de laatst bekende locatie van een apparaat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示设备的最后已知位置。"
+          }
+        }
+      }
+    },
+    "intent_find_device_dialog_format" : {
+      "comment" : "Dialog format for a tracked device's latest location. Arguments: display name, age text, place description.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -22009,197 +22139,197 @@
         }
       }
     },
-    "intent_find_person_parameter_person" : {
-      "comment" : "Parameter title for selecting a tracked person",
+    "intent_find_device_parameter_device" : {
+      "comment" : "Parameter title for selecting a tracked device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Gerät"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Henkilö"
+            "value" : "Laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personne"
+            "value" : "Appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人"
+            "value" : "デバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persoon"
+            "value" : "Apparaat"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人员"
+            "value" : "设备"
           }
         }
       }
     },
-    "intent_find_person_shortcut_title" : {
-      "comment" : "Short title for the find person App Shortcut",
+    "intent_find_device_shortcut_title" : {
+      "comment" : "Short title for the find device App Shortcut",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Find person"
+            "value" : "Find enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person finden"
+            "value" : "Gerät finden"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Find Person"
+            "value" : "Find Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buscar persona"
+            "value" : "Buscar dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Etsi henkilö"
+            "value" : "Etsi laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trouver une personne"
+            "value" : "Trouver un appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trova persona"
+            "value" : "Trova dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人を探す"
+            "value" : "デバイスを探す"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persoon vinden"
+            "value" : "Apparaat vinden"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查找人员"
+            "value" : "查找设备"
           }
         }
       }
     },
-    "intent_find_person_title" : {
-      "comment" : "Title for the App Intent that finds a tracked person's latest location",
+    "intent_find_device_title" : {
+      "comment" : "Title for the App Intent that finds a tracked device's latest location",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Find person"
+            "value" : "Find enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person finden"
+            "value" : "Gerät finden"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Find Person"
+            "value" : "Find Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buscar persona"
+            "value" : "Buscar dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Etsi henkilö"
+            "value" : "Etsi laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trouver une personne"
+            "value" : "Trouver un appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trova persona"
+            "value" : "Trova dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人を探す"
+            "value" : "デバイスを探す"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persoon vinden"
+            "value" : "Apparaat vinden"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查找人员"
+            "value" : "查找设备"
           }
         }
       }
@@ -22529,6 +22659,71 @@
         }
       }
     },
+    "intent_location_error_device_unavailable" : {
+      "comment" : "Error when a selected tracked device is no longer available",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne enhed er ikke længere tilgængelig i Miataru."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Gerät ist in Miataru nicht mehr verfügbar."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device is no longer available in Miataru."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este dispositivo ya no está disponible en Miataru."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä laite ei ole enää käytettävissä Miatarussa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cet appareil n’est plus disponible dans Miataru."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo dispositivo non è più disponibile in Miataru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスはMiataruで利用できなくなりました。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit apparaat is niet meer beschikbaar in Miataru."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此设备在 Miataru 中已不可用。"
+          }
+        }
+      }
+    },
     "intent_location_error_invalid_server_configuration" : {
       "comment" : "Error when the Miataru server URL is invalid",
       "localizations" : {
@@ -22659,262 +22854,197 @@
         }
       }
     },
+    "intent_location_error_no_devices_configured" : {
+      "comment" : "Error when no tracked devices are configured",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der er endnu ikke konfigureret nogen enheder i Miataru."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es sind noch keine Geräte in Miataru eingerichtet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No devices are configured in Miataru yet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todavía no hay dispositivos configurados en Miataru."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miatarussa ei ole vielä määritetty laitteita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun appareil n’est encore configuré dans Miataru."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non ci sono ancora dispositivi configurati in Miataru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataruにはまだデバイスが設定されていません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er zijn nog geen apparaten ingesteld in Miataru."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miataru 中尚未设置设备。"
+          }
+        }
+      }
+    },
     "intent_location_error_no_location_available" : {
-      "comment" : "Error when no location exists for a person",
+      "comment" : "Error when no location exists for a device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der er endnu ingen placering for denne person."
+            "value" : "Der er endnu ingen placering for denne enhed."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Für diese Person ist noch kein Standort verfügbar."
+            "value" : "Für dieses Gerät ist noch kein Standort verfügbar."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No location is available for this person yet."
+            "value" : "No location is available for this device yet."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aún no hay ninguna ubicación disponible para esta persona."
+            "value" : "Aún no hay ninguna ubicación disponible para este dispositivo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tälle henkilölle ei ole vielä sijaintia saatavilla."
+            "value" : "Tälle laitteelle ei ole vielä sijaintia saatavilla."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucune position n’est encore disponible pour cette personne."
+            "value" : "Aucune position n’est encore disponible pour cet appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non è ancora disponibile alcuna posizione per questa persona."
+            "value" : "Non è ancora disponibile alcuna posizione per questo dispositivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "この人の位置情報はまだありません。"
+            "value" : "このデバイスの位置情報はまだありません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Er is nog geen locatie beschikbaar voor deze persoon."
+            "value" : "Er is nog geen locatie beschikbaar voor dit apparaat."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此人员尚无可用位置。"
-          }
-        }
-      }
-    },
-    "intent_location_error_no_people_configured" : {
-      "comment" : "Error when no tracked people are configured",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der er endnu ikke konfigureret nogen personer i Miataru."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Es sind noch keine Personen in Miataru eingerichtet."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No people are configured in Miataru yet."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todavía no hay personas configuradas en Miataru."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miatarussa ei ole vielä määritetty henkilöitä."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune personne n’est encore configurée dans Miataru."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non ci sono ancora persone configurate in Miataru."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataruにはまだ人が設定されていません。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Er zijn nog geen personen ingesteld in Miataru."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Miataru 中尚未设置人员。"
-          }
-        }
-      }
-    },
-    "intent_location_error_person_unavailable" : {
-      "comment" : "Error when a selected tracked person is no longer available",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denne person er ikke længere tilgængelig i Miataru."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Person ist in Miataru nicht mehr verfügbar."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This person is no longer available in Miataru."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta persona ya no está disponible en Miataru."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tämä henkilö ei ole enää käytettävissä Miatarussa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cette personne n’est plus disponible dans Miataru."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questa persona non è più disponibile in Miataru."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この人はMiataruで利用できなくなりました。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deze persoon is niet meer beschikbaar in Miataru."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此人员在 Miataru 中已不可用。"
+            "value" : "此设备尚无可用位置。"
           }
         }
       }
     },
     "intent_location_error_unauthorized" : {
-      "comment" : "Error when the user has no current-location access for a person",
+      "comment" : "Error when the user has no current-location access for a device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adgang til denne persons placering er ikke tilladt."
+            "value" : "Adgang til denne enheds placering er ikke tilladt."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Für diese Person ist kein Zugriff auf den Standort erlaubt."
+            "value" : "Für dieses Gerät ist kein Zugriff auf den Standort erlaubt."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Access to this person's location is not allowed."
+            "value" : "Access to this device's location is not allowed."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se permite acceder a la ubicación de esta persona."
+            "value" : "No se permite acceder a la ubicación de este dispositivo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tämän henkilön sijaintiin ei ole käyttöoikeutta."
+            "value" : "Tämän laitteen sijaintiin ei ole käyttöoikeutta."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’accès à la position de cette personne n’est pas autorisé."
+            "value" : "L’accès à la position de cet appareil n’est pas autorisé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’accesso alla posizione di questa persona non è consentito."
+            "value" : "L’accesso alla posizione di questo dispositivo non è consentito."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "この人の位置情報へのアクセスは許可されていません。"
+            "value" : "このデバイスの位置情報へのアクセスは許可されていません。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toegang tot de locatie van deze persoon is niet toegestaan."
+            "value" : "Toegang tot de locatie van dit apparaat is niet toegestaan."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不允许访问此人员的位置。"
+            "value" : "不允许访问此设备的位置。"
           }
         }
       }
@@ -22984,73 +23114,73 @@
         }
       }
     },
-    "intent_open_miataru_navigation_to_person_description" : {
-      "comment" : "Description for the App Intent that opens Miataru's in-app navigation to a tracked person",
+    "intent_open_miataru_navigation_to_device_description" : {
+      "comment" : "Description for the App Intent that opens Miataru's in-app navigation to a tracked device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbner Miataru-navigation til en persons senest kendte placering."
+            "value" : "Åbner Miataru-navigation til en enheds senest kendte placering."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffnet die Miataru-Navigation zum letzten bekannten Standort einer Person."
+            "value" : "Öffnet die Miataru-Navigation zum letzten bekannten Standort eines Geräts."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opens Miataru navigation to the last known location of a person."
+            "value" : "Opens Miataru navigation to the last known location of a device."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre la navegación de Miataru a la última ubicación conocida de una persona."
+            "value" : "Abre la navegación de Miataru a la última ubicación conocida de un dispositivo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa Miataru-navigoinnin henkilön viimeisimpään tunnettuun sijaintiin."
+            "value" : "Avaa Miataru-navigoinnin laitteen viimeisimpään tunnettuun sijaintiin."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvre la navigation Miataru vers la dernière position connue d’une personne."
+            "value" : "Ouvre la navigation Miataru vers la dernière position connue d’un appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apre la navigazione Miataru verso l’ultima posizione conosciuta di una persona."
+            "value" : "Apre la navigazione Miataru verso l’ultima posizione conosciuta di un dispositivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人の最後に確認された位置へのMiataruナビゲーションを開きます。"
+            "value" : "デバイスの最後に確認された位置へのMiataruナビゲーションを開きます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opent Miataru-navigatie naar de laatst bekende locatie van een persoon."
+            "value" : "Opent Miataru-navigatie naar de laatst bekende locatie van een apparaat."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Miataru 导航，前往某人最后已知位置。"
+            "value" : "打开 Miataru 导航，前往设备最后已知位置。"
           }
         }
       }
     },
-    "intent_open_miataru_navigation_to_person_dialog_format" : {
-      "comment" : "Dialog format when opening Miataru navigation to a tracked person. Argument: display name.",
+    "intent_open_miataru_navigation_to_device_dialog_format" : {
+      "comment" : "Dialog format when opening Miataru navigation to a tracked device. Argument: display name.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -23114,7 +23244,7 @@
         }
       }
     },
-    "intent_open_miataru_navigation_to_person_shortcut_title" : {
+    "intent_open_miataru_navigation_to_device_shortcut_title" : {
       "comment" : "Short title for the Miataru in-app navigation App Shortcut",
       "localizations" : {
         "da" : {
@@ -23179,8 +23309,8 @@
         }
       }
     },
-    "intent_open_miataru_navigation_to_person_title" : {
-      "comment" : "Title for the App Intent that opens Miataru's in-app navigation to a tracked person",
+    "intent_open_miataru_navigation_to_device_title" : {
+      "comment" : "Title for the App Intent that opens Miataru's in-app navigation to a tracked device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -23244,73 +23374,73 @@
         }
       }
     },
-    "intent_open_route_to_person_description" : {
-      "comment" : "Description for the App Intent that opens an Apple Maps route to a tracked person",
+    "intent_open_route_to_device_description" : {
+      "comment" : "Description for the App Intent that opens an Apple Maps route to a tracked device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbner Apple Maps med rutevejledning til en persons senest kendte placering."
+            "value" : "Åbner Apple Maps med rutevejledning til en enheds senest kendte placering."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffnet Apple Karten mit einer Route zum letzten bekannten Standort einer Person."
+            "value" : "Öffnet Apple Karten mit einer Route zum letzten bekannten Standort eines Geräts."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opens Apple Maps with directions to the last known location of a person."
+            "value" : "Opens Apple Maps with directions to the last known location of a device."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre Mapas de Apple con indicaciones a la última ubicación conocida de una persona."
+            "value" : "Abre Mapas de Apple con indicaciones a la última ubicación conocida de un dispositivo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa Apple Kartat ja reittiohjeet henkilön viimeisimpään tunnettuun sijaintiin."
+            "value" : "Avaa Apple Kartat ja reittiohjeet laitteen viimeisimpään tunnettuun sijaintiin."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvre Plans Apple avec un itinéraire vers la dernière position connue d’une personne."
+            "value" : "Ouvre Plans Apple avec un itinéraire vers la dernière position connue d’un appareil."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apre Mappe di Apple con le indicazioni verso l’ultima posizione conosciuta di una persona."
+            "value" : "Apre Mappe di Apple con le indicazioni verso l’ultima posizione conosciuta di un dispositivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人の最後に確認された位置への経路をAppleマップで開きます。"
+            "value" : "デバイスの最後に確認された位置への経路をAppleマップで開きます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opent Apple Kaarten met een route naar de laatst bekende locatie van een persoon."
+            "value" : "Opent Apple Kaarten met een route naar de laatst bekende locatie van een apparaat."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 Apple 地图中打开前往某人最后已知位置的路线。"
+            "value" : "在 Apple 地图中打开前往设备最后已知位置的路线。"
           }
         }
       }
     },
-    "intent_open_route_to_person_dialog_format" : {
-      "comment" : "Dialog format when opening a route to a tracked person. Argument: display name.",
+    "intent_open_route_to_device_dialog_format" : {
+      "comment" : "Dialog format when opening a route to a tracked device. Argument: display name.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -23374,72 +23504,72 @@
         }
       }
     },
-    "intent_open_route_to_person_parameter_person" : {
-      "comment" : "Parameter title for selecting a tracked person for route opening",
+    "intent_open_route_to_device_parameter_device" : {
+      "comment" : "Parameter title for selecting a tracked device for route opening",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Gerät"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Henkilö"
+            "value" : "Laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personne"
+            "value" : "Appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人"
+            "value" : "デバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persoon"
+            "value" : "Apparaat"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人员"
+            "value" : "设备"
           }
         }
       }
     },
-    "intent_open_route_to_person_shortcut_title" : {
+    "intent_open_route_to_device_shortcut_title" : {
       "comment" : "Short title for the Apple Maps route App Shortcut",
       "localizations" : {
         "da" : {
@@ -23504,8 +23634,8 @@
         }
       }
     },
-    "intent_open_route_to_person_title" : {
-      "comment" : "Title for the App Intent that opens an Apple Maps route to a tracked person",
+    "intent_open_route_to_device_title" : {
+      "comment" : "Title for the App Intent that opens an Apple Maps route to a tracked device",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -23565,136 +23695,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple 地图路线"
-          }
-        }
-      }
-    },
-    "intent_person_fallback_name" : {
-      "comment" : "Fallback display name for a person without a device name",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Person"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Person"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Person"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Persona"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Henkilö"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Personne"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Persona"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "人"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Persoon"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "人员"
-          }
-        }
-      }
-    },
-    "intent_person_location_snippet_age_format" : {
-      "comment" : "Snippet age format. Argument: age text.",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seneste opdatering: for %@ siden"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzte Aktualisierung: vor %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last update: %@ ago"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Última actualización: hace %@"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viimeisin päivitys: %@ sitten"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dernière mise à jour : il y a %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ultimo aggiornamento: %@ fa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最終更新: %@前"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Laatste update: %@ geleden"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上次更新：%@ 前"
           }
         }
       }
@@ -24349,67 +24349,67 @@
         }
       }
     },
-    "intent_tracked_person_type_name" : {
-      "comment" : "Display name for a tracked person App Intent entity",
+    "intent_tracked_device_type_name" : {
+      "comment" : "Display name for a tracked device App Intent entity",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Sporet enhed"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Getracktes Gerät"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Person"
+            "value" : "Tracked Device"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo rastreado"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Henkilö"
+            "value" : "Seurattu laite"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personne"
+            "value" : "Appareil suivi"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persona"
+            "value" : "Dispositivo tracciato"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人"
+            "value" : "追跡対象デバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Persoon"
+            "value" : "Gevolgd apparaat"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "人员"
+            "value" : "已跟踪设备"
           }
         }
       }
@@ -30297,130 +30297,130 @@
         }
       }
     },
-    "Open Apple Maps route to ${person}" : {
+    "Open Apple Maps route to ${device}" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbn Apple Maps-rute til ${person}"
+            "value" : "Åbn Apple Maps-rute til ${device}"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Maps-Route zu ${person} öffnen"
+            "value" : "Apple Maps-Route zu ${device} öffnen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Apple Maps route to ${person}"
+            "value" : "Open Apple Maps route to ${device}"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir ruta de Apple Maps a ${person}"
+            "value" : "Abrir ruta de Apple Maps a ${device}"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa Apple Maps -reitti henkilölle ${person}"
+            "value" : "Avaa Apple Maps -reitti henkilölle ${device}"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir l’itinéraire Apple Maps vers ${person}"
+            "value" : "Ouvrir l’itinéraire Apple Maps vers ${device}"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri itinerario Apple Maps verso ${person}"
+            "value" : "Apri itinerario Apple Maps verso ${device}"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "${person}へのApple Maps経路を開く"
+            "value" : "${device}へのApple Maps経路を開く"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Apple Maps-route naar ${person}"
+            "value" : "Open Apple Maps-route naar ${device}"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开前往 ${person} 的 Apple 地图路线"
+            "value" : "打开前往 ${device} 的 Apple 地图路线"
           }
         }
       }
     },
-    "Open Miataru navigation to ${person}" : {
+    "Open Miataru navigation to ${device}" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Åbn Miataru-navigation til ${person}"
+            "value" : "Åbn Miataru-navigation til ${device}"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru-Navigation zu ${person} öffnen"
+            "value" : "Miataru-Navigation zu ${device} öffnen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Miataru navigation to ${person}"
+            "value" : "Open Miataru navigation to ${device}"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir navegación de Miataru a ${person}"
+            "value" : "Abrir navegación de Miataru a ${device}"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avaa Miataru-navigointi henkilölle ${person}"
+            "value" : "Avaa Miataru-navigointi henkilölle ${device}"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrir la navigation Miataru vers ${person}"
+            "value" : "Ouvrir la navigation Miataru vers ${device}"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apri navigazione Miataru verso ${person}"
+            "value" : "Apri navigazione Miataru verso ${device}"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "${person}へのMiataruナビゲーションを開く"
+            "value" : "${device}へのMiataruナビゲーションを開く"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Miataru-navigatie naar ${person}"
+            "value" : "Open Miataru-navigatie naar ${device}"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开前往 ${person} 的 Miataru 导航"
+            "value" : "打开前往 ${device} 的 Miataru 导航"
           }
         }
       }
@@ -34181,66 +34181,66 @@
         }
       }
     },
-    "Show location of ${person}" : {
+    "Show location of ${device}" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vis placering for ${person}"
+            "value" : "Vis placering for ${device}"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standort von ${person} anzeigen"
+            "value" : "Standort von ${device} anzeigen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show location of ${person}"
+            "value" : "Show location of ${device}"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar ubicación de ${person}"
+            "value" : "Mostrar ubicación de ${device}"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Näytä henkilön ${person} sijainti"
+            "value" : "Näytä henkilön ${device} sijainti"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Afficher la position de ${person}"
+            "value" : "Afficher la position de ${device}"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra la posizione di ${person}"
+            "value" : "Mostra la posizione di ${device}"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "${person}の位置を表示"
+            "value" : "${device}の位置を表示"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locatie van ${person} tonen"
+            "value" : "Locatie van ${device} tonen"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示${person}的位置"
+            "value" : "显示${device}的位置"
           }
         }
       }

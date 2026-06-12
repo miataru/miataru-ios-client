@@ -815,6 +815,7 @@ struct iPhone_DeviceNavigationView: View {
                 .zIndex(1)
         }
         .offset(y: 35)
+        .trackedDeviceUserActivity(for: device)
     }
     
 

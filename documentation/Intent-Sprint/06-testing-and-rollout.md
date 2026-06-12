@@ -39,7 +39,7 @@ For focused local work, use `xcodebuild test` against `miataruTests` and the spe
 
 Required coverage:
 
-- `KnownDevice` to `TrackedPersonEntity` mapping.
+- `KnownDevice` to `TrackedDeviceEntity` mapping.
 - Hidden devices and empty DeviceIDs excluded.
 - Dynamic string options remain available for Shortcuts.
 - iOS 26-only schema adapters are availability-gated.
@@ -53,8 +53,8 @@ Required coverage:
 - Tracking enabled, disabled, and blocked states.
 - Frequent tracking active, inactive, expiring, and unlimited states.
 - Permission and DeviceKey failures.
-- Person status with current location and cached place text.
-- No location, hidden person, and no people configured.
+- Device status with current location and cached place text.
+- No location, hidden device, and no devices configured.
 - Distance calculation and missing current-user-location fallback.
 - ETA route provider success and failure through an injectable seam.
 - Dialogs remain short and privacy-safe.
@@ -89,8 +89,8 @@ Required coverage:
 - Radius validation.
 - Place entity query and name search.
 - Proximity calculation with accuracy expansion.
-- Hidden people excluded.
-- Place Spotlight payload excludes person presence.
+- Hidden devices excluded.
+- Place Spotlight payload excludes device presence.
 - Watch transition detection and cooldown once watches are implemented.
 
 ## Manual Validation

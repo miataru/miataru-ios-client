@@ -44,7 +44,7 @@ Add `MiataruPlaceEntity` with:
 - iOS 26 schema conformance only if a neutral place/location entity schema fits.
 - `IndexedEntity` only for user-saved place names and non-sensitive metadata.
 
-Do not index live person presence at a place.
+Do not index live device presence at a place.
 
 ## Proximity Intents
 
@@ -52,24 +52,24 @@ Planned intents:
 
 - `SaveCurrentPlaceIntent`
 - `ListPlacesIntent`
-- `IsPersonNearPlaceIntent`
-- `FindPeopleNearPlaceIntent`
+- `IsDeviceNearPlaceIntent`
+- `FindDevicesNearPlaceIntent`
 
 Behavior:
 
 - `SaveCurrentPlaceIntent` saves the user's current location as a named place with a radius.
 - `ListPlacesIntent` returns saved places.
-- `IsPersonNearPlaceIntent` checks the latest authorized location for one selected person against one saved place.
-- `FindPeopleNearPlaceIntent` checks all visible people with current-location access against one saved place.
+- `IsDeviceNearPlaceIntent` checks the latest authorized location for one selected device against one saved place.
+- `FindDevicesNearPlaceIntent` checks all visible devices with current-location access against one saved place.
 
-Distance calculation should use a shared Haversine helper or existing map helper. A person is near a place when the center distance is less than or equal to the place radius plus the reported horizontal accuracy when accuracy exists.
+Distance calculation should use a shared Haversine helper or existing map helper. A device is near a place when the center distance is less than or equal to the place radius plus the reported horizontal accuracy when accuracy exists.
 
 ## Schema Fit
 
 Default schema decisions:
 
 - `MiataruPlaceEntity` should be built to support an Apple place/location entity schema if the SDK exposes one that matches saved user places.
-- Proximity intents remain custom because "is this Miataru-tracked person near this saved place" is app-specific.
+- Proximity intents remain custom because "is this Miataru-tracked device near this saved place" is app-specific.
 - `SaveCurrentPlaceIntent` may be evaluated for a schema only if the schema represents saving a user-defined place and does not imply adding a contact address or calendar location.
 
 ## Spotlight Indexing
@@ -84,8 +84,8 @@ Do not index:
 
 - DeviceKey.
 - Server URL.
-- Raw person locations.
-- Person presence at a place.
+- Raw device locations.
+- Device presence at a place.
 - Watch rules.
 - Private callback configuration.
 
@@ -98,9 +98,9 @@ On iOS 26+:
 - Annotate saved place rows with `MiataruPlaceEntity`.
 - Annotate place markers on maps.
 - Annotate the active place in a place detail view.
-- Annotate people and places together only when both are already visible and authorized.
+- Annotate devices and places together only when both are already visible and authorized.
 
-These annotations support context like "check whether this person is near this place" without requiring the user to repeat names.
+These annotations support context like "check whether this device is near this place" without requiring the user to repeat names.
 
 ## Watches
 
@@ -111,7 +111,7 @@ Future watch model:
 ```swift
 struct MiataruPlaceWatchRecord: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
-    var personID: String
+    var deviceID: String
     var placeID: UUID
     var condition: MiataruPlaceWatchCondition
     var isEnabled: Bool
@@ -128,7 +128,7 @@ enum MiataruPlaceWatchCondition: String, Codable, CaseIterable, Sendable {
 Watches should:
 
 - Use existing location refresh paths where possible.
-- Record `personEnteredPlace` and `personLeftPlace` events in the EventStore.
+- Record `deviceEnteredPlace` and `deviceLeftPlace` events in the EventStore.
 - Send local notifications when enabled and permitted.
 - Avoid high-frequency polling.
 - Apply cooldowns to avoid notification spam.
@@ -148,7 +148,7 @@ Add tests for:
 - Radius validation.
 - Place query by ID and name.
 - Proximity calculation with and without horizontal accuracy.
-- Hidden people excluded from proximity checks.
+- Hidden devices excluded from proximity checks.
 - Spotlight indexing payload excludes private data.
 - View annotation builders emit only visible saved places.
 - Watch transition detection for outside-to-inside and inside-to-outside state changes.
@@ -160,5 +160,5 @@ Add tests for:
 - Do not trigger user shortcuts directly from proximity checks.
 - Do not index place watches.
 - Do not infer home/work labels automatically.
-- Do not expose person-at-place facts to Spotlight.
+- Do not expose device-at-place facts to Spotlight.
 

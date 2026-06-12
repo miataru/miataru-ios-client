@@ -19,16 +19,16 @@ enum MiataruAutomationEventKind: String, Codable, CaseIterable {
     case frequentTrackingExpired
     case trackingPaused
     case trackingResumed
-    case personLocationUpdated
-    case personEnteredPlace
-    case personLeftPlace
+    case deviceLocationUpdated
+    case deviceEnteredPlace
+    case deviceLeftPlace
     case unknownVisitorDetected
     case deviceKeyBlockedOperation
     case lowBatteryDisabledFrequentTracking
 }
 ```
 
-`personEnteredPlace` and `personLeftPlace` are included for schema stability but should not be emitted until Places and watches exist.
+`deviceEnteredPlace` and `deviceLeftPlace` are included for schema stability but should not be emitted until Places and watches exist.
 
 ## Event Record
 
@@ -40,8 +40,8 @@ struct MiataruAutomationEventRecord: Codable, Equatable, Identifiable, Sendable 
     let kind: MiataruAutomationEventKind
     let timestamp: Date
     let privacyLevel: MiataruAutomationEventPrivacyLevel
-    let personID: String?
-    let personDisplayName: String?
+    let deviceID: String?
+    let deviceDisplayName: String?
     let placeID: String?
     let placeName: String?
     let latitude: Double?
@@ -93,7 +93,7 @@ First emission points:
 - DeviceKey auth blocks an intent or operation: `deviceKeyBlockedOperation`.
 - Unknown visitor alert candidate is accepted for notification: `unknownVisitorDetected`.
 
-Do not emit high-volume `personLocationUpdated` events for every background location update in the first version. If needed later, throttle and summarize them.
+Do not emit high-volume `deviceLocationUpdated` events for every background location update in the first version. If needed later, throttle and summarize them.
 
 ## Event App Intents
 
@@ -104,7 +104,7 @@ Add these as App Intents but not App Shortcuts initially:
 - `ClearMiataruEventsIntent`
 - `ExportAutomationEventIntent`
 
-Structured output should include kind, timestamp, summary text, privacy level, optional person display name, optional place name, and a compact payload dictionary. Spoken dialogs should summarize one or a few events, not dump JSON.
+Structured output should include kind, timestamp, summary text, privacy level, optional device display name, optional place name, and a compact payload dictionary. Spoken dialogs should summarize one or a few events, not dump JSON.
 
 ## Schema And Indexing
 

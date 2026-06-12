@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2026, Daniel Kirstenpfad, www.miataru.com
  *
- * PersonLocationSnippetView.swift
+ * DeviceLocationSnippetView.swift
  * miataru
  *
  * Created by Codex on 09.06.26.
@@ -9,8 +9,8 @@
 
 import SwiftUI
 
-struct PersonLocationSnippetView: View {
-    let location: IntentPersonLocation
+struct DeviceLocationSnippetView: View {
+    let location: IntentDeviceLocation
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -20,7 +20,7 @@ struct PersonLocationSnippetView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(String.localizedStringWithFormat(
-                NSLocalizedString("intent_person_location_snippet_age_format", comment: "Snippet age format. Argument: age text."),
+                NSLocalizedString("intent_device_location_snippet_age_format", comment: "Snippet age format. Argument: age text."),
                 location.ageText
             ))
             .font(.caption)

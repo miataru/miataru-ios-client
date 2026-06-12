@@ -12,15 +12,15 @@ import Foundation
 import MiataruAPIClient
 
 protocol IntentLocationServicing: Sendable {
-    func suggestedPeople() async throws -> [TrackedPersonEntity]
-    func person(for id: String) async throws -> TrackedPersonEntity?
-    func latestLocation(for personID: String) async throws -> IntentPersonLocation
+    func suggestedDevices() async throws -> [TrackedDeviceEntity]
+    func device(for id: String) async throws -> TrackedDeviceEntity?
+    func latestLocation(for deviceID: String) async throws -> IntentDeviceLocation
     func knownPlaces() async throws -> [Never]
     func place(for id: String) async throws -> Never?
 }
 
-struct IntentPersonLocation: Sendable, Equatable {
-    let personID: String
+struct IntentDeviceLocation: Sendable, Equatable {
+    let deviceID: String
     let displayName: String
     let latitude: Double
     let longitude: Double
@@ -52,8 +52,8 @@ struct IntentPersonLocation: Sendable, Equatable {
 }
 
 enum IntentLocationError: LocalizedError, Equatable {
-    case noPeopleConfigured
-    case personUnavailable
+    case noDevicesConfigured
+    case deviceUnavailable
     case unauthorized
     case noLocationAvailable
     case networkUnavailable
@@ -61,14 +61,14 @@ enum IntentLocationError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .noPeopleConfigured:
-            return NSLocalizedString("intent_location_error_no_people_configured", comment: "Error when no tracked people are configured")
-        case .personUnavailable:
-            return NSLocalizedString("intent_location_error_person_unavailable", comment: "Error when a selected tracked person is no longer available")
+        case .noDevicesConfigured:
+            return NSLocalizedString("intent_location_error_no_devices_configured", comment: "Error when no tracked devices are configured")
+        case .deviceUnavailable:
+            return NSLocalizedString("intent_location_error_device_unavailable", comment: "Error when a selected tracked device is no longer available")
         case .unauthorized:
-            return NSLocalizedString("intent_location_error_unauthorized", comment: "Error when the user has no current-location access for a person")
+            return NSLocalizedString("intent_location_error_unauthorized", comment: "Error when the user has no current-location access for a device")
         case .noLocationAvailable:
-            return NSLocalizedString("intent_location_error_no_location_available", comment: "Error when no location exists for a person")
+            return NSLocalizedString("intent_location_error_no_location_available", comment: "Error when no location exists for a device")
         case .networkUnavailable:
             return NSLocalizedString("intent_location_error_network_unavailable", comment: "Error when the Miataru server cannot be reached")
         case .invalidServerConfiguration:
@@ -77,7 +77,7 @@ enum IntentLocationError: LocalizedError, Equatable {
     }
 }
 
-struct IntentPersonRecord: Sendable, Equatable, Identifiable {
+struct IntentDeviceRecord: Sendable, Equatable, Identifiable {
     let id: String
     let name: String
     let hasCurrentLocationAccess: Bool
@@ -92,9 +92,9 @@ struct IntentLocationPayload: Sendable, Equatable {
 }
 
 protocol IntentLocationDataProviding: Sendable {
-    func personRecords() async -> [IntentPersonRecord]
-    func latestLocationPayload(for personID: String) async throws -> IntentLocationPayload?
-    func cachedPlaceDescription(for personID: String) async -> String?
+    func deviceRecords() async -> [IntentDeviceRecord]
+    func latestLocationPayload(for deviceID: String) async throws -> IntentLocationPayload?
+    func cachedPlaceDescription(for deviceID: String) async -> String?
 }
 
 final class IntentLocationService: IntentLocationServicing, @unchecked Sendable {
@@ -106,33 +106,34 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         self.provider = provider
     }
 
-    func suggestedPeople() async throws -> [TrackedPersonEntity] {
-        let people = await visiblePersonRecords()
-        return people.map(Self.entity(from:))
+    func suggestedDevices() async throws -> [TrackedDeviceEntity] {
+        let devices = await visibleDeviceRecords()
+        return devices.map(Self.entity(from:))
     }
 
-    func person(for id: String) async throws -> TrackedPersonEntity? {
-        guard let record = await visiblePersonRecord(for: id) else { return nil }
+    func device(for id: String) async throws -> TrackedDeviceEntity? {
+        guard let record = await visibleDeviceRecord(for: id) else { return nil }
         return Self.entity(from: record)
     }
 
-    func latestLocation(for personID: String) async throws -> IntentPersonLocation {
-        let records = await provider.personRecords()
-        guard !records.isEmpty else { throw IntentLocationError.noPeopleConfigured }
-        guard let record = Self.matchingRecord(in: records, id: personID) else {
-            throw IntentLocationError.personUnavailable
+    func latestLocation(for deviceID: String) async throws -> IntentDeviceLocation {
+        let records = await provider.deviceRecords()
+        guard !records.isEmpty else { throw IntentLocationError.noDevicesConfigured }
+        guard let record = Self.matchingRecord(in: records, id: deviceID) else {
+            throw IntentLocationError.deviceUnavailable
         }
         guard record.hasCurrentLocationAccess else {
             throw IntentLocationError.unauthorized
         }
-        guard let payload = try await provider.latestLocationPayload(for: record.id) else {
+        let requestDeviceID = TrackedDeviceIntentMetadata.trimmedDeviceID(record.id)
+        guard let payload = try await provider.latestLocationPayload(for: requestDeviceID) else {
             throw IntentLocationError.noLocationAvailable
         }
 
         return Self.location(
             from: payload,
-            person: record,
-            placeDescription: await provider.cachedPlaceDescription(for: record.id)
+            device: record,
+            placeDescription: await provider.cachedPlaceDescription(for: requestDeviceID)
         )
     }
 
@@ -144,14 +145,17 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         nil
     }
 
-    static func entity(from record: IntentPersonRecord) -> TrackedPersonEntity {
-        TrackedPersonEntity(id: record.id, name: record.name)
+    static func entity(from record: IntentDeviceRecord) -> TrackedDeviceEntity {
+        TrackedDeviceEntity(
+            id: TrackedDeviceIntentMetadata.trimmedDeviceID(record.id),
+            name: TrackedDeviceIntentMetadata.displayName(deviceName: record.name, deviceID: record.id)
+        )
     }
 
-    static func location(from payload: IntentLocationPayload, person: IntentPersonRecord, placeDescription: String?) -> IntentPersonLocation {
-        IntentPersonLocation(
-            personID: person.id,
-            displayName: person.name,
+    static func location(from payload: IntentLocationPayload, device: IntentDeviceRecord, placeDescription: String?) -> IntentDeviceLocation {
+        IntentDeviceLocation(
+            deviceID: TrackedDeviceIntentMetadata.trimmedDeviceID(device.id),
+            displayName: TrackedDeviceIntentMetadata.displayName(deviceName: device.name, deviceID: device.id),
             latitude: payload.latitude,
             longitude: payload.longitude,
             timestamp: payload.timestamp,
@@ -160,35 +164,40 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         )
     }
 
-    private func visiblePersonRecords() async -> [IntentPersonRecord] {
-        let records = await provider.personRecords()
-        return records.filter { !$0.id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && $0.hasCurrentLocationAccess }
+    private func visibleDeviceRecords() async -> [IntentDeviceRecord] {
+        let records = await provider.deviceRecords()
+        return records.filter {
+            TrackedDeviceIntentMetadata.isVisible(
+                deviceID: $0.id,
+                hasCurrentLocationAccess: $0.hasCurrentLocationAccess
+            )
+        }
     }
 
-    private func visiblePersonRecord(for id: String) async -> IntentPersonRecord? {
-        let records = await visiblePersonRecords()
+    private func visibleDeviceRecord(for id: String) async -> IntentDeviceRecord? {
+        let records = await visibleDeviceRecords()
         return Self.matchingRecord(in: records, id: id)
     }
 
-    private static func matchingRecord(in records: [IntentPersonRecord], id: String) -> IntentPersonRecord? {
+    private static func matchingRecord(in records: [IntentDeviceRecord], id: String) -> IntentDeviceRecord? {
         let normalizedID = normalizedDeviceID(id)
         guard !normalizedID.isEmpty else { return nil }
         return records.first { normalizedDeviceID($0.id) == normalizedID }
     }
 
     private static func normalizedDeviceID(_ deviceID: String) -> String {
-        deviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        TrackedDeviceIntentMetadata.normalizedDeviceID(deviceID)
     }
 }
 
 final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unchecked Sendable {
-    func personRecords() async -> [IntentPersonRecord] {
+    func deviceRecords() async -> [IntentDeviceRecord] {
         await MainActor.run {
             KnownDeviceStore.shared.devices.map(Self.record(from:))
         }
     }
 
-    func latestLocationPayload(for personID: String) async throws -> IntentLocationPayload? {
+    func latestLocationPayload(for deviceID: String) async throws -> IntentLocationPayload? {
         let configuration = await MainActor.run {
             (
                 serverURL: URL(string: SettingsManager.shared.miataruServerURL),
@@ -204,12 +213,12 @@ final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unc
         do {
             let locations = try await MiataruAppAPI.getLocation(
                 serverURL: serverURL,
-                forDeviceIDs: [personID],
+                forDeviceIDs: [deviceID],
                 requestingDeviceID: configuration.ownDeviceID,
                 requestingDeviceKey: configuration.ownDeviceKey
             )
             return locations
-                .filter { Self.normalizedDeviceID($0.Device) == Self.normalizedDeviceID(personID) }
+                .filter { Self.normalizedDeviceID($0.Device) == Self.normalizedDeviceID(deviceID) }
                 .max { $0.TimestampDate < $1.TimestampDate }
                 .map(Self.payload(from:))
         } catch let error as MiataruAPIClient.APIError {
@@ -223,9 +232,9 @@ final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unc
         }
     }
 
-    func cachedPlaceDescription(for personID: String) async -> String? {
+    func cachedPlaceDescription(for deviceID: String) async -> String? {
         await MainActor.run {
-            guard let placemark = DeviceLocationCacheStore.shared.getPlacemark(for: personID) else {
+            guard let placemark = DeviceLocationCacheStore.shared.getPlacemark(for: deviceID) else {
                 return nil
             }
             return Self.placeDescription(locality: placemark.locality, country: placemark.country)
@@ -242,8 +251,8 @@ final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unc
         )
     }
 
-    static func record(from device: KnownDevice) -> IntentPersonRecord {
-        IntentPersonRecord(
+    static func record(from device: KnownDevice) -> IntentDeviceRecord {
+        IntentDeviceRecord(
             id: device.DeviceID,
             name: displayName(for: device),
             hasCurrentLocationAccess: device.hasCurrentLocationAccess
@@ -312,10 +321,7 @@ final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unc
     }
 
     private static func displayName(for device: KnownDevice) -> String {
-        let trimmedName = device.DeviceName.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedName.isEmpty
-            ? NSLocalizedString("intent_person_fallback_name", comment: "Fallback display name for a person without a device name")
-            : trimmedName
+        TrackedDeviceIntentMetadata.displayName(deviceName: device.DeviceName, deviceID: device.DeviceID)
     }
 
     private static func trimmed(_ value: String?) -> String? {
@@ -326,6 +332,6 @@ final class MiataruIntentLocationDataProvider: IntentLocationDataProviding, @unc
     }
 
     private static func normalizedDeviceID(_ deviceID: String) -> String {
-        deviceID.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        TrackedDeviceIntentMetadata.normalizedDeviceID(deviceID)
     }
 }

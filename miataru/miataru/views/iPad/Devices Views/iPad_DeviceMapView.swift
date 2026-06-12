@@ -760,6 +760,7 @@ struct iPad_DeviceMapView: View {
                                         }
                             }
                             .offset(y: 35)
+                            .trackedDeviceUserActivity(for: device)
                         }
                     }
                     // Other device markers visible in the current viewport only (iOS 17+)
@@ -836,11 +837,12 @@ struct iPad_DeviceMapView: View {
                                                         Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                                     }
                                                 }
+                                            }
+                                            .offset(y: 35)
+                                            .trackedDeviceUserActivity(for: other)
                                         }
-                                    .offset(y: 35)
+                                    }
                                 }
-                            }
-                        }
                     }
                 }
             }

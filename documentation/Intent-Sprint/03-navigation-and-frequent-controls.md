@@ -6,8 +6,8 @@ This stage extends existing actions instead of replacing them. The goal is to ma
 
 Existing actions:
 
-- `OpenRouteToPersonIntent`
-- `OpenMiataruNavigationToPersonIntent`
+- `OpenRouteToDeviceIntent`
+- `OpenMiataruNavigationToDeviceIntent`
 - `StartFrequentTrackingIntent`
 - `StopFrequentTrackingIntent`
 
@@ -18,7 +18,7 @@ Planned improvements:
 - Parameterized presentation mode.
 - Manual frequent tracking duration.
 - Better status and stop behavior.
-- iOS 26 View Annotation handoff from visible people/devices into navigation intents.
+- iOS 26 View Annotation handoff from visible devices into navigation intents.
 
 ## Navigation Parameters
 
@@ -92,7 +92,7 @@ Do not overload "stop frequent tracking" to disable Smart frequent mode unless t
 
 Default schema decisions:
 
-- Keep Miataru navigation intents custom unless an Apple navigation/open schema can express route direction, destination person, presentation mode, and Miataru privacy constraints.
+- Keep Miataru navigation intents custom unless an Apple navigation/open schema can express route direction, destination device, presentation mode, and Miataru privacy constraints.
 - Keep frequent tracking custom. It is a Miataru-specific battery/privacy control.
 - If an Apple open-content or navigation schema is adopted later, retain the existing custom App Intent as the backward-compatible implementation path and add schema conformance only as an iOS 26+ Siri layer.
 
@@ -100,12 +100,12 @@ Do not distort parameter names or behavior to fit a schema. A correct custom int
 
 ## View Annotation Handoff
 
-On iOS 26+, visible device/person context should be able to feed navigation intents:
+On iOS 26+, visible device context should be able to feed navigation intents:
 
-- Device detail view: annotate the primary `TrackedPersonEntity` through `NSUserActivity`.
-- Device list rows: annotate each visible row so Siri can resolve "navigate to this person" while the row is on screen.
-- Group map markers: annotate each visible marker with its person entity where current-location access is allowed.
-- Navigation screen: annotate the active destination person and later the active route.
+- Device detail view: annotate the primary `TrackedDeviceEntity` through `NSUserActivity`.
+- Device list rows: annotate each visible row so Siri can resolve "navigate to this device" while the row is on screen.
+- Group map markers: annotate each visible marker with its device entity where current-location access is allowed.
+- Navigation screen: annotate the active destination device and later the active route.
 
 The handoff must never include hidden devices, unauthorized devices, DeviceKey, or raw server data.
 
@@ -121,7 +121,7 @@ Add or extend tests for:
 - Existing no-duration frequent tracking behavior remains unchanged.
 - Stop frequent is idempotent.
 - Permission, DeviceKey, and tracking-disabled preconditions still prevent start.
-- Annotation builders include only visible, authorized people.
+- Annotation builders include only visible, authorized devices.
 
 ## Explicit Deferrals
 

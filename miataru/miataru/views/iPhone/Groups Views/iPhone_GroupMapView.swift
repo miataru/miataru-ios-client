@@ -547,7 +547,9 @@ struct iPhone_GroupMapView: View {
                                     .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))
                                     .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
                                     .accessibilityAddTraits(.isButton)
-                            }.offset(y: 35)
+                            }
+                            .offset(y: 35)
+                            .trackedDeviceUserActivity(for: device)
                         }
                     }
                 }

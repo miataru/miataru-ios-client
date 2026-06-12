@@ -16,8 +16,8 @@ import UIKit
 
 @Suite("App Intents preparation")
 struct AppIntentsPreparationTests {
-    @Test("KnownDevice maps to tracked person entity")
-    func knownDeviceMapsToTrackedPersonEntity() {
+    @Test("KnownDevice maps to tracked device entity")
+    func knownDeviceMapsToTrackedDeviceEntity() {
         let device = KnownDevice(name: "Steffi", deviceID: "DEVICE-1", color: UIColor.systemBlue, hasCurrentLocationAccess: true)
 
         let record = MiataruIntentLocationDataProvider.record(from: device)
@@ -30,25 +30,78 @@ struct AppIntentsPreparationTests {
         #expect(entity.name == "Steffi")
     }
 
-    @Test("Suggested people only include visible devices with current location access")
-    func suggestedPeopleOnlyIncludeVisibleDevices() async throws {
+    @Test("Suggested devices only include visible devices with current location access")
+    func suggestedDevicesOnlyIncludeVisibleDevices() async throws {
         let service = IntentLocationService(
             provider: FakeIntentLocationProvider(
                 records: [
-                    IntentPersonRecord(id: "VISIBLE-1", name: "Daniel", hasCurrentLocationAccess: true),
-                    IntentPersonRecord(id: "HIDDEN-1", name: "Hidden", hasCurrentLocationAccess: false),
-                    IntentPersonRecord(id: "  ", name: "Empty", hasCurrentLocationAccess: true)
+                    IntentDeviceRecord(id: " VISIBLE-1 ", name: "Daniel", hasCurrentLocationAccess: true),
+                    IntentDeviceRecord(id: "HIDDEN-1", name: "Hidden", hasCurrentLocationAccess: false),
+                    IntentDeviceRecord(id: "  ", name: "Empty", hasCurrentLocationAccess: true)
                 ]
             )
         )
 
-        let people = try await service.suggestedPeople()
+        let devices = try await service.suggestedDevices()
 
-        #expect(people == [TrackedPersonEntity(id: "VISIBLE-1", name: "Daniel")])
+        #expect(devices == [TrackedDeviceEntity(id: "VISIBLE-1", name: "Daniel")])
     }
 
-    @Test("API location payload maps to intent person location")
-    func apiLocationPayloadMapsToIntentPersonLocation() {
+    @Test("Dynamic string options keep DeviceID values")
+    func dynamicStringOptionsKeepDeviceIDValues() {
+        let devices = [
+            TrackedDeviceEntity(id: "DEVICE-1", name: "Daniel"),
+            TrackedDeviceEntity(id: "DEVICE-2", name: "Steffi")
+        ]
+
+        #expect(TrackedDeviceOptionsProvider.optionValues(for: devices) == ["DEVICE-1", "DEVICE-2"])
+    }
+
+    @Test("Tracked device metadata excludes empty and unauthorized devices")
+    func trackedDeviceMetadataExcludesEmptyAndUnauthorizedDevices() {
+        let visible = KnownDevice(name: "Steffi", deviceID: " DEVICE-1 ", hasCurrentLocationAccess: true)
+        let hidden = KnownDevice(name: "Hidden", deviceID: "DEVICE-HIDDEN", hasCurrentLocationAccess: false)
+        let empty = KnownDevice(name: "Empty", deviceID: "  ", hasCurrentLocationAccess: true)
+
+        #expect(TrackedDeviceIntentMetadata.entity(for: visible) == TrackedDeviceEntity(id: "DEVICE-1", name: "Steffi"))
+        #expect(TrackedDeviceIntentMetadata.entity(for: hidden) == nil)
+        #expect(TrackedDeviceIntentMetadata.entity(for: empty) == nil)
+    }
+
+    @Test("Tracked device indexed attributes contain display name only")
+    func trackedDeviceIndexedAttributesContainDisplayNameOnly() {
+        let entity = TrackedDeviceEntity(id: "SECRET-DEVICE-ID", name: "Steffi")
+        let attributes = entity.attributeSet
+
+        #expect(entity.hideInSpotlight)
+        #expect(attributes.title == "Steffi")
+        #expect(attributes.displayName == "Steffi")
+        #expect(attributes.latitude == nil)
+        #expect(attributes.longitude == nil)
+        #expect(attributes.contentDescription == nil)
+        #expect(attributes.keywords == nil)
+    }
+
+    @Test("Tracked device user activity annotation is entity-only and not searchable")
+    func trackedDeviceUserActivityAnnotationIsEntityOnlyAndNotSearchable() {
+        guard #available(iOS 26.0, *) else { return }
+
+        let entity = TrackedDeviceEntity(id: "DEVICE-1", name: "Steffi")
+        let activity = NSUserActivity(activityType: TrackedDeviceIntentMetadata.userActivityType)
+
+        TrackedDeviceIntentMetadata.annotate(activity, with: entity)
+
+        #expect(activity.title == "Steffi")
+        #expect(activity.appEntityIdentifier == TrackedDeviceIntentMetadata.entityIdentifier(for: entity))
+        #expect(activity.isEligibleForSearch == false)
+        #expect(activity.isEligibleForPublicIndexing == false)
+        #expect(activity.isEligibleForHandoff == false)
+        #expect(activity.isEligibleForPrediction == false)
+        #expect(activity.userInfo?.isEmpty ?? true)
+    }
+
+    @Test("API location payload maps to intent device location")
+    func apiLocationPayloadMapsToIntentDeviceLocation() {
         let timestamp = Date(timeIntervalSince1970: 1_780_000_000)
         let apiLocation = MiataruLocationData(
             Device: "DEVICE-1",
@@ -57,12 +110,12 @@ struct AppIntentsPreparationTests {
             Latitude: 52.52,
             HorizontalAccuracy: 12
         )
-        let person = IntentPersonRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+        let device = IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
 
         let payload = MiataruIntentLocationDataProvider.payload(from: apiLocation)
-        let location = IntentLocationService.location(from: payload, person: person, placeDescription: "Berlin, Germany")
+        let location = IntentLocationService.location(from: payload, device: device, placeDescription: "Berlin, Germany")
 
-        #expect(location.personID == "DEVICE-1")
+        #expect(location.deviceID == "DEVICE-1")
         #expect(location.displayName == "Steffi")
         #expect(location.latitude == 52.52)
         #expect(location.longitude == 13.405)
@@ -76,7 +129,7 @@ struct AppIntentsPreparationTests {
         let service = IntentLocationService(
             provider: FakeIntentLocationProvider(
                 records: [
-                    IntentPersonRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
                 ]
             )
         )
@@ -86,12 +139,12 @@ struct AppIntentsPreparationTests {
         }
     }
 
-    @Test("Person without current location access is not visible and cannot be queried")
-    func personWithoutCurrentLocationAccessIsNotVisible() async throws {
+    @Test("Device without current location access is not visible and cannot be queried")
+    func deviceWithoutCurrentLocationAccessIsNotVisible() async throws {
         let service = IntentLocationService(
             provider: FakeIntentLocationProvider(
                 records: [
-                    IntentPersonRecord(id: "DEVICE-HIDDEN", name: "Hidden", hasCurrentLocationAccess: false)
+                    IntentDeviceRecord(id: "DEVICE-HIDDEN", name: "Hidden", hasCurrentLocationAccess: false)
                 ],
                 payloads: [
                     "DEVICE-HIDDEN": IntentLocationPayload(
@@ -105,20 +158,20 @@ struct AppIntentsPreparationTests {
             )
         )
 
-        let people = try await service.suggestedPeople()
-        let person = try await service.person(for: "DEVICE-HIDDEN")
+        let devices = try await service.suggestedDevices()
+        let device = try await service.device(for: "DEVICE-HIDDEN")
 
-        #expect(people.isEmpty)
-        #expect(person == nil)
+        #expect(devices.isEmpty)
+        #expect(device == nil)
         await expectLocationError(.unauthorized) {
             _ = try await service.latestLocation(for: "DEVICE-HIDDEN")
         }
     }
 
-    @Test("Apple Maps URL uses coordinates and does not leak person identifiers")
+    @Test("Apple Maps URL uses coordinates and does not leak device identifiers")
     func appleMapsURLUsesCoordinatesWithoutDeviceIDLeak() throws {
-        let location = IntentPersonLocation(
-            personID: "SECRET-DEVICE-ID",
+        let location = IntentDeviceLocation(
+            deviceID: "SECRET-DEVICE-ID",
             displayName: "Steffi",
             latitude: 52.52,
             longitude: 13.405,
@@ -140,8 +193,8 @@ struct AppIntentsPreparationTests {
 
     @Test("Miataru navigation URL uses device ID and focused user-to-device mode")
     func miataruNavigationURLUsesDeviceIDAndFocusedMode() throws {
-        let location = IntentPersonLocation(
-            personID: "DEVICE-1",
+        let location = IntentDeviceLocation(
+            deviceID: "DEVICE-1",
             displayName: "Steffi",
             latitude: 52.52,
             longitude: 13.405,
@@ -166,8 +219,8 @@ struct AppIntentsPreparationTests {
 
     @Test("Miataru navigation intent opens app and resolves an internal navigation destination")
     func miataruNavigationIntentOpensAppAndResolvesInternalDestination() {
-        let location = IntentPersonLocation(
-            personID: "DEVICE-1",
+        let location = IntentDeviceLocation(
+            deviceID: "DEVICE-1",
             displayName: "Steffi",
             latitude: 52.52,
             longitude: 13.405,
@@ -302,8 +355,9 @@ struct AppIntentsPreparationTests {
         let strings = try #require(json?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
         let appIntentExtractionKeys = [
-            "Open Apple Maps route to ${person}",
-            "Open Miataru navigation to ${person}",
+            "Open Apple Maps route to ${device}",
+            "Open Miataru navigation to ${device}",
+            "Show location of ${device}",
             "Start frequent tracking",
             "Stop frequent tracking"
         ]
@@ -434,19 +488,19 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
 }
 
 private struct FakeIntentLocationProvider: IntentLocationDataProviding {
-    var records: [IntentPersonRecord] = []
+    var records: [IntentDeviceRecord] = []
     var payloads: [String: IntentLocationPayload] = [:]
     var placeDescriptions: [String: String] = [:]
 
-    func personRecords() async -> [IntentPersonRecord] {
+    func deviceRecords() async -> [IntentDeviceRecord] {
         records
     }
 
-    func latestLocationPayload(for personID: String) async throws -> IntentLocationPayload? {
-        payloads[personID]
+    func latestLocationPayload(for deviceID: String) async throws -> IntentLocationPayload? {
+        payloads[deviceID]
     }
 
-    func cachedPlaceDescription(for personID: String) async -> String? {
-        placeDescriptions[personID]
+    func cachedPlaceDescription(for deviceID: String) async -> String? {
+        placeDescriptions[deviceID]
     }
 }

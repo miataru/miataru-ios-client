@@ -16,13 +16,13 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
         AppShortcut(
             intent: FindPersonLocationIntent(),
             phrases: [
-                "Find a person in \(.applicationName)",
+                "Find a device in \(.applicationName)",
                 "Show a Miataru location in \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource(
-                "intent_find_person_shortcut_title",
-                defaultValue: "Find Person",
-                comment: "Short title for the find person App Shortcut"
+                "intent_find_device_shortcut_title",
+                defaultValue: "Find Device",
+                comment: "Short title for the find device App Shortcut"
             ),
             systemImageName: "location"
         )
@@ -34,7 +34,7 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
                 "Route in Apple Maps with \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource(
-                "intent_open_route_to_person_shortcut_title",
+                "intent_open_route_to_device_shortcut_title",
                 defaultValue: "Route in Apple Maps",
                 comment: "Short title for the Apple Maps route App Shortcut"
             ),
@@ -48,7 +48,7 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
                 "Navigate in Miataru with \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource(
-                "intent_open_miataru_navigation_to_person_shortcut_title",
+                "intent_open_miataru_navigation_to_device_shortcut_title",
                 defaultValue: "Navigation in Miataru",
                 comment: "Short title for the Miataru in-app navigation App Shortcut"
             ),

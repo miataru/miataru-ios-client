@@ -555,7 +555,9 @@ struct iPad_GroupMapView: View {
                                             Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath").labelStyle(.titleAndIcon)
                                         }
                                     }
-                            }.offset(y: 35)
+                            }
+                            .offset(y: 35)
+                            .trackedDeviceUserActivity(for: device)
                             .accessibilityElement()
                             .accessibilityLabel(Text(annotationID))
                             .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))

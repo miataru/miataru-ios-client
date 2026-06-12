@@ -13,18 +13,18 @@ All documentation in this folder is written in English and is intended to be dir
 
 ## Current App State
 
-The current app already has a first App Intents layer:
+The current app already has a first App Intents layer, documented here with the device-facing names used for future work:
 
-- `TrackedPersonEntity` represents configured Miataru devices as user-facing people.
-- `TrackedPersonQuery` and `TrackedPersonOptionsProvider` resolve selectable people.
-- `FindPersonLocationIntent` returns privacy-friendly location text.
-- `OpenRouteToPersonIntent` opens Apple Maps without leaking DeviceKey or raw API data.
-- `OpenMiataruNavigationToPersonIntent` opens Miataru's internal navigation deep link.
+- `TrackedDeviceEntity` represents configured Miataru devices for App Intents.
+- `TrackedDeviceQuery` and `TrackedDeviceOptionsProvider` resolve selectable devices.
+- `FindDeviceLocationIntent` returns privacy-friendly location text.
+- `OpenRouteToDeviceIntent` opens Apple Maps without leaking DeviceKey or raw API data.
+- `OpenMiataruNavigationToDeviceIntent` opens Miataru's internal navigation deep link.
 - `StartFrequentTrackingIntent` and `StopFrequentTrackingIntent` control manual frequent tracking.
 - `IntentLocationService` and `IntentFrequentTrackingService` keep intent behavior testable.
 - `AppIntentsPreparationTests` covers entity mapping, privacy-safe URLs, visible-device filtering, frequent tracking preconditions, and localization key coverage.
 
-The current Shortcuts-facing person parameter intentionally uses dynamic string options because dynamic AppEntity selections have previously failed in Shortcuts with runtime serialization errors. Do not replace that path until entity selection is verified across Shortcuts, Spotlight, and Siri.
+The current Shortcuts-facing device parameter intentionally uses dynamic string options because dynamic AppEntity selections have previously failed in Shortcuts with runtime serialization errors. Do not replace that path until entity selection is verified across Shortcuts, Spotlight, and Siri.
 
 ## Platform Reality Check
 
@@ -55,7 +55,7 @@ Because Miataru still deploys below iOS 26, any implementation using iOS 26-only
 ## Stage Map
 
 - `01-schema-and-entity-foundation.md`: entity model, schema-fit policy, indexing rules, value queries, and view annotation targets.
-- `02-status-intents.md`: first concrete implementation stage for tracking, frequent tracking, person status, distance, and ETA.
+- `02-status-intents.md`: first concrete implementation stage for tracking, frequent tracking, device status, distance, and ETA.
 - `03-navigation-and-frequent-controls.md`: parameterized navigation and frequent tracking controls.
 - `04-automation-event-store.md`: internal event model and event query/export intents.
 - `05-places-proximity-and-watches.md`: persisted places, proximity checks, and later Miataru-native watches.
@@ -79,4 +79,3 @@ Because Miataru still deploys below iOS 26, any implementation using iOS 26-only
 - [App Shortcuts Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts)
 - [Run a shortcut from a URL](https://support.apple.com/guide/shortcuts/run-a-shortcut-from-a-url-apd624386f42/ios)
 - [Use x-callback-url with Shortcuts](https://support.apple.com/guide/shortcuts/use-x-callback-url-apdcd7f20a6f/ios)
-
