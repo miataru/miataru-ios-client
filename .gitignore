@@ -1,5 +1,6 @@
 # macOS
 .specstory
+miataru/.vscode/
 .DS_Store
 .DS_Store?
 ._*
