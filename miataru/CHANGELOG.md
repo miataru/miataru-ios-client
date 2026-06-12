@@ -1,4 +1,5 @@
 version 3.2.1
+- Changed the default server-side location history retention from 24 hours to 30 minutes across runtime defaults, iOS Settings, and regression coverage.
 - Added compact speed and altitude analysis to the iPhone device history map panel, including a speed histogram, altitude sparkline, synchronized playhead values, summary metrics, and localized accessibility strings.
 - Added a hideable history panel with a bottom restore pill so the map remains usable while playback, route, points, and selected marker state continue independently.
 - Cached device-history analysis, visible-history counts, downsampled map annotations, polyline segments, and marker color ratios so 10,000-point histories no longer force repeated full-history recalculation during panel, scrub, and map updates.

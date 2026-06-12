@@ -487,6 +487,7 @@ struct SettingsConfigurationTests {
         })
 
         #expect(defaultsByKey[SettingsKeys.trackAndReportLocation] as? Bool == false)
+        #expect(defaultsByKey[SettingsKeys.locationDataRetentionTime] as? String == "30")
         #expect(defaultsByKey[SettingsKeys.locationActivityType] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.locationSensitivityLevel] as? String == "2")
         #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled] as? Bool == false)

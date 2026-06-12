@@ -38,7 +38,7 @@
 			<key>Key</key>
 			<string>location_data_retention_time</string>
 			<key>DefaultValue</key>
-			<string>1440</string>
+			<string>30</string>
 			<key>Titles</key>
 			<array>
 				<string>30minutes</string>

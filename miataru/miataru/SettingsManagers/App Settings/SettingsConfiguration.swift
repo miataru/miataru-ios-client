@@ -69,7 +69,7 @@ enum SettingsDefaultValues {
     static let trackAndReportLocation = false
     static let trackAndReportLocationDisabledByDeviceKeyAuth = false
     static let saveLocationHistoryOnServer = false
-    static let locationDataRetentionTime = 1440
+    static let locationDataRetentionTime = 30
     static let mapType = 1
     static let mapUpdateInterval = 30
     static let outsideMapUpdateInterval = 60
