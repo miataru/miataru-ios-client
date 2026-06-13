@@ -276,6 +276,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         coalescedCounts = []
         droppedEntryCount = 0
         try? fileManager.removeItem(at: fileURL)
+        notificationCenter.post(name: .miataruLocalStorageUsageDidChange, object: nil)
     }
 
     func append(level: LocationDiagnosticsLogLevel,
@@ -554,6 +555,10 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         return baseURL
             .appendingPathComponent("LocationDiagnostics", isDirectory: true)
             .appendingPathComponent(defaultLogFileName)
+    }
+
+    static func storageFileURL(fileManager: FileManager = .default) -> URL {
+        defaultLogFileURL(fileManager: fileManager)
     }
 
     private static func loadOrCreateDiagnosticsSourceID(userDefaults: UserDefaults) -> String {

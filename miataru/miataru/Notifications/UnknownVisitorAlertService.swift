@@ -211,6 +211,7 @@ actor UnknownVisitorAlertService {
     private let defaults: UserDefaults
     private let notifier: UnknownVisitorAlertNotifying
     private let dataProvider: UnknownVisitorAlertDataProviding
+    private let eventRecorder: any MiataruAutomationEventRecording
     private let nowProvider: () -> Date
 
     private var isProcessing: Bool = false
@@ -219,10 +220,12 @@ actor UnknownVisitorAlertService {
     init(defaults: UserDefaults = .standard,
          notifier: UnknownVisitorAlertNotifying = LiveUnknownVisitorAlertNotifier(),
          dataProvider: UnknownVisitorAlertDataProviding = LiveUnknownVisitorAlertDataProvider(),
+         eventRecorder: any MiataruAutomationEventRecording = MiataruAutomationEventRecorder.shared,
          nowProvider: @escaping () -> Date = Date.init) {
         self.defaults = defaults
         self.notifier = notifier
         self.dataProvider = dataProvider
+        self.eventRecorder = eventRecorder
         self.nowProvider = nowProvider
     }
 
@@ -424,6 +427,20 @@ actor UnknownVisitorAlertService {
             do {
                 try await notifier.add(request)
                 lastNotifiedAtByDeviceID[candidate.deviceID] = nowProvider()
+                await eventRecorder.record(
+                    kind: .unknownVisitorDetected,
+                    privacyLevel: .securitySensitive,
+                    deviceID: candidate.deviceID,
+                    deviceDisplayName: nil,
+                    placeID: nil,
+                    placeName: nil,
+                    payload: [
+                        "visitorDeviceID": candidate.deviceID,
+                        "visitTimestampMs": String(candidate.visitTimestampMs),
+                        "hasSupplementalSlogan": (slogan?.isEmpty == false) ? "true" : "false",
+                        "hasSupplementalCity": (city?.isEmpty == false) ? "true" : "false"
+                    ]
+                )
             } catch {
                 debugLog("[UnknownVisitorAlertService] Failed scheduling notification: \(error)")
             }

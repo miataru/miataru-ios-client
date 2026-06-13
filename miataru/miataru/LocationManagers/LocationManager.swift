@@ -1418,6 +1418,10 @@ final class LocationManager: NSObject, ObservableObject {
         debugLog("[LocationManager] Effective frequent background updates disabled because battery is at \(batteryPercent)% (threshold \(thresholdPercent)%)")
 
         Task {
+            await Self.recordLowBatteryDisabledFrequentTrackingEvent(
+                batteryPercent: batteryPercent,
+                thresholdPercent: thresholdPercent
+            )
             await FrequentBackgroundTrackingReminderService.shared.notifyBatteryAutoDisable(
                 batteryPercent: batteryPercent,
                 thresholdPercent: thresholdPercent
@@ -1431,11 +1435,48 @@ final class LocationManager: NSObject, ObservableObject {
         let didExpire = settings.disableExpiredFrequentBackgroundLocationUpdatesIfNeeded(now: now)
         if didExpire {
             debugLog("[LocationManager] Frequent background updates expired; returning to significant-change monitoring")
+            Task {
+                await Self.recordFrequentTrackingExpiredEvent(at: now)
+            }
         } else {
             settings.ensureFrequentBackgroundLocationUpdatesExpiration(now: now)
         }
         scheduleFrequentBackgroundLocationExpirationTimer()
         return didExpire
+    }
+
+    static func recordLowBatteryDisabledFrequentTrackingEvent(
+        batteryPercent: Int,
+        thresholdPercent: Int,
+        recorder: any MiataruAutomationEventRecording = MiataruAutomationEventRecorder.shared
+    ) async {
+        await recorder.record(
+            kind: .lowBatteryDisabledFrequentTracking,
+            privacyLevel: .publicSummary,
+            deviceID: nil,
+            deviceDisplayName: nil,
+            placeID: nil,
+            placeName: nil,
+            payload: [
+                "batteryPercent": String(batteryPercent),
+                "thresholdPercent": String(thresholdPercent)
+            ]
+        )
+    }
+
+    static func recordFrequentTrackingExpiredEvent(
+        at date: Date,
+        recorder: any MiataruAutomationEventRecording = MiataruAutomationEventRecorder.shared
+    ) async {
+        await recorder.record(
+            kind: .frequentTrackingExpired,
+            privacyLevel: .publicSummary,
+            deviceID: nil,
+            deviceDisplayName: nil,
+            placeID: nil,
+            placeName: nil,
+            payload: ["expiredAt": ISO8601DateFormatter().string(from: date)]
+        )
     }
 
     private func scheduleFrequentBackgroundLocationExpirationTimer() {

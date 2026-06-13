@@ -140,6 +140,26 @@ final class DeviceSloganCacheStore: ObservableObject {
         persist()
     }
 
+    var storageItemCount: Int {
+        Set(slogansByDeviceID.keys)
+            .union(knownDeviceIDs)
+            .union(lastFetchByDeviceID.keys)
+            .count
+    }
+
+    var estimatedStorageBytes: Int64 {
+        let stringBytes = slogansByDeviceID.reduce(0) { partialResult, entry in
+            partialResult + entry.key.utf8.count + entry.value.utf8.count
+        }
+        let knownIDBytes = knownDeviceIDs.reduce(0) { partialResult, value in
+            partialResult + value.utf8.count
+        }
+        let fetchBytes = lastFetchByDeviceID.keys.reduce(0) { partialResult, value in
+            partialResult + value.utf8.count + MemoryLayout<TimeInterval>.size
+        }
+        return Int64(stringBytes + knownIDBytes + fetchBytes)
+    }
+
     @discardableResult
     func prune(
         retainingDeviceIDs retainedDeviceIDs: Set<String>,

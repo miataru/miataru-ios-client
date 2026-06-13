@@ -22,6 +22,7 @@ struct iPhone_LocationStatusView: View {
     @ObservedObject private var settings = SettingsManager.shared
     @State private var isFlushingQueuedLocationUpdates = false
     @State private var showingLocationDiagnosticsSheet = false
+    @State private var localStorageUsage = LocalStorageUsageSnapshot.empty
     // Legacy @AppStorage fields removed in favor of RouteRequestCounter
     
     var body: some View {
@@ -206,6 +207,8 @@ struct iPhone_LocationStatusView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
             }
+
+            LocalStorageUsageCard(snapshot: localStorageUsage)
             
             // Background Status
             BackgroundStatusCard()
@@ -269,14 +272,25 @@ struct iPhone_LocationStatusView: View {
         .accessibilityIdentifier("screen_location_tracking_details")
         .onAppear {
             refreshAllStatistics()
+            refreshLocalStorageUsage()
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 refreshAllStatistics()
+                refreshLocalStorageUsage()
             }
         }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
             refreshAllStatistics()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .miataruAutomationEventsDidChange)) { _ in
+            refreshLocalStorageUsage()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .locationUpdateOutboxDidChange)) { _ in
+            refreshLocalStorageUsage()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .miataruLocalStorageUsageDidChange)) { _ in
+            refreshLocalStorageUsage()
         }
     }
     
@@ -287,6 +301,15 @@ struct iPhone_LocationStatusView: View {
         apiRequestCounter.updateCounts()
     }
 
+    private func refreshLocalStorageUsage() {
+        Task {
+            let snapshot = await LocalStorageUsageReporter.snapshot()
+            await MainActor.run {
+                localStorageUsage = snapshot
+            }
+        }
+    }
+
     private func flushQueuedLocationUpdates() {
         guard !isFlushingQueuedLocationUpdates else { return }
         isFlushingQueuedLocationUpdates = true
@@ -294,6 +317,7 @@ struct iPhone_LocationStatusView: View {
             await LocationManager.shared.flushPendingLocationUpdatesNow()
             await MainActor.run {
                 refreshAllStatistics()
+                refreshLocalStorageUsage()
                 isFlushingQueuedLocationUpdates = false
             }
         }
@@ -474,6 +498,113 @@ struct LocationInfoRow: View {
             Text(value)
                 .font(.caption)
                 .fontWeight(.medium)
+        }
+    }
+}
+
+struct LocalStorageUsageCard: View {
+    let snapshot: LocalStorageUsageSnapshot
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "internaldrive")
+                    .foregroundColor(.blue)
+                    .frame(width: 20)
+
+                Text(NSLocalizedString("local_storage_section_title", comment: "Title for local storage usage section"))
+                    .font(.headline)
+
+                Spacer(minLength: 8)
+            }
+
+            LocalStorageUsageRow(
+                title: NSLocalizedString("local_storage_total_title", comment: "Title for total local storage usage"),
+                byteText: LocalStorageUsageReporter.byteCountText(snapshot.totalBytes),
+                itemCountText: nil,
+                icon: "sum"
+            )
+
+            if !snapshot.entries.isEmpty {
+                Divider()
+
+                VStack(spacing: 8) {
+                    ForEach(snapshot.entries) { entry in
+                        LocalStorageUsageRow(
+                            title: entry.title,
+                            byteText: entry.byteText,
+                            itemCountText: entry.itemCountText,
+                            icon: icon(for: entry.id)
+                        )
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+        .accessibilityIdentifier("location_status_local_storage_section")
+    }
+
+    private func icon(for id: String) -> String {
+        switch id {
+        case "automationEvents":
+            return "list.bullet.rectangle"
+        case "locationDiagnostics":
+            return "stethoscope"
+        case "locationUpdateOutbox":
+            return "tray.and.arrow.up"
+        case "knownDevices", "deviceGroups":
+            return "person.2"
+        case "deviceLocationCache":
+            return "location"
+        case "thisDeviceID":
+            return "iphone"
+        case "widgetSharedData", "widgetConfig", "widgetSnapshots":
+            return "square.grid.2x2"
+        case "deviceSlogans":
+            return "text.bubble"
+        case "ignoredVisitors":
+            return "hand.raised"
+        default:
+            return "doc"
+        }
+    }
+}
+
+private struct LocalStorageUsageRow: View {
+    let title: String
+    let byteText: String
+    let itemCountText: String?
+    let icon: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 8)
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(byteText)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.trailing)
+
+                if let itemCountText {
+                    Text(itemCountText)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
 }

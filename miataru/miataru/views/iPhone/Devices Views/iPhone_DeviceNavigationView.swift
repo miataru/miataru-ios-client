@@ -106,6 +106,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
     @State private var isNavigationMode: Bool = false
+    @State private var hasRecordedAutomationNavigationStart: Bool = false
     @State private var navigationLocationSessionID: UUID? = nil
     @State private var lastFollowCameraUpdate: Date? = nil
     @State private var lastFollowCameraCenter: CLLocationCoordinate2D? = nil
@@ -527,6 +528,7 @@ struct iPhone_DeviceNavigationView: View {
                 routeInfoState.onCancel = nil
                 // Stop mutual navigation detection
                 mutualNavigationDetector.stopMonitoring()
+                recordAutomationNavigationEndedIfNeeded(reason: "viewDisappear")
                 endNavigationLocationSessionIfNeeded()
             }
             .onChange(of: settings.mapUpdateInterval) {
@@ -1636,6 +1638,7 @@ struct iPhone_DeviceNavigationView: View {
         hasActivatedLaunchPresentation = true
         hideChromeIfNeeded()
         enableNavigationMode()
+        hasRecordedAutomationNavigationStart = true
     }
 
     private func handleMapDoubleTap() {
@@ -1648,6 +1651,34 @@ struct iPhone_DeviceNavigationView: View {
         } else {
             enableNavigationMode()
         }
+    }
+
+    private func recordAutomationNavigationEndedIfNeeded(reason: String) {
+        guard hasRecordedAutomationNavigationStart else { return }
+        hasRecordedAutomationNavigationStart = false
+        let eventPayload = automationNavigationPayload(reason: reason)
+        Task {
+            await MiataruAutomationEventRecorder.shared.record(
+                kind: .navigationEnded,
+                privacyLevel: .publicSummary,
+                deviceID: device.DeviceID,
+                deviceDisplayName: TrackedDeviceIntentMetadata.displayName(deviceName: device.DeviceName, deviceID: device.DeviceID),
+                placeID: nil,
+                placeName: nil,
+                payload: eventPayload
+            )
+        }
+    }
+
+    private func automationNavigationPayload(reason: String) -> [String: String] {
+        [
+            "direction": isRouteFromDeviceToUser
+                ? DeviceNavigationRouteDirection.deviceToUser.rawValue
+                : DeviceNavigationRouteDirection.userToDevice.rawValue,
+            "presentation": launchOptions.presentation.rawValue,
+            "transport": launchOptions.transportMode?.rawValue ?? String(effectiveNavigationTransportType),
+            "reason": reason
+        ]
     }
 
     private func enableFollowDeviceHeadingMode() {
@@ -1710,6 +1741,7 @@ struct iPhone_DeviceNavigationView: View {
     }
 
     private func disableNavigationMode() {
+        recordAutomationNavigationEndedIfNeeded(reason: "disabled")
         isNavigationMode = false
         endNavigationLocationSessionIfNeeded()
         isAutoCenteringEnabled = true
@@ -2037,6 +2069,7 @@ struct iPhone_DeviceNavigationView: View {
         stopAutoUpdate()
         showChromeIfNeeded()
         // Disable navigation modes when navigation is stopped
+        recordAutomationNavigationEndedIfNeeded(reason: "stopped")
         isNavigationMode = false
         isFollowDeviceHeadingMode = false
         endNavigationLocationSessionIfNeeded()

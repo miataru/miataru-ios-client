@@ -190,9 +190,11 @@ struct DeviceLinkResolverTests {
     }
 
     @Test("Navigation device link routing opens known navigation and adds unknown devices")
-    func navigationDeviceLinkRoutingOpensKnownNavigationAndAddsUnknown() {
+    func navigationDeviceLinkRoutingOpensKnownNavigationAndAddsUnknown() async throws {
         let coordinator = AppNavigationCoordinator.shared
         clearCoordinatorRequests(coordinator)
+        let recorder = DeviceLinkAutomationEventRecorder()
+        coordinator.setAutomationEventRecorderForTesting(recorder)
 
         let store = KnownDeviceStore.shared
         let canonicalID = "KnownNav-\(UUID().uuidString)"
@@ -200,6 +202,7 @@ struct DeviceLinkResolverTests {
         defer {
             store.removeDevice(byID: canonicalID)
             clearCoordinatorRequests(coordinator)
+            coordinator.setAutomationEventRecorderForTesting(MiataruAutomationEventRecorder.shared)
         }
 
         let device = KnownDevice(name: "Known Navigation Device", deviceID: canonicalID, color: UIColor.systemGreen)
@@ -210,6 +213,13 @@ struct DeviceLinkResolverTests {
         #expect(coordinator.deviceNavigationOpenRequest?.options == .defaultDeepLink)
         #expect(coordinator.deviceOpenRequest == nil)
         #expect(coordinator.addDeviceRequest == nil)
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let events = await recorder.recordedEvents()
+        #expect(events.map(\.kind) == [.navigationStarted])
+        #expect(events.first?.deviceID == canonicalID)
+        #expect(events.first?.deviceDisplayName == "Known Navigation Device")
+        #expect(events.first?.payload["direction"] == DeviceNavigationLaunchOptions.defaultDeepLink.direction.rawValue)
+        #expect(events.first?.payload["presentation"] == DeviceNavigationLaunchOptions.defaultDeepLink.presentation.rawValue)
 
         if let request = coordinator.deviceNavigationOpenRequest {
             coordinator.consumeDeviceNavigationOpenRequest(request)
@@ -220,6 +230,9 @@ struct DeviceLinkResolverTests {
         coordinator.openDeviceLink(.navigation(lowercaseUnknownID, options: .defaultDeepLink))
         #expect(coordinator.addDeviceRequest?.deviceID == lowercaseUnknownID)
         #expect(coordinator.addDeviceRequest?.source == .general)
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let eventsAfterUnknownNavigation = await recorder.recordedEvents()
+        #expect(eventsAfterUnknownNavigation.count == 1)
     }
 
     @Test("Unknown visitor add requests preserve source and case")
@@ -283,5 +296,38 @@ struct DeviceLinkResolverTests {
         }
         coordinator.consumeRootDestination(.devices)
         coordinator.consumeRootDestination(.settings)
+    }
+}
+
+private actor DeviceLinkAutomationEventRecorder: MiataruAutomationEventRecording {
+    private var events: [MiataruAutomationEventRecord] = []
+
+    func record(_ event: MiataruAutomationEventRecord) async {
+        events.append(event)
+    }
+
+    func record(
+        kind: MiataruAutomationEventKind,
+        privacyLevel: MiataruAutomationEventPrivacyLevel,
+        deviceID: String?,
+        deviceDisplayName: String?,
+        placeID: String?,
+        placeName: String?,
+        payload: [String: String]
+    ) async {
+        events.append(MiataruAutomationEventRecord(
+            kind: kind,
+            timestamp: Date(timeIntervalSince1970: 1_800_000_000),
+            privacyLevel: privacyLevel,
+            deviceID: deviceID,
+            deviceDisplayName: deviceDisplayName,
+            placeID: placeID,
+            placeName: placeName,
+            payload: payload
+        ))
+    }
+
+    func recordedEvents() -> [MiataruAutomationEventRecord] {
+        events
     }
 }

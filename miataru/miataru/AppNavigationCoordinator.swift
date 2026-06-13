@@ -68,6 +68,8 @@ final class AppNavigationCoordinator: ObservableObject {
     @Published private(set) var addDeviceRequest: AddDeviceRequest?
     @Published private(set) var unknownDeviceActionRequest: UnknownDeviceActionRequest?
 
+    private var automationEventRecorder: any MiataruAutomationEventRecording = MiataruAutomationEventRecorder.shared
+
     private init() {}
 
     func openDevices() {
@@ -88,6 +90,7 @@ final class AppNavigationCoordinator: ObservableObject {
         SettingsManager.shared.lastOpenedDeviceID = nil
         deviceOpenRequest = nil
         deviceNavigationOpenRequest = DeviceNavigationOpenRequest(deviceID: deviceID, options: options)
+        recordNavigationStarted(deviceID: deviceID, options: options)
     }
 
     func openDeviceLink(_ rawDeviceID: String) {
@@ -167,5 +170,36 @@ final class AppNavigationCoordinator: ObservableObject {
     func consumeUnknownDeviceActionRequest(_ request: UnknownDeviceActionRequest) {
         guard unknownDeviceActionRequest?.id == request.id else { return }
         unknownDeviceActionRequest = nil
+    }
+
+    func setAutomationEventRecorderForTesting(_ recorder: any MiataruAutomationEventRecording) {
+        automationEventRecorder = recorder
+    }
+
+    private func recordNavigationStarted(deviceID: String, options: DeviceNavigationLaunchOptions) {
+        let knownDevice = KnownDeviceStore.shared.devices.first { $0.DeviceID == deviceID }
+        let deviceDisplayName = TrackedDeviceIntentMetadata.displayName(
+            deviceName: knownDevice?.DeviceName ?? "",
+            deviceID: deviceID
+        )
+        let transport = options.transportMode ?? IntentTransportMode.fromNavigationSetting(SettingsManager.shared.navigationTransportType)
+        let payload = [
+            "direction": options.direction.rawValue,
+            "presentation": options.presentation.rawValue,
+            "transport": transport.rawValue,
+            "reason": "accepted"
+        ]
+        let recorder = automationEventRecorder
+        Task {
+            await recorder.record(
+                kind: .navigationStarted,
+                privacyLevel: .publicSummary,
+                deviceID: deviceID,
+                deviceDisplayName: deviceDisplayName,
+                placeID: nil,
+                placeName: nil,
+                payload: payload
+            )
+        }
     }
 }

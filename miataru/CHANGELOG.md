@@ -19,6 +19,15 @@ version 3.2.2
 - Updated project metadata for version 3.2.2 build 1.
 - Consolidated project documentation under the root `documentation/` folder and coalesced related implementation notes into topic references.
 - Reduced Location Diagnostics resource pressure during frequent background tracking by batching persisted writes, compacting the backing JSON file, coalescing queued/flushed upload diagnostics, and keeping key forensic breadcrumbs immediate.
+- Added Intent Sprint Step 04 as a bounded, privacy-safe local automation event store backed by Application Support JSON with schema version 1, ISO-8601 timestamps, atomic writes, corrupt-file recovery, lazy housekeeping, and the selected 90-day / 2,500-record retention policy.
+- Kept automation event storage intentionally light by avoiding database adoption, indexing, background polling, recurring cleanup jobs, and high-volume writes; payloads are sanitized, bounded, DeviceKey/raw API fields are rejected, and records are persisted only when the in-memory set changes.
+- Added localized automation event query/export/clear App Intents for latest event, recent events, clear events, and JSON export while keeping the new power-user actions out of promoted App Shortcuts.
+- Added localized automation event summaries, kind labels, privacy labels, spoken dialogs, and structured JSON output with privacy-safe device/place fields and bounded payload data.
+- Recorded Step 04 events for accepted Miataru navigation launches, focused navigation endings, frequent tracking start/stop/expiration, low-battery frequent tracking disablement, DeviceKey-blocked intent operations, and successfully scheduled unknown-visitor alerts without adding high-volume location update, place-entered, or place-left events.
+- Added a localized Local Storage section to Location Tracking Details showing total local storage and compact per-store sizes/counts for the automation event log, diagnostics log, update outbox, known devices, groups, location cache, widget data/config, widget map snapshots, and cheap UserDefaults-backed estimates.
+- Added lightweight storage reporting that reads file attributes only for known stores, avoids decoding store contents for size calculations, and refreshes on view appearance, scene activation, and storage-changing actions without timers or filesystem scans.
+- Added focused regression coverage for automation event persistence, pruning, corrupt-file recovery, payload sanitization, no-op persistence avoidance, storage metadata, intent JSON/dialog formatting, event emission helpers, frequent-tracking recorder injection, unknown-visitor success-only recording, storage-usage reporting, and localization completeness.
+- Moved the App-Intents-facing service layer from `miataru/miataru/Services/` into `miataru/miataru/AppIntents/Services/` so entities, queries, intents, support services, and automation event helpers live under one App Intents tree.
 
 version 3.2.1
 - Changed the default server-side location history retention from 24 hours to 30 minutes across runtime defaults, iOS Settings, and regression coverage.

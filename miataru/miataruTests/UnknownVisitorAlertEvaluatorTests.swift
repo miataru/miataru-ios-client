@@ -144,10 +144,12 @@ struct UnknownVisitorAlertEvaluatorTests {
             initialStatus: .authorized,
             requestAuthorizationResult: .success(true)
         )
+        let recorder = MockAutomationEventRecorder()
         let service = UnknownVisitorAlertService(
             defaults: defaults,
             notifier: notifier,
             dataProvider: dataProvider,
+            eventRecorder: recorder,
             nowProvider: { now }
         )
         await service.processVisitorHistory(
@@ -170,6 +172,54 @@ struct UnknownVisitorAlertEvaluatorTests {
         #expect(addedRequests.count == 1)
         #expect(addedRequests.first?.content.userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
         #expect(addedRequests.first?.content.sound == MiataruNotificationSounds.unknownVisitor)
+        let events = await recorder.recordedEvents()
+        #expect(events.map(\.kind) == [.unknownVisitorDetected])
+        #expect(events.first?.privacyLevel == .securitySensitive)
+        #expect(events.first?.deviceID == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
+        #expect(events.first?.payload["visitorDeviceID"] == UnknownVisitorAlertEvaluator.normalizeDeviceID(unknownID))
+    }
+
+    @Test("Unknown visitor event is emitted only after notification scheduling succeeds")
+    func unknownVisitorEventIsEmittedOnlyAfterNotificationSchedulingSucceeds() async throws {
+        let suiteName = "UnknownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let unknownID = "UNKNOWN_DEVICE_\(UUID().uuidString)"
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true),
+            addError: TestNotificationError.addFailed
+        )
+        let recorder = MockAutomationEventRecorder()
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            eventRecorder: recorder,
+            nowProvider: { now }
+        )
+
+        await service.processVisitorHistory(
+            [
+                MiataruVisitor(DeviceID: " \(unknownID.lowercased()) ", TimeStamp: msString(now.addingTimeInterval(2)))
+            ],
+            serverURL: URL(string: "https://example.org")!,
+            runtime: UnknownVisitorAlertRuntime(
+                ownDeviceID: "OWN_DEVICE",
+                deviceKey: "test-device-key",
+                knownDeviceIDs: [],
+                ignoredDeviceIDs: []
+            )
+        )
+
+        let addedRequests = await notifier.addedRequests
+        let events = await recorder.recordedEvents()
+        #expect(addedRequests.isEmpty)
+        #expect(events.isEmpty)
     }
 
     @Test("Known visitors do not trigger alert enrichment")
@@ -192,6 +242,7 @@ struct UnknownVisitorAlertEvaluatorTests {
             defaults: defaults,
             notifier: notifier,
             dataProvider: dataProvider,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
             nowProvider: { now }
         )
         await service.processVisitorHistory(
@@ -285,16 +336,56 @@ struct UnknownVisitorAlertEvaluatorTests {
     }
 }
 
+private enum TestNotificationError: Error {
+    case addFailed
+}
+
+private actor MockAutomationEventRecorder: MiataruAutomationEventRecording {
+    private var events: [MiataruAutomationEventRecord] = []
+
+    func record(_ event: MiataruAutomationEventRecord) async {
+        events.append(event)
+    }
+
+    func record(
+        kind: MiataruAutomationEventKind,
+        privacyLevel: MiataruAutomationEventPrivacyLevel,
+        deviceID: String?,
+        deviceDisplayName: String?,
+        placeID: String?,
+        placeName: String?,
+        payload: [String: String]
+    ) async {
+        events.append(MiataruAutomationEventRecord(
+            kind: kind,
+            timestamp: Date(timeIntervalSince1970: 1_700_000_000),
+            privacyLevel: privacyLevel,
+            deviceID: deviceID,
+            deviceDisplayName: deviceDisplayName,
+            placeID: placeID,
+            placeName: placeName,
+            payload: payload
+        ))
+    }
+
+    func recordedEvents() -> [MiataruAutomationEventRecord] {
+        events
+    }
+}
+
 actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
     private let status: UNAuthorizationStatus
     private let requestAuthorizationResult: Result<Bool, Error>
+    private let addError: Error?
     private(set) var didRequestAuthorization: Bool = false
     private(set) var addedRequests: [UNNotificationRequest] = []
 
     init(initialStatus: UNAuthorizationStatus,
-         requestAuthorizationResult: Result<Bool, Error>) {
+         requestAuthorizationResult: Result<Bool, Error>,
+         addError: Error? = nil) {
         self.status = initialStatus
         self.requestAuthorizationResult = requestAuthorizationResult
+        self.addError = addError
     }
 
     func authorizationStatus() async -> UNAuthorizationStatus {
@@ -313,6 +404,9 @@ actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
     }
 
     func add(_ request: UNNotificationRequest) async throws {
+        if let addError {
+            throw addError
+        }
         addedRequests.append(request)
     }
 }

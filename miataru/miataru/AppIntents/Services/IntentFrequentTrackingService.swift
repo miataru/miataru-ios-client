@@ -113,13 +113,16 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
     static let shared = IntentFrequentTrackingService()
 
     private let controller: any IntentFrequentTrackingControlling
+    private let eventRecorder: any MiataruAutomationEventRecording
     private let nowProvider: () -> Date
 
     init(
         controller: any IntentFrequentTrackingControlling = MiataruIntentFrequentTrackingController(),
+        eventRecorder: any MiataruAutomationEventRecording = MiataruAutomationEventRecorder.shared,
         nowProvider: @escaping () -> Date = Date.init
     ) {
         self.controller = controller
+        self.eventRecorder = eventRecorder
         self.nowProvider = nowProvider
     }
 
@@ -129,6 +132,7 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
             throw IntentFrequentTrackingError.locationTrackingDisabled
         }
         guard !currentState.deviceKeyAuthBlocked else {
+            await recordDeviceKeyBlockedOperation("startFrequentTracking")
             throw IntentFrequentTrackingError.deviceKeyBlocked
         }
         guard currentState.authorizationStatus == .authorizedAlways else {
@@ -139,6 +143,19 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
         await controller.reconcileTrackingState(reason: "start frequent tracking intent")
 
         let updatedState = await controller.state()
+        await eventRecorder.record(
+            kind: .frequentTrackingStarted,
+            privacyLevel: .publicSummary,
+            deviceID: nil,
+            deviceDisplayName: nil,
+            placeID: nil,
+            placeName: nil,
+            payload: [
+                "durationMode": Self.durationPayloadValue(updatedState.durationMode),
+                "expiresAt": updatedState.frequentTrackingExpiresAt.map(Self.isoString) ?? "unlimited",
+                "wasAlreadyActive": currentState.manualFrequentTrackingEnabled ? "true" : "false"
+            ]
+        )
         return IntentFrequentTrackingStartResult(
             wasAlreadyActive: currentState.manualFrequentTrackingEnabled,
             expiresAt: updatedState.frequentTrackingExpiresAt,
@@ -167,7 +184,56 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
         let currentState = await controller.state()
         await controller.stopManualFrequentTracking()
         await controller.reconcileTrackingState(reason: "stop frequent tracking intent")
+        if currentState.manualFrequentTrackingEnabled {
+            await eventRecorder.record(
+                kind: .frequentTrackingStopped,
+                privacyLevel: .publicSummary,
+                deviceID: nil,
+                deviceDisplayName: nil,
+                placeID: nil,
+                placeName: nil,
+                payload: [
+                    "durationMode": Self.durationPayloadValue(currentState.durationMode),
+                    "expiresAt": currentState.frequentTrackingExpiresAt.map(Self.isoString) ?? "unlimited"
+                ]
+            )
+        }
         return IntentFrequentTrackingStopResult(wasActive: currentState.manualFrequentTrackingEnabled)
+    }
+
+    private func recordDeviceKeyBlockedOperation(_ operation: String) async {
+        await eventRecorder.record(
+            kind: .deviceKeyBlockedOperation,
+            privacyLevel: .securitySensitive,
+            deviceID: nil,
+            deviceDisplayName: nil,
+            placeID: nil,
+            placeName: nil,
+            payload: ["operation": operation]
+        )
+    }
+
+    private static func isoString(_ date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
+    }
+
+    private static func durationPayloadValue(_ duration: FrequentBackgroundLocationUpdateDuration) -> String {
+        switch duration {
+        case .oneHour:
+            return "oneHour"
+        case .twoHours:
+            return "twoHours"
+        case .threeHours:
+            return "threeHours"
+        case .fourHours:
+            return "fourHours"
+        case .twelveHours:
+            return "twelveHours"
+        case .twentyFourHours:
+            return "twentyFourHours"
+        case .unlimited:
+            return "unlimited"
+        }
     }
 
     static func frequentTrackingStatus(

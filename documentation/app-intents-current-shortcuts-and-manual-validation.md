@@ -51,18 +51,26 @@ Relevant services:
 
 ## Implementation Files
 
-App Intents and support types live under the app's existing `AppIntents/` and `Services/` structure:
+App Intents and support types live under the app's `AppIntents/` structure:
 
-- `miataru/miataru/Services/IntentLocationService.swift`
+- `miataru/miataru/AppIntents/Services/IntentLocationService.swift`
   - `IntentLocationServicing`
   - `IntentLocationService`
   - `IntentDeviceLocation`
   - `IntentLocationError`
   - small provider/mapping layer for tests without a real server
-- `miataru/miataru/Services/IntentFrequentTrackingService.swift`
+- `miataru/miataru/AppIntents/Services/IntentFrequentTrackingService.swift`
   - `IntentFrequentTrackingService`
   - `IntentFrequentTrackingError`
   - testable controller for starting/stopping manual frequent-background tracking
+- `miataru/miataru/AppIntents/Services/IntentStatusModels.swift`
+  - shared App Intent status, navigation, transport, ETA, and frequent-tracking models
+- `miataru/miataru/AppIntents/Services/MiataruAutomationEventStore.swift`
+  - bounded local automation event log, filters, exports, and storage metadata
+- `miataru/miataru/AppIntents/Services/MiataruAutomationEventRecorder.swift`
+  - small recording facade for intent and app-side event emission
+- `miataru/miataru/AppIntents/Services/MiataruAutomationEventFormatting.swift`
+  - localized summaries, privacy labels, spoken dialogs, and JSON formatting
 - `miataru/miataru/AppIntents/Entities/TrackedDeviceEntity.swift`
 - `miataru/miataru/AppIntents/Entities/TrackedDeviceIntentMetadata.swift`
 - `miataru/miataru/AppIntents/Queries/TrackedDeviceQuery.swift`
@@ -73,6 +81,7 @@ App Intents and support types live under the app's existing `AppIntents/` and `S
 - `miataru/miataru/AppIntents/Intents/StartFrequentTrackingIntent.swift`
 - `miataru/miataru/AppIntents/Intents/StopFrequentTrackingIntent.swift`
 - `miataru/miataru/AppIntents/Intents/StatusIntents.swift`
+- `miataru/miataru/AppIntents/Intents/AutomationEventIntents.swift`
 - `miataru/miataru/AppIntents/Views/DeviceLocationSnippetView.swift`
 - `miataru/miataru/AppIntents/MiataruAppShortcutsProvider.swift`
 - `miataru/miataru/Assets/Localizable.xcstrings`

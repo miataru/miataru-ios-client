@@ -43,9 +43,12 @@ miataruApp.swift
 │   ├── Entities/
 │   ├── Queries/
 │   ├── Intents/
+│   ├── Services/
+│   │   ├── IntentLocationService.swift
+│   │   ├── IntentFrequentTrackingService.swift
+│   │   ├── IntentStatusModels.swift
+│   │   └── MiataruAutomationEventStore.swift
 │   └── MiataruAppShortcutsProvider.swift
-├── Services/
-│   └── IntentLocationService.swift
 ├── SettingsManagers/
 │   ├── App Settings/
 │   ├── Devices/

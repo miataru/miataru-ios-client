@@ -319,7 +319,7 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(locationTrackingEnabled: false)
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: NoOpMiataruAutomationEventRecorder())
 
         await expectFrequentTrackingError(.locationTrackingDisabled) {
             _ = try await service.startFrequentTracking()
@@ -334,7 +334,8 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(deviceKeyAuthBlocked: true)
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let recorder = FakeAutomationEventRecorder()
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: recorder)
 
         await expectFrequentTrackingError(.deviceKeyBlocked) {
             _ = try await service.startFrequentTracking()
@@ -342,6 +343,10 @@ struct AppIntentsPreparationTests {
 
         #expect(controller.startCallCount == 0)
         #expect(controller.reconcileReasons.isEmpty)
+        let records = await recorder.recordedEvents()
+        #expect(records.map(\.kind) == [.deviceKeyBlockedOperation])
+        #expect(records.first?.privacyLevel == .securitySensitive)
+        #expect(records.first?.payload["operation"] == "startFrequentTracking")
     }
 
     @Test("Frequent tracking start requires Always location authorization")
@@ -349,7 +354,7 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(authorizationStatus: .authorizedWhenInUse)
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: NoOpMiataruAutomationEventRecorder())
 
         await expectFrequentTrackingError(.alwaysAuthorizationRequired) {
             _ = try await service.startFrequentTracking()
@@ -365,7 +370,8 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(durationMode: .oneHour)
         )
-        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+        let recorder = FakeAutomationEventRecorder()
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: recorder, nowProvider: { now })
 
         let result = try await service.startFrequentTracking()
         let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.oneHour.expirationDate(from: now))
@@ -377,6 +383,11 @@ struct AppIntentsPreparationTests {
         #expect(controller.currentState.frequentTrackingExpiresAt == expectedExpiration)
         #expect(controller.startCallCount == 1)
         #expect(controller.reconcileReasons == ["start frequent tracking intent"])
+        let records = await recorder.recordedEvents()
+        #expect(records.map(\.kind) == [.frequentTrackingStarted])
+        #expect(records.first?.privacyLevel == .publicSummary)
+        #expect(records.first?.payload["durationMode"] == "oneHour")
+        #expect(records.first?.payload["wasAlreadyActive"] == "false")
     }
 
     @Test("Frequent tracking start accepts explicit duration override")
@@ -385,7 +396,11 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(durationMode: .oneHour)
         )
-        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+        let service = IntentFrequentTrackingService(
+            controller: controller,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
 
         let result = try await service.startFrequentTracking(duration: .twelveHours)
         let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.twelveHours.expirationDate(from: now))
@@ -402,7 +417,11 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(durationMode: .fourHours)
         )
-        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+        let service = IntentFrequentTrackingService(
+            controller: controller,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
 
         let result = try await service.startFrequentTracking(duration: .unlimited)
 
@@ -423,7 +442,11 @@ struct AppIntentsPreparationTests {
                 durationMode: .fourHours
             )
         )
-        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+        let service = IntentFrequentTrackingService(
+            controller: controller,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
 
         let result = try await service.startFrequentTracking()
         let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.fourHours.expirationDate(from: now))
@@ -441,7 +464,8 @@ struct AppIntentsPreparationTests {
                 frequentTrackingExpiresAt: Date(timeIntervalSince1970: 1_800_000_000)
             )
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let recorder = FakeAutomationEventRecorder()
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: recorder)
 
         let firstResult = await service.stopFrequentTracking()
         let secondResult = await service.stopFrequentTracking()
@@ -455,6 +479,9 @@ struct AppIntentsPreparationTests {
             "stop frequent tracking intent",
             "stop frequent tracking intent"
         ])
+        let records = await recorder.recordedEvents()
+        #expect(records.map(\.kind) == [.frequentTrackingStopped])
+        #expect(records.first?.payload["durationMode"] == "fourHours")
     }
 
     @Test("Tracking status reports stopped when normal tracking is off")
@@ -462,7 +489,7 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(locationTrackingEnabled: false, locationTrackingActive: false)
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: NoOpMiataruAutomationEventRecorder())
 
         let status = await service.trackingStatus()
 
@@ -477,7 +504,7 @@ struct AppIntentsPreparationTests {
         let controller = FakeFrequentTrackingController(
             state: frequentTrackingState(deviceKeyAuthBlocked: true)
         )
-        let service = IntentFrequentTrackingService(controller: controller)
+        let service = IntentFrequentTrackingService(controller: controller, eventRecorder: NoOpMiataruAutomationEventRecorder())
 
         let status = await service.trackingStatus()
 
@@ -807,6 +834,10 @@ struct AppIntentsPreparationTests {
         let appShortcutsStrings = try #require(appShortcutsJSON?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
         let appIntentExtractionKeys = [
+            "Get latest Miataru event",
+            "List recent Miataru events",
+            "Clear Miataru events",
+            "Export Miataru events",
             "Get Miataru tracking status",
             "Get frequent tracking status",
             "Get status for ${device}",
@@ -1054,6 +1085,39 @@ struct AppIntentsPreparationTests {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
+    }
+}
+
+private actor FakeAutomationEventRecorder: MiataruAutomationEventRecording {
+    private var events: [MiataruAutomationEventRecord] = []
+
+    func record(_ event: MiataruAutomationEventRecord) async {
+        events.append(event)
+    }
+
+    func record(
+        kind: MiataruAutomationEventKind,
+        privacyLevel: MiataruAutomationEventPrivacyLevel,
+        deviceID: String?,
+        deviceDisplayName: String?,
+        placeID: String?,
+        placeName: String?,
+        payload: [String: String]
+    ) async {
+        events.append(MiataruAutomationEventRecord(
+            kind: kind,
+            timestamp: Date(timeIntervalSince1970: 1_800_000_000),
+            privacyLevel: privacyLevel,
+            deviceID: deviceID,
+            deviceDisplayName: deviceDisplayName,
+            placeID: placeID,
+            placeName: placeName,
+            payload: payload
+        ))
+    }
+
+    func recordedEvents() -> [MiataruAutomationEventRecord] {
+        events
     }
 }
 

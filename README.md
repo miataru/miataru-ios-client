@@ -40,8 +40,7 @@ miataru/
 ├── Networking/                      # MiataruAppAPI, retry policy, request executor, update outbox
 ├── Notifications/                   # Unknown visitor alerts, frequent-background reminders
 ├── SettingsManagers/                # Settings, device/group stores, caches, widget sync, cleanup
-├── AppIntents/                      # Siri/Shortcuts entities, queries, intents, shortcuts
-├── Services/                        # Intent-facing adapters around existing app services
+├── AppIntents/                      # Siri/Shortcuts entities, queries, intents, shortcuts, services
 ├── Assets/                          # String catalogs, icons, onboarding assets, sounds
 ├── miataruWidgets/                  # WidgetKit extension sources
 ├── miataruTests/                    # Unit tests

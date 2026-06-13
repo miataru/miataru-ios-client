@@ -246,6 +246,10 @@ actor LocationUpdateOutboxStore {
             .appendingPathComponent("locationUpdateOutbox.json")
     }
 
+    static func storageFileURL() -> URL {
+        defaultFileURL()
+    }
+
     private static func prunedItems(_ items: [LocationUpdateOutboxItem], now: Date, ttl: TimeInterval?) -> [LocationUpdateOutboxItem] {
         guard let ttl else { return items }
         return items.filter { now.timeIntervalSince($0.enqueuedAt) <= ttl }
