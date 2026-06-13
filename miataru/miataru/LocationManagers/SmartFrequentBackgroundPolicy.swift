@@ -30,6 +30,12 @@ enum SmartFrequentBackgroundPolicy {
         case deactivate
     }
 
+    enum RestartRecoveryAction: String, Equatable {
+        case resume
+        case notifyDeactivation
+        case ignore
+    }
+
     enum InactivityTimerAction: Equatable {
         case none
         case schedule(Date)
@@ -396,6 +402,60 @@ enum SmartFrequentBackgroundPolicy {
         }
 
         return recoveryAttemptCount < maximumRecoveryAttempts ? .reassert : .deactivate
+    }
+
+    static func runtimeMarkerReferenceDate(_ marker: SmartFrequentBackgroundRuntimeMarker) -> Date {
+        [marker.confirmedAt, marker.lastRelevantMovementAt]
+            .compactMap { $0 }
+            .max() ?? marker.confirmedAt
+    }
+
+    static func isRuntimeMarkerFresh(_ marker: SmartFrequentBackgroundRuntimeMarker,
+                                     now: Date,
+                                     inactivityWindow: TimeInterval) -> Bool {
+        guard marker.phase == .confirmedActive,
+              inactivityWindow > 0,
+              inactivityWindow.isFinite,
+              now.timeIntervalSince1970.isFinite else {
+            return false
+        }
+
+        let reference = runtimeMarkerReferenceDate(marker)
+        guard reference.timeIntervalSince1970.isFinite else {
+            return false
+        }
+
+        let age = now.timeIntervalSince(reference)
+        return age >= 0 && age < inactivityWindow
+    }
+
+    static func restartRecoveryAction(marker: SmartFrequentBackgroundRuntimeMarker,
+                                      now: Date,
+                                      inactivityWindow: TimeInterval,
+                                      smartEnabled: Bool,
+                                      manualFrequentEnabled: Bool,
+                                      authorizationStatus: CLAuthorizationStatus,
+                                      trackAndReportLocation: Bool,
+                                      isTracking: Bool,
+                                      deviceKeyAuthBlocked: Bool,
+                                      modeChangeNotificationsEnabled: Bool) -> RestartRecoveryAction {
+        let runtimeEligible = marker.phase == .confirmedActive &&
+        smartEnabled &&
+        !manualFrequentEnabled &&
+        authorizationStatus == .authorizedAlways &&
+        trackAndReportLocation &&
+        isTracking &&
+        !deviceKeyAuthBlocked
+
+        guard runtimeEligible else {
+            return .ignore
+        }
+
+        if isRuntimeMarkerFresh(marker, now: now, inactivityWindow: inactivityWindow) {
+            return .resume
+        }
+
+        return marker.activationNotificationDelivered && modeChangeNotificationsEnabled ? .notifyDeactivation : .ignore
     }
 
     static func recoveryDiagnosticsContext(now: Date,

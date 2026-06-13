@@ -7,6 +7,7 @@
  * Created by Codex on 13.06.26.
  */
 
+import AppIntents
 import CoreLocation
 import Foundation
 import MapKit
@@ -43,6 +44,7 @@ enum IntentFrequentTrackingBlockingReason: String, Equatable, Sendable {
     case trackingDisabled
     case deviceKeyBlocked
     case alwaysAuthorizationRequired
+    case lowBatteryDisabled
 }
 
 struct IntentDeviceStatus: Equatable, Sendable {
@@ -63,10 +65,138 @@ struct IntentETAStatus: Equatable, Sendable {
     let transportMode: IntentTransportMode
 }
 
-enum IntentTransportMode: String, Equatable, Sendable {
+enum IntentNavigationDirection: String, AppEnum, Equatable, Sendable {
+    case userToDevice
+    case deviceToUser
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: LocalizedStringResource(
+            "intent_navigation_direction_type_name",
+            defaultValue: "Route Direction",
+            comment: "Display name for the route direction App Intent enum"
+        )
+    )
+
+    static var caseDisplayRepresentations: [IntentNavigationDirection: DisplayRepresentation] = [
+        .userToDevice: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_navigation_direction_user_to_device",
+                defaultValue: "From Me to Device",
+                comment: "Route direction from the user's current location to the selected device"
+            )
+        ),
+        .deviceToUser: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_navigation_direction_device_to_user",
+                defaultValue: "From Device to Me",
+                comment: "Route direction from the selected device to the user's current location"
+            )
+        )
+    ]
+
+    var launchDirection: DeviceNavigationRouteDirection {
+        switch self {
+        case .userToDevice:
+            return .userToDevice
+        case .deviceToUser:
+            return .deviceToUser
+        }
+    }
+
+    static func fromLaunchDirection(_ direction: DeviceNavigationRouteDirection) -> IntentNavigationDirection {
+        switch direction {
+        case .userToDevice:
+            return .userToDevice
+        case .deviceToUser:
+            return .deviceToUser
+        }
+    }
+}
+
+enum IntentNavigationPresentation: String, AppEnum, Equatable, Sendable {
+    case standard
+    case focused
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: LocalizedStringResource(
+            "intent_navigation_presentation_type_name",
+            defaultValue: "Navigation Presentation",
+            comment: "Display name for the Miataru navigation presentation App Intent enum"
+        )
+    )
+
+    static var caseDisplayRepresentations: [IntentNavigationPresentation: DisplayRepresentation] = [
+        .standard: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_navigation_presentation_standard",
+                defaultValue: "Standard",
+                comment: "Standard Miataru navigation presentation"
+            )
+        ),
+        .focused: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_navigation_presentation_focused",
+                defaultValue: "Focused",
+                comment: "Focused Miataru navigation presentation"
+            )
+        )
+    ]
+
+    var launchPresentation: DeviceNavigationPresentation {
+        switch self {
+        case .standard:
+            return .overview
+        case .focused:
+            return .focused
+        }
+    }
+
+    static func fromLaunchPresentation(_ presentation: DeviceNavigationPresentation) -> IntentNavigationPresentation {
+        switch presentation {
+        case .overview:
+            return .standard
+        case .focused:
+            return .focused
+        }
+    }
+}
+
+enum IntentTransportMode: String, AppEnum, Equatable, Sendable {
     case walking
     case automobile
     case transit
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: LocalizedStringResource(
+            "intent_transport_mode_type_name",
+            defaultValue: "Transport Mode",
+            comment: "Display name for the transport mode App Intent enum"
+        )
+    )
+
+    static var caseDisplayRepresentations: [IntentTransportMode: DisplayRepresentation] = [
+        .walking: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_transport_mode_walking",
+                defaultValue: "Walking",
+                comment: "Localized transport mode: walking"
+            )
+        ),
+        .automobile: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_transport_mode_automobile",
+                defaultValue: "Car",
+                comment: "Localized transport mode: automobile"
+            )
+        ),
+        .transit: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_transport_mode_transit",
+                defaultValue: "Transit",
+                comment: "Localized transport mode: transit"
+            )
+        )
+    ]
 
     static func fromNavigationSetting(_ value: Int) -> IntentTransportMode {
         switch value {
@@ -79,6 +209,28 @@ enum IntentTransportMode: String, Equatable, Sendable {
         }
     }
 
+    var navigationSettingValue: Int {
+        switch self {
+        case .walking:
+            return 0
+        case .automobile:
+            return 2
+        case .transit:
+            return 3
+        }
+    }
+
+    var appleMapsDirectionsFlag: String {
+        switch self {
+        case .walking:
+            return "w"
+        case .automobile:
+            return "d"
+        case .transit:
+            return "r"
+        }
+    }
+
     var directionsTransportType: MKDirectionsTransportType {
         switch self {
         case .walking:
@@ -87,6 +239,114 @@ enum IntentTransportMode: String, Equatable, Sendable {
             return .automobile
         case .transit:
             return .transit
+        }
+    }
+}
+
+enum IntentFrequentTrackingDuration: String, AppEnum, Equatable, Sendable {
+    case oneHour
+    case twoHours
+    case threeHours
+    case fourHours
+    case twelveHours
+    case twentyFourHours
+    case unlimited
+
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(
+        name: LocalizedStringResource(
+            "intent_frequent_tracking_duration_type_name",
+            defaultValue: "Frequent Tracking Duration",
+            comment: "Display name for the frequent tracking duration App Intent enum"
+        )
+    )
+
+    static var caseDisplayRepresentations: [IntentFrequentTrackingDuration: DisplayRepresentation] = [
+        .oneHour: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_one_hour",
+                defaultValue: "1 Hour",
+                comment: "Frequent tracking duration: one hour"
+            )
+        ),
+        .twoHours: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_two_hours",
+                defaultValue: "2 Hours",
+                comment: "Frequent tracking duration: two hours"
+            )
+        ),
+        .threeHours: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_three_hours",
+                defaultValue: "3 Hours",
+                comment: "Frequent tracking duration: three hours"
+            )
+        ),
+        .fourHours: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_four_hours",
+                defaultValue: "4 Hours",
+                comment: "Frequent tracking duration: four hours"
+            )
+        ),
+        .twelveHours: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_twelve_hours",
+                defaultValue: "12 Hours",
+                comment: "Frequent tracking duration: twelve hours"
+            )
+        ),
+        .twentyFourHours: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_twenty_four_hours",
+                defaultValue: "24 Hours",
+                comment: "Frequent tracking duration: twenty-four hours"
+            )
+        ),
+        .unlimited: DisplayRepresentation(
+            title: LocalizedStringResource(
+                "intent_frequent_tracking_duration_unlimited",
+                defaultValue: "Until Stopped",
+                comment: "Frequent tracking duration: unlimited until stopped"
+            )
+        )
+    ]
+
+    var durationMode: FrequentBackgroundLocationUpdateDuration {
+        switch self {
+        case .oneHour:
+            return .oneHour
+        case .twoHours:
+            return .twoHours
+        case .threeHours:
+            return .threeHours
+        case .fourHours:
+            return .fourHours
+        case .twelveHours:
+            return .twelveHours
+        case .twentyFourHours:
+            return .twentyFourHours
+        case .unlimited:
+            return .unlimited
+        }
+    }
+
+    static func fromDurationMode(_ mode: FrequentBackgroundLocationUpdateDuration) -> IntentFrequentTrackingDuration {
+        switch mode {
+        case .oneHour:
+            return .oneHour
+        case .twoHours:
+            return .twoHours
+        case .threeHours:
+            return .threeHours
+        case .fourHours:
+            return .fourHours
+        case .twelveHours:
+            return .twelveHours
+        case .twentyFourHours:
+            return .twentyFourHours
+        case .unlimited:
+            return .unlimited
         }
     }
 }

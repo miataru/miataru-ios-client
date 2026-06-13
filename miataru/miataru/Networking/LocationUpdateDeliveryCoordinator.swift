@@ -88,25 +88,36 @@ actor LocationUpdateDeliveryCoordinator {
             )
         }
         self.flushObserver = flushObserver ?? { item, trigger, flushedAt in
-            LocationDiagnosticsLogStore.shared.append(
-                level: .info,
-                event: "locationUpload",
-                summary: "Queued location update sent to server.",
-                result: "flushed",
-                reason: trigger,
-                checks: [],
-                context: [
-                    "locationTimestamp": .string(item.payload.Timestamp),
-                    "enqueuedAt": .string(ISO8601DateFormatter().string(from: item.enqueuedAt)),
-                    "flushedAt": .string(ISO8601DateFormatter().string(from: flushedAt)),
-                    "attemptCount": .integer(item.attemptCount),
-                    "serverURL": .string(item.serverURLString),
-                    "enableHistory": .bool(item.enableHistory),
-                    "retentionTime": .integer(item.retentionTime)
-                ],
-                timestamp: flushedAt
-            )
+            Self.recordFlushedLocationUpdateDiagnostics(item: item, trigger: trigger, flushedAt: flushedAt)
         }
+    }
+
+    static func recordFlushedLocationUpdateDiagnostics(
+        item: LocationUpdateOutboxItem,
+        trigger: String,
+        flushedAt: Date,
+        diagnosticsLog: LocationDiagnosticsLogStore = .shared
+    ) {
+        diagnosticsLog.appendCoalesced(
+            level: .info,
+            event: "locationUpload",
+            summary: "Queued location update sent to server.",
+            result: "flushed",
+            reason: "outbox flush",
+            coalescingKey: "locationUpload|flushed",
+            context: [
+                "trigger": .string(trigger),
+                "locationTimestamp": .string(item.payload.Timestamp),
+                "enqueuedAt": .string(ISO8601DateFormatter().string(from: item.enqueuedAt)),
+                "flushedAt": .string(ISO8601DateFormatter().string(from: flushedAt)),
+                "attemptCount": .integer(item.attemptCount),
+                "serverURL": .string(item.serverURLString),
+                "enableHistory": .bool(item.enableHistory),
+                "retentionTime": .integer(item.retentionTime)
+            ],
+            timestamp: flushedAt,
+            sampleEvery: 100
+        )
     }
 
     func start() {

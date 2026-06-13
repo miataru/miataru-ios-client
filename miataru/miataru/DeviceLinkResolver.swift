@@ -38,6 +38,17 @@ enum DeviceNavigationPresentation: String, CaseIterable, Equatable {
 struct DeviceNavigationLaunchOptions: Equatable {
     let direction: DeviceNavigationRouteDirection
     let presentation: DeviceNavigationPresentation
+    let transportMode: IntentTransportMode?
+
+    init(
+        direction: DeviceNavigationRouteDirection,
+        presentation: DeviceNavigationPresentation,
+        transportMode: IntentTransportMode? = nil
+    ) {
+        self.direction = direction
+        self.presentation = presentation
+        self.transportMode = transportMode
+    }
 
     static let standard = DeviceNavigationLaunchOptions(
         direction: .deviceToUser,
@@ -62,6 +73,7 @@ enum DeviceLinkResolver {
     private static let navigationActionValue = "navigate"
     private static let directionQueryItemName = "direction"
     private static let presentationQueryItemName = "presentation"
+    private static let transportQueryItemName = "transport"
 
     static func urlString(for deviceID: String) -> String {
         "\(canonicalPrefix)\(deviceID)"
@@ -69,11 +81,15 @@ enum DeviceLinkResolver {
 
     static func navigationURL(for deviceID: String, options: DeviceNavigationLaunchOptions = .defaultDeepLink) -> URL {
         var components = URLComponents(string: urlString(for: deviceID))!
-        components.queryItems = [
+        var queryItems = [
             URLQueryItem(name: actionQueryItemName, value: navigationActionValue),
             URLQueryItem(name: directionQueryItemName, value: options.direction.rawValue),
             URLQueryItem(name: presentationQueryItemName, value: options.presentation.rawValue)
         ]
+        if let transportMode = options.transportMode {
+            queryItems.append(URLQueryItem(name: transportQueryItemName, value: transportMode.rawValue))
+        }
+        components.queryItems = queryItems
         return components.url!
     }
 
@@ -139,7 +155,8 @@ enum DeviceLinkResolver {
     private static func navigationOptions(from url: URL) -> DeviceNavigationLaunchOptions {
         DeviceNavigationLaunchOptions(
             direction: DeviceNavigationRouteDirection(queryValue: queryValue(for: directionQueryItemName, in: url)),
-            presentation: DeviceNavigationPresentation(queryValue: queryValue(for: presentationQueryItemName, in: url))
+            presentation: DeviceNavigationPresentation(queryValue: queryValue(for: presentationQueryItemName, in: url)),
+            transportMode: queryValue(for: transportQueryItemName, in: url).flatMap(IntentTransportMode.init(rawValue:))
         )
     }
 

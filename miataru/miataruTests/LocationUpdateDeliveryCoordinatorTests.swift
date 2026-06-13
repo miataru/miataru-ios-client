@@ -360,6 +360,66 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(records.first?.retentionTime == 90)
     }
 
+    @Test("Flushed upload diagnostics are coalesced")
+    @MainActor
+    func flushedUploadDiagnosticsAreCoalesced() throws {
+        let suiteName = "LocationUpdateDeliveryDiagnosticsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationUpdateDeliveryDiagnosticsTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let diagnosticsURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let diagnosticsLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: diagnosticsURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
+        diagnosticsLog.setEnabled(true)
+
+        let enqueuedAt = Date(timeIntervalSince1970: 1_000)
+        let flushedAt = Date(timeIntervalSince1970: 2_000)
+        for index in 1...101 {
+            let item = LocationUpdateOutboxItem(
+                serverURLString: "https://example.org",
+                enqueuedAt: enqueuedAt.addingTimeInterval(TimeInterval(index)),
+                attemptCount: index,
+                payload: payload(timestamp: "timestamp-\(index)", latitude: 50 + Double(index) / 1_000),
+                enableHistory: index.isMultiple(of: 2),
+                retentionTime: 90 + index
+            )
+            LocationUpdateDeliveryCoordinator.recordFlushedLocationUpdateDiagnostics(
+                item: item,
+                trigger: index == 101 ? "manual" : "timer",
+                flushedAt: flushedAt.addingTimeInterval(TimeInterval(index)),
+                diagnosticsLog: diagnosticsLog
+            )
+        }
+
+        #expect(diagnosticsLog.coalescedCounts.count == 1)
+        #expect(diagnosticsLog.coalescedCounts.first?.count == 101)
+        #expect(diagnosticsLog.entries.map(\.event) == ["locationUpload", "locationUpload"])
+        #expect(diagnosticsLog.persistenceWriteCount == 0)
+        #expect(diagnosticsLog.hasPendingPersistence)
+
+        let lastContext = try #require(diagnosticsLog.coalescedCounts.first?.lastContext)
+        #expect(lastContext["trigger"] == .string("manual"))
+        #expect(lastContext["locationTimestamp"] == .string("timestamp-101"))
+        #expect(lastContext["attemptCount"] == .integer(101))
+        #expect(lastContext["retentionTime"] == .integer(191))
+        #expect(lastContext["serverURL"] == .string("https://example.org"))
+
+        let exportData = try diagnosticsLog.exportData(appVersion: "9.9", build: "42")
+        #expect(diagnosticsLog.persistenceWriteCount == 1)
+        let exportObject = try #require(JSONSerialization.jsonObject(with: exportData) as? [String: Any])
+        let coalescedCounts = try #require(exportObject["coalescedCounts"] as? [[String: Any]])
+        #expect(coalescedCounts.first?["count"] as? Int == 101)
+    }
+
     @Test("Manual full flush drains more than one batch")
     func manualFullFlushDrainsMoreThanOneBatch() async throws {
         let tempURL = temporaryOutboxURL()

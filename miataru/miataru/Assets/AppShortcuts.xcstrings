@@ -1,0 +1,852 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Find a device in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Find en enhed i ${applicationName}",
+              "Vis en Miataru-placering i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Gerät in ${applicationName} suchen",
+              "Miataru-Standort in ${applicationName} anzeigen"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Find a device in ${applicationName}",
+              "Show a Miataru location in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Buscar un dispositivo en ${applicationName}",
+              "Mostrar una ubicación de Miataru en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Etsi laite sovelluksessa ${applicationName}",
+              "Näytä Miataru-sijainti sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Trouver un appareil dans ${applicationName}",
+              "Afficher une position Miataru dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Trova un dispositivo in ${applicationName}",
+              "Mostra una posizione Miataru in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でデバイスを探す",
+              "${applicationName}でMiataruの位置を表示"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Zoek een apparaat in ${applicationName}",
+              "Toon een Miataru-locatie in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中查找设备",
+              "在 ${applicationName} 中显示 Miataru 位置"
+            ]
+          }
+        }
+      }
+    },
+    "Open an Apple Maps route in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Åbn en Apple Maps-rute i ${applicationName}",
+              "Rute i Apple Maps med ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Apple-Karten-Route in ${applicationName} öffnen",
+              "Route in Apple Karten mit ${applicationName}"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Open an Apple Maps route in ${applicationName}",
+              "Route in Apple Maps with ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Abrir una ruta de Apple Maps en ${applicationName}",
+              "Ruta en Apple Maps con ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Avaa Apple Maps -reitti sovelluksessa ${applicationName}",
+              "Reitti Apple Mapsissa sovelluksella ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Ouvrir un itinéraire Plans dans ${applicationName}",
+              "Itinéraire dans Plans avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Apri un percorso Mappe di Apple in ${applicationName}",
+              "Percorso in Mappe di Apple con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でAppleマップの経路を開く",
+              "${applicationName}でAppleマップに経路を表示"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Open een Apple Kaarten-route in ${applicationName}",
+              "Route in Apple Kaarten met ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中打开 Apple 地图路线",
+              "使用 ${applicationName} 在 Apple 地图中规划路线"
+            ]
+          }
+        }
+      }
+    },
+    "Start Miataru navigation in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start Miataru-navigation i ${applicationName}",
+              "Naviger i Miataru med ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Miataru-Navigation in ${applicationName} starten",
+              "In Miataru mit ${applicationName} navigieren"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start Miataru navigation in ${applicationName}",
+              "Navigate in Miataru with ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Iniciar navegación de Miataru en ${applicationName}",
+              "Navegar en Miataru con ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Aloita Miataru-navigointi sovelluksessa ${applicationName}",
+              "Navigoi Miatarussa sovelluksella ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Démarrer la navigation Miataru dans ${applicationName}",
+              "Naviguer dans Miataru avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Avvia la navigazione Miataru in ${applicationName}",
+              "Naviga in Miataru con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でMiataruナビゲーションを開始",
+              "${applicationName}でMiataru内をナビゲート"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start Miataru-navigatie in ${applicationName}",
+              "Navigeer in Miataru met ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中开始 Miataru 导航",
+              "使用 ${applicationName} 在 Miataru 中导航"
+            ]
+          }
+        }
+      }
+    },
+    "Start frequent tracking in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start hyppig sporing i ${applicationName}",
+              "Slå hyppig sporing til i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Häufiges Tracking in ${applicationName} starten",
+              "Häufiges Tracking in ${applicationName} aktivieren"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start frequent tracking in ${applicationName}",
+              "Enable frequent tracking in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Iniciar seguimiento frecuente en ${applicationName}",
+              "Activar seguimiento frecuente en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Aloita tiheä seuranta sovelluksessa ${applicationName}",
+              "Ota tiheä seuranta käyttöön sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Démarrer le suivi fréquent dans ${applicationName}",
+              "Activer le suivi fréquent dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Avvia il tracciamento frequente in ${applicationName}",
+              "Abilita il tracciamento frequente in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で頻繁な追跡を開始",
+              "${applicationName}で頻繁な追跡を有効にする"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Start frequente tracking in ${applicationName}",
+              "Schakel frequente tracking in ${applicationName} in"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中开始频繁跟踪",
+              "在 ${applicationName} 中启用频繁跟踪"
+            ]
+          }
+        }
+      }
+    },
+    "Stop frequent tracking in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Stop hyppig sporing i ${applicationName}",
+              "Slå hyppig sporing fra i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Häufiges Tracking in ${applicationName} stoppen",
+              "Häufiges Tracking in ${applicationName} deaktivieren"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Stop frequent tracking in ${applicationName}",
+              "Disable frequent tracking in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Detener seguimiento frecuente en ${applicationName}",
+              "Desactivar seguimiento frecuente en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Lopeta tiheä seuranta sovelluksessa ${applicationName}",
+              "Poista tiheä seuranta käytöstä sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Arrêter le suivi fréquent dans ${applicationName}",
+              "Désactiver le suivi fréquent dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Interrompi il tracciamento frequente in ${applicationName}",
+              "Disabilita il tracciamento frequente in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で頻繁な追跡を停止",
+              "${applicationName}で頻繁な追跡を無効にする"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Stop frequente tracking in ${applicationName}",
+              "Schakel frequente tracking in ${applicationName} uit"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中停止频繁跟踪",
+              "在 ${applicationName} 中停用频繁跟踪"
+            ]
+          }
+        }
+      }
+    },
+    "Check tracking status in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tjek sporingsstatus i ${applicationName}",
+              "Er Miataru-sporing aktiv i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tracking-Status in ${applicationName} prüfen",
+              "Ist Miataru-Tracking in ${applicationName} aktiv"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Check tracking status in ${applicationName}",
+              "Is Miataru tracking active in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Comprobar estado del seguimiento en ${applicationName}",
+              "Está activo el seguimiento de Miataru en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tarkista seurannan tila sovelluksessa ${applicationName}",
+              "Onko Miataru-seuranta aktiivinen sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Vérifier l’état du suivi dans ${applicationName}",
+              "Le suivi Miataru est-il actif dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controlla lo stato del tracciamento in ${applicationName}",
+              "Il tracciamento Miataru è attivo in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で追跡状況を確認",
+              "${applicationName}でMiataruの追跡は有効ですか"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controleer trackingstatus in ${applicationName}",
+              "Is Miataru-tracking actief in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中检查跟踪状态",
+              "${applicationName} 中的 Miataru 跟踪是否处于活动状态"
+            ]
+          }
+        }
+      }
+    },
+    "Check frequent tracking in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tjek hyppig sporing i ${applicationName}",
+              "Hvor længe er hyppig sporing aktiv i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Häufiges Tracking in ${applicationName} prüfen",
+              "Wie lange ist häufiges Tracking in ${applicationName} aktiv"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Check frequent tracking in ${applicationName}",
+              "How long is frequent tracking active in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Comprobar seguimiento frecuente en ${applicationName}",
+              "Cuánto tiempo está activo el seguimiento frecuente en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tarkista tiheä seuranta sovelluksessa ${applicationName}",
+              "Kuinka kauan tiheä seuranta on aktiivinen sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Vérifier le suivi fréquent dans ${applicationName}",
+              "Combien de temps le suivi fréquent est-il actif dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controlla il tracciamento frequente in ${applicationName}",
+              "Per quanto tempo è attivo il tracciamento frequente in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で頻繁な追跡を確認",
+              "${applicationName}で頻繁な追跡はどのくらい有効ですか"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controleer frequente tracking in ${applicationName}",
+              "Hoe lang is frequente tracking actief in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中检查频繁跟踪",
+              "${applicationName} 中的频繁跟踪还会持续多久"
+            ]
+          }
+        }
+      }
+    },
+    "Check a device status in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tjek en enheds status i ${applicationName}",
+              "Hvor gammel er en Miataru-placering i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Gerätestatus in ${applicationName} prüfen",
+              "Wie alt ist ein Miataru-Standort in ${applicationName}"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Check a device status in ${applicationName}",
+              "How old is a Miataru location in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Comprobar el estado de un dispositivo en ${applicationName}",
+              "Qué antigüedad tiene una ubicación de Miataru en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tarkista laitteen tila sovelluksessa ${applicationName}",
+              "Kuinka vanha Miataru-sijainti on sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Vérifier l’état d’un appareil dans ${applicationName}",
+              "Quel âge a une position Miataru dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controlla lo stato di un dispositivo in ${applicationName}",
+              "Quanto è vecchia una posizione Miataru in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でデバイスの状態を確認",
+              "${applicationName}でMiataruの位置はどのくらい前ですか"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controleer een apparaatstatus in ${applicationName}",
+              "Hoe oud is een Miataru-locatie in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中检查设备状态",
+              "${applicationName} 中的 Miataru 位置有多旧"
+            ]
+          }
+        }
+      }
+    },
+    "Check distance to a device in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tjek afstand til en enhed i ${applicationName}",
+              "Hvor langt væk er en Miataru-enhed i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Entfernung zu einem Gerät in ${applicationName} prüfen",
+              "Wie weit entfernt ist ein Miataru-Gerät in ${applicationName}"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Check distance to a device in ${applicationName}",
+              "How far away is a Miataru device in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Comprobar distancia a un dispositivo en ${applicationName}",
+              "A qué distancia está un dispositivo Miataru en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Tarkista etäisyys laitteeseen sovelluksessa ${applicationName}",
+              "Kuinka kaukana Miataru-laite on sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Vérifier la distance jusqu’à un appareil dans ${applicationName}",
+              "À quelle distance se trouve un appareil Miataru dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controlla la distanza da un dispositivo in ${applicationName}",
+              "Quanto è lontano un dispositivo Miataru in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でデバイスまでの距離を確認",
+              "${applicationName}でMiataruデバイスはどのくらい離れていますか"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Controleer afstand tot een apparaat in ${applicationName}",
+              "Hoe ver weg is een Miataru-apparaat in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "在 ${applicationName} 中检查到设备的距离",
+              "${applicationName} 中的 Miataru 设备有多远"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version": "1.1"
+}

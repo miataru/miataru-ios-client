@@ -35,13 +35,35 @@ struct OpenRouteToPersonIntent: AppIntent {
     )
     var device: String
 
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_navigation_parameter_direction",
+            defaultValue: "Direction",
+            comment: "Parameter title for choosing route direction"
+        )
+    )
+    var direction: IntentNavigationDirection?
+
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_navigation_parameter_transport_mode",
+            defaultValue: "Transport Mode",
+            comment: "Parameter title for choosing route transport mode"
+        )
+    )
+    var transportMode: IntentTransportMode?
+
     static var parameterSummary: some ParameterSummary {
         Summary("Open Apple Maps route to \(\.$device)")
     }
 
     func perform() async throws -> some IntentResult & OpensIntent & ProvidesDialog {
         let location = try await IntentLocationService.shared.latestLocation(for: device)
-        let url = Self.appleMapsURL(for: location)
+        let url = Self.appleMapsURL(
+            for: location,
+            direction: direction ?? .userToDevice,
+            transportMode: transportMode
+        )
         let dialogText = String.localizedStringWithFormat(
             NSLocalizedString("intent_open_route_to_device_dialog_format", comment: "Dialog format when opening a route to a tracked device. Argument: display name."),
             location.displayName
@@ -53,11 +75,29 @@ struct OpenRouteToPersonIntent: AppIntent {
         )
     }
 
-    static func appleMapsURL(for location: IntentDeviceLocation) -> URL {
+    static func appleMapsURL(
+        for location: IntentDeviceLocation,
+        direction: IntentNavigationDirection = .userToDevice,
+        transportMode: IntentTransportMode? = nil
+    ) -> URL {
         var components = URLComponents(string: "http://maps.apple.com/")!
-        components.queryItems = [
-            URLQueryItem(name: "daddr", value: "\(location.latitude),\(location.longitude)")
-        ]
+        let coordinateValue = "\(location.latitude),\(location.longitude)"
+        var queryItems: [URLQueryItem]
+        switch direction {
+        case .userToDevice:
+            queryItems = [
+                URLQueryItem(name: "daddr", value: coordinateValue)
+            ]
+        case .deviceToUser:
+            queryItems = [
+                URLQueryItem(name: "saddr", value: coordinateValue),
+                URLQueryItem(name: "daddr", value: "Current Location")
+            ]
+        }
+        if let transportMode {
+            queryItems.append(URLQueryItem(name: "dirflg", value: transportMode.appleMapsDirectionsFlag))
+        }
+        components.queryItems = queryItems
         return components.url!
     }
 }

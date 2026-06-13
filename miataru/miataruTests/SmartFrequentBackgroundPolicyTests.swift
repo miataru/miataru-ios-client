@@ -593,6 +593,74 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(store.load() == nil)
     }
 
+    @Test("Smart frequent restart recovery resumes only fresh confirmed runtime markers")
+    func smartFrequentRestartRecoveryResumesOnlyFreshConfirmedRuntimeMarkers() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let inactivityWindow: TimeInterval = 600
+        let freshMarker = SmartFrequentBackgroundRuntimeMarker(
+            phase: .confirmedActive,
+            confirmedAt: now.addingTimeInterval(-1_200),
+            lastRelevantMovementAt: now.addingTimeInterval(-30),
+            activationNotificationDelivered: true
+        )
+
+        #expect(SmartFrequentBackgroundPolicy.runtimeMarkerReferenceDate(freshMarker) == freshMarker.lastRelevantMovementAt)
+        #expect(SmartFrequentBackgroundPolicy.isRuntimeMarkerFresh(
+            freshMarker,
+            now: now,
+            inactivityWindow: inactivityWindow
+        ))
+        #expect(SmartFrequentBackgroundPolicy.restartRecoveryAction(
+            marker: freshMarker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            authorizationStatus: .authorizedAlways,
+            trackAndReportLocation: true,
+            isTracking: true,
+            deviceKeyAuthBlocked: false,
+            modeChangeNotificationsEnabled: true
+        ) == .resume)
+
+        let staleMarker = SmartFrequentBackgroundRuntimeMarker(
+            phase: .confirmedActive,
+            confirmedAt: now.addingTimeInterval(-1_200),
+            lastRelevantMovementAt: now.addingTimeInterval(-inactivityWindow - 1),
+            activationNotificationDelivered: true
+        )
+
+        #expect(!SmartFrequentBackgroundPolicy.isRuntimeMarkerFresh(
+            staleMarker,
+            now: now,
+            inactivityWindow: inactivityWindow
+        ))
+        #expect(SmartFrequentBackgroundPolicy.restartRecoveryAction(
+            marker: staleMarker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            authorizationStatus: .authorizedAlways,
+            trackAndReportLocation: true,
+            isTracking: true,
+            deviceKeyAuthBlocked: false,
+            modeChangeNotificationsEnabled: true
+        ) == .notifyDeactivation)
+        #expect(SmartFrequentBackgroundPolicy.restartRecoveryAction(
+            marker: freshMarker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: true,
+            manualFrequentEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            trackAndReportLocation: true,
+            isTracking: true,
+            deviceKeyAuthBlocked: false,
+            modeChangeNotificationsEnabled: true
+        ) == .ignore)
+    }
+
     @Test("Smart frequent exit fence anchor uses newest usable location")
     func smartFrequentExitFenceAnchorUsesNewestUsableLocation() throws {
         func location(timestamp: TimeInterval, accuracy: Double, latitude: Double = 49.8190) -> CLLocation {

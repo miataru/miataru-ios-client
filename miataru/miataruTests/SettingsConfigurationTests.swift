@@ -343,32 +343,42 @@ struct SettingsConfigurationTests {
 
     @Test("App string catalog has no stale or new translation units")
     func appStringCatalogHasNoStaleOrNewTranslationUnits() throws {
-        let strings = try loadStringCatalog()
-
-        let staleKeys = strings.compactMap { key, rawEntry -> String? in
-            guard let entry = rawEntry as? [String: Any],
-                  entry["extractionState"] as? String == "stale" else {
-                return nil
-            }
-            return key
-        }
-        #expect(staleKeys.isEmpty, "Stale localization keys: \(staleKeys.sorted())")
-
+        var staleKeys: [String] = []
         var newUnits: [String] = []
-        for (key, rawEntry) in strings {
-            guard let entry = rawEntry as? [String: Any],
-                  let localizations = entry["localizations"] as? [String: Any] else {
-                continue
+
+        for catalogName in ["Localizable", "AppShortcuts"] {
+            let strings = try loadStringCatalog(named: catalogName)
+
+            staleKeys += strings.compactMap { key, rawEntry -> String? in
+                guard let entry = rawEntry as? [String: Any],
+                      entry["extractionState"] as? String == "stale" else {
+                    return nil
+                }
+                return "\(catalogName): \(key)"
             }
-            for (locale, rawLocaleEntry) in localizations {
-                guard let localeEntry = rawLocaleEntry as? [String: Any],
-                      let stringUnit = localeEntry["stringUnit"] as? [String: Any],
-                      stringUnit["state"] as? String == "new" else {
+
+            for (key, rawEntry) in strings {
+                guard let entry = rawEntry as? [String: Any],
+                      let localizations = entry["localizations"] as? [String: Any] else {
                     continue
                 }
-                newUnits.append("\(key) [\(locale)]")
+                for (locale, rawLocaleEntry) in localizations {
+                    guard let localeEntry = rawLocaleEntry as? [String: Any] else {
+                        continue
+                    }
+                    if let stringUnit = localeEntry["stringUnit"] as? [String: Any],
+                       stringUnit["state"] as? String == "new" {
+                        newUnits.append("\(catalogName): \(key) [\(locale)]")
+                    }
+                    if let stringSet = localeEntry["stringSet"] as? [String: Any],
+                       stringSet["state"] as? String == "new" {
+                        newUnits.append("\(catalogName): \(key) [\(locale)]")
+                    }
+                }
             }
         }
+
+        #expect(staleKeys.isEmpty, "Stale localization keys: \(staleKeys.sorted())")
         #expect(newUnits.isEmpty, "New localization units: \(newUnits.sorted())")
     }
 
@@ -618,7 +628,13 @@ struct SettingsConfigurationTests {
         defer { try? FileManager.default.removeItem(at: directoryURL) }
         let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
 
-        let store = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, maxEntries: 2)
+        let store = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            maxEntries: 2,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
         #expect(!store.isEnabled)
         store.append(
             level: .info,
@@ -627,6 +643,9 @@ struct SettingsConfigurationTests {
             result: "ignored"
         )
         #expect(store.entries.isEmpty)
+        #expect(!store.hasPendingPersistence)
+        #expect(store.persistenceWriteCount == 0)
+        #expect(!FileManager.default.fileExists(atPath: fileURL.path))
 
         let location = CLLocation(
             coordinate: CLLocationCoordinate2D(latitude: 52.1234567, longitude: 13.9876543),
@@ -650,12 +669,12 @@ struct SettingsConfigurationTests {
         )
 
         #expect(store.entries.map(\.event) == ["second", "third"])
+        #expect(store.hasPendingPersistence)
+        #expect(store.persistenceWriteCount == 0)
 
-        let reloadedStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, maxEntries: 2)
-        #expect(reloadedStore.isEnabled)
-        #expect(reloadedStore.entries.map(\.event) == ["second", "third"])
-
-        let exportData = try reloadedStore.exportData(appVersion: "9.9", build: "42")
+        let exportData = try store.exportData(appVersion: "9.9", build: "42")
+        #expect(!store.hasPendingPersistence)
+        #expect(store.persistenceWriteCount == 1)
         let exportedString = try #require(String(data: exportData, encoding: .utf8))
         #expect(!exportedString.localizedCaseInsensitiveContains("devicekey"))
         let exportObject = try #require(JSONSerialization.jsonObject(with: exportData) as? [String: Any])
@@ -673,6 +692,19 @@ struct SettingsConfigurationTests {
         #expect(exportObject["schemaVersion"] as? Int == LocationDiagnosticsLogStore.schemaVersion)
         #expect(exportObject["droppedEntryCount"] as? Int == 1)
         #expect((exportObject["coalescedCounts"] as? [[String: Any]])?.isEmpty == true)
+
+        let persistedString = try #require(String(data: Data(contentsOf: fileURL), encoding: .utf8))
+        #expect(!persistedString.contains("\n  "))
+
+        let reloadedStore = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            maxEntries: 2,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
+        #expect(reloadedStore.isEnabled)
+        #expect(reloadedStore.entries.map(\.event) == ["second", "third"])
 
         let secondExportData = try reloadedStore.exportData(appVersion: "9.9", build: "42")
         let secondExportObject = try #require(JSONSerialization.jsonObject(with: secondExportData) as? [String: Any])
@@ -697,10 +729,20 @@ struct SettingsConfigurationTests {
             userDefaults: defaults,
             fileURL: fileURL,
             maxEntries: 3,
-            coalescedCountLimit: 10
+            coalescedCountLimit: 10,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
         )
         store.setEnabled(true)
-        store.append(level: .warning, event: "backgroundTrackingGap", summary: "Gap", result: "suspicious")
+        store.append(
+            level: .warning,
+            event: "backgroundTrackingGap",
+            summary: "Gap",
+            result: "suspicious",
+            persistence: .immediate
+        )
+        #expect(store.persistenceWriteCount == 1)
+        #expect(!store.hasPendingPersistence)
         for index in 1...120 {
             store.appendCoalesced(
                 level: .info,
@@ -717,8 +759,12 @@ struct SettingsConfigurationTests {
         #expect(store.entries.count <= 3)
         #expect(store.coalescedCounts.count == 1)
         #expect(store.coalescedCounts.first?.count == 120)
+        #expect(store.hasPendingPersistence)
+        #expect(store.persistenceWriteCount == 1)
 
         let exportData = try store.exportData(appVersion: "9.9", build: "42")
+        #expect(!store.hasPendingPersistence)
+        #expect(store.persistenceWriteCount == 2)
         let exportObject = try #require(JSONSerialization.jsonObject(with: exportData) as? [String: Any])
         let coalescedCounts = try #require(exportObject["coalescedCounts"] as? [[String: Any]])
         #expect(coalescedCounts.first?["count"] as? Int == 120)
@@ -756,7 +802,12 @@ struct SettingsConfigurationTests {
         """
         try #require(legacyJSON.data(using: .utf8)).write(to: fileURL, options: .atomic)
 
-        let legacyStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        let legacyStore = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
         #expect(legacyStore.entries.isEmpty)
         #expect(legacyStore.coalescedCounts.isEmpty)
         #expect(legacyStore.droppedEntryCount == 0)
@@ -784,22 +835,38 @@ struct SettingsConfigurationTests {
         }
         """
         try #require(oldSchemaJSON.data(using: .utf8)).write(to: fileURL, options: .atomic)
-        let oldSchemaStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        let oldSchemaStore = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
         #expect(oldSchemaStore.entries.isEmpty)
         #expect(oldSchemaStore.coalescedCounts.isEmpty)
         #expect(oldSchemaStore.droppedEntryCount == 0)
         #expect(!FileManager.default.fileExists(atPath: fileURL.path))
 
-        let currentStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        let currentStore = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
         currentStore.setEnabled(true)
         currentStore.append(level: .info, event: "currentSchemaEvent", summary: "Current", result: "stored")
-        let reloadedCurrentStore = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        currentStore.flushPendingPersistence()
+        let reloadedCurrentStore = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
         #expect(reloadedCurrentStore.entries.count == 1)
         #expect(reloadedCurrentStore.entries.first?.event == "currentSchemaEvent")
     }
 
-    private func loadStringCatalog() throws -> [String: Any] {
-        let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/Assets/Localizable.xcstrings"))
+    private func loadStringCatalog(named catalogName: String = "Localizable") throws -> [String: Any] {
+        let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/Assets/\(catalogName).xcstrings"))
         let jsonObject = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
         return try #require(jsonObject["strings"] as? [String: Any])
     }

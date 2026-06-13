@@ -9,6 +9,7 @@
 
 import Foundation
 import CoreLocation
+import UIKit
 
 enum LocationDiagnosticsLogLevel: String, Codable, Equatable {
     case info
@@ -20,6 +21,11 @@ enum LocationDiagnosticsRetentionClass: String, Codable, Equatable {
     case critical
     case sampled
     case coalesced
+}
+
+enum LocationDiagnosticsPersistencePolicy: Equatable {
+    case deferred
+    case immediate
 }
 
 enum LocationDiagnosticsValue: Codable, Equatable {
@@ -188,52 +194,84 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     static let criticalRetentionInterval: TimeInterval = 24 * 60 * 60
     static let defaultCoalescedCountLimit = 250
     static let defaultLogFileName = "location-diagnostics-log.json"
+    static let defaultDeferredPersistenceInterval: TimeInterval = 15
 
     @Published private(set) var entries: [LocationDiagnosticsLogEntry] = []
     @Published private(set) var coalescedCounts: [LocationDiagnosticsCoalescedCount] = []
     @Published private(set) var droppedEntryCount: Int = 0
     @Published private(set) var isEnabled: Bool
+    private(set) var hasPendingPersistence = false
+    private(set) var persistenceWriteCount = 0
 
     private let maxEntries: Int
     private let coalescedCountLimit: Int
     private let userDefaults: UserDefaults
     private let fileURL: URL
     private let fileManager: FileManager
+    private let notificationCenter: NotificationCenter
     private let diagnosticsSourceID: String
-    private let encoder = JSONEncoder()
+    private let persistenceEncoder = JSONEncoder()
+    private let exportEncoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let deferredPersistenceInterval: TimeInterval
+    private let automaticallyFlushesDeferredPersistence: Bool
+    private var deferredPersistenceWorkItem: DispatchWorkItem?
+    private var lifecycleObserverTokens: [NSObjectProtocol] = []
 
     init(userDefaults: UserDefaults = .standard,
          fileURL: URL? = nil,
          maxEntries: Int = LocationDiagnosticsLogStore.defaultMaxEntries,
          coalescedCountLimit: Int = LocationDiagnosticsLogStore.defaultCoalescedCountLimit,
-         fileManager: FileManager = .default) {
+         fileManager: FileManager = .default,
+         notificationCenter: NotificationCenter = .default,
+         deferredPersistenceInterval: TimeInterval = LocationDiagnosticsLogStore.defaultDeferredPersistenceInterval,
+         automaticallyFlushesDeferredPersistence: Bool = true,
+         registersLifecycleFlushObservers: Bool = true) {
         self.userDefaults = userDefaults
         self.fileManager = fileManager
+        self.notificationCenter = notificationCenter
         self.maxEntries = max(1, maxEntries)
         self.coalescedCountLimit = max(1, coalescedCountLimit)
         self.fileURL = fileURL ?? Self.defaultLogFileURL(fileManager: fileManager)
         self.isEnabled = userDefaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
         self.diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        self.deferredPersistenceInterval = max(0.1, deferredPersistenceInterval)
+        self.automaticallyFlushesDeferredPersistence = automaticallyFlushesDeferredPersistence
+        persistenceEncoder.dateEncodingStrategy = .iso8601
+        exportEncoder.dateEncodingStrategy = .iso8601
+        exportEncoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         decoder.dateDecodingStrategy = .iso8601
         let persistedLog = Self.loadPersistedLog(from: self.fileURL, decoder: decoder, fileManager: fileManager)
         entries = persistedLog.entries
         coalescedCounts = persistedLog.coalescedCounts
         droppedEntryCount = persistedLog.droppedEntryCount
+        if registersLifecycleFlushObservers {
+            registerLifecycleFlushObservers()
+        }
         if entries.count > self.maxEntries {
             trimToLimit()
-            persist()
+            hasPendingPersistence = true
+            flushPendingPersistence()
         }
     }
 
+    deinit {
+        cancelDeferredPersistence()
+        lifecycleObserverTokens.forEach { notificationCenter.removeObserver($0) }
+    }
+
     func setEnabled(_ enabled: Bool) {
+        if !enabled {
+            flushPendingPersistence()
+            cancelDeferredPersistence()
+        }
         isEnabled = enabled
         userDefaults.set(enabled, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
     }
 
     func clear() {
+        cancelDeferredPersistence()
+        hasPendingPersistence = false
         entries = []
         coalescedCounts = []
         droppedEntryCount = 0
@@ -248,7 +286,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
                 reason: String? = nil,
                 checks: @autoclosure () -> [LocationDiagnosticsCheck] = [],
                 context: @autoclosure () -> [String: LocationDiagnosticsValue] = [:],
-                timestamp: @autoclosure () -> Date = Date()) {
+                timestamp: @autoclosure () -> Date = Date(),
+                persistence: LocationDiagnosticsPersistencePolicy = .deferred) {
         guard isEnabled else { return }
         entries.append(LocationDiagnosticsLogEntry(
             timestamp: timestamp(),
@@ -262,7 +301,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
             context: context()
         ))
         trimToLimit()
-        persist()
+        recordPersistenceChange(policy: persistence)
     }
 
     func appendCoalesced(level: LocationDiagnosticsLogLevel,
@@ -273,7 +312,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
                          coalescingKey: String,
                          context: @autoclosure () -> [String: LocationDiagnosticsValue] = [:],
                          timestamp: @autoclosure () -> Date = Date(),
-                         sampleEvery sampleInterval: Int = 50) {
+                         sampleEvery sampleInterval: Int = 50,
+                         persistence: LocationDiagnosticsPersistencePolicy = .deferred) {
         guard isEnabled else { return }
 
         let resolvedTimestamp = timestamp()
@@ -291,7 +331,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
                     result: result,
                     reason: reason,
                     context: resolvedContext,
-                    timestamp: resolvedTimestamp
+                    timestamp: resolvedTimestamp,
+                    persistence: persistence
                 )
                 return
             }
@@ -315,20 +356,22 @@ final class LocationDiagnosticsLogStore: ObservableObject {
                 result: result,
                 reason: reason,
                 context: resolvedContext,
-                timestamp: resolvedTimestamp
+                timestamp: resolvedTimestamp,
+                persistence: persistence
             )
             return
         }
 
         trimCoalescedCountsToLimit()
-        persist()
+        recordPersistenceChange(policy: persistence)
     }
 
     func makeExport(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown",
                     generatedAt: Date = Date(),
                     exportID: String = UUID().uuidString) -> LocationDiagnosticsExport {
-        LocationDiagnosticsExport(
+        flushPendingPersistence()
+        return LocationDiagnosticsExport(
             schemaVersion: Self.schemaVersion,
             generatedAt: generatedAt,
             diagnosticsSourceID: diagnosticsSourceID,
@@ -352,7 +395,13 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func exportData(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown") throws -> Data {
-        try encoder.encode(makeExport(appVersion: appVersion, build: build))
+        try exportEncoder.encode(makeExport(appVersion: appVersion, build: build))
+    }
+
+    func flushPendingPersistence() {
+        cancelDeferredPersistence()
+        guard hasPendingPersistence else { return }
+        _ = persist()
     }
 
     func writeTemporaryExportFile() throws -> URL {
@@ -382,35 +431,79 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         ]
     }
 
-    private func persist() {
+    private func recordPersistenceChange(policy: LocationDiagnosticsPersistencePolicy) {
+        hasPendingPersistence = true
+        switch policy {
+        case .deferred:
+            scheduleDeferredPersistence()
+        case .immediate:
+            flushPendingPersistence()
+        }
+    }
+
+    private func scheduleDeferredPersistence() {
+        guard automaticallyFlushesDeferredPersistence,
+              deferredPersistenceWorkItem == nil else {
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.flushPendingPersistence()
+        }
+        deferredPersistenceWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + deferredPersistenceInterval, execute: workItem)
+    }
+
+    private func cancelDeferredPersistence() {
+        deferredPersistenceWorkItem?.cancel()
+        deferredPersistenceWorkItem = nil
+    }
+
+    private func registerLifecycleFlushObservers() {
+        [
+            UIApplication.didEnterBackgroundNotification,
+            UIApplication.willTerminateNotification
+        ].forEach { name in
+            let token = notificationCenter.addObserver(forName: name, object: nil, queue: nil) { [weak self] _ in
+                self?.flushPendingPersistence()
+            }
+            lifecycleObserverTokens.append(token)
+        }
+    }
+
+    @discardableResult
+    private func persist() -> Bool {
         do {
             try fileManager.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-            let data = try encoder.encode(LocationDiagnosticsPersistedLog(
+            let data = try persistenceEncoder.encode(LocationDiagnosticsPersistedLog(
                 schemaVersion: Self.schemaVersion,
                 entries: entries,
                 coalescedCounts: coalescedCounts,
                 droppedEntryCount: droppedEntryCount
             ))
             try data.write(to: fileURL, options: .atomic)
+            hasPendingPersistence = false
+            persistenceWriteCount += 1
+            return true
         } catch {
             debugLog("[LocationDiagnosticsLogStore] Failed persisting diagnostics log: \(error)")
+            return false
         }
     }
 
     private func trimToLimit() {
         guard entries.count > maxEntries else { return }
-        var keptEntries = entries
-        while keptEntries.count > maxEntries,
-              let sampledIndex = keptEntries.firstIndex(where: { $0.retentionClass != .critical }) {
-            keptEntries.remove(at: sampledIndex)
+        var overflowCount = entries.count - maxEntries
+        while overflowCount > 0,
+              let sampledIndex = entries.firstIndex(where: { $0.retentionClass != .critical }) {
+            entries.remove(at: sampledIndex)
             droppedEntryCount += 1
+            overflowCount -= 1
         }
-        if keptEntries.count > maxEntries {
-            let overflowCount = keptEntries.count - maxEntries
-            keptEntries.removeFirst(overflowCount)
+        if overflowCount > 0 {
+            entries.removeFirst(overflowCount)
             droppedEntryCount += overflowCount
         }
-        entries = keptEntries
     }
 
     private func trimCoalescedCountsToLimit() {

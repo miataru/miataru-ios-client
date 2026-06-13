@@ -332,6 +332,44 @@ extension LocationManager {
         )
     }
 
+    static func smartFrequentRuntimeMarkerReferenceDate(_ marker: SmartFrequentBackgroundRuntimeMarker) -> Date {
+        SmartFrequentBackgroundPolicy.runtimeMarkerReferenceDate(marker)
+    }
+
+    static func isSmartFrequentRuntimeMarkerFresh(_ marker: SmartFrequentBackgroundRuntimeMarker,
+                                                  now: Date,
+                                                  inactivityWindow: TimeInterval) -> Bool {
+        SmartFrequentBackgroundPolicy.isRuntimeMarkerFresh(
+            marker,
+            now: now,
+            inactivityWindow: inactivityWindow
+        )
+    }
+
+    static func smartFrequentRestartRecoveryAction(marker: SmartFrequentBackgroundRuntimeMarker,
+                                                   now: Date,
+                                                   inactivityWindow: TimeInterval,
+                                                   smartEnabled: Bool,
+                                                   manualFrequentEnabled: Bool,
+                                                   authorizationStatus: CLAuthorizationStatus,
+                                                   trackAndReportLocation: Bool,
+                                                   isTracking: Bool,
+                                                   deviceKeyAuthBlocked: Bool,
+                                                   modeChangeNotificationsEnabled: Bool) -> SmartFrequentBackgroundRestartRecoveryAction {
+        SmartFrequentBackgroundPolicy.restartRecoveryAction(
+            marker: marker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: smartEnabled,
+            manualFrequentEnabled: manualFrequentEnabled,
+            authorizationStatus: authorizationStatus,
+            trackAndReportLocation: trackAndReportLocation,
+            isTracking: isTracking,
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            modeChangeNotificationsEnabled: modeChangeNotificationsEnabled
+        )
+    }
+
     static func shouldBypassLocationSensitivityForFrequentBackgroundUpload(applicationState: UIApplication.State,
                                                                            updateSourceIsFrequentBackground: Bool,
                                                                            manualFrequentEnabled: Bool,

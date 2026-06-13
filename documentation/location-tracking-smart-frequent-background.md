@@ -215,7 +215,7 @@ Smart settings:
 
 Hybrid speed detection uses valid `CLLocation.speed` first and derived speed when GPS speed is invalid. GPS-only ignores derived speed. Activation speeds above 200 km/h are rejected as implausible.
 
-Smart runtime state is in memory. After relaunch, Smart starts in waiting. A fresh persisted Smart seed may become the speed reference only if it is newer than the configured inactivity window and passes plausibility checks.
+Smart runtime state is primarily in memory. After relaunch, a fresh persisted confirmedActive marker resumes Smart frequent mode if normal tracking is still eligible; stale or ineligible markers fall back to waiting and may emit the restart-recovery deactivation notification. A fresh persisted Smart seed may become the speed reference only if it is newer than the configured inactivity window and passes plausibility checks.
 
 The runtime phases are:
 
@@ -290,7 +290,7 @@ else:
     send deactivation notification only if runtime was confirmed active and notifications are enabled
 ```
 
-Because a normal timer cannot wake an iOS app after suspension, confirmedActive also maintains a Smart recovery exit fence around the latest usable movement anchor.
+Because a normal timer cannot wake an iOS app after suspension, confirmedActive also maintains a Smart recovery exit fence around the latest usable movement anchor and refreshes the persisted runtime marker as relevant movement advances.
 
 ### Accuracy Recovery
 
@@ -528,4 +528,3 @@ Validation across the consolidated work included:
 Coverage included defaults, Settings.bundle parity, migration, Smart prerequisite normalization, localization completeness, stale/new string-catalog detection, Hybrid/GPS-only speed detection, startup gating, implausible-speed rejection, activation/deactivation policy, manual override behavior, shared frequent interval behavior, persisted counters, Smart notifications, threshold normalization, persisted seeds, chronological batch processing, exit-fence behavior, accuracy recovery, inactivity timer action behavior, diagnostics export privacy, re-arm eligibility, same-build suppression, and outbox defaults.
 
 Manual real-device validation remains required for exact background cadence and reboot relaunch behavior.
-

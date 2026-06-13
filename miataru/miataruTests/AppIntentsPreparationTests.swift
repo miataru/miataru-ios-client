@@ -187,6 +187,37 @@ struct AppIntentsPreparationTests {
         #expect(components.scheme == "http")
         #expect(components.host == "maps.apple.com")
         #expect(destination == "52.52,13.405")
+        #expect(components.queryItems?.contains { $0.name == "saddr" } == false)
+        #expect(components.queryItems?.contains { $0.name == "dirflg" } == false)
+        #expect(!url.absoluteString.contains("SECRET-DEVICE-ID"))
+        #expect(!url.absoluteString.contains("Steffi"))
+    }
+
+    @Test("Apple Maps URL supports direction and explicit transport without leaking identifiers")
+    func appleMapsURLSupportsDirectionAndTransport() throws {
+        let location = IntentDeviceLocation(
+            deviceID: "SECRET-DEVICE-ID",
+            displayName: "Steffi",
+            latitude: 52.52,
+            longitude: 13.405,
+            timestamp: Date(timeIntervalSince1970: 1_780_000_000),
+            horizontalAccuracy: 12,
+            placeDescription: "Berlin"
+        )
+
+        let url = OpenRouteToPersonIntent.appleMapsURL(
+            for: location,
+            direction: .deviceToUser,
+            transportMode: .walking
+        )
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        #expect(queryItems["saddr"] == "52.52,13.405")
+        #expect(queryItems["daddr"] == "Current Location")
+        #expect(queryItems["dirflg"] == "w")
         #expect(!url.absoluteString.contains("SECRET-DEVICE-ID"))
         #expect(!url.absoluteString.contains("Steffi"))
     }
@@ -214,7 +245,52 @@ struct AppIntentsPreparationTests {
         #expect(queryItems["action"] == "navigate")
         #expect(queryItems["direction"] == "userToDevice")
         #expect(queryItems["presentation"] == "focused")
+        #expect(queryItems["transport"] == nil)
         #expect(!url.absoluteString.contains("Steffi"))
+    }
+
+    @Test("Miataru navigation URL supports direction presentation and transport")
+    func miataruNavigationURLSupportsParameters() throws {
+        let location = IntentDeviceLocation(
+            deviceID: "DEVICE-1",
+            displayName: "Steffi",
+            latitude: 52.52,
+            longitude: 13.405,
+            timestamp: Date(timeIntervalSince1970: 1_780_000_000),
+            horizontalAccuracy: 12,
+            placeDescription: "Berlin"
+        )
+
+        let url = OpenMiataruNavigationToPersonIntent.miataruNavigationURL(
+            for: location,
+            direction: .deviceToUser,
+            presentation: .standard,
+            transportMode: .transit
+        )
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).compactMap { item in
+            item.value.map { (item.name, $0) }
+        })
+
+        #expect(queryItems["action"] == "navigate")
+        #expect(queryItems["direction"] == "deviceToUser")
+        #expect(queryItems["presentation"] == "overview")
+        #expect(queryItems["transport"] == "transit")
+        #expect(
+            OpenMiataruNavigationToPersonIntent.miataruNavigationDestination(
+                for: location,
+                direction: .deviceToUser,
+                presentation: .standard,
+                transportMode: .transit
+            ) == .navigation(
+                "DEVICE-1",
+                options: DeviceNavigationLaunchOptions(
+                    direction: .deviceToUser,
+                    presentation: .overview,
+                    transportMode: .transit
+                )
+            )
+        )
     }
 
     @Test("Miataru navigation intent opens app and resolves an internal navigation destination")
@@ -301,6 +377,39 @@ struct AppIntentsPreparationTests {
         #expect(controller.currentState.frequentTrackingExpiresAt == expectedExpiration)
         #expect(controller.startCallCount == 1)
         #expect(controller.reconcileReasons == ["start frequent tracking intent"])
+    }
+
+    @Test("Frequent tracking start accepts explicit duration override")
+    func frequentTrackingStartAcceptsExplicitDurationOverride() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(durationMode: .oneHour)
+        )
+        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+
+        let result = try await service.startFrequentTracking(duration: .twelveHours)
+        let expectedExpiration = try #require(FrequentBackgroundLocationUpdateDuration.twelveHours.expirationDate(from: now))
+
+        #expect(result.durationMode == .twelveHours)
+        #expect(result.expiresAt == expectedExpiration)
+        #expect(controller.currentState.durationMode == .twelveHours)
+        #expect(controller.currentState.frequentTrackingExpiresAt == expectedExpiration)
+    }
+
+    @Test("Frequent tracking start accepts explicit unlimited duration")
+    func frequentTrackingStartAcceptsExplicitUnlimitedDuration() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(durationMode: .fourHours)
+        )
+        let service = IntentFrequentTrackingService(controller: controller, nowProvider: { now })
+
+        let result = try await service.startFrequentTracking(duration: .unlimited)
+
+        #expect(result.durationMode == .unlimited)
+        #expect(result.expiresAt == nil)
+        #expect(controller.currentState.durationMode == .unlimited)
+        #expect(controller.currentState.frequentTrackingExpiresAt == nil)
     }
 
     @Test("Frequent tracking start renews active manual frequent expiration")
@@ -453,6 +562,26 @@ struct AppIntentsPreparationTests {
         #expect(activeWithoutExpiry.remainingSeconds == nil)
         #expect(expired.active == false)
         #expect(expired.remainingSeconds == 0)
+    }
+
+    @Test("Frequent tracking status reports low battery blocked state")
+    func frequentTrackingStatusReportsLowBatteryBlockedState() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let status = await IntentFrequentTrackingService(
+            controller: FakeFrequentTrackingController(
+                state: frequentTrackingState(
+                    smartFrequentTrackingEnabled: true,
+                    smartFrequentTrackingRuntimeActive: true,
+                    lowBatteryFrequentTrackingDisabled: true
+                )
+            ),
+            nowProvider: { now }
+        ).frequentTrackingStatus()
+
+        #expect(status.active == false)
+        #expect(status.smartEnabled)
+        #expect(status.blockingReason == .lowBatteryDisabled)
+        #expect(GetFrequentTrackingStatusIntent.dialogText(for: status).isEmpty == false)
     }
 
     @Test("Device status includes cached place and stable age")
@@ -668,11 +797,14 @@ struct AppIntentsPreparationTests {
         }
     }
 
-    @Test("App Intent localization keys exist for all app locales")
+    @Test("App Intent and shortcut localization keys exist for all app locales")
     func appIntentLocalizationKeysExistForAllAppLocales() throws {
-        let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        let strings = try #require(json?["strings"] as? [String: Any])
+        let localizableData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
+        let localizableJSON = try JSONSerialization.jsonObject(with: localizableData) as? [String: Any]
+        let localizableStrings = try #require(localizableJSON?["strings"] as? [String: Any])
+        let appShortcutsData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/AppShortcuts.xcstrings"))
+        let appShortcutsJSON = try JSONSerialization.jsonObject(with: appShortcutsData) as? [String: Any]
+        let appShortcutsStrings = try #require(appShortcutsJSON?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
         let appIntentExtractionKeys = [
             "Get Miataru tracking status",
@@ -683,36 +815,182 @@ struct AppIntentsPreparationTests {
             "Open Apple Maps route to ${device}",
             "Open Miataru navigation to ${device}",
             "Show location of ${device}",
-            "Start frequent tracking",
+            "Start frequent tracking for ${duration}",
             "Stop frequent tracking"
         ]
+        let appShortcutPhraseGroups = [
+            [
+                "Find a device in ${applicationName}",
+                "Show a Miataru location in ${applicationName}"
+            ],
+            [
+                "Open an Apple Maps route in ${applicationName}",
+                "Route in Apple Maps with ${applicationName}"
+            ],
+            [
+                "Start Miataru navigation in ${applicationName}",
+                "Navigate in Miataru with ${applicationName}"
+            ],
+            [
+                "Start frequent tracking in ${applicationName}",
+                "Enable frequent tracking in ${applicationName}"
+            ],
+            [
+                "Stop frequent tracking in ${applicationName}",
+                "Disable frequent tracking in ${applicationName}"
+            ],
+            [
+                "Check tracking status in ${applicationName}",
+                "Is Miataru tracking active in ${applicationName}"
+            ],
+            [
+                "Check frequent tracking in ${applicationName}",
+                "How long is frequent tracking active in ${applicationName}"
+            ],
+            [
+                "Check a device status in ${applicationName}",
+                "How old is a Miataru location in ${applicationName}"
+            ],
+            [
+                "Check distance to a device in ${applicationName}",
+                "How far away is a Miataru device in ${applicationName}"
+            ]
+        ]
+        let appShortcutPhraseKeys = appShortcutPhraseGroups.flatMap { $0 }
+        let appShortcutCatalogKeys = appShortcutPhraseGroups.compactMap(\.first)
         let intentKeys = (
-            strings.keys.filter { $0.hasPrefix("intent_") }
-                + appIntentExtractionKeys.filter { strings[$0] != nil }
+            localizableStrings.keys.filter { $0.hasPrefix("intent_") }
+                + appIntentExtractionKeys
         ).sorted()
 
         #expect(!intentKeys.isEmpty)
+        #expect(!appShortcutPhraseKeys.isEmpty)
+        #expect(
+            appShortcutPhraseKeys.allSatisfy { localizableStrings[$0] == nil },
+            "App Shortcut phrase keys belong in AppShortcuts.xcstrings, not Localizable.xcstrings"
+        )
+        #expect(
+            Set(appShortcutsStrings.keys) == Set(appShortcutCatalogKeys),
+            "AppShortcuts.xcstrings should use one top-level key per shortcut and keep alternates in stringSet.values"
+        )
+        #expect(
+            appShortcutPhraseGroups.allSatisfy { group in
+                group.dropFirst().allSatisfy { appShortcutsStrings[$0] == nil }
+            },
+            "Alternate App Shortcut phrases belong in stringSet.values, not as top-level keys"
+        )
 
         var missingEntries: [String] = []
-        for key in intentKeys {
-            guard let entry = strings[key] as? [String: Any],
-                  let localizations = entry["localizations"] as? [String: Any] else {
-                missingEntries.append("\(key):all")
-                continue
-            }
+        var staleEntries: [String] = []
+        var newUnits: [String] = []
+        var englishFallbacks: [String] = []
+        var placeholderMismatches: [String] = []
 
-            for locale in locales {
-                guard let localeEntry = localizations[locale] as? [String: Any],
-                      let stringUnit = localeEntry["stringUnit"] as? [String: Any],
-                      let value = stringUnit["value"] as? String,
-                      !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    missingEntries.append("\(key):\(locale)")
+        func placeholders(in value: String) -> [String] {
+            let regex = try! NSRegularExpression(pattern: #"%[@df]|\$\{[^}]+\}"#)
+            return regex.matches(in: value, range: NSRange(value.startIndex..., in: value)).compactMap { match in
+                guard let range = Range(match.range, in: value) else {
+                    return nil
+                }
+                return String(value[range])
+            }
+        }
+
+        func validateStringUnits(keys: [String], in strings: [String: Any], catalogName: String) {
+            for key in keys {
+                guard let entry = strings[key] as? [String: Any],
+                      let localizations = entry["localizations"] as? [String: Any] else {
+                    missingEntries.append("\(catalogName):\(key):all")
                     continue
+                }
+                if entry["extractionState"] as? String == "stale" {
+                    staleEntries.append("\(catalogName):\(key)")
+                }
+                guard let englishEntry = localizations["en"] as? [String: Any],
+                      let englishStringUnit = englishEntry["stringUnit"] as? [String: Any],
+                      let englishValue = englishStringUnit["value"] as? String else {
+                    missingEntries.append("\(catalogName):\(key):en")
+                    continue
+                }
+                let englishPlaceholders = placeholders(in: englishValue)
+
+                for locale in locales {
+                    guard let localeEntry = localizations[locale] as? [String: Any],
+                          let stringUnit = localeEntry["stringUnit"] as? [String: Any],
+                          let value = stringUnit["value"] as? String,
+                          !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                        missingEntries.append("\(catalogName):\(key):\(locale)")
+                        continue
+                    }
+                    if stringUnit["state"] as? String == "new" {
+                        newUnits.append("\(catalogName):\(key):\(locale)")
+                    }
+                    if locale != "en" && value == englishValue {
+                        englishFallbacks.append("\(catalogName):\(key):\(locale)")
+                    }
+                    if placeholders(in: value) != englishPlaceholders {
+                        placeholderMismatches.append("\(catalogName):\(key):\(locale)")
+                    }
                 }
             }
         }
 
+        func validateShortcutStringSets(_ groups: [[String]]) {
+            for group in groups {
+                guard let key = group.first,
+                      let entry = appShortcutsStrings[key] as? [String: Any],
+                      let localizations = entry["localizations"] as? [String: Any] else {
+                    missingEntries.append("AppShortcuts:\(group.first ?? "<empty>"):all")
+                    continue
+                }
+                if entry["extractionState"] as? String == "stale" {
+                    staleEntries.append("AppShortcuts:\(key)")
+                }
+                guard let englishEntry = localizations["en"] as? [String: Any],
+                      let englishStringSet = englishEntry["stringSet"] as? [String: Any],
+                      let englishValues = englishStringSet["values"] as? [String] else {
+                    missingEntries.append("AppShortcuts:\(key):en")
+                    continue
+                }
+
+                for locale in locales {
+                    guard let localeEntry = localizations[locale] as? [String: Any],
+                          let stringSet = localeEntry["stringSet"] as? [String: Any],
+                          let values = stringSet["values"] as? [String],
+                          values.count == group.count,
+                          values.allSatisfy({ !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) else {
+                        missingEntries.append("AppShortcuts:\(key):\(locale)")
+                        continue
+                    }
+                    if stringSet["state"] as? String == "new" {
+                        newUnits.append("AppShortcuts:\(key):\(locale)")
+                    }
+                    if locale == "en" && values != group {
+                        missingEntries.append("AppShortcuts:\(key):\(locale):values")
+                    }
+                    for (index, value) in values.enumerated() {
+                        guard index < englishValues.count else {
+                            continue
+                        }
+                        if locale != "en" && value == englishValues[index] {
+                            englishFallbacks.append("AppShortcuts:\(key):\(locale):\(index)")
+                        }
+                        if placeholders(in: value) != placeholders(in: englishValues[index]) {
+                            placeholderMismatches.append("AppShortcuts:\(key):\(locale):\(index)")
+                        }
+                    }
+                }
+            }
+        }
+
+        validateStringUnits(keys: intentKeys, in: localizableStrings, catalogName: "Localizable")
+        validateShortcutStringSets(appShortcutPhraseGroups)
+
         #expect(missingEntries.isEmpty, "Missing App Intent localizations: \(missingEntries)")
+        #expect(staleEntries.isEmpty, "Stale App Intent localizations: \(staleEntries)")
+        #expect(newUnits.isEmpty, "New App Intent localization units: \(newUnits)")
+        #expect(englishFallbacks.isEmpty, "Untranslated English fallback values: \(englishFallbacks)")
+        #expect(placeholderMismatches.isEmpty, "Localization placeholder mismatches: \(placeholderMismatches)")
     }
 
     private func expectLocationError(
@@ -753,7 +1031,8 @@ struct AppIntentsPreparationTests {
         frequentTrackingExpiresAt: Date? = nil,
         durationMode: FrequentBackgroundLocationUpdateDuration = .fourHours,
         applicationState: UIApplication.State = .background,
-        locationTrackingActive: Bool = true
+        locationTrackingActive: Bool = true,
+        lowBatteryFrequentTrackingDisabled: Bool = false
     ) -> IntentFrequentTrackingState {
         IntentFrequentTrackingState(
             locationTrackingEnabled: locationTrackingEnabled,
@@ -765,7 +1044,8 @@ struct AppIntentsPreparationTests {
             frequentTrackingExpiresAt: frequentTrackingExpiresAt,
             durationMode: durationMode,
             applicationState: applicationState,
-            locationTrackingActive: locationTrackingActive
+            locationTrackingActive: locationTrackingActive,
+            lowBatteryFrequentTrackingDisabled: lowBatteryFrequentTrackingDisabled
         )
     }
 
@@ -791,8 +1071,9 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
         currentState
     }
 
-    func startManualFrequentTracking(now: Date) async {
+    func startManualFrequentTracking(now: Date, durationMode: FrequentBackgroundLocationUpdateDuration?) async {
         startCallCount += 1
+        let effectiveDurationMode = durationMode ?? currentState.durationMode
         currentState = IntentFrequentTrackingState(
             locationTrackingEnabled: currentState.locationTrackingEnabled,
             deviceKeyAuthBlocked: currentState.deviceKeyAuthBlocked,
@@ -800,10 +1081,11 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
             manualFrequentTrackingEnabled: true,
             smartFrequentTrackingEnabled: currentState.smartFrequentTrackingEnabled,
             smartFrequentTrackingRuntimeActive: currentState.smartFrequentTrackingRuntimeActive,
-            frequentTrackingExpiresAt: currentState.durationMode.expirationDate(from: now),
-            durationMode: currentState.durationMode,
+            frequentTrackingExpiresAt: effectiveDurationMode.expirationDate(from: now),
+            durationMode: effectiveDurationMode,
             applicationState: currentState.applicationState,
-            locationTrackingActive: currentState.locationTrackingActive
+            locationTrackingActive: currentState.locationTrackingActive,
+            lowBatteryFrequentTrackingDisabled: currentState.lowBatteryFrequentTrackingDisabled
         )
     }
 
@@ -819,7 +1101,8 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
             frequentTrackingExpiresAt: nil,
             durationMode: currentState.durationMode,
             applicationState: currentState.applicationState,
-            locationTrackingActive: currentState.locationTrackingActive
+            locationTrackingActive: currentState.locationTrackingActive,
+            lowBatteryFrequentTrackingDisabled: currentState.lowBatteryFrequentTrackingDisabled
         )
     }
 

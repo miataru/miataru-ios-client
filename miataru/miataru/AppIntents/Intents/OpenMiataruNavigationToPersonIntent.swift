@@ -35,13 +35,45 @@ struct OpenMiataruNavigationToPersonIntent: AppIntent {
     )
     var device: String
 
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_navigation_parameter_direction",
+            defaultValue: "Direction",
+            comment: "Parameter title for choosing route direction"
+        )
+    )
+    var direction: IntentNavigationDirection?
+
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_open_miataru_navigation_to_device_parameter_presentation",
+            defaultValue: "Presentation",
+            comment: "Parameter title for choosing Miataru navigation presentation"
+        )
+    )
+    var presentation: IntentNavigationPresentation?
+
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_navigation_parameter_transport_mode",
+            defaultValue: "Transport Mode",
+            comment: "Parameter title for choosing route transport mode"
+        )
+    )
+    var transportMode: IntentTransportMode?
+
     static var parameterSummary: some ParameterSummary {
         Summary("Open Miataru navigation to \(\.$device)")
     }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let location = try await IntentLocationService.shared.latestLocation(for: device)
-        await Self.openMiataruNavigation(for: location)
+        await Self.openMiataruNavigation(
+            for: location,
+            direction: direction ?? .userToDevice,
+            presentation: presentation ?? .focused,
+            transportMode: transportMode
+        )
         let dialogText = String.localizedStringWithFormat(
             NSLocalizedString("intent_open_miataru_navigation_to_device_dialog_format", comment: "Dialog format when opening Miataru navigation to a tracked device. Argument: display name."),
             location.displayName
@@ -50,20 +82,52 @@ struct OpenMiataruNavigationToPersonIntent: AppIntent {
         return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialogText)))
     }
 
-    static func miataruNavigationURL(for location: IntentDeviceLocation) -> URL {
-        DeviceLinkResolver.navigationURL(for: location.deviceID)
+    static func miataruNavigationURL(
+        for location: IntentDeviceLocation,
+        direction: IntentNavigationDirection = .userToDevice,
+        presentation: IntentNavigationPresentation = .focused,
+        transportMode: IntentTransportMode? = nil
+    ) -> URL {
+        DeviceLinkResolver.navigationURL(
+            for: location.deviceID,
+            options: DeviceNavigationLaunchOptions(
+                direction: direction.launchDirection,
+                presentation: presentation.launchPresentation,
+                transportMode: transportMode
+            )
+        )
     }
 
-    static func miataruNavigationDestination(for location: IntentDeviceLocation) -> DeviceLinkDestination? {
-        DeviceLinkResolver.destination(from: miataruNavigationURL(for: location))
+    static func miataruNavigationDestination(
+        for location: IntentDeviceLocation,
+        direction: IntentNavigationDirection = .userToDevice,
+        presentation: IntentNavigationPresentation = .focused,
+        transportMode: IntentTransportMode? = nil
+    ) -> DeviceLinkDestination? {
+        DeviceLinkResolver.destination(
+            from: miataruNavigationURL(
+                for: location,
+                direction: direction,
+                presentation: presentation,
+                transportMode: transportMode
+            )
+        )
     }
 
     @MainActor
     static func openMiataruNavigation(
         for location: IntentDeviceLocation,
+        direction: IntentNavigationDirection = .userToDevice,
+        presentation: IntentNavigationPresentation = .focused,
+        transportMode: IntentTransportMode? = nil,
         coordinator: AppNavigationCoordinator? = nil
     ) {
-        guard let destination = miataruNavigationDestination(for: location) else { return }
+        guard let destination = miataruNavigationDestination(
+            for: location,
+            direction: direction,
+            presentation: presentation,
+            transportMode: transportMode
+        ) else { return }
         (coordinator ?? .shared).openDeviceLink(destination)
     }
 }

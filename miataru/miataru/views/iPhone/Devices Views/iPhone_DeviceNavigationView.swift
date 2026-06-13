@@ -153,15 +153,19 @@ struct iPhone_DeviceNavigationView: View {
         isNavigationMode
     }
 
+    private var effectiveNavigationTransportType: Int {
+        launchOptions.transportMode?.navigationSettingValue ?? settings.navigationTransportType
+    }
+
     private var offRouteThreshold: CLLocationDistance {
-        switch settings.navigationTransportType {
+        switch effectiveNavigationTransportType {
         case 0: return 15
         case 3: return 50
         default: return 25
         }
     }
     private var cacheReuseThreshold: CLLocationDistance {
-        switch settings.navigationTransportType {
+        switch effectiveNavigationTransportType {
         case 0: return 50
         case 3: return 150
         default: return 100
@@ -545,6 +549,7 @@ struct iPhone_DeviceNavigationView: View {
                 calculateRoute(ignoreCache: true)
             }
             .onChange(of: settings.navigationTransportType) { _, _ in
+                guard launchOptions.transportMode == nil else { return }
                 if !useCachedRouteIfValid() {
                     calculateRoute()
                 }
@@ -816,6 +821,7 @@ struct iPhone_DeviceNavigationView: View {
         }
         .offset(y: 35)
         .trackedDeviceUserActivity(for: device)
+        .trackedDeviceViewAnnotation(for: device)
     }
     
 
@@ -964,7 +970,7 @@ struct iPhone_DeviceNavigationView: View {
             if let lastDevice = lastRouteDeviceCoordinate {
                 deviceCoordinatesChanged = (lastDevice.latitude != device.latitude) || (lastDevice.longitude != device.longitude)
             }
-            let transportTypeChanged = settings.navigationTransportType != lastRouteTransportType
+            let transportTypeChanged = effectiveNavigationTransportType != lastRouteTransportType
             let shouldRecalculate = (route == nil) || userTimestampChanged || deviceTimestampChanged || userCoordinatesChanged || deviceCoordinatesChanged || transportTypeChanged
             if !shouldRecalculate { return }
         }
@@ -988,7 +994,7 @@ struct iPhone_DeviceNavigationView: View {
             request.source = MKMapItem(placemark: MKPlacemark(coordinate: user))
             request.destination = MKMapItem(placemark: MKPlacemark(coordinate: device))
         }
-        request.transportType = transportTypeFromSetting(settings.navigationTransportType)
+        request.transportType = transportTypeFromSetting(effectiveNavigationTransportType)
         let hadRouteBeforeRecalculation = route != nil
         routeCalculationGeneration &+= 1
         let calculationGeneration = routeCalculationGeneration
@@ -1013,11 +1019,11 @@ struct iPhone_DeviceNavigationView: View {
                         lastRouteDeviceCoordinate = device
                         lastRouteUserTimestamp = userTimestamp
                         lastRouteDeviceTimestamp = deviceTimestamp
-                        lastRouteTransportType = settings.navigationTransportType
+                        lastRouteTransportType = effectiveNavigationTransportType
                         // Store in cache for reuse
                         routeCache.set(
                             for: self.device.DeviceID,
-                            transportType: settings.navigationTransportType,
+                            transportType: effectiveNavigationTransportType,
                             isRouteReversed: isRouteFromDeviceToUser,
                             route: first,
                             userCoordinate: user,
@@ -1143,7 +1149,7 @@ struct iPhone_DeviceNavigationView: View {
             destination.name = device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName
         }
         var options: [String: Any] = [:]
-        switch settings.navigationTransportType {
+        switch effectiveNavigationTransportType {
         case 0: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeWalking
         case 3: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeTransit
         default: options[MKLaunchOptionsDirectionsModeKey] = MKLaunchOptionsDirectionsModeDriving
@@ -2140,7 +2146,7 @@ extension iPhone_DeviceNavigationView {
     /// - Aligns all `lastRoute*` fields so subsequent change detection remains accurate
     private func useCachedRouteIfValid() -> Bool {
         guard let user = userCoordinate, let device = deviceCoordinate else { return false }
-        let transport = settings.navigationTransportType
+        let transport = effectiveNavigationTransportType
         if let cached = routeCache.get(
             for: self.device.DeviceID,
             transportType: transport,
@@ -2199,7 +2205,7 @@ extension iPhone_DeviceNavigationView {
     }
 
     private func transportSymbolName() -> String {
-        switch settings.navigationTransportType {
+        switch effectiveNavigationTransportType {
         case 0: return "figure.walk"
         case 2: return "car"
         case 3: return "tram"

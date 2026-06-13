@@ -2,7 +2,9 @@
 
 ## Summary
 
-This stage extends existing actions instead of replacing them. The goal is to make navigation and manual frequent tracking more useful from Shortcuts, Siri, Spotlight, widgets, and on-screen context while preserving current deep-link behavior.
+Status: implemented in version 3.2.2.
+
+This stage extends existing actions instead of replacing them. Navigation and manual frequent tracking are now more useful from Shortcuts, Siri, Spotlight, widgets, and on-screen context while preserving the current deep-link behavior.
 
 Existing actions:
 
@@ -11,18 +13,18 @@ Existing actions:
 - `StartFrequentTrackingIntent`
 - `StopFrequentTrackingIntent`
 
-Planned improvements:
+Implemented improvements:
 
 - Parameterized navigation direction.
 - Parameterized transport mode.
 - Parameterized presentation mode.
 - Manual frequent tracking duration.
-- Better status and stop behavior.
-- iOS 26 View Annotation handoff from visible devices into navigation intents.
+- Stronger frequent-tracking status reasons.
+- iOS 26 on-screen entity handoff from visible devices into navigation intents.
 
 ## Navigation Parameters
 
-Add shared intent enums before changing individual intents:
+Shared intent enums:
 
 ```swift
 enum IntentNavigationDirection: String, AppEnum {
@@ -40,30 +42,30 @@ enum IntentNavigationPresentation: String, AppEnum {
     case standard
     case focused
 }
-
-enum IntentRouteApp: String, AppEnum {
-    case miataru
-    case appleMaps
-}
 ```
 
-Default behavior must match the current app:
+`IntentTransportMode` is also an `AppEnum` and continues to use the existing automobile, walking, and transit route modes.
+
+Implemented default behavior matches the existing app:
 
 - Miataru navigation defaults to `userToDevice` and `focused`.
-- Apple Maps defaults to user-to-device routing.
+- Apple Maps defaults to user-to-device routing and does not add a transport query unless the shortcut provides one.
 - Existing deep links continue to resolve through `DeviceLinkResolver`.
+
+No combined route-app enum was added in this stage. Apple Maps and Miataru navigation remain separate App Intents so each action keeps a clear privacy and handoff contract.
+
+`DeviceNavigationLaunchOptions` and `DeviceLinkResolver` now accept an optional transport override. The override is used by the launched navigation screen and does not mutate the saved navigation transport setting.
 
 ## Frequent Tracking Duration
 
-Extend `StartFrequentTrackingIntent` with an optional duration parameter.
+`StartFrequentTrackingIntent` now has an optional duration parameter.
 
-Implementation rules:
+Implemented rules:
 
 - If duration is omitted, use the current settings-driven duration behavior.
-- If duration is provided, start manual frequent tracking and calculate an expiry from the provided duration.
-- Reconcile tracking state after updating settings, matching the existing service behavior.
-- Return whether frequent tracking was already active, the new expiry, and the effective duration mode.
-- Add a maximum duration using existing app policy if one exists; otherwise document the current app-supported duration choices rather than accepting arbitrary unbounded values.
+- If duration is provided, persist that duration to the existing manual frequent setting, refresh the expiry, and reconcile tracking state through the existing service path.
+- The result reports whether frequent tracking was already active, the new expiry, and the effective duration mode.
+- Supported choices match the app's existing manual frequent durations: 1h, 2h, 3h, 4h, 12h, 24h, and unlimited.
 
 The intent must keep current preconditions:
 
@@ -75,18 +77,18 @@ The intent must keep current preconditions:
 
 `StopFrequentTrackingIntent` should continue to be safe when frequent tracking is already inactive.
 
-The status path added in Stage 2 should distinguish:
+The status path added in Stage 2 now distinguishes:
 
 - Tracking disabled.
 - Manual frequent active.
 - Smart frequent active.
 - Smart waiting.
 - Frequent expired.
-- Low battery disabled frequent mode.
+- Low battery blocked or disabled frequent mode.
 - Permission blocked.
 - DeviceKey blocked.
 
-Do not overload "stop frequent tracking" to disable Smart frequent mode unless the user explicitly asks for a Smart setting change in a future intent.
+Stop Frequent Tracking still clears only the manual frequent override. It does not disable Smart frequent mode.
 
 ## Schema Fit
 
@@ -102,26 +104,31 @@ Do not distort parameter names or behavior to fit a schema. A correct custom int
 
 On iOS 26+, visible device context should be able to feed navigation intents:
 
-- Device detail view: annotate the primary `TrackedDeviceEntity` through `NSUserActivity`.
-- Device list rows: annotate each visible row so Siri can resolve "navigate to this device" while the row is on screen.
-- Group map markers: annotate each visible marker with its device entity where current-location access is allowed.
-- Navigation screen: annotate the active destination device and later the active route.
+- Device detail and navigation contexts keep `NSUserActivity` for the primary tracked device.
+- Device list rows annotate each visible row so Siri can resolve "navigate to this device" while the row is on screen.
+- Device and group map markers annotate each visible marker with its device entity where current-location access is allowed.
+- Navigation screens annotate the active destination device.
 
 The handoff must never include hidden devices, unauthorized devices, DeviceKey, or raw server data.
 
+Implementation note: the active Xcode 26.5 SDK includes `_AppIntents_SwiftUI` symbols for a `View.appEntityIdentifier(...)` modifier, but the modifier is not visible to the Swift compiler interface in this toolchain. Direct modifier calls fail to compile. Miataru therefore centralizes the handoff in `trackedDeviceViewAnnotation(for:)`, using SwiftUI `userActivity` plus `NSUserActivity.appEntityIdentifier` after the same `TrackedDeviceIntentMetadata.entity(for:)` privacy filter. The wrapper can be switched to the direct view modifier once the SDK exposes it to Swift source.
+
 ## Testing
 
-Add or extend tests for:
+Implemented coverage:
 
-- Miataru navigation URL defaults remain unchanged.
-- New navigation parameters produce expected deep-link options.
+- Apple Maps and Miataru navigation URL defaults remain unchanged.
+- Apple Maps direction and transport query behavior.
+- Miataru deep-link direction, presentation, and transport override behavior.
 - Apple Maps URL still avoids DeviceID and display name leakage.
 - Transport mode mapping is deterministic.
-- Frequent tracking duration sets the expected expiry with an injected clock.
-- Existing no-duration frequent tracking behavior remains unchanged.
-- Stop frequent is idempotent.
+- Frequent tracking explicit duration, omitted duration, unlimited duration, and renewal behavior.
 - Permission, DeviceKey, and tracking-disabled preconditions still prevent start.
-- Annotation builders include only visible, authorized devices.
+- Low-battery frequent status.
+- Annotation builders include only visible, authorized devices with non-empty IDs.
+- App Intent and App Shortcut localization completeness.
+- App Shortcut trigger phrase placement in `AppShortcuts.xcstrings`, using one top-level key per shortcut and storing alternate phrases in `stringSet.values` so Xcode does not mark them stale.
+- Non-English App Intent and App Shortcut values are not verbatim English fallback copies and preserve all interpolation placeholders.
 
 ## Explicit Deferrals
 
@@ -129,4 +136,3 @@ Add or extend tests for:
 - Do not create a route entity index.
 - Do not add place-based navigation until Places exist.
 - Do not make callback automation part of navigation start; record events in Stage 4 first.
-

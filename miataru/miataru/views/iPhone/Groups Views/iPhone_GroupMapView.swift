@@ -549,7 +549,7 @@ struct iPhone_GroupMapView: View {
                                     .accessibilityAddTraits(.isButton)
                             }
                             .offset(y: 35)
-                            .trackedDeviceUserActivity(for: device)
+                            .trackedDeviceViewAnnotation(for: device)
                         }
                     }
                 }

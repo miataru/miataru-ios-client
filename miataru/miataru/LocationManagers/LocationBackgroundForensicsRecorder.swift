@@ -142,7 +142,8 @@ final class LocationBackgroundForensicsRecorder {
                     detail: "\(assessment.gapSeconds)s >= \(Int(LocationBackgroundForensics.frequentBackgroundGapThreshold))s."
                 )
             ],
-            context: forensicGapContext(assessment: assessment)
+            context: forensicGapContext(assessment: assessment),
+            persistence: .immediate
         )
         state.lastBackgroundGapLoggedAt = now
         if prepareForegroundRecovery {
@@ -325,7 +326,8 @@ final class LocationBackgroundForensicsRecorder {
                     detail: "Foreground activity occurred within \(Int(LocationBackgroundForensics.foregroundRecoveryBurstWindow))s."
                 )
             ],
-            context: foregroundRecoveryContext()
+            context: foregroundRecoveryContext(),
+            persistence: .immediate
         )
         state.foregroundRecoveryBurstLoggedAt = now
         persistState()

@@ -723,6 +723,7 @@ struct iPhone_DeviceMapView: View {
                         }
                         .offset(y: 35)
                         .trackedDeviceUserActivity(for: device)
+                        .trackedDeviceViewAnnotation(for: device)
                     }
                 }
                 // Other device markers visible in the current viewport only (iOS 17+)
@@ -809,7 +810,7 @@ struct iPhone_DeviceMapView: View {
                                             }
                                     }
                                     .offset(y: 35)
-                                    .trackedDeviceUserActivity(for: other)
+                                    .trackedDeviceViewAnnotation(for: other)
                                 }
                             }
                         }

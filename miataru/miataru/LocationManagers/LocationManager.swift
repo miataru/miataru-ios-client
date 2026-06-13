@@ -80,6 +80,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundMovementAnchor: CLLocation?
     private var lastSmartFrequentBackgroundLocationUpdateAt: Date?
     private var smartFrequentBackgroundProbeStartedAt: Date?
+    private var smartFrequentBackgroundConfirmedAt: Date?
     private var smartFrequentBackgroundLastFrequentCallbackAt: Date?
     private var smartFrequentBackgroundRecoveryAttemptCount = 0
     private var smartFrequentBackgroundWatchdogTimer: Timer?
@@ -500,7 +501,7 @@ final class LocationManager: NSObject, ObservableObject {
         ensureAuthorizationIfNeeded()
         isTracking = true
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
-        consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: reason)
+        let didResumeSmartFrequentRuntime = consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: reason)
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
         diagnosticsLog.append(
             level: .info,
@@ -514,9 +515,14 @@ final class LocationManager: NSObject, ObservableObject {
                 "authorizationStatus": .integer(Int(authorizationStatus.rawValue)),
                 "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
                 "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
-            ]
+            ],
+            persistence: .immediate
         )
         applyTrackingMode(reason: "restore tracking after launch: \(reason)", applicationStateContext: applicationStateContext)
+        requestSmartFrequentRestartRecoveryLocationIfNeeded(
+            didResume: didResumeSmartFrequentRuntime,
+            applicationStateContext: applicationStateContext
+        )
         refreshPendingLocationUpdateCount()
     }
 
@@ -541,7 +547,8 @@ final class LocationManager: NSObject, ObservableObject {
                 result: decision.status.result.rawValue,
                 reason: decision.status.reason,
                 checks: decision.status.checks,
-                context: ["buildIdentifier": .string(buildIdentifier)]
+                context: ["buildIdentifier": .string(buildIdentifier)],
+                persistence: .immediate
             )
             return
         }
@@ -560,7 +567,8 @@ final class LocationManager: NSObject, ObservableObject {
             context: [
                 "buildIdentifier": .string(buildIdentifier),
                 "allowsBackgroundLocationUpdates": .bool(locationManager.allowsBackgroundLocationUpdates)
-            ]
+            ],
+            persistence: .immediate
         )
     }
     
@@ -929,7 +937,8 @@ final class LocationManager: NSObject, ObservableObject {
                 "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
                 "navigationSessions": .integer(navigationLocationSessionIDs.count)
-            ]
+            ],
+            persistence: .immediate
         )
         coreLocationServices.syncLocationServiceSession(
             reason: reason,
@@ -1009,7 +1018,8 @@ final class LocationManager: NSObject, ObservableObject {
             context: [
                 "allowsBackgroundLocationUpdates": .bool(locationManager.allowsBackgroundLocationUpdates),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive)
-            ]
+            ],
+            persistence: .immediate
         )
     }
 
@@ -1042,7 +1052,8 @@ final class LocationManager: NSObject, ObservableObject {
                 "frequentActivitySessionActive": .bool(coreLocationServices.frequentBackgroundActivitySessionActive),
                 "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue)
-            ]
+            ],
+            persistence: .immediate
         )
     }
 
@@ -1336,7 +1347,8 @@ final class LocationManager: NSObject, ObservableObject {
                 ),
                 checks: [],
                 context: recoveryContext,
-                timestamp: now
+                timestamp: now,
+                persistence: .immediate
             )
             applyTrackingMode(reason: "smart frequent recovery-fence", applicationStateContext: .forceBackground)
             coreLocationServices.requestFrequentBackgroundLocation()
@@ -1481,6 +1493,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func persistConfirmedSmartFrequentBackgroundRuntimeMarker(confirmedAt: Date) {
+        smartFrequentBackgroundConfirmedAt = confirmedAt
         let marker = SmartFrequentBackgroundRuntimeMarker(
             phase: .confirmedActive,
             confirmedAt: confirmedAt,
@@ -1490,30 +1503,56 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundRuntimeMarkerStore.save(marker)
     }
 
-    private func clearPersistedSmartFrequentBackgroundRuntimeMarker() {
-        smartFrequentBackgroundRuntimeMarkerStore.clear()
-    }
-
-    private func consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: String) {
-        guard let marker = smartFrequentBackgroundRuntimeMarkerStore.consume() else {
+    private func persistCurrentConfirmedSmartFrequentBackgroundRuntimeMarkerIfNeeded() {
+        guard smartFrequentBackgroundRuntimePhase == .confirmedActive else {
             return
         }
 
-        let shouldNotify = marker.phase == .confirmedActive &&
-        marker.activationNotificationDelivered &&
-        settings.smartFrequentBackgroundModeChangeNotificationsEnabled &&
-        settings.smartFrequentBackgroundLocationUpdatesEnabled &&
-        !settings.frequentBackgroundLocationUpdatesEnabled &&
-        authorizationStatus == .authorizedAlways &&
-        settings.trackAndReportLocation &&
-        isTracking &&
-        !settings.deviceKeyAuthBlocked
+        let confirmedAt = smartFrequentBackgroundConfirmedAt ??
+        smartFrequentBackgroundProbeStartedAt ??
+        smartFrequentBackgroundLastRelevantMovementAt ??
+        Date()
+        persistConfirmedSmartFrequentBackgroundRuntimeMarker(confirmedAt: confirmedAt)
+    }
+
+    private func clearPersistedSmartFrequentBackgroundRuntimeMarker() {
+        smartFrequentBackgroundConfirmedAt = nil
+        smartFrequentBackgroundRuntimeMarkerStore.clear()
+    }
+
+    @discardableResult
+    private func consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: String,
+                                                                                        now: Date = Date()) -> Bool {
+        guard let marker = smartFrequentBackgroundRuntimeMarkerStore.consume() else {
+            return false
+        }
+
+        let inactivityWindow = settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
+        let restartAction = Self.smartFrequentRestartRecoveryAction(
+            marker: marker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            authorizationStatus: authorizationStatus,
+            trackAndReportLocation: settings.trackAndReportLocation,
+            isTracking: isTracking,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
+            modeChangeNotificationsEnabled: settings.smartFrequentBackgroundModeChangeNotificationsEnabled
+        )
+        let markerReferenceAt = Self.smartFrequentRuntimeMarkerReferenceDate(marker)
+        let markerReferenceAge = now.timeIntervalSince(markerReferenceAt)
+        let markerIsFresh = Self.isSmartFrequentRuntimeMarkerFresh(
+            marker,
+            now: now,
+            inactivityWindow: inactivityWindow
+        )
 
         diagnosticsLog.append(
-            level: shouldNotify ? .warning : .info,
+            level: restartAction == .ignore ? .info : .warning,
             event: "smartFrequentRestartRecovery",
-            summary: "Consumed persisted Smart frequent runtime marker after launch.",
-            result: shouldNotify ? "notified" : "ignored",
+            summary: restartAction == .resume ? "Restored persisted Smart frequent runtime after launch." : "Consumed persisted Smart frequent runtime marker after launch.",
+            result: restartAction.rawValue,
             reason: reason,
             checks: [
                 LocationDiagnosticsLogStore.check(
@@ -1522,9 +1561,9 @@ final class LocationManager: NSObject, ObservableObject {
                     detail: "Persisted phase: \(marker.phase.rawValue)."
                 ),
                 LocationDiagnosticsLogStore.check(
-                    "modeChangeNotificationsEnabled",
-                    settings.smartFrequentBackgroundModeChangeNotificationsEnabled,
-                    detail: "Smart frequent mode-change notifications enabled: \(settings.smartFrequentBackgroundModeChangeNotificationsEnabled)."
+                    "runtimeMarkerFresh",
+                    markerIsFresh,
+                    detail: "Marker reference age: \(markerReferenceAge)s, inactivity window: \(inactivityWindow)s."
                 ),
                 LocationDiagnosticsLogStore.check(
                     "smartEnabled",
@@ -1545,23 +1584,91 @@ final class LocationManager: NSObject, ObservableObject {
                     "trackingRestored",
                     settings.trackAndReportLocation && isTracking && !settings.deviceKeyAuthBlocked,
                     detail: "Tracking restored: \(settings.trackAndReportLocation && isTracking && !settings.deviceKeyAuthBlocked)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "modeChangeNotificationsEnabled",
+                    settings.smartFrequentBackgroundModeChangeNotificationsEnabled,
+                    detail: "Smart frequent mode-change notifications enabled: \(settings.smartFrequentBackgroundModeChangeNotificationsEnabled)."
                 )
             ],
             context: [
                 "confirmedAt": .string(ISO8601DateFormatter().string(from: marker.confirmedAt)),
                 "lastRelevantMovementAt": marker.lastRelevantMovementAt.map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("unknown"),
+                "restartRecoveryReferenceAt": .string(ISO8601DateFormatter().string(from: markerReferenceAt)),
+                "restartRecoveryReferenceAgeSeconds": .double(markerReferenceAge),
+                "inactivityWindowSeconds": .double(inactivityWindow),
                 "activationNotificationDelivered": .bool(marker.activationNotificationDelivered)
-            ]
+            ],
+            persistence: .immediate
         )
 
-        guard shouldNotify else {
+        switch restartAction {
+        case .resume:
+            resumePersistedSmartFrequentBackgroundRuntime(marker: marker, referenceAt: markerReferenceAt, now: now)
+            return true
+
+        case .notifyDeactivation:
+            notifySmartFrequentBackgroundModeChangeIfEnabled(
+                isActive: false,
+                deactivationReason: .restartRecovery
+            )
+            return false
+
+        case .ignore:
+            return false
+        }
+    }
+
+    private func resumePersistedSmartFrequentBackgroundRuntime(marker: SmartFrequentBackgroundRuntimeMarker,
+                                                              referenceAt: Date,
+                                                              now: Date) {
+        smartFrequentBackgroundConfirmedAt = marker.confirmedAt
+        smartFrequentBackgroundActivationNotificationDelivered = marker.activationNotificationDelivered
+        smartFrequentBackgroundLastRelevantMovementAt = marker.lastRelevantMovementAt ?? marker.confirmedAt
+        lastSmartFrequentBackgroundLocationUpdateAt = referenceAt
+        smartFrequentBackgroundProbeStartedAt = referenceAt
+        smartFrequentBackgroundLastFrequentCallbackAt = referenceAt
+        smartFrequentBackgroundRecoveryAttemptCount = 0
+        smartFrequentBackgroundLastMovementLocationKey = nil
+        smartFrequentBackgroundLastMovementDistanceMeters = nil
+        smartFrequentBackgroundLastMovementThresholdMeters = nil
+        smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
+        if let seedLocation = smartFrequentBackgroundSpeedReferenceLocation,
+           isUsableForSmartFrequentBackgroundState(seedLocation) {
+            smartFrequentBackgroundMovementAnchor = seedLocation
+        }
+        smartFrequentBackgroundLastActivationReason = NSLocalizedString(
+            "smart_frequent_background_activation_movement",
+            comment: "Smart frequent activation reason when movement is detected"
+        )
+        resetFrequentBackgroundAccuracyRecoveryState()
+        transitionSmartFrequentBackgroundRuntime(
+            to: .confirmedActive,
+            reason: "restored confirmed Smart frequent runtime after launch",
+            now: now
+        )
+        persistConfirmedSmartFrequentBackgroundRuntimeMarker(confirmedAt: marker.confirmedAt)
+        scheduleSmartFrequentBackgroundInactivityTimer(now: now)
+        scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
+    }
+
+    private func requestSmartFrequentRestartRecoveryLocationIfNeeded(
+        didResume: Bool,
+        applicationStateContext: TrackingApplicationStateContext
+    ) {
+        let applicationState = Self.effectiveApplicationStateForTracking(
+            currentState: UIApplication.shared.applicationState,
+            context: applicationStateContext
+        )
+        guard didResume,
+              applicationState != .active,
+              settings.smartFrequentBackgroundLocationUpdatesEnabled,
+              !settings.frequentBackgroundLocationUpdatesEnabled,
+              smartFrequentBackgroundRuntimeActive else {
             return
         }
 
-        notifySmartFrequentBackgroundModeChangeIfEnabled(
-            isActive: false,
-            deactivationReason: .restartRecovery
-        )
+        coreLocationServices.requestFrequentBackgroundLocation()
     }
 
     private func syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: UIApplication.State) {
@@ -1889,7 +1996,8 @@ final class LocationManager: NSObject, ObservableObject {
                 ("distanceMeters", evidence.distanceMeters.map { .double($0) } ?? .string("unknown")),
                 ("elapsedSeconds", evidence.elapsedSeconds.map { .double($0) } ?? .string("unknown")),
                 ("distanceFilterMeters", .integer(settings.frequentBackgroundLocationDistanceFilter))
-            ])
+            ]),
+            persistence: .immediate
         )
     }
 
@@ -1928,7 +2036,8 @@ final class LocationManager: NSObject, ObservableObject {
             reason: reason,
             checks: [],
             context: context,
-            timestamp: now
+            timestamp: now,
+            persistence: .immediate
         )
     }
 
@@ -1979,7 +2088,8 @@ final class LocationManager: NSObject, ObservableObject {
                 ("distanceMeters", smartFrequentBackgroundLastMovementDistanceMeters.map { .double($0) } ?? .string("unknown")),
                 ("distanceFilterMeters", .integer(settings.frequentBackgroundLocationDistanceFilter))
             ]),
-            timestamp: now
+            timestamp: now,
+            persistence: .immediate
         )
     }
 
@@ -2022,7 +2132,8 @@ final class LocationManager: NSObject, ObservableObject {
                 result: "deactivated",
                 reason: reason,
                 checks: [],
-                context: context
+                context: context,
+                persistence: .immediate
             )
             if shouldNotifyDeactivation {
                 notifySmartFrequentBackgroundModeChangeIfEnabled(isActive: false)
@@ -2099,6 +2210,7 @@ final class LocationManager: NSObject, ObservableObject {
             smartFrequentBackgroundLastMovementLocationKey = Self.locationSubmissionDeduplicationKey(for: location)
             smartFrequentBackgroundLastMovementDistanceMeters = nil
             smartFrequentBackgroundLastMovementThresholdMeters = CLLocationDistance(settings.frequentBackgroundLocationDistanceFilter)
+            persistCurrentConfirmedSmartFrequentBackgroundRuntimeMarkerIfNeeded()
             return true
         }
 
@@ -2118,6 +2230,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundLastMovementLocationKey = Self.locationSubmissionDeduplicationKey(for: location)
         smartFrequentBackgroundLastMovementDistanceMeters = distance
         smartFrequentBackgroundLastMovementThresholdMeters = movementThreshold
+        persistCurrentConfirmedSmartFrequentBackgroundRuntimeMarkerIfNeeded()
         return true
     }
 
@@ -2320,7 +2433,8 @@ final class LocationManager: NSObject, ObservableObject {
             reason: "frequent background callback watchdog",
             checks: [],
             context: diagnosticsContext,
-            timestamp: now
+            timestamp: now,
+            persistence: .immediate
         )
 
         if isTracking {
@@ -2434,7 +2548,8 @@ final class LocationManager: NSObject, ObservableObject {
                 checks: [
                     LocationDiagnosticsLogStore.check("deviceKeyNotBlocked", false, detail: "DeviceKey auth is blocked.")
                 ],
-                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location),
+                persistence: .immediate
             )
             return
         }
@@ -2448,7 +2563,8 @@ final class LocationManager: NSObject, ObservableObject {
                 result: "failed",
                 reason: "invalid server configuration",
                 checks: [],
-                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location),
+                persistence: .immediate
             )
             return
         }
@@ -2482,7 +2598,8 @@ final class LocationManager: NSObject, ObservableObject {
                 result: "failed",
                 reason: "invalid location values",
                 checks: [],
-                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location),
+                persistence: .immediate
             )
             return
         case .delivery(let deliveryResult):
@@ -2513,14 +2630,15 @@ final class LocationManager: NSObject, ObservableObject {
             debugLog("[LocationManager] updateLocation queued for retry/outbox delivery")
             self.serverUpdateStatus = .idle
             self.refreshPendingLocationUpdateCount()
-            diagnosticsLog.append(
+            diagnosticsLog.appendCoalesced(
                 level: .warning,
                 event: "locationUpload",
                 summary: "Location update queued for retry/outbox delivery.",
                 result: "queued",
                 reason: nil,
-                checks: [],
-                context: LocationDiagnosticsLogStore.roundedLocationContext(location)
+                coalescingKey: "locationUpload|queued|\(applicationState.rawValue)",
+                context: LocationDiagnosticsLogStore.roundedLocationContext(location),
+                sampleEvery: 100
             )
         case .failed(let error):
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
@@ -2541,7 +2659,8 @@ final class LocationManager: NSObject, ObservableObject {
                 context: diagnosticsLocationContext(location, extra: [
                     ("apiErrorCategory", .string(Self.apiErrorDiagnosticCategory(error))),
                     ("retryable", .bool(MiataruRetryClassifier.isRetryable(error)))
-                ])
+                ]),
+                persistence: .immediate
             )
         }
     }

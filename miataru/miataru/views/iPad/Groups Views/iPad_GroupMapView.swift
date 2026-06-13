@@ -557,7 +557,7 @@ struct iPad_GroupMapView: View {
                                     }
                             }
                             .offset(y: 35)
-                            .trackedDeviceUserActivity(for: device)
+                            .trackedDeviceViewAnnotation(for: device)
                             .accessibilityElement()
                             .accessibilityLabel(Text(annotationID))
                             .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))

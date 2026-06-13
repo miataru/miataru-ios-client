@@ -101,4 +101,15 @@ extension View {
             self
         }
     }
+
+    @ViewBuilder
+    func trackedDeviceViewAnnotation(for device: KnownDevice) -> some View {
+        if #available(iOS 26.0, *), let entity = TrackedDeviceIntentMetadata.entity(for: device) {
+            userActivity(TrackedDeviceIntentMetadata.userActivityType, element: entity) { entity, activity in
+                TrackedDeviceIntentMetadata.annotate(activity, with: entity)
+            }
+        } else {
+            self
+        }
+    }
 }

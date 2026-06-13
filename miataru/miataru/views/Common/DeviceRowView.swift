@@ -124,7 +124,7 @@ struct DeviceRowView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(accessibilityLabel))
         .accessibilityValue(Text(subtitleText(from: displayedCachedLocation)))
-        .trackedDeviceUserActivity(for: device)
+        .trackedDeviceViewAnnotation(for: device)
     }
 
     private var displayName: String {

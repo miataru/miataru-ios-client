@@ -25,12 +25,21 @@ struct StartFrequentTrackingIntent: AppIntent {
     )
     static var openAppWhenRun: Bool = false
 
+    @Parameter(
+        title: LocalizedStringResource(
+            "intent_start_frequent_tracking_parameter_duration",
+            defaultValue: "Duration",
+            comment: "Parameter title for choosing how long frequent tracking should stay active"
+        )
+    )
+    var duration: IntentFrequentTrackingDuration?
+
     static var parameterSummary: some ParameterSummary {
-        Summary("Start frequent tracking")
+        Summary("Start frequent tracking for \(\.$duration)")
     }
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let result = try await IntentFrequentTrackingService.shared.startFrequentTracking()
+        let result = try await IntentFrequentTrackingService.shared.startFrequentTracking(duration: duration)
         return .result(dialog: IntentDialog(LocalizedStringResource(stringLiteral: result.dialogText)))
     }
 }

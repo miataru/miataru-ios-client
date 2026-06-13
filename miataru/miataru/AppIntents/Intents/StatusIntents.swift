@@ -362,6 +362,8 @@ enum IntentStatusFormatting {
             return NSLocalizedString("intent_frequent_tracking_blocking_reason_device_key_blocked", comment: "Frequent tracking blocking reason: DeviceKey blocked")
         case .alwaysAuthorizationRequired:
             return NSLocalizedString("intent_frequent_tracking_blocking_reason_always_authorization_required", comment: "Frequent tracking blocking reason: Always location authorization required")
+        case .lowBatteryDisabled:
+            return NSLocalizedString("intent_frequent_tracking_blocking_reason_low_battery_disabled", comment: "Frequent tracking blocking reason: low battery disabled frequent mode")
         }
     }
 
@@ -370,18 +372,25 @@ enum IntentStatusFormatting {
             return NSLocalizedString("intent_bearing_unknown", comment: "Bearing text when direction is unknown")
         }
 
-        let labels = [
-            "intent_bearing_north",
-            "intent_bearing_northeast",
-            "intent_bearing_east",
-            "intent_bearing_southeast",
-            "intent_bearing_south",
-            "intent_bearing_southwest",
-            "intent_bearing_west",
-            "intent_bearing_northwest"
-        ]
         let index = Int(((bearingDegrees + 22.5).truncatingRemainder(dividingBy: 360)) / 45)
-        return NSLocalizedString(labels[index], comment: "Localized cardinal bearing")
+        switch index {
+        case 0:
+            return NSLocalizedString("intent_bearing_north", comment: "Localized cardinal bearing: north")
+        case 1:
+            return NSLocalizedString("intent_bearing_northeast", comment: "Localized cardinal bearing: northeast")
+        case 2:
+            return NSLocalizedString("intent_bearing_east", comment: "Localized cardinal bearing: east")
+        case 3:
+            return NSLocalizedString("intent_bearing_southeast", comment: "Localized cardinal bearing: southeast")
+        case 4:
+            return NSLocalizedString("intent_bearing_south", comment: "Localized cardinal bearing: south")
+        case 5:
+            return NSLocalizedString("intent_bearing_southwest", comment: "Localized cardinal bearing: southwest")
+        case 6:
+            return NSLocalizedString("intent_bearing_west", comment: "Localized cardinal bearing: west")
+        default:
+            return NSLocalizedString("intent_bearing_northwest", comment: "Localized cardinal bearing: northwest")
+        }
     }
 
     static func localizedTransportMode(_ mode: IntentTransportMode) -> String {

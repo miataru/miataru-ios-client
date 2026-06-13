@@ -7,8 +7,18 @@ version 3.2.2
 - Added service-layer status result models with injectable current-location, navigation-settings, and route providers so App Intent behavior remains testable without SwiftUI state.
 - Localized the new status intent titles, descriptions, parameters, dialogs, errors, shortcut titles, mode labels, bearing labels, transport labels, and AppIntents-extracted summaries across all supported app locales.
 - Added App Intent regression coverage for tracking/frequent status combinations, device status age/place/accuracy, hidden and empty device rejection, distance and bearing math, ETA success/failure, dialog privacy, and localization completeness.
+- Added Intent Sprint Step 03 navigation controls: Apple Maps and Miataru navigation now accept optional route direction and transport mode, while Miataru navigation also accepts standard/focused presentation.
+- Preserved existing navigation defaults: Apple Maps still opens user-to-device without a transport query unless one is explicitly chosen, and Miataru navigation still opens user-to-device in focused mode.
+- Extended Miataru navigation launch options and deep-link resolution with a temporary transport override that affects the launched route without changing the saved navigation setting.
+- Added optional manual frequent-tracking duration choices to the Start Frequent Tracking intent, including the existing one-hour through 24-hour presets and unlimited mode.
+- Added low-battery blocked/disabled frequent-tracking status output while keeping Stop Frequent Tracking limited to clearing only the manual frequent override.
+- Added iOS 26 on-screen tracked-device handoff for visible device rows, map markers, details, and navigation contexts through privacy-filtered `NSUserActivity.appEntityIdentifier` annotations.
+- Localized all App Shortcut phrases in `AppShortcuts.xcstrings` using string-set values for alternate trigger phrases, localized Step 03 intent parameters/enums and extracted summaries in `Localizable.xcstrings`, and removed stale string-catalog entries for shortcut phrases and obsolete summaries.
+- Replaced English fallback copies in non-English App Intent titles, summaries, dialogs, status labels, and extracted shortcut metadata, with regression coverage for verbatim English fallbacks and placeholder drift.
+- Added App Intent regression coverage for navigation direction/transport/presentation behavior, manual frequent duration overrides, low-battery frequent status, annotation privacy filtering, shortcut localization completeness, and App Shortcut phrase table placement.
 - Updated project metadata for version 3.2.2 build 1.
 - Consolidated project documentation under the root `documentation/` folder and coalesced related implementation notes into topic references.
+- Reduced Location Diagnostics resource pressure during frequent background tracking by batching persisted writes, compacting the backing JSON file, coalescing queued/flushed upload diagnostics, and keeping key forensic breadcrumbs immediate.
 
 version 3.2.1
 - Changed the default server-side location history retention from 24 hours to 30 minutes across runtime defaults, iOS Settings, and regression coverage.
