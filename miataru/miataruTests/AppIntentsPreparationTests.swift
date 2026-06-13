@@ -348,6 +348,326 @@ struct AppIntentsPreparationTests {
         ])
     }
 
+    @Test("Tracking status reports stopped when normal tracking is off")
+    func trackingStatusReportsStoppedWhenTrackingIsOff() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(locationTrackingEnabled: false, locationTrackingActive: false)
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        let status = await service.trackingStatus()
+
+        #expect(status.trackingEnabled == false)
+        #expect(status.effectiveMode == .stopped)
+        #expect(status.frequentTracking.blockingReason == .trackingDisabled)
+        #expect(GetTrackingStatusIntent.isTrackingActive(status) == false)
+    }
+
+    @Test("Tracking status reports blocked while DeviceKey auth is blocked")
+    func trackingStatusReportsDeviceKeyBlocked() async {
+        let controller = FakeFrequentTrackingController(
+            state: frequentTrackingState(deviceKeyAuthBlocked: true)
+        )
+        let service = IntentFrequentTrackingService(controller: controller)
+
+        let status = await service.trackingStatus()
+
+        #expect(status.deviceKeyAuthBlocked)
+        #expect(status.effectiveMode == .blocked)
+        #expect(status.frequentTracking.blockingReason == .deviceKeyBlocked)
+        #expect(GetTrackingStatusIntent.dialogText(for: status).contains("SECRET-DEVICE-KEY") == false)
+    }
+
+    @Test("Tracking status maps smart and manual frequent modes")
+    func trackingStatusMapsSmartAndManualFrequentModes() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let manualController = FakeFrequentTrackingController(
+            state: frequentTrackingState(
+                manualFrequentTrackingEnabled: true,
+                frequentTrackingExpiresAt: now.addingTimeInterval(3_600)
+            )
+        )
+        let smartController = FakeFrequentTrackingController(
+            state: frequentTrackingState(
+                smartFrequentTrackingEnabled: true,
+                smartFrequentTrackingRuntimeActive: true
+            )
+        )
+        let waitingController = FakeFrequentTrackingController(
+            state: frequentTrackingState(smartFrequentTrackingEnabled: true)
+        )
+
+        let manualStatus = await IntentFrequentTrackingService(controller: manualController, nowProvider: { now }).trackingStatus()
+        let smartStatus = await IntentFrequentTrackingService(controller: smartController, nowProvider: { now }).trackingStatus()
+        let waitingStatus = await IntentFrequentTrackingService(controller: waitingController, nowProvider: { now }).trackingStatus()
+
+        #expect(manualStatus.effectiveMode == .manualFrequentActive)
+        #expect(smartStatus.effectiveMode == .smartFrequentActive)
+        #expect(waitingStatus.effectiveMode == .smartWaiting)
+    }
+
+    @Test("Frequent tracking status covers inactive active unlimited and expired")
+    func frequentTrackingStatusCoversCommonStates() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let activeExpiration = now.addingTimeInterval(7_200)
+        let inactive = await IntentFrequentTrackingService(
+            controller: FakeFrequentTrackingController(state: frequentTrackingState()),
+            nowProvider: { now }
+        ).frequentTrackingStatus()
+        let activeWithExpiry = await IntentFrequentTrackingService(
+            controller: FakeFrequentTrackingController(
+                state: frequentTrackingState(
+                    manualFrequentTrackingEnabled: true,
+                    frequentTrackingExpiresAt: activeExpiration,
+                    durationMode: .twoHours
+                )
+            ),
+            nowProvider: { now }
+        ).frequentTrackingStatus()
+        let activeWithoutExpiry = await IntentFrequentTrackingService(
+            controller: FakeFrequentTrackingController(
+                state: frequentTrackingState(
+                    manualFrequentTrackingEnabled: true,
+                    frequentTrackingExpiresAt: nil,
+                    durationMode: .unlimited
+                )
+            ),
+            nowProvider: { now }
+        ).frequentTrackingStatus()
+        let expired = await IntentFrequentTrackingService(
+            controller: FakeFrequentTrackingController(
+                state: frequentTrackingState(
+                    manualFrequentTrackingEnabled: true,
+                    frequentTrackingExpiresAt: now.addingTimeInterval(-60),
+                    durationMode: .oneHour
+                )
+            ),
+            nowProvider: { now }
+        ).frequentTrackingStatus()
+
+        #expect(inactive.active == false)
+        #expect(activeWithExpiry.active)
+        #expect(activeWithExpiry.expiresAt == activeExpiration)
+        #expect(activeWithExpiry.remainingSeconds == 7_200)
+        #expect(activeWithoutExpiry.active)
+        #expect(activeWithoutExpiry.remainingSeconds == nil)
+        #expect(expired.active == false)
+        #expect(expired.remainingSeconds == 0)
+    }
+
+    @Test("Device status includes cached place and stable age")
+    func deviceStatusIncludesCachedPlaceAndStableAge() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let timestamp = now.addingTimeInterval(-3_600)
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: timestamp,
+                        horizontalAccuracy: 12
+                    )
+                ],
+                placeDescriptions: ["DEVICE-1": "Berlin, Germany"]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(
+                location: IntentUserLocation(latitude: 52.50, longitude: 13.40, timestamp: now)
+            ),
+            nowProvider: { now }
+        )
+
+        let status = try await service.deviceStatus(for: "DEVICE-1")
+
+        #expect(status.deviceID == "DEVICE-1")
+        #expect(status.displayName == "Steffi")
+        #expect(status.timestamp == timestamp)
+        #expect(status.ageText == IntentDeviceLocation.ageText(for: timestamp, referenceDate: now))
+        #expect(status.horizontalAccuracy == 12)
+        #expect(status.coarsePlaceDescription == "Berlin, Germany")
+        #expect(status.distanceMeters != nil)
+    }
+
+    @Test("Empty DeviceID is rejected for status intents")
+    func emptyDeviceIDIsRejectedForStatusIntents() async {
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ]
+            )
+        )
+
+        await expectLocationError(.deviceUnavailable) {
+            _ = try await service.deviceStatus(for: "  ")
+        }
+    }
+
+    @Test("Distance status uses Core Location distance and bearing")
+    func distanceStatusUsesCoreLocationDistanceAndBearing() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let userLocation = IntentUserLocation(latitude: 52.52, longitude: 13.405, timestamp: now)
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.52,
+                        longitude: 13.505,
+                        timestamp: now,
+                        horizontalAccuracy: nil
+                    )
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(location: userLocation),
+            nowProvider: { now }
+        )
+
+        let status = try await service.distanceStatus(for: "DEVICE-1")
+        let expectedDistance = CLLocation(latitude: 52.52, longitude: 13.405)
+            .distance(from: CLLocation(latitude: 52.52, longitude: 13.505))
+
+        #expect(abs((status.distanceMeters ?? 0) - expectedDistance) < 0.5)
+        #expect((status.bearingDegrees ?? 0) > 80)
+        #expect((status.bearingDegrees ?? 0) < 100)
+    }
+
+    @Test("Distance status requires current user location")
+    func distanceStatusRequiresCurrentUserLocation() async {
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: Date(),
+                        horizontalAccuracy: nil
+                    )
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(location: nil)
+        )
+
+        await expectLocationError(.userLocationUnavailable) {
+            _ = try await service.distanceStatus(for: "DEVICE-1")
+        }
+    }
+
+    @Test("ETA status uses injected route provider and transport mode")
+    func etaStatusUsesInjectedRouteProviderAndTransportMode() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let routeProvider = FakeRouteProvider(
+            result: .success(IntentRouteStatus(expectedTravelTimeSeconds: 900, distanceMeters: 5_000))
+        )
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: now,
+                        horizontalAccuracy: nil
+                    )
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(
+                location: IntentUserLocation(latitude: 52.50, longitude: 13.40, timestamp: now)
+            ),
+            routeProvider: routeProvider,
+            navigationSettingsProvider: FakeNavigationSettingsProvider(mode: .walking),
+            nowProvider: { now }
+        )
+
+        let status = try await service.etaStatus(for: "DEVICE-1")
+
+        #expect(status.expectedTravelTimeSeconds == 900)
+        #expect(status.distanceMeters == 5_000)
+        #expect(status.transportMode == .walking)
+        #expect(routeProvider.requests.count == 1)
+        #expect(routeProvider.requests.first?.transportMode == .walking)
+    }
+
+    @Test("ETA failure returns localized error without route details")
+    func etaFailureReturnsLocalizedErrorWithoutRouteDetails() async {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: now,
+                        horizontalAccuracy: nil
+                    )
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(
+                location: IntentUserLocation(latitude: 52.50, longitude: 13.40, timestamp: now)
+            ),
+            routeProvider: FakeRouteProvider(result: .failure(IntentLocationError.etaUnavailable)),
+            nowProvider: { now }
+        )
+
+        await expectLocationError(.etaUnavailable) {
+            _ = try await service.etaStatus(for: "DEVICE-1")
+        }
+        let message = IntentLocationError.etaUnavailable.errorDescription ?? ""
+        #expect(message.contains("MKDirections") == false)
+        #expect(message.contains("52.52") == false)
+    }
+
+    @Test("Status dialogs do not leak device identifiers or raw coordinates")
+    func statusDialogsDoNotLeakSensitiveIdentifiers() {
+        let deviceStatus = IntentDeviceStatus(
+            deviceID: "SECRET-DEVICE-ID",
+            displayName: "SECRET-DEVICE-ID",
+            timestamp: Date(timeIntervalSince1970: 1_800_000_000),
+            ageText: "one minute",
+            horizontalAccuracy: 12,
+            coarsePlaceDescription: "Berlin",
+            distanceMeters: 1_200,
+            bearingDegrees: 90
+        )
+        let etaStatus = IntentETAStatus(
+            deviceStatus: deviceStatus,
+            expectedTravelTimeSeconds: 900,
+            distanceMeters: 1_200,
+            transportMode: .automobile
+        )
+
+        let dialogs = [
+            GetDeviceStatusIntent.dialogText(for: deviceStatus),
+            GetDistanceToDeviceIntent.dialogText(for: deviceStatus),
+            GetETAForDeviceIntent.dialogText(for: etaStatus)
+        ]
+
+        for dialog in dialogs {
+            #expect(dialog.contains("SECRET-DEVICE-ID") == false)
+            #expect(dialog.contains("52.") == false)
+            #expect(dialog.contains("13.") == false)
+            #expect(dialog.contains("MiataruAPI") == false)
+        }
+    }
+
     @Test("App Intent localization keys exist for all app locales")
     func appIntentLocalizationKeysExistForAllAppLocales() throws {
         let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
@@ -355,6 +675,11 @@ struct AppIntentsPreparationTests {
         let strings = try #require(json?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
         let appIntentExtractionKeys = [
+            "Get Miataru tracking status",
+            "Get frequent tracking status",
+            "Get status for ${device}",
+            "Get distance to ${device}",
+            "Get ETA to ${device}",
             "Open Apple Maps route to ${device}",
             "Open Miataru navigation to ${device}",
             "Show location of ${device}",
@@ -423,16 +748,24 @@ struct AppIntentsPreparationTests {
         deviceKeyAuthBlocked: Bool = false,
         authorizationStatus: CLAuthorizationStatus = .authorizedAlways,
         manualFrequentTrackingEnabled: Bool = false,
+        smartFrequentTrackingEnabled: Bool = false,
+        smartFrequentTrackingRuntimeActive: Bool = false,
         frequentTrackingExpiresAt: Date? = nil,
-        durationMode: FrequentBackgroundLocationUpdateDuration = .fourHours
+        durationMode: FrequentBackgroundLocationUpdateDuration = .fourHours,
+        applicationState: UIApplication.State = .background,
+        locationTrackingActive: Bool = true
     ) -> IntentFrequentTrackingState {
         IntentFrequentTrackingState(
             locationTrackingEnabled: locationTrackingEnabled,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked,
             authorizationStatus: authorizationStatus,
             manualFrequentTrackingEnabled: manualFrequentTrackingEnabled,
+            smartFrequentTrackingEnabled: smartFrequentTrackingEnabled,
+            smartFrequentTrackingRuntimeActive: smartFrequentTrackingRuntimeActive,
             frequentTrackingExpiresAt: frequentTrackingExpiresAt,
-            durationMode: durationMode
+            durationMode: durationMode,
+            applicationState: applicationState,
+            locationTrackingActive: locationTrackingActive
         )
     }
 
@@ -465,8 +798,12 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
             deviceKeyAuthBlocked: currentState.deviceKeyAuthBlocked,
             authorizationStatus: currentState.authorizationStatus,
             manualFrequentTrackingEnabled: true,
+            smartFrequentTrackingEnabled: currentState.smartFrequentTrackingEnabled,
+            smartFrequentTrackingRuntimeActive: currentState.smartFrequentTrackingRuntimeActive,
             frequentTrackingExpiresAt: currentState.durationMode.expirationDate(from: now),
-            durationMode: currentState.durationMode
+            durationMode: currentState.durationMode,
+            applicationState: currentState.applicationState,
+            locationTrackingActive: currentState.locationTrackingActive
         )
     }
 
@@ -477,8 +814,12 @@ private final class FakeFrequentTrackingController: IntentFrequentTrackingContro
             deviceKeyAuthBlocked: currentState.deviceKeyAuthBlocked,
             authorizationStatus: currentState.authorizationStatus,
             manualFrequentTrackingEnabled: false,
+            smartFrequentTrackingEnabled: currentState.smartFrequentTrackingEnabled,
+            smartFrequentTrackingRuntimeActive: currentState.smartFrequentTrackingRuntimeActive,
             frequentTrackingExpiresAt: nil,
-            durationMode: currentState.durationMode
+            durationMode: currentState.durationMode,
+            applicationState: currentState.applicationState,
+            locationTrackingActive: currentState.locationTrackingActive
         )
     }
 
@@ -502,5 +843,39 @@ private struct FakeIntentLocationProvider: IntentLocationDataProviding {
 
     func cachedPlaceDescription(for deviceID: String) async -> String? {
         placeDescriptions[deviceID]
+    }
+}
+
+private struct FakeCurrentLocationProvider: IntentCurrentLocationProviding {
+    var location: IntentUserLocation?
+
+    func currentUserLocation() async -> IntentUserLocation? {
+        location
+    }
+}
+
+private struct FakeNavigationSettingsProvider: IntentNavigationSettingsProviding {
+    var mode: IntentTransportMode = .automobile
+
+    func transportMode() async -> IntentTransportMode {
+        mode
+    }
+}
+
+private final class FakeRouteProvider: IntentRouteProviding, @unchecked Sendable {
+    var result: Result<IntentRouteStatus, Error>
+    private(set) var requests: [(source: IntentCoordinate, destination: IntentCoordinate, transportMode: IntentTransportMode)] = []
+
+    init(result: Result<IntentRouteStatus, Error>) {
+        self.result = result
+    }
+
+    func route(
+        from source: IntentCoordinate,
+        to destination: IntentCoordinate,
+        transportMode: IntentTransportMode
+    ) async throws -> IntentRouteStatus {
+        requests.append((source, destination, transportMode))
+        return try result.get()
     }
 }

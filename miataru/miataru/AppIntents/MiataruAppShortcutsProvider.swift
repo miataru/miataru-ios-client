@@ -82,5 +82,61 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             ),
             systemImageName: "location.slash"
         )
+
+        AppShortcut(
+            intent: GetTrackingStatusIntent(),
+            phrases: [
+                "Check tracking status in \(.applicationName)",
+                "Is Miataru tracking active in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_get_tracking_status_shortcut_title",
+                defaultValue: "Tracking Status",
+                comment: "Short title for the tracking status App Shortcut"
+            ),
+            systemImageName: "location.circle"
+        )
+
+        AppShortcut(
+            intent: GetFrequentTrackingStatusIntent(),
+            phrases: [
+                "Check frequent tracking in \(.applicationName)",
+                "How long is frequent tracking active in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_get_frequent_tracking_status_shortcut_title",
+                defaultValue: "Frequent Status",
+                comment: "Short title for the frequent tracking status App Shortcut"
+            ),
+            systemImageName: "location.fill"
+        )
+
+        AppShortcut(
+            intent: GetDeviceStatusIntent(),
+            phrases: [
+                "Check a device status in \(.applicationName)",
+                "How old is a Miataru location in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_get_device_status_shortcut_title",
+                defaultValue: "Device Status",
+                comment: "Short title for the device status App Shortcut"
+            ),
+            systemImageName: "clock"
+        )
+
+        AppShortcut(
+            intent: GetDistanceToDeviceIntent(),
+            phrases: [
+                "Check distance to a device in \(.applicationName)",
+                "How far away is a Miataru device in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource(
+                "intent_get_distance_to_device_shortcut_title",
+                defaultValue: "Device Distance",
+                comment: "Short title for the distance to device App Shortcut"
+            ),
+            systemImageName: "ruler"
+        )
     }
 }

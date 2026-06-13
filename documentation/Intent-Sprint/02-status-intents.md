@@ -12,6 +12,16 @@ This is the first concrete implementation stage. Add App Intents that answer sta
 
 These intents should be service-first, structured where possible, privacy-safe in dialogs, and compatible with the existing dynamic string device parameter strategy.
 
+## Implementation Status
+
+Implemented on 2026-06-13:
+
+- Added service-layer status models in `IntentStatusModels.swift`, including injectable current-location, route, and navigation-settings providers.
+- Extended `IntentFrequentTrackingService` with read-only tracking and frequent-tracking status snapshots backed by `SettingsManager` and `LocationManager` policy state.
+- Extended `IntentLocationService` with device status, distance, and ETA methods that reuse visible-device validation, cached placemark descriptions, current user location, and injectable route calculation.
+- Added all five status App Intents. Tracking status, frequent tracking status, device status, and distance are promoted as App Shortcuts; ETA remains an App Intent only.
+- Added all new App Intent localization keys across the ten app locales and expanded `AppIntentsPreparationTests` for status, distance, ETA, dialog privacy, and localization coverage.
+
 ## Existing Anchors
 
 Reuse and extend the current App Intents implementation:
@@ -168,4 +178,3 @@ Extend `AppIntentsPreparationTests` or add a focused status-intents suite coveri
 - Do not add an EventStore dependency in this stage.
 - Do not promote ETA to App Shortcuts until route reliability and prompt behavior are validated.
 - Do not replace dynamic string device parameters with entity parameters until Shortcuts serialization is verified.
-

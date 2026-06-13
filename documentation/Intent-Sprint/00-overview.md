@@ -21,8 +21,9 @@ The current app already has a first App Intents layer, documented here with the 
 - `OpenRouteToDeviceIntent` opens Apple Maps without leaking DeviceKey or raw API data.
 - `OpenMiataruNavigationToDeviceIntent` opens Miataru's internal navigation deep link.
 - `StartFrequentTrackingIntent` and `StopFrequentTrackingIntent` control manual frequent tracking.
+- `GetTrackingStatusIntent`, `GetFrequentTrackingStatusIntent`, `GetDeviceStatusIntent`, `GetDistanceToDeviceIntent`, and `GetETAForDeviceIntent` answer privacy-safe status questions without opening maps or starting navigation.
 - `IntentLocationService` and `IntentFrequentTrackingService` keep intent behavior testable.
-- `AppIntentsPreparationTests` covers entity mapping, privacy-safe URLs, visible-device filtering, frequent tracking preconditions, and localization key coverage.
+- `AppIntentsPreparationTests` covers entity mapping, privacy-safe URLs, visible-device filtering, frequent tracking preconditions, status/distance/ETA service behavior, dialog privacy, and localization key coverage.
 
 The current Shortcuts-facing device parameter intentionally uses dynamic string options because dynamic AppEntity selections have previously failed in Shortcuts with runtime serialization errors. Do not replace that path until entity selection is verified across Shortcuts, Spotlight, and Siri.
 

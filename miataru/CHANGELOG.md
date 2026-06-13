@@ -1,4 +1,9 @@
 version 3.2.2
+- Added Step 02 App Intents for tracking status, frequent tracking status, device status, distance to a device, and ETA to a device.
+- Promoted the reliable status and distance intents as App Shortcuts while keeping ETA as an advanced App Intent until route reliability is validated.
+- Added service-layer status result models with injectable current-location, navigation-settings, and route providers so App Intent behavior remains testable without SwiftUI state.
+- Localized the new status intent titles, descriptions, parameters, dialogs, errors, shortcut titles, mode labels, bearing labels, transport labels, and AppIntents-extracted summaries across all supported app locales.
+- Added App Intent regression coverage for tracking/frequent status combinations, device status age/place/accuracy, hidden and empty device rejection, distance and bearing math, ETA success/failure, dialog privacy, and localization completeness.
 - Updated project metadata for version 3.2.2 build 1.
 - Consolidated project documentation under the root `documentation/` folder and coalesced related implementation notes into topic references.
 

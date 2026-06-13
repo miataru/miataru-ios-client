@@ -227,7 +227,7 @@ enum LocationUpdateOutboxRetentionMode: Int {
     }
 }
 
-enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable {
+enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable, Sendable {
     case unlimited = 0
     case oneHour = 3_600
     case twoHours = 7_200

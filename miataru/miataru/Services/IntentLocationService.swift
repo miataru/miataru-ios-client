@@ -15,6 +15,9 @@ protocol IntentLocationServicing: Sendable {
     func suggestedDevices() async throws -> [TrackedDeviceEntity]
     func device(for id: String) async throws -> TrackedDeviceEntity?
     func latestLocation(for deviceID: String) async throws -> IntentDeviceLocation
+    func deviceStatus(for deviceID: String) async throws -> IntentDeviceStatus
+    func distanceStatus(for deviceID: String) async throws -> IntentDeviceStatus
+    func etaStatus(for deviceID: String) async throws -> IntentETAStatus
     func knownPlaces() async throws -> [Never]
     func place(for id: String) async throws -> Never?
 }
@@ -58,6 +61,8 @@ enum IntentLocationError: LocalizedError, Equatable {
     case noLocationAvailable
     case networkUnavailable
     case invalidServerConfiguration
+    case userLocationUnavailable
+    case etaUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -73,6 +78,10 @@ enum IntentLocationError: LocalizedError, Equatable {
             return NSLocalizedString("intent_location_error_network_unavailable", comment: "Error when the Miataru server cannot be reached")
         case .invalidServerConfiguration:
             return NSLocalizedString("intent_location_error_invalid_server_configuration", comment: "Error when the Miataru server URL is invalid")
+        case .userLocationUnavailable:
+            return NSLocalizedString("intent_location_error_user_location_unavailable", comment: "Error when the user's current location is unavailable")
+        case .etaUnavailable:
+            return NSLocalizedString("intent_location_error_eta_unavailable", comment: "Error when a route ETA cannot be calculated")
         }
     }
 }
@@ -101,9 +110,23 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
     static let shared = IntentLocationService()
 
     private let provider: any IntentLocationDataProviding
+    private let currentLocationProvider: any IntentCurrentLocationProviding
+    private let routeProvider: any IntentRouteProviding
+    private let navigationSettingsProvider: any IntentNavigationSettingsProviding
+    private let nowProvider: @Sendable () -> Date
 
-    init(provider: any IntentLocationDataProviding = MiataruIntentLocationDataProvider()) {
+    init(
+        provider: any IntentLocationDataProviding = MiataruIntentLocationDataProvider(),
+        currentLocationProvider: any IntentCurrentLocationProviding = MiataruIntentCurrentLocationProvider(),
+        routeProvider: any IntentRouteProviding = MiataruIntentRouteProvider(),
+        navigationSettingsProvider: any IntentNavigationSettingsProviding = MiataruIntentNavigationSettingsProvider(),
+        nowProvider: @escaping @Sendable () -> Date = { Date() }
+    ) {
         self.provider = provider
+        self.currentLocationProvider = currentLocationProvider
+        self.routeProvider = routeProvider
+        self.navigationSettingsProvider = navigationSettingsProvider
+        self.nowProvider = nowProvider
     }
 
     func suggestedDevices() async throws -> [TrackedDeviceEntity] {
@@ -137,6 +160,51 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         )
     }
 
+    func deviceStatus(for deviceID: String) async throws -> IntentDeviceStatus {
+        let location = try await latestLocation(for: deviceID)
+        return Self.status(
+            from: location,
+            userLocation: await currentLocationProvider.currentUserLocation(),
+            referenceDate: nowProvider()
+        )
+    }
+
+    func distanceStatus(for deviceID: String) async throws -> IntentDeviceStatus {
+        let location = try await latestLocation(for: deviceID)
+        guard let userLocation = await currentLocationProvider.currentUserLocation() else {
+            throw IntentLocationError.userLocationUnavailable
+        }
+        return Self.status(
+            from: location,
+            userLocation: userLocation,
+            referenceDate: nowProvider()
+        )
+    }
+
+    func etaStatus(for deviceID: String) async throws -> IntentETAStatus {
+        let location = try await latestLocation(for: deviceID)
+        guard let userLocation = await currentLocationProvider.currentUserLocation() else {
+            throw IntentLocationError.userLocationUnavailable
+        }
+        let transportMode = await navigationSettingsProvider.transportMode()
+        let route = try await routeProvider.route(
+            from: userLocation.coordinate,
+            to: IntentCoordinate(latitude: location.latitude, longitude: location.longitude),
+            transportMode: transportMode
+        )
+        let deviceStatus = Self.status(
+            from: location,
+            userLocation: userLocation,
+            referenceDate: nowProvider()
+        )
+        return IntentETAStatus(
+            deviceStatus: deviceStatus,
+            expectedTravelTimeSeconds: route.expectedTravelTimeSeconds,
+            distanceMeters: route.distanceMeters,
+            transportMode: transportMode
+        )
+    }
+
     func knownPlaces() async throws -> [Never] {
         []
     }
@@ -162,6 +230,54 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
             horizontalAccuracy: payload.horizontalAccuracy,
             placeDescription: placeDescription
         )
+    }
+
+    static func status(
+        from location: IntentDeviceLocation,
+        userLocation: IntentUserLocation?,
+        referenceDate: Date
+    ) -> IntentDeviceStatus {
+        let targetCoordinate = IntentCoordinate(latitude: location.latitude, longitude: location.longitude)
+        let distanceMeters: Double?
+        let bearingDegrees: Double?
+        if let userLocation {
+            distanceMeters = userLocation.location.distance(from: targetCoordinate.location)
+            bearingDegrees = Self.bearingDegrees(from: userLocation.coordinate, to: targetCoordinate)
+        } else {
+            distanceMeters = nil
+            bearingDegrees = nil
+        }
+
+        return IntentDeviceStatus(
+            deviceID: location.deviceID,
+            displayName: location.displayName,
+            timestamp: location.timestamp,
+            ageText: IntentDeviceLocation.ageText(for: location.timestamp, referenceDate: referenceDate),
+            horizontalAccuracy: location.horizontalAccuracy,
+            coarsePlaceDescription: location.placeDescription,
+            distanceMeters: distanceMeters,
+            bearingDegrees: bearingDegrees
+        )
+    }
+
+    static func bearingDegrees(from source: IntentCoordinate, to destination: IntentCoordinate) -> Double {
+        let sourceLatitude = degreesToRadians(source.latitude)
+        let destinationLatitude = degreesToRadians(destination.latitude)
+        let longitudeDelta = degreesToRadians(destination.longitude - source.longitude)
+
+        let y = sin(longitudeDelta) * cos(destinationLatitude)
+        let x = cos(sourceLatitude) * sin(destinationLatitude) -
+            sin(sourceLatitude) * cos(destinationLatitude) * cos(longitudeDelta)
+        let bearing = radiansToDegrees(atan2(y, x))
+        return (bearing + 360).truncatingRemainder(dividingBy: 360)
+    }
+
+    private static func degreesToRadians(_ degrees: Double) -> Double {
+        degrees * .pi / 180
+    }
+
+    private static func radiansToDegrees(_ radians: Double) -> Double {
+        radians * 180 / .pi
     }
 
     private func visibleDeviceRecords() async -> [IntentDeviceRecord] {

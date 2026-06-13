@@ -9,6 +9,7 @@
 
 import CoreLocation
 import Foundation
+import UIKit
 
 protocol IntentFrequentTrackingControlling {
     func state() async -> IntentFrequentTrackingState
@@ -22,8 +23,12 @@ struct IntentFrequentTrackingState: Equatable {
     let deviceKeyAuthBlocked: Bool
     let authorizationStatus: CLAuthorizationStatus
     let manualFrequentTrackingEnabled: Bool
+    let smartFrequentTrackingEnabled: Bool
+    let smartFrequentTrackingRuntimeActive: Bool
     let frequentTrackingExpiresAt: Date?
     let durationMode: FrequentBackgroundLocationUpdateDuration
+    let applicationState: UIApplication.State
+    let locationTrackingActive: Bool
 }
 
 struct IntentFrequentTrackingStartResult: Equatable {
@@ -140,11 +145,89 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
         )
     }
 
+    func trackingStatus() async -> IntentTrackingStatus {
+        let state = await controller.state()
+        let frequentStatus = Self.frequentTrackingStatus(from: state, now: nowProvider())
+        return IntentTrackingStatus(
+            trackingEnabled: state.locationTrackingEnabled,
+            authorizationStatus: state.authorizationStatus,
+            deviceKeyAuthBlocked: state.deviceKeyAuthBlocked,
+            effectiveMode: Self.trackingMode(from: state, frequentStatus: frequentStatus),
+            frequentTracking: frequentStatus
+        )
+    }
+
+    func frequentTrackingStatus() async -> IntentFrequentTrackingStatus {
+        let state = await controller.state()
+        return Self.frequentTrackingStatus(from: state, now: nowProvider())
+    }
+
     func stopFrequentTracking() async -> IntentFrequentTrackingStopResult {
         let currentState = await controller.state()
         await controller.stopManualFrequentTracking()
         await controller.reconcileTrackingState(reason: "stop frequent tracking intent")
         return IntentFrequentTrackingStopResult(wasActive: currentState.manualFrequentTrackingEnabled)
+    }
+
+    static func frequentTrackingStatus(
+        from state: IntentFrequentTrackingState,
+        now: Date
+    ) -> IntentFrequentTrackingStatus {
+        let remainingSeconds = state.frequentTrackingExpiresAt.map { max(0, $0.timeIntervalSince(now)) }
+        let manualActive = state.manualFrequentTrackingEnabled && (remainingSeconds == nil || (remainingSeconds ?? 0) > 0)
+        let smartActive = state.smartFrequentTrackingEnabled && state.smartFrequentTrackingRuntimeActive
+
+        return IntentFrequentTrackingStatus(
+            manualEnabled: state.manualFrequentTrackingEnabled,
+            smartEnabled: state.smartFrequentTrackingEnabled,
+            active: manualActive || smartActive,
+            expiresAt: state.frequentTrackingExpiresAt,
+            remainingSeconds: remainingSeconds,
+            durationMode: state.durationMode,
+            blockingReason: frequentTrackingBlockingReason(from: state)
+        )
+    }
+
+    static func trackingMode(
+        from state: IntentFrequentTrackingState,
+        frequentStatus: IntentFrequentTrackingStatus
+    ) -> IntentTrackingMode {
+        guard state.locationTrackingEnabled else { return .stopped }
+        guard !state.deviceKeyAuthBlocked else { return .blocked }
+
+        switch state.authorizationStatus {
+        case .authorizedAlways:
+            break
+        case .authorizedWhenInUse:
+            return state.applicationState == .active ? .foregroundHighAccuracy : .blocked
+        default:
+            return .blocked
+        }
+
+        guard state.locationTrackingActive else { return .stopped }
+
+        if state.applicationState == .active {
+            return .foregroundHighAccuracy
+        }
+        if frequentStatus.manualEnabled && frequentStatus.active {
+            return .manualFrequentActive
+        }
+        if state.smartFrequentTrackingEnabled && state.smartFrequentTrackingRuntimeActive {
+            return .smartFrequentActive
+        }
+        if state.smartFrequentTrackingEnabled {
+            return .smartWaiting
+        }
+        return .backgroundSignificantChange
+    }
+
+    private static func frequentTrackingBlockingReason(
+        from state: IntentFrequentTrackingState
+    ) -> IntentFrequentTrackingBlockingReason? {
+        guard state.locationTrackingEnabled else { return .trackingDisabled }
+        guard !state.deviceKeyAuthBlocked else { return .deviceKeyBlocked }
+        guard state.authorizationStatus == .authorizedAlways else { return .alwaysAuthorizationRequired }
+        return nil
     }
 }
 
@@ -158,8 +241,12 @@ struct MiataruIntentFrequentTrackingController: IntentFrequentTrackingControllin
                 deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
                 authorizationStatus: locationManager.authorizationStatusForIntent(),
                 manualFrequentTrackingEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                smartFrequentTrackingEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+                smartFrequentTrackingRuntimeActive: locationManager.smartFrequentBackgroundRuntimeActive,
                 frequentTrackingExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
-                durationMode: settings.frequentBackgroundLocationUpdateDurationMode
+                durationMode: settings.frequentBackgroundLocationUpdateDurationMode,
+                applicationState: UIApplication.shared.applicationState,
+                locationTrackingActive: locationManager.isTracking
             )
         }
     }
