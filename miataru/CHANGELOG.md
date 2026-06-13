@@ -1,4 +1,7 @@
 version 3.2.2
+- Implemented Intent Sprint Step 01 as the Device Entity Foundation, renaming the App Intents tracked entity/query/options/snippet layer from person terminology to tracked device terminology.
+- Kept Shortcuts compatibility by preserving selected DeviceID string values while adding privacy-safe tracked device metadata helpers for DeviceID trimming, display-name fallback, visible/authorized filtering, and iOS 26-gated `EntityIdentifier` annotation paths.
+- Added display-name-only indexed attribute helpers with Spotlight publishing disabled, wired visible tracked-device annotations into device rows, map details, group markers, and navigation destinations, and updated the Intent Sprint documentation to use device terminology throughout.
 - Added Step 02 App Intents for tracking status, frequent tracking status, device status, distance to a device, and ETA to a device.
 - Promoted the reliable status and distance intents as App Shortcuts while keeping ETA as an advanced App Intent until route reliability is validated.
 - Added service-layer status result models with injectable current-location, navigation-settings, and route providers so App Intent behavior remains testable without SwiftUI state.
