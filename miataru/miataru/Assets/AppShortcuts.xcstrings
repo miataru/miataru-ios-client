@@ -95,14 +95,14 @@
         }
       }
     },
-    "Open an Apple Maps route in ${applicationName}": {
+    "Open a Maps route in ${applicationName}": {
       "localizations": {
         "da": {
           "stringSet": {
             "state": "translated",
             "values": [
-              "Åbn en Apple Maps-rute i ${applicationName}",
-              "Rute i Apple Maps med ${applicationName}"
+              "Åbn en Maps-rute i ${applicationName}",
+              "Rute i Maps med ${applicationName}"
             ]
           }
         },
@@ -110,8 +110,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Apple-Karten-Route in ${applicationName} öffnen",
-              "Route in Apple Karten mit ${applicationName}"
+              "Karten-Route in ${applicationName} öffnen",
+              "Route in Karten mit ${applicationName}"
             ]
           }
         },
@@ -119,8 +119,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Open an Apple Maps route in ${applicationName}",
-              "Route in Apple Maps with ${applicationName}"
+              "Open a Maps route in ${applicationName}",
+              "Route in Maps with ${applicationName}"
             ]
           }
         },
@@ -128,8 +128,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Abrir una ruta de Apple Maps en ${applicationName}",
-              "Ruta en Apple Maps con ${applicationName}"
+              "Abrir una ruta de Mapas en ${applicationName}",
+              "Ruta en Mapas con ${applicationName}"
             ]
           }
         },
@@ -137,8 +137,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Avaa Apple Maps -reitti sovelluksessa ${applicationName}",
-              "Reitti Apple Mapsissa sovelluksella ${applicationName}"
+              "Avaa Maps-reitti sovelluksessa ${applicationName}",
+              "Reitti Mapsissa sovelluksella ${applicationName}"
             ]
           }
         },
@@ -155,8 +155,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Apri un percorso Mappe di Apple in ${applicationName}",
-              "Percorso in Mappe di Apple con ${applicationName}"
+              "Apri un percorso Mappe in ${applicationName}",
+              "Percorso in Mappe con ${applicationName}"
             ]
           }
         },
@@ -164,8 +164,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName}でAppleマップの経路を開く",
-              "${applicationName}でAppleマップに経路を表示"
+              "${applicationName}でマップの経路を開く",
+              "${applicationName}でマップに経路を表示"
             ]
           }
         },
@@ -173,8 +173,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Open een Apple Kaarten-route in ${applicationName}",
-              "Route in Apple Kaarten met ${applicationName}"
+              "Open een Kaarten-route in ${applicationName}",
+              "Route in Kaarten met ${applicationName}"
             ]
           }
         },
@@ -182,8 +182,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "在 ${applicationName} 中打开 Apple 地图路线",
-              "使用 ${applicationName} 在 Apple 地图中规划路线"
+              "在 ${applicationName} 中打开地图路线",
+              "使用 ${applicationName} 在地图中规划路线"
             ]
           }
         }

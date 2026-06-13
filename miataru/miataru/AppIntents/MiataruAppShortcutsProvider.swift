@@ -30,13 +30,13 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
         AppShortcut(
             intent: OpenRouteToPersonIntent(),
             phrases: [
-                "Open an Apple Maps route in \(.applicationName)",
-                "Route in Apple Maps with \(.applicationName)"
+                "Open a Maps route in \(.applicationName)",
+                "Route in Maps with \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource(
                 "intent_open_route_to_device_shortcut_title",
-                defaultValue: "Route in Apple Maps",
-                comment: "Short title for the Apple Maps route App Shortcut"
+                defaultValue: "Route in Maps",
+                comment: "Short title for the Maps route App Shortcut"
             ),
             systemImageName: "point.topleft.down.curvedto.point.bottomright.up"
         )

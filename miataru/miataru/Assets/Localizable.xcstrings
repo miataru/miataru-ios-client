@@ -27925,66 +27925,66 @@
       }
     },
     "intent_open_route_to_device_description": {
-      "comment": "Description for the App Intent that opens an Apple Maps route to a tracked device",
+      "comment": "Description for the App Intent that opens a Maps route to a tracked device",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbner Apple Maps med rutevejledning til en enheds senest kendte placering."
+            "value": "Åbner Maps med rutevejledning til en enheds senest kendte placering."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Öffnet Apple Karten mit einer Route zum letzten bekannten Standort eines Geräts."
+            "value": "Öffnet Karten mit einer Route zum letzten bekannten Standort eines Geräts."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Opens Apple Maps with directions to the last known location of a device."
+            "value": "Opens Maps with directions to the last known location of a device."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abre Mapas de Apple con indicaciones a la última ubicación conocida de un dispositivo."
+            "value": "Abre Mapas con indicaciones a la última ubicación conocida de un dispositivo."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avaa Apple Kartat ja reittiohjeet laitteen viimeisimpään tunnettuun sijaintiin."
+            "value": "Avaa Kartat ja reittiohjeet laitteen viimeisimpään tunnettuun sijaintiin."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvre Plans Apple avec un itinéraire vers la dernière position connue d’un appareil."
+            "value": "Ouvre Plans avec un itinéraire vers la dernière position connue d’un appareil."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apre Mappe di Apple con le indicazioni verso l’ultima posizione conosciuta di un dispositivo."
+            "value": "Apre Mappe con le indicazioni verso l’ultima posizione conosciuta di un dispositivo."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "デバイスの最後に確認された位置への経路をAppleマップで開きます。"
+            "value": "デバイスの最後に確認された位置への経路をマップで開きます。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Opent Apple Kaarten met een route naar de laatst bekende locatie van een apparaat."
+            "value": "Opent Kaarten met een route naar de laatst bekende locatie van een apparaat."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 Apple 地图中打开前往设备最后已知位置的路线。"
+            "value": "在地图中打开前往设备最后已知位置的路线。"
           }
         }
       }
@@ -27995,19 +27995,19 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbner en Apple Maps-rute til %@."
+            "value": "Åbner en Maps-rute til %@."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple-Karten-Route zu %@ wird geöffnet."
+            "value": "Karten-Route zu %@ wird geöffnet."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Opening an Apple Maps route to %@."
+            "value": "Opening a Maps route to %@."
           }
         },
         "es": {
@@ -28019,37 +28019,37 @@
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avataan Apple Kartat -reitti kohteeseen %@."
+            "value": "Avataan Kartat-reitti kohteeseen %@."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouverture d’un itinéraire Apple Plans vers %@."
+            "value": "Ouverture d’un itinéraire Plans vers %@."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apro un percorso in Mappe di Apple verso %@."
+            "value": "Apro un percorso in Mappe verso %@."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@さんへの経路をAppleマップで開きます。"
+            "value": "%@さんへの経路をマップで開きます。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple Kaarten-route naar %@ wordt geopend."
+            "value": "Kaarten-route naar %@ wordt geopend."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在 Apple 地图中打开前往 %@ 的路线。"
+            "value": "正在地图中打开前往 %@ 的路线。"
           }
         }
       }
@@ -28120,24 +28120,24 @@
       }
     },
     "intent_open_route_to_device_shortcut_title": {
-      "comment": "Short title for the Apple Maps route App Shortcut",
+      "comment": "Short title for the Maps route App Shortcut",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple Maps-rute"
+            "value": "Maps-rute"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Karten"
+            "value": "Route in Karten"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Maps"
+            "value": "Route in Maps"
           }
         },
         "es": {
@@ -28149,7 +28149,7 @@
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple Kartat -reitti"
+            "value": "Kartat-reitti"
           }
         },
         "fr": {
@@ -28167,42 +28167,42 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Appleマップの経路"
+            "value": "マップの経路"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Kaarten"
+            "value": "Route in Kaarten"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple 地图路线"
+            "value": "地图路线"
           }
         }
       }
     },
     "intent_open_route_to_device_title": {
-      "comment": "Title for the App Intent that opens an Apple Maps route to a tracked device",
+      "comment": "Title for the App Intent that opens a Maps route to a tracked device",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rute i Apple Maps"
+            "value": "Rute i Maps"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Karten"
+            "value": "Route in Karten"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Maps"
+            "value": "Route in Maps"
           }
         },
         "es": {
@@ -28214,7 +28214,7 @@
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple Kartat -reitti"
+            "value": "Kartat-reitti"
           }
         },
         "fr": {
@@ -28232,19 +28232,19 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Appleマップの経路"
+            "value": "マップの経路"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Route in Apple Kaarten"
+            "value": "Route in Kaarten"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple 地图路线"
+            "value": "地图路线"
           }
         }
       }
@@ -35692,66 +35692,66 @@
         }
       }
     },
-    "Open Apple Maps route to ${device}": {
+    "Open Maps route to ${device}": {
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Åbn Apple Maps-rute til ${device}"
+            "value": "Åbn Maps-rute til ${device}"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apple Maps-Route zu ${device} öffnen"
+            "value": "Maps-Route zu ${device} öffnen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Apple Maps route to ${device}"
+            "value": "Open Maps route to ${device}"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir ruta de Apple Maps a ${device}"
+            "value": "Abrir ruta de Mapas a ${device}"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avaa Apple Maps -reitti henkilölle ${device}"
+            "value": "Avaa Maps-reitti henkilölle ${device}"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir l’itinéraire Apple Maps vers ${device}"
+            "value": "Ouvrir l’itinéraire Plans vers ${device}"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apri itinerario Apple Maps verso ${device}"
+            "value": "Apri itinerario Mappe verso ${device}"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "${device}へのApple Maps経路を開く"
+            "value": "${device}へのマップ経路を開く"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Apple Maps-route naar ${device}"
+            "value": "Open Maps-route naar ${device}"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开前往 ${device} 的 Apple 地图路线"
+            "value": "打开前往 ${device} 的地图路线"
           }
         }
       }

@@ -843,7 +843,7 @@ struct AppIntentsPreparationTests {
             "Get status for ${device}",
             "Get distance to ${device}",
             "Get ETA to ${device}",
-            "Open Apple Maps route to ${device}",
+            "Open Maps route to ${device}",
             "Open Miataru navigation to ${device}",
             "Show location of ${device}",
             "Start frequent tracking for ${duration}",
@@ -855,8 +855,8 @@ struct AppIntentsPreparationTests {
                 "Show a Miataru location in ${applicationName}"
             ],
             [
-                "Open an Apple Maps route in ${applicationName}",
-                "Route in Apple Maps with ${applicationName}"
+                "Open a Maps route in ${applicationName}",
+                "Route in Maps with ${applicationName}"
             ],
             [
                 "Start Miataru navigation in ${applicationName}",
