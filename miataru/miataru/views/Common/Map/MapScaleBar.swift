@@ -50,7 +50,7 @@ struct MapScaleBar: View {
 
     private var defaultLabel: String {
         // Localized: Placeholder text while computing scale
-        NSLocalizedString("scalebar_computing", comment: "Scale bar: computing distance placeholder")
+        NSLocalizedString("scalebar_computing", tableName: "MapNavigationHistory", comment: "Scale bar: computing distance placeholder")
     }
 
     private struct RegionToken: Equatable {

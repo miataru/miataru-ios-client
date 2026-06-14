@@ -15,7 +15,7 @@ struct iPhone_7_OnboardingDoneView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Text("You are Ready to Go!")
+            Text("You are Ready to Go!", tableName: "OnboardingQR")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("done")
@@ -24,20 +24,20 @@ struct iPhone_7_OnboardingDoneView: View {
                 .frame(width: 300)
                 .padding(.horizontal)
                 .accessibilityHidden(true)
-            Text("Miataru is set up and ready.")
+            Text("Miataru is set up and ready.", tableName: "OnboardingQR")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Text("You can change your settings or permissions anytime in the app.")
+            Text("You can change your settings or permissions anytime in the app.", tableName: "OnboardingQR")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Text("Tap on Finish to start using Miataru.")
+            Text("Tap on Finish to start using Miataru.", tableName: "OnboardingQR")
                 .font(.body)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Button("Finish") {
+            Button(String(localized: "Finish", table: "OnboardingQR")) {
                 onFinish()
             }
             .buttonStyle(.borderedProminent)

@@ -51,21 +51,21 @@ struct iPhone_EditDeviceView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("device_name")) {
-                    TextField("device_name2", text: $tempDeviceName)
+                Section(header: Text("device_name", tableName: "Devices")) {
+                    TextField(String(localized: "device_name2", table: "Devices"), text: $tempDeviceName)
 
                     if hasSimilarDeviceName {
-                        Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
+                        Label(String(localized: "device_name_similar_warning", table: "Devices"), systemImage: "exclamationmark.triangle")
                             .font(.caption)
                             .foregroundColor(.orange)
                     }
 
                     if isCurrentDevice {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Info")
+                            Text("Info", tableName: "SettingsDiagnostics")
                                 .foregroundColor(.secondary)
 
-                            TextField("Info", text: $sloganDraft)
+                            TextField(String(localized: "Info", table: "SettingsDiagnostics"), text: $sloganDraft)
                                 .onChange(of: sloganDraft) { _, newValue in
                                     let sanitizedDraft = MiataruAppAPI.sanitizeDeviceSloganDraft(newValue, maxLength: maxSloganLength)
                                     if sanitizedDraft != newValue {
@@ -79,7 +79,7 @@ struct iPhone_EditDeviceView: View {
                                     ProgressView()
                                         .scaleEffect(0.9)
                                 } else {
-                                    Text("\(sloganDraft.count)/\(maxSloganLength)")
+                                    Text(verbatim: "\(sloganDraft.count)/\(maxSloganLength)")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -87,7 +87,7 @@ struct iPhone_EditDeviceView: View {
                         }
                     } else {
                         HStack(alignment: .firstTextBaseline, spacing: 12) {
-                            Text("Info")
+                            Text("Info", tableName: "SettingsDiagnostics")
                             Spacer()
                             if isLoadingSlogan {
                                 ProgressView()
@@ -101,7 +101,7 @@ struct iPhone_EditDeviceView: View {
                         }
                     }
                 }
-                Section(header: Text("device_id")) {
+                Section(header: Text("device_id", tableName: "Devices")) {
                     HStack {
                         Text(device.DeviceID)
                             .foregroundColor(.secondary)
@@ -120,12 +120,12 @@ struct iPhone_EditDeviceView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                Section(header: Text("device_color")) {
+                Section(header: Text("device_color", tableName: "Devices")) {
                     // Button wie in ColorPickerButtonDemo, öffnet das Sheet
                     Button(action: { showColorPickerSheet = true }) {
                         HStack {
                             Circle().fill(tempDeviceColor).frame(width: 24, height: 24)
-                            Text(NSLocalizedString("Pick Color", comment: "Button label to open color picker sheet"))
+                            Text(NSLocalizedString("Pick Color", tableName: "Common", comment: "Button label to open color picker sheet"))
                         }
                     }
                     .sheet(isPresented: $showColorPickerSheet) {
@@ -135,7 +135,7 @@ struct iPhone_EditDeviceView: View {
                 }
                 // Hide ACL controls for this device itself – ACLs are only relevant for *other* devices.
                 if !settings.allowedDeviceListEnabled {
-                    Section(header: Text("allowed_device_list_access_controls")) {
+                    Section(header: Text("allowed_device_list_access_controls", tableName: "Devices")) {
                         Button {
                             Task {
                                 await activateAllowedDeviceList()
@@ -144,7 +144,7 @@ struct iPhone_EditDeviceView: View {
                             HStack {
                                 Image(systemName: "lock.shield")
                                     .foregroundColor(.blue)
-                                Text("allowed_device_list_enable_button")
+                                Text("allowed_device_list_enable_button", tableName: "Devices")
 
                                 if isActivatingAllowedDeviceList {
                                     Spacer()
@@ -160,14 +160,14 @@ struct iPhone_EditDeviceView: View {
                                 .foregroundColor(.red)
                         }
 
-                        Text("allowed_device_list_disabled_explanation")
+                        Text("allowed_device_list_disabled_explanation", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 } else if device.DeviceID != thisDeviceIDManager.shared.deviceID {
-                    Section(header: Text("allowed_device_list_access_controls")) {
+                    Section(header: Text("allowed_device_list_access_controls", tableName: "Devices")) {
                         HStack(alignment: .top, spacing: 12) {
-                            Text("allowed_device_list_security_overview_label")
+                            Text("allowed_device_list_security_overview_label", tableName: "Devices")
                             Spacer()
                             VStack(alignment: .trailing, spacing: 6) {
                                 HStack(spacing: 6) {
@@ -191,7 +191,7 @@ struct iPhone_EditDeviceView: View {
                             }
                             .font(.caption)
                         }
-                        Toggle("allowed_device_list_current_location_access", isOn: Binding(
+                        Toggle(String(localized: "allowed_device_list_current_location_access", table: "Devices"), isOn: Binding(
                             get: { tempHasCurrentLocationAccess },
                             set: { newValue in
                                 let previousCurrentLocationAccess = tempHasCurrentLocationAccess
@@ -213,10 +213,10 @@ struct iPhone_EditDeviceView: View {
                             }
                         ))
                         .disabled(isSyncingACL)
-                        Text("allowed_device_list_current_location_access_description")
+                        Text("allowed_device_list_current_location_access_description", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Toggle("allowed_device_list_history_access", isOn: Binding(
+                        Toggle(String(localized: "allowed_device_list_history_access", table: "Devices"), isOn: Binding(
                             get: { tempHasHistoryAccess },
                             set: { newValue in
                                 let previousCurrentLocationAccess = tempHasCurrentLocationAccess
@@ -232,7 +232,7 @@ struct iPhone_EditDeviceView: View {
                             }
                         ))
                             .disabled(!tempHasCurrentLocationAccess || isSyncingACL)
-                        Text("allowed_device_list_history_access_description")
+                        Text("allowed_device_list_history_access_description", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         if isSyncingACL {
@@ -245,7 +245,7 @@ struct iPhone_EditDeviceView: View {
                         }
                     }
                 }
-                Section(header: Text("device_qr_code")) {
+                Section(header: Text("device_qr_code", tableName: "Devices")) {
                     let qrContent = QRCodeShape(
                         data: DeviceLinkResolver.urlString(for: device.DeviceID).data(using: .utf8) ?? Data(),
                         errorCorrection: .low
@@ -270,10 +270,10 @@ struct iPhone_EditDeviceView: View {
                     }
                 }
             }
-            .navigationTitle("edit_device")
+            .navigationTitle(String(localized: "edit_device", table: "Devices"))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("close_button_label") {
+                    Button(String(localized: "close_button_label", table: "SettingsDiagnostics")) {
                         Task {
                             await saveDevice()
                         }
@@ -301,8 +301,8 @@ struct iPhone_EditDeviceView: View {
                     await refreshDeviceSecurityStatus()
                 }
             }
-            .alert(NSLocalizedString("Error", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
-                Button(NSLocalizedString("ok", comment: "OK button")) {
+            .alert(NSLocalizedString("Error", tableName: "SettingsDiagnostics", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
+                Button(NSLocalizedString("ok", tableName: "Common", comment: "OK button")) {
                     saveError = nil
                 }
             } message: { error in
@@ -312,7 +312,7 @@ struct iPhone_EditDeviceView: View {
         .overlay(
             Group {
                 if copiedIDFeedback {
-                    Text("device_id_copied_to_clipboard")
+                    Text("device_id_copied_to_clipboard", tableName: "Devices")
                         .padding(12)
                         .background(Color.black.opacity(0.8))
                         .foregroundColor(.white)
@@ -351,9 +351,7 @@ struct iPhone_EditDeviceView: View {
                           let message = editDeviceError.errorDescription {
                     saveError = message
                 } else {
-                    saveError = NSLocalizedString(
-                        "device_slogan_set_failed_try_again_later",
-                        comment: "Fallback error when setting the device slogan failed."
+                    saveError = NSLocalizedString("device_slogan_set_failed_try_again_later", tableName: "Devices", comment: "Fallback error when setting the device slogan failed."
                     )
                 }
                 Haptic.notifyWarning()
@@ -386,22 +384,22 @@ struct iPhone_EditDeviceView: View {
     private var deviceKeySecurityStatusText: String {
         switch deviceKeySecurityStatus {
         case .active:
-            return NSLocalizedString("allowed_device_list_security_devicekey_active", comment: "DeviceKey security status active")
+            return NSLocalizedString("allowed_device_list_security_devicekey_active", tableName: "Devices", comment: "DeviceKey security status active")
         case .inactive:
-            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", comment: "DeviceKey security status inactive")
+            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", tableName: "Devices", comment: "DeviceKey security status inactive")
         case .unknown:
-            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", comment: "DeviceKey security status unknown")
+            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", tableName: "Devices", comment: "DeviceKey security status unknown")
         }
     }
 
     private var aclSecurityStatusText: String {
         switch aclSecurityStatus {
         case .active:
-            return NSLocalizedString("allowed_device_list_security_acl_active", comment: "ACL security status active")
+            return NSLocalizedString("allowed_device_list_security_acl_active", tableName: "Devices", comment: "ACL security status active")
         case .inactive:
-            return NSLocalizedString("allowed_device_list_security_acl_inactive", comment: "ACL security status inactive")
+            return NSLocalizedString("allowed_device_list_security_acl_inactive", tableName: "Devices", comment: "ACL security status inactive")
         case .unknown:
-            return NSLocalizedString("allowed_device_list_security_acl_unknown", comment: "ACL security status unknown")
+            return NSLocalizedString("allowed_device_list_security_acl_unknown", tableName: "Devices", comment: "ACL security status unknown")
         }
     }
 
@@ -613,9 +611,9 @@ struct iPhone_EditDeviceView: View {
         var errorDescription: String? {
             switch self {
             case .invalidServerURL:
-                return NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+                return NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
             case .missingDeviceKey:
-                return NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
+                return NSLocalizedString("device_key_auth_required_message", tableName: "Devices", comment: "Message when device key authentication is required")
             }
         }
     }

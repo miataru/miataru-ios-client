@@ -46,10 +46,10 @@ struct iPad_DevicesView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             VStack(spacing: 0) {
                 iPadSidebarListHeader(
-                    title: NSLocalizedString("devices", comment: "Devices list title on iPad"),
+                    title: NSLocalizedString("devices", tableName: "Devices", comment: "Devices list title on iPad"),
                     editTitle: editMode == .active
-                        ? NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list.")
-                        : NSLocalizedString("devicelist_editbutton", comment: "Edit device list"),
+                        ? NSLocalizedString("devicelist_edit_done", tableName: "Devices", comment: "Finish editing the device list.")
+                        : NSLocalizedString("devicelist_editbutton", tableName: "Devices", comment: "Edit device list"),
                     onToggleEdit: {
                         editMode = editMode == .active ? .inactive : .active
                     },
@@ -61,14 +61,14 @@ struct iPad_DevicesView: View {
                             columnVisibility = .detailOnly
                         }
                     },
-                    addAccessibilityLabel: NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list"),
-                    addAccessibilityHint: NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form"),
+                    addAccessibilityLabel: NSLocalizedString("devicelist_addbutton", tableName: "Devices", comment: "Add a new device to your list"),
+                    addAccessibilityHint: NSLocalizedString("devicelist_addbutton_hint", tableName: "Devices", comment: "Opens the add device form"),
                     addAccessibilityIdentifier: "devices_add_button"
                 )
 
                 List(selection: $selection) {
                     if !unknownVisitors.isEmpty {
-                        Section(header: Text("unknown_visitors_section_title")) {
+                        Section(header: Text("unknown_visitors_section_title", tableName: "Devices")) {
                             ForEach(unknownVisitors, id: \.uniqueID) { visitor in
                                 UnknownVisitorRow(
                                     visitor: visitor,
@@ -84,9 +84,12 @@ struct iPad_DevicesView: View {
                                         appNavigation.openAddDevice(visitor.DeviceID, source: .unknownVisitor)
                                     } label: {
                                         Label(
-                                            settings.allowedDeviceListEnabled
-                                                ? "unknown_visitor_add_and_allow"
-                                                : "add",
+                                            String(
+                                                localized: settings.allowedDeviceListEnabled
+                                                    ? "unknown_visitor_add_and_allow"
+                                                    : "add",
+                                                table: settings.allowedDeviceListEnabled ? "Devices" : "Common"
+                                            ),
                                             systemImage: "plus.circle"
                                         )
                                     }
@@ -96,14 +99,14 @@ struct iPad_DevicesView: View {
                                     Button(role: .destructive) {
                                         ignoredStore.addIgnored(deviceID: visitor.DeviceID)
                                     } label: {
-                                        Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                                        Label(String(localized: "allowed_device_list_ignore_button", table: "Devices"), systemImage: "eye.slash")
                                     }
                                 }
                             }
                         }
                     }
 
-                    Section(header: Text(NSLocalizedString("devices", comment: "Devices list header on iPad"))) {
+                    Section(header: Text(NSLocalizedString("devices", tableName: "Devices", comment: "Devices list header on iPad"))) {
                         if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
                             FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
                                 AppNavigationCoordinator.shared.openAdvancedSettings()
@@ -125,21 +128,21 @@ struct iPad_DevicesView: View {
                                         Button {
                                             openWindow(value: device.DeviceID)
                                         } label: {
-                                            Label(NSLocalizedString("open_in_new_window", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
+                                            Label(NSLocalizedString("open_in_new_window", tableName: "MapNavigationHistory", comment: "Open device in a new window."), systemImage: "macwindow.badge.plus")
                                                 .labelStyle(.titleAndIcon)
                                         }
                                         if device.DeviceID != thisDeviceIDManager.shared.deviceID, cache.getLocation(for: device.DeviceID) != nil {
                                             Button {
                                                 navigationTarget = DeviceNavigationTarget(device: device)
                                             } label: {
-                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                                                     .labelStyle(.titleAndIcon)
                                             }
                                         }
                                         Button {
                                             editingDevice = device
                                         } label: {
-                                            Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                            Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device."), systemImage: "pencil")
                                                 .labelStyle(.titleAndIcon)
                                         }
                                         Button(role: .destructive) {
@@ -147,7 +150,7 @@ struct iPad_DevicesView: View {
                                                 await removeDevice(deviceID: device.DeviceID)
                                             }
                                         } label: {
-                                            Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
+                                            Label(NSLocalizedString("delete_device", tableName: "Devices", comment: "Delete this device."), systemImage: "trash")
                                         }
                                     }
                                     .swipeActions(edge: .leading) {
@@ -155,14 +158,14 @@ struct iPad_DevicesView: View {
                                             Button {
                                                 navigationTarget = DeviceNavigationTarget(device: device)
                                             } label: {
-                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                                             }
                                             .tint(.green)
                                         }
                                         Button {
                                             editingDevice = device
                                         } label: {
-                                            Label("edit_device_swipe", systemImage: "pencil")
+                                            Label(String(localized: "edit_device_swipe", table: "Devices"), systemImage: "pencil")
                                         }
                                         .tint(.blue)
                                     }
@@ -179,7 +182,7 @@ struct iPad_DevicesView: View {
                                         Button {
                                             editingDevice = device
                                         } label: {
-                                            Label(NSLocalizedString("edit_device", comment: "Edit this device."), systemImage: "pencil")
+                                            Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device."), systemImage: "pencil")
                                                 .labelStyle(.titleAndIcon)
                                         }
                                         Button(role: .destructive) {
@@ -187,14 +190,14 @@ struct iPad_DevicesView: View {
                                                 await removeDevice(deviceID: device.DeviceID)
                                             }
                                         } label: {
-                                            Label(NSLocalizedString("delete_device", comment: "Delete this device."), systemImage: "trash")
+                                            Label(NSLocalizedString("delete_device", tableName: "Devices", comment: "Delete this device."), systemImage: "trash")
                                         }
                                     }
                                     .swipeActions(edge: .leading) {
                                         Button {
                                             editingDevice = device
                                         } label: {
-                                            Label("edit_device_swipe", systemImage: "pencil")
+                                            Label(String(localized: "edit_device_swipe", table: "Devices"), systemImage: "pencil")
                                         }
                                         .tint(.blue)
                                     }
@@ -312,7 +315,7 @@ struct iPad_DevicesView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: { editingDevice = device }) {
-                                Label(NSLocalizedString("edit_device", comment: "Edit the selected device."), systemImage: "pencil")
+                                Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit the selected device."), systemImage: "pencil")
                                     .labelStyle(.titleAndIcon)
                             }
                         }
@@ -329,7 +332,7 @@ struct iPad_DevicesView: View {
                         }
                     }
                 } else {
-                    Text("Select a device to view details")
+                    Text("Select a device to view details", tableName: "Devices")
                         .foregroundColor(.secondary)
                 }
             }
@@ -610,8 +613,8 @@ struct iPadSidebarListHeader: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.primary)
-                .accessibilityLabel(Text("Hide sidebar"))
-                .accessibilityHint(Text("Shows the map without the sidebar"))
+                .accessibilityLabel(Text("Hide sidebar", tableName: "MapNavigationHistory"))
+                .accessibilityHint(Text("Shows the map without the sidebar", tableName: "MapNavigationHistory"))
             }
             .frame(width: 104, alignment: .trailing)
         }

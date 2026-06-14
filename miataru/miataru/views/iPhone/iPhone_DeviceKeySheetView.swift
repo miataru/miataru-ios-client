@@ -35,10 +35,10 @@ struct iPhone_DeviceKeySheetView: View {
         let hasRuntimeAuthBlock = SettingsManager.shared.deviceKeyAuthBlocked
         let initialErrorMessage: String? = {
             if showsMismatchWarning {
-                return String(localized: "device_key_auth_mismatch_message")
+                return String(localized: "device_key_auth_mismatch_message", table: "Devices")
             }
             if hasRuntimeAuthBlock {
-                return String(localized: "device_key_auth_runtime_error_message")
+                return String(localized: "device_key_auth_runtime_error_message", table: "Devices")
             }
             return nil
         }()
@@ -72,12 +72,12 @@ struct iPhone_DeviceKeySheetView: View {
             }
             .accessibilityIdentifier("device_key_sheet")
             .padding(.top, 12)
-            .navigationTitle("device_key_title")
+            .navigationTitle(String(localized: "device_key_title", table: "Devices"))
             .navigationBarTitleDisplayMode(.inline)
             .tint(.blue)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("close_button_label") {
+                    Button(String(localized: "close_button_label", table: "SettingsDiagnostics")) {
                         dismiss()
                     }
                 }
@@ -86,9 +86,9 @@ struct iPhone_DeviceKeySheetView: View {
             .onAppear {
                 if errorMessage == nil {
                     if showsMismatchWarning {
-                        errorMessage = String(localized: "device_key_auth_mismatch_message")
+                        errorMessage = String(localized: "device_key_auth_mismatch_message", table: "Devices")
                     } else if settings.deviceKeyAuthBlocked {
-                        errorMessage = String(localized: "device_key_auth_runtime_error_message")
+                        errorMessage = String(localized: "device_key_auth_runtime_error_message", table: "Devices")
                     }
                 }
 
@@ -102,9 +102,9 @@ struct iPhone_DeviceKeySheetView: View {
             }
             .sheet(isPresented: $showRestoreSheet) {
                 DeviceKeyEntrySheet(
-                    title: String(localized: "device_key_restore_title"),
-                    message: String(localized: "device_key_restore_message"),
-                    confirmTitle: String(localized: "device_key_restore_confirm"),
+                    title: String(localized: "device_key_restore_title", table: "Devices"),
+                    message: String(localized: "device_key_restore_message", table: "Devices"),
+                    confirmTitle: String(localized: "device_key_restore_confirm", table: "Devices"),
                     initialValue: settings.deviceKey ?? ""
                 ) { enteredKey in
                     await restoreDeviceKey(enteredKey)
@@ -112,15 +112,15 @@ struct iPhone_DeviceKeySheetView: View {
             }
             .sheet(isPresented: $showCustomKeySheet) {
                 DeviceKeyEntrySheet(
-                    title: String(localized: "device_key_custom_title"),
-                    message: String(localized: "device_key_custom_message"),
-                    confirmTitle: String(localized: "device_key_custom_confirm"),
+                    title: String(localized: "device_key_custom_title", table: "Devices"),
+                    message: String(localized: "device_key_custom_message", table: "Devices"),
+                    confirmTitle: String(localized: "device_key_custom_confirm", table: "Devices"),
                     initialValue: settings.deviceKey ?? "",
-                    emergencyWarningMessage: String(localized: "device_key_custom_emergency_explanation"),
-                    emergencyButtonTitle: String(localized: "device_key_custom_emergency_button"),
-                    emergencyConfirmTitle: String(localized: "device_key_custom_emergency_confirm_title"),
-                    emergencyConfirmMessage: String(localized: "device_key_custom_emergency_confirm_message"),
-                    emergencyConfirmActionTitle: String(localized: "device_key_custom_emergency_confirm_action"),
+                    emergencyWarningMessage: String(localized: "device_key_custom_emergency_explanation", table: "Devices"),
+                    emergencyButtonTitle: String(localized: "device_key_custom_emergency_button", table: "Devices"),
+                    emergencyConfirmTitle: String(localized: "device_key_custom_emergency_confirm_title", table: "Devices"),
+                    emergencyConfirmMessage: String(localized: "device_key_custom_emergency_confirm_message", table: "Devices"),
+                    emergencyConfirmActionTitle: String(localized: "device_key_custom_emergency_confirm_action", table: "Devices"),
                     onEmergencyReset: {
                         let result = await regenerateDeviceIdentityAndKey()
                         if let result {
@@ -151,20 +151,20 @@ struct iPhone_DeviceKeySheetView: View {
                 }
 
             if showsMismatchWarning {
-                Text("device_key_mismatch_explanation")
+                Text("device_key_mismatch_explanation", tableName: "Devices")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
             }
 
-            Text("device_key_long_press_admin_hint")
+            Text("device_key_long_press_admin_hint", tableName: "Devices")
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
 
-            Text("device_key_intro_text")
+            Text("device_key_intro_text", tableName: "Devices")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.leading)
@@ -176,7 +176,7 @@ struct iPhone_DeviceKeySheetView: View {
                 if isBusy {
                     ProgressView()
                 } else {
-                    Text("device_key_generate_button")
+                    Text("device_key_generate_button", tableName: "Devices")
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -200,21 +200,21 @@ struct iPhone_DeviceKeySheetView: View {
                 }
 
             if showsMismatchWarning {
-                Text("device_key_mismatch_explanation")
+                Text("device_key_mismatch_explanation", tableName: "Devices")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
             }
 
-            Text("device_key_long_press_admin_hint")
+            Text("device_key_long_press_admin_hint", tableName: "Devices")
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
 
             VStack(spacing: 8) {
-                Text("device_key_current_label")
+                Text("device_key_current_label", tableName: "Devices")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
@@ -226,20 +226,20 @@ struct iPhone_DeviceKeySheetView: View {
                             .foregroundColor(.blue)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel(Text("device_key_copy_label"))
-                    .accessibilityHint(Text("device_key_copy_hint"))
+                    .accessibilityLabel(Text("device_key_copy_label", tableName: "Devices"))
+                    .accessibilityHint(Text("device_key_copy_hint", tableName: "Devices"))
                 }
             }
             .padding(.horizontal, 16)
 
             if let lastChangedText = formattedLastChanged() {
-                Text(String(format: NSLocalizedString("device_key_last_changed", comment: ""), lastChangedText))
+                Text(String(format: NSLocalizedString("device_key_last_changed", tableName: "Devices", comment: ""), lastChangedText))
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 16)
             }
 
-            Button("device_key_restore_button") {
+            Button(String(localized: "device_key_restore_button", table: "Devices")) {
                 showRestoreSheet = true
             }
             .buttonStyle(.bordered)
@@ -258,7 +258,7 @@ struct iPhone_DeviceKeySheetView: View {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
                             .font(.title2)
-                        Text("device_key_copied")
+                        Text("device_key_copied", tableName: "Devices")
                             .font(.body)
                             .fontWeight(.medium)
                             .foregroundColor(.white)
@@ -314,7 +314,7 @@ struct iPhone_DeviceKeySheetView: View {
 
     private func regenerateDeviceIdentityAndKey() async -> String? {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
-            return NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+            return NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
         }
 
         let oldDeviceID = thisDeviceIDManager.shared.deviceID
@@ -392,9 +392,7 @@ struct iPhone_DeviceKeySheetView: View {
             )
             var message = localizedMessage(for: error)
             if createdServerSideIdentity {
-                message += "\n\n" + NSLocalizedString(
-                    "device_key_emergency_server_side_hint",
-                    comment: "Hint explaining that a newly created server identity might still exist"
+                message += "\n\n" + NSLocalizedString("device_key_emergency_server_side_hint", tableName: "Devices", comment: "Hint explaining that a newly created server identity might still exist"
                 )
             }
             return message
@@ -424,7 +422,7 @@ struct iPhone_DeviceKeySheetView: View {
         }
         guard let currentKey = settings.deviceKey, !currentKey.isEmpty else {
             keyCardState = .failure
-            return NSLocalizedString("device_key_missing_current", comment: "Error when current key is missing")
+            return NSLocalizedString("device_key_missing_current", tableName: "Devices", comment: "Error when current key is missing")
         }
         let result = await performSetDeviceKey(currentKey: currentKey, newKey: trimmed)
         if result == nil {
@@ -443,7 +441,7 @@ struct iPhone_DeviceKeySheetView: View {
 
     private func performRestoreValidation(currentKey: String?, newKey: String) async -> String? {
         guard let url = URL(string: settings.miataruServerURL) else {
-            return NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+            return NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
         }
 
         isBusy = true
@@ -465,7 +463,7 @@ struct iPhone_DeviceKeySheetView: View {
         } catch let error as MiataruAPIClient.APIError {
             switch error {
             case .serverError:
-                return NSLocalizedString("device_key_restore_server_error", comment: "Server rejected DeviceKey during restore")
+                return NSLocalizedString("device_key_restore_server_error", tableName: "Devices", comment: "Server rejected DeviceKey during restore")
             default:
                 return apiErrorMessage(error)
             }
@@ -476,10 +474,10 @@ struct iPhone_DeviceKeySheetView: View {
 
     private func validateDeviceKey(_ key: String) -> String? {
         if key.isEmpty {
-            return NSLocalizedString("device_key_error_empty", comment: "Error when device key is empty")
+            return NSLocalizedString("device_key_error_empty", tableName: "Devices", comment: "Error when device key is empty")
         }
         if key.count > 256 {
-            return NSLocalizedString("device_key_error_too_long", comment: "Error when device key exceeds max length")
+            return NSLocalizedString("device_key_error_too_long", tableName: "Devices", comment: "Error when device key exceeds max length")
         }
         return nil
     }
@@ -487,7 +485,7 @@ struct iPhone_DeviceKeySheetView: View {
     private func performSetDeviceKey(currentKey: String?, newKey: String) async -> SetDeviceKeyFailure? {
         guard let url = URL(string: settings.miataruServerURL) else {
             return SetDeviceKeyFailure(
-                message: NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid"),
+                message: NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid"),
                 isForbidden: false
             )
         }
@@ -698,7 +696,7 @@ struct iPhone_DeviceKeySheetView: View {
         if let ownIndex {
             let oldOwnDevice = devices.remove(at: ownIndex)
             let ownName = oldOwnDevice.DeviceName.isEmpty
-                ? NSLocalizedString("my_device", comment: "Name for the user's own device in the device list")
+                ? NSLocalizedString("my_device", tableName: "Devices", comment: "Name for the user's own device in the device list")
                 : oldOwnDevice.DeviceName
 
             let existingNames = Set(devices.map(\.DeviceName))
@@ -725,7 +723,7 @@ struct iPhone_DeviceKeySheetView: View {
             devices.insert(newOwnDevice, at: ownIndex)
             devices.insert(legacyDevice, at: min(ownIndex + 1, devices.count))
         } else {
-            let baseName = NSLocalizedString("my_device", comment: "Name for the user's own device in the device list")
+            let baseName = NSLocalizedString("my_device", tableName: "Devices", comment: "Name for the user's own device in the device list")
             let existingNames = Set(devices.map(\.DeviceName))
             let legacyName = uniqueLegacyDeviceName(baseName: baseName, existingNames: existingNames)
 
@@ -787,8 +785,8 @@ struct iPhone_DeviceKeySheetView: View {
     }
 
     private func uniqueLegacyDeviceName(baseName: String, existingNames: Set<String>) -> String {
-        let suffix = String(localized: "device_key_old_device_suffix")
-        let numberedSuffixFormat = String(localized: "device_key_old_device_suffix_numbered")
+        let suffix = String(localized: "device_key_old_device_suffix", table: "Devices")
+        let numberedSuffixFormat = String(localized: "device_key_old_device_suffix_numbered", table: "Devices")
 
         var candidate = "\(baseName) \(suffix)"
         if !existingNames.contains(candidate) {
@@ -825,15 +823,15 @@ struct iPhone_DeviceKeySheetView: View {
         case .serverError(_, let message):
             return message
         case .invalidURL:
-            return NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+            return NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
         case .invalidResponse:
-            return NSLocalizedString("device_key_error_invalid_response", comment: "Error when server response is invalid")
+            return NSLocalizedString("device_key_error_invalid_response", tableName: "Devices", comment: "Error when server response is invalid")
         case .encodingError:
-            return NSLocalizedString("device_key_error_encoding", comment: "Error when request encoding fails")
+            return NSLocalizedString("device_key_error_encoding", tableName: "Devices", comment: "Error when request encoding fails")
         case .decodingError:
-            return NSLocalizedString("device_key_error_decoding", comment: "Error when response decoding fails")
+            return NSLocalizedString("device_key_error_decoding", tableName: "Devices", comment: "Error when response decoding fails")
         case .requestFailed:
-            return NSLocalizedString("device_key_error_request_failed", comment: "Error when request fails")
+            return NSLocalizedString("device_key_error_request_failed", tableName: "Devices", comment: "Error when request fails")
         }
     }
 
@@ -976,7 +974,7 @@ private struct DeviceKeyEntrySheet: View {
                 Section {
                     RevealableSensitiveInputField(
                         text: $inputValue,
-                        placeholder: String(localized: "device_key_entry_placeholder")
+                        placeholder: String(localized: "device_key_entry_placeholder", table: "Devices")
                     )
                 }
 
@@ -1021,24 +1019,24 @@ private struct DeviceKeyEntrySheet: View {
             .tint(.blue)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel_button_label") {
+                    Button(String(localized: "cancel_button_label", table: "SettingsDiagnostics")) {
                         dismiss()
                     }
                 }
             }
             .alert(
-                emergencyConfirmTitle ?? String(localized: "device_key_custom_emergency_confirm_title"),
+                emergencyConfirmTitle ?? String(localized: "device_key_custom_emergency_confirm_title", table: "Devices"),
                 isPresented: $showEmergencyConfirmation
             ) {
-                Button("cancel_button_label", role: .cancel) {}
+                Button(String(localized: "cancel_button_label", table: "SettingsDiagnostics"), role: .cancel) {}
                 Button(
-                    emergencyConfirmActionTitle ?? String(localized: "device_key_custom_emergency_confirm_action"),
+                    emergencyConfirmActionTitle ?? String(localized: "device_key_custom_emergency_confirm_action", table: "Devices"),
                     role: .destructive
                 ) {
                     Task { await runEmergencyReset() }
                 }
             } message: {
-                Text(emergencyConfirmMessage ?? String(localized: "device_key_custom_emergency_confirm_message"))
+                Text(emergencyConfirmMessage ?? String(localized: "device_key_custom_emergency_confirm_message", table: "Devices"))
             }
         }
     }
@@ -1092,7 +1090,7 @@ private struct RevealableSensitiveValueField: View {
                     .foregroundColor(.blue)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(Text(isRevealed ? "Hide DeviceKey" : "Show DeviceKey"))
+            .accessibilityLabel(Text(String(localized: isRevealed ? "Hide DeviceKey" : "Show DeviceKey", table: "OnboardingQR")))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -1133,7 +1131,7 @@ private struct RevealableSensitiveInputField: View {
                     .foregroundColor(.blue)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(Text(isRevealed ? "Hide DeviceKey" : "Show DeviceKey"))
+            .accessibilityLabel(Text(String(localized: isRevealed ? "Hide DeviceKey" : "Show DeviceKey", table: "OnboardingQR")))
         }
     }
 }

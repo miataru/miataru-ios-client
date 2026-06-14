@@ -14,7 +14,7 @@ struct HistoryPanelRestorePill: View {
         HStack(spacing: 8) {
             Image(systemName: "chevron.up")
                 .imageScale(.small)
-            Text(NSLocalizedString("history_panel_restore", comment: "Button title to restore the hidden history panel"))
+            Text(NSLocalizedString("history_panel_restore", tableName: "MapNavigationHistory", comment: "Button title to restore the hidden history panel"))
         }
         .font(.subheadline.weight(.semibold))
         .padding(.horizontal, 18)
@@ -22,9 +22,9 @@ struct HistoryPanelRestorePill: View {
         .background(historyRestoreBackground)
         .contentShape(Capsule(style: .continuous))
         .onTapGesture(perform: onRestore)
-        .accessibilityLabel(Text(NSLocalizedString("history_panel_restore_accessibility", comment: "Accessibility label to restore the hidden history panel")))
+        .accessibilityLabel(Text(NSLocalizedString("history_panel_restore_accessibility", tableName: "MapNavigationHistory", comment: "Accessibility label to restore the hidden history panel")))
         .accessibilityAddTraits(.isButton)
-        .accessibilityAction(named: Text(NSLocalizedString("history_panel_restore_accessibility", comment: "Accessibility label to restore the hidden history panel"))) {
+        .accessibilityAction(named: Text(NSLocalizedString("history_panel_restore_accessibility", tableName: "MapNavigationHistory", comment: "Accessibility label to restore the hidden history panel"))) {
             onRestore()
         }
         .gesture(

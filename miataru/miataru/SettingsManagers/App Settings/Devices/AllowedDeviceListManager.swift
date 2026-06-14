@@ -28,11 +28,11 @@ enum AllowedDeviceListError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .deviceKeyMissing:
-            return NSLocalizedString("device_key_auth_required_message", comment: "Error shown when trying to enable access control without a DeviceKey")
+            return NSLocalizedString("device_key_auth_required_message", tableName: "Devices", comment: "Error shown when trying to enable access control without a DeviceKey")
         case .serverURLInvalid:
-            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+            return NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid.")
         case .syncFailed:
-            return NSLocalizedString("allowed_device_list_sync_failed", comment: "Generic error when syncing the allowed device list fails")
+            return NSLocalizedString("allowed_device_list_sync_failed", tableName: "Devices", comment: "Generic error when syncing the allowed device list fails")
         case .preconditionFailed(let message):
             return message
         }

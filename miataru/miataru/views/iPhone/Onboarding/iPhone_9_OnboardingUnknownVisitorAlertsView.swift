@@ -17,7 +17,7 @@ struct iPhone_9_OnboardingUnknownVisitorAlertsView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Text("onboarding_unknown_visitor_alerts_title")
+            Text("onboarding_unknown_visitor_alerts_title", tableName: "OnboardingQR")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
@@ -28,15 +28,15 @@ struct iPhone_9_OnboardingUnknownVisitorAlertsView: View {
                 .padding(.horizontal)
                 .accessibilityHidden(true)
 
-            Text("onboarding_unknown_visitor_alerts_intro_text")
+            Text("onboarding_unknown_visitor_alerts_intro_text", tableName: "OnboardingQR")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("onboarding_unknown_visitor_alerts_example_title")
+                Text("onboarding_unknown_visitor_alerts_example_title", tableName: "OnboardingQR")
                     .font(.headline)
-                Text("onboarding_unknown_visitor_alerts_example_message")
+                Text("onboarding_unknown_visitor_alerts_example_message", tableName: "OnboardingQR")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.leading)
@@ -47,8 +47,7 @@ struct iPhone_9_OnboardingUnknownVisitorAlertsView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .padding(.horizontal)
 
-            Toggle(
-                "unknown_visitor_alerts_toggle",
+            Toggle(String(localized: "unknown_visitor_alerts_toggle", table: "Devices"),
                 isOn: Binding(
                     get: { settings.unknownVisitorAlertsEnabled },
                     set: { newValue in
@@ -59,7 +58,7 @@ struct iPhone_9_OnboardingUnknownVisitorAlertsView: View {
             .disabled(isUpdatingUnknownVisitorAlerts)
             .padding(.horizontal)
 
-            Text("explanation_unknown_visitor_alerts_toggle")
+            Text("explanation_unknown_visitor_alerts_toggle", tableName: "LocationTracking")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -67,11 +66,11 @@ struct iPhone_9_OnboardingUnknownVisitorAlertsView: View {
 
             if settings.unknownVisitorAlertsPermissionDenied {
                 VStack(spacing: 8) {
-                    Text("unknown_visitor_alerts_permission_denied_message")
+                    Text("unknown_visitor_alerts_permission_denied_message", tableName: "Devices")
                         .font(.caption)
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
-                    Button("unknown_visitor_alerts_open_settings_button") {
+                    Button(String(localized: "unknown_visitor_alerts_open_settings_button", table: "Devices")) {
                         LocationManager.shared.openAppSettings()
                     }
                     .buttonStyle(.bordered)

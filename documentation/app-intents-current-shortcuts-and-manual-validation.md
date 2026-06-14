@@ -95,8 +95,9 @@ App Intents and support types live under the app's `AppIntents/` structure:
 - `miataru/miataru/AppIntents/Views/DeviceLocationSnippetView.swift`
 - `miataru/miataru/AppIntents/MiataruAppShortcutsProvider.swift`
 - `miataru/miataru/SettingsManagers/App Settings/Places/MiataruPlaceStore.swift`
-- `miataru/miataru/Assets/Localizable.xcstrings`
-- `miataru/miataru/Assets/AppShortcuts.xcstrings`
+- `miataru/miataru/Assets/Localization/Localizable.xcstrings`
+- `miataru/miataru/Assets/Localization/AppIntents.xcstrings`
+- `miataru/miataru/Assets/Localization/AppShortcuts.xcstrings`
 
 ## Architecture Decisions
 
@@ -157,7 +158,7 @@ Frequent tracking behavior:
 Snippet and localization behavior:
 
 - `DeviceLocationSnippetView` is prepared but is not wired through `ShowsSnippetView`, because the locally visible SDK signature was available only behind newer AppIntents APIs at the time this implementation was prepared.
-- Intent titles, descriptions, parameters, dialogs, errors, shortcut titles, snippet preparation strings, and extracted parameter-summary strings are covered in `Localizable.xcstrings` across all ten app locales.
+- Intent titles, descriptions, parameters, dialogs, errors, shortcut titles, snippet preparation strings, and most AppIntents-owned strings are covered in `AppIntents.xcstrings` across all ten app locales. SDK-extracted parameter-summary fallback strings that cannot name a table remain in `Localizable.xcstrings`.
 - App Shortcut trigger phrases live in the separate `AppShortcuts.xcstrings` catalog with `${applicationName}` placeholders. Each shortcut uses one top-level source key, with alternate phrases stored per locale in `stringSet.values`; adding alternates as separate top-level keys makes Xcode mark them stale.
 - Non-English intent and shortcut localizations must not be verbatim English fallback copies, even when Xcode marks the translation state as translated. The App Intents regression suite checks this and also verifies that placeholders such as `%@`, `${device}`, `${duration}`, and `${applicationName}` are preserved.
 

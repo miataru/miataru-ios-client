@@ -47,7 +47,7 @@ struct MapCompass: View {
             //.cornerRadius(size/5 + 8)
             //.shadow(radius: 1)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
+            .accessibilityLabel(NSLocalizedString("Compass", tableName: "MapNavigationHistory", comment: "Accessibility label for compass"))
             .accessibilityValue(compassLabel(for: heading))
         } else {
             // Fallback on earlier versions
@@ -81,7 +81,7 @@ struct MapCompass: View {
             .cornerRadius(size/5 + 8)
             .shadow(radius: 1)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(NSLocalizedString("Compass", comment: "Accessibility label for compass"))
+            .accessibilityLabel(NSLocalizedString("Compass", tableName: "MapNavigationHistory", comment: "Accessibility label for compass"))
             .accessibilityValue(compassLabel(for: heading))
         }
     }
@@ -89,21 +89,21 @@ struct MapCompass: View {
     /// Returns e.g. "NE 45°"
     private func compassLabel(for heading: Double) -> String {
         let directions = [
-            NSLocalizedString("compass_N", comment: "Compass North abbreviation"),
-            NSLocalizedString("compass_NE", comment: "Compass North-East abbreviation"),
-            NSLocalizedString("compass_E", comment: "Compass East abbreviation"),
-            NSLocalizedString("compass_SE", comment: "Compass South-East abbreviation"),
-            NSLocalizedString("compass_S", comment: "Compass South abbreviation"),
-            NSLocalizedString("compass_SW", comment: "Compass South-West abbreviation"),
-            NSLocalizedString("compass_W", comment: "Compass West abbreviation"),
-            NSLocalizedString("compass_NW", comment: "Compass North-West abbreviation"),
-            NSLocalizedString("compass_N", comment: "Compass North abbreviation (repeat for wraparound)")
+            NSLocalizedString("compass_N", tableName: "MapNavigationHistory", comment: "Compass North abbreviation"),
+            NSLocalizedString("compass_NE", tableName: "MapNavigationHistory", comment: "Compass North-East abbreviation"),
+            NSLocalizedString("compass_E", tableName: "MapNavigationHistory", comment: "Compass East abbreviation"),
+            NSLocalizedString("compass_SE", tableName: "MapNavigationHistory", comment: "Compass South-East abbreviation"),
+            NSLocalizedString("compass_S", tableName: "MapNavigationHistory", comment: "Compass South abbreviation"),
+            NSLocalizedString("compass_SW", tableName: "MapNavigationHistory", comment: "Compass South-West abbreviation"),
+            NSLocalizedString("compass_W", tableName: "MapNavigationHistory", comment: "Compass West abbreviation"),
+            NSLocalizedString("compass_NW", tableName: "MapNavigationHistory", comment: "Compass North-West abbreviation"),
+            NSLocalizedString("compass_N", tableName: "MapNavigationHistory", comment: "Compass North abbreviation (repeat for wraparound)")
         ]
         let index = Int((heading + 22.5) / 45.0) % 8
         let dir = directions[index]
         let deg = Int(round(heading))
         // Formatted string for direction and degree
-        return String(format: NSLocalizedString("compass_%@ %d°", comment: "Compass direction and degree, e.g. 'NE 45°'"), dir, deg)
+        return String(format: NSLocalizedString("compass_%@ %d°", tableName: "MapNavigationHistory", comment: "Compass direction and degree, e.g. 'NE 45°'"), dir, deg)
     }
 }
 

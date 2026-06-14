@@ -106,9 +106,9 @@ func relativeTimeString(
     guard let date = date else { return "–" }
     let diff = now.timeIntervalSince(date)
     if date > now {
-        return NSLocalizedString("relative_time_now", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
+        return NSLocalizedString("relative_time_now", tableName: "Common", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
     } else if diff < timeConsideredNow {
-        return NSLocalizedString("relative_time_now", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
+        return NSLocalizedString("relative_time_now", tableName: "Common", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
     }
     let formatter = RelativeDateTimeFormatter()
     formatter.unitsStyle = unitsStyle

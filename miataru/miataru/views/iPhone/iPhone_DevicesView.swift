@@ -49,7 +49,7 @@ struct iPhone_DevicesView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             devicesList
-            .navigationTitle("devices")
+            .navigationTitle(String(localized: "devices", table: "Devices"))
             .toolbar { devicesToolbar }
             .navigationDestination(for: NavigationDestination.self) { destination in
                 switch destination {
@@ -77,7 +77,7 @@ struct iPhone_DevicesView: View {
                                 )
                             )
                     } else {
-                        Text(NSLocalizedString("Group not found", comment: "Shown when a group with the given ID does not exist"))
+                        Text(NSLocalizedString("Group not found", tableName: "Groups", comment: "Shown when a group with the given ID does not exist"))
                     }
                 }
             }
@@ -267,7 +267,7 @@ struct iPhone_DevicesView: View {
     @ViewBuilder
     private var unknownVisitorsSection: some View {
         if !unknownVisitors.isEmpty {
-            Section(header: Text("unknown_visitors_section_title")) {
+            Section(header: Text("unknown_visitors_section_title", tableName: "Devices")) {
                 ForEach(unknownVisitors, id: \.uniqueID) { visitor in
                     unknownVisitorRow(for: visitor)
                 }
@@ -332,9 +332,9 @@ struct iPhone_DevicesView: View {
 
     private var emptyGroupsView: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(NSLocalizedString("No groups yet", comment: "Shown when there are no groups in the list"))
+            Text(NSLocalizedString("No groups yet", tableName: "Groups", comment: "Shown when there are no groups in the list"))
                 .font(.headline)
-            Text(NSLocalizedString("Tap the + button to create a new group.", comment: "Instruction to create a new group when none exist"))
+            Text(NSLocalizedString("Tap the + button to create a new group.", tableName: "Groups", comment: "Instruction to create a new group when none exist"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -345,7 +345,7 @@ struct iPhone_DevicesView: View {
         VStack(alignment: .leading, spacing: 8) {
             Divider()
             HStack(spacing: 12) {
-                Text(NSLocalizedString("groups", comment: "Section header for the groups list"))
+                Text(NSLocalizedString("groups", tableName: "Groups", comment: "Section header for the groups list"))
                     .font(.headline)
                 Spacer()
                 groupEditButton
@@ -367,7 +367,7 @@ struct iPhone_DevicesView: View {
     @ViewBuilder
     private var groupEditButtonLabel: some View {
         if groupEditMode == .active {
-            Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+            Text(NSLocalizedString("grouplist_edit_done", tableName: "Groups", comment: "Finish editing the groups list."))
         } else {
             EmptyView()
         }
@@ -386,8 +386,8 @@ struct iPhone_DevicesView: View {
                 }
                 .clipShape(Circle())
                 .shadow(color: .black.opacity(0.18), radius: 6, x: 0, y: 3)
-                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
-                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
+                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", tableName: "Groups", comment: "Create a new group")))
+                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", tableName: "Groups", comment: "Opens the create group sheet")))
         }
         .buttonStyle(.plain)
     }
@@ -409,19 +409,19 @@ struct iPhone_DevicesView: View {
     @ViewBuilder
     private var deviceEditButtonLabel: some View {
         if editMode == .active {
-            Text(NSLocalizedString("devicelist_edit_done", comment: "Finish editing the device list."))
+            Text(NSLocalizedString("devicelist_edit_done", tableName: "Devices", comment: "Finish editing the device list."))
         } else {
             Image(systemName: "pencil")
-                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", comment: "Edit device list")))
-                .accessibilityHint(Text(NSLocalizedString("devicelist_editbutton_hint", comment: "Enters edit mode for the device list")))
+                .accessibilityLabel(Text(NSLocalizedString("devicelist_editbutton", tableName: "Devices", comment: "Edit device list")))
+                .accessibilityHint(Text(NSLocalizedString("devicelist_editbutton_hint", tableName: "Devices", comment: "Enters edit mode for the device list")))
         }
     }
 
     private var addDeviceButton: some View {
         Button(action: { showingAddDevice = true }) {
             Image(systemName: "plus")
-                .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", comment: "Add a new device to your list")))
-                .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", comment: "Opens the add device form")))
+                .accessibilityLabel(Text(NSLocalizedString("devicelist_addbutton", tableName: "Devices", comment: "Add a new device to your list")))
+                .accessibilityHint(Text(NSLocalizedString("devicelist_addbutton_hint", tableName: "Devices", comment: "Opens the add device form")))
         }
         .accessibilityIdentifier("devices_add_button")
     }
@@ -441,9 +441,12 @@ struct iPhone_DevicesView: View {
                 appNavigation.openAddDevice(visitor.DeviceID, source: .unknownVisitor)
             } label: {
                 Label(
-                    settings.allowedDeviceListEnabled
-                        ? "unknown_visitor_add_and_allow"
-                        : "add",
+                    String(
+                        localized: settings.allowedDeviceListEnabled
+                            ? "unknown_visitor_add_and_allow"
+                            : "add",
+                        table: settings.allowedDeviceListEnabled ? "Devices" : "Common"
+                    ),
                     systemImage: "plus.circle"
                 )
             }
@@ -453,7 +456,7 @@ struct iPhone_DevicesView: View {
             Button(role: .destructive) {
                 ignoredStore.addIgnored(deviceID: visitor.DeviceID)
             } label: {
-                Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                Label(String(localized: "allowed_device_list_ignore_button", table: "Devices"), systemImage: "eye.slash")
             }
         }
     }
@@ -473,7 +476,7 @@ struct iPhone_DevicesView: View {
                     groupStore.remove(atOffsets: IndexSet(integer: index))
                 }
             } label: {
-                Label("delete_group", systemImage: "trash")
+                Label(String(localized: "delete_group", table: "Groups"), systemImage: "trash")
             }
         }
         .swipeActions(edge: .leading) {
@@ -481,7 +484,7 @@ struct iPhone_DevicesView: View {
                 editingGroup = group
                 selectedGroupID = group.id
             } label: {
-                Label("edit_group", systemImage: "pencil")
+                Label(String(localized: "edit_group", table: "Groups"), systemImage: "pencil")
             }
             .tint(.blue)
         }
@@ -552,7 +555,7 @@ struct iPhone_DevicesView: View {
             Button {
                 navigationTarget = DeviceNavigationTarget(device: device)
             } label: {
-                Label("navigation", systemImage: "location")
+                Label(String(localized: "navigation", table: "MapNavigationHistory"), systemImage: "location")
             }
             .tint(.green)
         }
@@ -562,7 +565,7 @@ struct iPhone_DevicesView: View {
         Button {
             editingDevice = device
         } label: {
-            Label("edit_device_swipe", systemImage: "pencil")
+            Label(String(localized: "edit_device_swipe", table: "Devices"), systemImage: "pencil")
         }
         .tint(.blue)
     }
@@ -573,7 +576,7 @@ struct iPhone_DevicesView: View {
                 await removeDevice(deviceID: device.DeviceID)
             }
         } label: {
-            Label("delete_device", systemImage: "trash")
+            Label(String(localized: "delete_device", table: "Devices"), systemImage: "trash")
         }
     }
     
@@ -842,7 +845,7 @@ struct UnknownVisitorRow: View {
                     .foregroundColor(.blue)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(Text("unknown_device_actions_title"))
+            .accessibilityLabel(Text("unknown_device_actions_title", tableName: "Devices"))
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())

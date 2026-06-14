@@ -1042,12 +1042,15 @@ struct AppIntentsPreparationTests {
 
     @Test("App Intent and shortcut localization keys exist for all app locales")
     func appIntentLocalizationKeysExistForAllAppLocales() throws {
-        let localizableData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
+        let localizableData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localization/Localizable.xcstrings"))
         let localizableJSON = try JSONSerialization.jsonObject(with: localizableData) as? [String: Any]
         let localizableStrings = try #require(localizableJSON?["strings"] as? [String: Any])
-        let appShortcutsData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/AppShortcuts.xcstrings"))
+        let appShortcutsData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localization/AppShortcuts.xcstrings"))
         let appShortcutsJSON = try JSONSerialization.jsonObject(with: appShortcutsData) as? [String: Any]
         let appShortcutsStrings = try #require(appShortcutsJSON?["strings"] as? [String: Any])
+        let appIntentsData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localization/AppIntents.xcstrings"))
+        let appIntentsJSON = try JSONSerialization.jsonObject(with: appIntentsData) as? [String: Any]
+        let appIntentsStrings = try #require(appIntentsJSON?["strings"] as? [String: Any])
         let locales = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
         let appIntentExtractionKeys = [
             "Get latest Miataru event",
@@ -1109,10 +1112,18 @@ struct AppIntentsPreparationTests {
         ]
         let appShortcutPhraseKeys = appShortcutPhraseGroups.flatMap { $0 }
         let appShortcutCatalogKeys = appShortcutPhraseGroups.compactMap(\.first)
-        let intentKeys = (
-            localizableStrings.keys.filter { $0.hasPrefix("intent_") }
-                + appIntentExtractionKeys
-        ).sorted()
+        let appShortcutTitleKeys = [
+            "intent_find_device_shortcut_title",
+            "intent_open_route_to_device_shortcut_title",
+            "intent_open_miataru_navigation_to_device_shortcut_title",
+            "intent_start_frequent_tracking_shortcut_title",
+            "intent_stop_frequent_tracking_shortcut_title",
+            "intent_get_tracking_status_shortcut_title",
+            "intent_get_frequent_tracking_status_shortcut_title",
+            "intent_get_device_status_shortcut_title",
+            "intent_get_distance_to_device_shortcut_title"
+        ]
+        let intentKeys = appIntentsStrings.keys.filter { $0.hasPrefix("intent_") }.sorted()
 
         #expect(!intentKeys.isEmpty)
         #expect(!appShortcutPhraseKeys.isEmpty)
@@ -1123,6 +1134,10 @@ struct AppIntentsPreparationTests {
         #expect(
             Set(appShortcutsStrings.keys) == Set(appShortcutCatalogKeys),
             "AppShortcuts.xcstrings should use one top-level key per shortcut and keep alternates in stringSet.values"
+        )
+        #expect(
+            appShortcutTitleKeys.allSatisfy { appIntentsStrings[$0] != nil },
+            "App Shortcut tile titles belong in AppIntents.xcstrings so AppShortcuts.xcstrings remains phrase-only"
         )
         #expect(
             appShortcutPhraseGroups.allSatisfy { group in
@@ -1234,7 +1249,9 @@ struct AppIntentsPreparationTests {
             }
         }
 
-        validateStringUnits(keys: intentKeys, in: localizableStrings, catalogName: "Localizable")
+        validateStringUnits(keys: intentKeys, in: appIntentsStrings, catalogName: "AppIntents")
+        validateStringUnits(keys: appIntentExtractionKeys, in: localizableStrings, catalogName: "Localizable")
+        validateStringUnits(keys: appShortcutTitleKeys, in: appIntentsStrings, catalogName: "AppIntents")
         validateShortcutStringSets(appShortcutPhraseGroups)
 
         #expect(missingEntries.isEmpty, "Missing App Intent localizations: \(missingEntries)")

@@ -11,7 +11,7 @@ import AppIntents
 
 struct TrackedDeviceEntity: AppEntity, Identifiable, Sendable, Equatable {
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource("intent_tracked_device_type_name", defaultValue: "Tracked Device", comment: "Display name for a tracked device App Intent entity")
+        name: LocalizedStringResource("intent_tracked_device_type_name", defaultValue: "Tracked Device", table: "AppIntents", comment: "Display name for a tracked device App Intent entity")
     )
     static var defaultQuery = TrackedDeviceQuery()
 

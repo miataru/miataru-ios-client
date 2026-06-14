@@ -27,7 +27,7 @@ enum TrackedDeviceIntentMetadata {
     static func displayName(deviceName: String, deviceID: String) -> String {
         let trimmedName = deviceName.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedName.isEmpty
-            ? NSLocalizedString("intent_device_fallback_name", comment: "Fallback display name for a device without a device name")
+            ? NSLocalizedString("intent_device_fallback_name", tableName: "AppIntents", comment: "Fallback display name for a device without a device name")
             : trimmedName
     }
 

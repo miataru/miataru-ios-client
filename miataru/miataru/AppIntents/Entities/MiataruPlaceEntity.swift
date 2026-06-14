@@ -15,9 +15,7 @@ import UniformTypeIdentifiers
 
 struct MiataruPlaceEntity: AppEntity, Identifiable, Sendable, Equatable {
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource(
-            "intent_place_type_name",
-            defaultValue: "Saved Place",
+        name: LocalizedStringResource("intent_place_type_name", defaultValue: "Saved Place", table: "AppIntents",
             comment: "Display name for a saved place App Intent entity"
         )
     )
@@ -49,9 +47,7 @@ enum MiataruPlaceIntentMetadata {
     }
 
     static func radiusSubtitle(_ radiusMeters: Double) -> String {
-        let format = NSLocalizedString(
-            "intent_place_radius_subtitle_format",
-            comment: "Subtitle for a saved place. Argument: localized radius distance."
+        let format = NSLocalizedString("intent_place_radius_subtitle_format", tableName: "AppIntents", comment: "Subtitle for a saved place. Argument: localized radius distance."
         )
         return String.localizedStringWithFormat(format, IntentStatusFormatting.localizedDistance(radiusMeters))
     }

@@ -119,7 +119,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                         await visitorHistoryViewModel.refreshIfNeeded(isVisible: true)
                     }
                 }
-                .navigationTitle("my_device")
+                .navigationTitle(String(localized: "my_device", table: "Devices"))
                 .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -130,8 +130,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .foregroundColor(.blue)
                                 .font(.title2)
                         }
-                        .accessibilityLabel(Text("device_key_button_label"))
-                        .accessibilityHint(Text("device_key_button_hint"))
+                        .accessibilityLabel(Text("device_key_button_label", tableName: "Devices"))
+                        .accessibilityHint(Text("device_key_button_hint", tableName: "Devices"))
                         .accessibilityIdentifier("qr_device_key_button")
                     }
                 }
@@ -147,7 +147,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                     .foregroundColor(.green)
                                     .font(.title2)
                                 
-                                Text("device_id_copied_to_clipboard")
+                                Text("device_id_copied_to_clipboard", tableName: "Devices")
                                     .font(.body)
                                     .fontWeight(.medium)
                                     .foregroundColor(.white)
@@ -234,11 +234,11 @@ struct iPhone_MyDeviceQRCodeView: View {
                 
                 // Title and explanation
                 VStack(spacing: isLandscape ? 8 : 12) {
-                    Text("my_device_qr_code")
+                    Text("my_device_qr_code", tableName: "Devices")
                         .font(isLandscape ? .title2 : .title)
                         .multilineTextAlignment(.center)
                     
-                    Text("qr_code_explanation")
+                    Text("qr_code_explanation", tableName: "OnboardingQR")
                         .font(isLandscape ? .caption : .body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -249,7 +249,7 @@ struct iPhone_MyDeviceQRCodeView: View {
             
             // Device ID Section
             VStack(spacing: isLandscape ? 12 : 16) {
-                Text("device_id")
+                Text("device_id", tableName: "Devices")
                     .font(isLandscape ? .subheadline : .headline)
                     .foregroundColor(.secondary)
                 
@@ -290,8 +290,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title3)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
-                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
+                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", tableName: "Devices", comment: "Copy device ID to clipboard")))
+                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", tableName: "Devices", comment: "Copies your device ID to the clipboard")))
 
                         ShareLink(item: shareText) {
                             Image(systemName: "square.and.arrow.up")
@@ -299,7 +299,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title3)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text("share_device_url_button_label"))
+                        .accessibilityLabel(Text("share_device_url_button_label", tableName: "Devices"))
 
                         Button(action: {
                             if MFMailComposeViewController.canSendMail() {
@@ -315,7 +315,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title3)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text("share_device_email_button_label"))
+                        .accessibilityLabel(Text("share_device_email_button_label", tableName: "Devices"))
                     }
                 } else {
                     // Portrait: device id + copy on first row
@@ -355,8 +355,8 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title2)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", comment: "Copy device ID to clipboard")))
-                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", comment: "Copies your device ID to the clipboard")))
+                        .accessibilityLabel(Text(NSLocalizedString("copy_device_id", tableName: "Devices", comment: "Copy device ID to clipboard")))
+                        .accessibilityHint(Text(NSLocalizedString("copy_device_id_hint", tableName: "Devices", comment: "Copies your device ID to the clipboard")))
                     }
 
                     // Portrait: share buttons on second row below
@@ -367,7 +367,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title2)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text("share_device_url_button_label"))
+                        .accessibilityLabel(Text("share_device_url_button_label", tableName: "Devices"))
 
                         Button(action: {
                             if MFMailComposeViewController.canSendMail() {
@@ -383,7 +383,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                                 .font(.title2)
                         }
                         .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel(Text("share_device_email_button_label"))
+                        .accessibilityLabel(Text("share_device_email_button_label", tableName: "Devices"))
                     }
                     .padding(.top, 4)
                 }
@@ -392,7 +392,7 @@ struct iPhone_MyDeviceQRCodeView: View {
             .padding(.top, isLandscape ? 10 : 12)
 
             VStack(spacing: isLandscape ? 10 : 12) {
-                Text("Device Slogan")
+                Text("Device Slogan", tableName: "Devices")
                     .font(isLandscape ? .subheadline : .headline)
                     .foregroundColor(.secondary)
 
@@ -468,7 +468,7 @@ struct iPhone_MyDeviceQRCodeView: View {
 
     private var shareText: String {
         String(
-            format: NSLocalizedString("share_device_email_body", comment: "Body for sharing a device link via email or share sheet"),
+            format: NSLocalizedString("share_device_email_body", tableName: "Devices", comment: "Body for sharing a device link via email or share sheet"),
             currentDeviceID,
             DeviceLinkResolver.urlString(for: currentDeviceID)
         )
@@ -479,14 +479,14 @@ struct iPhone_MyDeviceQRCodeView: View {
     }
 
     private var displayedSloganText: String {
-        ownDeviceSlogan.isEmpty ? NSLocalizedString("Device slogan", comment: "Placeholder for the editable device info text.") : ownDeviceSlogan
+        ownDeviceSlogan.isEmpty ? NSLocalizedString("Device slogan", tableName: "Devices", comment: "Placeholder for the editable device info text.") : ownDeviceSlogan
     }
 
     private var sloganEditorSheet: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Device slogan", text: $sloganDraft)
+                    TextField(String(localized: "Device slogan", table: "Devices"), text: $sloganDraft)
                         .onChange(of: sloganDraft) { _, newValue in
                             let sanitizedDraft = MiataruAppAPI.sanitizeDeviceSloganDraft(newValue, maxLength: maxSloganLength)
                             if sanitizedDraft != newValue {
@@ -496,12 +496,12 @@ struct iPhone_MyDeviceQRCodeView: View {
 
                     HStack {
                         Spacer()
-                        Text("\(sloganDraft.count)/\(maxSloganLength)")
+                        Text(verbatim: "\(sloganDraft.count)/\(maxSloganLength)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 } footer: {
-                    Text("Max 40 characters")
+                    Text("Max 40 characters", tableName: "Common")
                 }
 
                 if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
@@ -511,17 +511,17 @@ struct iPhone_MyDeviceQRCodeView: View {
                     }
                 }
             }
-            .navigationTitle("Device Slogan")
+            .navigationTitle(String(localized: "Device Slogan", table: "Devices"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
+                    Button(String(localized: "cancel", table: "Common")) {
                         showSloganEditor = false
                         sloganDraft = ownDeviceSlogan
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("save") {
+                    Button(String(localized: "save", table: "Common")) {
                         Task {
                             await saveOwnDeviceSlogan()
                         }
@@ -541,7 +541,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @MainActor
     private func loadOwnDeviceSloganIfNeeded(forceRefresh: Bool = false) async {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
-            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
             return
         }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else { return }
@@ -583,11 +583,11 @@ struct iPhone_MyDeviceQRCodeView: View {
     @MainActor
     private func saveOwnDeviceSlogan() async {
         guard let serverURL = URL(string: settings.miataruServerURL) else {
-            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", comment: "Error when server URL is invalid")
+            sloganErrorMessage = NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
             return
         }
         guard let deviceKey = settings.deviceKey, !deviceKey.isEmpty else {
-            sloganErrorMessage = NSLocalizedString("device_key_auth_required_message", comment: "Message when device key authentication is required")
+            sloganErrorMessage = NSLocalizedString("device_key_auth_required_message", tableName: "Devices", comment: "Message when device key authentication is required")
             return
         }
 
@@ -612,9 +612,7 @@ struct iPhone_MyDeviceQRCodeView: View {
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 sloganErrorMessage = authMessage
             } else {
-                sloganErrorMessage = NSLocalizedString(
-                    "device_slogan_set_failed_try_again_later",
-                    comment: "Fallback error when setting the device slogan failed."
+                sloganErrorMessage = NSLocalizedString("device_slogan_set_failed_try_again_later", tableName: "Devices", comment: "Fallback error when setting the device slogan failed."
                 )
             }
         }
@@ -647,8 +645,8 @@ struct MailView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
         let vc = MFMailComposeViewController()
         vc.mailComposeDelegate = context.coordinator
-        let subject = NSLocalizedString("share_device_email_subject", comment: "")
-        let body = String(format: NSLocalizedString("share_device_email_body", comment: ""), deviceID, DeviceLinkResolver.urlString(for: deviceID))
+        let subject = NSLocalizedString("share_device_email_subject", tableName: "Devices", comment: "")
+        let body = String(format: NSLocalizedString("share_device_email_body", tableName: "Devices", comment: ""), deviceID, DeviceLinkResolver.urlString(for: deviceID))
         vc.setSubject(subject)
         vc.setMessageBody(body, isHTML: false)
         if let data = qrImage.pngData() {

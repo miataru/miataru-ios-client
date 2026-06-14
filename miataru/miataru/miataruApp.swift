@@ -449,16 +449,16 @@ struct miataruApp: App {
 
     private var unknownDeviceAddActionTitle: String {
         if SettingsManager.shared.allowedDeviceListEnabled {
-            return NSLocalizedString("unknown_visitor_add_and_allow", comment: "Action to add an unknown visitor device and allow access")
+            return NSLocalizedString("unknown_visitor_add_and_allow", tableName: "Devices", comment: "Action to add an unknown visitor device and allow access")
         }
-        return NSLocalizedString("add", comment: "Add")
+        return NSLocalizedString("add", tableName: "Common", comment: "Add")
     }
 
     private var unknownDeviceActionMessage: String {
         if SettingsManager.shared.allowedDeviceListEnabled {
-            return NSLocalizedString("unknown_device_actions_message_acl_enabled", comment: "Dialog message for an unknown device when the allowed device list is enabled.")
+            return NSLocalizedString("unknown_device_actions_message_acl_enabled", tableName: "Devices", comment: "Dialog message for an unknown device when the allowed device list is enabled.")
         }
-        return NSLocalizedString("unknown_device_actions_message_acl_disabled", comment: "Dialog message for an unknown device when the allowed device list is disabled.")
+        return NSLocalizedString("unknown_device_actions_message_acl_disabled", tableName: "Devices", comment: "Dialog message for an unknown device when the allowed device list is disabled.")
     }
 
     @MainActor
@@ -571,7 +571,7 @@ private struct DeviceWindowEntrypoint: View {
             if let id = deviceID {
                 iPad_DeviceMapView(deviceID: id, shouldUpdateLastOpenedDeviceID: false)
             } else {
-                Text(NSLocalizedString("no_device_selected", comment: "No device selected for this window."))
+                Text(NSLocalizedString("no_device_selected", tableName: "Devices", comment: "No device selected for this window."))
             }
         }
         .task {
@@ -644,7 +644,7 @@ private struct UnknownDeviceActionSheet: View {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 14) {
                         Label {
-                            Text("unknown_device_actions_title")
+                            Text("unknown_device_actions_title", tableName: "Devices")
                                 .font(.title2.weight(.semibold))
                                 .foregroundStyle(.primary)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -687,7 +687,7 @@ private struct UnknownDeviceActionSheet: View {
 
                         Button(role: .destructive, action: onIgnore) {
                             Label(
-                                NSLocalizedString("allowed_device_list_ignore_button", comment: "Button to ignore an unknown visitor device"),
+                                NSLocalizedString("allowed_device_list_ignore_button", tableName: "Devices", comment: "Button to ignore an unknown visitor device"),
                                 systemImage: "eye.slash"
                             )
                             .frame(maxWidth: .infinity)
@@ -704,11 +704,11 @@ private struct UnknownDeviceActionSheet: View {
             .onAppear {
                 locationCache.enqueueGeocodingIfNeeded(for: deviceID)
             }
-            .navigationTitle("unknown_device_actions_title")
+            .navigationTitle(String(localized: "unknown_device_actions_title", table: "Devices"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel", role: .cancel, action: onCancel)
+                    Button(String(localized: "cancel", table: "Common"), role: .cancel, action: onCancel)
                 }
             }
         }

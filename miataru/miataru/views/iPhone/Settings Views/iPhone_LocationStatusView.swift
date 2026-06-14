@@ -29,7 +29,7 @@ struct iPhone_LocationStatusView: View {
         ScrollView {
             VStack(spacing: 16) {
             HStack {
-                Text(NSLocalizedString("Version", comment: "Label for app version on location status screen"))
+                Text(NSLocalizedString("Version", tableName: "SettingsDiagnostics", comment: "Label for app version on location status screen"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Spacer()
@@ -53,7 +53,7 @@ struct iPhone_LocationStatusView: View {
                     .font(.title2)
                 
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Location Tracking Status", comment: "Header for location tracking status section"))
+                    Text(NSLocalizedString("Location Tracking Status", tableName: "LocationTracking", comment: "Header for location tracking status section"))
                         .font(.headline)
                     Text(statusText)
                         .font(.caption)
@@ -66,7 +66,7 @@ struct iPhone_LocationStatusView: View {
                 Spacer()
                 
                 // Tracking Toggle
-                Toggle("location_track", isOn: $settings.trackAndReportLocation)
+                Toggle(String(localized: "location_track", table: "LocationTracking"), isOn: $settings.trackAndReportLocation)
                     .labelsHidden()
             }
             .padding()
@@ -93,7 +93,7 @@ struct iPhone_LocationStatusView: View {
                     // Aktuelle Location
                     if let location = locationManager.currentLocation {
                         LocationInfoRow(
-                            title: NSLocalizedString("Current location", comment: "Current position display in Location Tracking Details"),
+                            title: NSLocalizedString("Current location", tableName: "MapNavigationHistory", comment: "Current position display in Location Tracking Details"),
                             value: String(format: "%.6f, %.6f",
                                         location.coordinate.latitude, 
                                         location.coordinate.longitude),
@@ -101,68 +101,68 @@ struct iPhone_LocationStatusView: View {
                         )
                         
                         LocationInfoRow(
-                            title: NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details"),
+                            title: NSLocalizedString("Accuracy", tableName: "MapNavigationHistory", comment: "Accuracy display in Location Tracking Details"),
                             value: String(format: "%.1f m", location.horizontalAccuracy),
                             icon: "target"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Altitude (sea level)", comment: "Altitude above sea level display in Location Tracking Details"),
+                            title: NSLocalizedString("Altitude (sea level)", tableName: "MapNavigationHistory", comment: "Altitude above sea level display in Location Tracking Details"),
                             value: altitudeText(for: location),
                             icon: "arrow.up.and.down.circle"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Route requests", comment: "Number of route requests counter in Location Tracking Details"),
+                            title: NSLocalizedString("Route requests", tableName: "SettingsDiagnostics", comment: "Number of route requests counter in Location Tracking Details"),
                             value: String(routeCounter.count),
                             icon: "map"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Widget requests (today)", comment: "Number of widget-initiated requests today in Location Tracking Details"),
+                            title: NSLocalizedString("Widget requests (today)", tableName: "SettingsDiagnostics", comment: "Number of widget-initiated requests today in Location Tracking Details"),
                             value: String(widgetRequestCounter.countToday),
                             icon: "square.on.square"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Updated location calls (today)", comment: "Number of UpdateLocation calls today in Location Tracking Details"),
+                            title: NSLocalizedString("Updated location calls (today)", tableName: "SettingsDiagnostics", comment: "Number of UpdateLocation calls today in Location Tracking Details"),
                             value: String(apiRequestCounter.updatedLocationCallsToday),
                             icon: "arrow.up.circle"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetVisitorHistory calls (today)", comment: "Number of GetVisitorHistory calls today in Location Tracking Details"),
+                            title: NSLocalizedString("GetVisitorHistory calls (today)", tableName: "SettingsDiagnostics", comment: "Number of GetVisitorHistory calls today in Location Tracking Details"),
                             value: String(apiRequestCounter.getVisitorHistoryCallsToday),
                             icon: "person.2"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetLocation calls (today)", comment: "Number of GetLocation calls today in Location Tracking Details"),
+                            title: NSLocalizedString("GetLocation calls (today)", tableName: "SettingsDiagnostics", comment: "Number of GetLocation calls today in Location Tracking Details"),
                             value: String(apiRequestCounter.getLocationCallsToday),
                             icon: "location"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("GetLocationHistory calls (today)", comment: "Number of GetLocationHistory calls today in Location Tracking Details"),
+                            title: NSLocalizedString("GetLocationHistory calls (today)", tableName: "SettingsDiagnostics", comment: "Number of GetLocationHistory calls today in Location Tracking Details"),
                             value: String(apiRequestCounter.getLocationHistoryCallsToday),
                             icon: "clock.arrow.circlepath"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Speed", comment: "Speed display in Location Tracking Details"),
+                            title: NSLocalizedString("Speed", tableName: "MapNavigationHistory", comment: "Speed display in Location Tracking Details"),
                             value: speedText(for: location),
                             icon: "speedometer"
                         )
 
                         LocationInfoRow(
-                            title: NSLocalizedString("Battery level", comment: "Battery level display in Location Tracking Details"),
+                            title: NSLocalizedString("Battery level", tableName: "MapNavigationHistory", comment: "Battery level display in Location Tracking Details"),
                             value: batteryLevelText,
                             icon: "battery.100"
                         )
                     }
 
                     LocationInfoRow(
-                        title: NSLocalizedString("Queued location updates", comment: "Number of locally queued UpdateLocation records waiting to be sent"),
+                        title: NSLocalizedString("Queued location updates", tableName: "LocationTracking", comment: "Number of locally queued UpdateLocation records waiting to be sent"),
                         value: String(locationManager.pendingLocationUpdateCount),
                         icon: "tray.and.arrow.up"
                     )
@@ -171,8 +171,7 @@ struct iPhone_LocationStatusView: View {
                         Button {
                             flushQueuedLocationUpdates()
                         } label: {
-                            Label(
-                                "location_update_outbox_flush_button",
+                            Label(String(localized: "location_update_outbox_flush_button", table: "LocationTracking"),
                                 systemImage: isFlushingQueuedLocationUpdates ? "arrow.clockwise" : "paperplane"
                             )
                             .frame(maxWidth: .infinity)
@@ -186,7 +185,7 @@ struct iPhone_LocationStatusView: View {
                     // Letzte Updates
                     if let lastUpdate = locationManager.lastUpdateTime {
                         LocationInfoRow(
-                            title: NSLocalizedString("Last GPS update", comment: "Last GPS update"),
+                            title: NSLocalizedString("Last GPS update", tableName: "MapNavigationHistory", comment: "Last GPS update"),
                             value: formatDate(lastUpdate),
                             icon: "clock"
                         )
@@ -194,7 +193,7 @@ struct iPhone_LocationStatusView: View {
                     
                     if let lastServerUpdate = locationManager.lastServerUpdate {
                         LocationInfoRow(
-                            title: NSLocalizedString("Last server update", comment: "Last Server-Update status line in Location Tracking details"),
+                            title: NSLocalizedString("Last server update", tableName: "MapNavigationHistory", comment: "Last Server-Update status line in Location Tracking details"),
                             value: formatDate(lastServerUpdate),
                             icon: "network"
                         )
@@ -216,7 +215,7 @@ struct iPhone_LocationStatusView: View {
             // Log der letzten Updates
             if !updateLog.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(NSLocalizedString("Recent location updates:", comment: "Header for recent location updates log"))
+                    Text(NSLocalizedString("Recent location updates:", tableName: "LocationTracking", comment: "Header for recent location updates log"))
                         .font(.caption)
                     ForEach(updateLog, id: \ .timestamp) { entry in
                         HStack {
@@ -237,7 +236,7 @@ struct iPhone_LocationStatusView: View {
                 UserDefaults.standard.hasCompletedOnboarding = false
                 appState.presentFullOnboarding(skipPostUpdate: true)
             } label: {
-                Text("Show Onboarding Wizard Again")
+                Text("Show Onboarding Wizard Again", tableName: "OnboardingQR")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
@@ -257,11 +256,11 @@ struct iPhone_LocationStatusView: View {
                         .padding()
                 }
                 .accessibilityIdentifier("location_diagnostics_sheet")
-                .navigationTitle("Location diagnostics")
+                .navigationTitle(String(localized: "Location diagnostics", table: "SettingsDiagnostics"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") {
+                        Button(String(localized: "Done", table: "Common")) {
                             showingLocationDiagnosticsSheet = false
                         }
                         .accessibilityIdentifier("location_diagnostics_done_button")
@@ -364,22 +363,22 @@ struct iPhone_LocationStatusView: View {
     
     private var statusText: String {
         if !settings.trackAndReportLocation {
-            return NSLocalizedString("Location tracking deactivated", comment: "Location Tracking Status statusText")
+            return NSLocalizedString("Location tracking deactivated", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         }
         
         switch locationManager.authorizationStatus {
         case .authorizedAlways:
-            return locationManager.isTracking ? NSLocalizedString("Tracking inactive (fore- & background)", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", comment: "Location Tracking Status statusText")
+            return locationManager.isTracking ? NSLocalizedString("Tracking inactive (fore- & background)", tableName: "LocationTracking", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         case .authorizedWhenInUse:
-            return NSLocalizedString("Only allowed when app in foregrond", comment: "Location Tracking Status statusText")
+            return NSLocalizedString("Only allowed when app in foregrond", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         case .denied:
             return NSLocalizedString("Location access denied", comment: "Location Tracking Status statusText")
         case .restricted:
             return NSLocalizedString("Location access restricted", comment: "Location Tracking Status statusText")
         case .notDetermined:
-            return NSLocalizedString("Permission not determined", comment: "Location Tracking Status statusText")
+            return NSLocalizedString("Permission not determined", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         @unknown default:
-            return NSLocalizedString("Location services not available", comment: "Location Tracking Status statusText")
+            return NSLocalizedString("Location services not available", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         }
     }
     
@@ -394,7 +393,7 @@ struct iPhone_LocationStatusView: View {
         let bundle = Bundle.main
         let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
         let build = bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
-        return String(format: "%@ (%@ %@)", version, NSLocalizedString("Build", comment: "Build number label"), build)
+        return String(format: "%@ (%@ %@)", version, NSLocalizedString("Build", tableName: "SettingsDiagnostics", comment: "Build number label"), build)
     }
     
     // Tracking-Modus-Text
@@ -410,12 +409,12 @@ struct iPhone_LocationStatusView: View {
     private var backgroundLocationHintText: String {
         switch locationManager.currentBackgroundTrackingDisplayMode {
         case .manualFrequent, .smartFrequent:
-            let format = NSLocalizedString("frequent_background_location_updates_active_hint_format", comment: "Hint shown when frequent background updates are active")
+            let format = NSLocalizedString("frequent_background_location_updates_active_hint_format", tableName: "LocationTracking", comment: "Hint shown when frequent background updates are active")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
         case .smartWaiting:
-            return NSLocalizedString("smart_frequent_background_waiting_hint", comment: "Hint shown when smart frequent background updates are waiting for movement")
+            return NSLocalizedString("smart_frequent_background_waiting_hint", tableName: "LocationTracking", comment: "Hint shown when smart frequent background updates are waiting for movement")
         case .significantChange, .foregroundLive:
-            return NSLocalizedString("Location updates in the background use the battery-saving standard mode.", comment: "Hint for battery-saving standard background location update behavior")
+            return NSLocalizedString("Location updates in the background use the battery-saving standard mode.", tableName: "LocationTracking", comment: "Hint for battery-saving standard background location update behavior")
         }
     }
     
@@ -430,24 +429,24 @@ struct iPhone_LocationStatusView: View {
             let kilometersPerHour = metersPerSecond * 3.6
             return String(format: "%.1f km/h", kilometersPerHour)
         } else {
-            return NSLocalizedString("Unknown", comment: "Unknown speed value in Location Tracking Details")
+            return NSLocalizedString("Unknown", tableName: "Common", comment: "Unknown speed value in Location Tracking Details")
         }
     }
 
     private func trackingModeText(for mode: LocationManager.BackgroundTrackingDisplayMode) -> String {
         switch mode {
         case .foregroundLive:
-            return NSLocalizedString("Tracking mode: Live (GPS)", comment: "Tracking mode text for foreground mode")
+            return NSLocalizedString("Tracking mode: Live (GPS)", tableName: "LocationTracking", comment: "Tracking mode text for foreground mode")
         case .manualFrequent:
-            let format = NSLocalizedString("tracking_mode_manual_frequent_background_updates_format", comment: "Tracking mode text for manually enabled frequent background updates")
+            let format = NSLocalizedString("tracking_mode_manual_frequent_background_updates_format", tableName: "LocationTracking", comment: "Tracking mode text for manually enabled frequent background updates")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
         case .smartFrequent:
-            let format = NSLocalizedString("tracking_mode_smart_frequent_background_updates_format", comment: "Tracking mode text for smart frequent background updates")
+            let format = NSLocalizedString("tracking_mode_smart_frequent_background_updates_format", tableName: "LocationTracking", comment: "Tracking mode text for smart frequent background updates")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
         case .smartWaiting:
-            return NSLocalizedString("tracking_mode_smart_waiting", comment: "Tracking mode text when smart frequent background updates are waiting")
+            return NSLocalizedString("tracking_mode_smart_waiting", tableName: "LocationTracking", comment: "Tracking mode text when smart frequent background updates are waiting")
         case .significantChange:
-            return NSLocalizedString("tracking_mode_battery_saving_standard", comment: "Tracking mode text for battery-saving standard background mode")
+            return NSLocalizedString("tracking_mode_battery_saving_standard", tableName: "LocationTracking", comment: "Tracking mode text for battery-saving standard background mode")
         }
     }
 
@@ -458,7 +457,7 @@ struct iPhone_LocationStatusView: View {
         defer { if !wasMonitoringEnabled { device.isBatteryMonitoringEnabled = false } }
         let level = device.batteryLevel
         if level < 0 {
-            return NSLocalizedString("Unknown", comment: "Unknown battery level in Location Tracking Details")
+            return NSLocalizedString("Unknown", tableName: "Common", comment: "Unknown battery level in Location Tracking Details")
         }
         let percent = Int(level * 100)
         return "\(percent) %"
@@ -469,7 +468,7 @@ struct iPhone_LocationStatusView: View {
         if verticalAccuracy >= 0 {
             return String(format: "%.1f m", location.altitude)
         } else {
-            return NSLocalizedString("Unknown", comment: "Unknown altitude value in Location Tracking Details")
+            return NSLocalizedString("Unknown", tableName: "Common", comment: "Unknown altitude value in Location Tracking Details")
         }
     }
 }
@@ -512,14 +511,14 @@ struct LocalStorageUsageCard: View {
                     .foregroundColor(.blue)
                     .frame(width: 20)
 
-                Text(NSLocalizedString("local_storage_section_title", comment: "Title for local storage usage section"))
+                Text(NSLocalizedString("local_storage_section_title", tableName: "SettingsDiagnostics", comment: "Title for local storage usage section"))
                     .font(.headline)
 
                 Spacer(minLength: 8)
             }
 
             LocalStorageUsageRow(
-                title: NSLocalizedString("local_storage_total_title", comment: "Title for total local storage usage"),
+                title: NSLocalizedString("local_storage_total_title", tableName: "SettingsDiagnostics", comment: "Title for total local storage usage"),
                 byteText: LocalStorageUsageReporter.byteCountText(snapshot.totalBytes),
                 itemCountText: nil,
                 icon: "sum"
@@ -618,7 +617,7 @@ struct ServerStatusRow: View {
                 .foregroundColor(statusColor)
                 .frame(width: 20)
             
-            Text(NSLocalizedString("Miataru server status", comment: "Server Status Row"))
+            Text(NSLocalizedString("Miataru server status", tableName: "SettingsDiagnostics", comment: "Server Status Row"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             
@@ -660,11 +659,11 @@ struct ServerStatusRow: View {
     private var statusText: String {
         switch status {
         case .idle:
-            return NSLocalizedString("Ready", comment: "statusText LocationTracking Status")
+            return NSLocalizedString("Ready", tableName: "SettingsDiagnostics", comment: "statusText LocationTracking Status")
         case .updating:
-            return NSLocalizedString("Sending...", comment: "statusText LocationTracking Status")
+            return NSLocalizedString("Sending...", tableName: "SettingsDiagnostics", comment: "statusText LocationTracking Status")
         case .success:
-            return NSLocalizedString("Successful", comment: "statusText LocationTracking Status")
+            return NSLocalizedString("Successful", tableName: "SettingsDiagnostics", comment: "statusText LocationTracking Status")
         case .failed(let error):
             return NSLocalizedString("Error: \(error)", comment: "statusText LocationTracking Status")
         }
@@ -676,7 +675,7 @@ struct PermissionStatusView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("location_permission_state_title")
+            Text("location_permission_state_title", tableName: "LocationTracking")
                 .font(.headline)
             
             HStack {
@@ -691,12 +690,12 @@ struct PermissionStatusView: View {
             }
             
             if status != .authorizedAlways {
-                Text("always_location_permission_required_message")
+                Text("always_location_permission_required_message", tableName: "LocationTracking")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text("always_location_permission_required_steps")
+                Text("always_location_permission_required_steps", tableName: "LocationTracking")
                     .font(.caption2)
                     .foregroundColor(status == .denied || status == .restricted ? .red : .secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -741,17 +740,17 @@ struct PermissionStatusView: View {
     private var permissionText: String {
         switch status {
         case .authorizedAlways:
-            return NSLocalizedString("Full permissions granted", comment: "permission text in Location Tracking Status")
+            return NSLocalizedString("Full permissions granted", tableName: "LocationTracking", comment: "permission text in Location Tracking Status")
         case .authorizedWhenInUse:
-            return NSLocalizedString("Only allowed when app in foregrond", comment: "permission text in Location Tracking Status")
+            return NSLocalizedString("Only allowed when app in foregrond", tableName: "LocationTracking", comment: "permission text in Location Tracking Status")
         case .denied:
             return NSLocalizedString("Location access denied", comment: "permission text in Location Tracking Status")
         case .restricted:
             return NSLocalizedString("Location access restricted", comment: "permission text in Location Tracking Status")
         case .notDetermined:
-            return NSLocalizedString("Permission not determined", comment: "permission text in Location Tracking Status")
+            return NSLocalizedString("Permission not determined", tableName: "LocationTracking", comment: "permission text in Location Tracking Status")
         @unknown default:
-            return NSLocalizedString("Location services not available", comment: "permission text in Location Tracking Status")
+            return NSLocalizedString("Location services not available", tableName: "LocationTracking", comment: "permission text in Location Tracking Status")
         }
     }
 }
@@ -766,58 +765,58 @@ struct BackgroundStatusCard: View {
                 Image(systemName: "clock.fill")
                     .foregroundColor(.blue)
                     .frame(width: 20)
-                Text(NSLocalizedString("background_status_header", comment: "Header for background location status card"))
+                Text(NSLocalizedString("background_status_header", tableName: "LocationTracking", comment: "Header for background location status card"))
                     .font(.headline)
                 Spacer()
             }
             
             statusRow(
-                title: NSLocalizedString("background_updates_label", comment: "Label for number of background updates"),
+                title: NSLocalizedString("background_updates_label", tableName: "LocationTracking", comment: "Label for number of background updates"),
                 value: "\(backgroundManager.backgroundUpdateCount)",
                 icon: "arrow.clockwise.circle.fill"
             )
 
             statusRow(
-                title: NSLocalizedString("location_update_count_foreground_live_label", comment: "Label for foreground live location update count"),
+                title: NSLocalizedString("location_update_count_foreground_live_label", tableName: "LocationTracking", comment: "Label for foreground live location update count"),
                 value: "\(backgroundManager.locationUpdateModeCounts.foregroundLive)",
                 icon: "location.fill"
             )
 
             statusRow(
-                title: NSLocalizedString("location_update_count_significant_change_label", comment: "Label for significant-change location update count"),
+                title: NSLocalizedString("location_update_count_significant_change_label", tableName: "LocationTracking", comment: "Label for significant-change location update count"),
                 value: "\(backgroundManager.locationUpdateModeCounts.significantChange)",
                 icon: "leaf.fill"
             )
 
             statusRow(
-                title: NSLocalizedString("location_update_count_smart_frequent_label", comment: "Label for smart frequent location update count"),
+                title: NSLocalizedString("location_update_count_smart_frequent_label", tableName: "LocationTracking", comment: "Label for smart frequent location update count"),
                 value: "\(backgroundManager.locationUpdateModeCounts.smartFrequent)",
                 icon: "sparkles"
             )
 
             statusRow(
-                title: NSLocalizedString("location_update_count_manual_frequent_label", comment: "Label for manually frequent location update count"),
+                title: NSLocalizedString("location_update_count_manual_frequent_label", tableName: "LocationTracking", comment: "Label for manually frequent location update count"),
                 value: "\(backgroundManager.locationUpdateModeCounts.manualFrequent)",
                 icon: "hand.tap.fill"
             )
             
             if let lastUpdate = backgroundManager.lastBackgroundUpdate {
                 statusRow(
-                    title: NSLocalizedString("last_background_update_label", comment: "Label for timestamp of the last background update"),
+                    title: NSLocalizedString("last_background_update_label", tableName: "LocationTracking", comment: "Label for timestamp of the last background update"),
                     value: formatTime(lastUpdate),
                     icon: "clock.fill"
                 )
             }
 
             statusRow(
-                title: NSLocalizedString("background_tracking_mode_title", comment: "Label for current background tracking mode"),
+                title: NSLocalizedString("background_tracking_mode_title", tableName: "LocationTracking", comment: "Label for current background tracking mode"),
                 value: backgroundTrackingModeText,
                 icon: "slider.horizontal.3"
             )
 
             if settings.frequentBackgroundLocationUpdatesEnabled {
                 statusRow(
-                    title: NSLocalizedString("background_tracking_expires_at_label", comment: "Label for frequent background tracking expiration time"),
+                    title: NSLocalizedString("background_tracking_expires_at_label", tableName: "LocationTracking", comment: "Label for frequent background tracking expiration time"),
                     value: backgroundTrackingExpirationText,
                     icon: "timer"
                 )
@@ -825,19 +824,19 @@ struct BackgroundStatusCard: View {
 
             if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                 statusRow(
-                    title: NSLocalizedString("smart_frequent_background_last_activation_label", comment: "Label for the latest smart frequent activation reason"),
-                    value: backgroundManager.smartFrequentBackgroundLastActivationReason ?? NSLocalizedString("smart_frequent_background_no_activation_yet", comment: "No smart frequent activation has happened yet"),
+                    title: NSLocalizedString("smart_frequent_background_last_activation_label", tableName: "LocationTracking", comment: "Label for the latest smart frequent activation reason"),
+                    value: backgroundManager.smartFrequentBackgroundLastActivationReason ?? NSLocalizedString("smart_frequent_background_no_activation_yet", tableName: "LocationTracking", comment: "No smart frequent activation has happened yet"),
                     icon: "bolt.fill"
                 )
 
                 statusRow(
-                    title: NSLocalizedString("smart_frequent_background_last_movement_label", comment: "Label for the latest relevant smart frequent movement"),
+                    title: NSLocalizedString("smart_frequent_background_last_movement_label", tableName: "LocationTracking", comment: "Label for the latest relevant smart frequent movement"),
                     value: smartMovementText,
                     icon: "speedometer"
                 )
 
                 statusRow(
-                    title: NSLocalizedString("smart_frequent_background_next_timeout_label", comment: "Label for the next smart frequent inactivity timeout"),
+                    title: NSLocalizedString("smart_frequent_background_next_timeout_label", tableName: "LocationTracking", comment: "Label for the next smart frequent inactivity timeout"),
                     value: smartTimeoutText,
                     icon: "hourglass"
                 )
@@ -875,23 +874,23 @@ struct BackgroundStatusCard: View {
     private var backgroundTrackingModeText: String {
         switch backgroundManager.currentBackgroundTrackingDisplayMode {
         case .foregroundLive:
-            return NSLocalizedString("background_tracking_mode_foreground_live", comment: "Background status text for foreground live mode")
+            return NSLocalizedString("background_tracking_mode_foreground_live", tableName: "LocationTracking", comment: "Background status text for foreground live mode")
         case .manualFrequent:
-            let format = NSLocalizedString("background_tracking_mode_frequent_format", comment: "Background status text for frequent update mode")
+            let format = NSLocalizedString("background_tracking_mode_frequent_format", tableName: "LocationTracking", comment: "Background status text for frequent update mode")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
         case .smartFrequent:
-            let format = NSLocalizedString("background_tracking_mode_smart_frequent_format", comment: "Background status text for smart frequent update mode")
+            let format = NSLocalizedString("background_tracking_mode_smart_frequent_format", tableName: "LocationTracking", comment: "Background status text for smart frequent update mode")
             return String(format: format, settings.frequentBackgroundLocationDistanceFilter)
         case .smartWaiting:
-            return NSLocalizedString("background_tracking_mode_smart_waiting", comment: "Background status text for smart frequent waiting mode")
+            return NSLocalizedString("background_tracking_mode_smart_waiting", tableName: "LocationTracking", comment: "Background status text for smart frequent waiting mode")
         case .significantChange:
-            return NSLocalizedString("background_tracking_mode_significant_change", comment: "Background status text for significant-change mode")
+            return NSLocalizedString("background_tracking_mode_significant_change", tableName: "LocationTracking", comment: "Background status text for significant-change mode")
         }
     }
 
     private var backgroundTrackingExpirationText: String {
         guard let expiresAt = settings.frequentBackgroundLocationUpdatesExpiresAt else {
-            return NSLocalizedString("background_tracking_expires_never", comment: "Frequent background tracking never expires")
+            return NSLocalizedString("background_tracking_expires_never", tableName: "LocationTracking", comment: "Frequent background tracking never expires")
         }
 
         let formatter = DateFormatter()
@@ -902,14 +901,14 @@ struct BackgroundStatusCard: View {
 
     private var smartMovementText: String {
         guard let date = backgroundManager.smartFrequentBackgroundLastRelevantMovementAt else {
-            return NSLocalizedString("smart_frequent_background_no_movement_yet", comment: "No smart frequent movement has been recorded yet")
+            return NSLocalizedString("smart_frequent_background_no_movement_yet", tableName: "LocationTracking", comment: "No smart frequent movement has been recorded yet")
         }
         return formatTime(date)
     }
 
     private var smartTimeoutText: String {
         guard let date = backgroundManager.smartFrequentBackgroundNextInactivityTimeoutAt else {
-            return NSLocalizedString("smart_frequent_background_no_timeout_pending", comment: "No smart frequent inactivity timeout is pending")
+            return NSLocalizedString("smart_frequent_background_no_timeout_pending", tableName: "LocationTracking", comment: "No smart frequent inactivity timeout is pending")
         }
         return formatTime(date)
     }
@@ -929,21 +928,21 @@ struct LocationDiagnosticsCard: View {
                 Image(systemName: "stethoscope")
                     .foregroundColor(.blue)
                     .frame(width: 20)
-                Text("Location diagnostics")
+                Text("Location diagnostics", tableName: "SettingsDiagnostics")
                     .font(.headline)
                 Spacer()
-                Toggle("Location diagnostics logging", isOn: $settings.locationDiagnosticsLoggingEnabled)
+                Toggle(String(localized: "Location diagnostics logging", table: "SettingsDiagnostics"), isOn: $settings.locationDiagnosticsLoggingEnabled)
                     .labelsHidden()
                     .accessibilityIdentifier("location_diagnostics_logging_toggle")
             }
 
-            Text("Records selected location-tracking decisions for later export. Existing entries remain until cleared.")
+            Text("Records selected location-tracking decisions for later export. Existing entries remain until cleared.", tableName: "SettingsDiagnostics")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             statusRow(
-                title: NSLocalizedString("location_diagnostics_entries_title", comment: "Number of entries in the location diagnostics log"),
+                title: NSLocalizedString("location_diagnostics_entries_title", tableName: "LocationTracking", comment: "Number of entries in the location diagnostics log"),
                 value: "\(diagnosticsLog.entries.count) / \(LocationDiagnosticsLogStore.defaultMaxEntries) (+\(diagnosticsLog.coalescedCounts.count) summaries)",
                 icon: "list.bullet.rectangle"
             )
@@ -982,7 +981,7 @@ struct LocationDiagnosticsCard: View {
 
             if let latestEntry = diagnosticsLog.entries.last {
                 statusRow(
-                    title: NSLocalizedString("location_diagnostics_last_event_title", comment: "Title for the latest location diagnostics event"),
+                    title: NSLocalizedString("location_diagnostics_last_event_title", tableName: "LocationTracking", comment: "Title for the latest location diagnostics event"),
                     value: "\(latestEntry.event): \(latestEntry.result)",
                     icon: "clock"
                 )
@@ -990,7 +989,7 @@ struct LocationDiagnosticsCard: View {
 
             if let rearmStatus = locationManager.lastSignificantChangeRearmStatus {
                 statusRow(
-                    title: NSLocalizedString("location_diagnostics_rearm_title", comment: "Title for the significant-change location monitor re-arm status"),
+                    title: NSLocalizedString("location_diagnostics_rearm_title", tableName: "LocationTracking", comment: "Title for the significant-change location monitor re-arm status"),
                     value: rearmStatusText(rearmStatus),
                     icon: rearmStatus.result == .attempted ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle"
                 )
@@ -1000,7 +999,7 @@ struct LocationDiagnosticsCard: View {
                 Button {
                     exportDiagnostics()
                 } label: {
-                    Label("Export", systemImage: "square.and.arrow.up")
+                    Label(String(localized: "Export", table: "SettingsDiagnostics"), systemImage: "square.and.arrow.up")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -1011,7 +1010,7 @@ struct LocationDiagnosticsCard: View {
                 Button(role: .destructive) {
                     diagnosticsLog.clear()
                 } label: {
-                    Label("Clear", systemImage: "trash")
+                    Label(String(localized: "Clear", table: "SettingsDiagnostics"), systemImage: "trash")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -1029,7 +1028,7 @@ struct LocationDiagnosticsCard: View {
             if !diagnosticsLog.entries.isEmpty {
                 Divider()
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Recent diagnostics")
+                    Text("Recent diagnostics", tableName: "SettingsDiagnostics")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     ForEach(recentDiagnosticEntries) { entry in

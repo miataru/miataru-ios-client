@@ -102,10 +102,10 @@ struct ColorPickerSheet: View {
                     .padding(.top, 8)
                 // Hue Slider
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Hue", comment: "Label for hue slider in color picker"))
+                    Text(NSLocalizedString("Hue", tableName: "Common", comment: "Label for hue slider in color picker"))
                         .font(.caption)
                     Slider(value: $hue, in: 0...1, step: 0.01) {
-                        Text(NSLocalizedString("Hue", comment: "Accessibility label for hue slider in color picker"))
+                        Text(NSLocalizedString("Hue", tableName: "Common", comment: "Accessibility label for hue slider in color picker"))
                     } minimumValueLabel: {
                         // text minimum
                     } maximumValueLabel: {
@@ -117,10 +117,10 @@ struct ColorPickerSheet: View {
                 }
                 // Brightness Slider
                 VStack(alignment: .leading) {
-                    Text(NSLocalizedString("Brightness", comment: "Label for brightness slider in color picker"))
+                    Text(NSLocalizedString("Brightness", tableName: "Common", comment: "Label for brightness slider in color picker"))
                         .font(.caption)
                     Slider(value: $brightness, in: 0...1, step: 0.01) {
-                        Text(NSLocalizedString("Brightness", comment: "Accessibility label for brightness slider in color picker"))
+                        Text(NSLocalizedString("Brightness", tableName: "Common", comment: "Accessibility label for brightness slider in color picker"))
                     } minimumValueLabel: {
                         // text minimum
                     } maximumValueLabel: {
@@ -132,11 +132,11 @@ struct ColorPickerSheet: View {
                 }
             }
             .padding()
-            .navigationTitle(NSLocalizedString("Pick Color", comment: "Title for color picker sheet"))
+            .navigationTitle(NSLocalizedString("Pick Color", tableName: "Common", comment: "Title for color picker sheet"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(NSLocalizedString("Done", comment: "Button to close color picker sheet")) {
+                    Button(NSLocalizedString("Done", tableName: "Common", comment: "Button to close color picker sheet")) {
                         dismiss()
                     }
                 }
@@ -158,7 +158,7 @@ struct ColorPickerButtonDemo: View {
         Button(action: { showSheet = true }) {
             HStack {
                 Circle().fill(color).frame(width: 24, height: 24)
-                Text(NSLocalizedString("Pick Color", comment: "Button label to open color picker sheet"))
+                Text(NSLocalizedString("Pick Color", tableName: "Common", comment: "Button label to open color picker sheet"))
             }
         }
         .sheet(isPresented: $showSheet) {

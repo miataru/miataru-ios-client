@@ -95,13 +95,9 @@ actor LocationTrackingHealthReminderService {
         await notifier.removePendingNotificationRequests(withIdentifiers: [Self.notificationIdentifier])
 
         let content = UNMutableNotificationContent()
-        content.title = NSLocalizedString(
-            "location_tracking_health_reminder_notification_title",
-            comment: "Notification title reminding the user to open Miataru to confirm location tracking is working"
+        content.title = NSLocalizedString("location_tracking_health_reminder_notification_title", tableName: "LocationTracking", comment: "Notification title reminding the user to open Miataru to confirm location tracking is working"
         )
-        content.body = NSLocalizedString(
-            "location_tracking_health_reminder_notification_body",
-            comment: "Notification body explaining that Miataru should be opened after a long quiet period"
+        content.body = NSLocalizedString("location_tracking_health_reminder_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that Miataru should be opened after a long quiet period"
         )
         content.sound = .default
         content.userInfo = [

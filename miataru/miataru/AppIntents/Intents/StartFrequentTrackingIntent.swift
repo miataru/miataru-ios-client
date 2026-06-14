@@ -11,24 +11,18 @@ import AppIntents
 import Foundation
 
 struct StartFrequentTrackingIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_start_frequent_tracking_title",
-        defaultValue: "Start Frequent Tracking",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_start_frequent_tracking_title", defaultValue: "Start Frequent Tracking", table: "AppIntents",
         comment: "Title for the App Intent that starts manual frequent background tracking"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_start_frequent_tracking_description",
-            defaultValue: "Starts Miataru's more frequent background tracking using the current duration setting.",
+        LocalizedStringResource("intent_start_frequent_tracking_description", defaultValue: "Starts Miataru's more frequent background tracking using the current duration setting.", table: "AppIntents",
             comment: "Description for the App Intent that starts manual frequent background tracking"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_start_frequent_tracking_parameter_duration",
-            defaultValue: "Duration",
+        title: LocalizedStringResource("intent_start_frequent_tracking_parameter_duration", defaultValue: "Duration", table: "AppIntents",
             comment: "Parameter title for choosing how long frequent tracking should stay active"
         )
     )

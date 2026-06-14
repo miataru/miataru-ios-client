@@ -81,25 +81,19 @@ enum IntentNavigationDirection: String, AppEnum, Equatable, Sendable {
     case deviceToUser
 
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource(
-            "intent_navigation_direction_type_name",
-            defaultValue: "Route Direction",
+        name: LocalizedStringResource("intent_navigation_direction_type_name", defaultValue: "Route Direction", table: "AppIntents",
             comment: "Display name for the route direction App Intent enum"
         )
     )
 
     static var caseDisplayRepresentations: [IntentNavigationDirection: DisplayRepresentation] = [
         .userToDevice: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_navigation_direction_user_to_device",
-                defaultValue: "From Me to Device",
+            title: LocalizedStringResource("intent_navigation_direction_user_to_device", defaultValue: "From Me to Device", table: "AppIntents",
                 comment: "Route direction from the user's current location to the selected device"
             )
         ),
         .deviceToUser: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_navigation_direction_device_to_user",
-                defaultValue: "From Device to Me",
+            title: LocalizedStringResource("intent_navigation_direction_device_to_user", defaultValue: "From Device to Me", table: "AppIntents",
                 comment: "Route direction from the selected device to the user's current location"
             )
         )
@@ -129,25 +123,19 @@ enum IntentNavigationPresentation: String, AppEnum, Equatable, Sendable {
     case focused
 
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource(
-            "intent_navigation_presentation_type_name",
-            defaultValue: "Navigation Presentation",
+        name: LocalizedStringResource("intent_navigation_presentation_type_name", defaultValue: "Navigation Presentation", table: "AppIntents",
             comment: "Display name for the Miataru navigation presentation App Intent enum"
         )
     )
 
     static var caseDisplayRepresentations: [IntentNavigationPresentation: DisplayRepresentation] = [
         .standard: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_navigation_presentation_standard",
-                defaultValue: "Standard",
+            title: LocalizedStringResource("intent_navigation_presentation_standard", defaultValue: "Standard", table: "AppIntents",
                 comment: "Standard Miataru navigation presentation"
             )
         ),
         .focused: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_navigation_presentation_focused",
-                defaultValue: "Focused",
+            title: LocalizedStringResource("intent_navigation_presentation_focused", defaultValue: "Focused", table: "AppIntents",
                 comment: "Focused Miataru navigation presentation"
             )
         )
@@ -178,32 +166,24 @@ enum IntentTransportMode: String, AppEnum, Equatable, Sendable {
     case transit
 
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource(
-            "intent_transport_mode_type_name",
-            defaultValue: "Transport Mode",
+        name: LocalizedStringResource("intent_transport_mode_type_name", defaultValue: "Transport Mode", table: "AppIntents",
             comment: "Display name for the transport mode App Intent enum"
         )
     )
 
     static var caseDisplayRepresentations: [IntentTransportMode: DisplayRepresentation] = [
         .walking: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_transport_mode_walking",
-                defaultValue: "Walking",
+            title: LocalizedStringResource("intent_transport_mode_walking", defaultValue: "Walking", table: "AppIntents",
                 comment: "Localized transport mode: walking"
             )
         ),
         .automobile: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_transport_mode_automobile",
-                defaultValue: "Car",
+            title: LocalizedStringResource("intent_transport_mode_automobile", defaultValue: "Car", table: "AppIntents",
                 comment: "Localized transport mode: automobile"
             )
         ),
         .transit: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_transport_mode_transit",
-                defaultValue: "Transit",
+            title: LocalizedStringResource("intent_transport_mode_transit", defaultValue: "Transit", table: "AppIntents",
                 comment: "Localized transport mode: transit"
             )
         )
@@ -264,60 +244,44 @@ enum IntentFrequentTrackingDuration: String, AppEnum, Equatable, Sendable {
     case unlimited
 
     static var typeDisplayRepresentation = TypeDisplayRepresentation(
-        name: LocalizedStringResource(
-            "intent_frequent_tracking_duration_type_name",
-            defaultValue: "Frequent Tracking Duration",
+        name: LocalizedStringResource("intent_frequent_tracking_duration_type_name", defaultValue: "Frequent Tracking Duration", table: "AppIntents",
             comment: "Display name for the frequent tracking duration App Intent enum"
         )
     )
 
     static var caseDisplayRepresentations: [IntentFrequentTrackingDuration: DisplayRepresentation] = [
         .oneHour: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_one_hour",
-                defaultValue: "1 Hour",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_one_hour", defaultValue: "1 Hour", table: "AppIntents",
                 comment: "Frequent tracking duration: one hour"
             )
         ),
         .twoHours: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_two_hours",
-                defaultValue: "2 Hours",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_two_hours", defaultValue: "2 Hours", table: "AppIntents",
                 comment: "Frequent tracking duration: two hours"
             )
         ),
         .threeHours: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_three_hours",
-                defaultValue: "3 Hours",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_three_hours", defaultValue: "3 Hours", table: "AppIntents",
                 comment: "Frequent tracking duration: three hours"
             )
         ),
         .fourHours: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_four_hours",
-                defaultValue: "4 Hours",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_four_hours", defaultValue: "4 Hours", table: "AppIntents",
                 comment: "Frequent tracking duration: four hours"
             )
         ),
         .twelveHours: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_twelve_hours",
-                defaultValue: "12 Hours",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_twelve_hours", defaultValue: "12 Hours", table: "AppIntents",
                 comment: "Frequent tracking duration: twelve hours"
             )
         ),
         .twentyFourHours: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_twenty_four_hours",
-                defaultValue: "24 Hours",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_twenty_four_hours", defaultValue: "24 Hours", table: "AppIntents",
                 comment: "Frequent tracking duration: twenty-four hours"
             )
         ),
         .unlimited: DisplayRepresentation(
-            title: LocalizedStringResource(
-                "intent_frequent_tracking_duration_unlimited",
-                defaultValue: "Until Stopped",
+            title: LocalizedStringResource("intent_frequent_tracking_duration_unlimited", defaultValue: "Until Stopped", table: "AppIntents",
                 comment: "Frequent tracking duration: unlimited until stopped"
             )
         )

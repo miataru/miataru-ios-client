@@ -14,7 +14,7 @@ struct MapHelpersTests {
         let justNow = now.addingTimeInterval(-2) // within default timeConsideredNow = 10s
         let result = relativeTimeString(from: justNow, to: now)
         // Should equal the localized string for the explicit key used in MapHelpers
-        let expectedNow = NSLocalizedString("relative_time_now", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
+        let expectedNow = NSLocalizedString("relative_time_now", tableName: "Common", comment: "Indicates that the location update just happened or is happening right now in a relative time on the map marker.")
         #expect(result == expectedNow)
     }
 
@@ -197,7 +197,7 @@ struct MapHelpersTests {
         let reference = Date(timeIntervalSince1970: 1_700_000_000)
         let future = reference.addingTimeInterval(30)
         let result = relativeTimeString(from: future, to: reference)
-        let expectedNow = NSLocalizedString("relative_time_now", comment: "Indicates now")
+        let expectedNow = NSLocalizedString("relative_time_now", tableName: "Common", comment: "Indicates now")
         #expect(result == expectedNow)
     }
 

@@ -19,7 +19,7 @@ struct PlaybackSpeedOverlay: View {
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundStyle(.primary)
 
-            Text(String(format: NSLocalizedString("playback_speed_format", comment: "Playback speed indicator format like 1x or 2x"), speed))
+            Text(String(format: NSLocalizedString("playback_speed_format", tableName: "MapNavigationHistory", comment: "Playback speed indicator format like 1x or 2x"), speed))
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
         }

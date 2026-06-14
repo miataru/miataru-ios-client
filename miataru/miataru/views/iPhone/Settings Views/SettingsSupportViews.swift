@@ -10,14 +10,14 @@
 import SwiftUI
 
 struct SettingsDescriptionText: View {
-    let key: LocalizedStringKey
+    let key: String
 
-    init(_ key: LocalizedStringKey) {
+    init(_ key: String) {
         self.key = key
     }
 
     var body: some View {
-        Text(key)
+        Text(LocalizedStringKey(key), tableName: SettingsTextTable.tableName(for: key))
             .font(.caption)
             .foregroundColor(.secondary)
             .fixedSize(horizontal: false, vertical: true)
@@ -25,17 +25,41 @@ struct SettingsDescriptionText: View {
 }
 
 struct SettingsWarningText: View {
-    let key: LocalizedStringKey
+    let key: String
 
-    init(_ key: LocalizedStringKey) {
+    init(_ key: String) {
         self.key = key
     }
 
     var body: some View {
-        Text(key)
+        Text(LocalizedStringKey(key), tableName: SettingsTextTable.tableName(for: key))
             .font(.caption)
             .foregroundColor(.red)
             .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private enum SettingsTextTable {
+    static func tableName(for key: String) -> String? {
+        if key.hasPrefix("allowed_device_list_") || key.hasPrefix("unknown_visitor_") || key.hasPrefix("device_key_") {
+            return "Devices"
+        }
+        if key.hasPrefix("location_sensitivity_") {
+            return "MapNavigationHistory"
+        }
+        if key.hasPrefix("explanation_server_url") {
+            return "SettingsDiagnostics"
+        }
+        if key.hasPrefix("activity_type_")
+            || key.hasPrefix("background_")
+            || key.hasPrefix("frequent_background_")
+            || key.hasPrefix("smart_frequent_")
+            || key.hasPrefix("location_tracking_")
+            || key.hasPrefix("location_update_outbox_")
+            || key.hasPrefix("explanation_") {
+            return "LocationTracking"
+        }
+        return nil
     }
 }
 
@@ -45,16 +69,16 @@ struct AlwaysLocationPermissionRequiredNotice: View {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Image(systemName: "location.badge.exclamationmark")
                     .foregroundColor(.orange)
-                Text("always_location_permission_required_title")
+                Text("always_location_permission_required_title", tableName: "LocationTracking")
                     .font(.headline)
             }
 
-            Text("always_location_permission_required_message")
+            Text("always_location_permission_required_message", tableName: "LocationTracking")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("always_location_permission_required_steps")
+            Text("always_location_permission_required_steps", tableName: "LocationTracking")
                 .font(.caption2)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -82,7 +106,7 @@ struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
                         .padding(.top, 1)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("frequent_background_location_updates_device_list_notice")
+                        Text("frequent_background_location_updates_device_list_notice", tableName: "LocationTracking")
                             .font(.subheadline)
                             .fixedSize(horizontal: false, vertical: true)
 
@@ -106,14 +130,12 @@ struct FrequentBackgroundLocationUpdatesDeviceListNotice: View {
         .foregroundColor(.primary)
         .padding(.vertical, 6)
         .accessibilityIdentifier("devices_frequent_background_location_updates_notice")
-        .accessibilityHint(Text("frequent_background_location_updates_device_list_notice_hint"))
+        .accessibilityHint(Text("frequent_background_location_updates_device_list_notice_hint", tableName: "LocationTracking"))
     }
 
     private func expirationText(for date: Date) -> String {
         String(
-            format: NSLocalizedString(
-                "frequent_background_location_updates_device_list_notice_expires_format",
-                comment: "Expiration line shown in the device list notice for temporary frequent background updates"
+            format: NSLocalizedString("frequent_background_location_updates_device_list_notice_expires_format", tableName: "LocationTracking", comment: "Expiration line shown in the device list notice for temporary frequent background updates"
             ),
             Self.expirationFormatter.string(from: date)
         )
@@ -138,7 +160,7 @@ struct AllowedDeviceListSettingsContent: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
-                    Text("allowed_device_list_enabled_status")
+                    Text("allowed_device_list_enabled_status", tableName: "Devices")
                         .font(.body)
                 }
 
@@ -152,7 +174,7 @@ struct AllowedDeviceListSettingsContent: View {
                     HStack {
                         Image(systemName: "lock.shield")
                             .foregroundColor(.blue)
-                        Text("allowed_device_list_enable_button")
+                        Text("allowed_device_list_enable_button", tableName: "Devices")
 
                         if isActivatingAllowedDeviceList {
                             Spacer()
@@ -192,7 +214,7 @@ struct AllowedDeviceListSettingsContent: View {
 struct AllowedDeviceListStatusCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("allowed_device_list_section_title")
+            Text("allowed_device_list_section_title", tableName: "Devices")
                 .font(.headline)
 
             AllowedDeviceListSettingsContent()

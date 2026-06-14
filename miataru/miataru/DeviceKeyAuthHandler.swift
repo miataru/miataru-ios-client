@@ -49,17 +49,17 @@ enum DeviceKeyAuthHandler {
 
     private static func deviceKeyAuthMessage(for error: Error) -> String {
         guard let apiError = error as? MiataruAPIClient.APIError else {
-            return NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+            return NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
         }
         switch apiError {
         case .serverError(_, let message):
             let lowercased = message.lowercased()
             if lowercased.contains("does not match") || lowercased.contains("doesn't match") {
-                return NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+                return NSLocalizedString("device_key_auth_mismatch_message", tableName: "Devices", comment: "Message when stored DeviceKey does not match server")
             }
-            return NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+            return NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
         default:
-            return NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+            return NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
         }
     }
 }

@@ -18,7 +18,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
-            Text("Location Permissions")
+            Text("Location Permissions", tableName: "LocationTracking")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("mapandpin")
@@ -33,16 +33,16 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                         .foregroundColor(.blue)
                         .padding(.top, 2)
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Location Access")
+                        Text("Location Access", tableName: "LocationTracking")
                             .font(.headline)
-                        Text("Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.")
+                        Text("Miataru needs your location to provide core app functionality, such as sharing your position with trusted contacts.", tableName: "LocationTracking")
                             .font(.subheadline)
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                         (
-                            Text("You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '")
-                            + Text("Allow While Using App").bold()
-                            + Text("'.")
+                            Text("You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '", tableName: "LocationTracking")
+                            + Text("Allow While Using App", tableName: "LocationTracking").bold()
+                            + Text("'.", tableName: "Common")
                         )
                         .font(.subheadline)
                         .multilineTextAlignment(.leading)
@@ -51,7 +51,7 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                     }
                 }
                 HStack(spacing: 12) {
-                    Text("Location Tracking")
+                    Text("Location Tracking", tableName: "LocationTracking")
                     Toggle("", isOn: Binding(
                         get: { settings.trackAndReportLocation },
                         set: { newValue in
@@ -74,18 +74,18 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                     .labelsHidden()
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-                .alert(NSLocalizedString("location_permission_open_settings_title", comment: "Alert title when redirecting to Settings for location permission"), isPresented: $showSettingsAlert) {
-                    Button(NSLocalizedString("cancel", comment: "Cancel button"), role: .cancel) {
+                .alert(NSLocalizedString("location_permission_open_settings_title", tableName: "LocationTracking", comment: "Alert title when redirecting to Settings for location permission"), isPresented: $showSettingsAlert) {
+                    Button(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel button"), role: .cancel) {
                         // User cancelled, keep toggle off
                         settings.trackAndReportLocation = false
                     }
-                    Button(NSLocalizedString("location_permission_open_settings_button", comment: "Button to open Settings for location permission")) {
+                    Button(NSLocalizedString("location_permission_open_settings_button", tableName: "LocationTracking", comment: "Button to open Settings for location permission")) {
                         // User confirmed, open Settings
                         settings.trackAndReportLocation = true
                         LocationManager.shared.openAppSettings()
                     }
                 } message: {
-                    Text(NSLocalizedString("location_permission_open_settings_message", comment: "Explanation message when redirecting to Settings for location permission"))
+                    Text(NSLocalizedString("location_permission_open_settings_message", tableName: "LocationTracking", comment: "Explanation message when redirecting to Settings for location permission"))
                 }
             }
             Text("").padding(.bottom,16)

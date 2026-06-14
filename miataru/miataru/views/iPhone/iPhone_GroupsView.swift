@@ -25,36 +25,36 @@ struct iPhone_GroupsView: View {
                     Image(systemName: "person.3.fill")
                         .font(.system(size: 48))
                         .foregroundColor(.gray)
-                    Text(NSLocalizedString("No groups yet", comment: "Shown when there are no groups in the list"))
+                    Text(NSLocalizedString("No groups yet", tableName: "Groups", comment: "Shown when there are no groups in the list"))
                         .font(.title2)
                         .foregroundColor(.secondary)
-                    Text(NSLocalizedString("Tap the + button to create a new group.", comment: "Instruction to create a new group when none exist"))
+                    Text(NSLocalizedString("Tap the + button to create a new group.", tableName: "Groups", comment: "Instruction to create a new group when none exist"))
                         .font(.body)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle(NSLocalizedString("groups", comment: "Navigation title for the groups list"))
+                .navigationTitle(NSLocalizedString("groups", tableName: "Groups", comment: "Navigation title for the groups list"))
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             editMode = editMode == .active ? .inactive : .active
                         } label: {
                             if editMode == .active {
-                                Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+                                Text(NSLocalizedString("grouplist_edit_done", tableName: "Groups", comment: "Finish editing the groups list."))
                             } else {
                                 Image(systemName: "pencil")
-                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
-                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
+                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", tableName: "Groups", comment: "Edit groups list")))
+                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", tableName: "Groups", comment: "Enters edit mode for the groups list")))
                             }
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
-                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
-                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
+                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", tableName: "Groups", comment: "Create a new group")))
+                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", tableName: "Groups", comment: "Opens the create group sheet")))
                         }
                     }
                 }
@@ -78,7 +78,7 @@ struct iPhone_GroupsView: View {
                                     groupStore.remove(atOffsets: IndexSet(integer: index))
                                 }
                             } label: {
-                                Label("delete_group", systemImage: "trash")
+                                Label(String(localized: "delete_group", table: "Groups"), systemImage: "trash")
                             }
                         }
                         .swipeActions(edge: .leading) {
@@ -87,7 +87,7 @@ struct iPhone_GroupsView: View {
                                 selectedGroupID = group.id
                             } label: {
                                 Label {
-                                    Text(NSLocalizedString("edit_group", comment: "Edit group"))
+                                    Text(NSLocalizedString("edit_group", tableName: "Groups", comment: "Edit group"))
                                 } icon: {
                                     Image(systemName: "pencil")
                                 }
@@ -103,26 +103,26 @@ struct iPhone_GroupsView: View {
                     }
                 }
                 .environment(\.editMode, $editMode)
-                .navigationTitle(NSLocalizedString("groups", comment: "Navigation title for the groups list"))
+                .navigationTitle(NSLocalizedString("groups", tableName: "Groups", comment: "Navigation title for the groups list"))
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             editMode = editMode == .active ? .inactive : .active
                         } label: {
                             if editMode == .active {
-                                Text(NSLocalizedString("grouplist_edit_done", comment: "Finish editing the groups list."))
+                                Text(NSLocalizedString("grouplist_edit_done", tableName: "Groups", comment: "Finish editing the groups list."))
                             } else {
                                 Image(systemName: "pencil")
-                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", comment: "Edit groups list")))
-                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", comment: "Enters edit mode for the groups list")))
+                                    .accessibilityLabel(Text(NSLocalizedString("grouplist_editbutton", tableName: "Groups", comment: "Edit groups list")))
+                                    .accessibilityHint(Text(NSLocalizedString("grouplist_editbutton_hint", tableName: "Groups", comment: "Enters edit mode for the groups list")))
                             }
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: { showingAddGroup = true }) {
                             Image(systemName: "plus")
-                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", comment: "Create a new group")))
-                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet")))
+                                .accessibilityLabel(Text(NSLocalizedString("grouplist_addbutton", tableName: "Groups", comment: "Create a new group")))
+                                .accessibilityHint(Text(NSLocalizedString("grouplist_addbutton_hint", tableName: "Groups", comment: "Opens the create group sheet")))
                         }
                     }
                 }
@@ -148,7 +148,7 @@ struct iPhone_GroupsView: View {
                                 )
                             )
                     } else {
-                        Text(NSLocalizedString("Group not found", comment: "Shown when a group with the given ID does not exist"))
+                        Text(NSLocalizedString("Group not found", tableName: "Groups", comment: "Shown when a group with the given ID does not exist"))
                     }
                 }
                 .onChange(of: selectedGroupID) {
@@ -184,7 +184,7 @@ struct GroupEditSheetContainer: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button(NSLocalizedString("cancel", comment: "Cancel editing the group")) {
+                        Button(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel editing the group")) {
                             group.groupName = originalGroupName
                             group.deviceIDs = originalDeviceIDs
                             dismiss()
@@ -192,7 +192,7 @@ struct GroupEditSheetContainer: View {
                         }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(NSLocalizedString("save", comment: "Save changes to the group")) {
+                        Button(NSLocalizedString("save", tableName: "Common", comment: "Save changes to the group")) {
                             dismiss()
                             onSave()
                         }

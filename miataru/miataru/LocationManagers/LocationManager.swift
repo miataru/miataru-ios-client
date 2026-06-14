@@ -1319,14 +1319,10 @@ final class LocationManager: NSObject, ObservableObject {
                 diagnosticsLog.append(
                     level: .info,
                     event: "smartFrequentExitFence",
-                    summary: NSLocalizedString(
-                        "location_diagnostics_smart_frequent_recovery_fence_blocked_summary",
-                        comment: "Diagnostics summary when Smart frequent recovery fence cannot reassert frequent background updates"
+                    summary: NSLocalizedString("location_diagnostics_smart_frequent_recovery_fence_blocked_summary", tableName: "LocationTracking", comment: "Diagnostics summary when Smart frequent recovery fence cannot reassert frequent background updates"
                     ),
                     result: "blocked",
-                    reason: batteryAboveThreshold ? NSLocalizedString(
-                        "location_diagnostics_smart_frequent_recovery_ineligible_reason",
-                        comment: "Diagnostics reason when Smart frequent recovery is not currently eligible"
+                    reason: batteryAboveThreshold ? NSLocalizedString("location_diagnostics_smart_frequent_recovery_ineligible_reason", tableName: "LocationTracking", comment: "Diagnostics reason when Smart frequent recovery is not currently eligible"
                     ) : "Battery is at or below frequent background threshold.",
                     context: [
                         "applicationState": .integer(applicationState.rawValue),
@@ -1351,14 +1347,10 @@ final class LocationManager: NSObject, ObservableObject {
             diagnosticsLog.append(
                 level: .warning,
                 event: "smartFrequentRecovery",
-                summary: NSLocalizedString(
-                    "location_diagnostics_smart_frequent_recovery_fence_reasserted_summary",
-                    comment: "Diagnostics summary when a Smart frequent recovery fence reasserts frequent background updates"
+                summary: NSLocalizedString("location_diagnostics_smart_frequent_recovery_fence_reasserted_summary", tableName: "LocationTracking", comment: "Diagnostics summary when a Smart frequent recovery fence reasserts frequent background updates"
                 ),
                 result: "reasserted",
-                reason: NSLocalizedString(
-                    "location_diagnostics_smart_frequent_recovery_fence_exit_reason",
-                    comment: "Diagnostics reason when Smart frequent recovery was triggered by a recovery fence exit"
+                reason: NSLocalizedString("location_diagnostics_smart_frequent_recovery_fence_exit_reason", tableName: "LocationTracking", comment: "Diagnostics reason when Smart frequent recovery was triggered by a recovery fence exit"
                 ),
                 checks: [],
                 context: recoveryContext,
@@ -1723,9 +1715,7 @@ final class LocationManager: NSObject, ObservableObject {
            isUsableForSmartFrequentBackgroundState(seedLocation) {
             smartFrequentBackgroundMovementAnchor = seedLocation
         }
-        smartFrequentBackgroundLastActivationReason = NSLocalizedString(
-            "smart_frequent_background_activation_movement",
-            comment: "Smart frequent activation reason when movement is detected"
+        smartFrequentBackgroundLastActivationReason = NSLocalizedString("smart_frequent_background_activation_movement", tableName: "LocationTracking", comment: "Smart frequent activation reason when movement is detected"
         )
         resetFrequentBackgroundAccuracyRecoveryState()
         transitionSmartFrequentBackgroundRuntime(
@@ -2048,16 +2038,12 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
         if let speedKmh = evidence.speedKmh {
             smartFrequentBackgroundLastActivationReason = String(
-                format: NSLocalizedString(
-                    "smart_frequent_background_activation_speed_format",
-                    comment: "Smart frequent activation reason with speed in km/h"
+                format: NSLocalizedString("smart_frequent_background_activation_speed_format", tableName: "LocationTracking", comment: "Smart frequent activation reason with speed in km/h"
                 ),
                 speedKmh
             )
         } else {
-            smartFrequentBackgroundLastActivationReason = NSLocalizedString(
-                "smart_frequent_background_activation_movement",
-                comment: "Smart frequent activation reason when movement is detected"
+            smartFrequentBackgroundLastActivationReason = NSLocalizedString("smart_frequent_background_activation_movement", tableName: "LocationTracking", comment: "Smart frequent activation reason when movement is detected"
             )
         }
         scheduleSmartFrequentBackgroundInactivityTimer(now: now)
@@ -2623,7 +2609,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func sendLocationToServer(_ location: CLLocation) async {
         if settings.deviceKeyAuthBlocked {
             self.serverUpdateStatus = .failed(
-                NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+                NSLocalizedString("device_key_auth_mismatch_message", tableName: "Devices", comment: "Message when stored DeviceKey does not match server")
             )
             diagnosticsLog.append(
                 level: .error,
@@ -2791,13 +2777,13 @@ final class LocationManager: NSObject, ObservableObject {
     private func locationUpdateLogModeText(for mode: LocationUpdateCounterMode) -> String {
         switch mode {
         case .foregroundLive:
-            return NSLocalizedString("lm_foreground_status", comment: "shown in the Location Status overview for foreground updates")
+            return NSLocalizedString("lm_foreground_status", tableName: "LocationTracking", comment: "shown in the Location Status overview for foreground updates")
         case .significantChange:
-            return NSLocalizedString("location_update_mode_significant_change", comment: "Location update log mode for significant-change updates")
+            return NSLocalizedString("location_update_mode_significant_change", tableName: "LocationTracking", comment: "Location update log mode for significant-change updates")
         case .smartFrequent:
-            return NSLocalizedString("location_update_mode_smart_frequent", comment: "Location update log mode for smart frequent updates")
+            return NSLocalizedString("location_update_mode_smart_frequent", tableName: "LocationTracking", comment: "Location update log mode for smart frequent updates")
         case .manualFrequent:
-            return NSLocalizedString("location_update_mode_manual_frequent", comment: "Location update log mode for manually enabled frequent updates")
+            return NSLocalizedString("location_update_mode_manual_frequent", tableName: "LocationTracking", comment: "Location update log mode for manually enabled frequent updates")
         }
     }
 

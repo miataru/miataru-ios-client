@@ -25,27 +25,27 @@ struct iPad_RootView: View {
                 .accessibilityIdentifier("screen_devices_ipad")
                 .ignoresSafeArea(.container, edges: .top)
                 .tabItem {
-                    Label("devices", systemImage: "iphone.gen3.badge.location")
+                    Label(String(localized: "devices", table: "Devices"), systemImage: "iphone.gen3.badge.location")
                 }
                 .tag(0)
             iPad_GroupsView()
                 .accessibilityIdentifier("screen_groups_ipad")
                 .ignoresSafeArea(.container, edges: .top)
                 .tabItem {
-                    Label("groups", systemImage: "person.3")
+                    Label(String(localized: "groups", table: "Groups"), systemImage: "person.3")
                 }
                 .tag(1)
             iPhone_MyDeviceQRCodeView()
                 .accessibilityIdentifier("screen_qr_ipad")
                 .tabItem {
-                    Label("qr", systemImage: "qrcode")
+                    Label(String(localized: "qr", table: "OnboardingQR"), systemImage: "qrcode")
                 }
                 .tag(2)
             iPhone_SettingsView()
                 .navigationViewStyle(.stack)
                 .accessibilityIdentifier("screen_settings_ipad")
                 .tabItem {
-                    Label("settings", systemImage: "gear")
+                    Label(String(localized: "settings", table: "SettingsDiagnostics"), systemImage: "gear")
                 }
                 .tag(3)
         }
@@ -69,7 +69,7 @@ struct iPad_RootView: View {
             }
             applyRootNavigationDestination(appNavigation.rootDestination)
             if !isUITesting, settings.deviceKeyAuthBlocked {
-                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showDeviceKeyBanner = true
                 }
@@ -80,8 +80,8 @@ struct iPad_RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .deviceKeyAuthRequired)) { notification in
             guard !isUITesting else { return }
             deviceKeyBannerMessage = (notification.userInfo?["message"] as? String)
-                ?? NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
-            deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+                ?? NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+            deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", tableName: "Devices", comment: "Message when stored DeviceKey does not match server")
             withAnimation(.easeInOut(duration: 0.25)) {
                 showDeviceKeyBanner = true
             }
@@ -156,14 +156,14 @@ private struct DeviceKeyBannerView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(.white)
-            .accessibilityLabel(Text("device_key_banner_set_button"))
+            .accessibilityLabel(Text("device_key_banner_set_button", tableName: "Devices"))
 
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.white.opacity(0.9))
             }
             .buttonStyle(PlainButtonStyle())
-            .accessibilityLabel(Text("device_key_banner_dismiss"))
+            .accessibilityLabel(Text("device_key_banner_dismiss", tableName: "Devices"))
         }
         .padding(12)
         .background(

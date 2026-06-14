@@ -44,7 +44,7 @@ struct GhostAnnotationView: View {
 struct MarkerAnnotationDebugView: View {
     @Environment(\.animationsAllowed) private var animationsAllowed
 
-    var deviceName: String = NSLocalizedString("debug_marker_device_name", comment: "Sample device name used in the marker debug view.")
+    var deviceName: String = NSLocalizedString("debug_marker_device_name", tableName: "Devices", comment: "Sample device name used in the marker debug view.")
     var deviceColor: Color = .red
     var transportIconName: String = "car"
     var markerHeight: CGFloat = 48
@@ -150,7 +150,7 @@ struct MarkerAnnotationDebugView: View {
                     }
 
                     // Second marker (Device B)
-                    let idB = NSLocalizedString("debug_marker_device_alt_name", comment: "Alternate sample device name used in the marker debug view.")
+                    let idB = NSLocalizedString("debug_marker_device_alt_name", tableName: "Devices", comment: "Alternate sample device name used in the marker debug view.")
                     Annotation("", coordinate: coordB, anchor: .bottom) {
                         ZStack {
                             // Pulsing behind
@@ -258,14 +258,14 @@ struct MarkerAnnotationDebugView: View {
 #Preview("Variants") {
     VStack(spacing: 28) {
         MarkerAnnotationDebugView(
-            deviceName: NSLocalizedString("debug_marker_device_name", comment: "Sample device name used in the marker debug view."),
+            deviceName: NSLocalizedString("debug_marker_device_name", tableName: "Devices", comment: "Sample device name used in the marker debug view."),
             deviceColor: .blue,
             transportIconName: "figure.walk",
             markerHeight: 40,
             pulsing: true
         )
         MarkerAnnotationDebugView(
-            deviceName: NSLocalizedString("debug_marker_device_alt_name", comment: "Alternate sample device name used in the marker debug view."),
+            deviceName: NSLocalizedString("debug_marker_device_alt_name", tableName: "Devices", comment: "Alternate sample device name used in the marker debug view."),
             deviceColor: .green,
             transportIconName: "tram",
             markerHeight: 64,

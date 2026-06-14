@@ -1,4 +1,5 @@
 version 3.2.2
+- Moved all app string catalogs into `Assets/Localization/`, documented themed catalog ownership for future localization additions, and extended localization QA to read the split catalogs from their new location.
 - Implemented Intent Sprint Step 01 as the Device Entity Foundation, renaming the App Intents tracked entity/query/options/snippet layer from person terminology to tracked device terminology.
 - Kept Shortcuts compatibility by preserving selected DeviceID string values while adding privacy-safe tracked device metadata helpers for DeviceID trimming, display-name fallback, visible/authorized filtering, and iOS 26-gated `EntityIdentifier` annotation paths.
 - Added display-name-only indexed attribute helpers with Spotlight publishing disabled, wired visible tracked-device annotations into device rows, map details, group markers, and navigation destinations, and updated the Intent Sprint documentation to use device terminology throughout.

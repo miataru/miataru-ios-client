@@ -39,9 +39,7 @@ struct IntentFrequentTrackingStartResult: Equatable {
 
     var dialogText: String {
         if let expiresAt {
-            let format = NSLocalizedString(
-                "intent_start_frequent_tracking_dialog_until_format",
-                comment: "Dialog shown when starting frequent tracking with an expiration date. Argument: localized expiration date."
+            let format = NSLocalizedString("intent_start_frequent_tracking_dialog_until_format", tableName: "AppIntents", comment: "Dialog shown when starting frequent tracking with an expiration date. Argument: localized expiration date."
             )
             return String(
                 format: format,
@@ -50,9 +48,7 @@ struct IntentFrequentTrackingStartResult: Equatable {
             )
         }
 
-        return NSLocalizedString(
-            "intent_start_frequent_tracking_dialog_unlimited",
-            comment: "Dialog shown when starting frequent tracking with unlimited duration"
+        return NSLocalizedString("intent_start_frequent_tracking_dialog_unlimited", tableName: "AppIntents", comment: "Dialog shown when starting frequent tracking with unlimited duration"
         )
     }
 
@@ -70,15 +66,11 @@ struct IntentFrequentTrackingStopResult: Equatable {
 
     var dialogText: String {
         if wasActive {
-            return NSLocalizedString(
-                "intent_stop_frequent_tracking_dialog_stopped",
-                comment: "Dialog shown when frequent tracking has been stopped from an App Intent"
+            return NSLocalizedString("intent_stop_frequent_tracking_dialog_stopped", tableName: "AppIntents", comment: "Dialog shown when frequent tracking has been stopped from an App Intent"
             )
         }
 
-        return NSLocalizedString(
-            "intent_stop_frequent_tracking_dialog_already_stopped",
-            comment: "Dialog shown when frequent tracking was already stopped"
+        return NSLocalizedString("intent_stop_frequent_tracking_dialog_already_stopped", tableName: "AppIntents", comment: "Dialog shown when frequent tracking was already stopped"
         )
     }
 }
@@ -91,19 +83,13 @@ enum IntentFrequentTrackingError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .locationTrackingDisabled:
-            return NSLocalizedString(
-                "intent_frequent_tracking_error_tracking_disabled",
-                comment: "Error shown when frequent tracking is started while normal location tracking is disabled"
+            return NSLocalizedString("intent_frequent_tracking_error_tracking_disabled", tableName: "AppIntents", comment: "Error shown when frequent tracking is started while normal location tracking is disabled"
             )
         case .deviceKeyBlocked:
-            return NSLocalizedString(
-                "intent_frequent_tracking_error_device_key_blocked",
-                comment: "Error shown when frequent tracking is started while DeviceKey authentication blocks tracking"
+            return NSLocalizedString("intent_frequent_tracking_error_device_key_blocked", tableName: "AppIntents", comment: "Error shown when frequent tracking is started while DeviceKey authentication blocks tracking"
             )
         case .alwaysAuthorizationRequired:
-            return NSLocalizedString(
-                "intent_frequent_tracking_error_always_authorization_required",
-                comment: "Error shown when frequent background tracking is started without Always location authorization"
+            return NSLocalizedString("intent_frequent_tracking_error_always_authorization_required", tableName: "AppIntents", comment: "Error shown when frequent background tracking is started without Always location authorization"
             )
         }
     }

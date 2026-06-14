@@ -11,24 +11,18 @@ import AppIntents
 import Foundation
 
 struct FindPersonLocationIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_find_device_title",
-        defaultValue: "Find Device",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_find_device_title", defaultValue: "Find Device", table: "AppIntents",
         comment: "Title for the App Intent that finds a tracked device's latest location"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_find_device_description",
-            defaultValue: "Shows the last known location of a device.",
+        LocalizedStringResource("intent_find_device_description", defaultValue: "Shows the last known location of a device.", table: "AppIntents",
             comment: "Description for the App Intent that finds a tracked device's latest location"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_find_device_parameter_device",
-            defaultValue: "Device",
+        title: LocalizedStringResource("intent_find_device_parameter_device", defaultValue: "Device", table: "AppIntents",
             comment: "Parameter title for selecting a tracked device"
         ),
         optionsProvider: TrackedDeviceOptionsProvider()
@@ -41,9 +35,9 @@ struct FindPersonLocationIntent: AppIntent {
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let location = try await IntentLocationService.shared.latestLocation(for: device)
-        let place = location.placeDescription ?? NSLocalizedString("intent_location_fallback_place", comment: "Fallback place description for the last known location")
+        let place = location.placeDescription ?? NSLocalizedString("intent_location_fallback_place", tableName: "AppIntents", comment: "Fallback place description for the last known location")
         let dialogText = String.localizedStringWithFormat(
-            NSLocalizedString("intent_find_device_dialog_format", comment: "Dialog format for a tracked device's latest location. Arguments: display name, age text, place description."),
+            NSLocalizedString("intent_find_device_dialog_format", tableName: "AppIntents", comment: "Dialog format for a tracked device's latest location. Arguments: display name, age text, place description."),
             location.displayName,
             location.ageText,
             place

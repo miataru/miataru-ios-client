@@ -12,6 +12,13 @@
 - Whenever tests are added, changed, renamed, moved, or removed, update `documentation/test-gap-matrix.md` in the same work item.
 - In the same change, also update `documentation/test-katalog.md` so catalog and matrix stay consistent.
 
+## Localization Catalog Memory
+
+- App string catalogs live under `miataru/miataru/Assets/Localization/`.
+- When adding or moving user-facing strings, put them in the existing themed `.xcstrings` file that owns that feature area and use the matching explicit table name in Swift. If no existing catalog fits, create a new themed `.xcstrings` file in `Assets/Localization/` instead of expanding `Localizable.xcstrings`.
+- Keep `AppShortcuts.xcstrings` phrase-only: shortcut trigger phrases with `${applicationName}` belong there, while App Intent titles, parameters, summaries, dialogs, entities, errors, and shortcut tile titles belong in `AppIntents.xcstrings`.
+- Keep Settings.bundle strings in `SettingsManagers/App Settings/Settings.bundle/*.lproj/Root.strings` synchronized with their matching app string-catalog keys where the same setting is shown in-app.
+
 ## Simulator / Test Device Memory
 
 - Always use the dedicated Miataru simulator devices for simulation and testing. Do not run tests against an arbitrary open or booted Simulator window.

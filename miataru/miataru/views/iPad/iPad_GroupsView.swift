@@ -23,10 +23,10 @@ struct iPad_GroupsView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             VStack(spacing: 0) {
                 iPadSidebarListHeader(
-                    title: NSLocalizedString("groups", comment: "Groups list title on iPad"),
+                    title: NSLocalizedString("groups", tableName: "Groups", comment: "Groups list title on iPad"),
                     editTitle: editMode == .active
-                        ? NSLocalizedString("grouplist_edit_done", comment: "Finish editing the group list.")
-                        : NSLocalizedString("grouplist_editbutton", comment: "Edit group list"),
+                        ? NSLocalizedString("grouplist_edit_done", tableName: "Groups", comment: "Finish editing the group list.")
+                        : NSLocalizedString("grouplist_editbutton", tableName: "Groups", comment: "Edit group list"),
                     onToggleEdit: {
                         editMode = editMode == .active ? .inactive : .active
                     },
@@ -38,13 +38,13 @@ struct iPad_GroupsView: View {
                             columnVisibility = .detailOnly
                         }
                     },
-                    addAccessibilityLabel: NSLocalizedString("grouplist_addbutton", comment: "Create a new group"),
-                    addAccessibilityHint: NSLocalizedString("grouplist_addbutton_hint", comment: "Opens the create group sheet"),
+                    addAccessibilityLabel: NSLocalizedString("grouplist_addbutton", tableName: "Groups", comment: "Create a new group"),
+                    addAccessibilityHint: NSLocalizedString("grouplist_addbutton_hint", tableName: "Groups", comment: "Opens the create group sheet"),
                     addAccessibilityIdentifier: "groups_add_button"
                 )
 
                 List(selection: $selection) {
-                    Section(header: Text(NSLocalizedString("groups", comment: "Groups list header on iPad"))) {
+                    Section(header: Text(NSLocalizedString("groups", tableName: "Groups", comment: "Groups list header on iPad"))) {
                         ForEach(groupStore.groups) { group in
                             GroupRowView(group: group)
                                 .tag(group.id)
@@ -53,19 +53,19 @@ struct iPad_GroupsView: View {
                                     Button {
                                         editingGroup = group
                                     } label: {
-                                        Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                        Label(NSLocalizedString("edit_group", tableName: "Groups", comment: "Edit this group."), systemImage: "pencil")
                                     }
                                     Button(role: .destructive) {
                                         groupStore.remove(group: group)
                                     } label: {
-                                        Label("delete_group", systemImage: "trash")
+                                        Label(String(localized: "delete_group", table: "Groups"), systemImage: "trash")
                                     }
                                 }
                                 .swipeActions(edge: .leading) {
                                     Button {
                                         editingGroup = group
                                     } label: {
-                                        Label(NSLocalizedString("edit_group", comment: "Edit this group."), systemImage: "pencil")
+                                        Label(NSLocalizedString("edit_group", tableName: "Groups", comment: "Edit this group."), systemImage: "pencil")
                                     }
                                     .tint(.blue)
                                 }
@@ -93,7 +93,7 @@ struct iPad_GroupsView: View {
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Button(action: { editingGroup = groupStore.groups.first(where: { $0.id == selectedID }) }) {
-                                    Label(NSLocalizedString("edit_group", comment: "Edit the selected group.."), systemImage: "pencil")
+                                    Label(NSLocalizedString("edit_group", tableName: "Groups", comment: "Edit the selected group.."), systemImage: "pencil")
                                         .labelStyle(.titleAndIcon)
                                 }
                             }
@@ -116,7 +116,7 @@ struct iPad_GroupsView: View {
                             }
                         }
                 } else {
-                    Text(NSLocalizedString("no_groups_available_create_new", comment: "No groups available. Create a new group to get started."))
+                    Text(NSLocalizedString("no_groups_available_create_new", tableName: "Groups", comment: "No groups available. Create a new group to get started."))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding()

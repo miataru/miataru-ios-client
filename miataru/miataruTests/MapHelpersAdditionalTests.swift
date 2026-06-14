@@ -18,7 +18,7 @@ struct MapHelpersAdditionalTests {
         let twoSecondsAgo = reference.addingTimeInterval(-2)
         // With a 1s threshold, 2s ago should not be considered "now"
         let result = relativeTimeString(from: twoSecondsAgo, to: reference, unitsStyle: .short, timeConsideredNow: 1)
-        let nowString = NSLocalizedString("relative_time_now", comment: "Indicates now")
+        let nowString = NSLocalizedString("relative_time_now", tableName: "Common", comment: "Indicates now")
         #expect(result != nowString)
         #expect(!result.isEmpty)
     }

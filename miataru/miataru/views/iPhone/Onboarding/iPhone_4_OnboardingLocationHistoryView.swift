@@ -27,7 +27,7 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
     var body: some View {
         VStack(spacing: 16) {
             Spacer()
-            Text("Location History")
+            Text("Location History", tableName: "LocationTracking")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("locationhistory")
@@ -36,17 +36,17 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
                 .frame(maxWidth: 300)
                 .padding(.horizontal)
                 .accessibilityHidden(true)
-            Text("You can choose how your location data is stored on the Miataru server.")
+            Text("You can choose how your location data is stored on the Miataru server.", tableName: "OnboardingQR")
                 .font(.headline)
                 //.multilineTextAlignment(.center)
                 //.padding(.horizontal)
-            Text("If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time.")
+            Text("If you enable server history, the server will keep a history of your last locations (depending on server and update frequency).\n\nIf you prefer not to keep a history, you can choose to only store your last location for a limited time.", tableName: "LocationTracking")
                 .font(.subheadline)
                 .multilineTextAlignment(.leading)
                 .padding(.horizontal)
             Picker("History Options", selection: $settings.saveLocationHistoryOnServer) {
-                Text("store location history").tag(true)
-                Text("only store last location").tag(false)
+                Text("store location history", tableName: "LocationTracking").tag(true)
+                Text("only store last location", tableName: "LocationTracking").tag(false)
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
@@ -55,12 +55,12 @@ struct iPhone_4_OnboardingLocationHistoryView: View {
             }
 
             if !settings.saveLocationHistoryOnServer {
-                Text("Only the last location is stored for a fixed time on the server (default 30 minutes).")
+                Text("Only the last location is stored for a fixed time on the server (default 30 minutes).", tableName: "LocationTracking")
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .padding(.horizontal)
             } else {
-                Text("A number of your last location updates is stored on the server (default: last 1000).")
+                Text("A number of your last location updates is stored on the server (default: last 1000).", tableName: "LocationTracking")
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .padding(.horizontal)

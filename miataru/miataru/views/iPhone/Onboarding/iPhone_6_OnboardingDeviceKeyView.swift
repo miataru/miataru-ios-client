@@ -23,7 +23,7 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Text("device_key_title")
+            Text("device_key_title", tableName: "Devices")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("devicekey")
@@ -32,16 +32,16 @@ struct iPhone_6_OnboardingDeviceKeyView: View {
                 .frame(width: 300)
                 .padding(.horizontal)
                 .accessibilityHidden(true)
-            Text("device_key_intro_text")
+            Text("device_key_intro_text", tableName: "Devices")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Button(hasDeviceKey ? "device_key_banner_configure_button" : "device_key_banner_set_button") {
+            Button(String(localized: hasDeviceKey ? "device_key_banner_configure_button" : "device_key_banner_set_button", table: "Devices")) {
                 showDeviceKeySheet = true
             }
             .buttonStyle(.borderedProminent)
             .tint(hasDeviceKey ? .green : .blue)
-            .accessibilityHint(Text("device_key_button_hint"))
+            .accessibilityHint(Text("device_key_button_hint", tableName: "Devices"))
             .padding(.horizontal)
             .sheet(
                 isPresented: $showDeviceKeySheet,

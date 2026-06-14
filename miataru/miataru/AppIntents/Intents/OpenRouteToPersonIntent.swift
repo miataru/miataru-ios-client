@@ -11,24 +11,18 @@ import AppIntents
 import Foundation
 
 struct OpenRouteToPersonIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_open_route_to_device_title",
-        defaultValue: "Route in Maps",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_open_route_to_device_title", defaultValue: "Route in Maps", table: "AppIntents",
         comment: "Title for the App Intent that opens a Maps route to a tracked device"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_open_route_to_device_description",
-            defaultValue: "Opens Maps with directions to the last known location of a device.",
+        LocalizedStringResource("intent_open_route_to_device_description", defaultValue: "Opens Maps with directions to the last known location of a device.", table: "AppIntents",
             comment: "Description for the App Intent that opens a Maps route to a tracked device"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_open_route_to_device_parameter_device",
-            defaultValue: "Device",
+        title: LocalizedStringResource("intent_open_route_to_device_parameter_device", defaultValue: "Device", table: "AppIntents",
             comment: "Parameter title for selecting a tracked device for route opening"
         ),
         optionsProvider: TrackedDeviceOptionsProvider()
@@ -36,18 +30,14 @@ struct OpenRouteToPersonIntent: AppIntent {
     var device: String
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_navigation_parameter_direction",
-            defaultValue: "Direction",
+        title: LocalizedStringResource("intent_navigation_parameter_direction", defaultValue: "Direction", table: "AppIntents",
             comment: "Parameter title for choosing route direction"
         )
     )
     var direction: IntentNavigationDirection?
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_navigation_parameter_transport_mode",
-            defaultValue: "Transport Mode",
+        title: LocalizedStringResource("intent_navigation_parameter_transport_mode", defaultValue: "Transport Mode", table: "AppIntents",
             comment: "Parameter title for choosing route transport mode"
         )
     )
@@ -65,7 +55,7 @@ struct OpenRouteToPersonIntent: AppIntent {
             transportMode: transportMode
         )
         let dialogText = String.localizedStringWithFormat(
-            NSLocalizedString("intent_open_route_to_device_dialog_format", comment: "Dialog format when opening a route to a tracked device. Argument: display name."),
+            NSLocalizedString("intent_open_route_to_device_dialog_format", tableName: "AppIntents", comment: "Dialog format when opening a route to a tracked device. Argument: display name."),
             location.displayName
         )
 

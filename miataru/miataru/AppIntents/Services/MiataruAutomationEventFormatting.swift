@@ -50,112 +50,112 @@ enum MiataruAutomationEventFormatting {
         case .navigationStarted:
             if let name = safeDisplayName(record.deviceDisplayName) {
                 return String.localizedStringWithFormat(
-                    NSLocalizedString("automation_event_summary_navigation_started_format", comment: "Summary for a Miataru navigation started event. Argument: device display name."),
+                    NSLocalizedString("automation_event_summary_navigation_started_format", tableName: "AutomationEvents", comment: "Summary for a Miataru navigation started event. Argument: device display name."),
                     name
                 )
             }
-            return NSLocalizedString("automation_event_summary_navigation_started", comment: "Summary for a Miataru navigation started event without a device name")
+            return NSLocalizedString("automation_event_summary_navigation_started", tableName: "AutomationEvents", comment: "Summary for a Miataru navigation started event without a device name")
         case .navigationEnded:
             if let name = safeDisplayName(record.deviceDisplayName) {
                 return String.localizedStringWithFormat(
-                    NSLocalizedString("automation_event_summary_navigation_ended_format", comment: "Summary for a Miataru navigation ended event. Argument: device display name."),
+                    NSLocalizedString("automation_event_summary_navigation_ended_format", tableName: "AutomationEvents", comment: "Summary for a Miataru navigation ended event. Argument: device display name."),
                     name
                 )
             }
-            return NSLocalizedString("automation_event_summary_navigation_ended", comment: "Summary for a Miataru navigation ended event without a device name")
+            return NSLocalizedString("automation_event_summary_navigation_ended", tableName: "AutomationEvents", comment: "Summary for a Miataru navigation ended event without a device name")
         case .frequentTrackingStarted:
-            return NSLocalizedString("automation_event_summary_frequent_tracking_started", comment: "Summary for frequent background tracking started")
+            return NSLocalizedString("automation_event_summary_frequent_tracking_started", tableName: "AutomationEvents", comment: "Summary for frequent background tracking started")
         case .frequentTrackingStopped:
-            return NSLocalizedString("automation_event_summary_frequent_tracking_stopped", comment: "Summary for frequent background tracking stopped")
+            return NSLocalizedString("automation_event_summary_frequent_tracking_stopped", tableName: "AutomationEvents", comment: "Summary for frequent background tracking stopped")
         case .frequentTrackingExpired:
-            return NSLocalizedString("automation_event_summary_frequent_tracking_expired", comment: "Summary for frequent background tracking expiration")
+            return NSLocalizedString("automation_event_summary_frequent_tracking_expired", tableName: "AutomationEvents", comment: "Summary for frequent background tracking expiration")
         case .trackingPaused:
-            return NSLocalizedString("automation_event_summary_tracking_paused", comment: "Summary for tracking paused")
+            return NSLocalizedString("automation_event_summary_tracking_paused", tableName: "AutomationEvents", comment: "Summary for tracking paused")
         case .trackingResumed:
-            return NSLocalizedString("automation_event_summary_tracking_resumed", comment: "Summary for tracking resumed")
+            return NSLocalizedString("automation_event_summary_tracking_resumed", tableName: "AutomationEvents", comment: "Summary for tracking resumed")
         case .deviceLocationUpdated:
             if let name = safeDisplayName(record.deviceDisplayName) {
                 return String.localizedStringWithFormat(
-                    NSLocalizedString("automation_event_summary_device_location_updated_format", comment: "Summary for a device location update event. Argument: device display name."),
+                    NSLocalizedString("automation_event_summary_device_location_updated_format", tableName: "AutomationEvents", comment: "Summary for a device location update event. Argument: device display name."),
                     name
                 )
             }
-            return NSLocalizedString("automation_event_summary_device_location_updated", comment: "Summary for a device location update event without a device name")
+            return NSLocalizedString("automation_event_summary_device_location_updated", tableName: "AutomationEvents", comment: "Summary for a device location update event without a device name")
         case .deviceEnteredPlace:
             if let placeName = safeDisplayName(record.placeName) {
                 return String.localizedStringWithFormat(
-                    NSLocalizedString("automation_event_summary_device_entered_place_format", comment: "Summary for a device entered place event. Argument: place name."),
+                    NSLocalizedString("automation_event_summary_device_entered_place_format", tableName: "AutomationEvents", comment: "Summary for a device entered place event. Argument: place name."),
                     placeName
                 )
             }
-            return NSLocalizedString("automation_event_summary_device_entered_place", comment: "Summary for a device entered place event without place name")
+            return NSLocalizedString("automation_event_summary_device_entered_place", tableName: "AutomationEvents", comment: "Summary for a device entered place event without place name")
         case .deviceLeftPlace:
             if let placeName = safeDisplayName(record.placeName) {
                 return String.localizedStringWithFormat(
-                    NSLocalizedString("automation_event_summary_device_left_place_format", comment: "Summary for a device left place event. Argument: place name."),
+                    NSLocalizedString("automation_event_summary_device_left_place_format", tableName: "AutomationEvents", comment: "Summary for a device left place event. Argument: place name."),
                     placeName
                 )
             }
-            return NSLocalizedString("automation_event_summary_device_left_place", comment: "Summary for a device left place event without place name")
+            return NSLocalizedString("automation_event_summary_device_left_place", tableName: "AutomationEvents", comment: "Summary for a device left place event without place name")
         case .unknownVisitorDetected:
-            return NSLocalizedString("automation_event_summary_unknown_visitor_detected", comment: "Summary for an unknown visitor alert event")
+            return NSLocalizedString("automation_event_summary_unknown_visitor_detected", tableName: "AutomationEvents", comment: "Summary for an unknown visitor alert event")
         case .deviceKeyBlockedOperation:
-            return NSLocalizedString("automation_event_summary_device_key_blocked_operation", comment: "Summary for an operation blocked by DeviceKey authentication")
+            return NSLocalizedString("automation_event_summary_device_key_blocked_operation", tableName: "AutomationEvents", comment: "Summary for an operation blocked by DeviceKey authentication")
         case .lowBatteryDisabledFrequentTracking:
-            return NSLocalizedString("automation_event_summary_low_battery_disabled_frequent_tracking", comment: "Summary for low battery disabling frequent background tracking")
+            return NSLocalizedString("automation_event_summary_low_battery_disabled_frequent_tracking", tableName: "AutomationEvents", comment: "Summary for low battery disabling frequent background tracking")
         }
     }
 
     static func kindDisplayName(_ kind: MiataruAutomationEventKind) -> String {
         switch kind {
         case .navigationStarted:
-            return NSLocalizedString("automation_event_kind_navigation_started", comment: "Display name for navigation started automation event")
+            return NSLocalizedString("automation_event_kind_navigation_started", tableName: "AutomationEvents", comment: "Display name for navigation started automation event")
         case .navigationEnded:
-            return NSLocalizedString("automation_event_kind_navigation_ended", comment: "Display name for navigation ended automation event")
+            return NSLocalizedString("automation_event_kind_navigation_ended", tableName: "AutomationEvents", comment: "Display name for navigation ended automation event")
         case .frequentTrackingStarted:
-            return NSLocalizedString("automation_event_kind_frequent_tracking_started", comment: "Display name for frequent tracking started automation event")
+            return NSLocalizedString("automation_event_kind_frequent_tracking_started", tableName: "AutomationEvents", comment: "Display name for frequent tracking started automation event")
         case .frequentTrackingStopped:
-            return NSLocalizedString("automation_event_kind_frequent_tracking_stopped", comment: "Display name for frequent tracking stopped automation event")
+            return NSLocalizedString("automation_event_kind_frequent_tracking_stopped", tableName: "AutomationEvents", comment: "Display name for frequent tracking stopped automation event")
         case .frequentTrackingExpired:
-            return NSLocalizedString("automation_event_kind_frequent_tracking_expired", comment: "Display name for frequent tracking expired automation event")
+            return NSLocalizedString("automation_event_kind_frequent_tracking_expired", tableName: "AutomationEvents", comment: "Display name for frequent tracking expired automation event")
         case .trackingPaused:
-            return NSLocalizedString("automation_event_kind_tracking_paused", comment: "Display name for tracking paused automation event")
+            return NSLocalizedString("automation_event_kind_tracking_paused", tableName: "AutomationEvents", comment: "Display name for tracking paused automation event")
         case .trackingResumed:
-            return NSLocalizedString("automation_event_kind_tracking_resumed", comment: "Display name for tracking resumed automation event")
+            return NSLocalizedString("automation_event_kind_tracking_resumed", tableName: "AutomationEvents", comment: "Display name for tracking resumed automation event")
         case .deviceLocationUpdated:
-            return NSLocalizedString("automation_event_kind_device_location_updated", comment: "Display name for device location updated automation event")
+            return NSLocalizedString("automation_event_kind_device_location_updated", tableName: "AutomationEvents", comment: "Display name for device location updated automation event")
         case .deviceEnteredPlace:
-            return NSLocalizedString("automation_event_kind_device_entered_place", comment: "Display name for device entered place automation event")
+            return NSLocalizedString("automation_event_kind_device_entered_place", tableName: "AutomationEvents", comment: "Display name for device entered place automation event")
         case .deviceLeftPlace:
-            return NSLocalizedString("automation_event_kind_device_left_place", comment: "Display name for device left place automation event")
+            return NSLocalizedString("automation_event_kind_device_left_place", tableName: "AutomationEvents", comment: "Display name for device left place automation event")
         case .unknownVisitorDetected:
-            return NSLocalizedString("automation_event_kind_unknown_visitor_detected", comment: "Display name for unknown visitor detected automation event")
+            return NSLocalizedString("automation_event_kind_unknown_visitor_detected", tableName: "AutomationEvents", comment: "Display name for unknown visitor detected automation event")
         case .deviceKeyBlockedOperation:
-            return NSLocalizedString("automation_event_kind_device_key_blocked_operation", comment: "Display name for DeviceKey blocked operation automation event")
+            return NSLocalizedString("automation_event_kind_device_key_blocked_operation", tableName: "AutomationEvents", comment: "Display name for DeviceKey blocked operation automation event")
         case .lowBatteryDisabledFrequentTracking:
-            return NSLocalizedString("automation_event_kind_low_battery_disabled_frequent_tracking", comment: "Display name for low battery disabled frequent tracking automation event")
+            return NSLocalizedString("automation_event_kind_low_battery_disabled_frequent_tracking", tableName: "AutomationEvents", comment: "Display name for low battery disabled frequent tracking automation event")
         }
     }
 
     static func privacyDisplayName(_ privacyLevel: MiataruAutomationEventPrivacyLevel) -> String {
         switch privacyLevel {
         case .publicSummary:
-            return NSLocalizedString("automation_event_privacy_public_summary", comment: "Display name for public-summary event privacy")
+            return NSLocalizedString("automation_event_privacy_public_summary", tableName: "AutomationEvents", comment: "Display name for public-summary event privacy")
         case .privateLocation:
-            return NSLocalizedString("automation_event_privacy_private_location", comment: "Display name for private-location event privacy")
+            return NSLocalizedString("automation_event_privacy_private_location", tableName: "AutomationEvents", comment: "Display name for private-location event privacy")
         case .securitySensitive:
-            return NSLocalizedString("automation_event_privacy_security_sensitive", comment: "Display name for security-sensitive event privacy")
+            return NSLocalizedString("automation_event_privacy_security_sensitive", tableName: "AutomationEvents", comment: "Display name for security-sensitive event privacy")
         }
     }
 
     static func spokenDialog(for records: [MiataruAutomationEventRecord]) -> String {
         if records.isEmpty {
-            return NSLocalizedString("intent_automation_events_dialog_none", comment: "Dialog when no automation events are available")
+            return NSLocalizedString("intent_automation_events_dialog_none", tableName: "AppIntents", comment: "Dialog when no automation events are available")
         }
         if records.count == 1, let record = records.first {
             return summary(for: record)
         }
-        let format = NSLocalizedString("intent_automation_events_dialog_count_format", comment: "Dialog when multiple automation events are returned. Argument: event count.")
+        let format = NSLocalizedString("intent_automation_events_dialog_count_format", tableName: "AppIntents", comment: "Dialog when multiple automation events are returned. Argument: event count.")
         return String.localizedStringWithFormat(format, records.count)
     }
 

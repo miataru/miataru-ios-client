@@ -56,7 +56,7 @@ struct HistoryMetricsPanel: View {
                             .fontWeight(.semibold)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
-                        Text(String(format: NSLocalizedString("history_timeline_visible_count", comment: "Visible items count out of total"), selectedCount, totalCount))
+                        Text(String(format: NSLocalizedString("history_timeline_visible_count", tableName: "MapNavigationHistory", comment: "Visible items count out of total"), selectedCount, totalCount))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -75,26 +75,26 @@ struct HistoryMetricsPanel: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     metricRow(
-                        label: NSLocalizedString("history_metric_speed", comment: "Compact speed metric label"),
+                        label: NSLocalizedString("history_metric_speed", tableName: "MapNavigationHistory", comment: "Compact speed metric label"),
                         value: formatSpeed(currentSpeedKmh),
                         graph: HistoryHistogramView(
                             values: analysis?.speedValues ?? [],
                             currentIndex: currentBucketIndex,
                             valueRange: speedValueRange
                         )
-                        .accessibilityLabel(Text(NSLocalizedString("history_speed_graph_label", comment: "Accessibility label for the speed graph")))
+                        .accessibilityLabel(Text(NSLocalizedString("history_speed_graph_label", tableName: "MapNavigationHistory", comment: "Accessibility label for the speed graph")))
                         .accessibilityValue(Text(speedGraphAccessibilityValue))
                     )
 
                     metricRow(
-                        label: NSLocalizedString("history_metric_altitude", comment: "Compact altitude metric label"),
+                        label: NSLocalizedString("history_metric_altitude", tableName: "MapNavigationHistory", comment: "Compact altitude metric label"),
                         value: formatAltitude(currentAltitudeMeters),
                         graph: HistorySparklineView(
                             values: analysis?.altitudeValues ?? [],
                             currentIndex: currentBucketIndex,
                             valueRange: altitudeValueRange
                         )
-                        .accessibilityLabel(Text(NSLocalizedString("history_altitude_graph_label", comment: "Accessibility label for the altitude graph")))
+                        .accessibilityLabel(Text(NSLocalizedString("history_altitude_graph_label", tableName: "MapNavigationHistory", comment: "Accessibility label for the altitude graph")))
                         .accessibilityValue(Text(altitudeGraphAccessibilityValue))
                     )
                 }
@@ -102,7 +102,7 @@ struct HistoryMetricsPanel: View {
             }
             .contentShape(Rectangle())
             .simultaneousGesture(panelDismissGesture)
-            .accessibilityAction(named: Text(NSLocalizedString("history_panel_hide_accessibility", comment: "Accessibility label to hide the history panel"))) {
+            .accessibilityAction(named: Text(NSLocalizedString("history_panel_hide_accessibility", tableName: "MapNavigationHistory", comment: "Accessibility label to hide the history panel"))) {
                 onHidePanel()
             }
 
@@ -228,9 +228,7 @@ struct HistoryMetricsPanel: View {
         )
         .accessibilityHint(
             Text(
-                NSLocalizedString(
-                    "history_playback_speed_hint",
-                    comment: "Long press to change playback speed"
+                NSLocalizedString("history_playback_speed_hint", tableName: "MapNavigationHistory", comment: "Long press to change playback speed"
                 )
             )
         )
@@ -263,11 +261,11 @@ struct HistoryMetricsPanel: View {
         var segments: [String] = []
 
         if let distance = analysis.totalDistanceMeters {
-            segments.append("\(NSLocalizedString("history_metric_distance", comment: "Compact distance metric label")) \(formatDistance(distance))")
+            segments.append("\(NSLocalizedString("history_metric_distance", tableName: "MapNavigationHistory", comment: "Compact distance metric label")) \(formatDistance(distance))")
         }
 
         if let maxSpeed = analysis.maxSpeedKmh {
-            segments.append("\(NSLocalizedString("history_metric_max_speed", comment: "Compact maximum speed metric label")) \(formatSpeed(maxSpeed))")
+            segments.append("\(NSLocalizedString("history_metric_max_speed", tableName: "MapNavigationHistory", comment: "Compact maximum speed metric label")) \(formatSpeed(maxSpeed))")
         }
 
         if let altitudeRangeText = formatAltitudeRange(minimum: analysis.minAltitudeMeters, maximum: analysis.maxAltitudeMeters) {
@@ -322,17 +320,17 @@ struct HistoryMetricsPanel: View {
 
     private var speedGraphAccessibilityValue: String {
         guard let maxSpeed = analysis?.maxSpeedKmh else {
-            return NSLocalizedString("history_graph_no_data", comment: "Accessibility value when a history graph has no data")
+            return NSLocalizedString("history_graph_no_data", tableName: "MapNavigationHistory", comment: "Accessibility value when a history graph has no data")
         }
         return String(
-            format: NSLocalizedString("history_speed_graph_accessibility_value", comment: "Accessibility value for speed graph maximum"),
+            format: NSLocalizedString("history_speed_graph_accessibility_value", tableName: "MapNavigationHistory", comment: "Accessibility value for speed graph maximum"),
             formatSpeed(maxSpeed)
         )
     }
 
     private var altitudeGraphAccessibilityValue: String {
         guard let range = formatAltitudeRange(minimum: analysis?.minAltitudeMeters, maximum: analysis?.maxAltitudeMeters) else {
-            return NSLocalizedString("history_graph_no_data", comment: "Accessibility value when a history graph has no data")
+            return NSLocalizedString("history_graph_no_data", tableName: "MapNavigationHistory", comment: "Accessibility value when a history graph has no data")
         }
         return range
     }

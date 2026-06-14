@@ -53,7 +53,7 @@ final class VisitorHistoryViewModel: ObservableObject {
     @discardableResult
     func loadVisitorHistory(showLoading: Bool = true) async -> Bool {
         guard let url = URL(string: settings.miataruServerURL) else {
-            errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+            errorMessage = NSLocalizedString("visitor_history_error", tableName: "Devices", comment: "Error message when visitor history fails to load")
             return false
         }
         
@@ -79,7 +79,7 @@ final class VisitorHistoryViewModel: ObservableObject {
             if let authMessage = DeviceKeyAuthHandler.handle(error: error) {
                 self.errorMessage = authMessage
             } else {
-                self.errorMessage = NSLocalizedString("visitor_history_error", comment: "Error message when visitor history fails to load")
+                self.errorMessage = NSLocalizedString("visitor_history_error", tableName: "Devices", comment: "Error message when visitor history fails to load")
             }
             self.isLoading = false
             debugLog("[VisitorHistoryViewModel] Failed to load visitor history: \(error)")
@@ -126,7 +126,7 @@ struct VisitorHistoryStateView<Content: View>: View {
                 Text(error)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                Button(NSLocalizedString("visitor_history_retry", comment: "Button to retry loading visitor history")) {
+                Button(NSLocalizedString("visitor_history_retry", tableName: "Devices", comment: "Button to retry loading visitor history")) {
                     Task {
                         await viewModel.loadVisitorHistory()
                     }
@@ -137,7 +137,7 @@ struct VisitorHistoryStateView<Content: View>: View {
             .frame(maxWidth: .infinity)
         } else if viewModel.visitors.isEmpty {
             VStack(spacing: 8) {
-                Text(NSLocalizedString("visitor_history_empty", comment: "Empty state message when no visitors have accessed the device"))
+                Text(NSLocalizedString("visitor_history_empty", tableName: "Devices", comment: "Empty state message when no visitors have accessed the device"))
                     .foregroundColor(.secondary)
             }
             .frame(maxWidth: .infinity)
@@ -159,7 +159,7 @@ struct VisitorHistorySection: View {
         VStack(alignment: .leading, spacing: isLandscape ? 12 : 16) {
             HStack(spacing: 8) {
                 Image(systemName: "clock.arrow.circlepath")
-                Text(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+                Text(NSLocalizedString("visitor_history_title", tableName: "Devices", comment: "Title for visitor history screen"))
             }
             .font(isLandscape ? .headline : .title3)
             
@@ -218,7 +218,7 @@ struct iPhone_VisitorHistoryView: View {
                 }
             }
         }
-        .navigationTitle(NSLocalizedString("visitor_history_title", comment: "Title for visitor history screen"))
+        .navigationTitle(NSLocalizedString("visitor_history_title", tableName: "Devices", comment: "Title for visitor history screen"))
         .navigationBarTitleDisplayMode(.large)
         .refreshable {
             await viewModel.loadVisitorHistory(showLoading: false)
@@ -308,7 +308,7 @@ struct VisitorHistoryRow: View {
                         Image(systemName: "eye.slash.fill")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                            .accessibilityLabel(Text("visitor_history_ignored_indicator"))
+                            .accessibilityLabel(Text("visitor_history_ignored_indicator", tableName: "Devices"))
                     }
                 }
                 
@@ -386,20 +386,20 @@ struct VisitorHistoryRow: View {
                     Button(role: .none) {
                         onAddDevice()
                     } label: {
-                        Label("unknown_visitor_add_and_allow", systemImage: "plus.circle")
+                        Label(String(localized: "unknown_visitor_add_and_allow", table: "Devices"), systemImage: "plus.circle")
                     }
                     
                     if isIgnored {
                         Button(role: .none) {
                             onUnignore()
                         } label: {
-                            Label("visitor_history_unignore", systemImage: "eye")
+                            Label(String(localized: "visitor_history_unignore", table: "Devices"), systemImage: "eye")
                         }
                     } else {
                         Button(role: .destructive) {
                             onIgnore()
                         } label: {
-                            Label("allowed_device_list_ignore_button", systemImage: "eye.slash")
+                            Label(String(localized: "allowed_device_list_ignore_button", table: "Devices"), systemImage: "eye.slash")
                         }
                     }
                 } label: {
@@ -457,7 +457,7 @@ struct VisitorHistoryRow: View {
     
     /// Returns the subtitle string for the visitor row: last seen with timezone and exact date/time
     private func subtitleText(now: Date) -> String {
-        let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
+        let lastSeen = NSLocalizedString("device_row_last_seen", tableName: "Devices", comment: "Label for the last seen time of a device in the device list row")
         // Relative time using the same helper as DeviceRowView
         let relativeTime = relativeTimeString(from: visitor.TimeStampDate, to: now, unitsStyle: .abbreviated)
         // Add timezone offset if available
@@ -490,7 +490,7 @@ struct VisitorHistoryRow: View {
             }
         }
         
-        let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
+        let separator = NSLocalizedString("device_row_separator", tableName: "Devices", comment: "Separator between last seen and distance in device row subtitle")
         let exactDateTime = "\(timeString) \(separator) \(dateString)"
         
         return "\(lastSeen): \(relativeTimeWithOffset) (\(exactDateTime))"
@@ -504,11 +504,11 @@ struct VisitorHistoryRow: View {
     
     /// Returns the distance text for the visitor row (separate line)
     private func distanceText() -> String {
-        let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
+        let distanceLabel = NSLocalizedString("device_row_distance", tableName: "Devices", comment: "Label for the distance to the device in the device list row")
         
         guard let visitorCached = cache.getLocation(for: visitor.DeviceID),
               let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
-            let unknown = NSLocalizedString("device_row_unknown", comment: "Default value for unknown distance")
+            let unknown = NSLocalizedString("device_row_unknown", tableName: "Devices", comment: "Default value for unknown distance")
             return "\(distanceLabel): \(unknown)"
         }
         
@@ -525,16 +525,16 @@ struct VisitorHistoryRow: View {
         
         let formattedDistance: String
         if usesMetric {
-            let meterUnit = NSLocalizedString("device_row_meter_unit", comment: "Unit for meters in device row distance display")
-            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", comment: "Unit for kilometers in device row distance display")
+            let meterUnit = NSLocalizedString("device_row_meter_unit", tableName: "Devices", comment: "Unit for meters in device row distance display")
+            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", tableName: "Devices", comment: "Unit for kilometers in device row distance display")
             if distance < 1000 {
                 formattedDistance = String(format: "%.0f %@", distance, meterUnit)
             } else {
                 formattedDistance = String(format: "%d %@", Int(round(distance / 1000)), kilometerUnit)
             }
         } else {
-            let feetUnit = NSLocalizedString("device_row_feet_unit", comment: "Unit for feet in device row distance display (imperial)")
-            let milesUnit = NSLocalizedString("device_row_miles_unit", comment: "Unit for miles in device row distance display (imperial)")
+            let feetUnit = NSLocalizedString("device_row_feet_unit", tableName: "Devices", comment: "Unit for feet in device row distance display (imperial)")
+            let milesUnit = NSLocalizedString("device_row_miles_unit", tableName: "Devices", comment: "Unit for miles in device row distance display (imperial)")
             let distanceInFeet = distance / 0.3048
             let distanceInMiles = distance / 1609.34
             if distanceInFeet > 528 { // More than 1/10 mile
@@ -563,7 +563,7 @@ struct VisitorHistoryRow: View {
             // Add altitude if available
             if let altitude = cached.altitude {
                 let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
-                let altitudeLabel = NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")
+                let altitudeLabel = NSLocalizedString("altitude_label", tableName: "MapNavigationHistory", comment: "Altitude label/abbreviation for display in device row")
                 if !placemarkText.isEmpty {
                     placemarkText += " (\(altitudeLabel): \(altitudeValue) \(altitudeUnit))"
                 } else {
@@ -599,13 +599,13 @@ struct VisitorHistoryRow: View {
         
         if usesMetric {
             let altitudeValue = String(format: "%.0f", altitudeInMeters)
-            let altitudeUnit = NSLocalizedString("altitude_meters", comment: "Altitude in meters")
+            let altitudeUnit = NSLocalizedString("altitude_meters", tableName: "MapNavigationHistory", comment: "Altitude in meters")
             return (altitudeValue, altitudeUnit)
         } else {
             // Convert meters to feet (1 meter = 3.28084 feet)
             let altitudeInFeet = altitudeInMeters * 3.28084
             let altitudeValue = String(format: "%.0f", altitudeInFeet)
-            let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+            let altitudeUnit = NSLocalizedString("altitude_feet", tableName: "MapNavigationHistory", comment: "Altitude in feet")
             return (altitudeValue, altitudeUnit)
         }
     }

@@ -389,13 +389,9 @@ actor UnknownVisitorAlertService {
             let slogan = supplementalData?.slogan
             let city = supplementalData?.city
 
-            let format = NSLocalizedString(
-                "unknown_visitor_alert_notification_body_with_details",
-                comment: "Notification body when slogan and city are available for an unknown visitor alert"
+            let format = NSLocalizedString("unknown_visitor_alert_notification_body_with_details", tableName: "Devices", comment: "Notification body when slogan and city are available for an unknown visitor alert"
             )
-            let fallbackBody = NSLocalizedString(
-                "unknown_visitor_alert_notification_body_fallback",
-                comment: "Fallback notification body when no supplemental details are available for an unknown visitor alert"
+            let fallbackBody = NSLocalizedString("unknown_visitor_alert_notification_body_fallback", tableName: "Devices", comment: "Fallback notification body when no supplemental details are available for an unknown visitor alert"
             )
             let body: String
             if let slogan, !slogan.isEmpty,
@@ -406,9 +402,7 @@ actor UnknownVisitorAlertService {
             }
 
             let content = UNMutableNotificationContent()
-            content.title = NSLocalizedString(
-                "unknown_visitor_alert_notification_title",
-                comment: "Notification title for unknown visitor alert"
+            content.title = NSLocalizedString("unknown_visitor_alert_notification_title", tableName: "Devices", comment: "Notification title for unknown visitor alert"
             )
             content.body = body
             content.sound = MiataruNotificationSounds.unknownVisitor

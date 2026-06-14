@@ -270,14 +270,14 @@ struct iPhone_DeviceHistoryMapView: View {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.system(size: 32))
                             .foregroundStyle(.secondary)
-                        Text(NSLocalizedString("history_no_data", comment: "No history available placeholder"))
+                        Text(NSLocalizedString("history_no_data", tableName: "MapNavigationHistory", comment: "No history available placeholder"))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 24)
                     }
                 } else if visibleHistoryCount == 0 {
                     ErrorOverlay(
-                        message: NSLocalizedString("history_no_data_in_range", comment: "No history entries inside selected time range"),
+                        message: NSLocalizedString("history_no_data_in_range", tableName: "MapNavigationHistory", comment: "No history entries inside selected time range"),
                         visible: true
                     )
                 }
@@ -287,7 +287,7 @@ struct iPhone_DeviceHistoryMapView: View {
             VStack(spacing: 10) {
                 if let loadError {
                     VStack(spacing: 6) {
-                        Text(NSLocalizedString("history_load_failed", comment: "History load failed message"))
+                        Text(NSLocalizedString("history_load_failed", tableName: "MapNavigationHistory", comment: "History load failed message"))
                             .font(.footnote)
                             .bold()
                             .multilineTextAlignment(.center)
@@ -435,7 +435,7 @@ struct iPhone_DeviceHistoryMapView: View {
                 Button {
                     applyQuickRange(duration: item.duration, bounds: bounds)
                 } label: {
-                    Text(NSLocalizedString(item.key, comment: "Quick picker option for a fixed time range"))
+                    Text(NSLocalizedString(item.key, tableName: "MapNavigationHistory", comment: "Quick picker option for a fixed time range"))
                         .font(.caption2.weight(isSelected ? .semibold : .medium))
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
@@ -554,9 +554,7 @@ struct iPhone_DeviceHistoryMapView: View {
         )
         .accessibilityHint(
             Text(
-                NSLocalizedString(
-                    "history_playback_speed_hint",
-                    comment: "Long press to change playback speed"
+                NSLocalizedString("history_playback_speed_hint", tableName: "MapNavigationHistory", comment: "Long press to change playback speed"
                 )
             )
         )
@@ -611,7 +609,7 @@ struct iPhone_DeviceHistoryMapView: View {
             await MainActor.run {
                 isLoading = false
                 hasResolvedInitialHistoryLoad = true
-                loadError = NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+                loadError = NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid.")
             }
             return
         }
@@ -646,7 +644,7 @@ struct iPhone_DeviceHistoryMapView: View {
                 hasResolvedInitialHistoryLoad = true
                 debugLog("[DeviceHistoryMapView] Loaded history entries=\(sorted.count) for device \(device.DeviceID)")
                 if sorted.isEmpty {
-                    loadError = NSLocalizedString("history_no_data", comment: "No history available placeholder")
+                    loadError = NSLocalizedString("history_no_data", tableName: "MapNavigationHistory", comment: "No history available placeholder")
                 }
                 initializeTimelineIfNeeded()
                 updateRegionIfUserCameraAllows(animated: false)
@@ -832,19 +830,19 @@ struct iPhone_DeviceHistoryMapView: View {
         ]
 
         if entry.HorizontalAccuracy.isFinite, entry.HorizontalAccuracy > 0 {
-            rows.append(("scope", "\(NSLocalizedString("Accuracy", comment: "Accuracy display in Location Tracking Details")): \(distanceText(meters: entry.HorizontalAccuracy, maximumFractionDigits: 0))"))
+            rows.append(("scope", "\(NSLocalizedString("Accuracy", tableName: "MapNavigationHistory", comment: "Accuracy display in Location Tracking Details")): \(distanceText(meters: entry.HorizontalAccuracy, maximumFractionDigits: 0))"))
         }
 
         if let speedText = mapSpeedLabelText(speedMetersPerSecond: entry.Speed, minSpeedKmh: 0) {
-            rows.append(("speedometer", "\(NSLocalizedString("Speed", comment: "Speed display in Location Tracking Details")): \(speedText)"))
+            rows.append(("speedometer", "\(NSLocalizedString("Speed", tableName: "MapNavigationHistory", comment: "Speed display in Location Tracking Details")): \(speedText)"))
         }
 
         if let altitude = entry.Altitude, altitude.isFinite {
-            rows.append(("mountain.2", "\(NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")): \(distanceText(meters: altitude, maximumFractionDigits: 0))"))
+            rows.append(("mountain.2", "\(NSLocalizedString("altitude_label", tableName: "MapNavigationHistory", comment: "Altitude label/abbreviation for display in device row")): \(distanceText(meters: altitude, maximumFractionDigits: 0))"))
         }
 
         if let batteryLevel = entry.BatteryLevel, batteryLevel.isFinite, batteryLevel >= 0 {
-            rows.append(("battery.100", "\(NSLocalizedString("Battery level", comment: "Battery level display in Location Tracking Details")): \(batteryText(batteryLevel))"))
+            rows.append(("battery.100", "\(NSLocalizedString("Battery level", tableName: "MapNavigationHistory", comment: "Battery level display in Location Tracking Details")): \(batteryText(batteryLevel))"))
         }
 
         return rows
@@ -869,8 +867,8 @@ struct iPhone_DeviceHistoryMapView: View {
 
         let value = usesMetric ? meters : meters * 3.28084
         let unit = usesMetric
-            ? NSLocalizedString("altitude_meters", comment: "Altitude in meters")
-            : NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+            ? NSLocalizedString("altitude_meters", tableName: "MapNavigationHistory", comment: "Altitude in meters")
+            : NSLocalizedString("altitude_feet", tableName: "MapNavigationHistory", comment: "Altitude in feet")
         return "\(localizedNumber(value, maximumFractionDigits: maximumFractionDigits)) \(unit)"
     }
 
@@ -934,18 +932,18 @@ struct iPhone_DeviceHistoryMapView: View {
     private func mapAPIError(_ error: MiataruAPIClient.APIError) -> String {
         switch error {
         case .invalidURL:
-            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+            return NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid.")
         case .invalidResponse(_):
-            return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
+            return NSLocalizedString("server_response_invalid", tableName: "SettingsDiagnostics", comment: "The server response was invalid.")
         case .encodingError(let err):
             debugLog("[DeviceHistoryMapView] Encoding error while loading history: \(err.localizedDescription)")
-            return NSLocalizedString("history_load_failed", comment: "Could not load history.")
+            return NSLocalizedString("history_load_failed", tableName: "MapNavigationHistory", comment: "Could not load history.")
         case .decodingError(let err):
-            return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
+            return "\(NSLocalizedString("decoding_error", tableName: "SettingsDiagnostics", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
-            return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+            return "\(NSLocalizedString("network_error", tableName: "SettingsDiagnostics", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
         case .serverError(_, let message):
-            return String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+            return String(format: NSLocalizedString("server_error", tableName: "SettingsDiagnostics", comment: "Server error: %@"), message)
         }
     }
 

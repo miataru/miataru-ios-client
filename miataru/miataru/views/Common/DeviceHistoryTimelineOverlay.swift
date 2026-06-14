@@ -41,7 +41,7 @@ struct DeviceHistoryTimelineOverlay: View {
                     Text(verbatim: "\(formattedDateTime(selection.lowerBound)) • \(formattedDateTime(selection.upperBound))")
                         .font(.footnote)
                         .fontWeight(.semibold)
-                    Text(String(format: NSLocalizedString("history_timeline_visible_count", comment: "Visible items count out of total"), selectedCount, totalCount))
+                    Text(String(format: NSLocalizedString("history_timeline_visible_count", tableName: "MapNavigationHistory", comment: "Visible items count out of total"), selectedCount, totalCount))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
@@ -150,9 +150,7 @@ struct DeviceHistoryTimelineOverlay: View {
         )
         .accessibilityHint(
             Text(
-                NSLocalizedString(
-                    "history_playback_speed_hint",
-                    comment: "Long press to change playback speed"
+                NSLocalizedString("history_playback_speed_hint", tableName: "MapNavigationHistory", comment: "Long press to change playback speed"
                 )
             )
         )

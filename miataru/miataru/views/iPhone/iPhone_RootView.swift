@@ -24,19 +24,19 @@ struct iPhone_RootView: View {
             iPhone_DevicesView()
                 .accessibilityIdentifier("screen_devices")
                 .tabItem {
-                    Label("devices", systemImage: "iphone.gen3.badge.location")
+                    Label(String(localized: "devices", table: "Devices"), systemImage: "iphone.gen3.badge.location")
                 }
                 .tag(0)
             iPhone_MyDeviceQRCodeView()
                 .accessibilityIdentifier("screen_qr")
                 .tabItem {
-                    Label("qr", systemImage: "qrcode")
+                    Label(String(localized: "qr", table: "OnboardingQR"), systemImage: "qrcode")
                 }
                 .tag(1)
             iPhone_SettingsView()
                 .accessibilityIdentifier("screen_settings")
                 .tabItem {
-                    Label("settings", systemImage: "gear")
+                    Label(String(localized: "settings", table: "SettingsDiagnostics"), systemImage: "gear")
                 }
                 .tag(2)
         }
@@ -56,7 +56,7 @@ struct iPhone_RootView: View {
             }
             applyRootNavigationDestination(appNavigation.rootDestination)
             if !isUITesting, settings.deviceKeyAuthBlocked {
-                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+                deviceKeyBannerMessage = NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showDeviceKeyBanner = true
                 }
@@ -67,8 +67,8 @@ struct iPhone_RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .deviceKeyAuthRequired)) { notification in
             guard !isUITesting else { return }
             deviceKeyBannerMessage = (notification.userInfo?["message"] as? String)
-                ?? NSLocalizedString("device_key_auth_runtime_error_message", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
-            deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", comment: "Message when stored DeviceKey does not match server")
+                ?? NSLocalizedString("device_key_auth_runtime_error_message", tableName: "Devices", comment: "Runtime auth error when stored DeviceKey is missing or invalid")
+            deviceKeySheetShowsMismatch = deviceKeyBannerMessage == NSLocalizedString("device_key_auth_mismatch_message", tableName: "Devices", comment: "Message when stored DeviceKey does not match server")
             withAnimation(.easeInOut(duration: 0.25)) {
                 showDeviceKeyBanner = true
             }
@@ -143,14 +143,14 @@ private struct DeviceKeyBannerView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(.white)
-            .accessibilityLabel(Text("device_key_banner_set_button"))
+            .accessibilityLabel(Text("device_key_banner_set_button", tableName: "Devices"))
 
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.white.opacity(0.9))
             }
             .buttonStyle(PlainButtonStyle())
-            .accessibilityLabel(Text("device_key_banner_dismiss"))
+            .accessibilityLabel(Text("device_key_banner_dismiss", tableName: "Devices"))
         }
         .padding(12)
         .background(

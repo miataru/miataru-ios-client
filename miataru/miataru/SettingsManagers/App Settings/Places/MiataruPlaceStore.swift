@@ -30,13 +30,13 @@ enum MiataruPlaceStoreError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .invalidDeviceID:
-            return NSLocalizedString("intent_place_error_invalid_device", comment: "Error when a saved place has no owning device")
+            return NSLocalizedString("intent_place_error_invalid_device", tableName: "AppIntents", comment: "Error when a saved place has no owning device")
         case .invalidName:
-            return NSLocalizedString("intent_place_error_invalid_name", comment: "Error when a saved place name is empty")
+            return NSLocalizedString("intent_place_error_invalid_name", tableName: "AppIntents", comment: "Error when a saved place name is empty")
         case .duplicateName:
-            return NSLocalizedString("intent_place_error_duplicate_name", comment: "Error when a saved place name already exists")
+            return NSLocalizedString("intent_place_error_duplicate_name", tableName: "AppIntents", comment: "Error when a saved place name already exists")
         case .invalidCoordinate:
-            return NSLocalizedString("intent_place_error_invalid_coordinate", comment: "Error when a saved place coordinate is invalid")
+            return NSLocalizedString("intent_place_error_invalid_coordinate", tableName: "AppIntents", comment: "Error when a saved place coordinate is invalid")
         }
     }
 }

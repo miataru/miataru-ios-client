@@ -23,9 +23,9 @@ struct iPhone_GroupDetailView: View {
 
     var body: some View {
         List {
-            Section(header: Text("group_name_section")) {
+            Section(header: Text("group_name_section", tableName: "Groups")) {
                 HStack {
-                    TextField("group_name_textfield", text: $groupNameField)
+                    TextField(String(localized: "group_name_textfield", table: "Groups"), text: $groupNameField)
                         .onTapGesture {
                             previousGroupName = group.groupName
                         }
@@ -40,7 +40,7 @@ struct iPhone_GroupDetailView: View {
                         }
                 }
             }
-            Section(header: Text("group_member_devices")) {
+            Section(header: Text("group_member_devices", tableName: "Groups")) {
                 ForEach(deviceStore.devices) { device in
                     HStack {
                         DeviceRowView(
@@ -60,14 +60,14 @@ struct iPhone_GroupDetailView: View {
                         Button(role: .destructive) {
                             group.removeDevice(device.DeviceID)
                         } label: {
-                            Label("remove_from_group", systemImage: "minus.circle")
+                            Label(String(localized: "remove_from_group", table: "Groups"), systemImage: "minus.circle")
                         }
                     }
                     .swipeActions(edge: .leading) {
                         Button {
                             editingDevice = device
                         } label: {
-                            Label("edit_device", systemImage: "pencil")
+                            Label(String(localized: "edit_device", table: "Devices"), systemImage: "pencil")
                         }
                         .tint(.blue)
                     }
@@ -81,12 +81,12 @@ struct iPhone_GroupDetailView: View {
                 }
             }
         }
-        .navigationTitle("edit_group")
+        .navigationTitle(String(localized: "edit_group", table: "Groups"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showsDoneButton {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(NSLocalizedString("Done", comment: "Close group details")) {
+                    Button(NSLocalizedString("Done", tableName: "Common", comment: "Close group details")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }

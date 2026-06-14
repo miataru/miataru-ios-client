@@ -32,7 +32,7 @@ struct LocalStorageUsageEntry: Identifiable, Equatable {
 
     var itemCountText: String? {
         guard let itemCount else { return nil }
-        let format = NSLocalizedString("local_storage_item_count_format", comment: "Storage statistic item count. Argument: number of items.")
+        let format = NSLocalizedString("local_storage_item_count_format", tableName: "SettingsDiagnostics", comment: "Storage statistic item count. Argument: number of items.")
         return String.localizedStringWithFormat(format, itemCount)
     }
 }
@@ -48,14 +48,14 @@ enum LocalStorageUsageReporter {
         let automationInfo = await MiataruAutomationEventStore.shared.storageInfo()
         entries.append(LocalStorageUsageEntry(
             id: "automationEvents",
-            title: NSLocalizedString("local_storage_automation_events_title", comment: "Local storage row title for automation events"),
+            title: NSLocalizedString("local_storage_automation_events_title", tableName: "AutomationEvents", comment: "Local storage row title for automation events"),
             byteCount: automationInfo.fileSizeBytes,
             itemCount: automationInfo.recordCount
         ))
 
         entries.append(fileEntry(
             id: "locationDiagnostics",
-            title: NSLocalizedString("local_storage_location_diagnostics_title", comment: "Local storage row title for location diagnostics log"),
+            title: NSLocalizedString("local_storage_location_diagnostics_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for location diagnostics log"),
             url: LocationDiagnosticsLogStore.storageFileURL(fileManager: fileManager),
             itemCount: LocationDiagnosticsLogStore.shared.entries.count + LocationDiagnosticsLogStore.shared.coalescedCounts.count,
             fileManager: fileManager
@@ -63,7 +63,7 @@ enum LocalStorageUsageReporter {
 
         entries.append(fileEntry(
             id: "locationUpdateOutbox",
-            title: NSLocalizedString("local_storage_location_update_outbox_title", comment: "Local storage row title for queued location updates"),
+            title: NSLocalizedString("local_storage_location_update_outbox_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for queued location updates"),
             url: LocationUpdateOutboxStore.storageFileURL(),
             itemCount: LocationManager.shared.pendingLocationUpdateCount,
             fileManager: fileManager
@@ -71,7 +71,7 @@ enum LocalStorageUsageReporter {
 
         entries.append(fileEntry(
             id: "knownDevices",
-            title: NSLocalizedString("local_storage_known_devices_title", comment: "Local storage row title for known devices"),
+            title: NSLocalizedString("local_storage_known_devices_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for known devices"),
             url: AppDirectories.applicationSupportFile(named: "knownDevices.plist"),
             itemCount: KnownDeviceStore.shared.devices.count,
             fileManager: fileManager
@@ -79,7 +79,7 @@ enum LocalStorageUsageReporter {
 
         entries.append(fileEntry(
             id: "deviceGroups",
-            title: NSLocalizedString("local_storage_device_groups_title", comment: "Local storage row title for device groups"),
+            title: NSLocalizedString("local_storage_device_groups_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for device groups"),
             url: AppDirectories.applicationSupportFile(named: "deviceGroups.plist"),
             itemCount: DeviceGroupStore.shared.groups.count,
             fileManager: fileManager
@@ -87,7 +87,7 @@ enum LocalStorageUsageReporter {
 
         entries.append(fileEntry(
             id: "deviceLocationCache",
-            title: NSLocalizedString("local_storage_device_location_cache_title", comment: "Local storage row title for cached device locations"),
+            title: NSLocalizedString("local_storage_device_location_cache_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for cached device locations"),
             url: AppDirectories.applicationSupportFile(named: "deviceLocations.plist"),
             itemCount: DeviceLocationCacheStore.shared.locations.count,
             fileManager: fileManager
@@ -95,7 +95,7 @@ enum LocalStorageUsageReporter {
 
         entries.append(fileEntry(
             id: "thisDeviceID",
-            title: NSLocalizedString("local_storage_device_identity_title", comment: "Local storage row title for this device identity"),
+            title: NSLocalizedString("local_storage_device_identity_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for this device identity"),
             url: AppDirectories.applicationSupportFile(named: "deviceIDmodern.txt"),
             itemCount: 1,
             fileManager: fileManager
@@ -104,7 +104,7 @@ enum LocalStorageUsageReporter {
         if let widgetDataURL = SharedWidgetDataManager.sharedDataURL {
             entries.append(fileEntry(
                 id: "widgetSharedData",
-                title: NSLocalizedString("local_storage_widget_data_title", comment: "Local storage row title for shared widget data"),
+                title: NSLocalizedString("local_storage_widget_data_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for shared widget data"),
                 url: widgetDataURL,
                 itemCount: nil,
                 fileManager: fileManager
@@ -114,7 +114,7 @@ enum LocalStorageUsageReporter {
         if let widgetConfigURL = SharedWidgetConfigManager.configURL {
             entries.append(fileEntry(
                 id: "widgetConfig",
-                title: NSLocalizedString("local_storage_widget_config_title", comment: "Local storage row title for shared widget configuration"),
+                title: NSLocalizedString("local_storage_widget_config_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for shared widget configuration"),
                 url: widgetConfigURL,
                 itemCount: nil,
                 fileManager: fileManager
@@ -128,7 +128,7 @@ enum LocalStorageUsageReporter {
         let sloganStore = DeviceSloganCacheStore.shared
         entries.append(LocalStorageUsageEntry(
             id: "deviceSlogans",
-            title: NSLocalizedString("local_storage_device_slogans_title", comment: "Local storage row title for cached device slogans"),
+            title: NSLocalizedString("local_storage_device_slogans_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for cached device slogans"),
             byteCount: sloganStore.estimatedStorageBytes,
             itemCount: sloganStore.storageItemCount
         ))
@@ -136,7 +136,7 @@ enum LocalStorageUsageReporter {
         let ignoredVisitorCount = IgnoredVisitorDeviceStore.shared.getAllIgnoredDeviceIDs().count
         entries.append(LocalStorageUsageEntry(
             id: "ignoredVisitors",
-            title: NSLocalizedString("local_storage_ignored_visitors_title", comment: "Local storage row title for ignored visitor devices"),
+            title: NSLocalizedString("local_storage_ignored_visitors_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for ignored visitor devices"),
             byteCount: estimatedStringArrayBytes(IgnoredVisitorDeviceStore.shared.getAllIgnoredDeviceIDs()),
             itemCount: ignoredVisitorCount
         ))
@@ -223,7 +223,7 @@ enum LocalStorageUsageReporter {
         guard bytes > 0 || count > 0 else { return nil }
         return LocalStorageUsageEntry(
             id: "widgetSnapshots",
-            title: NSLocalizedString("local_storage_widget_snapshots_title", comment: "Local storage row title for widget map snapshots"),
+            title: NSLocalizedString("local_storage_widget_snapshots_title", tableName: "SettingsDiagnostics", comment: "Local storage row title for widget map snapshots"),
             byteCount: bytes,
             itemCount: count
         )

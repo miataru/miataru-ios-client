@@ -17,19 +17,19 @@ struct iPhone_AddGroupView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("group_name")) {
-                    TextField("group_name_placeholder", text: $groupName)
+                Section(header: Text("group_name", tableName: "Groups")) {
+                    TextField(String(localized: "group_name_placeholder", table: "Groups"), text: $groupName)
                 }
             }
-            .navigationTitle("add_new_group")
+            .navigationTitle(String(localized: "add_new_group", table: "Groups"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
+                    Button(String(localized: "cancel", table: "Common")) {
                         isPresented = false
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("add") {
+                    Button(String(localized: "add", table: "Common")) {
                         let newGroup = DeviceGroup(name: groupName)
                         groupStore.add(group: newGroup)
                         isPresented = false

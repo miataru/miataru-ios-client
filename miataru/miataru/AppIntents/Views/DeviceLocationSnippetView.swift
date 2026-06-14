@@ -16,11 +16,11 @@ struct DeviceLocationSnippetView: View {
         VStack(alignment: .leading, spacing: 8) {
             Label(location.displayName, systemImage: "location.fill")
                 .font(.headline)
-            Text(location.placeDescription ?? NSLocalizedString("intent_location_fallback_place", comment: "Fallback place description for the last known location"))
+            Text(location.placeDescription ?? NSLocalizedString("intent_location_fallback_place", tableName: "AppIntents", comment: "Fallback place description for the last known location"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(String.localizedStringWithFormat(
-                NSLocalizedString("intent_device_location_snippet_age_format", comment: "Snippet age format. Argument: age text."),
+                NSLocalizedString("intent_device_location_snippet_age_format", tableName: "AppIntents", comment: "Snippet age format. Argument: age text."),
                 location.ageText
             ))
             .font(.caption)

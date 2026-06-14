@@ -244,8 +244,8 @@ struct iPhone_DeviceNavigationView: View {
                     directionIndicatorIcon()
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(Text(NSLocalizedString("reverse_navigation_direction", comment: "Reverse navigation direction")))
-                .accessibilityHint(Text(NSLocalizedString("reverse_navigation_direction_hint", comment: "Swaps the route to show navigation from the device to you, or from you to the device.")))
+                .accessibilityLabel(Text(NSLocalizedString("reverse_navigation_direction", tableName: "MapNavigationHistory", comment: "Reverse navigation direction")))
+                .accessibilityHint(Text(NSLocalizedString("reverse_navigation_direction_hint", tableName: "MapNavigationHistory", comment: "Swaps the route to show navigation from the device to you, or from you to the device.")))
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: openInAppleMaps) {
@@ -685,7 +685,7 @@ struct iPhone_DeviceNavigationView: View {
                             Image(systemName: "person.line.dotted.person.fill")
                                 .imageScale(.small)
                                 .symbolEffect(.pulse, options: .repeating, isActive: shouldAnimateMutualNavigationSymbol)
-                                .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
+                                .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", tableName: "MapNavigationHistory", comment: "Indicates that both devices are actively navigating to each other")))
                         }
                     }
                 }
@@ -875,8 +875,8 @@ struct iPhone_DeviceNavigationView: View {
                         Haptic.notifyWarning()
                     }
                 }
-                .accessibilityLabel(Text(NSLocalizedString("reload", comment: "Reload target device location")))
-                .accessibilityHint(Text(NSLocalizedString("reload_longpress_hint", comment: "Long-press to toggle automatic route updates.")))
+                .accessibilityLabel(Text(NSLocalizedString("reload", tableName: "MapNavigationHistory", comment: "Reload target device location")))
+                .accessibilityHint(Text(NSLocalizedString("reload_longpress_hint", tableName: "MapNavigationHistory", comment: "Long-press to toggle automatic route updates.")))
         }
         .animation(animationsAllowed ? .easeInOut(duration: 0.2) : nil, value: isAutoRouteUpdateLocked)
         .accessibilityAddTraits(.isButton)
@@ -982,7 +982,7 @@ struct iPhone_DeviceNavigationView: View {
         guard routeCounter.count < routeRequestDailyLimit else {
             showErrorOverlay(
                 "Daily route request limit reached",
-                NSLocalizedString("route_request_limit_reached", comment: "Daily route request limit reached. Try again tomorrow.")
+                NSLocalizedString("route_request_limit_reached", tableName: "MapNavigationHistory", comment: "Daily route request limit reached. Try again tomorrow.")
             )
             return
         }
@@ -1073,7 +1073,7 @@ struct iPhone_DeviceNavigationView: View {
             pendingRouteRetryOnReconnect = true
             showErrorOverlay(
                 "Route request failed while offline",
-                NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")
+                NSLocalizedString("network_error", tableName: "SettingsDiagnostics", comment: "Network error. Please check your internet connection.")
             )
             return
         }
@@ -1082,12 +1082,12 @@ struct iPhone_DeviceNavigationView: View {
             if noRouteFound {
                 showErrorOverlay(
                     "No route found after retries",
-                    NSLocalizedString("route_not_found", comment: "Could not generate a route between the locations.")
+                    NSLocalizedString("route_not_found", tableName: "MapNavigationHistory", comment: "Could not generate a route between the locations.")
                 )
             } else {
                 showErrorOverlay(
                     "Route calculation failed after retries: \(error?.localizedDescription ?? "unknown error")",
-                    NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
+                    NSLocalizedString("route_generation_failed", tableName: "MapNavigationHistory", comment: "Route calculation failed. Please try again.")
                 )
             }
             return
@@ -1096,7 +1096,7 @@ struct iPhone_DeviceNavigationView: View {
         guard noRouteFound || isRetryableRouteError(error) else {
             showErrorOverlay(
                 "Route calculation failed: \(error?.localizedDescription ?? "unknown error")",
-                NSLocalizedString("route_generation_failed", comment: "Route calculation failed. Please try again.")
+                NSLocalizedString("route_generation_failed", tableName: "MapNavigationHistory", comment: "Route calculation failed. Please try again.")
             )
             return
         }
@@ -2046,7 +2046,7 @@ struct iPhone_DeviceNavigationView: View {
             // Show info overlay and trigger haptics
             Haptic.notifySuccess()
             infoOverlayManager.show(
-                message: NSLocalizedString("navigation_stopped_automatically", comment: "Navigation stopped automatically - devices are close"),
+                message: NSLocalizedString("navigation_stopped_automatically", tableName: "MapNavigationHistory", comment: "Navigation stopped automatically - devices are close"),
                 duration: 6.0,
                 animationsAllowed: animationsAllowed
             )

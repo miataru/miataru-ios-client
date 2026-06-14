@@ -24,16 +24,15 @@ struct iPhone_SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("track_and_history")) {
-                    Toggle("location_track", isOn: $settings.trackAndReportLocation)
+                Section(header: Text("track_and_history", tableName: "LocationTracking")) {
+                    Toggle(String(localized: "location_track", table: "LocationTracking"), isOn: $settings.trackAndReportLocation)
                     SettingsDescriptionText("explanation_location_track")
 
                     if trackingPermissionVisibility.showsTrackingDependentSettings {
-                        Toggle("save_location_history_to_server", isOn: $settings.saveLocationHistoryOnServer)
+                        Toggle(String(localized: "save_location_history_to_server", table: "LocationTracking"), isOn: $settings.saveLocationHistoryOnServer)
                         SettingsDescriptionText("explanation_save_location_history_to_server")
 
-                        Toggle(
-                            "unknown_visitor_alerts_toggle",
+                        Toggle(String(localized: "unknown_visitor_alerts_toggle", table: "Devices"),
                             isOn: Binding(
                                 get: { settings.unknownVisitorAlertsEnabled },
                                 set: { newValue in
@@ -46,10 +45,10 @@ struct iPhone_SettingsView: View {
 
                         if settings.unknownVisitorAlertsPermissionDenied {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("unknown_visitor_alerts_permission_denied_message")
+                                Text("unknown_visitor_alerts_permission_denied_message", tableName: "Devices")
                                     .font(.caption)
                                     .foregroundColor(.red)
-                                Button("unknown_visitor_alerts_open_settings_button") {
+                                Button(String(localized: "unknown_visitor_alerts_open_settings_button", table: "Devices")) {
                                     LocationManager.shared.openAppSettings()
                                 }
                                 .font(.caption)
@@ -57,14 +56,14 @@ struct iPhone_SettingsView: View {
                         }
 
                         if !settings.saveLocationHistoryOnServer {
-                            Picker("store_history_before_autoremove", selection: $settings.locationDataRetentionTime) {
-                                Text("30minutes").tag(30)
-                                Text("1hour").tag(60)
-                                Text("2hours").tag(120)
-                                Text("6hours").tag(360)
-                                Text("12hours").tag(720)
-                                Text("24hours").tag(1440)
-                                Text("7days").tag(10_080)
+                            Picker(String(localized: "store_history_before_autoremove", table: "LocationTracking"), selection: $settings.locationDataRetentionTime) {
+                                Text("30minutes", tableName: "Common").tag(30)
+                                Text("1hour", tableName: "Common").tag(60)
+                                Text("2hours", tableName: "Common").tag(120)
+                                Text("6hours", tableName: "Common").tag(360)
+                                Text("12hours", tableName: "Common").tag(720)
+                                Text("24hours", tableName: "Common").tag(1440)
+                                Text("7days", tableName: "Common").tag(10_080)
                             }
                             SettingsDescriptionText("explanation_store_history_before_autoremove")
                         }
@@ -78,14 +77,14 @@ struct iPhone_SettingsView: View {
                         HStack {
                             Image(systemName: "key.card")
                                 .foregroundColor(.blue)
-                            Text("manage_your_devicekey")
+                            Text("manage_your_devicekey", tableName: "Devices")
                         }
                     }
                 }
 
                 if trackingPermissionVisibility.showsTrackingDependentSettings {
-                    Section(header: Text("background_location_updates_section_title")) {
-                        Toggle("smart_frequent_background_location_updates_title", isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
+                    Section(header: Text("background_location_updates_section_title", tableName: "LocationTracking")) {
+                        Toggle(String(localized: "smart_frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_smart_frequent_background_location_updates_central_toggle")
                             .disabled(settings.frequentBackgroundLocationUpdatesEnabled)
                         SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
@@ -94,7 +93,7 @@ struct iPhone_SettingsView: View {
                         }
 
                         if settings.smartFrequentBackgroundLocationUpdatesEnabled {
-                            Toggle("frequent_background_location_updates_title", isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                            Toggle(String(localized: "frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
                                 .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
                             SettingsDescriptionText("frequent_background_location_updates_manual_explanation")
                             if settings.frequentBackgroundLocationUpdatesEnabled {
@@ -105,50 +104,50 @@ struct iPhone_SettingsView: View {
                 }
 
                 if !settings.allowedDeviceListEnabled {
-                    Section(header: Text("allowed_device_list_section_title")) {
+                    Section(header: Text("allowed_device_list_section_title", tableName: "Devices")) {
                         AllowedDeviceListSettingsContent()
                     }
                 }
 
-                Section(header: Text("app_behaviour")) {
-                    Toggle("deactivate_device_lock", isOn: $settings.disableDeviceAutolock)
+                Section(header: Text("app_behaviour", tableName: "SettingsDiagnostics")) {
+                    Toggle(String(localized: "deactivate_device_lock", table: "Devices"), isOn: $settings.disableDeviceAutolock)
                     SettingsDescriptionText("explanation_deactivate_device_lock")
 
-                    Toggle("prevent_screen_rotation", isOn: $settings.preventScreenRotation)
+                    Toggle(String(localized: "prevent_screen_rotation", table: "LocationTracking"), isOn: $settings.preventScreenRotation)
                     SettingsDescriptionText("explanation_prevent_screen_rotation")
                 }
 
-                Section(header: Text("map_configuration")) {
-                    Picker("map_type", selection: $settings.mapType) {
-                        Text("default_map").tag(1)
-                        Text("hybrid_map").tag(2)
-                        Text("sat_map").tag(3)
+                Section(header: Text("map_configuration", tableName: "MapNavigationHistory")) {
+                    Picker(String(localized: "map_type", table: "MapNavigationHistory"), selection: $settings.mapType) {
+                        Text("default_map", tableName: "MapNavigationHistory").tag(1)
+                        Text("hybrid_map", tableName: "MapNavigationHistory").tag(2)
+                        Text("sat_map", tableName: "MapNavigationHistory").tag(3)
                     }
                     SettingsDescriptionText("explanation_map_type")
 
-                    Picker("map_zoom_level", selection: $settings.mapZoomLevel) {
-                        Text("1km").tag(1)
-                        Text("2km").tag(2)
-                        Text("5km").tag(5)
-                        Text("10km").tag(10)
-                        Text("25km").tag(25)
-                        Text("50km").tag(50)
-                        Text("100km").tag(100)
+                    Picker(String(localized: "map_zoom_level", table: "MapNavigationHistory"), selection: $settings.mapZoomLevel) {
+                        Text("1km", tableName: "Common").tag(1)
+                        Text("2km", tableName: "Common").tag(2)
+                        Text("5km", tableName: "Common").tag(5)
+                        Text("10km", tableName: "Common").tag(10)
+                        Text("25km", tableName: "Common").tag(25)
+                        Text("50km", tableName: "Common").tag(50)
+                        Text("100km", tableName: "Common").tag(100)
                     }
                     SettingsDescriptionText("explanation_map_zoom_level")
                 }
 
-                Section(header: Text("navigation")) {
-                    Picker("transport_mode", selection: $settings.navigationTransportType) {
-                        Text("transport_walk").tag(0)
-                        Text("transport_car").tag(2)
-                        Text("transport_transit").tag(3)
+                Section(header: Text("navigation", tableName: "MapNavigationHistory")) {
+                    Picker(String(localized: "transport_mode", table: "MapNavigationHistory"), selection: $settings.navigationTransportType) {
+                        Text("transport_walk", tableName: "MapNavigationHistory").tag(0)
+                        Text("transport_car", tableName: "MapNavigationHistory").tag(2)
+                        Text("transport_transit", tableName: "MapNavigationHistory").tag(3)
                     }
                     SettingsDescriptionText("explanation_navigation_mode")
                 }
 
-                Section(header: Text("server_url")) {
-                    TextField("server_url", text: $serverURLDraft)
+                Section(header: Text("server_url", tableName: "SettingsDiagnostics")) {
+                    TextField(String(localized: "server_url", table: "SettingsDiagnostics"), text: $serverURLDraft)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .keyboardType(.URL)
@@ -159,14 +158,14 @@ struct iPhone_SettingsView: View {
                     SettingsDescriptionText("explanation_server_url")
                 }
 
-                Section(header: Text("advanced_options_and_tracking_status")) {
+                Section(header: Text("advanced_options_and_tracking_status", tableName: "SettingsDiagnostics")) {
                     Button {
                         showAdvancedOptionsFromNavigationRequest = true
                     } label: {
                         HStack {
                             Image(systemName: "slider.horizontal.3")
                                 .foregroundColor(.blue)
-                            Text("advanced_options")
+                            Text("advanced_options", tableName: "SettingsDiagnostics")
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
@@ -179,12 +178,12 @@ struct iPhone_SettingsView: View {
                     .accessibilityIdentifier("settings_advanced_options_link")
 
                     NavigationLink(destination: iPhone_LocationStatusView()
-                        .navigationTitle("Location Tracking Details")
+                        .navigationTitle(String(localized: "Location Tracking Details", table: "LocationTracking"))
                         .navigationBarTitleDisplayMode(.inline)) {
                         HStack {
                             Image(systemName: "location.fill")
                                 .foregroundColor(.blue)
-                            Text("Location Tracking Details")
+                            Text("Location Tracking Details", tableName: "LocationTracking")
                         }
                     }
                     .accessibilityIdentifier("settings_location_tracking_details_link")
@@ -193,22 +192,22 @@ struct iPhone_SettingsView: View {
             .navigationDestination(isPresented: $showAdvancedOptionsFromNavigationRequest) {
                 iPhone_AdvancedOptionsView()
             }
-            .navigationTitle("settings")
+            .navigationTitle(String(localized: "settings", table: "SettingsDiagnostics"))
             .sheet(isPresented: $showingDeviceKeySheet) {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
             }
             .confirmationDialog(
-                "location_update_outbox_server_change_title",
+                String(localized: "location_update_outbox_server_change_title", table: "LocationTracking"),
                 isPresented: $showingServerURLQueueDialog,
                 titleVisibility: .visible
             ) {
-                Button("location_update_outbox_send_to_new_server_button") {
+                Button(String(localized: "location_update_outbox_send_to_new_server_button", table: "LocationTracking")) {
                     confirmPendingServerURLChange(sendQueuedUpdates: true)
                 }
-                Button("location_update_outbox_discard_pending_button", role: .destructive) {
+                Button(String(localized: "location_update_outbox_discard_pending_button", table: "LocationTracking"), role: .destructive) {
                     confirmPendingServerURLChange(sendQueuedUpdates: false)
                 }
-                Button("cancel", role: .cancel) {
+                Button(String(localized: "cancel", table: "Common"), role: .cancel) {
                     cancelPendingServerURLChange()
                 }
             } message: {
@@ -268,9 +267,7 @@ struct iPhone_SettingsView: View {
 
     private var serverURLQueueDialogMessage: String {
         String(
-            format: NSLocalizedString(
-                "location_update_outbox_server_change_message",
-                comment: "Message shown when changing the server URL while location updates are queued"
+            format: NSLocalizedString("location_update_outbox_server_change_message", tableName: "LocationTracking", comment: "Message shown when changing the server URL while location updates are queued"
             ),
             pendingServerURLQueuedCount
         )

@@ -537,7 +537,7 @@ Validation across the consolidated work included:
 - focused `LocationSamplePolicyTests`
 - focused `LocationBackgroundForensicsTests`
 - focused `LocationUpdateMetricsStoreTests`
-- `python3 -m json.tool miataru/miataru/Assets/Localizable.xcstrings`
+- `python3 -m json.tool miataru/miataru/Assets/Localization/LocationTracking.xcstrings`
 - `plutil -lint "miataru/miataru/SettingsManagers/App Settings/Settings.bundle/Root.plist"`
 - `git diff --check`
 

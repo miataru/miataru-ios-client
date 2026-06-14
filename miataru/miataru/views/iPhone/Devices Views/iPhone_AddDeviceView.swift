@@ -89,17 +89,17 @@ struct iPhone_AddDeviceView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("device_name")) {
-                    TextField("device_name2", text: $deviceName)
+                Section(header: Text("device_name", tableName: "Devices")) {
+                    TextField(String(localized: "device_name2", table: "Devices"), text: $deviceName)
 
                     if hasSimilarDeviceName {
-                        Label("device_name_similar_warning", systemImage: "exclamationmark.triangle")
+                        Label(String(localized: "device_name_similar_warning", table: "Devices"), systemImage: "exclamationmark.triangle")
                             .font(.caption)
                             .foregroundColor(.orange)
                     }
 
                     HStack(alignment: .firstTextBaseline, spacing: 12) {
-                        Text("Info")
+                        Text("Info", tableName: "SettingsDiagnostics")
                         Spacer()
                         if isLoadingSlogan {
                             ProgressView()
@@ -116,13 +116,13 @@ struct iPhone_AddDeviceView: View {
                         adoptSloganAsDeviceNameIfNeeded()
                     }
                 }
-                Section(header: Text("device_id")) {
+                Section(header: Text("device_id", tableName: "Devices")) {
                     if allowsDeviceIDEditing {
                         Button(action: { isShowingScanner = true }) {
-                            Label("scan_qr_code", systemImage: "qrcode.viewfinder")
+                            Label(String(localized: "scan_qr_code", table: "OnboardingQR"), systemImage: "qrcode.viewfinder")
                         }
                         .accessibilityIdentifier("add_device_scan_qr_button")
-                        TextField("device_id2", text: $deviceID)
+                        TextField(String(localized: "device_id2", table: "Devices"), text: $deviceID)
                             .accessibilityIdentifier("add_device_device_id_field")
                     } else {
                         Text(deviceID.isEmpty ? "-" : deviceID)
@@ -133,11 +133,11 @@ struct iPhone_AddDeviceView: View {
                             .accessibilityIdentifier("add_device_locked_device_id")
                     }
                 }
-                Section(header: Text("device_color")) {
+                Section(header: Text("device_color", tableName: "Devices")) {
                     Button(action: { showColorPickerSheet = true }) {
                         HStack {
                             Circle().fill(deviceColor).frame(width: 24, height: 24)
-                            Text(NSLocalizedString("Pick Color", comment: "Button label to open color picker sheet"))
+                            Text(NSLocalizedString("Pick Color", tableName: "Common", comment: "Button label to open color picker sheet"))
                         }
                     }
                     .sheet(isPresented: $showColorPickerSheet) {
@@ -146,9 +146,9 @@ struct iPhone_AddDeviceView: View {
                     }
                 }
                 if settings.allowedDeviceListEnabled {
-                    Section(header: Text("allowed_device_list_access_controls")) {
+                    Section(header: Text("allowed_device_list_access_controls", tableName: "Devices")) {
                         HStack(alignment: .top, spacing: 12) {
-                            Text("allowed_device_list_security_overview_label")
+                            Text("allowed_device_list_security_overview_label", tableName: "Devices")
                             Spacer()
                             VStack(alignment: .trailing, spacing: 6) {
                                 HStack(spacing: 6) {
@@ -172,17 +172,17 @@ struct iPhone_AddDeviceView: View {
                             }
                             .font(.caption)
                         }
-                        Toggle("allowed_device_list_current_location_access", isOn: $hasCurrentLocationAccess)
-                        Text("allowed_device_list_current_location_access_description")
+                        Toggle(String(localized: "allowed_device_list_current_location_access", table: "Devices"), isOn: $hasCurrentLocationAccess)
+                        Text("allowed_device_list_current_location_access_description", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Toggle("allowed_device_list_history_access", isOn: $hasHistoryAccess)
-                        Text("allowed_device_list_history_access_description")
+                        Toggle(String(localized: "allowed_device_list_history_access", table: "Devices"), isOn: $hasHistoryAccess)
+                        Text("allowed_device_list_history_access_description", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 } else {
-                    Section(header: Text("allowed_device_list_access_controls")) {
+                    Section(header: Text("allowed_device_list_access_controls", tableName: "Devices")) {
                         Button {
                             Task {
                                 await activateAllowedDeviceList()
@@ -191,7 +191,7 @@ struct iPhone_AddDeviceView: View {
                             HStack {
                                 Image(systemName: "lock.shield")
                                     .foregroundColor(.blue)
-                                Text("allowed_device_list_enable_button")
+                                Text("allowed_device_list_enable_button", tableName: "Devices")
 
                                 if isActivatingAllowedDeviceList {
                                     Spacer()
@@ -207,22 +207,22 @@ struct iPhone_AddDeviceView: View {
                                 .foregroundColor(.red)
                         }
 
-                        Text("allowed_device_list_disabled_explanation")
+                        Text("allowed_device_list_disabled_explanation", tableName: "Devices")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            .navigationTitle("new_device")
+            .navigationTitle(String(localized: "new_device", table: "Devices"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
+                    Button(String(localized: "cancel", table: "Common")) {
                         isPresented = false
                     }
                     .accessibilityIdentifier("add_device_cancel_button")
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("add") {
+                    Button(String(localized: "add", table: "Common")) {
                         Task {
                             await saveDevice()
                         }
@@ -260,20 +260,20 @@ struct iPhone_AddDeviceView: View {
         }
         .alert(isPresented: $showInvalidQRAlert) {
             Alert(
-                title: Text("invalid_miataru_qr_code"),
-                message: Text("invalid_miataru_qr_code_error_text"), //"Der QR-Code muss mit 'miataru://' beginnen."
-                dismissButton: .default(Text("ok"))
+                title: Text("invalid_miataru_qr_code", tableName: "SettingsDiagnostics"),
+                message: Text("invalid_miataru_qr_code_error_text", tableName: "SettingsDiagnostics"), //"Der QR-Code muss mit 'miataru://' beginnen."
+                dismissButton: .default(Text("ok", tableName: "Common"))
             )
         }
         .alert(isPresented: $showDuplicateAlert) {
             Alert(
-                title: Text(NSLocalizedString("adddevice_duplicate_device_id_title", comment: "Alert title shown when user tries to add a duplicate device.")),
-                message: Text(duplicateDeviceIDMessage.isEmpty ? NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.") : duplicateDeviceIDMessage),
-                dismissButton: .default(Text("ok"))
+                title: Text(NSLocalizedString("adddevice_duplicate_device_id_title", tableName: "Devices", comment: "Alert title shown when user tries to add a duplicate device.")),
+                message: Text(duplicateDeviceIDMessage.isEmpty ? NSLocalizedString("adddevice_duplicate_device_already_exists_message", tableName: "Devices", comment:"Alert text shown when user tries to add a duplicate device.") : duplicateDeviceIDMessage),
+                dismissButton: .default(Text("ok", tableName: "Common"))
             )
         }
-        .alert(NSLocalizedString("Error", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
-            Button(NSLocalizedString("ok", comment: "OK button")) {
+        .alert(NSLocalizedString("Error", tableName: "SettingsDiagnostics", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
+            Button(NSLocalizedString("ok", tableName: "Common", comment: "OK button")) {
                 saveError = nil
             }
         } message: { error in
@@ -357,7 +357,7 @@ struct iPhone_AddDeviceView: View {
 
         if let existingDevice = store.device(matchingDeviceIDCaseInsensitive: trimmedDeviceID) {
             duplicateDeviceIDMessage = String(
-                format: NSLocalizedString("adddevice_duplicate_device_id_case_insensitive_message", comment: "Alert text shown when a device ID matches an existing device ignoring letter case."),
+                format: NSLocalizedString("adddevice_duplicate_device_id_case_insensitive_message", tableName: "Devices", comment: "Alert text shown when a device ID matches an existing device ignoring letter case."),
                 existingDevice.DeviceID
             )
             Haptic.notifyWarning()
@@ -380,7 +380,7 @@ struct iPhone_AddDeviceView: View {
         
         let success = store.add(device: newDevice)
         if !success {
-            duplicateDeviceIDMessage = NSLocalizedString("adddevice_duplicate_device_already_exists_message", comment:"Alert text shown when user tries to add a duplicate device.")
+            duplicateDeviceIDMessage = NSLocalizedString("adddevice_duplicate_device_already_exists_message", tableName: "Devices", comment:"Alert text shown when user tries to add a duplicate device.")
             Haptic.notifyWarning()
             showDuplicateAlert = true
             isSaving = false
@@ -429,22 +429,22 @@ struct iPhone_AddDeviceView: View {
     private var deviceKeySecurityStatusText: String {
         switch deviceKeySecurityStatus {
         case .active:
-            return NSLocalizedString("allowed_device_list_security_devicekey_active", comment: "DeviceKey security status active")
+            return NSLocalizedString("allowed_device_list_security_devicekey_active", tableName: "Devices", comment: "DeviceKey security status active")
         case .inactive:
-            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", comment: "DeviceKey security status inactive")
+            return NSLocalizedString("allowed_device_list_security_devicekey_inactive", tableName: "Devices", comment: "DeviceKey security status inactive")
         case .unknown:
-            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", comment: "DeviceKey security status unknown")
+            return NSLocalizedString("allowed_device_list_security_devicekey_unknown", tableName: "Devices", comment: "DeviceKey security status unknown")
         }
     }
 
     private var aclSecurityStatusText: String {
         switch aclSecurityStatus {
         case .active:
-            return NSLocalizedString("allowed_device_list_security_acl_active", comment: "ACL security status active")
+            return NSLocalizedString("allowed_device_list_security_acl_active", tableName: "Devices", comment: "ACL security status active")
         case .inactive:
-            return NSLocalizedString("allowed_device_list_security_acl_inactive", comment: "ACL security status inactive")
+            return NSLocalizedString("allowed_device_list_security_acl_inactive", tableName: "Devices", comment: "ACL security status inactive")
         case .unknown:
-            return NSLocalizedString("allowed_device_list_security_acl_unknown", comment: "ACL security status unknown")
+            return NSLocalizedString("allowed_device_list_security_acl_unknown", tableName: "Devices", comment: "ACL security status unknown")
         }
     }
 

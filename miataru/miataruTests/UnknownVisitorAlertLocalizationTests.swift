@@ -35,12 +35,31 @@ struct UnknownVisitorAlertLocalizationTests {
         let repoRoot = testFileURL
             .deletingLastPathComponent() // miataruTests
             .deletingLastPathComponent() // project root folder in repo
-        let localizationFileURL = repoRoot
-            .appendingPathComponent("miataru/Assets/Localizable.xcstrings")
-
-        let data = try Data(contentsOf: localizationFileURL)
-        let jsonObject = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
-        let strings = try #require(jsonObject["strings"] as? [String: Any])
+        let localizationFolderURL = repoRoot
+            .appendingPathComponent("miataru/Assets/Localization")
+        let catalogNames = [
+            "AppIntents",
+            "AppShortcuts",
+            "AutomationEvents",
+            "Common",
+            "Devices",
+            "Groups",
+            "Localizable",
+            "LocationTracking",
+            "MapNavigationHistory",
+            "OnboardingQR",
+            "SettingsDiagnostics"
+        ]
+        var strings: [String: Any] = [:]
+        for catalogName in catalogNames {
+            let data = try Data(contentsOf: localizationFolderURL.appendingPathComponent("\(catalogName).xcstrings"))
+            let jsonObject = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            let catalogStrings = try #require(jsonObject["strings"] as? [String: Any])
+            for (key, value) in catalogStrings {
+                #expect(strings[key] == nil, "Duplicate localization key across string catalogs: \(key)")
+                strings[key] = value
+            }
+        }
 
         for key in requiredKeys {
             let keyEntry = try #require(strings[key] as? [String: Any], "Missing localization key: \(key)")

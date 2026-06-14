@@ -15,6 +15,19 @@ import UIKit
 
 struct SettingsConfigurationTests {
     private let expectedLocales: Set<String> = ["da", "de", "en", "es", "fi", "fr", "it", "ja", "nl", "zh-Hans"]
+    private let appStringCatalogNames = [
+        "AppIntents",
+        "AppShortcuts",
+        "AutomationEvents",
+        "Common",
+        "Devices",
+        "Groups",
+        "Localizable",
+        "LocationTracking",
+        "MapNavigationHistory",
+        "OnboardingQR",
+        "SettingsDiagnostics"
+    ]
 
     @Test("Existing-install settings migration applies once and only to targeted keys")
     func existingInstallSettingsMigrationAppliesOnce() throws {
@@ -331,7 +344,7 @@ struct SettingsConfigurationTests {
             "allowed_device_list_disabled_explanation",
         ]
 
-        let strings = try loadStringCatalog()
+        let strings = try loadAllAppStringCatalogs()
 
         for key in requiredKeys {
             let keyEntry = try #require(strings[key] as? [String: Any], "Missing localization key: \(key)")
@@ -354,7 +367,7 @@ struct SettingsConfigurationTests {
         var staleKeys: [String] = []
         var newUnits: [String] = []
 
-        for catalogName in ["Localizable", "AppShortcuts"] {
+        for catalogName in appStringCatalogNames {
             let strings = try loadStringCatalog(named: catalogName)
 
             staleKeys += strings.compactMap { key, rawEntry -> String? in
@@ -892,9 +905,21 @@ struct SettingsConfigurationTests {
     }
 
     private func loadStringCatalog(named catalogName: String = "Localizable") throws -> [String: Any] {
-        let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/Assets/\(catalogName).xcstrings"))
+        let data = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/Assets/Localization/\(catalogName).xcstrings"))
         let jsonObject = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
         return try #require(jsonObject["strings"] as? [String: Any])
+    }
+
+    private func loadAllAppStringCatalogs() throws -> [String: Any] {
+        var mergedStrings: [String: Any] = [:]
+        for catalogName in appStringCatalogNames {
+            let strings = try loadStringCatalog(named: catalogName)
+            for (key, value) in strings {
+                #expect(mergedStrings[key] == nil, "Duplicate localization key across string catalogs: \(key)")
+                mergedStrings[key] = value
+            }
+        }
+        return mergedStrings
     }
 
     private func loadSettingsBundleStrings(locale: String) throws -> [String: String] {

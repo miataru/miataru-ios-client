@@ -61,8 +61,10 @@ miataruApp.swift
 │   ├── iPhone/
 │   ├── iPad/
 │   └── Mac/
+├── Assets/
+│   └── Localization/
 ├── miataruWidgets/
-└── Assets/
+└── miataruTests/
 ```
 
 ## Core Domains
@@ -124,6 +126,10 @@ The first App Intents layer prepares configured Miataru devices as user-friendly
 `FindPersonLocationIntent` fetches the latest server location on demand through `MiataruAppAPI.getLocation`, reuses cached placemark context from `DeviceLocationCacheStore`, and returns privacy-friendly dialog text. `OpenRouteToPersonIntent` fetches the same latest location and opens Apple Maps with a destination coordinate. Dialogs and route URLs avoid DeviceKeys, raw DeviceIDs, and full API responses.
 
 The prepared snippet view is not currently wired to `ShowsSnippetView` because the locally available AppIntents API marks that protocol as iOS 26+. Place entities and the "is person near place" shortcut are deferred until a real persisted places source exists.
+
+### Localization
+
+App string catalogs live under `Assets/Localization/` and are split by feature area. Existing themed catalogs should be used for future localized strings whenever they match the owning feature; otherwise add a new themed `.xcstrings` catalog in that folder and use explicit table names from Swift. `AppShortcuts.xcstrings` stays limited to shortcut trigger phrases with `${applicationName}` while App Intent metadata and dialogs belong in `AppIntents.xcstrings`.
 
 ### Maps and Navigation
 

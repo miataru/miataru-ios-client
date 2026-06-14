@@ -11,24 +11,18 @@ import AppIntents
 import Foundation
 
 struct SaveCurrentPlaceIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_save_current_place_title",
-        defaultValue: "Save Current Place",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_save_current_place_title", defaultValue: "Save Current Place", table: "AppIntents",
         comment: "Title for the App Intent that saves the user's current location as a place"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_save_current_place_description",
-            defaultValue: "Saves your current location as a named Miataru place.",
+        LocalizedStringResource("intent_save_current_place_description", defaultValue: "Saves your current location as a named Miataru place.", table: "AppIntents",
             comment: "Description for the App Intent that saves the user's current location as a place"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_save_current_place_parameter_device",
-            defaultValue: "Device",
+        title: LocalizedStringResource("intent_save_current_place_parameter_device", defaultValue: "Device", table: "AppIntents",
             comment: "Parameter title for selecting the tracked device that owns a saved place"
         ),
         optionsProvider: TrackedDeviceOptionsProvider()
@@ -36,18 +30,14 @@ struct SaveCurrentPlaceIntent: AppIntent {
     var device: String
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_save_current_place_parameter_name",
-            defaultValue: "Name",
+        title: LocalizedStringResource("intent_save_current_place_parameter_name", defaultValue: "Name", table: "AppIntents",
             comment: "Parameter title for the saved place name"
         )
     )
     var name: String
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_save_current_place_parameter_radius",
-            defaultValue: "Radius in Meters",
+        title: LocalizedStringResource("intent_save_current_place_parameter_radius", defaultValue: "Radius in Meters", table: "AppIntents",
             comment: "Parameter title for the saved place radius in meters"
         )
     )
@@ -70,9 +60,7 @@ struct SaveCurrentPlaceIntent: AppIntent {
     }
 
     static func dialogText(for place: MiataruPlaceEntity) -> String {
-        let format = NSLocalizedString(
-            "intent_save_current_place_dialog_format",
-            comment: "Dialog after saving a place. Arguments: place name, localized radius."
+        let format = NSLocalizedString("intent_save_current_place_dialog_format", tableName: "AppIntents", comment: "Dialog after saving a place. Arguments: place name, localized radius."
         )
         return String.localizedStringWithFormat(
             format,
@@ -83,24 +71,18 @@ struct SaveCurrentPlaceIntent: AppIntent {
 }
 
 struct ListPlacesIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_list_places_title",
-        defaultValue: "List Places",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_list_places_title", defaultValue: "List Places", table: "AppIntents",
         comment: "Title for the App Intent that lists saved places"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_list_places_description",
-            defaultValue: "Returns saved Miataru places without exposing their raw coordinates.",
+        LocalizedStringResource("intent_list_places_description", defaultValue: "Returns saved Miataru places without exposing their raw coordinates.", table: "AppIntents",
             comment: "Description for the App Intent that lists saved places"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_list_places_parameter_device",
-            defaultValue: "Device",
+        title: LocalizedStringResource("intent_list_places_parameter_device", defaultValue: "Device", table: "AppIntents",
             comment: "Parameter title for selecting the tracked device whose places should be listed"
         ),
         optionsProvider: TrackedDeviceOptionsProvider()
@@ -121,12 +103,10 @@ struct ListPlacesIntent: AppIntent {
 
     static func dialogText(for places: [MiataruPlaceEntity]) -> String {
         guard !places.isEmpty else {
-            return NSLocalizedString("intent_list_places_dialog_empty", comment: "Dialog when there are no saved places")
+            return NSLocalizedString("intent_list_places_dialog_empty", tableName: "AppIntents", comment: "Dialog when there are no saved places")
         }
 
-        let format = NSLocalizedString(
-            "intent_list_places_dialog_count_format",
-            comment: "Dialog when listing saved places. Arguments: place count, localized list of place names."
+        let format = NSLocalizedString("intent_list_places_dialog_count_format", tableName: "AppIntents", comment: "Dialog when listing saved places. Arguments: place count, localized list of place names."
         )
         let names = ListFormatter.localizedString(byJoining: places.map(\.name))
         return String.localizedStringWithFormat(format, places.count, names)
@@ -134,24 +114,18 @@ struct ListPlacesIntent: AppIntent {
 }
 
 struct IsDeviceNearPlaceIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_is_device_near_place_title",
-        defaultValue: "Check Device Near Place",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_is_device_near_place_title", defaultValue: "Check Device Near Place", table: "AppIntents",
         comment: "Title for the App Intent that checks whether a device is near a saved place"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_is_device_near_place_description",
-            defaultValue: "Checks whether a visible tracked device is inside a saved place radius.",
+        LocalizedStringResource("intent_is_device_near_place_description", defaultValue: "Checks whether a visible tracked device is inside a saved place radius.", table: "AppIntents",
             comment: "Description for the App Intent that checks whether a device is near a saved place"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_is_device_near_place_parameter_device",
-            defaultValue: "Device",
+        title: LocalizedStringResource("intent_is_device_near_place_parameter_device", defaultValue: "Device", table: "AppIntents",
             comment: "Parameter title for selecting a tracked device for a place proximity check"
         ),
         optionsProvider: TrackedDeviceOptionsProvider()
@@ -159,9 +133,7 @@ struct IsDeviceNearPlaceIntent: AppIntent {
     var device: String
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_is_device_near_place_parameter_place",
-            defaultValue: "Place",
+        title: LocalizedStringResource("intent_is_device_near_place_parameter_place", defaultValue: "Place", table: "AppIntents",
             comment: "Parameter title for selecting a saved place for a proximity check"
         )
     )
@@ -185,14 +157,10 @@ struct IsDeviceNearPlaceIntent: AppIntent {
     static func dialogText(for status: IntentPlaceProximityStatus) -> String {
         let format: String
         if status.isNear {
-            format = NSLocalizedString(
-                "intent_is_device_near_place_dialog_near_format",
-                comment: "Dialog when a device is near a saved place. Arguments: device display name, place name, distance, radius."
+            format = NSLocalizedString("intent_is_device_near_place_dialog_near_format", tableName: "AppIntents", comment: "Dialog when a device is near a saved place. Arguments: device display name, place name, distance, radius."
             )
         } else {
-            format = NSLocalizedString(
-                "intent_is_device_near_place_dialog_not_near_format",
-                comment: "Dialog when a device is not near a saved place. Arguments: device display name, place name, distance, radius."
+            format = NSLocalizedString("intent_is_device_near_place_dialog_not_near_format", tableName: "AppIntents", comment: "Dialog when a device is not near a saved place. Arguments: device display name, place name, distance, radius."
             )
         }
         return String.localizedStringWithFormat(
@@ -206,24 +174,18 @@ struct IsDeviceNearPlaceIntent: AppIntent {
 }
 
 struct FindDevicesNearPlaceIntent: AppIntent {
-    static var title: LocalizedStringResource = LocalizedStringResource(
-        "intent_find_devices_near_place_title",
-        defaultValue: "Find Devices Near Place",
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_find_devices_near_place_title", defaultValue: "Find Devices Near Place", table: "AppIntents",
         comment: "Title for the App Intent that finds devices near a saved place"
     )
     static var description = IntentDescription(
-        LocalizedStringResource(
-            "intent_find_devices_near_place_description",
-            defaultValue: "Finds visible tracked devices inside a saved place radius.",
+        LocalizedStringResource("intent_find_devices_near_place_description", defaultValue: "Finds visible tracked devices inside a saved place radius.", table: "AppIntents",
             comment: "Description for the App Intent that finds devices near a saved place"
         )
     )
     static var openAppWhenRun: Bool = false
 
     @Parameter(
-        title: LocalizedStringResource(
-            "intent_find_devices_near_place_parameter_place",
-            defaultValue: "Place",
+        title: LocalizedStringResource("intent_find_devices_near_place_parameter_place", defaultValue: "Place", table: "AppIntents",
             comment: "Parameter title for selecting a saved place for finding nearby devices"
         )
     )
@@ -243,16 +205,12 @@ struct FindDevicesNearPlaceIntent: AppIntent {
 
     static func dialogText(for statuses: [IntentPlaceProximityStatus], placeName: String) -> String {
         guard !statuses.isEmpty else {
-            let format = NSLocalizedString(
-                "intent_find_devices_near_place_dialog_none_format",
-                comment: "Dialog when no devices are near a saved place. Argument: place name."
+            let format = NSLocalizedString("intent_find_devices_near_place_dialog_none_format", tableName: "AppIntents", comment: "Dialog when no devices are near a saved place. Argument: place name."
             )
             return String.localizedStringWithFormat(format, placeName)
         }
 
-        let format = NSLocalizedString(
-            "intent_find_devices_near_place_dialog_found_format",
-            comment: "Dialog when devices are near a saved place. Arguments: localized device name list, place name."
+        let format = NSLocalizedString("intent_find_devices_near_place_dialog_found_format", tableName: "AppIntents", comment: "Dialog when devices are near a saved place. Arguments: localized device name list, place name."
         )
         let deviceNames = statuses.map {
             IntentStatusFormatting.spokenDisplayName(displayName: $0.displayName, deviceID: $0.deviceID)

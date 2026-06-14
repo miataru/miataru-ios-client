@@ -20,7 +20,7 @@ struct GroupRowView: View {
                 Text(group.groupName)
                     .font(.headline)
                     .foregroundColor(colorScheme == .light ? .black : .white)
-                Text("\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? NSLocalizedString("device", comment: "GroupRow Device singular") : NSLocalizedString("devices", comment: "GroupRow Device plural"))")
+                Text(verbatim: "\(group.deviceIDs.count) \(group.deviceIDs.count == 1 ? NSLocalizedString("device", tableName: "Devices", comment: "GroupRow Device singular") : NSLocalizedString("devices", tableName: "Devices", comment: "GroupRow Device plural"))")
                     .font(.caption)
                     .foregroundColor(colorScheme == .light ? Color.black.opacity(0.6) : Color.white.opacity(0.7))
             }
@@ -29,7 +29,7 @@ struct GroupRowView: View {
         .padding(.vertical, 4)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(group.groupName))
-        .accessibilityValue(Text(String(format: NSLocalizedString("group_row_num_devices", comment: "Accessibility value expressing how many devices are in the group"), group.deviceIDs.count)))
+        .accessibilityValue(Text(String(format: NSLocalizedString("group_row_num_devices", tableName: "Groups", comment: "Accessibility value expressing how many devices are in the group"), group.deviceIDs.count)))
     }
 }
 

@@ -32,12 +32,19 @@ miataru/
 ├── Networking/                      # API wrappers, retry, outbox
 ├── Notifications/                   # Unknown visitor and frequent-background notifications
 ├── SettingsManagers/                # Settings, stores, caches, widget sync, cleanup
-├── Assets/                          # String catalogs, sounds, icons, onboarding assets
+├── Assets/                          # Localization catalogs, sounds, icons, onboarding assets
+│   └── Localization/                # Themed .xcstrings catalogs
 ├── miataruWidgets/                  # WidgetKit extension
 ├── miataruTests/                    # Unit tests
 ├── miataruUITests/                  # Functional UI tests
 └── miataruScreenshotUITests/        # Screenshot UI tests
 ```
+
+## Localization
+
+App string catalogs live in `miataru/miataru/Assets/Localization/` and are split by feature area (`AppIntents`, `Devices`, `LocationTracking`, `MapNavigationHistory`, `SettingsDiagnostics`, and related catalogs). New or changed app strings should go into the existing themed catalog that owns the feature and Swift call sites should use the matching explicit table name. Create a new themed `.xcstrings` catalog in that folder when a new feature area does not fit an existing catalog.
+
+`AppShortcuts.xcstrings` is reserved for App Shortcut trigger phrases with `${applicationName}`. App Intent titles, descriptions, parameters, summaries, dialogs, entity text, errors, and shortcut tile titles belong in `AppIntents.xcstrings`. System Settings strings remain under `SettingsManagers/App Settings/Settings.bundle/*.lproj/Root.strings` and should stay synchronized with matching in-app strings.
 
 ## Core Components
 

@@ -247,7 +247,7 @@ struct TimelineRangeSlider: View {
             .background(Color.primary.opacity(0.08), in: Capsule())
             .position(x: x, y: trackCenterY - 24)
         }
-        .accessibilityLabel(Text(NSLocalizedString("history_timeline_scrub_handle", comment: "Scrub handle for history timeline")))
+        .accessibilityLabel(Text(NSLocalizedString("history_timeline_scrub_handle", tableName: "MapNavigationHistory", comment: "Scrub handle for history timeline")))
     }
 
     private func formattedTime(_ timestamp: Double) -> String {

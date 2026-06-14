@@ -177,7 +177,7 @@ struct iPhone_GroupMapView: View {
             if groupDeviceIDs.isEmpty {
                 VStack {
                     Spacer()
-                    Text("group_empty_add_devices_message")
+                    Text("group_empty_add_devices_message", tableName: "Groups")
                         .font(.title3)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -526,26 +526,26 @@ struct iPhone_GroupMapView: View {
                                             editingDeviceID = deviceID
                                             showEditDeviceSheet = true
                                         } label: {
-                                            Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                                            Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device"), systemImage: "pencil")
                                         }
                                         if deviceID != thisDeviceIDManager.shared.deviceID {
                                             Button {
                                                 navigationDeviceID = deviceID
                                                 showNavigationSheet = true
                                             } label: {
-                                                Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                                             }
                                         }
                                         Button {
                                             historyDeviceID = deviceID
                                             showHistoryView = true
                                         } label: {
-                                            Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                                            Label(NSLocalizedString("show_history", tableName: "MapNavigationHistory", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                         }
                                     }
                                     .accessibilityLabel(Text(annotationID))
                                     .accessibilityValue(Text(deviceTimestamps[deviceID].map { relativeTimeString(from: $0, to: now, unitsStyle: .full) } ?? ""))
-                                    .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", comment: "Opens the selected device details on the map")))
+                                    .accessibilityHint(Text(NSLocalizedString("map_marker_open_details", tableName: "MapNavigationHistory", comment: "Opens the selected device details on the map")))
                                     .accessibilityAddTraits(.isButton)
                             }
                             .offset(y: 35)
@@ -580,7 +580,7 @@ struct iPhone_GroupMapView: View {
             )
         }
         .confirmationDialog(
-            Text(NSLocalizedString("map_device_quick_actions_title", comment: "Title for device actions when tapping near a marker")),
+            Text(NSLocalizedString("map_device_quick_actions_title", tableName: "MapNavigationHistory", comment: "Title for device actions when tapping near a marker")),
             isPresented: $showQuickActionsDialog,
             titleVisibility: .visible
         ) {
@@ -589,26 +589,26 @@ struct iPhone_GroupMapView: View {
                     editingDeviceID = deviceID
                     showEditDeviceSheet = true
                 } label: {
-                    Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                    Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device"), systemImage: "pencil")
                 }
                 if deviceID != thisDeviceIDManager.shared.deviceID {
                     Button {
                         navigationDeviceID = deviceID
                         showNavigationSheet = true
                     } label: {
-                        Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                        Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                     }
                 }
                 Button {
                     historyDeviceID = deviceID
                     showHistoryView = true
                 } label: {
-                    Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                    Label(NSLocalizedString("show_history", tableName: "MapNavigationHistory", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                 }
             }
         } message: {
             if let deviceID = quickActionDeviceID {
-                Text(String(format: NSLocalizedString("map_device_quick_actions_message", comment: "Message showing the device name the actions will affect"), deviceDisplayName(for: deviceID)))
+                Text(String(format: NSLocalizedString("map_device_quick_actions_message", tableName: "MapNavigationHistory", comment: "Message showing the device name the actions will affect"), deviceDisplayName(for: deviceID)))
             }
         }
     }
@@ -670,7 +670,7 @@ struct iPhone_GroupMapView: View {
     private func groupEditButton() -> some View {
         NavigationLink(destination: iPhone_GroupDetailView(group: group)) {
             Image(systemName: "pencil")
-                .accessibilityLabel(Text(NSLocalizedString("group_detailview_edit", comment: "Edit group details")))
+                .accessibilityLabel(Text(NSLocalizedString("group_detailview_edit", tableName: "Groups", comment: "Edit group details")))
         }
     }
     
@@ -684,7 +684,7 @@ struct iPhone_GroupMapView: View {
                 // No devices: No server request, no error message
                 return
             }
-            showErrorOverlay("Invalid server URL or no devices in group", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+            showErrorOverlay("Invalid server URL or no devices in group", NSLocalizedString("server_or_deviceid_invalid", tableName: "SettingsDiagnostics", comment: "Error: Server or DeviceID invalid"))
             return
         }
         let minShimmerDuration: TimeInterval = 1.5
@@ -727,7 +727,7 @@ struct iPhone_GroupMapView: View {
             let missingIDs = Set(groupDeviceIDs).subtracting(foundIDs)
             for missingID in missingIDs {
                 let deviceName = deviceStore.devices.first(where: { $0.DeviceID == missingID })?.DeviceName ?? missingID
-                let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", comment: "Could not fetch location for device: %@"), deviceName)
+                let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", tableName: "Groups", comment: "Could not fetch location for device: %@"), deviceName)
                 showErrorOverlay("No location data for device: \(missingID)", userMessage)
             }
         } catch {
@@ -774,12 +774,12 @@ struct iPhone_GroupMapView: View {
                         }
                     default:
                         let deviceName = deviceStore.devices.first(where: { $0.DeviceID == deviceID })?.DeviceName ?? deviceID
-                        let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", comment: "Could not fetch location for device: %@"), deviceName)
+                        let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", tableName: "Groups", comment: "Could not fetch location for device: %@"), deviceName)
                         showErrorOverlay("Failed to fetch location for device: \(deviceID)", userMessage)
                     }
                 } catch {
                     let deviceName = deviceStore.devices.first(where: { $0.DeviceID == deviceID })?.DeviceName ?? deviceID
-                    let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", comment: "Could not fetch location for device: %@"), deviceName)
+                    let userMessage = String(format: NSLocalizedString("group_map_could_fetch_device_location", tableName: "Groups", comment: "Could not fetch location for device: %@"), deviceName)
                     showErrorOverlay("Failed to fetch location for device: \(deviceID)", userMessage)
                 }
             }
@@ -880,17 +880,17 @@ struct iPhone_GroupMapView: View {
     private func handleAPIError(_ error: MiataruAPIClient.APIError) {
         switch error {
         case .invalidURL:
-            showErrorOverlay("Invalid server URL", NSLocalizedString("server_url_invalid", comment: "The server URL is invalid."))
+            showErrorOverlay("Invalid server URL", NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid."))
         case .invalidResponse(_):
-            showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
+            showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", tableName: "SettingsDiagnostics", comment: "The server response was invalid."))
         case .encodingError(let err):
             debugLog("[iPhone_GroupMapView] Suppressed encoding error overlay while fetching locations: \(err.localizedDescription)")
         case .decodingError(let err):
-            showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
+            showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", tableName: "SettingsDiagnostics", comment: "Error processing the server response."))
         case .requestFailed(let err):
-            showErrorOverlay("Network error: \(err.localizedDescription)", NSLocalizedString("network_error", comment: "Network error. Please check your internet connection."))
+            showErrorOverlay("Network error: \(err.localizedDescription)", NSLocalizedString("network_error", tableName: "SettingsDiagnostics", comment: "Network error. Please check your internet connection."))
         case .serverError(_, let message):
-            let userMessage = String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+            let userMessage = String(format: NSLocalizedString("server_error", tableName: "SettingsDiagnostics", comment: "Server error: %@"), message)
             showErrorOverlay("Server error: \(message)", userMessage)
         }
     }

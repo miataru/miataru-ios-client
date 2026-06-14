@@ -24,9 +24,9 @@ struct iPad_GroupDetailView: View {
 
     var body: some View {
         List {
-            Section(header: Text("group_name_section")) {
+            Section(header: Text("group_name_section", tableName: "Groups")) {
                 HStack {
-                    TextField("group_name_textfield", text: $groupNameField)
+                    TextField(String(localized: "group_name_textfield", table: "Groups"), text: $groupNameField)
                         .onTapGesture {
                             previousGroupName = group.groupName
                         }
@@ -41,7 +41,7 @@ struct iPad_GroupDetailView: View {
                         }
                 }
             }
-            Section(header: Text("group_member_devices")) {
+            Section(header: Text("group_member_devices", tableName: "Groups")) {
                 ForEach(deviceStore.devices) { device in
                     HStack {
                         DeviceRowView(
@@ -61,14 +61,14 @@ struct iPad_GroupDetailView: View {
                         Button(role: .destructive) {
                             group.removeDevice(device.DeviceID)
                         } label: {
-                            Label("remove_from_group", systemImage: "minus.circle")
+                            Label(String(localized: "remove_from_group", table: "Groups"), systemImage: "minus.circle")
                         }
                     }
                     .swipeActions(edge: .leading) {
                         Button {
                             editingDevice = device
                         } label: {
-                            Label("edit_device", systemImage: "pencil").labelStyle(.titleAndIcon)
+                            Label(String(localized: "edit_device", table: "Devices"), systemImage: "pencil").labelStyle(.titleAndIcon)
                         }
                         .tint(.blue)
                     }
@@ -90,13 +90,13 @@ struct iPad_GroupDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(NSLocalizedString("cancel", comment: "Cancel button to discard changes and dismiss the view")) {
+                Button(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel button to discard changes and dismiss the view")) {
                     cancelChanges()
                     presentationMode.wrappedValue.dismiss()
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(NSLocalizedString("save", comment: "Save button to save changes and dismiss the view")) {
+                Button(NSLocalizedString("save", tableName: "Common", comment: "Save button to save changes and dismiss the view")) {
                     saveChanges()
                     presentationMode.wrappedValue.dismiss()
                 }

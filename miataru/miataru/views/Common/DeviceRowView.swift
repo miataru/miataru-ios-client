@@ -139,7 +139,7 @@ struct DeviceRowView: View {
 
     private var ambiguousDeviceIDText: String {
         String(
-            format: NSLocalizedString("device_row_duplicate_name_device_id", comment: "Device row subtitle shown when multiple devices have the same display name."),
+            format: NSLocalizedString("device_row_duplicate_name_device_id", tableName: "Devices", comment: "Device row subtitle shown when multiple devices have the same display name."),
             shortenedDeviceID(device.DeviceID)
         )
     }
@@ -167,11 +167,11 @@ struct DeviceRowView: View {
     /// Returns the subtitle string for the device row: last seen + distance
     private func subtitleText(from cached: CachedDeviceLocation?) -> String {
         guard let cached = cached else {
-            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-            let never = NSLocalizedString("device_row_never", comment: "Default value for never seen device")
-            let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
-            let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
-            let unknown = NSLocalizedString("device_row_unknown", comment: "Default value for unknown distance")
+            let lastSeen = NSLocalizedString("device_row_last_seen", tableName: "Devices", comment: "Label for the last seen time of a device in the device list row")
+            let never = NSLocalizedString("device_row_never", tableName: "Devices", comment: "Default value for never seen device")
+            let separator = NSLocalizedString("device_row_separator", tableName: "Devices", comment: "Separator between last seen and distance in device row subtitle")
+            let distanceLabel = NSLocalizedString("device_row_distance", tableName: "Devices", comment: "Label for the distance to the device in the device list row")
+            let unknown = NSLocalizedString("device_row_unknown", tableName: "Devices", comment: "Default value for unknown distance")
             return "\(lastSeen): \(never) \(separator) \(distanceLabel): \(unknown)"
         }
         // Relative time
@@ -182,7 +182,7 @@ struct DeviceRowView: View {
         let relativeTimeWithOffset = timezoneOffset != nil ? "\(relativeTime) (\(timezoneOffset!))" : relativeTime
         // Distance calculation
         guard let myCached = cache.getLocation(for: thisDeviceIDManager.shared.deviceID) else {
-            let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
+            let lastSeen = NSLocalizedString("device_row_last_seen", tableName: "Devices", comment: "Label for the last seen time of a device in the device list row")
             return "\(lastSeen): \(relativeTimeWithOffset)"
         }
         let deviceLoc = CLLocation(latitude: cached.latitude, longitude: cached.longitude)
@@ -196,16 +196,16 @@ struct DeviceRowView: View {
         }
         let formattedDistance: String
         if usesMetric {
-            let meterUnit = NSLocalizedString("device_row_meter_unit", comment: "Unit for meters in device row distance display")
-            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", comment: "Unit for kilometers in device row distance display")
+            let meterUnit = NSLocalizedString("device_row_meter_unit", tableName: "Devices", comment: "Unit for meters in device row distance display")
+            let kilometerUnit = NSLocalizedString("device_row_kilometer_unit", tableName: "Devices", comment: "Unit for kilometers in device row distance display")
             if distance < 1000 {
                 formattedDistance = String(format: "%.0f %@", distance, meterUnit)
             } else {
                 formattedDistance = String(format: "%d %@", Int(round(distance / 1000)), kilometerUnit)
             }
         } else {
-            let feetUnit = NSLocalizedString("device_row_feet_unit", comment: "Unit for feet in device row distance display (imperial)")
-            let milesUnit = NSLocalizedString("device_row_miles_unit", comment: "Unit for miles in device row distance display (imperial)")
+            let feetUnit = NSLocalizedString("device_row_feet_unit", tableName: "Devices", comment: "Unit for feet in device row distance display (imperial)")
+            let milesUnit = NSLocalizedString("device_row_miles_unit", tableName: "Devices", comment: "Unit for miles in device row distance display (imperial)")
             let distanceInFeet = distance / 0.3048
             let distanceInMiles = distance / 1609.34
             if distanceInFeet > 528 { // More than 1/10 mile
@@ -214,9 +214,9 @@ struct DeviceRowView: View {
                 formattedDistance = String(format: "%.0f %@", distanceInFeet, feetUnit)
             }
         }
-        let separator = NSLocalizedString("device_row_separator", comment: "Separator between last seen and distance in device row subtitle")
-        let lastSeen = NSLocalizedString("device_row_last_seen", comment: "Label for the last seen time of a device in the device list row")
-        let distanceLabel = NSLocalizedString("device_row_distance", comment: "Label for the distance to the device in the device list row")
+        let separator = NSLocalizedString("device_row_separator", tableName: "Devices", comment: "Separator between last seen and distance in device row subtitle")
+        let lastSeen = NSLocalizedString("device_row_last_seen", tableName: "Devices", comment: "Label for the last seen time of a device in the device list row")
+        let distanceLabel = NSLocalizedString("device_row_distance", tableName: "Devices", comment: "Label for the distance to the device in the device list row")
         return "\(lastSeen): \(relativeTimeWithOffset) \(separator) \(distanceLabel): \(formattedDistance)"
     }
 
@@ -233,7 +233,7 @@ struct DeviceRowView: View {
         // Add altitude if available
         if let altitude = cached?.altitude {
             let (altitudeValue, altitudeUnit) = formatAltitude(altitude)
-            let altitudeLabel = NSLocalizedString("altitude_label", comment: "Altitude label/abbreviation for display in device row")
+            let altitudeLabel = NSLocalizedString("altitude_label", tableName: "MapNavigationHistory", comment: "Altitude label/abbreviation for display in device row")
             if !placemarkText.isEmpty {
                 placemarkText += " (\(altitudeLabel): \(altitudeValue) \(altitudeUnit))"
             } else {
@@ -254,13 +254,13 @@ struct DeviceRowView: View {
         
         if usesMetric {
             let altitudeValue = String(format: "%.0f", altitudeInMeters)
-            let altitudeUnit = NSLocalizedString("altitude_meters", comment: "Altitude in meters")
+            let altitudeUnit = NSLocalizedString("altitude_meters", tableName: "MapNavigationHistory", comment: "Altitude in meters")
             return (altitudeValue, altitudeUnit)
         } else {
             // Convert meters to feet (1 meter = 3.28084 feet)
             let altitudeInFeet = altitudeInMeters * 3.28084
             let altitudeValue = String(format: "%.0f", altitudeInFeet)
-            let altitudeUnit = NSLocalizedString("altitude_feet", comment: "Altitude in feet")
+            let altitudeUnit = NSLocalizedString("altitude_feet", tableName: "MapNavigationHistory", comment: "Altitude in feet")
             return (altitudeValue, altitudeUnit)
         }
     }

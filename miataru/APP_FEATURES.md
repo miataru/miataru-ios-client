@@ -238,7 +238,8 @@ This document describes the current user-facing and developer-facing feature set
 
 **For developers:**
 
-- App strings live primarily in `Assets/Localizable.xcstrings`; system Settings strings live under `Settings.bundle/*.lproj/Root.strings`.
+- App strings live in themed catalogs under `Assets/Localization/*.xcstrings`; system Settings strings live under `Settings.bundle/*.lproj/Root.strings`.
+- New app strings should use the existing themed catalog that owns the feature, or a new themed catalog in `Assets/Localization/` if no current catalog fits. `AppShortcuts.xcstrings` is reserved for shortcut trigger phrases, and App Intent metadata belongs in `AppIntents.xcstrings`.
 - `InfoPlist.strings` exists for all supported app locales.
 - Tests check localization key completeness for settings, Smart frequent explanations/notifications, and unknown visitor alert flows.
 

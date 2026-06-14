@@ -66,7 +66,7 @@ struct BottomAccessoryModifier: ViewModifier {
                         Image(systemName: "person.line.dotted.person.fill")
                             .imageScale(.small)
                             .symbolEffect(.pulse, options: .repeating, isActive: shouldAnimateMutualNavigationSymbol)
-                            .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", comment: "Indicates that both devices are actively navigating to each other")))
+                            .accessibilityLabel(Text(NSLocalizedString("mutual_navigation_active", tableName: "MapNavigationHistory", comment: "Indicates that both devices are actively navigating to each other")))
                     }
                 }
                 .font(.system(size: 14, weight: .regular))
@@ -84,7 +84,7 @@ struct BottomAccessoryModifier: ViewModifier {
                     .font(.system(size: 16, weight: .semibold))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(.red)
-                    .accessibilityLabel(Text(NSLocalizedString("cancel", comment: "Cancel navigation")))
+                    .accessibilityLabel(Text(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel navigation")))
             }
             .padding(10)
             .contentShape(Rectangle())
@@ -111,7 +111,7 @@ struct BottomAccessoryModifier: ViewModifier {
     }
 
     private var routeInfoSeparator: String {
-        NSLocalizedString("device_row_separator", comment: "Separator between route info segments in bottom navigation accessory")
+        NSLocalizedString("device_row_separator", tableName: "Devices", comment: "Separator between route info segments in bottom navigation accessory")
     }
 
     private var shouldAnimateMutualNavigationSymbol: Bool {

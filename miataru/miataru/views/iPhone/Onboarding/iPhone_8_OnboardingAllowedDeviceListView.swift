@@ -29,7 +29,7 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Text("allowed_device_list_title")
+            Text("allowed_device_list_title", tableName: "Devices")
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Image("devicekey")
@@ -38,7 +38,7 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
                 .frame(width: 300)
                 .padding(.horizontal)
                 .accessibilityHidden(true)
-            Text("allowed_device_list_intro_text")
+            Text("allowed_device_list_intro_text", tableName: "Devices")
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -47,14 +47,14 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
-                    Text("allowed_device_list_enabled_status")
+                    Text("allowed_device_list_enabled_status", tableName: "Devices")
                         .font(.body)
                         .foregroundColor(.secondary)
                 }
                 .padding()
             } else if hasDeviceKey {
                 VStack(spacing: 16) {
-                    Button("allowed_device_list_enable_button") {
+                    Button(String(localized: "allowed_device_list_enable_button", table: "Devices")) {
                         Task {
                             await activateFeature()
                         }
@@ -77,12 +77,12 @@ struct iPhone_8_OnboardingAllowedDeviceListView: View {
                 }
                 .padding(.horizontal)
             } else {
-                Button("allowed_device_list_setup_devicekey_button") {
+                Button(String(localized: "allowed_device_list_setup_devicekey_button", table: "Devices")) {
                     showDeviceKeySheet = true
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.blue)
-                .accessibilityHint(Text("allowed_device_list_devicekey_hint"))
+                .accessibilityHint(Text("allowed_device_list_devicekey_hint", tableName: "Devices"))
                 .padding(.horizontal)
             }
             

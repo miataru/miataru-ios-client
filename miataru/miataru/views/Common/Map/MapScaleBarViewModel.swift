@@ -126,11 +126,11 @@ final class MapScaleBarViewModel: ObservableObject {
         if usesMetric {
             if distance > 1000 {
                 // Localized: Kilometer unit for scale bar
-                let format = NSLocalizedString("scalebar_kilometers", comment: "Scale bar: display distance in kilometers")
+                let format = NSLocalizedString("scalebar_kilometers", tableName: "MapNavigationHistory", comment: "Scale bar: display distance in kilometers")
                 return String(format: format, distance / 1000)
             } else {
                 // Localized: Meter unit for scale bar
-                let format = NSLocalizedString("scalebar_meters", comment: "Scale bar: display distance in meters")
+                let format = NSLocalizedString("scalebar_meters", tableName: "MapNavigationHistory", comment: "Scale bar: display distance in meters")
                 return String(format: format, distance)
             }
         } else {
@@ -139,11 +139,11 @@ final class MapScaleBarViewModel: ObservableObject {
             let distanceInMiles = distance / 1609.34
             if distanceInFeet > 528 { // More than 1/10 mile
                 // Localized: Miles unit for scale bar
-                let format = NSLocalizedString("scalebar_miles", comment: "Scale bar: display distance in miles")
+                let format = NSLocalizedString("scalebar_miles", tableName: "MapNavigationHistory", comment: "Scale bar: display distance in miles")
                 return String(format: format, distanceInMiles)
             } else {
                 // Localized: Feet unit for scale bar
-                let format = NSLocalizedString("scalebar_feet", comment: "Scale bar: display distance in feet")
+                let format = NSLocalizedString("scalebar_feet", tableName: "MapNavigationHistory", comment: "Scale bar: display distance in feet")
                 return String(format: format, distanceInFeet)
             }
         }

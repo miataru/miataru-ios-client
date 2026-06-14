@@ -46,7 +46,7 @@ struct IntentDeviceLocation: Sendable, Equatable {
     static func ageText(for timestamp: Date, referenceDate: Date = Date()) -> String {
         let age = max(0, referenceDate.timeIntervalSince(timestamp))
         guard age >= 60 else {
-            return NSLocalizedString("intent_location_age_less_than_minute", comment: "Age text for a location younger than one minute")
+            return NSLocalizedString("intent_location_age_less_than_minute", tableName: "AppIntents", comment: "Age text for a location younger than one minute")
         }
 
         let formatter = DateComponentsFormatter()
@@ -54,7 +54,7 @@ struct IntentDeviceLocation: Sendable, Equatable {
         formatter.maximumUnitCount = 1
         formatter.unitsStyle = .full
         formatter.calendar = Calendar.current
-        return formatter.string(from: age) ?? NSLocalizedString("intent_location_age_unknown", comment: "Fallback age text when a location age cannot be formatted")
+        return formatter.string(from: age) ?? NSLocalizedString("intent_location_age_unknown", tableName: "AppIntents", comment: "Fallback age text when a location age cannot be formatted")
     }
 }
 
@@ -73,25 +73,25 @@ enum IntentLocationError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .noDevicesConfigured:
-            return NSLocalizedString("intent_location_error_no_devices_configured", comment: "Error when no tracked devices are configured")
+            return NSLocalizedString("intent_location_error_no_devices_configured", tableName: "AppIntents", comment: "Error when no tracked devices are configured")
         case .deviceUnavailable:
-            return NSLocalizedString("intent_location_error_device_unavailable", comment: "Error when a selected tracked device is no longer available")
+            return NSLocalizedString("intent_location_error_device_unavailable", tableName: "AppIntents", comment: "Error when a selected tracked device is no longer available")
         case .unauthorized:
-            return NSLocalizedString("intent_location_error_unauthorized", comment: "Error when the user has no current-location access for a device")
+            return NSLocalizedString("intent_location_error_unauthorized", tableName: "AppIntents", comment: "Error when the user has no current-location access for a device")
         case .noLocationAvailable:
-            return NSLocalizedString("intent_location_error_no_location_available", comment: "Error when no location exists for a device")
+            return NSLocalizedString("intent_location_error_no_location_available", tableName: "AppIntents", comment: "Error when no location exists for a device")
         case .networkUnavailable:
-            return NSLocalizedString("intent_location_error_network_unavailable", comment: "Error when the Miataru server cannot be reached")
+            return NSLocalizedString("intent_location_error_network_unavailable", tableName: "AppIntents", comment: "Error when the Miataru server cannot be reached")
         case .invalidServerConfiguration:
-            return NSLocalizedString("intent_location_error_invalid_server_configuration", comment: "Error when the Miataru server URL is invalid")
+            return NSLocalizedString("intent_location_error_invalid_server_configuration", tableName: "AppIntents", comment: "Error when the Miataru server URL is invalid")
         case .userLocationUnavailable:
-            return NSLocalizedString("intent_location_error_user_location_unavailable", comment: "Error when the user's current location is unavailable")
+            return NSLocalizedString("intent_location_error_user_location_unavailable", tableName: "AppIntents", comment: "Error when the user's current location is unavailable")
         case .currentLocationTooOld:
-            return NSLocalizedString("intent_location_error_current_location_too_old", comment: "Error when the user's current location is too old to save as a place")
+            return NSLocalizedString("intent_location_error_current_location_too_old", tableName: "AppIntents", comment: "Error when the user's current location is too old to save as a place")
         case .etaUnavailable:
-            return NSLocalizedString("intent_location_error_eta_unavailable", comment: "Error when a route ETA cannot be calculated")
+            return NSLocalizedString("intent_location_error_eta_unavailable", tableName: "AppIntents", comment: "Error when a route ETA cannot be calculated")
         case .placeUnavailable:
-            return NSLocalizedString("intent_location_error_place_unavailable", comment: "Error when a selected saved place is no longer available")
+            return NSLocalizedString("intent_location_error_place_unavailable", tableName: "AppIntents", comment: "Error when a selected saved place is no longer available")
         }
     }
 }

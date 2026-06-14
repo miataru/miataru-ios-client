@@ -26,7 +26,7 @@ struct iPhone_3_OnboardingServerView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     Spacer()
-                    Text("Choose the server you trust.")
+                    Text("Choose the server you trust.", tableName: "SettingsDiagnostics")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     if keyboardHeight == 0 {
@@ -36,18 +36,18 @@ struct iPhone_3_OnboardingServerView: View {
                             .frame(maxWidth: 300)
                             .padding(.horizontal)
                     }
-                    Text("Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.")
+                    Text("Your location data is stored on a server you trust. You can use the default Miataru server, or enter your own server address.", tableName: "OnboardingQR")
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                    Link("Documentation to setup your own server (GitHub)", destination: URL(string: "https://github.com/miataru/miataru-server")!)
+                    Link(String(localized: "Documentation to setup your own server (GitHub)", table: "SettingsDiagnostics"), destination: URL(string: "https://github.com/miataru/miataru-server")!)
                         .font(.footnote)
                         .foregroundStyle(.link)
                         .padding(.bottom, 8)
 
-                    Picker("Server", selection: $useDefaultServer) {
-                        Text("Use Default Server").tag(true)
-                        Text("Enter Custom Server").tag(false)
+                    Picker(String(localized: "Server", table: "SettingsDiagnostics"), selection: $useDefaultServer) {
+                        Text("Use Default Server", tableName: "SettingsDiagnostics").tag(true)
+                        Text("Enter Custom Server", tableName: "SettingsDiagnostics").tag(false)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.horizontal)
@@ -61,7 +61,7 @@ struct iPhone_3_OnboardingServerView: View {
                     }
                     VStack(alignment: .leading, spacing: 32) {
                         HStack {
-                            TextField("Custom server URL (must start with https://)", text: $customServerURL)
+                            TextField(String(localized: "Custom server URL (must start with https://)", table: "SettingsDiagnostics"), text: $customServerURL)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .autocapitalization(.none)
                                 .disableAutocorrection(true)
@@ -94,7 +94,7 @@ struct iPhone_3_OnboardingServerView: View {
                             }
                         }
                         if showURLError && !useDefaultServer {
-                            Text("Please enter a valid https server URL.")
+                            Text("Please enter a valid https server URL.", tableName: "SettingsDiagnostics")
                                 .foregroundColor(.red)
                                 .font(.caption)
                                 .padding(.horizontal)

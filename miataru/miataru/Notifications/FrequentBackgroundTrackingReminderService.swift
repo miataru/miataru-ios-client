@@ -142,14 +142,14 @@ actor FrequentBackgroundTrackingReminderService {
         let content = UNMutableNotificationContent()
         content.title = NSLocalizedString(
             "frequent_background_location_battery_auto_disabled_notification_title",
-            tableName: nil,
+            tableName: "LocationTracking",
             bundle: .main,
             value: "Background updates switched to standard",
             comment: "Notification title shown when low battery automatically disables frequent background tracking"
         )
         let bodyFormat = NSLocalizedString(
             "frequent_background_location_battery_auto_disabled_notification_body_format",
-            tableName: nil,
+            tableName: "LocationTracking",
             bundle: .main,
             value: "Battery is at %@ and reached the %@ limit. Miataru turned off more frequent background updates and is now using standard mode.",
             comment: "Notification body explaining that low battery disabled frequent background tracking"
@@ -189,33 +189,23 @@ actor FrequentBackgroundTrackingReminderService {
 
         let content = UNMutableNotificationContent()
         if isActive {
-            content.title = NSLocalizedString(
-                "smart_frequent_background_activated_notification_title",
-                comment: "Notification title shown when smart frequent background tracking turns frequent updates on"
+            content.title = NSLocalizedString("smart_frequent_background_activated_notification_title", tableName: "LocationTracking", comment: "Notification title shown when smart frequent background tracking turns frequent updates on"
             )
-            content.body = NSLocalizedString(
-                "smart_frequent_background_activated_notification_body",
-                comment: "Notification body explaining that movement activated smart frequent background tracking"
+            content.body = NSLocalizedString("smart_frequent_background_activated_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that movement activated smart frequent background tracking"
             )
             content.userInfo = [
                 Self.notificationTypeUserInfoKey: Self.smartFrequentActivatedNotificationType
             ]
             content.sound = MiataruNotificationSounds.smartFrequentActivated
         } else {
-            content.title = NSLocalizedString(
-                "smart_frequent_background_deactivated_notification_title",
-                comment: "Notification title shown when smart frequent background tracking returns to standard mode"
+            content.title = NSLocalizedString("smart_frequent_background_deactivated_notification_title", tableName: "LocationTracking", comment: "Notification title shown when smart frequent background tracking returns to standard mode"
             )
             switch deactivationReason {
             case .inactivity:
-                content.body = NSLocalizedString(
-                    "smart_frequent_background_deactivated_notification_body",
-                    comment: "Notification body explaining that inactivity stopped smart frequent background tracking"
+                content.body = NSLocalizedString("smart_frequent_background_deactivated_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that inactivity stopped smart frequent background tracking"
                 )
             case .restartRecovery:
-                content.body = NSLocalizedString(
-                    "smart_frequent_background_restart_recovery_notification_body",
-                    comment: "Notification body explaining that app restart returned smart frequent background tracking to standard mode"
+                content.body = NSLocalizedString("smart_frequent_background_restart_recovery_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that app restart returned smart frequent background tracking to standard mode"
                 )
             }
             content.userInfo = [
@@ -291,13 +281,9 @@ actor FrequentBackgroundTrackingReminderService {
         }
 
         let content = UNMutableNotificationContent()
-        content.title = NSLocalizedString(
-            "frequent_background_location_reminder_notification_title",
-            comment: "Notification title reminding the user that never-expiring frequent background tracking is still active"
+        content.title = NSLocalizedString("frequent_background_location_reminder_notification_title", tableName: "LocationTracking", comment: "Notification title reminding the user that never-expiring frequent background tracking is still active"
         )
-        content.body = NSLocalizedString(
-            "frequent_background_location_reminder_notification_body",
-            comment: "Notification body explaining that tapping opens Advanced Options to disable frequent background tracking"
+        content.body = NSLocalizedString("frequent_background_location_reminder_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that tapping opens Advanced Options to disable frequent background tracking"
         )
         content.sound = .default
         content.userInfo = [
@@ -334,13 +320,9 @@ actor FrequentBackgroundTrackingReminderService {
         await notifier.removePendingNotificationRequests(withIdentifiers: [Self.expirationNotificationIdentifier])
 
         let content = UNMutableNotificationContent()
-        content.title = NSLocalizedString(
-            "frequent_background_location_expired_notification_title",
-            comment: "Notification title shown when temporary frequent background tracking has automatically ended"
+        content.title = NSLocalizedString("frequent_background_location_expired_notification_title", tableName: "LocationTracking", comment: "Notification title shown when temporary frequent background tracking has automatically ended"
         )
-        content.body = NSLocalizedString(
-            "frequent_background_location_expired_notification_body",
-            comment: "Notification body explaining that Miataru returned to standard background tracking"
+        content.body = NSLocalizedString("frequent_background_location_expired_notification_body", tableName: "LocationTracking", comment: "Notification body explaining that Miataru returned to standard background tracking"
         )
         content.sound = .default
         content.userInfo = [

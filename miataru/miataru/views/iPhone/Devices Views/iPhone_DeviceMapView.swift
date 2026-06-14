@@ -460,29 +460,29 @@ struct iPhone_DeviceMapView: View {
             }
         }
         .confirmationDialog(
-            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? "") : NSLocalizedString("device_actions", comment: "Actions for the selected device"),
+            selectedActionDevice?.DeviceName.isEmpty == false ? (selectedActionDevice?.DeviceName ?? "") : NSLocalizedString("device_actions", tableName: "Devices", comment: "Actions for the selected device"),
             isPresented: $showDeviceActionDialog,
             titleVisibility: .visible
         ) {
             if let actionDevice = selectedActionDevice {
-                Button(NSLocalizedString("edit_device", comment: "Edit this device")) {
+                Button(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device")) {
                     triggerEdit(for: actionDevice.DeviceID)
                 }
                 if actionDevice.DeviceID != thisDeviceIDManager.shared.deviceID {
-                    Button(NSLocalizedString("navigation", comment: "Navigate to this device")) {
+                    Button(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device")) {
                         triggerNavigation(for: actionDevice.DeviceID)
                     }
                 }
-                Button(NSLocalizedString("show_history", comment: "Show device history")) {
+                Button(NSLocalizedString("show_history", tableName: "MapNavigationHistory", comment: "Show device history")) {
                     triggerHistory(for: actionDevice)
                 }
             }
-            Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) { }
+            Button(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel"), role: .cancel) { }
         }
         .sheet(item: $devicePickerData) { pickerData in
             let _ = print("Sheet content closure evaluated: pickerData.devices.count = \(pickerData.devices.count), devices: \(pickerData.devices.map { $0.DeviceName })")
             VStack(spacing: 0) {
-                Text(NSLocalizedString("select_device", comment: "Select a device to show actions"))
+                Text(NSLocalizedString("select_device", tableName: "Devices", comment: "Select a device to show actions"))
                     .font(.headline)
                     .padding(.top, 16)
                 List {
@@ -495,7 +495,7 @@ struct iPhone_DeviceMapView: View {
                                     .foregroundStyle(Color.primary)
                                 if device.DeviceID == deviceID {
                                     Spacer()
-                                    Text(NSLocalizedString("current_device", comment: "Current device"))
+                                    Text(NSLocalizedString("current_device", tableName: "Devices", comment: "Current device"))
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -506,7 +506,7 @@ struct iPhone_DeviceMapView: View {
                 .onAppear {
                     print("List onAppear: pickerData.devices.count = \(pickerData.devices.count)")
                 }
-                Button(NSLocalizedString("cancel", comment: "Cancel"), role: .cancel) {
+                Button(NSLocalizedString("cancel", tableName: "Common", comment: "Cancel"), role: .cancel) {
                     devicePickerData = nil
                 }
                 .padding()
@@ -596,7 +596,7 @@ struct iPhone_DeviceMapView: View {
                         .controlSize(.large)
 
                     VStack(spacing: 4) {
-                        Text(NSLocalizedString("history_loading", comment: "History loading indicator"))
+                        Text(NSLocalizedString("history_loading", tableName: "MapNavigationHistory", comment: "History loading indicator"))
                             .font(.headline)
                             .multilineTextAlignment(.center)
 
@@ -625,7 +625,7 @@ struct iPhone_DeviceMapView: View {
             .zIndex(30)
             .transition(animationsAllowed ? .opacity : .identity)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel(Text(NSLocalizedString("history_loading", comment: "History loading indicator")))
+            .accessibilityLabel(Text(NSLocalizedString("history_loading", tableName: "MapNavigationHistory", comment: "History loading indicator")))
         }
     }
     
@@ -697,7 +697,7 @@ struct iPhone_DeviceMapView: View {
                                 .zIndex(1)
                                 .accessibilityLabel(Text(device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName))
                                 .accessibilityAddTraits(.isButton)
-                                .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", comment: "Open actions for this device")))
+                                .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", tableName: "MapNavigationHistory", comment: "Open actions for this device")))
                                 .onTapGesture {
                                     handleDeviceTap(deviceID: device.DeviceID, coordinate: coordinate)
                                 }
@@ -705,19 +705,19 @@ struct iPhone_DeviceMapView: View {
                                     Button {
                                         triggerEdit(for: device.DeviceID)
                                     } label: {
-                                        Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                                        Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device"), systemImage: "pencil")
                                     }
                                     if device.DeviceID != thisDeviceIDManager.shared.deviceID {
                                         Button {
                                             triggerNavigation(for: device.DeviceID)
                                         } label: {
-                                            Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                            Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                                         }
                                     }
                                     Button {
                                         triggerHistory(for: device)
                                     } label: {
-                                        Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                                        Label(NSLocalizedString("show_history", tableName: "MapNavigationHistory", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                     }
                                 }
                         }
@@ -785,7 +785,7 @@ struct iPhone_DeviceMapView: View {
                                             .zIndex(1)
                                             .accessibilityLabel(Text(other.DeviceName.isEmpty ? other.DeviceID : other.DeviceName))
                                             .accessibilityAddTraits(.isButton)
-                                            .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", comment: "Open actions for this device")))
+                                            .accessibilityHint(Text(NSLocalizedString("open_device_actions_hint", tableName: "MapNavigationHistory", comment: "Open actions for this device")))
                                             .onTapGesture {
                                                 handleDeviceTap(deviceID: other.DeviceID, coordinate: coord)
                                             }
@@ -793,19 +793,19 @@ struct iPhone_DeviceMapView: View {
                                                 Button {
                                                     triggerEdit(for: other.DeviceID)
                                                 } label: {
-                                                    Label(NSLocalizedString("edit_device", comment: "Edit this device"), systemImage: "pencil")
+                                                    Label(NSLocalizedString("edit_device", tableName: "Devices", comment: "Edit this device"), systemImage: "pencil")
                                                 }
                                                 if other.DeviceID != thisDeviceIDManager.shared.deviceID {
                                                     Button {
                                                         triggerNavigation(for: other.DeviceID)
                                                     } label: {
-                                                        Label(NSLocalizedString("navigation", comment: "Navigate to this device"), systemImage: "location")
+                                                        Label(NSLocalizedString("navigation", tableName: "MapNavigationHistory", comment: "Navigate to this device"), systemImage: "location")
                                                     }
                                                 }
                                                 Button {
                                                     triggerHistory(for: other)
                                                 } label: {
-                                                    Label(NSLocalizedString("show_history", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
+                                                    Label(NSLocalizedString("show_history", tableName: "MapNavigationHistory", comment: "Show device history"), systemImage: "clock.arrow.circlepath")
                                                 }
                                             }
                                     }
@@ -880,13 +880,13 @@ struct iPhone_DeviceMapView: View {
             Image(systemName: "arrow.clockwise")
                 .symbolEffect(.rotate.clockwise.byLayer, options: .nonRepeating, isActive: isUpdating)
         }
-        .accessibilityLabel(Text(NSLocalizedString("refresh_location", comment: "Refresh the device location now")))
-        .accessibilityHint(Text(NSLocalizedString("refresh_location_hint", comment: "Fetches the latest location and resets zoom if configured")))
+        .accessibilityLabel(Text(NSLocalizedString("refresh_location", tableName: "MapNavigationHistory", comment: "Refresh the device location now")))
+        .accessibilityHint(Text(NSLocalizedString("refresh_location_hint", tableName: "MapNavigationHistory", comment: "Fetches the latest location and resets zoom if configured")))
     }
     // Fetches the latest location for the device from the server
     private func fetchLocation(resetZoomToSettings: Bool = false) async {
         guard let url = URL(string: settings.miataruServerURL), !deviceID.isEmpty else {
-            showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+            showErrorOverlay("Invalid server URL or DeviceID", NSLocalizedString("server_or_deviceid_invalid", tableName: "SettingsDiagnostics", comment: "Error: Server or DeviceID invalid"))
             return
         }
         let minShimmerDuration: TimeInterval = 1.5
@@ -960,19 +960,19 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             } else {
-                showErrorOverlay("No location data found", NSLocalizedString("no_location_data_found", comment: "No location available"))
+                showErrorOverlay("No location data found", NSLocalizedString("no_location_data_found", tableName: "MapNavigationHistory", comment: "No location available"))
             }
         } catch let error as MiataruAPIClient.APIError {
             // Differentiated error handling
             switch error {
             case .invalidURL:
-                showErrorOverlay("Invalid server URL", NSLocalizedString("server_url_invalid", comment: "The server URL is invalid."))
+                showErrorOverlay("Invalid server URL", NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid."))
             case .invalidResponse(_):
-                showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", comment: "The server response was invalid."))
+                showErrorOverlay("Invalid server response", NSLocalizedString("server_response_invalid", tableName: "SettingsDiagnostics", comment: "The server response was invalid."))
             case .encodingError(let err):
                 debugLog("[iPhone_DeviceMapView] Suppressed encoding error overlay while fetching location: \(err.localizedDescription)")
             case .decodingError(let err):
-                showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", comment: "Error processing the server response."))
+                showErrorOverlay("Error processing the response: \(err.localizedDescription)", NSLocalizedString("decoding_error", tableName: "SettingsDiagnostics", comment: "Error processing the server response."))
             case .requestFailed(_):
                 // Show only the network error icon, not the overlay
                 withAnimation {
@@ -984,11 +984,11 @@ struct iPhone_DeviceMapView: View {
                     }
                 }
             case .serverError(_, let message):
-                let userMessage = String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+                let userMessage = String(format: NSLocalizedString("server_error", tableName: "SettingsDiagnostics", comment: "Server error: %@"), message)
                 showErrorOverlay("Server error: \(message)", userMessage)
             }
         } catch {
-            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", comment: "Error loading location data"))
+            showErrorOverlay(error.localizedDescription, NSLocalizedString("error_loading_locationdata", tableName: "MapNavigationHistory", comment: "Error loading location data"))
         }
     }
 
@@ -1103,7 +1103,7 @@ struct iPhone_DeviceMapView: View {
     private func fetchHistoryBeforeNavigation(for device: KnownDevice) async {
         guard let url = URL(string: settings.miataruServerURL), !device.DeviceID.isEmpty else {
             await MainActor.run {
-                showHistoryLoadErrorOverlay(NSLocalizedString("server_or_deviceid_invalid", comment: "Error: Server or DeviceID invalid"))
+                showHistoryLoadErrorOverlay(NSLocalizedString("server_or_deviceid_invalid", tableName: "SettingsDiagnostics", comment: "Error: Server or DeviceID invalid"))
             }
             return
         }
@@ -1126,7 +1126,7 @@ struct iPhone_DeviceMapView: View {
                 await MainActor.run {
                     DeviceHistoryCacheStore.shared.removeHistory(for: device.DeviceID)
                     errorOverlayManager.show(
-                        message: NSLocalizedString("history_no_data", comment: "No history available placeholder"),
+                        message: NSLocalizedString("history_no_data", tableName: "MapNavigationHistory", comment: "No history available placeholder"),
                         animationsAllowed: animationsAllowed
                     )
                 }
@@ -1146,7 +1146,7 @@ struct iPhone_DeviceMapView: View {
             }
         } catch {
             await MainActor.run {
-                showHistoryLoadErrorOverlay("\(NSLocalizedString("history_load_failed", comment: "Could not load history.")) \(error.localizedDescription)")
+                showHistoryLoadErrorOverlay("\(NSLocalizedString("history_load_failed", tableName: "MapNavigationHistory", comment: "Could not load history.")) \(error.localizedDescription)")
             }
         }
     }
@@ -1154,18 +1154,18 @@ struct iPhone_DeviceMapView: View {
     private func mapHistoryAPIError(_ error: MiataruAPIClient.APIError) -> String? {
         switch error {
         case .invalidURL:
-            return NSLocalizedString("server_url_invalid", comment: "The server URL is invalid.")
+            return NSLocalizedString("server_url_invalid", tableName: "SettingsDiagnostics", comment: "The server URL is invalid.")
         case .invalidResponse(_):
-            return NSLocalizedString("server_response_invalid", comment: "The server response was invalid.")
+            return NSLocalizedString("server_response_invalid", tableName: "SettingsDiagnostics", comment: "The server response was invalid.")
         case .encodingError(let err):
             debugLog("[iPhone_DeviceMapView] Encoding error while loading history: \(err.localizedDescription)")
-            return NSLocalizedString("history_load_failed", comment: "Could not load history.")
+            return NSLocalizedString("history_load_failed", tableName: "MapNavigationHistory", comment: "Could not load history.")
         case .decodingError(let err):
-            return "\(NSLocalizedString("decoding_error", comment: "Error processing the server response.")) \(err.localizedDescription)"
+            return "\(NSLocalizedString("decoding_error", tableName: "SettingsDiagnostics", comment: "Error processing the server response.")) \(err.localizedDescription)"
         case .requestFailed(let err):
-            return "\(NSLocalizedString("network_error", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
+            return "\(NSLocalizedString("network_error", tableName: "SettingsDiagnostics", comment: "Network error. Please check your internet connection.")) \(err.localizedDescription)"
         case .serverError(_, let message):
-            return String(format: NSLocalizedString("server_error", comment: "Server error: %@"), message)
+            return String(format: NSLocalizedString("server_error", tableName: "SettingsDiagnostics", comment: "Server error: %@"), message)
         }
     }
 

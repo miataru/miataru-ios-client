@@ -60,13 +60,13 @@ struct Mac_OnboardingContainerView: View {
             
             HStack {
                 if currentPage > 0 {
-                    Button("Previous") { currentPage -= 1 }
+                    Button(String(localized: "Previous", table: "OnboardingQR")) { currentPage -= 1 }
                 }
                 Spacer()
                 if currentPage < pages.count - 1 {
-                    Button("Next") { currentPage += 1 }
+                    Button(String(localized: "Next", table: "OnboardingQR")) { currentPage += 1 }
                 } else {
-                    Button("Finish") {
+                    Button(String(localized: "Finish", table: "OnboardingQR")) {
                         switch mode {
                         case .postUpdate:
                             UserDefaults.standard.hasShownPostUpdateOnboarding = true
