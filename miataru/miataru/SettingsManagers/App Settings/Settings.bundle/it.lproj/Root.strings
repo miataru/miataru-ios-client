@@ -12,7 +12,10 @@
 "6hours" = "6 ore";
 "12hours" = "12 ore";
 "24hours" = "24 ore";
+"5days" = "5 giorni";
 "7days" = "7 giorni";
+"14days" = "14 giorni";
+"30days" = "30 giorni";
 "activity_type_accuracy_settings_title" = "Sensibilità tracciamento posizione (primo piano)";
 "activity_type_tracking_accuracy_title" = "Modalità di aggiornamento della posizione";
 "activity_type_other" = "Standard (predefinito)";
@@ -109,3 +112,4 @@
 "10minutes" = "10 minuti";
 "15minutes" = "15 minuti";
 "smart_frequent_background_mode_change_notifications_title" = "Notifiche degli aggiornamenti frequenti smart";
+"location_tracking_health_reminder_interval_title" = "Promemoria sul tracciamento";

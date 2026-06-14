@@ -771,7 +771,158 @@ struct FrequentBackgroundTrackingReminderServiceTests {
     }
 }
 
-actor MockFrequentBackgroundTrackingReminderNotifier: FrequentBackgroundTrackingReminderNotifying {
+struct LocationTrackingHealthReminderServiceTests {
+    private static let lastConfirmedActivityDateKey = "location_tracking_health_reminder_last_confirmed_activity_date"
+    private static let scheduledFireDateKey = "location_tracking_health_reminder_scheduled_fire_date"
+
+    @Test("Tracking health reminder schedules one-shot default five-day notification")
+    func trackingHealthReminderSchedulesDefaultFiveDayNotification() async throws {
+        let suiteName = "LocationTrackingHealthReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 20_000)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .notDetermined,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = LocationTrackingHealthReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(locationTrackingEnabled: true, interval: .fiveDays)
+
+        #expect(await notifier.didRequestAuthorization)
+        let request = try #require(await notifier.addedRequests.first)
+        #expect(request.identifier == LocationTrackingHealthReminderService.notificationIdentifier)
+        #expect(request.content.userInfo[LocationTrackingHealthReminderService.notificationTypeUserInfoKey] as? String == LocationTrackingHealthReminderService.notificationType)
+
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == LocationTrackingHealthReminderInterval.fiveDays.timeInterval)
+        #expect(!trigger.repeats)
+        #expect(defaults.object(forKey: Self.lastConfirmedActivityDateKey) as? Date == now)
+        #expect(defaults.object(forKey: Self.scheduledFireDateKey) as? Date == now.addingTimeInterval(LocationTrackingHealthReminderInterval.fiveDays.timeInterval))
+    }
+
+    @Test("Confirmed health activity reschedules from the newest activity date")
+    func confirmedHealthActivityReschedulesFromNewestActivityDate() async throws {
+        let suiteName = "LocationTrackingHealthReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var now = Date(timeIntervalSince1970: 20_000)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = LocationTrackingHealthReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.recordConfirmedActivity(locationTrackingEnabled: true, interval: .sevenDays)
+        now = now.addingTimeInterval(3_600)
+        await service.recordConfirmedActivity(locationTrackingEnabled: true, interval: .sevenDays)
+
+        let addedRequests = await notifier.addedRequests
+        #expect(addedRequests.count == 2)
+        #expect(await notifier.removedPendingIdentifiers.contains(LocationTrackingHealthReminderService.notificationIdentifier))
+
+        let request = try #require(addedRequests.last)
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == LocationTrackingHealthReminderInterval.sevenDays.timeInterval)
+        #expect(defaults.object(forKey: Self.lastConfirmedActivityDateKey) as? Date == now)
+        #expect(defaults.object(forKey: Self.scheduledFireDateKey) as? Date == now.addingTimeInterval(LocationTrackingHealthReminderInterval.sevenDays.timeInterval))
+    }
+
+    @Test("Health reminder refresh preserves the previous confirmed activity date")
+    func healthReminderRefreshPreservesPreviousConfirmedActivityDate() async throws {
+        let suiteName = "LocationTrackingHealthReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 100_000)
+        let lastConfirmedActivity = now.addingTimeInterval(-86_400)
+        defaults.set(lastConfirmedActivity, forKey: Self.lastConfirmedActivityDateKey)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = LocationTrackingHealthReminderService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(locationTrackingEnabled: true, interval: .sevenDays)
+
+        let request = try #require(await notifier.addedRequests.first)
+        let trigger = try #require(request.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == TimeInterval(6 * 24 * 60 * 60))
+        #expect(defaults.object(forKey: Self.lastConfirmedActivityDateKey) as? Date == lastConfirmedActivity)
+        #expect(defaults.object(forKey: Self.scheduledFireDateKey) as? Date == lastConfirmedActivity.addingTimeInterval(LocationTrackingHealthReminderInterval.sevenDays.timeInterval))
+    }
+
+    @Test("Disabled tracking cancels health reminder notifications")
+    func disabledTrackingCancelsHealthReminderNotifications() async throws {
+        let suiteName = "LocationTrackingHealthReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set(Date(timeIntervalSince1970: 100_000), forKey: Self.scheduledFireDateKey)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .notDetermined,
+            pendingRequests: [Self.existingHealthReminderRequest()]
+        )
+        let service = LocationTrackingHealthReminderService(defaults: defaults, notifier: notifier)
+
+        await service.refresh(locationTrackingEnabled: false, interval: .fiveDays)
+
+        #expect(await notifier.didRequestAuthorization == false)
+        #expect(await notifier.addedRequests.isEmpty)
+        #expect(await notifier.removedPendingIdentifiers.contains(LocationTrackingHealthReminderService.notificationIdentifier))
+        #expect(await notifier.removedDeliveredIdentifiers.contains(LocationTrackingHealthReminderService.notificationIdentifier))
+        #expect(defaults.object(forKey: Self.scheduledFireDateKey) == nil)
+    }
+
+    @Test("Denied notification authorization cancels health reminder notifications")
+    func deniedNotificationAuthorizationCancelsHealthReminderNotifications() async throws {
+        let suiteName = "LocationTrackingHealthReminderTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set(Date(timeIntervalSince1970: 100_000), forKey: Self.scheduledFireDateKey)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(
+            initialStatus: .denied,
+            pendingRequests: [Self.existingHealthReminderRequest()]
+        )
+        let service = LocationTrackingHealthReminderService(defaults: defaults, notifier: notifier)
+
+        await service.refresh(locationTrackingEnabled: true, interval: .fiveDays)
+
+        #expect(await notifier.addedRequests.isEmpty)
+        #expect(await notifier.removedPendingIdentifiers.contains(LocationTrackingHealthReminderService.notificationIdentifier))
+        #expect(await notifier.removedDeliveredIdentifiers.contains(LocationTrackingHealthReminderService.notificationIdentifier))
+        #expect(defaults.object(forKey: Self.scheduledFireDateKey) == nil)
+    }
+
+    private static func existingHealthReminderRequest() -> UNNotificationRequest {
+        let content = UNMutableNotificationContent()
+        content.userInfo = [
+            LocationTrackingHealthReminderService.notificationTypeUserInfoKey: LocationTrackingHealthReminderService.notificationType
+        ]
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 600, repeats: false)
+        return UNNotificationRequest(
+            identifier: LocationTrackingHealthReminderService.notificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
+    }
+}
+
+actor MockFrequentBackgroundTrackingReminderNotifier: LocalNotificationNotifying {
     private var status: UNAuthorizationStatus
     private let requestAuthorizationResult: Result<Bool, Error>
     private(set) var didRequestAuthorization: Bool = false

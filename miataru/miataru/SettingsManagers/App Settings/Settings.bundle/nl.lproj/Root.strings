@@ -12,7 +12,10 @@
 "6hours" = "6 uur";
 "12hours" = "12 uur";
 "24hours" = "24 uur";
+"5days" = "5 dagen";
 "7days" = "7 dagen";
+"14days" = "14 dagen";
+"30days" = "30 dagen";
 "activity_type_accuracy_settings_title" = "Locatietrackinggevoeligheid (voorgrond)";
 "activity_type_tracking_accuracy_title" = "Modus voor locatie-updates";
 "activity_type_other" = "Standaard (default)";
@@ -109,3 +112,4 @@
 "10minutes" = "10 minuten";
 "15minutes" = "15 minuten";
 "smart_frequent_background_mode_change_notifications_title" = "Meldingen voor slimme frequente updates";
+"location_tracking_health_reminder_interval_title" = "Herinnering voor trackingcontrole";

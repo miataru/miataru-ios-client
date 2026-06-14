@@ -168,6 +168,10 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_deactivated_notification_title",
             "smart_frequent_background_deactivated_notification_body",
             "smart_frequent_background_waiting_hint",
+            "location_tracking_health_reminder_interval_title",
+            "location_tracking_health_reminder_interval_explanation",
+            "location_tracking_health_reminder_notification_title",
+            "location_tracking_health_reminder_notification_body",
             "frequent_background_location_updates_title",
             "frequent_background_location_updates_manual_explanation",
             "frequent_background_location_updates_battery_warning",
@@ -193,6 +197,10 @@ struct SettingsConfigurationTests {
             "4hours",
             "12hours",
             "24hours",
+            "5days",
+            "7days",
+            "14days",
+            "30days",
             "frequent_background_location_duration_1h_explanation",
             "frequent_background_location_duration_2h_explanation",
             "frequent_background_location_duration_3h_explanation",
@@ -403,6 +411,7 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_speed_detection_gps_only",
             "smart_frequent_background_inactivity_window_title",
             "smart_frequent_background_mode_change_notifications_title",
+            "location_tracking_health_reminder_interval_title",
             "frequent_background_location_updates_title",
             "background_location_distance_filter_title",
             "frequent_background_location_updates_duration_title",
@@ -427,6 +436,10 @@ struct SettingsConfigurationTests {
             "4hours",
             "12hours",
             "24hours",
+            "5days",
+            "7days",
+            "14days",
+            "30days",
             "100m",
             "50m",
             "25m",
@@ -511,6 +524,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundBatteryAutoDisableLevel] as? String == "30")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDeliveryMode] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundVisitorCheckInterval] as? String == "600")
+        #expect(defaultsByKey[SettingsKeys.locationTrackingHealthReminderIntervalDays] as? String == "5")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.preventScreenRotation] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.pulsingMapMarkers] as? Bool == true)
@@ -535,6 +549,12 @@ struct SettingsConfigurationTests {
         })
         #expect(distanceFilterSpecifier["Titles"] as? [String] == ["100m", "50m", "25m", "10m", "5m"])
         #expect(distanceFilterSpecifier["Values"] as? [String] == ["100", "50", "25", "10", "5"])
+
+        let healthReminderSpecifier = try #require(specifiers.first {
+            $0["Key"] as? String == SettingsKeys.locationTrackingHealthReminderIntervalDays
+        })
+        #expect(healthReminderSpecifier["Titles"] as? [String] == ["5days", "7days", "14days", "30days"])
+        #expect(healthReminderSpecifier["Values"] as? [String] == ["5", "7", "14", "30"])
     }
 
     @Test("Frequent background location update settings normalize and expire as expected")
@@ -583,6 +603,10 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundVisitorCheckInterval.tenMinutes.minimumInterval == 600)
         #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue) == 3_600)
         #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)
+
+        #expect(LocationTrackingHealthReminderInterval.fiveDays.timeInterval == 432_000)
+        #expect(LocationTrackingHealthReminderInterval.normalizedRawValue(LocationTrackingHealthReminderInterval.thirtyDays.rawValue) == 30)
+        #expect(LocationTrackingHealthReminderInterval.normalizedRawValue(3) == SettingsDefaultValues.locationTrackingHealthReminderIntervalDays)
     }
 
     @Test("App activation refresh imports external tracking and frequent defaults")
@@ -604,6 +628,7 @@ struct SettingsConfigurationTests {
         defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
         defaults.set("7200", forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration)
         defaults.set("3", forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter)
+        defaults.set("14", forKey: SettingsKeys.locationTrackingHealthReminderIntervalDays)
 
         #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
         #expect(manager.trackAndReportLocation)
@@ -611,6 +636,7 @@ struct SettingsConfigurationTests {
         #expect(manager.smartFrequentBackgroundLocationUpdatesEnabled)
         #expect(manager.frequentBackgroundLocationUpdateDuration == FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
         #expect(manager.frequentBackgroundLocationDistanceFilter == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
+        #expect(manager.locationTrackingHealthReminderIntervalDays == LocationTrackingHealthReminderInterval.fourteenDays.rawValue)
         #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == now.addingTimeInterval(7_200))
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
     }

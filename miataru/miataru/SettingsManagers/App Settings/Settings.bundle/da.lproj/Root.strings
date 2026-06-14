@@ -12,7 +12,10 @@
 "6hours" = "6 timer";
 "12hours" = "12 timer";
 "24hours" = "24 timer";
+"5days" = "5 dage";
 "7days" = "7 dage";
+"14days" = "14 dage";
+"30days" = "30 dage";
 "activity_type_accuracy_settings_title" = "Følsomhed for lokationssporing (forgrund)";
 "activity_type_tracking_accuracy_title" = "Tilstand for positionsopdatering";
 "activity_type_other" = "Standard (standard)";
@@ -109,3 +112,4 @@
 "10minutes" = "10 minutter";
 "15minutes" = "15 minutter";
 "smart_frequent_background_mode_change_notifications_title" = "Notifikationer for smarte hyppige opdateringer";
+"location_tracking_health_reminder_interval_title" = "Sundhedspåmindelse";

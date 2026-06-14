@@ -39,6 +39,7 @@ enum SettingsKeys {
     static let frequentBackgroundBatteryAutoDisableLevel = "frequent_background_battery_auto_disable_level"
     static let frequentBackgroundLocationDeliveryMode = "frequent_background_location_delivery_mode"
     static let frequentBackgroundVisitorCheckInterval = "frequent_background_visitor_check_interval"
+    static let locationTrackingHealthReminderIntervalDays = "location_tracking_health_reminder_interval_days"
     static let autoRefreshDeviceList = "auto_refresh_device_list"
     static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
     static let showCurrentSpeedOnMap = "show_current_speed_on_map"
@@ -88,6 +89,7 @@ enum SettingsDefaultValues {
     static let frequentBackgroundBatteryAutoDisableLevel = 30
     static let frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.immediate.rawValue
     static let frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.tenMinutes.rawValue
+    static let locationTrackingHealthReminderIntervalDays = LocationTrackingHealthReminderInterval.fiveDays.rawValue
     static let autoRefreshDeviceList = true
     static let unknownVisitorAlertsEnabled = false
     static let showCurrentSpeedOnMap = true
@@ -130,6 +132,7 @@ enum SettingsDefaultValues {
         SettingsKeys.frequentBackgroundBatteryAutoDisableLevel: String(frequentBackgroundBatteryAutoDisableLevel),
         SettingsKeys.frequentBackgroundLocationDeliveryMode: String(frequentBackgroundLocationDeliveryMode),
         SettingsKeys.frequentBackgroundVisitorCheckInterval: String(frequentBackgroundVisitorCheckInterval),
+        SettingsKeys.locationTrackingHealthReminderIntervalDays: String(locationTrackingHealthReminderIntervalDays),
         SettingsKeys.autoRefreshDeviceList: autoRefreshDeviceList,
         SettingsKeys.unknownVisitorAlertsEnabled: unknownVisitorAlertsEnabled,
         SettingsKeys.showCurrentSpeedOnMap: showCurrentSpeedOnMap,
@@ -296,6 +299,21 @@ enum FrequentBackgroundVisitorCheckInterval: Int, CaseIterable {
 
     static func normalizedRawValue(_ value: Int) -> Int {
         Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundVisitorCheckInterval
+    }
+}
+
+enum LocationTrackingHealthReminderInterval: Int, CaseIterable {
+    case fiveDays = 5
+    case sevenDays = 7
+    case fourteenDays = 14
+    case thirtyDays = 30
+
+    var timeInterval: TimeInterval {
+        TimeInterval(rawValue) * 24 * 60 * 60
+    }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.locationTrackingHealthReminderIntervalDays
     }
 }
 

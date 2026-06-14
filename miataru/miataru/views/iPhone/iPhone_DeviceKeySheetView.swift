@@ -584,6 +584,7 @@ struct iPhone_DeviceKeySheetView: View {
             frequentBackgroundLocationUpdatesExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
             frequentBackgroundLocationDeliveryMode: settings.frequentBackgroundLocationDeliveryMode,
             frequentBackgroundVisitorCheckInterval: settings.frequentBackgroundVisitorCheckInterval,
+            locationTrackingHealthReminderIntervalDays: settings.locationTrackingHealthReminderIntervalDays,
             autoRefreshDeviceList: settings.autoRefreshDeviceList,
             unknownVisitorAlertsEnabled: settings.unknownVisitorAlertsEnabled,
             unknownVisitorAlertsPermissionDenied: settings.unknownVisitorAlertsPermissionDenied,
@@ -633,6 +634,7 @@ struct iPhone_DeviceKeySheetView: View {
         assignIfChanged(\.frequentBackgroundLocationUpdatesExpiresAt, snapshot.frequentBackgroundLocationUpdatesExpiresAt)
         assignIfChanged(\.frequentBackgroundLocationDeliveryMode, snapshot.frequentBackgroundLocationDeliveryMode)
         assignIfChanged(\.frequentBackgroundVisitorCheckInterval, snapshot.frequentBackgroundVisitorCheckInterval)
+        assignIfChanged(\.locationTrackingHealthReminderIntervalDays, snapshot.locationTrackingHealthReminderIntervalDays)
         assignIfChanged(\.autoRefreshDeviceList, snapshot.autoRefreshDeviceList)
         assignIfChanged(\.unknownVisitorAlertsEnabled, snapshot.unknownVisitorAlertsEnabled)
         assignIfChanged(\.unknownVisitorAlertsPermissionDenied, snapshot.unknownVisitorAlertsPermissionDenied)
@@ -900,6 +902,7 @@ private struct SettingsSnapshot {
     let frequentBackgroundLocationUpdatesExpiresAt: Date?
     let frequentBackgroundLocationDeliveryMode: Int
     let frequentBackgroundVisitorCheckInterval: Int
+    let locationTrackingHealthReminderIntervalDays: Int
     let autoRefreshDeviceList: Bool
     let unknownVisitorAlertsEnabled: Bool
     let unknownVisitorAlertsPermissionDenied: Bool

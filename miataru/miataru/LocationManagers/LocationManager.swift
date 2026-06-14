@@ -149,6 +149,7 @@ final class LocationManager: NSObject, ObservableObject {
         settings.ensureFrequentBackgroundLocationUpdatesExpiration()
         scheduleFrequentBackgroundLocationExpirationTimer()
         refreshFrequentBackgroundTrackingReminder()
+        refreshLocationTrackingHealthReminder()
         // Ensure permission state is handled on startup
         ensureAuthorizationIfNeeded()
         applyLocationUpdateMetricsSnapshot(locationUpdateMetricsStore.load())
@@ -181,6 +182,7 @@ final class LocationManager: NSObject, ObservableObject {
             applicationStateContext: .forceForeground,
             refreshExternalSettings: true
         )
+        recordLocationTrackingHealthReminderActivity(reason: "app did become active")
         Task {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
         }
@@ -194,6 +196,7 @@ final class LocationManager: NSObject, ObservableObject {
     @objc private func ownLocationUpdateDidSend() {
         Task { @MainActor in
             self.markServerUpdateSucceeded()
+            self.recordLocationTrackingHealthReminderActivity(reason: "own location update sent")
         }
     }
     
@@ -205,10 +208,20 @@ final class LocationManager: NSObject, ObservableObject {
                 guard let self else { return }
                 if shouldTrack {
                     self.startTracking()
+                    self.recordLocationTrackingHealthReminderActivity(reason: "tracking enabled")
                 } else {
                     self.stopTracking()
+                    self.refreshLocationTrackingHealthReminder()
                 }
                 self.refreshFrequentBackgroundTrackingReminder()
+            }
+            .store(in: &cancellables)
+
+        settings.$locationTrackingHealthReminderIntervalDays
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.refreshLocationTrackingHealthReminder()
             }
             .store(in: &cancellables)
 
@@ -487,6 +500,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
         handleFrequentBackgroundLocationExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
+        refreshLocationTrackingHealthReminder()
         recordForensicRestoreAfterLaunch(trigger: "restore tracking after launch: \(reason)")
 
         guard Self.shouldRestoreTrackingAfterLaunch(
@@ -503,6 +517,7 @@ final class LocationManager: NSObject, ObservableObject {
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
         let didResumeSmartFrequentRuntime = consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: reason)
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
+        recordLocationTrackingHealthReminderActivity(reason: "restore tracking after launch: \(reason)")
         diagnosticsLog.append(
             level: .info,
             event: "restoreTrackingAfterLaunch",
@@ -1515,6 +1530,36 @@ final class LocationManager: NSObject, ObservableObject {
                 expiresAt: expiresAt
             )
         }
+    }
+
+    private func recordLocationTrackingHealthReminderActivity(reason: String) {
+        let locationTrackingEnabled = locationTrackingHealthReminderIsEnabled
+        let interval = settings.locationTrackingHealthReminderIntervalSelection
+
+        Task {
+            await LocationTrackingHealthReminderService.shared.recordConfirmedActivity(
+                locationTrackingEnabled: locationTrackingEnabled,
+                interval: interval
+            )
+        }
+
+        debugLog("[LocationManager] Location tracking health reminder activity recorded: \(reason)")
+    }
+
+    private func refreshLocationTrackingHealthReminder() {
+        let locationTrackingEnabled = locationTrackingHealthReminderIsEnabled
+        let interval = settings.locationTrackingHealthReminderIntervalSelection
+
+        Task {
+            await LocationTrackingHealthReminderService.shared.refresh(
+                locationTrackingEnabled: locationTrackingEnabled,
+                interval: interval
+            )
+        }
+    }
+
+    private var locationTrackingHealthReminderIsEnabled: Bool {
+        settings.trackAndReportLocation
     }
 
     private func notifySmartFrequentBackgroundModeChangeIfEnabled(
@@ -2821,6 +2866,7 @@ final class LocationManager: NSObject, ObservableObject {
             applicationStateContext: .forceForeground,
             refreshExternalSettings: true
         )
+        recordLocationTrackingHealthReminderActivity(reason: "app did enter foreground")
     }
 
     func appDidEnterBackground() {

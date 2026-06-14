@@ -12,7 +12,10 @@
 "6hours" = "6時間";
 "12hours" = "12時間";
 "24hours" = "24時間";
+"5days" = "5日間";
 "7days" = "7日間";
+"14days" = "14日間";
+"30days" = "30日間";
 "activity_type_accuracy_settings_title" = "位置追跡の感度（フォアグラウンド）";
 "activity_type_tracking_accuracy_title" = "位置情報更新モード";
 "activity_type_other" = "標準（デフォルト）";
@@ -109,3 +112,4 @@
 "10minutes" = "10分";
 "15minutes" = "15分";
 "smart_frequent_background_mode_change_notifications_title" = "スマート高頻度更新の通知";
+"location_tracking_health_reminder_interval_title" = "トラッキング確認リマインダー";

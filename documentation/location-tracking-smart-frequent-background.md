@@ -10,6 +10,7 @@ The current model is:
 - Standard background tracking uses significant-change monitoring and remains the battery-saving default.
 - Manual frequent background tracking is an explicit user override with distance, duration, delayed delivery, visitor-check cadence, reminders, expiry, and low-battery safeguards.
 - Smart frequent background tracking is a policy layer that waits in standard mode, activates frequent runtime when movement evidence is strong enough, confirms only after accepted frequent movement, and deactivates or recovers based on inactivity and callback watchdogs.
+- The location tracking health reminder is an enabled-by-default local notification guardrail for users with normal location tracking enabled. It asks the user to reopen Miataru only after no app foreground activity and no successfully sent own-location update occurred within the configured interval.
 
 ## Source Notes Consolidated
 
@@ -29,6 +30,7 @@ This document consolidates:
 - `location-tracking-state-machines-2026-06-07.md`
 - `smart-frequent-accuracy-recovery-2026-06-08.md`
 - `smart-frequent-inactivity-timer-recursion-fix-2026-06-09.md`
+- `location-tracking-health-reminder-2026-06-14.md`
 - `location-manager-modularization-2026-06-08.md`
 - `miataru-retry-outbox-implementation-2026-03-04.md`
 - `notification-sounds-2026-06-07.md`
@@ -393,6 +395,7 @@ User behavior:
 - Upload errors that are probably transient are not shown as immediate destructive failures.
 - Updates can be retried later without rewriting their original metadata.
 - DeviceKey/auth failures still require user recovery.
+- Only direct or flushed own-location updates that were accepted by the server post `.didSendOwnLocationUpdate` and count as confirmed health-reminder activity. Queued and failed sends do not reset the health-reminder clock.
 
 ## Background Recovery And Reboot Hardening
 
@@ -464,17 +467,30 @@ Frequent-background notifications:
 - One-shot expiration notification for finite manual duration.
 - Low-battery auto-disable notification.
 - Optional Smart frequent mode-change notifications.
+- Location tracking health reminder when normal location tracking is enabled but Miataru has not been foregrounded and no own-location update has been successfully sent within the configured interval.
+
+Location tracking health reminder:
+
+- Notification type: `location_tracking_health_reminder`.
+- Settings key: `location_tracking_health_reminder_interval_days`.
+- Interval choices: 5 days default, 7 days, 14 days, 30 days.
+- Confirmed activity is either app launch/foreground activation while tracking is enabled or `.didSendOwnLocationUpdate`.
+- Confirmed activity stores `lastConfirmedActivityDate` and schedules one non-repeating notification for `lastConfirmedActivityDate + interval`.
+- Changing the interval refreshes the pending notification from the persisted confirmed activity date rather than treating the settings change as new activity.
+- Tracking disabled cancels pending and delivered health reminders and does not request notification permission.
+- Notification permission is checked only when tracking is enabled and the service is about to schedule the reminder. If permission is `.notDetermined`, Miataru requests alert/sound permission; if denied, it cancels pending and delivered health reminders.
+- Tapping the notification uses default iOS behavior and only opens Miataru; it is intentionally not routed to Advanced Options.
 
 Smart mode-change notifications are sent only when enabled by the user and notification permission is granted. They fire when Smart activates after detected movement, deactivates after inactivity, or returns to standard after watchdog exhaustion. Manual overrides, disabling Smart, and low-battery auto-disable do not send Smart mode-change notifications.
 
-Notification taps route to Advanced Options.
+Frequent-background reminder, expiration, low-battery, and Smart mode-change notification taps route to Advanced Options. The location tracking health reminder does not.
 
 Custom notification sounds:
 
 - Smart frequent activated: `confirm.caf`
 - Smart frequent deactivated/paused: `cancel.caf`
 - Unknown visitor alert: `confirm.caf`
-- Frequent reminder, expiry, and low-battery notifications keep the default iOS sound.
+- Frequent reminder, expiry, low-battery, and location tracking health reminder notifications keep the default iOS sound.
 
 `MiataruNotificationSounds` centralizes the sound names. The CAF files are copied to the app bundle root so iOS can resolve them by file name.
 
@@ -525,6 +541,6 @@ Validation across the consolidated work included:
 - `plutil -lint "miataru/miataru/SettingsManagers/App Settings/Settings.bundle/Root.plist"`
 - `git diff --check`
 
-Coverage included defaults, Settings.bundle parity, migration, Smart prerequisite normalization, localization completeness, stale/new string-catalog detection, Hybrid/GPS-only speed detection, startup gating, implausible-speed rejection, activation/deactivation policy, manual override behavior, shared frequent interval behavior, persisted counters, Smart notifications, threshold normalization, persisted seeds, chronological batch processing, exit-fence behavior, accuracy recovery, inactivity timer action behavior, diagnostics export privacy, re-arm eligibility, same-build suppression, and outbox defaults.
+Coverage included defaults, Settings.bundle parity, migration, Smart prerequisite normalization, localization completeness, stale/new string-catalog detection, Hybrid/GPS-only speed detection, startup gating, implausible-speed rejection, activation/deactivation policy, manual override behavior, shared frequent interval behavior, persisted counters, Smart notifications, location tracking health-reminder scheduling and permission timing, threshold normalization, persisted seeds, chronological batch processing, exit-fence behavior, accuracy recovery, inactivity timer action behavior, diagnostics export privacy, re-arm eligibility, same-build suppression, and outbox defaults.
 
 Manual real-device validation remains required for exact background cadence and reboot relaunch behavior.

@@ -63,6 +63,14 @@ struct iPhone_AdvancedOptionsView: View {
                         SettingsDescriptionText("smart_frequent_background_locked_by_manual_explanation")
                     }
 
+                    Picker("location_tracking_health_reminder_interval_title", selection: $settings.locationTrackingHealthReminderIntervalDays) {
+                        Text("5days").tag(LocationTrackingHealthReminderInterval.fiveDays.rawValue)
+                        Text("7days").tag(LocationTrackingHealthReminderInterval.sevenDays.rawValue)
+                        Text("14days").tag(LocationTrackingHealthReminderInterval.fourteenDays.rawValue)
+                        Text("30days").tag(LocationTrackingHealthReminderInterval.thirtyDays.rawValue)
+                    }
+                    SettingsDescriptionText("location_tracking_health_reminder_interval_explanation")
+
                     if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                         Picker("smart_frequent_background_speed_threshold_title", selection: $settings.smartFrequentBackgroundSpeedThresholdKmh) {
                             Text("2kmh").tag(2)

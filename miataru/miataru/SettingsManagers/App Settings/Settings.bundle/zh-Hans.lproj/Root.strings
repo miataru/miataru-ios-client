@@ -12,7 +12,10 @@
 "6hours" = "6 小时";
 "12hours" = "12 小时";
 "24hours" = "24 小时";
+"5days" = "5 天";
 "7days" = "7 天";
+"14days" = "14 天";
+"30days" = "30 天";
 "activity_type_accuracy_settings_title" = "位置跟踪灵敏度（前台）";
 "activity_type_tracking_accuracy_title" = "位置更新模式";
 "activity_type_other" = "标准（默认）";
@@ -109,3 +112,4 @@
 "10minutes" = "10 分钟";
 "15minutes" = "15 分钟";
 "smart_frequent_background_mode_change_notifications_title" = "智能频繁更新通知";
+"location_tracking_health_reminder_interval_title" = "跟踪状态提醒";

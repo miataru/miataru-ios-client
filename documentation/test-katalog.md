@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **284** (Unit: 267, UI: 17 incl. 11 screenshot captures)
+- Actively linked app test cases: **289** (Unit: 272, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -155,6 +155,11 @@ Important project observations:
 | UT-FBT-009 | Smart frequent mode-change notifications are immediate and typed | Protect Smart auto-switch notifications | Smart activation/deactivation notifications are immediate, typed, and non-empty | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | High |
 | UT-FBT-010 | Smart frequent mode-change notifications respect denied authorization | Guard denied notification permission | Denied notification authorization prevents Smart mode-change request scheduling | FrequentBackgroundTrackingReminderService | Unit | actor-based notifier mock | Medium |
 | UT-FBT-011 | Smart frequent mode-change notification setting requests permission before enabling | Guard settings permission flow | `.notDetermined` requests notification authorization before the Smart mode-change notification setting is enabled; denial is reported and leaves the setting off | FrequentBackgroundTrackingReminderService / Settings UI binding | Unit | actor-based notifier mock | High |
+| UT-LHR-001 | Tracking health reminder schedules one-shot default five-day notification | Protect default health reminder timing | Enabled location tracking requests notification permission when needed and schedules a typed non-repeating notification 5 days after confirmed activity | LocationTrackingHealthReminderService | Unit | isolated `UserDefaults`, actor-based notifier mock, fixed clock | High |
+| UT-LHR-002 | Confirmed health activity reschedules from newest activity date | Validate launch/send reset behavior | Confirmed app activity records the new timestamp and moves the pending reminder to the selected interval | LocationTrackingHealthReminderService | Unit | isolated `UserDefaults`, actor-based notifier mock, mutable fixed clock | High |
+| UT-LHR-003 | Health reminder refresh preserves previous confirmed activity date | Avoid false resets | Refreshing scheduler state uses the persisted activity date instead of treating queued/failed sends as confirmation | LocationTrackingHealthReminderService | Unit | isolated `UserDefaults`, fixed clock | High |
+| UT-LHR-004 | Disabled tracking cancels health reminder notifications | Cleanup tracking-off path | Disabled location tracking removes pending/delivered health reminders, clears scheduled-fire state, and does not request notification permission | LocationTrackingHealthReminderService | Unit | pending notification mock | High |
+| UT-LHR-005 | Denied notification authorization cancels health reminder notifications | Guard denied permission path | Denied notification permission prevents scheduling and removes stale health reminders | LocationTrackingHealthReminderService | Unit | pending notification mock | High |
 | UT-DSL-001 | Device slogan draft sanitization preserves regular spaces while typing | Protect editable slogan input | Draft sanitization keeps normal spaces so multi-word info text remains typeable | MiataruAppAPI slogan input handling | Unit | Plain strings | High |
 | UT-DSL-002 | Device slogan cleansing trims surrounding whitespace on save | Keep saved slogan normalized | Save sanitization removes leading/trailing whitespace but preserves inner spaces | MiataruAppAPI slogan save handling | Unit | Plain strings | High |
 | UT-SET-001 | Existing-install settings migration applies once and only to targeted keys | Guard one-time upgrade behavior | Migration enables only the targeted booleans and does not reapply after marker is set | SettingsMigration | Unit | isolated `UserDefaults` suite | High |

@@ -10,7 +10,7 @@
 import Foundation
 import UserNotifications
 
-protocol FrequentBackgroundTrackingReminderNotifying {
+protocol LocalNotificationNotifying {
     func authorizationStatus() async -> UNAuthorizationStatus
     func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
     func pendingNotificationRequests() async -> [UNNotificationRequest]
@@ -19,7 +19,7 @@ protocol FrequentBackgroundTrackingReminderNotifying {
     func removeDeliveredNotifications(withIdentifiers identifiers: [String]) async
 }
 
-struct LiveFrequentBackgroundTrackingReminderNotifier: FrequentBackgroundTrackingReminderNotifying {
+struct LiveLocalNotificationNotifier: LocalNotificationNotifying {
     func authorizationStatus() async -> UNAuthorizationStatus {
         await withCheckedContinuation { continuation in
             UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -95,11 +95,11 @@ actor FrequentBackgroundTrackingReminderService {
     }
 
     private let defaults: UserDefaults
-    private let notifier: FrequentBackgroundTrackingReminderNotifying
+    private let notifier: LocalNotificationNotifying
     private let nowProvider: () -> Date
 
     init(defaults: UserDefaults = .standard,
-         notifier: FrequentBackgroundTrackingReminderNotifying = LiveFrequentBackgroundTrackingReminderNotifier(),
+         notifier: LocalNotificationNotifying = LiveLocalNotificationNotifier(),
          nowProvider: @escaping () -> Date = Date.init) {
         self.defaults = defaults
         self.notifier = notifier

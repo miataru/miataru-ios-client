@@ -214,6 +214,30 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>location_tracking_health_reminder_interval_title</string>
+			<key>Key</key>
+			<string>location_tracking_health_reminder_interval_days</string>
+			<key>DefaultValue</key>
+			<string>5</string>
+			<key>Titles</key>
+			<array>
+				<string>5days</string>
+				<string>7days</string>
+				<string>14days</string>
+				<string>30days</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>5</string>
+				<string>7</string>
+				<string>14</string>
+				<string>30</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 				<key>Title</key>
 				<string>frequent_background_location_updates_title</string>
