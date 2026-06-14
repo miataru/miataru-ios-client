@@ -65,6 +65,17 @@ struct IntentETAStatus: Equatable, Sendable {
     let transportMode: IntentTransportMode
 }
 
+struct IntentPlaceProximityStatus: Equatable, Sendable {
+    let deviceID: String
+    let displayName: String
+    let placeID: UUID
+    let placeName: String
+    let radiusMeters: Double
+    let distanceMeters: Double
+    let horizontalAccuracy: Double?
+    let isNear: Bool
+}
+
 enum IntentNavigationDirection: String, AppEnum, Equatable, Sendable {
     case userToDevice
     case deviceToUser

@@ -100,6 +100,73 @@ struct AppIntentsPreparationTests {
         #expect(activity.userInfo?.isEmpty ?? true)
     }
 
+    @Test("Place entity maps and indexed attributes exclude private location data")
+    func placeEntityMapsAndIndexedAttributesExcludePrivateLocationData() {
+        let record = MiataruPlaceRecord(
+            id: UUID(),
+            deviceID: "DEVICE-1",
+            name: "Home",
+            latitude: 52.52,
+            longitude: 13.405,
+            radiusMeters: 150,
+            createdAt: Date(timeIntervalSince1970: 1_800_000_000),
+            updatedAt: Date(timeIntervalSince1970: 1_800_000_000)
+        )
+
+        let entity = MiataruPlaceIntentMetadata.entity(from: record)
+        let attributes = entity.attributeSet
+
+        #expect(entity.id == record.id)
+        #expect(entity.deviceID == "DEVICE-1")
+        #expect(entity.name == "Home")
+        #expect(entity.radiusMeters == 150)
+        #expect(!entity.hideInSpotlight)
+        #expect(attributes.title == "Home")
+        #expect(attributes.displayName == "Home")
+        #expect(attributes.latitude == nil)
+        #expect(attributes.longitude == nil)
+        #expect(attributes.keywords == nil)
+        #expect(attributes.contentDescription?.contains("150") ?? true)
+    }
+
+    @Test("Place user activity annotation is searchable without raw coordinates")
+    func placeUserActivityAnnotationIsSearchableWithoutRawCoordinates() {
+        guard #available(iOS 26.0, *) else { return }
+
+        let entity = MiataruPlaceEntity(id: UUID(), deviceID: "DEVICE-1", name: "Home", radiusMeters: 150)
+        let activity = NSUserActivity(activityType: MiataruPlaceIntentMetadata.userActivityType)
+
+        MiataruPlaceIntentMetadata.annotate(activity, with: entity)
+
+        #expect(activity.title == "Home")
+        #expect(activity.appEntityIdentifier == MiataruPlaceIntentMetadata.entityIdentifier(for: entity))
+        #expect(activity.isEligibleForSearch)
+        #expect(activity.isEligibleForPublicIndexing == false)
+        #expect(activity.isEligibleForHandoff == false)
+        #expect(activity.isEligibleForPrediction == false)
+        #expect(activity.userInfo?.isEmpty ?? true)
+    }
+
+    @Test("Place query resolves exact IDs and case-insensitive names")
+    func placeQueryResolvesExactIDsAndNames() async throws {
+        let homeID = UUID()
+        let officeID = UUID()
+        let query = MiataruPlaceQuery(
+            service: FakePlaceIntentService(
+                places: [
+                    MiataruPlaceEntity(id: homeID, deviceID: "DEVICE-1", name: "Home", radiusMeters: 150),
+                    MiataruPlaceEntity(id: officeID, deviceID: "DEVICE-2", name: "Office", radiusMeters: 250)
+                ]
+            )
+        )
+
+        let exact = try await query.entities(for: [officeID])
+        let matching = try await query.entities(matching: "hom")
+
+        #expect(exact == [MiataruPlaceEntity(id: officeID, deviceID: "DEVICE-2", name: "Office", radiusMeters: 250)])
+        #expect(matching == [MiataruPlaceEntity(id: homeID, deviceID: "DEVICE-1", name: "Home", radiusMeters: 150)])
+    }
+
     @Test("API location payload maps to intent device location")
     func apiLocationPayloadMapsToIntentDeviceLocation() {
         let timestamp = Date(timeIntervalSince1970: 1_780_000_000)
@@ -720,6 +787,124 @@ struct AppIntentsPreparationTests {
         }
     }
 
+    @Test("Saving current place uses current location and rejects stale locations")
+    func savingCurrentPlaceUsesCurrentLocationAndRejectsStaleLocations() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let placeStore = MiataruPlaceStore(fileURL: try temporaryFileURL(named: "places.json"), nowProvider: { now })
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true),
+                    IntentDeviceRecord(id: "DEVICE-2", name: "Daniel", hasCurrentLocationAccess: true)
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(
+                location: IntentUserLocation(latitude: 52.52, longitude: 13.405, timestamp: now)
+            ),
+            placeStore: placeStore,
+            nowProvider: { now }
+        )
+
+        let place = try await service.saveCurrentPlace(deviceID: "device-1", name: "  Home  ", radiusMeters: 10)
+        _ = try await service.saveCurrentPlace(deviceID: "DEVICE-2", name: "  Home  ", radiusMeters: nil)
+
+        #expect(place.deviceID == "DEVICE-1")
+        #expect(place.name == "Home")
+        #expect(place.radiusMeters == MiataruPlaceStore.minimumRadiusMeters)
+        #expect(try await service.knownPlaces(forDeviceID: "DEVICE-1") == [place])
+
+        let staleService = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ]
+            ),
+            currentLocationProvider: FakeCurrentLocationProvider(
+                location: IntentUserLocation(
+                    latitude: 52.52,
+                    longitude: 13.405,
+                    timestamp: now.addingTimeInterval(-IntentLocationService.maximumCurrentLocationAge - 1)
+                )
+            ),
+            placeStore: MiataruPlaceStore(fileURL: try temporaryFileURL(named: "stale-places.json"), nowProvider: { now }),
+            nowProvider: { now }
+        )
+
+        await expectLocationError(.currentLocationTooOld) {
+            _ = try await staleService.saveCurrentPlace(deviceID: "DEVICE-1", name: "Stale", radiusMeters: nil)
+        }
+    }
+
+    @Test("Proximity checks include horizontal accuracy allowance")
+    func proximityChecksIncludeHorizontalAccuracyAllowance() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let placeStore = MiataruPlaceStore(fileURL: try temporaryFileURL(named: "proximity-places.json"), nowProvider: { now })
+        let place = try await placeStore.savePlace(deviceID: "DEVICE-1", name: "Home", latitude: 52.52, longitude: 13.405, radiusMeters: 50)
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "DEVICE-1", name: "Steffi", hasCurrentLocationAccess: true)
+                ],
+                payloads: [
+                    "DEVICE-1": IntentLocationPayload(
+                        deviceID: "DEVICE-1",
+                        latitude: 52.5209,
+                        longitude: 13.405,
+                        timestamp: now,
+                        horizontalAccuracy: 60
+                    )
+                ]
+            ),
+            placeStore: placeStore,
+            nowProvider: { now }
+        )
+
+        let status = try await service.isDeviceNearPlace(deviceID: "DEVICE-1", placeID: place.id)
+
+        #expect(status.isNear)
+        #expect(status.placeName == "Home")
+        #expect(status.radiusMeters == 50)
+        #expect(status.horizontalAccuracy == 60)
+        #expect(status.distanceMeters > 50)
+    }
+
+    @Test("Devices near place excludes hidden devices")
+    func devicesNearPlaceExcludesHiddenDevices() async throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let placeStore = MiataruPlaceStore(fileURL: try temporaryFileURL(named: "visible-places.json"), nowProvider: { now })
+        let place = try await placeStore.savePlace(deviceID: "VISIBLE-1", name: "Hotel", latitude: 52.52, longitude: 13.405, radiusMeters: 150)
+        let service = IntentLocationService(
+            provider: FakeIntentLocationProvider(
+                records: [
+                    IntentDeviceRecord(id: "VISIBLE-1", name: "Daniel", hasCurrentLocationAccess: true),
+                    IntentDeviceRecord(id: "HIDDEN-1", name: "Hidden", hasCurrentLocationAccess: false)
+                ],
+                payloads: [
+                    "VISIBLE-1": IntentLocationPayload(
+                        deviceID: "VISIBLE-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: now,
+                        horizontalAccuracy: nil
+                    ),
+                    "HIDDEN-1": IntentLocationPayload(
+                        deviceID: "HIDDEN-1",
+                        latitude: 52.52,
+                        longitude: 13.405,
+                        timestamp: now,
+                        horizontalAccuracy: nil
+                    )
+                ]
+            ),
+            placeStore: placeStore,
+            nowProvider: { now }
+        )
+
+        let statuses = try await service.devicesNearPlace(placeID: place.id)
+
+        #expect(statuses.map(\.displayName) == ["Daniel"])
+    }
+
     @Test("ETA status uses injected route provider and transport mode")
     func etaStatusUsesInjectedRouteProviderAndTransportMode() async throws {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
@@ -824,6 +1009,37 @@ struct AppIntentsPreparationTests {
         }
     }
 
+    @Test("Place intent dialogs and JSON do not leak identifiers or raw coordinates")
+    func placeIntentDialogsAndJSONDoNotLeakIdentifiersOrRawCoordinates() {
+        let place = MiataruPlaceEntity(id: UUID(), deviceID: "SECRET-DEVICE-ID", name: "Home", radiusMeters: 150)
+        let status = IntentPlaceProximityStatus(
+            deviceID: "SECRET-DEVICE-ID",
+            displayName: "SECRET-DEVICE-ID",
+            placeID: place.id,
+            placeName: place.name,
+            radiusMeters: place.radiusMeters,
+            distanceMeters: 42,
+            horizontalAccuracy: 12,
+            isNear: true
+        )
+
+        let texts = [
+            SaveCurrentPlaceIntent.dialogText(for: place),
+            ListPlacesIntent.dialogText(for: [place]),
+            IsDeviceNearPlaceIntent.dialogText(for: status),
+            FindDevicesNearPlaceIntent.dialogText(for: [status], placeName: place.name),
+            MiataruPlaceIntentFormatting.jsonString(for: [status])
+        ]
+
+        for text in texts {
+            #expect(text.contains("SECRET-DEVICE-ID") == false)
+            #expect(text.contains("52.") == false)
+            #expect(text.contains("13.") == false)
+            #expect(text.contains("DeviceKey") == false)
+            #expect(text.contains("miataruServerURL") == false)
+        }
+    }
+
     @Test("App Intent and shortcut localization keys exist for all app locales")
     func appIntentLocalizationKeysExistForAllAppLocales() throws {
         let localizableData = try Data(contentsOf: repoRootURL().appendingPathComponent("miataru/miataru/Assets/Localizable.xcstrings"))
@@ -846,6 +1062,10 @@ struct AppIntentsPreparationTests {
             "Open Maps route to ${device}",
             "Open Miataru navigation to ${device}",
             "Show location of ${device}",
+            "Save ${name} as a Miataru place for ${device}",
+            "List saved Miataru places for ${device}",
+            "Check whether ${device} is near ${place}",
+            "Find devices near ${place}",
             "Start frequent tracking for ${duration}",
             "Stop frequent tracking"
         ]
@@ -1085,6 +1305,68 @@ struct AppIntentsPreparationTests {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
+    }
+
+    private func temporaryFileURL(named fileName: String) throws -> URL {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("AppIntentsPreparationTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        return directory.appendingPathComponent(fileName)
+    }
+}
+
+private struct FakePlaceIntentService: IntentLocationServicing {
+    let places: [MiataruPlaceEntity]
+
+    func suggestedDevices() async throws -> [TrackedDeviceEntity] {
+        []
+    }
+
+    func device(for id: String) async throws -> TrackedDeviceEntity? {
+        nil
+    }
+
+    func latestLocation(for deviceID: String) async throws -> IntentDeviceLocation {
+        throw IntentLocationError.deviceUnavailable
+    }
+
+    func deviceStatus(for deviceID: String) async throws -> IntentDeviceStatus {
+        throw IntentLocationError.deviceUnavailable
+    }
+
+    func distanceStatus(for deviceID: String) async throws -> IntentDeviceStatus {
+        throw IntentLocationError.deviceUnavailable
+    }
+
+    func etaStatus(for deviceID: String) async throws -> IntentETAStatus {
+        throw IntentLocationError.deviceUnavailable
+    }
+
+    func knownPlaces() async throws -> [MiataruPlaceEntity] {
+        places
+    }
+
+    func knownPlaces(forDeviceID deviceID: String) async throws -> [MiataruPlaceEntity] {
+        places.filter {
+            TrackedDeviceIntentMetadata.normalizedDeviceID($0.deviceID) ==
+            TrackedDeviceIntentMetadata.normalizedDeviceID(deviceID)
+        }
+    }
+
+    func place(for id: UUID) async throws -> MiataruPlaceEntity? {
+        places.first { $0.id == id }
+    }
+
+    func saveCurrentPlace(deviceID: String, name: String, radiusMeters: Double?) async throws -> MiataruPlaceEntity {
+        throw IntentLocationError.userLocationUnavailable
+    }
+
+    func isDeviceNearPlace(deviceID: String, placeID: UUID) async throws -> IntentPlaceProximityStatus {
+        throw IntentLocationError.deviceUnavailable
+    }
+
+    func devicesNearPlace(placeID: UUID) async throws -> [IntentPlaceProximityStatus] {
+        []
     }
 }
 

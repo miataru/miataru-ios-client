@@ -26,8 +26,12 @@ The implemented foundation supports:
 - "Navigate in Miataru": open Miataru directly into internal navigation, with optional route direction, presentation, and transport mode. External `miataru://` links remain valid for Safari and `simctl openurl`.
 - "Start Frequent Tracking": start the manual frequent-background override without turning normal location tracking on, optionally choosing one of the app's supported manual frequent durations.
 - "Stop Frequent Tracking": stop the manual frequent-background override without changing normal location tracking.
+- "Save Current Place": save the user's current location as a named local place for a selected tracked device with a bounded radius.
+- "List Places": return saved places for a selected tracked device without exposing raw coordinates.
+- "Check Device Near Place": check whether one visible authorized device is inside one of its saved place radii.
+- "Find Devices Near Place": return visible authorized devices that are currently near one saved place.
 
-The "Is Device Near Place" idea remains deferred because the app does not yet have a persistent Places data source. When Places exist, build that on `MiataruPlaceEntity`, `MiataruPlaceQuery`, and a dedicated proximity intent rather than hiding place behavior inside the current device-location intents.
+The Places intents are implemented as App Intents but are not promoted as App Shortcut tiles yet. The visible Places UI is planned separately in `Places-Sprint/00-overview-concept.md`.
 
 ## Relevant Models And Services
 
@@ -38,6 +42,8 @@ Relevant models:
 - `KnownDevice`: contains `DeviceName`, `DeviceID`, current-location/history access flags, and display/sort metadata.
 - `KnownDeviceStore.shared.devices`: local source of configured tracked devices.
 - `MiataruLocationData`: API location model with DeviceID, coordinate, accuracy, and timestamp.
+- `MiataruPlaceRecord`: local saved-place model with stable UUID, owning DeviceID, name, coordinate, radius, and timestamps.
+- `MiataruPlaceStore`: Application Support JSON store for device-scoped saved places.
 - `DeviceLocationCacheStore`: cache for last device locations and previously known reverse-geocoding results.
 
 Relevant services:
@@ -48,6 +54,7 @@ Relevant services:
 - `SettingsManager.shared`: source for normal tracking state, DeviceKey lock state, manual frequent-background configuration, duration, and expiration.
 - `LocationManager.shared`: source for current Core Location authorization and the central reconcile path used by both UI and intent actions.
 - `FrequentBackgroundTrackingReminderService`: updated indirectly through existing Settings/LocationManager observers when manual frequent tracking starts or stops.
+- `MiataruPlaceStore.shared`: source for device-scoped saved places used by place query and proximity intents.
 
 ## Implementation Files
 
@@ -64,7 +71,7 @@ App Intents and support types live under the app's `AppIntents/` structure:
   - `IntentFrequentTrackingError`
   - testable controller for starting/stopping manual frequent-background tracking
 - `miataru/miataru/AppIntents/Services/IntentStatusModels.swift`
-  - shared App Intent status, navigation, transport, ETA, and frequent-tracking models
+  - shared App Intent status, navigation, transport, ETA, place-proximity, and frequent-tracking models
 - `miataru/miataru/AppIntents/Services/MiataruAutomationEventStore.swift`
   - bounded local automation event log, filters, exports, and storage metadata
 - `miataru/miataru/AppIntents/Services/MiataruAutomationEventRecorder.swift`
@@ -73,8 +80,10 @@ App Intents and support types live under the app's `AppIntents/` structure:
   - localized summaries, privacy labels, spoken dialogs, and JSON formatting
 - `miataru/miataru/AppIntents/Entities/TrackedDeviceEntity.swift`
 - `miataru/miataru/AppIntents/Entities/TrackedDeviceIntentMetadata.swift`
+- `miataru/miataru/AppIntents/Entities/MiataruPlaceEntity.swift`
 - `miataru/miataru/AppIntents/Queries/TrackedDeviceQuery.swift`
 - `miataru/miataru/AppIntents/Queries/TrackedDeviceOptionsProvider.swift`
+- `miataru/miataru/AppIntents/Queries/MiataruPlaceQuery.swift`
 - `miataru/miataru/AppIntents/Intents/FindPersonLocationIntent.swift`
 - `miataru/miataru/AppIntents/Intents/OpenRouteToPersonIntent.swift`
 - `miataru/miataru/AppIntents/Intents/OpenMiataruNavigationToPersonIntent.swift`
@@ -82,8 +91,10 @@ App Intents and support types live under the app's `AppIntents/` structure:
 - `miataru/miataru/AppIntents/Intents/StopFrequentTrackingIntent.swift`
 - `miataru/miataru/AppIntents/Intents/StatusIntents.swift`
 - `miataru/miataru/AppIntents/Intents/AutomationEventIntents.swift`
+- `miataru/miataru/AppIntents/Intents/PlaceIntents.swift`
 - `miataru/miataru/AppIntents/Views/DeviceLocationSnippetView.swift`
 - `miataru/miataru/AppIntents/MiataruAppShortcutsProvider.swift`
+- `miataru/miataru/SettingsManagers/App Settings/Places/MiataruPlaceStore.swift`
 - `miataru/miataru/Assets/Localizable.xcstrings`
 - `miataru/miataru/Assets/AppShortcuts.xcstrings`
 
@@ -99,11 +110,25 @@ Device selection and visibility:
 - Production intent parameters currently use `TrackedDeviceOptionsProvider` as a dynamic string picker. This avoids a Shortcuts runtime failure where dynamic `AppEntity` selections can be rejected as an unregistered `AppEntity` identifier.
 - The prepared entity/query layer remains in the project so `TrackedDeviceEntity` can be revisited as a direct shortcut parameter when the runtime behavior is stable enough.
 
+Places:
+
+- `MiataruPlaceStore` persists device-scoped saved places to `places.json` in Application Support.
+- Place names are trimmed, required, and unique case/diacritic-insensitively within one owning device. The same name may exist for different devices.
+- Place radius defaults to 150 meters and is clamped to the supported 50-5000 meter range.
+- `SaveCurrentPlaceIntent` uses the current local Core Location value, associates the place with the selected device, and rejects locations older than 15 minutes.
+- `ListPlacesIntent` lists saved places for the selected device.
+- `IsDeviceNearPlaceIntent` rejects mismatched device/place ownership rather than checking a selected device against another device's saved place.
+- `MiataruPlaceEntity` is used directly for place parameters and name search through `MiataruPlaceQuery`.
+- Proximity uses Core Location distance and treats a device as near when `distance <= place radius + horizontal accuracy` when accuracy exists.
+- `FindDevicesNearPlaceIntent` only checks visible devices with current-location access and omits hidden, unauthorized, or locationless devices from results.
+
 Privacy and output:
 
 - Siri/dialog text may include display name, location age, and a coarse place description.
 - Siri/dialog text must not include DeviceID, DeviceKey, raw API responses, or exact implementation details.
 - Apple Maps URLs must contain only destination coordinates and never DeviceID.
+- Place intent dialogs and JSON outputs may include place ID, place name, radius, device display name, distance, and horizontal accuracy, but not raw place coordinates, DeviceKey, server URL, or raw DeviceID. Owning DeviceID is internal scoping metadata and is not returned in place JSON.
+- `MiataruPlaceEntity` Spotlight attributes include only place name and radius text. They do not include latitude, longitude, device presence, watch rules, or callback configuration.
 - Locked-device behavior is not separately reduced yet; all dialog output remains generally data-minimized.
 
 Navigation behavior:
@@ -219,13 +244,16 @@ Error paths:
 7. Run "Start Frequent Tracking" without Always location permission and verify the message that Always access is required.
 8. Simulate or verify low-battery frequent disabling and confirm that frequent status reports the low-battery reason.
 
-Deferred Places validation once Places exist:
+Places manual validation:
 
-1. Create a saved place such as Home or Work.
-2. Search for the proximity action in Shortcuts.
-3. Choose device, place, and radius.
-4. Use the returned Boolean in an automation.
-5. Validate distance calculation against known test coordinates.
+1. Create a saved place such as Home or Work for a specific tracked device.
+2. Confirm `ListPlacesIntent` returns the saved place for that device without raw coordinates.
+3. Create the same place name for a second tracked device and confirm it is allowed there but not duplicated within the first device.
+4. Search for the proximity action in Shortcuts.
+5. Choose a device and one of its saved places.
+6. Use the returned Boolean in an automation.
+7. Validate distance calculation against known test coordinates.
+8. Choose a place owned by another device and confirm the single-device proximity check fails without leaking identifiers.
 
 ## Automated Coverage
 
@@ -241,6 +269,8 @@ Deferred Places validation once Places exist:
 - Shortcuts foreground handoff
 - frequent tracking explicit duration, omitted duration, unlimited duration, renewal, and precondition failures
 - low-battery frequent status
+- place persistence, per-device validation, corrupt-file recovery, entity mapping, query resolution, current-location save, stale-location rejection, proximity calculation, and hidden-device exclusion
+- place intent dialog and JSON privacy
 - on-screen annotation helper privacy filtering
 - App Intent localization completeness
 - parameter-summary localization key coverage
@@ -262,6 +292,7 @@ For the current implemented actions:
 ## Deferrals And Risks
 
 - Add an explicit per-device "Show in Siri/Shortcuts" permission if product requirements demand finer control than `hasCurrentLocationAccess`.
-- Add persisted Places before building place/proximity intents.
+- Build the visible Places UI from `Places-Sprint/00-overview-concept.md`; the current step implements the Places data and App Intents foundation only.
+- Add Miataru-native place watches after the base place model and EventStore behavior are stable.
 - Wire snippet views only when deployment target and AppIntents APIs allow the integration cleanly.
 - Continue manual Siri testing whenever shortcut phrases, dialog text, or entity/parameter registration changes.

@@ -86,11 +86,13 @@ Required coverage:
 Required coverage:
 
 - Place persistence round trip.
+- Device-scoped place validation, including duplicate names rejected within one device and allowed across devices.
 - Radius validation.
 - Place entity query and name search.
 - Proximity calculation with accuracy expansion.
 - Hidden devices excluded.
 - Place Spotlight payload excludes device presence.
+- Place intent output privacy, including no raw coordinates or raw DeviceIDs.
 - Watch transition detection and cooldown once watches are implemented.
 
 ## Manual Validation
@@ -154,4 +156,3 @@ Each stage should be mergeable on its own and should preserve existing App Short
 - Do not promote every App Intent as an App Shortcut.
 - Do not require Siri validation for lower-runtime devices.
 - Do not raise the deployment target as part of the Intent Sprint.
-

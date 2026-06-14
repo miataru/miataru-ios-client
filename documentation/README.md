@@ -19,6 +19,7 @@ The current structure favors living topic references over many small dated notes
 
 - `app-intents-current-shortcuts-and-manual-validation.md` - current Siri/Shortcuts implementation, service boundaries, privacy rules, App Intents test coverage, and manual validation.
 - `Intent-Sprint/` - separate iOS 26 schema-readiness roadmap for App Intents, Entity/Intent Schemas, IndexedEntity/Spotlight, IntentValueQuery, View Annotations, and AppIntentsTesting.
+- `Places-Sprint/` - future Places UI/UX concept, requirements, privacy rules, and watch-planning notes.
 - `location-tracking-smart-frequent-background.md` - tracking resolver, foreground/background modes, manual frequent updates, Smart frequent runtime, diagnostics, retry/outbox behavior, notification sounds, and LocationManager modularization.
 - `navigation-routing-and-mutual-navigation.md` - route camera behavior, heading refresh, mutual navigation UI, live ETA, compact arrival state, route ghost stabilization, and focused navigation.
 - `device-history-cache-map-and-analysis.md` - history loading, cache refresh, user camera priority, and compact speed/altitude analysis.

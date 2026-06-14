@@ -21,7 +21,7 @@ Miataru currently builds with the iOS 26.5 SDK and deploys to iOS 18.6. Any iOS 
 | Entity | Source of truth | Query model | Indexing | Schema decision | Annotation target |
 | --- | --- | --- | --- | --- | --- |
 | `TrackedDeviceEntity` | `KnownDeviceStore` through `IntentLocationService` | Keep `TrackedDeviceQuery`; keep `TrackedDeviceOptionsProvider` for Shortcuts until AppEntity selection is stable | Do not index exact coordinates. Consider indexing only display name and non-sensitive metadata after explicit validation | Keep custom first. Add schema conformance only if the SDK exposes a neutral device schema that does not imply Contacts ownership | Device rows, device detail, map-selected device |
-| `MiataruPlaceEntity` | Future persisted place store | `EntityQuery`, `EntityStringQuery`, later `IntentValueQuery` | Index user-named places when enabled; do not index live device presence | Prefer an Apple place/location schema if it maps to saved places without exposing private coordinates unexpectedly | Place rows, map place markers |
+| `MiataruPlaceEntity` | `MiataruPlaceStore` | `EntityQuery`, `EntityStringQuery`, later `IntentValueQuery` | Index user-named places when enabled; do not index live device presence | Prefer an Apple place/location schema if it maps to saved places without exposing private coordinates unexpectedly | Place rows, map place markers |
 | `MiataruGroupEntity` | `DeviceGroupStore` | `EntityQuery` and name search | Index group names only if groups are user-created and visible in app UI | Keep custom unless a generic collection/group schema fits | Group rows and group map screens |
 | `MiataruRouteEntity` | Route/navigation runtime and `RouteCacheStore` | No broad query in v1; use as return value or current-route status later | Do not index transient routes by default | Keep custom. Apple navigation schemas should be adopted only if they match Miataru's direction/privacy model | Current navigation screen |
 | `MiataruAutomationEventEntity` | Future `MiataruAutomationEventStore` | Event query intents, not global search | Do not index by default. Revisit only for explicit user-visible event summaries | Keep custom | Event log screen if one is added |
@@ -106,3 +106,4 @@ Add or extend tests around:
 - Do not index automation events.
 - Do not adopt a Contacts or messaging schema for tracked devices unless Apple provides a schema that matches Miataru's concept without changing meaning.
 
+Stage note: Step 05 later introduced the device-scoped `MiataruPlaceStore` and `MiataruPlaceEntity` foundation. This deferral remains historical to the entity-foundation stage.

@@ -134,5 +134,5 @@ Implemented coverage:
 
 - Do not add route history summaries in this stage.
 - Do not create a route entity index.
-- Do not add place-based navigation until Places exist.
+- Do not add place-based navigation until the visible Places UI exists and users can inspect/edit saved places in app.
 - Do not make callback automation part of navigation start; record events in Stage 4 first.

@@ -18,8 +18,12 @@ protocol IntentLocationServicing: Sendable {
     func deviceStatus(for deviceID: String) async throws -> IntentDeviceStatus
     func distanceStatus(for deviceID: String) async throws -> IntentDeviceStatus
     func etaStatus(for deviceID: String) async throws -> IntentETAStatus
-    func knownPlaces() async throws -> [Never]
-    func place(for id: String) async throws -> Never?
+    func knownPlaces() async throws -> [MiataruPlaceEntity]
+    func knownPlaces(forDeviceID deviceID: String) async throws -> [MiataruPlaceEntity]
+    func place(for id: UUID) async throws -> MiataruPlaceEntity?
+    func saveCurrentPlace(deviceID: String, name: String, radiusMeters: Double?) async throws -> MiataruPlaceEntity
+    func isDeviceNearPlace(deviceID: String, placeID: UUID) async throws -> IntentPlaceProximityStatus
+    func devicesNearPlace(placeID: UUID) async throws -> [IntentPlaceProximityStatus]
 }
 
 struct IntentDeviceLocation: Sendable, Equatable {
@@ -62,7 +66,9 @@ enum IntentLocationError: LocalizedError, Equatable {
     case networkUnavailable
     case invalidServerConfiguration
     case userLocationUnavailable
+    case currentLocationTooOld
     case etaUnavailable
+    case placeUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -80,8 +86,12 @@ enum IntentLocationError: LocalizedError, Equatable {
             return NSLocalizedString("intent_location_error_invalid_server_configuration", comment: "Error when the Miataru server URL is invalid")
         case .userLocationUnavailable:
             return NSLocalizedString("intent_location_error_user_location_unavailable", comment: "Error when the user's current location is unavailable")
+        case .currentLocationTooOld:
+            return NSLocalizedString("intent_location_error_current_location_too_old", comment: "Error when the user's current location is too old to save as a place")
         case .etaUnavailable:
             return NSLocalizedString("intent_location_error_eta_unavailable", comment: "Error when a route ETA cannot be calculated")
+        case .placeUnavailable:
+            return NSLocalizedString("intent_location_error_place_unavailable", comment: "Error when a selected saved place is no longer available")
         }
     }
 }
@@ -113,19 +123,24 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
     private let currentLocationProvider: any IntentCurrentLocationProviding
     private let routeProvider: any IntentRouteProviding
     private let navigationSettingsProvider: any IntentNavigationSettingsProviding
+    private let placeStore: any MiataruPlaceStoring
     private let nowProvider: @Sendable () -> Date
+
+    static let maximumCurrentLocationAge: TimeInterval = 15 * 60
 
     init(
         provider: any IntentLocationDataProviding = MiataruIntentLocationDataProvider(),
         currentLocationProvider: any IntentCurrentLocationProviding = MiataruIntentCurrentLocationProvider(),
         routeProvider: any IntentRouteProviding = MiataruIntentRouteProvider(),
         navigationSettingsProvider: any IntentNavigationSettingsProviding = MiataruIntentNavigationSettingsProvider(),
+        placeStore: any MiataruPlaceStoring = MiataruPlaceStore.shared,
         nowProvider: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.provider = provider
         self.currentLocationProvider = currentLocationProvider
         self.routeProvider = routeProvider
         self.navigationSettingsProvider = navigationSettingsProvider
+        self.placeStore = placeStore
         self.nowProvider = nowProvider
     }
 
@@ -205,12 +220,80 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         )
     }
 
-    func knownPlaces() async throws -> [Never] {
-        []
+    func knownPlaces() async throws -> [MiataruPlaceEntity] {
+        await placeStore.allPlaces().map(MiataruPlaceIntentMetadata.entity(from:))
     }
 
-    func place(for id: String) async throws -> Never? {
-        nil
+    func knownPlaces(forDeviceID deviceID: String) async throws -> [MiataruPlaceEntity] {
+        let canonicalDeviceID = try await canonicalDeviceID(for: deviceID)
+        return await placeStore.places(forDeviceID: canonicalDeviceID).map(MiataruPlaceIntentMetadata.entity(from:))
+    }
+
+    func place(for id: UUID) async throws -> MiataruPlaceEntity? {
+        await placeStore.place(id: id).map(MiataruPlaceIntentMetadata.entity(from:))
+    }
+
+    func saveCurrentPlace(deviceID: String, name: String, radiusMeters: Double? = nil) async throws -> MiataruPlaceEntity {
+        let now = nowProvider()
+        let canonicalDeviceID = try await canonicalDeviceID(for: deviceID)
+        guard let userLocation = await currentLocationProvider.currentUserLocation() else {
+            throw IntentLocationError.userLocationUnavailable
+        }
+        guard now.timeIntervalSince(userLocation.timestamp) <= Self.maximumCurrentLocationAge else {
+            throw IntentLocationError.currentLocationTooOld
+        }
+        let record = try await placeStore.savePlace(
+            deviceID: canonicalDeviceID,
+            name: name,
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            radiusMeters: radiusMeters
+        )
+        return MiataruPlaceIntentMetadata.entity(from: record)
+    }
+
+    func isDeviceNearPlace(deviceID: String, placeID: UUID) async throws -> IntentPlaceProximityStatus {
+        guard let place = await placeStore.place(id: placeID) else {
+            throw IntentLocationError.placeUnavailable
+        }
+        guard Self.deviceIDsMatch(place.deviceID, deviceID) else {
+            throw IntentLocationError.placeUnavailable
+        }
+        let location = try await latestLocation(for: deviceID)
+        return Self.proximityStatus(for: location, place: place)
+    }
+
+    func devicesNearPlace(placeID: UUID) async throws -> [IntentPlaceProximityStatus] {
+        guard let place = await placeStore.place(id: placeID) else {
+            throw IntentLocationError.placeUnavailable
+        }
+        let records = await visibleDeviceRecords()
+        guard !records.isEmpty else {
+            throw IntentLocationError.noDevicesConfigured
+        }
+
+        var statuses: [IntentPlaceProximityStatus] = []
+        for record in records {
+            do {
+                let location = try await latestLocation(for: record.id)
+                let status = Self.proximityStatus(for: location, place: place)
+                if status.isNear {
+                    statuses.append(status)
+                }
+            } catch let error as IntentLocationError where [
+                .noLocationAvailable,
+                .deviceUnavailable,
+                .unauthorized
+            ].contains(error) {
+                continue
+            }
+        }
+        return statuses.sorted {
+            if $0.distanceMeters != $1.distanceMeters {
+                return $0.distanceMeters < $1.distanceMeters
+            }
+            return $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
+        }
     }
 
     static func entity(from record: IntentDeviceRecord) -> TrackedDeviceEntity {
@@ -260,6 +343,28 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         )
     }
 
+    static func proximityStatus(
+        for location: IntentDeviceLocation,
+        place: MiataruPlaceRecord
+    ) -> IntentPlaceProximityStatus {
+        let deviceLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+        let placeLocation = CLLocation(latitude: place.latitude, longitude: place.longitude)
+        let distanceMeters = deviceLocation.distance(from: placeLocation)
+        let accuracyAllowance = max(location.horizontalAccuracy ?? 0, 0)
+        let isNear = distanceMeters <= place.radiusMeters + accuracyAllowance
+
+        return IntentPlaceProximityStatus(
+            deviceID: location.deviceID,
+            displayName: location.displayName,
+            placeID: place.id,
+            placeName: place.name,
+            radiusMeters: place.radiusMeters,
+            distanceMeters: distanceMeters,
+            horizontalAccuracy: location.horizontalAccuracy,
+            isNear: isNear
+        )
+    }
+
     static func bearingDegrees(from source: IntentCoordinate, to destination: IntentCoordinate) -> Double {
         let sourceLatitude = degreesToRadians(source.latitude)
         let destinationLatitude = degreesToRadians(destination.latitude)
@@ -295,10 +400,25 @@ final class IntentLocationService: IntentLocationServicing, @unchecked Sendable 
         return Self.matchingRecord(in: records, id: id)
     }
 
+    private func canonicalDeviceID(for id: String) async throws -> String {
+        let records = await provider.deviceRecords()
+        guard !records.isEmpty else {
+            throw IntentLocationError.noDevicesConfigured
+        }
+        guard let record = Self.matchingRecord(in: records, id: id) else {
+            throw IntentLocationError.deviceUnavailable
+        }
+        return TrackedDeviceIntentMetadata.trimmedDeviceID(record.id)
+    }
+
     private static func matchingRecord(in records: [IntentDeviceRecord], id: String) -> IntentDeviceRecord? {
         let normalizedID = normalizedDeviceID(id)
         guard !normalizedID.isEmpty else { return nil }
         return records.first { normalizedDeviceID($0.id) == normalizedID }
+    }
+
+    private static func deviceIDsMatch(_ lhs: String, _ rhs: String) -> Bool {
+        normalizedDeviceID(lhs) == normalizedDeviceID(rhs)
     }
 
     private static func normalizedDeviceID(_ deviceID: String) -> String {

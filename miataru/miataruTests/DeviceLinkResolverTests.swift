@@ -213,8 +213,7 @@ struct DeviceLinkResolverTests {
         #expect(coordinator.deviceNavigationOpenRequest?.options == .defaultDeepLink)
         #expect(coordinator.deviceOpenRequest == nil)
         #expect(coordinator.addDeviceRequest == nil)
-        try await Task.sleep(nanoseconds: 50_000_000)
-        let events = await recorder.recordedEvents()
+        let events = await waitForRecordedEvents(recorder, minimumCount: 1)
         #expect(events.map(\.kind) == [.navigationStarted])
         #expect(events.first?.deviceID == canonicalID)
         #expect(events.first?.deviceDisplayName == "Known Navigation Device")
@@ -230,7 +229,7 @@ struct DeviceLinkResolverTests {
         coordinator.openDeviceLink(.navigation(lowercaseUnknownID, options: .defaultDeepLink))
         #expect(coordinator.addDeviceRequest?.deviceID == lowercaseUnknownID)
         #expect(coordinator.addDeviceRequest?.source == .general)
-        try await Task.sleep(nanoseconds: 50_000_000)
+        try await Task.sleep(nanoseconds: 100_000_000)
         let eventsAfterUnknownNavigation = await recorder.recordedEvents()
         #expect(eventsAfterUnknownNavigation.count == 1)
     }
@@ -330,4 +329,20 @@ private actor DeviceLinkAutomationEventRecorder: MiataruAutomationEventRecording
     func recordedEvents() -> [MiataruAutomationEventRecord] {
         events
     }
+}
+
+private func waitForRecordedEvents(
+    _ recorder: DeviceLinkAutomationEventRecorder,
+    minimumCount: Int,
+    attempts: Int = 100
+) async -> [MiataruAutomationEventRecord] {
+    for _ in 0..<attempts {
+        let events = await recorder.recordedEvents()
+        if events.count >= minimumCount {
+            return events
+        }
+        try? await Task.sleep(nanoseconds: 20_000_000)
+    }
+
+    return await recorder.recordedEvents()
 }
