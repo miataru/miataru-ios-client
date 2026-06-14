@@ -19,6 +19,17 @@
 - Keep `AppShortcuts.xcstrings` phrase-only: shortcut trigger phrases with `${applicationName}` belong there, while App Intent titles, parameters, summaries, dialogs, entities, errors, and shortcut tile titles belong in `AppIntents.xcstrings`.
 - Keep Settings.bundle strings in `SettingsManagers/App Settings/Settings.bundle/*.lproj/Root.strings` synchronized with their matching app string-catalog keys where the same setting is shown in-app.
 
+## Token Discipline
+
+- Prefer narrow inspection commands: `rg --files`, targeted `rg`, `sed -n`, `git diff --name-only`, and path-scoped `git status --short -- <paths>`.
+- Avoid full-file reads for large documents, test inventories, string catalogs, generated files, and JSON payloads unless the full content is genuinely needed; start with narrow line ranges or key-specific reads.
+- For `.xcstrings` and other large JSON files, inspect counts, key lists, duplicate checks, or targeted keys with `jq`/small scripts instead of dumping whole files.
+- Use `xcodebuild ... -quiet` for expected-success builds. When investigating failures or warnings, filter output first with focused patterns such as `error:`, `warning:`, `TEST FAILED`, `TEST SUCCEEDED`, or the specific diagnostic text.
+- If a test fails, inspect the focused failure output first and expand to full logs only when the failure summary is insufficient.
+- Split large work into separate turns or commits when it crosses more than one major concern, such as implementation, localization/catalog migration, test infrastructure, documentation cleanup, and warning cleanup.
+- For catalog moves, generated-file changes, and broad refactors, verify with compact summary scripts instead of repeatedly printing long file contents or large diffs.
+- Keep final reports compact: summarize changed areas, verification commands/results, commit hashes, and important caveats. Do not paste long command output unless explicitly requested.
+
 ## Simulator / Test Device Memory
 
 - Always use the dedicated Miataru simulator devices for simulation and testing. Do not run tests against an arbitrary open or booted Simulator window.
