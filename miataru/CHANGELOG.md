@@ -37,6 +37,8 @@ version 3.2.2
 - Added lightweight storage reporting that reads file attributes only for known stores, avoids decoding store contents for size calculations, and refreshes on view appearance, scene activation, and storage-changing actions without timers or filesystem scans.
 - Added focused regression coverage for automation event persistence, pruning, corrupt-file recovery, payload sanitization, no-op persistence avoidance, storage metadata, intent JSON/dialog formatting, event emission helpers, frequent-tracking recorder injection, unknown-visitor success-only recording, storage-usage reporting, and localization completeness.
 - Moved the App-Intents-facing service layer from `miataru/miataru/Services/` into `miataru/miataru/AppIntents/Services/` so entities, queries, intents, support services, and automation event helpers live under one App Intents tree.
+- Added token-sparing test workflow defaults: unit/UI test scripts now keep full `xcodebuild` logs under `artifacts/test-logs/`, print focused summaries by default, preserve `TEST_OUTPUT=full` for deep debugging, and include a compact context-summary helper for broad refactor orientation.
+- Documented agent token-discipline rules for targeted test documentation updates, compact discovery before broad searches/diffs, summary-oriented test polling, and splitting sprawling implementation/test/docs/commit work into smaller phases.
 
 version 3.2.1
 - Changed the default server-side location history retention from 24 hours to 30 minutes across runtime defaults, iOS Settings, and regression coverage.

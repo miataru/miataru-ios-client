@@ -169,7 +169,10 @@ Whenever tests are added, removed, renamed, moved, or materially changed:
 
 1. Update `documentation/test-katalog.md`.
 2. Update `documentation/test-gap-matrix.md`.
-3. Keep counters, coverage notes, and prioritized gaps consistent.
+3. Locate the relevant test ID, suite, component, or backlog row first and update only the affected lines.
+4. Keep counters, coverage notes, and prioritized gaps consistent.
+
+For a single focused regression test, keep the documentation change local to the matching catalog row and gap/backlog entry unless the change materially alters broader coverage counts or priorities.
 
 ## Development Workflow
 
