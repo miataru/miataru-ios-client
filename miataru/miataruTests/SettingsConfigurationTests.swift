@@ -172,6 +172,8 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_speed_detection_explanation",
             "smart_frequent_background_inactivity_window_title",
             "smart_frequent_background_inactivity_window_explanation",
+            "smart_frequent_background_exit_fence_radius_title",
+            "smart_frequent_background_exit_fence_radius_explanation",
             "smart_frequent_background_mode_change_notifications_title",
             "smart_frequent_background_mode_change_notifications_explanation",
             "smart_frequent_background_mode_change_notifications_permission_denied_message",
@@ -281,6 +283,10 @@ struct SettingsConfigurationTests {
             "15kmh",
             "20kmh",
             "30kmh",
+            "75m",
+            "150m",
+            "200m",
+            "300m",
             "5minutes",
             "10minutes",
             "15minutes",
@@ -423,6 +429,7 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_speed_detection_hybrid",
             "smart_frequent_background_speed_detection_gps_only",
             "smart_frequent_background_inactivity_window_title",
+            "smart_frequent_background_exit_fence_radius_title",
             "smart_frequent_background_mode_change_notifications_title",
             "location_tracking_health_reminder_interval_title",
             "frequent_background_location_updates_title",
@@ -453,7 +460,11 @@ struct SettingsConfigurationTests {
             "7days",
             "14days",
             "30days",
+            "300m",
+            "200m",
+            "150m",
             "100m",
+            "75m",
             "50m",
             "25m",
             "2kmh",
@@ -530,6 +541,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh] as? String == "10")
         #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundSpeedDetectionMode] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundInactivityWindow] as? String == "600")
+        #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters] as? String == "150")
         #expect(defaultsByKey[SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationUpdatesEnabled] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDistanceFilter] as? String == "100")
@@ -563,6 +575,12 @@ struct SettingsConfigurationTests {
         #expect(distanceFilterSpecifier["Titles"] as? [String] == ["100m", "50m", "25m", "10m", "5m"])
         #expect(distanceFilterSpecifier["Values"] as? [String] == ["100", "50", "25", "10", "5"])
 
+        let smartExitFenceRadiusSpecifier = try #require(specifiers.first {
+            $0["Key"] as? String == SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters
+        })
+        #expect(smartExitFenceRadiusSpecifier["Titles"] as? [String] == ["300m", "200m", "150m", "100m", "75m", "50m"])
+        #expect(smartExitFenceRadiusSpecifier["Values"] as? [String] == ["300", "200", "150", "100", "75", "50"])
+
         let healthReminderSpecifier = try #require(specifiers.first {
             $0["Key"] as? String == SettingsKeys.locationTrackingHealthReminderIntervalDays
         })
@@ -583,6 +601,14 @@ struct SettingsConfigurationTests {
         #expect(SmartFrequentBackgroundInactivityWindow.tenMinutes.timeInterval == 600)
         #expect(SmartFrequentBackgroundInactivityWindow.normalizedRawValue(SmartFrequentBackgroundInactivityWindow.thirtyMinutes.rawValue) == 1_800)
         #expect(SmartFrequentBackgroundInactivityWindow.normalizedRawValue(123) == SettingsDefaultValues.smartFrequentBackgroundInactivityWindow)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(300) == 300)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(200) == 200)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(150) == 150)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(100) == 100)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(75) == 75)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(50) == 50)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(25) == SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters)
+        #expect(SmartFrequentBackgroundExitFenceRadius.normalized(10) == SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters)
 
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(100) == 100)
         #expect(FrequentBackgroundLocationDistanceFilter.normalized(50) == 50)
@@ -641,6 +667,7 @@ struct SettingsConfigurationTests {
         defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
         defaults.set("7200", forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration)
         defaults.set("3", forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter)
+        defaults.set("200", forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters)
         defaults.set("14", forKey: SettingsKeys.locationTrackingHealthReminderIntervalDays)
 
         #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
@@ -649,8 +676,13 @@ struct SettingsConfigurationTests {
         #expect(manager.smartFrequentBackgroundLocationUpdatesEnabled)
         #expect(manager.frequentBackgroundLocationUpdateDuration == FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
         #expect(manager.frequentBackgroundLocationDistanceFilter == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
+        #expect(manager.smartFrequentBackgroundExitFenceRadiusMeters == 200)
         #expect(manager.locationTrackingHealthReminderIntervalDays == LocationTrackingHealthReminderInterval.fourteenDays.rawValue)
         #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == now.addingTimeInterval(7_200))
+
+        defaults.set("25", forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters)
+        #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
+        #expect(manager.smartFrequentBackgroundExitFenceRadiusMeters == SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters)
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
     }
 

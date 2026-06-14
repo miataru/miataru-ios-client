@@ -31,6 +31,7 @@ enum SettingsKeys {
     static let smartFrequentBackgroundSpeedThresholdKmh = "smart_frequent_background_speed_threshold_kmh"
     static let smartFrequentBackgroundSpeedDetectionMode = "smart_frequent_background_speed_detection_mode"
     static let smartFrequentBackgroundInactivityWindow = "smart_frequent_background_inactivity_window"
+    static let smartFrequentBackgroundExitFenceRadiusMeters = "smart_frequent_background_exit_fence_radius_meters"
     static let smartFrequentBackgroundModeChangeNotificationsEnabled = "smart_frequent_background_mode_change_notifications_enabled"
     static let frequentBackgroundLocationUpdatesEnabled = "frequent_background_location_updates_enabled"
     static let frequentBackgroundLocationDistanceFilter = "frequent_background_location_distance_filter"
@@ -82,6 +83,7 @@ enum SettingsDefaultValues {
     static let smartFrequentBackgroundSpeedThresholdKmh = 10
     static let smartFrequentBackgroundSpeedDetectionMode = SmartFrequentBackgroundSpeedDetectionMode.hybrid.rawValue
     static let smartFrequentBackgroundInactivityWindow = SmartFrequentBackgroundInactivityWindow.tenMinutes.rawValue
+    static let smartFrequentBackgroundExitFenceRadiusMeters = 150
     static let smartFrequentBackgroundModeChangeNotificationsEnabled = false
     static let frequentBackgroundLocationUpdatesEnabled = false
     static let frequentBackgroundLocationDistanceFilter = 100
@@ -125,6 +127,7 @@ enum SettingsDefaultValues {
         SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh: String(smartFrequentBackgroundSpeedThresholdKmh),
         SettingsKeys.smartFrequentBackgroundSpeedDetectionMode: String(smartFrequentBackgroundSpeedDetectionMode),
         SettingsKeys.smartFrequentBackgroundInactivityWindow: String(smartFrequentBackgroundInactivityWindow),
+        SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters: String(smartFrequentBackgroundExitFenceRadiusMeters),
         SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled: smartFrequentBackgroundModeChangeNotificationsEnabled,
         SettingsKeys.frequentBackgroundLocationUpdatesEnabled: frequentBackgroundLocationUpdatesEnabled,
         SettingsKeys.frequentBackgroundLocationDistanceFilter: String(frequentBackgroundLocationDistanceFilter),
@@ -203,6 +206,14 @@ enum SmartFrequentBackgroundInactivityWindow: Int, CaseIterable {
 
     static func normalizedRawValue(_ value: Int) -> Int {
         Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.smartFrequentBackgroundInactivityWindow
+    }
+}
+
+enum SmartFrequentBackgroundExitFenceRadius {
+    static let allowedValues = [300, 200, 150, 100, 75, 50]
+
+    static func normalized(_ value: Int) -> Int {
+        allowedValues.contains(value) ? value : SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters
     }
 }
 

@@ -117,6 +117,16 @@ class SettingsManager: ObservableObject {
             defaults.set(String(smartFrequentBackgroundInactivityWindow), forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow)
         }
     }
+    @Published var smartFrequentBackgroundExitFenceRadiusMeters: Int {
+        didSet {
+            let normalizedValue = SmartFrequentBackgroundExitFenceRadius.normalized(smartFrequentBackgroundExitFenceRadiusMeters)
+            if smartFrequentBackgroundExitFenceRadiusMeters != normalizedValue {
+                smartFrequentBackgroundExitFenceRadiusMeters = normalizedValue
+                return
+            }
+            defaults.set(String(smartFrequentBackgroundExitFenceRadiusMeters), forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters)
+        }
+    }
     @Published var smartFrequentBackgroundModeChangeNotificationsEnabled: Bool {
         didSet {
             defaults.set(smartFrequentBackgroundModeChangeNotificationsEnabled, forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled)
@@ -402,6 +412,7 @@ class SettingsManager: ObservableObject {
         self.smartFrequentBackgroundSpeedThresholdKmh = SmartFrequentBackgroundSpeedThreshold.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh))
         self.smartFrequentBackgroundSpeedDetectionMode = SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedDetectionMode, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode))
         self.smartFrequentBackgroundInactivityWindow = SmartFrequentBackgroundInactivityWindow.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundInactivityWindow))
+        self.smartFrequentBackgroundExitFenceRadiusMeters = SmartFrequentBackgroundExitFenceRadius.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters, defaults: d, defaultValue: SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters))
         self.smartFrequentBackgroundModeChangeNotificationsEnabled = d.bool(forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled)
         self.frequentBackgroundLocationUpdatesEnabled = d.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
         self.frequentBackgroundLocationDistanceFilter = FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter))
@@ -471,6 +482,7 @@ class SettingsManager: ObservableObject {
         assignIfChanged(\.smartFrequentBackgroundSpeedThresholdKmh, SmartFrequentBackgroundSpeedThreshold.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedThresholdKmh, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedThresholdKmh)))
         assignIfChanged(\.smartFrequentBackgroundSpeedDetectionMode, SmartFrequentBackgroundSpeedDetectionMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundSpeedDetectionMode, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundSpeedDetectionMode)))
         assignIfChanged(\.smartFrequentBackgroundInactivityWindow, SmartFrequentBackgroundInactivityWindow.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundInactivityWindow, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundInactivityWindow)))
+        assignIfChanged(\.smartFrequentBackgroundExitFenceRadiusMeters, SmartFrequentBackgroundExitFenceRadius.normalized(Self.persistedInt(forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters, defaults: defaults, defaultValue: SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters)))
         assignIfChanged(\.smartFrequentBackgroundModeChangeNotificationsEnabled, defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundModeChangeNotificationsEnabled))
         assignIfChanged(\.frequentBackgroundLocationDistanceFilter, FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)))
         assignIfChanged(\.frequentBackgroundLocationUpdateDuration, FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration)))

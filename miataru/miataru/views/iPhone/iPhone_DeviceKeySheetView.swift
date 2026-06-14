@@ -575,6 +575,7 @@ struct iPhone_DeviceKeySheetView: View {
             historyNumberOfDays: settings.historyNumberOfDays,
             locationActivityType: settings.locationActivityType,
             locationSensitivityLevel: settings.locationSensitivityLevel,
+            smartFrequentBackgroundExitFenceRadiusMeters: settings.smartFrequentBackgroundExitFenceRadiusMeters,
             frequentBackgroundLocationUpdatesEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             frequentBackgroundLocationDistanceFilter: settings.frequentBackgroundLocationDistanceFilter,
             frequentBackgroundLocationUpdateDuration: settings.frequentBackgroundLocationUpdateDuration,
@@ -625,6 +626,7 @@ struct iPhone_DeviceKeySheetView: View {
         assignIfChanged(\.historyNumberOfDays, snapshot.historyNumberOfDays)
         assignIfChanged(\.locationActivityType, snapshot.locationActivityType)
         assignIfChanged(\.locationSensitivityLevel, snapshot.locationSensitivityLevel)
+        assignIfChanged(\.smartFrequentBackgroundExitFenceRadiusMeters, snapshot.smartFrequentBackgroundExitFenceRadiusMeters)
         assignIfChanged(\.frequentBackgroundLocationUpdatesEnabled, snapshot.frequentBackgroundLocationUpdatesEnabled)
         assignIfChanged(\.frequentBackgroundLocationDistanceFilter, snapshot.frequentBackgroundLocationDistanceFilter)
         assignIfChanged(\.frequentBackgroundLocationUpdateDuration, snapshot.frequentBackgroundLocationUpdateDuration)
@@ -893,6 +895,7 @@ private struct SettingsSnapshot {
     let historyNumberOfDays: Int
     let locationActivityType: Int
     let locationSensitivityLevel: Int
+    let smartFrequentBackgroundExitFenceRadiusMeters: Int
     let frequentBackgroundLocationUpdatesEnabled: Bool
     let frequentBackgroundLocationDistanceFilter: Int
     let frequentBackgroundLocationUpdateDuration: Int

@@ -193,10 +193,10 @@ extension LocationManager {
         )
     }
 
-    static func smartFrequentExitFenceRadius(frequentDistanceFilterMeters: Int,
+    static func smartFrequentExitFenceRadius(configuredRadiusMeters: Int,
                                              maximumRegionMonitoringDistance: CLLocationDistance) -> CLLocationDistance {
         SmartFrequentBackgroundPolicy.exitFenceRadius(
-            frequentDistanceFilterMeters: frequentDistanceFilterMeters,
+            configuredRadiusMeters: configuredRadiusMeters,
             maximumRegionMonitoringDistance: maximumRegionMonitoringDistance
         )
     }

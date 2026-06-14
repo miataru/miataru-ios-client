@@ -111,5 +111,10 @@
 "5minutes" = "5 分钟";
 "10minutes" = "10 分钟";
 "15minutes" = "15 分钟";
+"smart_frequent_background_exit_fence_radius_title" = "智能唤醒半径";
+"300m" = "300 米";
+"200m" = "200 米";
+"150m" = "150 米";
+"75m" = "75 米";
 "smart_frequent_background_mode_change_notifications_title" = "智能频繁更新通知";
 "location_tracking_health_reminder_interval_title" = "跟踪状态提醒";

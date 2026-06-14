@@ -155,10 +155,10 @@ and region monitoring available
 and app not active
 ```
 
-The Smart exit-fence radius is:
+The Smart exit-fence radius is configured independently from the frequent-update distance filter:
 
 ```text
-min(max(150 m, frequentDistanceFilter), maximumRegionMonitoringDistance)
+min(configuredSmartExitFenceRadius, maximumRegionMonitoringDistance)
 ```
 
 ## Manual Frequent Background Updates
@@ -213,7 +213,10 @@ Smart settings:
 - Speed threshold: 2, 5, 10, 15, 20, 30 km/h; default 10 km/h.
 - Speed detection: Hybrid or GPS-only; default Hybrid.
 - Smart inactivity window: 5, 10, 15, 30 minutes; default 10 minutes.
+- Smart exit-fence radius: 300 m, 200 m, 150 m, 100 m, 75 m, 50 m; default 150 m.
 - Smart frequent mode-change notifications: default off.
+
+The Smart exit-fence radius intentionally does not offer 25 m or 10 m. Those values are still available for the manual/frequent movement-distance filter, but they are too precise-looking for iOS region monitoring and could set the wrong expectation for Smart wake behavior.
 
 Hybrid speed detection uses valid `CLLocation.speed` first and derived speed when GPS speed is invalid. GPS-only ignores derived speed. Activation speeds above 200 km/h are rejected as implausible.
 

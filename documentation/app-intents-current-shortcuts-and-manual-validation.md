@@ -22,16 +22,27 @@ Related roadmap package:
 The implemented foundation supports:
 
 - "Find Device": fetch the last known location for a configured tracked device.
+- "Get Miataru Tracking Status": report whether normal tracking is enabled, blocked, or running in a frequent mode.
+- "Get Frequent Tracking Status": report whether manual or Smart frequent tracking is active, inactive, expiring, unlimited, or blocked.
+- "Get Device Status": report a selected device's latest location age, coarse place text, accuracy, and optional distance.
+- "Get Distance to Device": report distance and bearing from the user's current location to a selected tracked device.
+- "Get ETA to Device": estimate route travel time to a selected tracked device through the injectable route provider.
 - "Route in Apple Maps": open Apple Maps to the last known target coordinate, with optional route direction and transport mode.
 - "Navigate in Miataru": open Miataru directly into internal navigation, with optional route direction, presentation, and transport mode. External `miataru://` links remain valid for Safari and `simctl openurl`.
 - "Start Frequent Tracking": start the manual frequent-background override without turning normal location tracking on, optionally choosing one of the app's supported manual frequent durations.
 - "Stop Frequent Tracking": stop the manual frequent-background override without changing normal location tracking.
+- "Get Latest Miataru Event": return the newest locally recorded automation event.
+- "List Recent Miataru Events": return recent local automation events.
+- "Clear Miataru Events": clear matching local automation events.
+- "Export Miataru Events": export stable local event summaries.
 - "Save Current Place": save the user's current location as a named local place for a selected tracked device with a bounded radius.
 - "List Places": return saved places for a selected tracked device without exposing raw coordinates.
 - "Check Device Near Place": check whether one visible authorized device is inside one of its saved place radii.
 - "Find Devices Near Place": return visible authorized devices that are currently near one saved place.
 
-The Places intents are implemented as App Intents but are not promoted as App Shortcut tiles yet. The visible Places UI is planned separately in `Places-Sprint/00-overview-concept.md`.
+Promoted App Shortcut tiles are intentionally limited to the most reliable user-facing actions: Find Device, Route in Apple Maps, Navigation in Miataru, Start Frequent Tracking, Stop Frequent Tracking, Get Miataru Tracking Status, Get Frequent Tracking Status, Get Device Status, and Get Distance to Device.
+
+ETA, automation event, and Places intents are implemented as power-user App Intents but are not promoted as App Shortcut tiles yet. The visible Places UI is planned separately in `Places-Sprint/00-overview-concept.md`.
 
 ## Relevant Models And Services
 
@@ -122,6 +133,13 @@ Places:
 - `MiataruPlaceEntity` is used directly for place parameters and name search through `MiataruPlaceQuery`.
 - Proximity uses Core Location distance and treats a device as near when `distance <= place radius + horizontal accuracy` when accuracy exists.
 - `FindDevicesNearPlaceIntent` only checks visible devices with current-location access and omits hidden, unauthorized, or locationless devices from results.
+
+Automation events:
+
+- `MiataruAutomationEventStore` persists a bounded local event log with newest-first querying, count and age retention, and corrupt-file recovery.
+- Event payloads are sanitized before persistence so DeviceKey-like fields, authorization tokens, and overlong payload values are removed or bounded.
+- Event App Intents return localized summaries and JSON output without exposing raw DeviceID at the top level.
+- Event query/export/clear intents are power-user App Intents and are not promoted as App Shortcut tiles.
 
 Privacy and output:
 
@@ -234,6 +252,24 @@ Stop Frequent Tracking:
 6. Test Siri with a phrase such as "Stop frequent tracking in Miataru."
 7. Verify that the app does not open automatically.
 
+Status and ETA intents:
+
+1. Run "Get Miataru Tracking Status" with tracking enabled, disabled, and DeviceKey-blocked states.
+2. Run "Get Frequent Tracking Status" while frequent tracking is inactive, manually active, Smart active or waiting, expired, unlimited, and low-battery blocked where possible.
+3. Run "Get Device Status" for a visible device and verify that the dialog includes age, coarse place or fallback text, and accuracy when available.
+4. Run "Get Distance to Device" with and without a current user location and verify the success and user-location-missing paths.
+5. Run "Get ETA to Device" for each supported transport mode where route calculation is available.
+6. Verify every status and ETA dialog avoids raw DeviceID, DeviceKey, exact coordinates, route-provider internals, and raw server responses.
+
+Automation event intents:
+
+1. Trigger at least one frequent tracking or navigation event.
+2. Run "Get Latest Miataru Event" and verify that it returns the newest event summary.
+3. Run "List Recent Miataru Events" with a small limit and verify newest-first ordering.
+4. Run "Export Miataru Events" and verify that exported JSON is stable and privacy-safe.
+5. Run "Clear Miataru Events" and verify the removed count and no-event follow-up state.
+6. Verify event dialogs and summaries avoid DeviceKey, authorization tokens, raw API payloads, and raw DeviceID where not explicitly intended.
+
 Error paths:
 
 1. Run without configured devices and verify the "no devices configured" message.
@@ -256,9 +292,17 @@ Places manual validation:
 7. Validate distance calculation against known test coordinates.
 8. Choose a place owned by another device and confirm the single-device proximity check fails without leaking identifiers.
 
+iOS 26 system validation:
+
+1. On iOS 26+, validate Spotlight results for indexed saved places and confirm results show place name/radius text only.
+2. On iOS 26+, validate device and place user-activity annotations from visible, authorized UI contexts where Siri on-screen awareness is supported.
+3. On iOS 26+, validate Siri flows that depend on App Intents metadata, entity lookup, or on-screen context.
+4. Confirm lower-runtime devices still use custom App Intents, dynamic options, or no-op indexing/annotation paths.
+5. Record `AppIntentsTesting` as unavailable unless the active Xcode toolchain can import it.
+
 ## Automated Coverage
 
-`AppIntentsPreparationTests` covers the implementation layer that can be tested without Siri:
+`AppIntentsPreparationTests`, `MiataruAutomationEventStoreTests`, and `MiataruPlaceStoreTests` cover the implementation layer that can be tested without Siri:
 
 - known-device entity mapping
 - current-location-access filtering
@@ -270,6 +314,8 @@ Places manual validation:
 - Shortcuts foreground handoff
 - frequent tracking explicit duration, omitted duration, unlimited duration, renewal, and precondition failures
 - low-battery frequent status
+- tracking, frequent tracking, device status, distance, and ETA service behavior
+- automation event append, latest, recent list, clear, retention, corrupt-file recovery, payload sanitization, stable JSON, and privacy summaries
 - place persistence, per-device validation, corrupt-file recovery, entity mapping, query resolution, current-location save, stale-location rejection, proximity calculation, and hidden-device exclusion
 - place intent dialog and JSON privacy
 - on-screen annotation helper privacy filtering
@@ -279,6 +325,8 @@ Places manual validation:
 - App Shortcut phrase table placement, so trigger phrases stay out of `Localizable.xcstrings`
 
 Manual Siri/Shortcuts validation remains required because App Shortcut phrase discovery and Siri recognition are only realistic on device or simulator.
+
+Focused local validation on 2026-06-14 passed 54 Swift Testing cases across the App Intents preparation, automation event store, and place store suites.
 
 ## iOS 26 Schema Roadmap Boundary
 
@@ -294,6 +342,7 @@ For the current implemented actions:
 
 - Add an explicit per-device "Show in Siri/Shortcuts" permission if product requirements demand finer control than `hasCurrentLocationAccess`.
 - Build the visible Places UI from `Places-Sprint/00-overview-concept.md`; the current step implements the Places data and App Intents foundation only.
-- Add Miataru-native place watches after the base place model and EventStore behavior are stable.
+- Add Miataru-native place watches after the visible Places UI and EventStore behavior are stable enough for notifications.
+- Add an optional callback bridge only after watch delivery semantics are defined.
 - Wire snippet views only when deployment target and AppIntents APIs allow the integration cleanly.
 - Continue manual Siri testing whenever shortcut phrases, dialog text, or entity/parameter registration changes.

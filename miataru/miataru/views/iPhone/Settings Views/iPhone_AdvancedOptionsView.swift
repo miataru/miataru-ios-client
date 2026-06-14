@@ -96,6 +96,16 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         SettingsDescriptionText("smart_frequent_background_inactivity_window_explanation")
 
+                        Picker(String(localized: "smart_frequent_background_exit_fence_radius_title", table: "LocationTracking"), selection: $settings.smartFrequentBackgroundExitFenceRadiusMeters) {
+                            Text("300m", tableName: "Common").tag(300)
+                            Text("200m", tableName: "Common").tag(200)
+                            Text("150m", tableName: "Common").tag(150)
+                            Text("100m", tableName: "Common").tag(100)
+                            Text("75m", tableName: "Common").tag(75)
+                            Text("50m", tableName: "Common").tag(50)
+                        }
+                        SettingsDescriptionText("smart_frequent_background_exit_fence_radius_explanation")
+
                         Toggle(String(localized: "smart_frequent_background_mode_change_notifications_title", table: "LocationTracking"), isOn: smartFrequentModeChangeNotificationsBinding)
                             .accessibilityIdentifier("settings_smart_frequent_background_mode_change_notifications_toggle")
                             .disabled(isRequestingSmartFrequentNotificationPermission)

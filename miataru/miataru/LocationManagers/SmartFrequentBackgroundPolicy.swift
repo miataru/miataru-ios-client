@@ -177,11 +177,10 @@ enum SmartFrequentBackgroundPolicy {
         return (distance / elapsed) * 3.6
     }
 
-    static func exitFenceRadius(frequentDistanceFilterMeters: Int,
+    static func exitFenceRadius(configuredRadiusMeters: Int,
                                 maximumRegionMonitoringDistance: CLLocationDistance) -> CLLocationDistance {
-        let desiredRadius = max(
-            defaultExitFenceRadius,
-            CLLocationDistance(FrequentBackgroundLocationDistanceFilter.normalized(frequentDistanceFilterMeters))
+        let desiredRadius = CLLocationDistance(
+            SmartFrequentBackgroundExitFenceRadius.normalized(configuredRadiusMeters)
         )
         guard maximumRegionMonitoringDistance.isFinite,
               maximumRegionMonitoringDistance > 0 else {

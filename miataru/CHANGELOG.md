@@ -1,5 +1,7 @@
 version 3.2.2
 - Moved all app string catalogs into `Assets/Localization/`, documented themed catalog ownership for future localization additions, and extended localization QA to read the split catalogs from their new location.
+- Added a configurable Smart frequent exit-fence radius in Advanced Options and iOS Settings with 300 m, 200 m, 150 m, 100 m, 75 m, and 50 m choices, keeping 150 m as the default and fallback for invalid persisted values.
+- Decoupled the Smart frequent exit-fence radius from the manual frequent movement-distance filter, while still capping it to iOS region-monitoring limits and documenting why 25 m and 10 m are not offered for this wake fence.
 - Implemented Intent Sprint Step 01 as the Device Entity Foundation, renaming the App Intents tracked entity/query/options/snippet layer from person terminology to tracked device terminology.
 - Kept Shortcuts compatibility by preserving selected DeviceID string values while adding privacy-safe tracked device metadata helpers for DeviceID trimming, display-name fallback, visible/authorized filtering, and iOS 26-gated `EntityIdentifier` annotation paths.
 - Added display-name-only indexed attribute helpers with Spotlight publishing disabled, wired visible tracked-device annotations into device rows, map details, group markers, and navigation destinations, and updated the Intent Sprint documentation to use device terminology throughout.

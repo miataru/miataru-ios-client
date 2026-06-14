@@ -242,16 +242,28 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(regionEvidence.kind == .regionExit)
     }
 
-    @Test("Smart frequent exit fence eligibility and radius are automatic")
-    func smartFrequentExitFenceEligibilityAndRadiusAreAutomatic() {
+    @Test("Smart frequent exit fence eligibility and radius are configurable")
+    func smartFrequentExitFenceEligibilityAndRadiusAreConfigurable() {
         #expect(SmartFrequentBackgroundPolicy.exitFenceRadius(
-            frequentDistanceFilterMeters: 10,
+            configuredRadiusMeters: 150,
             maximumRegionMonitoringDistance: 1_000
         ) == 150)
         #expect(SmartFrequentBackgroundPolicy.exitFenceRadius(
-            frequentDistanceFilterMeters: 100,
+            configuredRadiusMeters: 300,
             maximumRegionMonitoringDistance: 120
         ) == 120)
+        #expect(SmartFrequentBackgroundPolicy.exitFenceRadius(
+            configuredRadiusMeters: 75,
+            maximumRegionMonitoringDistance: 1_000
+        ) == 75)
+        #expect(SmartFrequentBackgroundPolicy.exitFenceRadius(
+            configuredRadiusMeters: 50,
+            maximumRegionMonitoringDistance: 1_000
+        ) == 50)
+        #expect(SmartFrequentBackgroundPolicy.exitFenceRadius(
+            configuredRadiusMeters: 25,
+            maximumRegionMonitoringDistance: 1_000
+        ) == 150)
 
         #expect(SmartFrequentBackgroundPolicy.shouldMaintainExitFence(
             trackAndReportLocation: true,

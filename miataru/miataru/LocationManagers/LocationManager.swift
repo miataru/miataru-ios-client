@@ -259,9 +259,11 @@ final class LocationManager: NSObject, ObservableObject {
             settings.$smartFrequentBackgroundSpeedDetectionMode.removeDuplicates(),
             settings.$smartFrequentBackgroundInactivityWindow.removeDuplicates()
         )
+        .combineLatest(settings.$smartFrequentBackgroundExitFenceRadiusMeters.removeDuplicates())
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] smartEnabled, _, _, _ in
+        .sink { [weak self] smartSettings, _ in
             guard let self else { return }
+            let smartEnabled = smartSettings.0
             if !smartEnabled {
                 self.deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent disabled")
             } else {
@@ -1178,7 +1180,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         let radius = Self.smartFrequentExitFenceRadius(
-            frequentDistanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
+            configuredRadiusMeters: settings.smartFrequentBackgroundExitFenceRadiusMeters,
             maximumRegionMonitoringDistance: locationManager.maximumRegionMonitoringDistance
         )
         if let existingRegion {

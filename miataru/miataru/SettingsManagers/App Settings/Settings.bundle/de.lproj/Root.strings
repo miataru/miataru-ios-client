@@ -111,5 +111,10 @@
 "5minutes" = "5 Minuten";
 "10minutes" = "10 Minuten";
 "15minutes" = "15 Minuten";
+"smart_frequent_background_exit_fence_radius_title" = "Smart-Aufwachradius";
+"300m" = "300 m";
+"200m" = "200 m";
+"150m" = "150 m";
+"75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "Smart-Häufige-Updates-Benachrichtigungen";
 "location_tracking_health_reminder_interval_title" = "Tracking-Prüferinnerung";

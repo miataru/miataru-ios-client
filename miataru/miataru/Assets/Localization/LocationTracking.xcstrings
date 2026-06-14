@@ -13279,6 +13279,138 @@
           }
         }
       }
+    },
+    "smart_frequent_background_exit_fence_radius_title": {
+      "comment": "Picker title for the Smart frequent background exit-fence radius",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smart-vækkeradius"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smart-Aufwachradius"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smart wake radius"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radio de activación inteligente"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Älykkään herätyksen säde"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rayon de réveil intelligent"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raggio di attivazione smart"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スマート起動半径"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slimme activeringsradius"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "智能唤醒半径"
+          }
+        }
+      }
+    },
+    "smart_frequent_background_exit_fence_radius_explanation": {
+      "comment": "Explanation for the Smart frequent background exit-fence radius",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angiver, hvor langt du skal forlade Smart-vækkeområdet, før Miataru i baggrunden prøver at starte hyppigere opdateringer. Mindre radier kan reagere tidligere, men kan vække oftere; større radier er roligere og mere batterivenlige. Dette ændrer ikke bevægelsestærsklen for hyppige opdateringer. iOS kan begrænse den effektive radius."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legt fest, wie weit du den Smart-Aufwachbereich verlassen musst, bevor Miataru im Hintergrund häufigere Updates probeweise startet. Kleinere Radien reagieren früher, können aber öfter wecken; größere Radien sind ruhiger und akkuschonender. Das ändert nicht die Bewegungsschwelle der häufigen Updates. iOS kann den effektiven Radius begrenzen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sets how far you need to leave the Smart wake region before Miataru starts probing for more frequent background updates. Smaller radii can react sooner but may wake more often; larger radii are calmer and more battery-friendly. This does not change the movement threshold for frequent updates. iOS may cap the effective radius."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Define cuánto debes salir de la zona de activación inteligente antes de que Miataru empiece a probar actualizaciones más frecuentes en segundo plano. Los radios menores pueden reaccionar antes, pero pueden despertar la app más a menudo; los radios mayores son más tranquilos y ahorran más batería. Esto no cambia el umbral de movimiento de las actualizaciones frecuentes. iOS puede limitar el radio efectivo."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Määrittää, kuinka kauas sinun on poistuttava älykkäältä herätysalueelta ennen kuin Miataru alkaa kokeilla tiheämpiä taustapäivityksiä. Pienemmät säteet voivat reagoida aiemmin mutta herättää useammin; suuremmat säteet ovat rauhallisempia ja säästävät akkua. Tämä ei muuta tiheiden päivitysten liikkumiskynnystä. iOS voi rajoittaa todellista sädettä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Définit la distance à laquelle vous devez quitter la zone de réveil intelligente avant que Miataru commence à tester des mises à jour plus fréquentes en arrière-plan. Les rayons plus petits peuvent réagir plus tôt, mais réveiller plus souvent; les rayons plus grands sont plus calmes et économes. Cela ne modifie pas le seuil de déplacement des mises à jour fréquentes. iOS peut limiter le rayon effectif."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imposta quanto devi uscire dall’area di attivazione smart prima che Miataru inizi a provare aggiornamenti in background più frequenti. I raggi più piccoli possono reagire prima, ma possono riattivare più spesso; i raggi più grandi sono più tranquilli e consumano meno batteria. Questo non modifica la soglia di movimento degli aggiornamenti frequenti. iOS può limitare il raggio effettivo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miataru がより頻繁なバックグラウンド更新の試行を始める前に、スマート起動エリアからどれだけ離れる必要があるかを設定します。半径を小さくすると早く反応できますが、起動回数が増える場合があります。半径を大きくすると穏やかで省電力です。頻繁更新の移動しきい値は変更しません。iOS により実際の半径が制限される場合があります。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bepaalt hoe ver je de slimme activeringszone moet verlaten voordat Miataru op de achtergrond frequentere updates gaat proberen. Kleinere radii kunnen eerder reageren, maar kunnen vaker wekken; grotere radii zijn rustiger en batterijvriendelijker. Dit wijzigt de bewegingsdrempel voor frequente updates niet. iOS kan de effectieve radius beperken."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置你需要离开智能唤醒区域多远后，Miataru 才会开始尝试更频繁的后台更新。较小半径可能更早响应，但也可能更频繁唤醒；较大半径更平稳且更省电。这不会改变频繁更新的移动阈值。iOS 可能会限制实际生效半径。"
+          }
+        }
+      }
     }
   },
   "version": "1.1"
