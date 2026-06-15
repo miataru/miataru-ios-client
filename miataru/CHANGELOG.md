@@ -1,4 +1,6 @@
 version 3.2.2
+- Changed the iPhone device-history panel auto-hide rule so the 5-second timer starts only after active map pan/zoom, map point selection, or Play/Pause, preventing the panel from hiding while users are simply reading or thinking.
+- Added `HistoryPanelAutoHidePolicy` regression coverage for map-triggered hiding, the Play/Pause exception, ignored panel interactions such as speed changes/scrubbing/range dragging, and programmatic camera changes.
 - Added a conservative GPS anomaly filter before local cache and `UpdateLocation` upload so poor reception spikes with invalid/coarse accuracy or implausible short-hop speed are kept out of server history.
 - Added deferred large-jump confirmation for long callback gaps: a suspicious 500 m+ jump now waits for a nearby follow-up fix before replacing the last accepted position, while a return near the previous accepted point discards the pending jump.
 - Added `LocationSamplePolicy` regression coverage for plausible movement, short speed spikes, poor horizontal accuracy, large-jump deferral, confirmation, and discard behavior.

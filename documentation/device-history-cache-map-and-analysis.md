@@ -117,8 +117,9 @@ Stored history does not include vertical accuracy. Altitude values are used when
 - The gesture no longer performs live dragging; it hides on gesture end to avoid per-frame SwiftUI state updates while graphs and map render.
 - The restore pill is a direct SwiftUI view with explicit capsule hit shape, tap gesture, upward drag gesture, and accessibility action.
 - The restore pill is not a nested `Button` plus competing drag gesture.
-- The full panel schedules a lightweight 5-second auto-hide after direct map camera movement, marker selection, play/pause, or playback speed changes.
-- Playback ticks, scrubber movement, and range-drag updates do not restart auto-hide.
+- The full panel schedules a lightweight 5-second auto-hide only after active map pan/zoom, marker selection, or Play/Pause.
+- Programmatic camera updates, playback ticks, playback speed changes, scrubber movement, range-drag updates, quick range changes, and ordinary panel reading do not start or restart auto-hide.
+- `HistoryPanelAutoHidePolicy` keeps the timer source rules small and unit-tested.
 - Quick range controls are compact glass segmented controls.
 - Ranges shorter than the loaded span are shown; full range remains available.
 
@@ -150,6 +151,7 @@ Validation included:
 - App builds with `xcodebuild`.
 - Focused `HistoryAnalyzerTests`.
 - The analyzer suite covers empty history, one-point history, duplicate timestamps, derived speed, provided speed, speed outliers, bad horizontal accuracy, missing altitude, and 10,000-sample bucketing.
+- `HistoryPanelAutoHidePolicyTests` cover the map-triggered auto-hide sources, the Play/Pause exception, ignored panel interactions, and programmatic/lifecycle events.
 - Additional build validation after compact range picker, hidden-handle swipe behavior, auto-hide timer, and timestamp-paced playback changes.
 
 Remaining follow-up:
@@ -157,4 +159,3 @@ Remaining follow-up:
 - Add UI coverage for graph rendering and missing-data visual states.
 - Add UI coverage for timeline/graph playhead sync, panel hide, and restore pill.
 - Profile on a real device with Instruments if 10,000-point MapKit route rendering becomes a bottleneck.
-

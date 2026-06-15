@@ -222,6 +222,8 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
             }
         }
+        .simultaneousGesture(historyMapPanGesture)
+        .simultaneousGesture(historyMapZoomGesture)
         .onMapCameraChange(frequency: .continuous) { context in
             let previousRegion = currentRegion
             let now = Date()
@@ -247,7 +249,6 @@ struct iPhone_DeviceHistoryMapView: View {
 
             if (zoomChanged || centerChanged) && !suppressed {
                 hasUserAdjustedMapCamera = true
-                scheduleHistoryPanelAutoHide(restartExisting: false)
             }
 
             if isPlaying && zoomChanged && !suppressed {
@@ -423,6 +424,20 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
             }
         }
+    }
+
+    private var historyMapPanGesture: some Gesture {
+        DragGesture(minimumDistance: 8, coordinateSpace: .local)
+            .onEnded { _ in
+                handleHistoryPanelAutoHideEvent(.mapPanZoom)
+            }
+    }
+
+    private var historyMapZoomGesture: some Gesture {
+        MagnifyGesture()
+            .onEnded { _ in
+                handleHistoryPanelAutoHideEvent(.mapPanZoom)
+            }
     }
 
     @ViewBuilder
@@ -888,7 +903,7 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func selectEntryFromMap(_ entry: MiataruLocationData) {
         let timestamp = entry.TimestampDate.timeIntervalSince1970
-        scheduleHistoryPanelAutoHide(restartExisting: true)
+        handleHistoryPanelAutoHideEvent(.mapPointSelection)
         stopPlayback()
         guard scrubTimestamp != timestamp else {
             hasUserScrubbed = true
@@ -1071,8 +1086,17 @@ struct iPhone_DeviceHistoryMapView: View {
         historyPanelAutoHideTask = nil
     }
 
+    private func handleHistoryPanelAutoHideEvent(_ event: HistoryPanelAutoHideEvent) {
+        switch HistoryPanelAutoHidePolicy.action(for: event) {
+        case .none:
+            return
+        case .startOrRestart:
+            scheduleHistoryPanelAutoHide(restartExisting: true)
+        }
+    }
+
     private func togglePlayback() {
-        scheduleHistoryPanelAutoHide(restartExisting: true)
+        handleHistoryPanelAutoHideEvent(.playbackPlayPause)
         if isPlaying {
             // Mark current position so resume continues from here
             hasUserScrubbed = true
@@ -1089,7 +1113,6 @@ struct iPhone_DeviceHistoryMapView: View {
 
     private func handleLongPressSpeedUp() {
         guard isPlaying else { return }
-        scheduleHistoryPanelAutoHide(restartExisting: true)
         // Cycle through 1x → 2x → 4x → 8x → 1x
         switch playbackSpeed {
         case 1.0:
