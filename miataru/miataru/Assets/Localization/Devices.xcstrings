@@ -8768,61 +8768,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Positionsopslag"
+            "value": "Notifikationer ved positionsadgang"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Positionsabfragen"
+            "value": "Mitteilungen bei Standortzugriff"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Position lookups"
+            "value": "Notifications for location access"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Consultas de posición"
+            "value": "Notificaciones de acceso a la ubicación"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sijaintikyselyt"
+            "value": "Ilmoitukset sijainnin käytöstä"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Consultations de position"
+            "value": "Notifications d’accès à la position"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Richieste di posizione"
+            "value": "Notifiche per l’accesso alla posizione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置照会"
+            "value": "位置情報アクセスの通知"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Positie-opvragingen"
+            "value": "Meldingen bij locatietoegang"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置查询"
+            "value": "位置访问通知"
           }
         }
       }
@@ -8834,61 +8834,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Giv besked ved positionsopslag"
+            "value": "Giv besked ved positionsadgang fra denne enhed"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bei Positionsabfrage benachrichtigen"
+            "value": "Bei Standortzugriff durch dieses Gerät benachrichtigen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notify when position is checked"
+            "value": "Notify when this device accesses your location"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avisar al consultar la posición"
+            "value": "Avisar cuando este dispositivo acceda a tu ubicación"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ilmoita sijainnin tarkistuksesta"
+            "value": "Ilmoita, kun tämä laite käyttää sijaintiasi"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notifier lors d’une consultation de position"
+            "value": "Notifier lorsque cet appareil accède à votre position"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Avvisa quando la posizione viene controllata"
+            "value": "Avvisa quando questo dispositivo accede alla tua posizione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置確認時に通知"
+            "value": "このデバイスが位置情報にアクセスしたら通知"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Meld wanneer positie wordt bekeken"
+            "value": "Meld wanneer dit apparaat je locatie opent"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置被查询时通知"
+            "value": "当此设备访问你的位置时通知"
           }
         }
       }
@@ -8900,61 +8900,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sender en notifikation, når denne enhed for nylig har forespurgt din position under tjek af visitorhistorikken."
+            "value": "Du får en notifikation, når denne enhed forespørger din position, mens Smart eller hyppigere baggrundsopdateringer er aktive."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sendet eine Mitteilung, wenn dieses Gerät deine Position kürzlich während der Besucherhistorie-Prüfung abgefragt hat."
+            "value": "Du erhältst eine Mitteilung, wenn dieses Gerät deine Position abfragt, während Smart- oder häufigere Hintergrund-Updates aktiv sind."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sends a notification when this device recently checked your position during visitor-history checks."
+            "value": "You receive a notification when this device checks your location while Smart or more frequent background updates are active."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Envía una notificación cuando este dispositivo haya consultado recientemente tu posición durante las comprobaciones del historial de visitantes."
+            "value": "Recibirás una notificación cuando este dispositivo consulte tu ubicación mientras las actualizaciones en segundo plano Smart o más frecuentes estén activas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lähettää ilmoituksen, kun tämä laite on äskettäin tarkistanut sijaintisi vierailijahistorian tarkistusten aikana."
+            "value": "Saat ilmoituksen, kun tämä laite tarkistaa sijaintisi Smart- tai tiheämpien taustapäivitysten ollessa käytössä."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Envoie une notification lorsque cet appareil a récemment consulté votre position pendant les contrôles de l’historique des visiteurs."
+            "value": "Vous recevez une notification lorsque cet appareil consulte votre position pendant que les mises à jour en arrière-plan Smart ou plus fréquentes sont actives."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Invia una notifica quando questo dispositivo ha controllato di recente la tua posizione durante i controlli della cronologia visitatori."
+            "value": "Ricevi una notifica quando questo dispositivo controlla la tua posizione mentre sono attivi gli aggiornamenti in background Smart o più frequenti."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "訪問者履歴の確認中に、このデバイスが最近あなたの位置情報を確認した場合に通知します。"
+            "value": "Smartまたはより頻繁なバックグラウンド更新が有効な間に、このデバイスがあなたの位置情報を確認すると通知を受け取ります。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Stuurt een melding wanneer dit apparaat onlangs je positie heeft bekeken tijdens controles van de bezoekersgeschiedenis."
+            "value": "Je ontvangt een melding wanneer dit apparaat je locatie opvraagt terwijl Smart of frequentere achtergrondupdates actief zijn."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "当此设备在访客历史检查期间最近查询了你的位置时发送通知。"
+            "value": "当此设备在 Smart 或更频繁的后台更新处于活动状态时查询你的位置，你会收到通知。"
           }
         }
       }

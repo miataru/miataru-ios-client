@@ -1,4 +1,5 @@
 version 3.2.2
+- Clarified the Edit Device copy for known-device visitor notifications across all supported locales so it explains that alerts are tied to location access during Smart or manual frequent background updates.
 - Added opt-in known-device visitor notifications for Smart/manual frequent visitor-history checks, including per-device controls, localized notification copy, and a configurable 1/5/15/30/60-minute cooldown.
 - Restricted known-device visitor notifications to explicit Smart/manual frequent background visitor checks so normal app opens, foreground uploads, manual visitor-history views, and active-app outbox flushes cannot trigger them.
 - Moved all app string catalogs into `Assets/Localization/`, documented themed catalog ownership for future localization additions, and extended localization QA to read the split catalogs from their new location.

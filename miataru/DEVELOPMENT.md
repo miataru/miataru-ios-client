@@ -132,6 +132,8 @@ App string catalogs live in `miataru/miataru/Assets/Localization/` and are split
 - It starts at enable time, filters own/known/ignored devices, applies a 24-hour per-device cooldown, and coalesces in-flight runs.
 - Supplemental notification details are best-effort and only fetched for true unknown candidates.
 - `UnknownVisitorFilter` keeps unknown visitor list filtering shared between iPhone and iPad.
+- Known-device visitor notifications reuse the frequent visitor-history check path. The Edit Device toggle is per known device, hidden for the current device, and visible only when Smart frequent or manual frequent background updates are enabled in settings.
+- Known-device alerts use the same 90-second recent-visitor window as the device-list eye indicator and a configurable cooldown, so normal app opens and manual visitor-history refreshes do not create notifications.
 
 ### Navigation
 

@@ -141,7 +141,7 @@ The iPhone device history map keeps the existing MapKit route, point annotation,
 
 ### Notifications
 
-`UnknownVisitorAlertService` evaluates visitor history incrementally from activation time, filters own/known/ignored IDs, applies a per-device cooldown, enriches true unknown candidates with cached or batched `GetLocation` data, and schedules local notifications.
+`UnknownVisitorAlertService` evaluates visitor history incrementally from activation time, filters own/known/ignored IDs, applies a per-device cooldown, enriches true unknown candidates with cached or batched `GetLocation` data, and schedules local notifications. Known-device visitor notifications are opt-in per device from Edit Device, shown only while Smart frequent or manual frequent background updates are enabled, and reuse the frequent visitor-history check with the same 90-second recent-visitor window as the device-list eye indicator.
 
 `FrequentBackgroundTrackingReminderService` manages reminder, expiry, low-battery auto-disable, and optional Smart frequent mode-change notifications for frequent background tracking. Smart activation/deactivation notifications default to off, request notification permission before the setting is enabled, and are sent only when Smart itself turns frequent runtime on or off.
 

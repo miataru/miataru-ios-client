@@ -87,6 +87,7 @@ This document describes the current user-facing and developer-facing feature set
 - Allowed Device List can restrict which devices are allowed to access this device.
 - Unknown visitors can be allowed, ignored, or surfaced through optional local notifications.
 - Unknown visitor notifications start from activation time and are filtered so own, known, allowed, and ignored devices do not create alerts.
+- Known devices can opt into per-device location-access notifications from Edit Device. The control is only shown for other devices while Smart frequent or manual frequent background updates are enabled, and the copy explains that alerts are sent when that device checks this device's location during those frequent-update modes.
 - Frequent background tracking uses local notifications for manual never-ending reminders, temporary-mode expiration, low-battery auto-disable, and optional Smart frequent auto-switch events. Smart auto-switch notifications are permission-gated and show a denied-state app-settings shortcut when needed.
 
 **For developers:**
@@ -95,6 +96,7 @@ This document describes the current user-facing and developer-facing feature set
 - `AllowedDeviceListManager` performs access-control sync through `MiataruAppAPI`.
 - `UnknownVisitorFilter` normalizes the shared unknown visitor filtering logic for iPhone and iPad lists.
 - `UnknownVisitorAlertService` evaluates visitor history incrementally, applies 24-hour per-device cooldown, coalesces in-flight processing, and batches supplemental `GetLocation` enrichment for true unknown candidates.
+- Known-device visitor notifications share the frequent visitor-history fetch path, respect the 90-second recent-visitor window used by the device-list eye indicator, and apply a configurable per-device cooldown after a notification is scheduled.
 - `FrequentBackgroundTrackingReminderService` owns frequent-background reminder, expiration, low-battery, and Smart mode-change notifications. AppDelegate routes all frequent-background notification types to Advanced Options.
 
 ## Group Management
