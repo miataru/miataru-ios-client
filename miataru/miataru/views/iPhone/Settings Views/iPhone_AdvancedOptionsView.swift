@@ -180,6 +180,15 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_visitor_check_60m", tableName: "LocationTracking").tag(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue)
                         }
                         SettingsDescriptionText(frequentBackgroundVisitorCheckExplanationKey)
+
+                        Picker(String(localized: "known_visitor_notification_cooldown_title", table: "LocationTracking"), selection: $settings.knownVisitorNotificationCooldown) {
+                            Text("1minute", tableName: "Common").tag(KnownVisitorNotificationCooldown.oneMinute.rawValue)
+                            Text("5minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.fiveMinutes.rawValue)
+                            Text("15minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.fifteenMinutes.rawValue)
+                            Text("30minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.thirtyMinutes.rawValue)
+                            Text("60minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.sixtyMinutes.rawValue)
+                        }
+                        SettingsDescriptionText(knownVisitorNotificationCooldownExplanationKey)
                     }
                 }
             }
@@ -364,6 +373,21 @@ struct iPhone_AdvancedOptionsView: View {
             return "frequent_background_visitor_check_30m_explanation"
         case .everyHour:
             return "frequent_background_visitor_check_60m_explanation"
+        }
+    }
+
+    private var knownVisitorNotificationCooldownExplanationKey: String {
+        switch settings.knownVisitorNotificationCooldownSelection {
+        case .oneMinute:
+            return "known_visitor_notification_cooldown_1m_explanation"
+        case .fiveMinutes:
+            return "known_visitor_notification_cooldown_5m_explanation"
+        case .fifteenMinutes:
+            return "known_visitor_notification_cooldown_15m_explanation"
+        case .thirtyMinutes:
+            return "known_visitor_notification_cooldown_30m_explanation"
+        case .sixtyMinutes:
+            return "known_visitor_notification_cooldown_60m_explanation"
         }
     }
 

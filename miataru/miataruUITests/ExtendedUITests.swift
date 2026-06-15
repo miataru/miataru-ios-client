@@ -42,10 +42,10 @@ final class ExtendedUITests: XCTestCase {
 
     @MainActor
     func testSettingsShowOnboardingActionIsReachable() throws {
-        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
 
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
-        XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
+        XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
 
         let locationDetailsLink = app.descendants(matching: .any)["settings_location_tracking_details_link"].firstMatch
         XCTAssertTrue(waitForElementByScrollingUp(in: app, element: locationDetailsLink, maxSwipes: 10), "Location tracking details link should be reachable")
@@ -59,10 +59,10 @@ final class ExtendedUITests: XCTestCase {
 
     @MainActor
     func testLocationDiagnosticsSheetOpensFromVersionTripleTap() throws {
-        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
 
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
-        XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
+        XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
 
         let locationDetailsLink = app.descendants(matching: .any)["settings_location_tracking_details_link"].firstMatch
         XCTAssertTrue(waitForElementByScrollingUp(in: app, element: locationDetailsLink, maxSwipes: 10), "Location tracking details link should be reachable")
@@ -86,20 +86,20 @@ final class ExtendedUITests: XCTestCase {
 
     @MainActor
     func testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen() throws {
-        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
 
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
-        XCTAssertTrue(selectTab(in: app, index: 2, expectedScreenIdentifier: "screen_settings"), "Settings tab should be active")
+        XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
 
-        let advancedOptionsLink = app.descendants(matching: .any)["settings_advanced_options_link"].firstMatch
-        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: advancedOptionsLink, maxSwipes: 6), "Advanced options link should be reachable")
+        let advancedOptionsLabel = app.staticTexts["settings_advanced_options_label"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: advancedOptionsLabel, maxSwipes: 6), "Advanced options link should be reachable")
 
         let pulsingToggle = app.descendants(matching: .any)["settings_pulsing_map_markers_toggle"].firstMatch
         XCTAssertFalse(pulsingToggle.exists, "Advanced-only toggle should not be visible on the root settings screen")
 
-        advancedOptionsLink.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        tapElement(advancedOptionsLabel)
 
-        XCTAssertTrue(pulsingToggle.waitForExistence(timeout: 10), "Moved advanced toggle should be visible on the advanced options screen")
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: pulsingToggle, maxSwipes: 8), "Moved advanced toggle should be reachable on the advanced options screen")
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert after opening advanced options")
     }
 
@@ -134,13 +134,27 @@ final class ExtendedUITests: XCTestCase {
 
     @MainActor
     private func waitForElementByScrollingUp(in app: XCUIApplication, element: XCUIElement, maxSwipes: Int) -> Bool {
-        if element.waitForExistence(timeout: 2) {
+        if element.waitForExistence(timeout: 2), isVisible(element, in: app) {
             return true
         }
 
+        let scrollContainer: XCUIElement
+        if app.collectionViews.firstMatch.exists {
+            scrollContainer = app.collectionViews.firstMatch
+        } else {
+            scrollContainer = app
+        }
+
         for _ in 0..<maxSwipes {
-            app.swipeUp()
-            if element.waitForExistence(timeout: 1) {
+            scrollContainer.swipeUp()
+            if element.waitForExistence(timeout: 1), isVisible(element, in: app) {
+                return true
+            }
+        }
+
+        for _ in 0..<(maxSwipes * 2) {
+            scrollContainer.swipeDown()
+            if element.waitForExistence(timeout: 1), isVisible(element, in: app) {
                 return true
             }
         }
@@ -152,12 +166,21 @@ final class ExtendedUITests: XCTestCase {
     private func tapElement(_ element: XCUIElement) {
         XCTAssertTrue(element.waitForExistence(timeout: 5), "Element should exist before tapping")
 
-        if element.waitForHittable(timeout: 2) {
-            element.tap()
-            return
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    private func isVisible(_ element: XCUIElement, in app: XCUIApplication) -> Bool {
+        guard element.exists else { return false }
+
+        let frame = element.frame
+        guard frame.width > 0,
+              frame.height > 0,
+              frame.origin.x.isFinite,
+              frame.origin.y.isFinite else {
+            return false
         }
 
-        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        return app.frame.intersects(frame)
     }
 
     @MainActor
@@ -184,15 +207,24 @@ final class ExtendedUITests: XCTestCase {
 
         if targetTab.isHittable {
             targetTab.tap()
+        } else {
+            targetTab.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         }
 
-        return app.otherElements[expectedScreenIdentifier].waitForExistence(timeout: 10)
+        return targetTab.waitForSelected(timeout: 10)
+            && app.otherElements[expectedScreenIdentifier].waitForExistence(timeout: 2)
     }
 }
 
 private extension XCUIElement {
     func waitForHittable(timeout: TimeInterval) -> Bool {
         let predicate = NSPredicate(format: "hittable == true")
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
+        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    func waitForSelected(timeout: TimeInterval) -> Bool {
+        let predicate = NSPredicate(format: "selected == true")
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
         return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
     }

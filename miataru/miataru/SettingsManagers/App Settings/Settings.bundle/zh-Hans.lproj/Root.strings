@@ -118,3 +118,7 @@
 "75m" = "75 米";
 "smart_frequent_background_mode_change_notifications_title" = "智能频繁更新通知";
 "location_tracking_health_reminder_interval_title" = "跟踪状态提醒";
+
+"1minute" = "1 分钟";
+"60minutes" = "60 分钟";
+"known_visitor_notification_cooldown_title" = "已知访客冷却时间";

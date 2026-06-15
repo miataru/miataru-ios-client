@@ -286,8 +286,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
         await coordinator.stopPeriodicFlushTaskForTesting()
     }
 
-    @Test("Flush forwards queued visitor check interval")
-    func flushForwardsQueuedVisitorCheckInterval() async throws {
+    @Test("Flush forwards queued visitor check context")
+    func flushForwardsQueuedVisitorCheckContext() async throws {
         let tempURL = temporaryOutboxURL()
         defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
 
@@ -297,7 +297,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
             payload: payload(timestamp: "visitor-check"),
             enableHistory: true,
             retentionTime: 60,
-            visitorCheckMinimumInterval: 600
+            visitorCheckMinimumInterval: 600,
+            processKnownVisitorAlerts: true
         )
 
         let sender = MockUpdateSender(outcomes: [.success(true)])
@@ -309,8 +310,12 @@ struct LocationUpdateDeliveryCoordinatorTests {
             updateSender: { url, payload, enableHistory, retentionTime in
                 try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
             },
-            visitorProcessor: { url, minimumInterval in
-                await visitorProcessor.record(url: url, minimumInterval: minimumInterval)
+            visitorProcessor: { url, minimumInterval, processKnownVisitorAlerts in
+                await visitorProcessor.record(
+                    url: url,
+                    minimumInterval: minimumInterval,
+                    processKnownVisitorAlerts: processKnownVisitorAlerts
+                )
             }
         )
 
@@ -320,6 +325,7 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(records.count == 1)
         #expect(records.first?.urlString == "https://example.org")
         #expect(records.first?.minimumInterval == 600)
+        #expect(records.first?.processKnownVisitorAlerts == true)
     }
 
     @Test("Flush observer receives original queued payload metadata")
@@ -725,7 +731,7 @@ struct LocationUpdateDeliveryCoordinatorTests {
         )!
     }
 
-    private static let noOpVisitorProcessor: LocationUpdateDeliveryCoordinator.VisitorProcessor = { _, _ in }
+    private static let noOpVisitorProcessor: LocationUpdateDeliveryCoordinator.VisitorProcessor = { _, _, _ in }
 }
 
 private actor MockUpdateSender {
@@ -773,12 +779,17 @@ private actor RecordingVisitorProcessor {
     struct Record: Sendable {
         let urlString: String
         let minimumInterval: TimeInterval?
+        let processKnownVisitorAlerts: Bool
     }
 
     private var records: [Record] = []
 
-    func record(url: URL, minimumInterval: TimeInterval?) {
-        records.append(Record(urlString: url.absoluteString, minimumInterval: minimumInterval))
+    func record(url: URL, minimumInterval: TimeInterval?, processKnownVisitorAlerts: Bool) {
+        records.append(Record(
+            urlString: url.absoluteString,
+            minimumInterval: minimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
+        ))
     }
 
     func recordsSnapshot() -> [Record] {

@@ -82,8 +82,8 @@ struct LocationUpdateOutboxStoreTests {
         #expect(snapshot[1].payload.Timestamp == "124")
     }
 
-    @Test("Visitor check interval is persisted with queued updates")
-    func visitorCheckIntervalPersistsWithQueuedUpdate() async throws {
+    @Test("Visitor check context is persisted with queued updates")
+    func visitorCheckContextPersistsWithQueuedUpdate() async throws {
         let tempURL = temporaryOutboxURL()
         defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
 
@@ -98,7 +98,8 @@ struct LocationUpdateOutboxStoreTests {
             payload: payload(timestamp: "visitor-check"),
             enableHistory: true,
             retentionTime: 40,
-            visitorCheckMinimumInterval: 600
+            visitorCheckMinimumInterval: 600,
+            processKnownVisitorAlerts: true
         )
 
         let reloadedStore = LocationUpdateOutboxStore(
@@ -110,6 +111,7 @@ struct LocationUpdateOutboxStoreTests {
         let snapshot = await reloadedStore.itemsSnapshot()
         #expect(snapshot.first?.payload.Timestamp == "visitor-check")
         #expect(snapshot.first?.visitorCheckMinimumInterval == 600)
+        #expect(snapshot.first?.processKnownVisitorAlerts == true)
     }
 
     @Test("Runtime policy can keep aged items and raise max cap")

@@ -9,6 +9,7 @@
 
 import Foundation
 import MiataruAPIClient
+import UIKit
 
 enum LocationUpdateDeliveryError: LocalizedError {
     case serverDidNotAcknowledge
@@ -29,7 +30,7 @@ actor LocationUpdateDeliveryCoordinator {
     }
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
-    typealias VisitorProcessor = (URL, TimeInterval?) async -> Void
+    typealias VisitorProcessor = (URL, TimeInterval?, Bool) async -> Void
     typealias FlushObserver = (LocationUpdateOutboxItem, String, Date) async -> Void
 
     private struct FlushResult {
@@ -81,10 +82,14 @@ actor LocationUpdateDeliveryCoordinator {
                 retryPolicy: .updateLocation
             )
         }
-        self.visitorProcessor = visitorProcessor ?? { serverURL, minimumInterval in
+        self.visitorProcessor = visitorProcessor ?? { serverURL, minimumInterval, processKnownVisitorAlerts in
+            let processKnownVisitorAlertsNow = await MainActor.run {
+                processKnownVisitorAlerts && UIApplication.shared.applicationState != .active
+            }
             await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
                 serverURL: serverURL,
-                minimumInterval: minimumInterval
+                minimumInterval: minimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlertsNow
             )
         }
         self.flushObserver = flushObserver ?? { item, trigger, flushedAt in
@@ -147,7 +152,8 @@ actor LocationUpdateDeliveryCoordinator {
         enableHistory: Bool,
         retentionTime: Int,
         deliveryDelay: TimeInterval? = nil,
-        visitorCheckMinimumInterval: TimeInterval? = nil
+        visitorCheckMinimumInterval: TimeInterval? = nil,
+        processKnownVisitorAlerts: Bool = false
     ) async -> SubmitResult {
         if let deliveryDelay, deliveryDelay > 0 {
             let now = Date()
@@ -159,7 +165,8 @@ actor LocationUpdateDeliveryCoordinator {
                 enableHistory: enableHistory,
                 retentionTime: retentionTime,
                 availableAfter: availableAfter,
-                visitorCheckMinimumInterval: visitorCheckMinimumInterval
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
             )
             await notifyOutboxDidChange()
             await scheduleNextFlushIfNeeded(now: now, trigger: "delayedSubmit")
@@ -172,7 +179,8 @@ actor LocationUpdateDeliveryCoordinator {
                 payload: payload,
                 enableHistory: enableHistory,
                 retentionTime: retentionTime,
-                visitorCheckMinimumInterval: visitorCheckMinimumInterval
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
             )
             await notifyOutboxDidChange()
             scheduleFlushSoon(trigger: "submitWithPendingOutbox")
@@ -191,7 +199,8 @@ actor LocationUpdateDeliveryCoordinator {
                 payload: payload,
                 enableHistory: enableHistory,
                 retentionTime: retentionTime,
-                visitorCheckMinimumInterval: visitorCheckMinimumInterval
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
             )
             await notifyOutboxDidChange()
             return .queued
@@ -314,7 +323,13 @@ actor LocationUpdateDeliveryCoordinator {
                     processedCount += 1
                     await notifyOwnLocationUpdateDidSend()
                     await flushObserver(head, trigger, Date())
-                    Task { await visitorProcessor(serverURL, head.visitorCheckMinimumInterval) }
+                    Task {
+                        await visitorProcessor(
+                            serverURL,
+                            head.visitorCheckMinimumInterval,
+                            head.processKnownVisitorAlerts
+                        )
+                    }
                     continue
                 }
 

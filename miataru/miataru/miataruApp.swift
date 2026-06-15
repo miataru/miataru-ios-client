@@ -194,6 +194,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             return
         }
 
+        if let type = userInfo[UnknownVisitorAlertService.notificationTypeUserInfoKey] as? String,
+           type == UnknownVisitorAlertService.knownVisitorNotificationType,
+           let deviceID = userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String {
+            Task { @MainActor in
+                AppNavigationCoordinator.shared.openKnownDevice(deviceID)
+            }
+            completionHandler()
+            return
+        }
+
         if let type = userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String,
            Self.opensAdvancedSettingsNotificationTypes.contains(type) {
             Task { @MainActor in

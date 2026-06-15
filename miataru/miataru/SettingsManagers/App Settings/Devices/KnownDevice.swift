@@ -49,15 +49,21 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
             objectWillChange.send()
         }
     }
+    @Published @objc var notifyOnVisitorHistoryAccess: Bool = false {
+        didSet {
+            objectWillChange.send()
+        }
+    }
     
     var id: String { DeviceID }
     
-    init(name: String, deviceID: String, color: UIColor? = nil, hasCurrentLocationAccess: Bool = true, hasHistoryAccess: Bool = true) {
+    init(name: String, deviceID: String, color: UIColor? = nil, hasCurrentLocationAccess: Bool = true, hasHistoryAccess: Bool = true, notifyOnVisitorHistoryAccess: Bool = false) {
         self.DeviceName = name
         self.DeviceID = deviceID
         self.DeviceColor = color
         self.hasCurrentLocationAccess = hasCurrentLocationAccess
         self.hasHistoryAccess = hasHistoryAccess
+        self.notifyOnVisitorHistoryAccess = notifyOnVisitorHistoryAccess
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -78,6 +84,11 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
         } else {
             self.hasHistoryAccess = true
         }
+        if aDecoder.containsValue(forKey: "notifyOnVisitorHistoryAccess") {
+            self.notifyOnVisitorHistoryAccess = aDecoder.decodeBool(forKey: "notifyOnVisitorHistoryAccess")
+        } else {
+            self.notifyOnVisitorHistoryAccess = false
+        }
         /*print(aDecoder.decodeObject(forKey: "DeviceName") as? String ?? "")
         print(aDecoder.decodeObject(forKey: "DeviceID") as? String ?? "")
         print(aDecoder.decodeBool(forKey: "DeviceIsInGroup"))
@@ -93,6 +104,7 @@ class KnownDevice: NSObject, ObservableObject, NSCoding, NSSecureCoding, Identif
         aCoder.encode(DeviceColor, forKey: "DeviceColor")
         aCoder.encode(hasCurrentLocationAccess, forKey: "hasCurrentLocationAccess")
         aCoder.encode(hasHistoryAccess, forKey: "hasHistoryAccess")
+        aCoder.encode(notifyOnVisitorHistoryAccess, forKey: "notifyOnVisitorHistoryAccess")
         //print("Speichern ist temporär deaktiviert - muss repariert werden!!!")
 
     }

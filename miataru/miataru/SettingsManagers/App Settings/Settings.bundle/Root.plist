@@ -412,10 +412,36 @@
 			</dict>
 			<dict>
 				<key>Type</key>
-				<string>PSGroupSpecifier</string>
+				<string>PSMultiValueSpecifier</string>
 				<key>Title</key>
-				<string>server_url</string>
-		</dict>
+				<string>known_visitor_notification_cooldown_title</string>
+				<key>Key</key>
+				<string>known_visitor_notification_cooldown</string>
+				<key>DefaultValue</key>
+				<string>1800</string>
+				<key>Titles</key>
+				<array>
+					<string>1minute</string>
+					<string>5minutes</string>
+					<string>15minutes</string>
+					<string>30minutes</string>
+					<string>60minutes</string>
+				</array>
+				<key>Values</key>
+				<array>
+					<string>60</string>
+					<string>300</string>
+					<string>900</string>
+					<string>1800</string>
+					<string>3600</string>
+					</array>
+				</dict>
+				<dict>
+					<key>Type</key>
+					<string>PSGroupSpecifier</string>
+					<key>Title</key>
+					<string>server_url</string>
+				</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>

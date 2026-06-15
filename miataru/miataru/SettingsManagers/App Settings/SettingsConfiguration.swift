@@ -40,6 +40,7 @@ enum SettingsKeys {
     static let frequentBackgroundBatteryAutoDisableLevel = "frequent_background_battery_auto_disable_level"
     static let frequentBackgroundLocationDeliveryMode = "frequent_background_location_delivery_mode"
     static let frequentBackgroundVisitorCheckInterval = "frequent_background_visitor_check_interval"
+    static let knownVisitorNotificationCooldown = "known_visitor_notification_cooldown"
     static let locationTrackingHealthReminderIntervalDays = "location_tracking_health_reminder_interval_days"
     static let autoRefreshDeviceList = "auto_refresh_device_list"
     static let unknownVisitorAlertsEnabled = "unknown_visitor_alerts_enabled"
@@ -91,6 +92,7 @@ enum SettingsDefaultValues {
     static let frequentBackgroundBatteryAutoDisableLevel = 30
     static let frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.immediate.rawValue
     static let frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.tenMinutes.rawValue
+    static let knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.thirtyMinutes.rawValue
     static let locationTrackingHealthReminderIntervalDays = LocationTrackingHealthReminderInterval.fiveDays.rawValue
     static let autoRefreshDeviceList = true
     static let unknownVisitorAlertsEnabled = false
@@ -135,6 +137,7 @@ enum SettingsDefaultValues {
         SettingsKeys.frequentBackgroundBatteryAutoDisableLevel: String(frequentBackgroundBatteryAutoDisableLevel),
         SettingsKeys.frequentBackgroundLocationDeliveryMode: String(frequentBackgroundLocationDeliveryMode),
         SettingsKeys.frequentBackgroundVisitorCheckInterval: String(frequentBackgroundVisitorCheckInterval),
+        SettingsKeys.knownVisitorNotificationCooldown: String(knownVisitorNotificationCooldown),
         SettingsKeys.locationTrackingHealthReminderIntervalDays: String(locationTrackingHealthReminderIntervalDays),
         SettingsKeys.autoRefreshDeviceList: autoRefreshDeviceList,
         SettingsKeys.unknownVisitorAlertsEnabled: unknownVisitorAlertsEnabled,
@@ -310,6 +313,22 @@ enum FrequentBackgroundVisitorCheckInterval: Int, CaseIterable {
 
     static func normalizedRawValue(_ value: Int) -> Int {
         Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundVisitorCheckInterval
+    }
+}
+
+enum KnownVisitorNotificationCooldown: Int, CaseIterable {
+    case oneMinute = 60
+    case fiveMinutes = 300
+    case fifteenMinutes = 900
+    case thirtyMinutes = 1_800
+    case sixtyMinutes = 3_600
+
+    var timeInterval: TimeInterval {
+        TimeInterval(rawValue)
+    }
+
+    static func normalizedRawValue(_ value: Int) -> Int {
+        Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.knownVisitorNotificationCooldown
     }
 }
 

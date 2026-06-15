@@ -118,3 +118,7 @@
 "75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "Älykkäiden tiheiden päivitysten ilmoitukset";
 "location_tracking_health_reminder_interval_title" = "Seurannan toimintamuistutus";
+
+"1minute" = "1 minuutti";
+"60minutes" = "60 minuuttia";
+"known_visitor_notification_cooldown_title" = "Tunnettujen kävijöiden odotusaika";

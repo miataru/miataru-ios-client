@@ -210,6 +210,16 @@ class SettingsManager: ObservableObject {
             defaults.set(String(frequentBackgroundVisitorCheckInterval), forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval)
         }
     }
+    @Published var knownVisitorNotificationCooldown: Int {
+        didSet {
+            let normalizedValue = KnownVisitorNotificationCooldown.normalizedRawValue(knownVisitorNotificationCooldown)
+            if knownVisitorNotificationCooldown != normalizedValue {
+                knownVisitorNotificationCooldown = normalizedValue
+                return
+            }
+            defaults.set(String(knownVisitorNotificationCooldown), forKey: SettingsKeys.knownVisitorNotificationCooldown)
+        }
+    }
     @Published var locationTrackingHealthReminderIntervalDays: Int {
         didSet {
             let normalizedValue = LocationTrackingHealthReminderInterval.normalizedRawValue(locationTrackingHealthReminderIntervalDays)
@@ -278,6 +288,10 @@ class SettingsManager: ObservableObject {
 
     var frequentBackgroundVisitorCheckIntervalSelection: FrequentBackgroundVisitorCheckInterval {
         FrequentBackgroundVisitorCheckInterval(rawValue: frequentBackgroundVisitorCheckInterval) ?? .tenMinutes
+    }
+
+    var knownVisitorNotificationCooldownSelection: KnownVisitorNotificationCooldown {
+        KnownVisitorNotificationCooldown(rawValue: knownVisitorNotificationCooldown) ?? .thirtyMinutes
     }
 
     var locationTrackingHealthReminderIntervalSelection: LocationTrackingHealthReminderInterval {
@@ -421,6 +435,7 @@ class SettingsManager: ObservableObject {
         self.frequentBackgroundLocationUpdatesExpiresAt = d.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date
         self.frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode))
         self.frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval))
+        self.knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.knownVisitorNotificationCooldown, defaults: d, defaultValue: SettingsDefaultValues.knownVisitorNotificationCooldown))
         self.locationTrackingHealthReminderIntervalDays = LocationTrackingHealthReminderInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.locationTrackingHealthReminderIntervalDays, defaults: d, defaultValue: SettingsDefaultValues.locationTrackingHealthReminderIntervalDays))
         self.autoRefreshDeviceList = d.bool(forKey: SettingsKeys.autoRefreshDeviceList)
         self.unknownVisitorAlertsEnabled = d.bool(forKey: SettingsKeys.unknownVisitorAlertsEnabled)
@@ -489,6 +504,7 @@ class SettingsManager: ObservableObject {
         assignIfChanged(\.frequentBackgroundBatteryAutoDisableLevel, FrequentBackgroundBatteryAutoDisableLevel.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel)))
         assignIfChanged(\.frequentBackgroundLocationDeliveryMode, FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode)))
         assignIfChanged(\.frequentBackgroundVisitorCheckInterval, FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)))
+        assignIfChanged(\.knownVisitorNotificationCooldown, KnownVisitorNotificationCooldown.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.knownVisitorNotificationCooldown, defaults: defaults, defaultValue: SettingsDefaultValues.knownVisitorNotificationCooldown)))
         assignIfChanged(\.locationTrackingHealthReminderIntervalDays, LocationTrackingHealthReminderInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.locationTrackingHealthReminderIntervalDays, defaults: defaults, defaultValue: SettingsDefaultValues.locationTrackingHealthReminderIntervalDays)))
 
         let externalFrequentEnabled = defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)

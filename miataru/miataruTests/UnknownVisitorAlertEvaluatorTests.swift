@@ -126,6 +126,132 @@ struct UnknownVisitorAlertEvaluatorTests {
         #expect(filteredVisitors.first?.TimeStamp == msString(now.addingTimeInterval(50)))
     }
 
+    @Test("Known visitor evaluator selects watched recent visitor with normalized ID")
+    func knownVisitorEvaluatorSelectsWatchedRecentVisitorWithNormalizedID() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let watchedID = "Known-\(UUID().uuidString)"
+        let oldTimestamp = msString(now.addingTimeInterval(-30))
+        let newestTimestamp = msString(now.addingTimeInterval(-5))
+
+        let result = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [
+                MiataruVisitor(DeviceID: watchedID.lowercased(), TimeStamp: oldTimestamp),
+                MiataruVisitor(DeviceID: " \(watchedID.uppercased()) ", TimeStamp: newestTimestamp),
+                MiataruVisitor(DeviceID: "UNWATCHED", TimeStamp: msString(now.addingTimeInterval(-3)))
+            ],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: [
+                KnownVisitorAlertWatchDevice(deviceID: " \(watchedID.lowercased()) ", displayName: "Steffi")
+            ],
+            lastNotifiedAtByDeviceID: [:],
+            lastNotifiedVisitTimestampMsByDeviceID: [:],
+            cooldown: KnownVisitorNotificationCooldown.thirtyMinutes.timeInterval,
+            now: now
+        )
+
+        #expect(result.candidates.count == 1)
+        #expect(result.candidates.first?.deviceID == UnknownVisitorAlertEvaluator.normalizeDeviceID(watchedID))
+        #expect(result.candidates.first?.displayName == "Steffi")
+        #expect(result.candidates.first?.visitTimestampMs == Int64(newestTimestamp))
+    }
+
+    @Test("Known visitor evaluator ignores unwatched and own devices")
+    func knownVisitorEvaluatorIgnoresUnwatchedAndOwnDevices() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+        let result = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [
+                MiataruVisitor(DeviceID: "OWN_DEVICE", TimeStamp: msString(now.addingTimeInterval(-5))),
+                MiataruVisitor(DeviceID: "UNWATCHED", TimeStamp: msString(now.addingTimeInterval(-5)))
+            ],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: [
+                KnownVisitorAlertWatchDevice(deviceID: "OWN_DEVICE", displayName: "Own"),
+                KnownVisitorAlertWatchDevice(deviceID: "WATCHED", displayName: "Watched")
+            ],
+            lastNotifiedAtByDeviceID: [:],
+            lastNotifiedVisitTimestampMsByDeviceID: [:],
+            cooldown: KnownVisitorNotificationCooldown.thirtyMinutes.timeInterval,
+            now: now
+        )
+
+        #expect(result.candidates.isEmpty)
+    }
+
+    @Test("Known visitor evaluator uses 90 second recent visitor window")
+    func knownVisitorEvaluatorUsesRecentVisitorWindow() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+        let result = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [
+                MiataruVisitor(DeviceID: "WATCHED", TimeStamp: msString(now.addingTimeInterval(-91)))
+            ],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: [
+                KnownVisitorAlertWatchDevice(deviceID: "WATCHED", displayName: "Watched")
+            ],
+            lastNotifiedAtByDeviceID: [:],
+            lastNotifiedVisitTimestampMsByDeviceID: [:],
+            cooldown: KnownVisitorNotificationCooldown.thirtyMinutes.timeInterval,
+            now: now
+        )
+
+        #expect(result.candidates.isEmpty)
+    }
+
+    @Test("Known visitor evaluator suppresses duplicate visit timestamp")
+    func knownVisitorEvaluatorSuppressesDuplicateVisitTimestamp() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let timestamp = Int64(msString(now.addingTimeInterval(-5)))!
+
+        let result = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [
+                MiataruVisitor(DeviceID: "WATCHED", TimeStamp: String(timestamp))
+            ],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: [
+                KnownVisitorAlertWatchDevice(deviceID: "WATCHED", displayName: "Watched")
+            ],
+            lastNotifiedAtByDeviceID: ["WATCHED": now.addingTimeInterval(-3_600)],
+            lastNotifiedVisitTimestampMsByDeviceID: ["WATCHED": timestamp],
+            cooldown: KnownVisitorNotificationCooldown.oneMinute.timeInterval,
+            now: now
+        )
+
+        #expect(result.candidates.isEmpty)
+    }
+
+    @Test("Known visitor evaluator respects configured cooldown values")
+    func knownVisitorEvaluatorRespectsConfiguredCooldownValues() {
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let visitor = MiataruVisitor(DeviceID: "WATCHED", TimeStamp: msString(now.addingTimeInterval(-5)))
+        let watchedDevices = [
+            KnownVisitorAlertWatchDevice(deviceID: "WATCHED", displayName: "Watched")
+        ]
+
+        let suppressed = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [visitor],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: watchedDevices,
+            lastNotifiedAtByDeviceID: ["WATCHED": now.addingTimeInterval(-59)],
+            lastNotifiedVisitTimestampMsByDeviceID: [:],
+            cooldown: KnownVisitorNotificationCooldown.oneMinute.timeInterval,
+            now: now
+        )
+        #expect(suppressed.candidates.isEmpty)
+
+        let allowed = KnownVisitorAlertEvaluator.evaluate(
+            visitors: [visitor],
+            ownDeviceID: "OWN_DEVICE",
+            watchedDevices: watchedDevices,
+            lastNotifiedAtByDeviceID: ["WATCHED": now.addingTimeInterval(-KnownVisitorNotificationCooldown.fiveMinutes.timeInterval)],
+            lastNotifiedVisitTimestampMsByDeviceID: [:],
+            cooldown: KnownVisitorNotificationCooldown.fiveMinutes.timeInterval,
+            now: now
+        )
+        #expect(allowed.candidates.count == 1)
+    }
+
     @Test("Alert enrichment requests locations only for unknown candidates")
     func alertEnrichmentRequestsLocationsOnlyForUnknownCandidates() async throws {
         let suiteName = "UnknownVisitorAlertTests-\(UUID().uuidString)"
@@ -262,6 +388,218 @@ struct UnknownVisitorAlertEvaluatorTests {
         let addedRequests = await notifier.addedRequests
         #expect(locationRequests.isEmpty)
         #expect(addedRequests.isEmpty)
+    }
+
+    @Test("Watched known visitor fetch runs without unknown alerts")
+    @MainActor
+    func watchedKnownVisitorFetchRunsWithoutUnknownAlerts() async throws {
+        let suiteName = "KnownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let ownDeviceID = "OWN-\(UUID().uuidString)"
+        let knownID = "KNOWN-\(UUID().uuidString)"
+        let previousDeviceID = thisDeviceIDManager.shared.deviceID
+        let settings = SettingsManager.shared
+        let oldUnknownAlertsEnabled = settings.unknownVisitorAlertsEnabled
+        let oldSmartEnabled = settings.smartFrequentBackgroundLocationUpdatesEnabled
+        let oldFrequentEnabled = settings.frequentBackgroundLocationUpdatesEnabled
+        let oldCooldown = settings.knownVisitorNotificationCooldown
+        let oldDeviceKey = settings.deviceKey
+        let store = KnownDeviceStore.shared
+
+        defer {
+            store.removeDevice(byID: knownID)
+            settings.unknownVisitorAlertsEnabled = oldUnknownAlertsEnabled
+            settings.frequentBackgroundLocationUpdatesEnabled = oldFrequentEnabled
+            settings.smartFrequentBackgroundLocationUpdatesEnabled = oldSmartEnabled
+            settings.knownVisitorNotificationCooldown = oldCooldown
+            settings.deviceKey = oldDeviceKey
+            thisDeviceIDManager.shared.setDeviceID(previousDeviceID)
+        }
+
+        thisDeviceIDManager.shared.setDeviceID(ownDeviceID)
+        settings.deviceKey = "test-device-key"
+        settings.unknownVisitorAlertsEnabled = false
+        settings.smartFrequentBackgroundLocationUpdatesEnabled = true
+        settings.frequentBackgroundLocationUpdatesEnabled = false
+        settings.knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.thirtyMinutes.rawValue
+        store.removeDevice(byID: knownID)
+        #expect(store.add(device: KnownDevice(
+            name: "Watched Known",
+            deviceID: knownID,
+            notifyOnVisitorHistoryAccess: true
+        )))
+
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [
+            MiataruVisitor(DeviceID: knownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(-5)))
+        ])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
+
+        await service.processAfterSuccessfulLocationUpdate(
+            serverURL: URL(string: "https://example.org")!,
+            processKnownVisitorAlerts: true
+        )
+
+        let visitorHistoryRequests = await dataProvider.visitorHistoryRequests
+        let addedRequests = await notifier.addedRequests
+        #expect(visitorHistoryRequests.map(\.deviceID) == [UnknownVisitorAlertEvaluator.normalizeDeviceID(ownDeviceID)])
+        #expect(addedRequests.count == 1)
+        #expect(addedRequests.first?.content.userInfo[UnknownVisitorAlertService.notificationTypeUserInfoKey] as? String == UnknownVisitorAlertService.knownVisitorNotificationType)
+        #expect(addedRequests.first?.content.userInfo[UnknownVisitorAlertService.notificationDeviceIDUserInfoKey] as? String == UnknownVisitorAlertEvaluator.normalizeDeviceID(knownID))
+    }
+
+    @Test("Known visitor alerts are skipped outside frequent visitor checks")
+    @MainActor
+    func knownVisitorAlertsAreSkippedOutsideFrequentVisitorChecks() async throws {
+        let suiteName = "KnownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_250)
+        let ownDeviceID = "OWN-\(UUID().uuidString)"
+        let knownID = "KNOWN-\(UUID().uuidString)"
+        let previousDeviceID = thisDeviceIDManager.shared.deviceID
+        let settings = SettingsManager.shared
+        let oldUnknownAlertsEnabled = settings.unknownVisitorAlertsEnabled
+        let oldSmartEnabled = settings.smartFrequentBackgroundLocationUpdatesEnabled
+        let oldFrequentEnabled = settings.frequentBackgroundLocationUpdatesEnabled
+        let oldCooldown = settings.knownVisitorNotificationCooldown
+        let oldDeviceKey = settings.deviceKey
+        let store = KnownDeviceStore.shared
+
+        defer {
+            store.removeDevice(byID: knownID)
+            settings.unknownVisitorAlertsEnabled = oldUnknownAlertsEnabled
+            settings.frequentBackgroundLocationUpdatesEnabled = oldFrequentEnabled
+            settings.smartFrequentBackgroundLocationUpdatesEnabled = oldSmartEnabled
+            settings.knownVisitorNotificationCooldown = oldCooldown
+            settings.deviceKey = oldDeviceKey
+            thisDeviceIDManager.shared.setDeviceID(previousDeviceID)
+        }
+
+        thisDeviceIDManager.shared.setDeviceID(ownDeviceID)
+        settings.deviceKey = "test-device-key"
+        settings.unknownVisitorAlertsEnabled = true
+        settings.smartFrequentBackgroundLocationUpdatesEnabled = true
+        settings.frequentBackgroundLocationUpdatesEnabled = false
+        settings.knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.thirtyMinutes.rawValue
+        store.removeDevice(byID: knownID)
+        #expect(store.add(device: KnownDevice(
+            name: "Watched Known",
+            deviceID: knownID,
+            notifyOnVisitorHistoryAccess: true
+        )))
+
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [
+            MiataruVisitor(DeviceID: knownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(-5)))
+        ])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
+
+        await service.processAfterSuccessfulLocationUpdate(serverURL: URL(string: "https://example.org")!)
+
+        let visitorHistoryRequests = await dataProvider.visitorHistoryRequests
+        let addedRequests = await notifier.addedRequests
+        #expect(visitorHistoryRequests.count == 1)
+        #expect(addedRequests.isEmpty)
+    }
+
+    @Test("Unknown and known visitor alerts share one visitor history fetch")
+    @MainActor
+    func unknownAndKnownVisitorAlertsShareOneVisitorHistoryFetch() async throws {
+        let suiteName = "KnownVisitorAlertTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 1_700_000_500)
+        let ownDeviceID = "OWN-\(UUID().uuidString)"
+        let knownID = "KNOWN-\(UUID().uuidString)"
+        let unknownID = "UNKNOWN-\(UUID().uuidString)"
+        let previousDeviceID = thisDeviceIDManager.shared.deviceID
+        let settings = SettingsManager.shared
+        let oldUnknownAlertsEnabled = settings.unknownVisitorAlertsEnabled
+        let oldSmartEnabled = settings.smartFrequentBackgroundLocationUpdatesEnabled
+        let oldFrequentEnabled = settings.frequentBackgroundLocationUpdatesEnabled
+        let oldCooldown = settings.knownVisitorNotificationCooldown
+        let oldDeviceKey = settings.deviceKey
+        let store = KnownDeviceStore.shared
+
+        defer {
+            store.removeDevice(byID: knownID)
+            settings.unknownVisitorAlertsEnabled = oldUnknownAlertsEnabled
+            settings.frequentBackgroundLocationUpdatesEnabled = oldFrequentEnabled
+            settings.smartFrequentBackgroundLocationUpdatesEnabled = oldSmartEnabled
+            settings.knownVisitorNotificationCooldown = oldCooldown
+            settings.deviceKey = oldDeviceKey
+            thisDeviceIDManager.shared.setDeviceID(previousDeviceID)
+        }
+
+        thisDeviceIDManager.shared.setDeviceID(ownDeviceID)
+        settings.deviceKey = "test-device-key"
+        settings.unknownVisitorAlertsEnabled = true
+        settings.smartFrequentBackgroundLocationUpdatesEnabled = true
+        settings.frequentBackgroundLocationUpdatesEnabled = false
+        settings.knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.thirtyMinutes.rawValue
+        store.removeDevice(byID: knownID)
+        #expect(store.add(device: KnownDevice(
+            name: "Watched Known",
+            deviceID: knownID,
+            notifyOnVisitorHistoryAccess: true
+        )))
+
+        let dataProvider = MockUnknownVisitorAlertDataProvider(visitors: [
+            MiataruVisitor(DeviceID: knownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(-5))),
+            MiataruVisitor(DeviceID: unknownID.lowercased(), TimeStamp: msString(now.addingTimeInterval(-4)))
+        ])
+        let notifier = MockUnknownVisitorAlertNotifier(
+            initialStatus: .authorized,
+            requestAuthorizationResult: .success(true)
+        )
+        let service = UnknownVisitorAlertService(
+            defaults: defaults,
+            notifier: notifier,
+            dataProvider: dataProvider,
+            eventRecorder: NoOpMiataruAutomationEventRecorder(),
+            nowProvider: { now }
+        )
+
+        await service.processAfterSuccessfulLocationUpdate(
+            serverURL: URL(string: "https://example.org")!,
+            processKnownVisitorAlerts: true
+        )
+
+        let visitorHistoryRequests = await dataProvider.visitorHistoryRequests
+        let addedRequests = await notifier.addedRequests
+        let notificationTypes = addedRequests.compactMap {
+            $0.content.userInfo[UnknownVisitorAlertService.notificationTypeUserInfoKey] as? String
+        }
+        #expect(visitorHistoryRequests.count == 1)
+        #expect(notificationTypes.contains(UnknownVisitorAlertService.unknownVisitorNotificationType))
+        #expect(notificationTypes.contains(UnknownVisitorAlertService.knownVisitorNotificationType))
     }
 
     @Test("Permission request enables feature when authorization is granted")
@@ -414,6 +752,7 @@ actor MockUnknownVisitorAlertNotifier: UnknownVisitorAlertNotifying {
 actor MockUnknownVisitorAlertDataProvider: UnknownVisitorAlertDataProviding {
     private let visitors: [MiataruVisitor]
     private(set) var locationRequests: [[String]] = []
+    private(set) var visitorHistoryRequests: [(deviceID: String, amount: Int)] = []
 
     init(visitors: [MiataruVisitor]) {
         self.visitors = visitors
@@ -424,9 +763,8 @@ actor MockUnknownVisitorAlertDataProvider: UnknownVisitorAlertDataProviding {
                            deviceKey: String,
                            amount: Int) async throws -> [MiataruVisitor] {
         _ = serverURL
-        _ = deviceID
         _ = deviceKey
-        _ = amount
+        visitorHistoryRequests.append((deviceID: deviceID, amount: amount))
         return visitors
     }
 

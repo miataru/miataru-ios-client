@@ -2,7 +2,7 @@
 
 ## Summary
 
-This document consolidates unknown visitor alerts, unknown visitor list filtering, allowed-list handoff from unknown visitors, add-device locking, DeviceID case preservation, and visitor history slogan behavior.
+This document consolidates unknown visitor alerts, known-device visitor notifications, unknown visitor list filtering, allowed-list handoff from unknown visitors, add-device locking, DeviceID case preservation, and visitor history slogan behavior.
 
 ## Source Notes Consolidated
 
@@ -16,6 +16,7 @@ This document consolidates:
 - `visitor-history-slogan-display-2026-03-11.md`
 - Visitor refresh details from `location-permission-devicekey-onboarding-refresh-2026-05-13.md`
 - Unknown visitor sound mapping from `notification-sounds-2026-06-07.md`
+- Known-device visitor notification implementation from 2026-06-15
 
 ## Unknown Visitor Alerts
 
@@ -40,16 +41,64 @@ User behavior:
 - Notification body can include slogan and city when enrichment succeeds; otherwise it uses a generic fallback.
 - Unknown visitor notifications use `confirm.caf` through `MiataruNotificationSounds`.
 
+## Known-Device Visitor Notifications
+
+Known-device visitor notifications add a per-device opt-in layer on top of the existing VisitorHistory checks. The feature is meant for trusted or known devices where the user explicitly wants to know when that specific device recently looked up their position.
+
+Scope:
+
+- Disabled by default on every `KnownDevice`.
+- Stored per device as `notifyOnVisitorHistoryAccess`, with legacy `NSSecureCoding` archives defaulting to false.
+- The Edit Device toggle is shown only for other devices, never for the current device.
+- The toggle is visible only when Smart Frequent or manual Frequent background updates are enabled in settings.
+- Visibility follows the stored settings (`smartFrequentBackgroundLocationUpdatesEnabled` or `frequentBackgroundLocationUpdatesEnabled`), not the current Smart Frequent runtime phase.
+- If both Smart Frequent and manual Frequent are disabled, existing per-device opt-ins are preserved but hidden and do not cause extra checks.
+
+User behavior:
+
+- Enabling the per-device toggle requests notification permission when needed.
+- If permission is denied, the toggle is reset and the user sees a localized explanation with an app-settings shortcut.
+- Notification title: "Positionsabfrage erkannt".
+- Notification body format: "%@ hat gerade deine Position abgefragt."
+- Tapping a `known_visitor_alert` notification opens the known device when it still exists; otherwise the tap is ignored without starting an add-device flow.
+
+Trigger and fetch behavior:
+
+- Known-device notifications are evaluated only during automatic Smart/manual frequent VisitorHistory checks.
+- Foreground app opens, ordinary foreground location uploads, manual VisitorHistory screens, and active-app outbox flushes do not trigger known-device notifications.
+- Unknown Visitor Alerts remain independent: they can still use the shared VisitorHistory fetch when enabled.
+- When unknown alerts and known-device alerts are both active for the same eligible check, the service performs one shared VisitorHistory fetch.
+- For "every update" visitor checks, `minimumInterval` is nil by design; the pipeline therefore carries an explicit `processKnownVisitorAlerts` context flag instead of inferring eligibility from the interval value.
+- Queued location updates persist that context flag and re-check foreground/background state before processing, so a background item flushed later while the app is active cannot create a known-device notification.
+
+Evaluation rules:
+
+- DeviceIDs are normalized case-insensitively for comparison and persisted notification state.
+- The current device is excluded.
+- Only known devices with `notifyOnVisitorHistoryAccess == true` are considered.
+- The evaluator keeps the newest VisitorHistory timestamp per watched device.
+- A candidate must be inside the same 90-second recent-visitor window used by the device-list eye indicator.
+- The same visitor timestamp is never notified twice.
+- After a notification is successfully scheduled, the configured per-device cooldown suppresses further notifications until it expires.
+
+Cooldown settings:
+
+- Advanced Options expose "Known visitor notification cooldown".
+- Default: 30 minutes.
+- Allowed values: 1 minute, 5 minutes, 15 minutes, 30 minutes, 60 minutes.
+- Runtime settings and iOS Settings.bundle values share the same key: `known_visitor_notification_cooldown`.
+
 ## Alert Architecture
 
 `UnknownVisitorAlertService` is an actor responsible for:
 
 - `setFeatureEnabled(_:)`
-- `processAfterSuccessfulLocationUpdate(serverURL:)`
+- `processAfterSuccessfulLocationUpdate(serverURL:minimumInterval:processKnownVisitorAlerts:)`
 - notification status evaluation and permission requests through a notifier abstraction
 - watermark-based incremental visitor processing
 - own/known/ignored-device filtering
 - per-device 24-hour cooldown
+- known-device recent-visitor evaluation and per-device configurable cooldown
 - best-effort enrichment lookup
 - local notification scheduling
 - in-flight coalescing for parallel trigger calls
@@ -61,6 +110,15 @@ User behavior:
 - watermark progression
 - cooldown checks
 
+`KnownVisitorAlertEvaluator` owns the known-device selection logic:
+
+- watched-device normalization
+- current-device exclusion
+- newest timestamp per watched device
+- 90-second recent-window filtering
+- duplicate timestamp suppression
+- configurable cooldown checks
+
 Trigger integration:
 
 - After direct successful `updateLocation` submit in `LocationManager`.
@@ -71,8 +129,10 @@ Persistence keys:
 - `unknown_visitor_alerts_enabled`
 - `unknown_visitor_alert_last_processed_ts_ms`
 - `unknown_visitor_alert_last_notified_by_device`
+- `known_visitor_alert_last_notified_at_by_device`
+- `known_visitor_alert_last_notified_visit_ts_by_device`
 
-Localization includes onboarding copy, settings toggle/explanation, permission denied hint/CTA, notification title, detailed body, and fallback body.
+Localization includes onboarding copy, settings toggles/explanations, permission denied hints/CTA, notification titles/bodies, detailed unknown visitor body, fallback body, and known visitor cooldown option explanations.
 
 ## Enrichment And Filtering
 
@@ -207,15 +267,22 @@ Validation included:
 - `DeviceLocationCacheStoreTests`
 - `VisitorHistoryViewModelTests`
 - `LocationUpdateDeliveryCoordinatorTests`
+- `LocationUpdateOutboxStoreTests`
+- `LocationTrackingPolicyTests`
 - `DeviceLinkResolverTests`
 - Full scheme run with 141 unit tests and 5 UI tests for unknown visitor add lock.
 - Notification sound tests verifying unknown visitor alerts use `confirm.caf`.
 - Earlier refresh/onboarding validation with 115 unit tests passing.
+- 2026-06-15 full scheme validation on `miataru Tests - iPhone 16` with 287 tests passing.
 
 Regression coverage verifies:
 
 - Known/allowed visitor plus unknown visitor enriches only the unknown ID.
 - Only known/allowed visitors schedule no notification and no supplemental lookup.
+- Known-device visitor notifications run only from explicit frequent visitor-check context, not from normal app opens or foreground uploads.
+- Watched known devices can share the VisitorHistory fetch with unknown visitor alerts without duplicate fetches.
+- Known-device alert evaluation excludes unwatched devices and the current device, respects the 90-second recent window, suppresses duplicate timestamps, and honors 1/5/15/30/60-minute cooldown values.
+- Queued background updates persist and forward the known-visitor processing context while active-app flushes remain guarded.
 - Own, known, ignored, whitespace-padded, and differently cased IDs are normalized before filtering.
 - iPhone/iPad unknown visitor list filtering excludes known and ignored IDs consistently.
 - URI and scanner parsing preserve mixed-case IDs.

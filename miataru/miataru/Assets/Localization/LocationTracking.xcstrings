@@ -13411,6 +13411,402 @@
           }
         }
       }
+    },
+    "known_visitor_notification_cooldown_title": {
+      "comment": "Picker title for known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afkøling for kendte besøgende"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abkühlzeit für bekannte Besucher"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Known visitor alert cooldown"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espera de visitantes conocidos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunnettujen kävijöiden odotusaika"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Délai pour visiteurs connus"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausa per visitatori noti"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "既知の訪問者通知の間隔"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afkoeltijd bekende bezoekers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已知访客提醒冷却时间"
+          }
+        }
+      }
+    },
+    "known_visitor_notification_cooldown_1m_explanation": {
+      "comment": "Explanation for one-minute known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efter en notifikation for den samme kendte enhed kan Miataru give besked igen efter 1 minut."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach einer Benachrichtigung für dasselbe bekannte Gerät kann Miataru nach 1 Minute erneut benachrichtigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After notifying you about the same known device, Miataru can notify you again after 1 minute."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Después de avisarte sobre el mismo dispositivo conocido, Miataru puede volver a notificarte tras 1 minuto."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun Miataru on ilmoittanut samasta tunnetusta laitteesta, se voi ilmoittaa uudelleen 1 minuutin kuluttua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 1 minute."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo una notifica per lo stesso dispositivo noto, Miataru può avvisarti di nuovo dopo 1 minuto."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ既知のデバイスについて通知した後、Miataru は1分後に再度通知できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na een melding over hetzelfde bekende apparaat kan Miataru je na 1 minuut opnieuw melden."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对同一已知设备发出通知后，Miataru 可在 1 分钟后再次通知你。"
+          }
+        }
+      }
+    },
+    "known_visitor_notification_cooldown_5m_explanation": {
+      "comment": "Explanation for five-minute known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efter en notifikation for den samme kendte enhed kan Miataru give besked igen efter 5 minutter."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach einer Benachrichtigung für dasselbe bekannte Gerät kann Miataru nach 5 Minuten erneut benachrichtigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After notifying you about the same known device, Miataru can notify you again after 5 minutes."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Después de avisarte sobre el mismo dispositivo conocido, Miataru puede volver a notificarte tras 5 minutos."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun Miataru on ilmoittanut samasta tunnetusta laitteesta, se voi ilmoittaa uudelleen 5 minuutin kuluttua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 5 minutes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo una notifica per lo stesso dispositivo noto, Miataru può avvisarti di nuovo dopo 5 minuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ既知のデバイスについて通知した後、Miataru は5分後に再度通知できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na een melding over hetzelfde bekende apparaat kan Miataru je na 5 minuten opnieuw melden."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对同一已知设备发出通知后，Miataru 可在 5 分钟后再次通知你。"
+          }
+        }
+      }
+    },
+    "known_visitor_notification_cooldown_15m_explanation": {
+      "comment": "Explanation for fifteen-minute known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efter en notifikation for den samme kendte enhed kan Miataru give besked igen efter 15 minutter."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach einer Benachrichtigung für dasselbe bekannte Gerät kann Miataru nach 15 Minuten erneut benachrichtigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After notifying you about the same known device, Miataru can notify you again after 15 minutes."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Después de avisarte sobre el mismo dispositivo conocido, Miataru puede volver a notificarte tras 15 minutos."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun Miataru on ilmoittanut samasta tunnetusta laitteesta, se voi ilmoittaa uudelleen 15 minuutin kuluttua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 15 minutes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo una notifica per lo stesso dispositivo noto, Miataru può avvisarti di nuovo dopo 15 minuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ既知のデバイスについて通知した後、Miataru は15分後に再度通知できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na een melding over hetzelfde bekende apparaat kan Miataru je na 15 minuten opnieuw melden."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对同一已知设备发出通知后，Miataru 可在 15 分钟后再次通知你。"
+          }
+        }
+      }
+    },
+    "known_visitor_notification_cooldown_30m_explanation": {
+      "comment": "Explanation for thirty-minute known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efter en notifikation for den samme kendte enhed kan Miataru give besked igen efter 30 minutter."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach einer Benachrichtigung für dasselbe bekannte Gerät kann Miataru nach 30 Minuten erneut benachrichtigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After notifying you about the same known device, Miataru can notify you again after 30 minutes."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Después de avisarte sobre el mismo dispositivo conocido, Miataru puede volver a notificarte tras 30 minutos."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun Miataru on ilmoittanut samasta tunnetusta laitteesta, se voi ilmoittaa uudelleen 30 minuutin kuluttua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 30 minutes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo una notifica per lo stesso dispositivo noto, Miataru può avvisarti di nuovo dopo 30 minuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ既知のデバイスについて通知した後、Miataru は30分後に再度通知できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na een melding over hetzelfde bekende apparaat kan Miataru je na 30 minuten opnieuw melden."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对同一已知设备发出通知后，Miataru 可在 30 分钟后再次通知你。"
+          }
+        }
+      }
+    },
+    "known_visitor_notification_cooldown_60m_explanation": {
+      "comment": "Explanation for sixty-minute known-device visitor notification cooldown",
+      "extractionState": "manual",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Efter en notifikation for den samme kendte enhed kan Miataru give besked igen efter 60 minutter."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach einer Benachrichtigung für dasselbe bekannte Gerät kann Miataru nach 60 Minuten erneut benachrichtigen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After notifying you about the same known device, Miataru can notify you again after 60 minutes."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Después de avisarte sobre el mismo dispositivo conocido, Miataru puede volver a notificarte tras 60 minutos."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun Miataru on ilmoittanut samasta tunnetusta laitteesta, se voi ilmoittaa uudelleen 60 minuutin kuluttua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 60 minutes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dopo una notifica per lo stesso dispositivo noto, Miataru può avvisarti di nuovo dopo 60 minuti."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ既知のデバイスについて通知した後、Miataru は60分後に再度通知できます。"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na een melding over hetzelfde bekende apparaat kan Miataru je na 60 minuten opnieuw melden."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对同一已知设备发出通知后，Miataru 可在 60 分钟后再次通知你。"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

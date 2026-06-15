@@ -2644,6 +2644,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
         let applicationState = UIApplication.shared.applicationState
         let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
+        let processKnownVisitorAlerts = frequentBackgroundVisitorChecksEnabled(for: applicationState)
         let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
         self.serverUpdateStatus = .updating
 
@@ -2656,6 +2657,7 @@ final class LocationManager: NSObject, ObservableObject {
             retentionTime: settings.locationDataRetentionTime,
             deliveryDelay: deliveryDelay,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts,
             applicationState: applicationState,
             batteryLevel: UIDevice.current.batteryLevel
         )
@@ -2697,7 +2699,8 @@ final class LocationManager: NSObject, ObservableObject {
             Task {
                 await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
                     serverURL: serverURL,
-                    minimumInterval: visitorCheckMinimumInterval
+                    minimumInterval: visitorCheckMinimumInterval,
+                    processKnownVisitorAlerts: processKnownVisitorAlerts
                 )
             }
         case .queued:
@@ -2756,6 +2759,13 @@ final class LocationManager: NSObject, ObservableObject {
             applicationState: applicationState,
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             visitorCheckInterval: settings.frequentBackgroundVisitorCheckIntervalSelection
+        )
+    }
+
+    private func frequentBackgroundVisitorChecksEnabled(for applicationState: UIApplication.State) -> Bool {
+        Self.frequentBackgroundVisitorChecksEnabled(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled
         )
     }
 

@@ -118,3 +118,7 @@
 "75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "スマート高頻度更新の通知";
 "location_tracking_health_reminder_interval_title" = "トラッキング確認リマインダー";
+
+"1minute" = "1分";
+"60minutes" = "60分";
+"known_visitor_notification_cooldown_title" = "既知の訪問者通知の間隔";

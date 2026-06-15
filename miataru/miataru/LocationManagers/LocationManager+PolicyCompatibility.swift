@@ -470,6 +470,14 @@ extension LocationManager {
         )
     }
 
+    static func frequentBackgroundVisitorChecksEnabled(applicationState: UIApplication.State,
+                                                       frequentUpdatesEnabled: Bool) -> Bool {
+        LocationTrackingPolicy.frequentBackgroundVisitorChecksEnabled(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled
+        )
+    }
+
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
                                                               authorizationStatus: CLAuthorizationStatus,
                                                               deviceKeyAuthBlocked: Bool) -> Bool {

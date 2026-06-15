@@ -53,6 +53,7 @@ private enum SettingsTextTable {
         if key.hasPrefix("activity_type_")
             || key.hasPrefix("background_")
             || key.hasPrefix("frequent_background_")
+            || key.hasPrefix("known_visitor_notification_")
             || key.hasPrefix("smart_frequent_")
             || key.hasPrefix("location_tracking_")
             || key.hasPrefix("location_update_outbox_")

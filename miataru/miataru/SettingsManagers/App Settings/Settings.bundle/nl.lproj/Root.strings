@@ -118,3 +118,7 @@
 "75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "Meldingen voor slimme frequente updates";
 "location_tracking_health_reminder_interval_title" = "Herinnering voor trackingcontrole";
+
+"1minute" = "1 minuut";
+"60minutes" = "60 minuten";
+"known_visitor_notification_cooldown_title" = "Afkoeltijd bekende bezoekers";

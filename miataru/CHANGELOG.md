@@ -1,4 +1,6 @@
 version 3.2.2
+- Added opt-in known-device visitor notifications for Smart/manual frequent visitor-history checks, including per-device controls, localized notification copy, and a configurable 1/5/15/30/60-minute cooldown.
+- Restricted known-device visitor notifications to explicit Smart/manual frequent background visitor checks so normal app opens, foreground uploads, manual visitor-history views, and active-app outbox flushes cannot trigger them.
 - Moved all app string catalogs into `Assets/Localization/`, documented themed catalog ownership for future localization additions, and extended localization QA to read the split catalogs from their new location.
 - Added a configurable Smart frequent exit-fence radius in Advanced Options and iOS Settings with 300 m, 200 m, 150 m, 100 m, 75 m, and 50 m choices, keeping 150 m as the default and fallback for invalid persisted values.
 - Decoupled the Smart frequent exit-fence radius from the manual frequent movement-distance filter, while still capping it to iOS region-monitoring limits and documenting why 25 m and 10 m are not offered for this wake fence.

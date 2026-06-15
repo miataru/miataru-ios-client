@@ -159,22 +159,16 @@ struct iPhone_SettingsView: View {
                 }
 
                 Section(header: Text("advanced_options_and_tracking_status", tableName: "SettingsDiagnostics")) {
-                    Button {
-                        showAdvancedOptionsFromNavigationRequest = true
+                    NavigationLink {
+                        iPhone_AdvancedOptionsView()
                     } label: {
                         HStack {
                             Image(systemName: "slider.horizontal.3")
                                 .foregroundColor(.blue)
                             Text("advanced_options", tableName: "SettingsDiagnostics")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundColor(.secondary)
+                                .accessibilityIdentifier("settings_advanced_options_label")
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
                     .accessibilityIdentifier("settings_advanced_options_link")
 
                     NavigationLink(destination: iPhone_LocationStatusView()

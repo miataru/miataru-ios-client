@@ -104,11 +104,45 @@ struct UnknownVisitorAlertEvaluationResult {
     let newWatermarkMs: Int64
 }
 
+struct KnownVisitorAlertWatchDevice: Equatable {
+    let deviceID: String
+    let displayName: String
+}
+
+struct KnownVisitorAlertCandidate: Equatable {
+    let deviceID: String
+    let displayName: String
+    let visitTimestampMs: Int64
+}
+
+struct KnownVisitorAlertEvaluationResult {
+    let candidates: [KnownVisitorAlertCandidate]
+}
+
 struct UnknownVisitorAlertRuntime {
     let ownDeviceID: String
     let deviceKey: String
     let knownDeviceIDs: Set<String>
     let ignoredDeviceIDs: Set<String>
+    let shouldProcessUnknownVisitorAlerts: Bool
+    let knownVisitorWatchDevices: [KnownVisitorAlertWatchDevice]
+    let knownVisitorNotificationCooldown: TimeInterval
+
+    init(ownDeviceID: String,
+         deviceKey: String,
+         knownDeviceIDs: Set<String>,
+         ignoredDeviceIDs: Set<String>,
+         shouldProcessUnknownVisitorAlerts: Bool = true,
+         knownVisitorWatchDevices: [KnownVisitorAlertWatchDevice] = [],
+         knownVisitorNotificationCooldown: TimeInterval = KnownVisitorNotificationCooldown.thirtyMinutes.timeInterval) {
+        self.ownDeviceID = ownDeviceID
+        self.deviceKey = deviceKey
+        self.knownDeviceIDs = knownDeviceIDs
+        self.ignoredDeviceIDs = ignoredDeviceIDs
+        self.shouldProcessUnknownVisitorAlerts = shouldProcessUnknownVisitorAlerts
+        self.knownVisitorWatchDevices = knownVisitorWatchDevices
+        self.knownVisitorNotificationCooldown = knownVisitorNotificationCooldown
+    }
 }
 
 struct BackgroundVisitorCheckThrottle {
@@ -188,6 +222,68 @@ struct UnknownVisitorAlertEvaluator {
     }
 }
 
+struct KnownVisitorAlertEvaluator {
+    static let recentVisitorWindow: TimeInterval = 90
+
+    static func evaluate(visitors: [MiataruVisitor],
+                         ownDeviceID: String,
+                         watchedDevices: [KnownVisitorAlertWatchDevice],
+                         lastNotifiedAtByDeviceID: [String: Date],
+                         lastNotifiedVisitTimestampMsByDeviceID: [String: Int64],
+                         cooldown: TimeInterval,
+                         now: Date,
+                         recentVisitorWindow: TimeInterval = Self.recentVisitorWindow) -> KnownVisitorAlertEvaluationResult {
+        let normalizedOwnDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(ownDeviceID)
+        let watchedDevicesByID = watchedDevices.reduce(into: [String: KnownVisitorAlertWatchDevice]()) { partialResult, device in
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(device.deviceID)
+            guard !normalizedID.isEmpty, normalizedID != normalizedOwnDeviceID else { return }
+            partialResult[normalizedID] = KnownVisitorAlertWatchDevice(deviceID: normalizedID, displayName: device.displayName)
+        }
+        guard !watchedDevicesByID.isEmpty else {
+            return KnownVisitorAlertEvaluationResult(candidates: [])
+        }
+
+        let cutoff = now.addingTimeInterval(-max(0, recentVisitorWindow))
+        var newestVisitByDeviceID: [String: Int64] = [:]
+
+        for visitor in visitors {
+            guard let visitTimestampMs = UnknownVisitorAlertEvaluator.parseTimestampMs(visitor.TimeStamp) else { continue }
+            let visitDate = Date(timeIntervalSince1970: Double(visitTimestampMs) / 1000.0)
+            guard visitDate >= cutoff else { continue }
+
+            let normalizedVisitorDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(visitor.DeviceID)
+            guard watchedDevicesByID[normalizedVisitorDeviceID] != nil else { continue }
+
+            let existingTimestamp = newestVisitByDeviceID[normalizedVisitorDeviceID] ?? Int64.min
+            if visitTimestampMs > existingTimestamp {
+                newestVisitByDeviceID[normalizedVisitorDeviceID] = visitTimestampMs
+            }
+        }
+
+        let candidates = newestVisitByDeviceID.compactMap { deviceID, visitTimestampMs -> KnownVisitorAlertCandidate? in
+            guard let watchDevice = watchedDevicesByID[deviceID] else { return nil }
+
+            if lastNotifiedVisitTimestampMsByDeviceID[deviceID] == visitTimestampMs {
+                return nil
+            }
+
+            if let lastNotifiedAt = lastNotifiedAtByDeviceID[deviceID],
+               now.timeIntervalSince(lastNotifiedAt) < cooldown {
+                return nil
+            }
+
+            return KnownVisitorAlertCandidate(
+                deviceID: deviceID,
+                displayName: watchDevice.displayName,
+                visitTimestampMs: visitTimestampMs
+            )
+        }
+        .sorted { $0.visitTimestampMs < $1.visitTimestampMs }
+
+        return KnownVisitorAlertEvaluationResult(candidates: candidates)
+    }
+}
+
 actor UnknownVisitorAlertService {
     enum SetFeatureResult: Equatable {
         case enabled
@@ -199,6 +295,7 @@ actor UnknownVisitorAlertService {
 
     static let notificationTypeUserInfoKey = "miataru_notification_type"
     static let unknownVisitorNotificationType = "unknown_visitor_alert"
+    static let knownVisitorNotificationType = "known_visitor_alert"
     static let notificationDeviceIDUserInfoKey = "device_id"
     static let notificationVisitTimestampUserInfoKey = "visit_ts_ms"
 
@@ -206,6 +303,18 @@ actor UnknownVisitorAlertService {
         static let lastProcessedVisitorTimestampMs = "unknown_visitor_alert_last_processed_ts_ms"
         static let lastNotifiedByDeviceID = "unknown_visitor_alert_last_notified_by_device"
         static let lastBackgroundVisitorCheckAt = "unknown_visitor_alert_last_background_check_at"
+        static let knownVisitorLastNotifiedAtByDeviceID = "known_visitor_alert_last_notified_at_by_device"
+        static let knownVisitorLastNotifiedVisitTimestampMsByDeviceID = "known_visitor_alert_last_notified_visit_ts_by_device"
+    }
+
+    private struct VisitorProcessingFeatures {
+        let shouldProcessUnknownVisitorAlerts: Bool
+        let knownVisitorWatchDevices: [KnownVisitorAlertWatchDevice]
+        let knownVisitorNotificationCooldown: TimeInterval
+
+        var shouldFetchVisitorHistory: Bool {
+            shouldProcessUnknownVisitorAlerts || !knownVisitorWatchDevices.isEmpty
+        }
     }
 
     private let defaults: UserDefaults
@@ -234,32 +343,36 @@ actor UnknownVisitorAlertService {
             return .disabled
         }
 
+        if await requestKnownVisitorNotificationAuthorization() {
+            setLastProcessedTimestampMs(currentTimestampMs())
+            return .enabled
+        }
+        return .denied
+    }
+
+    func requestKnownVisitorNotificationAuthorization() async -> Bool {
         let status = await notifier.authorizationStatus()
         switch status {
         case .authorized, .provisional, .ephemeral:
-            setLastProcessedTimestampMs(currentTimestampMs())
-            return .enabled
+            return true
         case .notDetermined:
             do {
-                let granted = try await notifier.requestAuthorization(options: [.alert, .sound, .badge])
-                if granted {
-                    setLastProcessedTimestampMs(currentTimestampMs())
-                    return .enabled
-                }
+                return try await notifier.requestAuthorization(options: [.alert, .sound, .badge])
             } catch {
                 debugLog("[UnknownVisitorAlertService] Notification authorization request failed: \(error)")
+                return false
             }
-            return .denied
         case .denied:
-            return .denied
+            return false
         @unknown default:
-            return .denied
+            return false
         }
     }
 
     func processAfterSuccessfulLocationUpdate(serverURL: URL,
-                                              minimumInterval: TimeInterval? = nil) async {
-        guard await shouldProcessUnknownVisitorAlerts() else { return }
+                                              minimumInterval: TimeInterval? = nil,
+                                              processKnownVisitorAlerts: Bool = false) async {
+        guard await shouldProcessVisitorHistoryNotifications(processKnownVisitorAlerts: processKnownVisitorAlerts) else { return }
         guard shouldRunVisitorCheck(minimumInterval: minimumInterval) else { return }
 
         if isProcessing {
@@ -275,16 +388,14 @@ actor UnknownVisitorAlertService {
         var currentURL: URL? = serverURL
         while let url = currentURL {
             pendingServerURL = nil
-            await processOnce(serverURL: url)
+            await processOnce(serverURL: url, processKnownVisitorAlerts: processKnownVisitorAlerts)
             currentURL = pendingServerURL
         }
     }
 
-    private func shouldProcessUnknownVisitorAlerts() async -> Bool {
-        let featureEnabled = await MainActor.run {
-            SettingsManager.shared.unknownVisitorAlertsEnabled
-        }
-        guard featureEnabled else { return false }
+    private func shouldProcessVisitorHistoryNotifications(processKnownVisitorAlerts: Bool) async -> Bool {
+        let features = await visitorProcessingFeatures(processKnownVisitorAlerts: processKnownVisitorAlerts)
+        guard features.shouldFetchVisitorHistory else { return false }
 
         let status = await notifier.authorizationStatus()
         switch status {
@@ -292,6 +403,37 @@ actor UnknownVisitorAlertService {
             return true
         default:
             return false
+        }
+    }
+
+    private func visitorProcessingFeatures(processKnownVisitorAlerts: Bool) async -> VisitorProcessingFeatures {
+        await MainActor.run {
+            let settings = SettingsManager.shared
+            let ownDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(thisDeviceIDManager.shared.deviceID)
+            let knownVisitorNotificationsAvailable =
+                processKnownVisitorAlerts &&
+                (settings.smartFrequentBackgroundLocationUpdatesEnabled ||
+                 settings.frequentBackgroundLocationUpdatesEnabled)
+
+            let watchedDevices: [KnownVisitorAlertWatchDevice]
+            if knownVisitorNotificationsAvailable {
+                watchedDevices = KnownDeviceStore.shared.devices.compactMap { device in
+                    guard device.notifyOnVisitorHistoryAccess else { return nil }
+                    let normalizedDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(device.DeviceID)
+                    guard !normalizedDeviceID.isEmpty, normalizedDeviceID != ownDeviceID else { return nil }
+                    let trimmedName = device.DeviceName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let displayName = trimmedName.isEmpty ? device.DeviceID : trimmedName
+                    return KnownVisitorAlertWatchDevice(deviceID: normalizedDeviceID, displayName: displayName)
+                }
+            } else {
+                watchedDevices = []
+            }
+
+            return VisitorProcessingFeatures(
+                shouldProcessUnknownVisitorAlerts: settings.unknownVisitorAlertsEnabled,
+                knownVisitorWatchDevices: watchedDevices,
+                knownVisitorNotificationCooldown: settings.knownVisitorNotificationCooldownSelection.timeInterval
+            )
         }
     }
 
@@ -312,7 +454,10 @@ actor UnknownVisitorAlertService {
         return true
     }
 
-    private func processOnce(serverURL: URL) async {
+    private func processOnce(serverURL: URL, processKnownVisitorAlerts: Bool) async {
+        let features = await visitorProcessingFeatures(processKnownVisitorAlerts: processKnownVisitorAlerts)
+        guard features.shouldFetchVisitorHistory else { return }
+
         let runtime = await MainActor.run {
             let settings = SettingsManager.shared
             let ownDeviceID = UnknownVisitorAlertEvaluator.normalizeDeviceID(thisDeviceIDManager.shared.deviceID)
@@ -345,7 +490,10 @@ actor UnknownVisitorAlertService {
                     ownDeviceID: runtime.ownDeviceID,
                     deviceKey: deviceKey,
                     knownDeviceIDs: runtime.knownIDs,
-                    ignoredDeviceIDs: runtime.ignoredIDs
+                    ignoredDeviceIDs: runtime.ignoredIDs,
+                    shouldProcessUnknownVisitorAlerts: features.shouldProcessUnknownVisitorAlerts,
+                    knownVisitorWatchDevices: features.knownVisitorWatchDevices,
+                    knownVisitorNotificationCooldown: features.knownVisitorNotificationCooldown
                 )
             )
         } catch {
@@ -361,6 +509,31 @@ actor UnknownVisitorAlertService {
         let deviceKey = runtime.deviceKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !ownDeviceID.isEmpty, !deviceKey.isEmpty else { return }
 
+        if runtime.shouldProcessUnknownVisitorAlerts {
+            await processUnknownVisitorNotifications(
+                visitors,
+                serverURL: serverURL,
+                ownDeviceID: ownDeviceID,
+                deviceKey: deviceKey,
+                knownDeviceIDs: runtime.knownDeviceIDs,
+                ignoredDeviceIDs: runtime.ignoredDeviceIDs
+            )
+        }
+
+        await processKnownVisitorNotifications(
+            visitors,
+            ownDeviceID: ownDeviceID,
+            watchedDevices: runtime.knownVisitorWatchDevices,
+            cooldown: runtime.knownVisitorNotificationCooldown
+        )
+    }
+
+    private func processUnknownVisitorNotifications(_ visitors: [MiataruVisitor],
+                                                    serverURL: URL,
+                                                    ownDeviceID: String,
+                                                    deviceKey: String,
+                                                    knownDeviceIDs: Set<String>,
+                                                    ignoredDeviceIDs: Set<String>) async {
         let lastProcessedTimestampMs = getLastProcessedTimestampMs()
         var lastNotifiedAtByDeviceID = getLastNotifiedAtByDeviceID()
 
@@ -368,8 +541,8 @@ actor UnknownVisitorAlertService {
             visitors: visitors,
             lastProcessedTimestampMs: lastProcessedTimestampMs,
             ownDeviceID: ownDeviceID,
-            knownDeviceIDs: runtime.knownDeviceIDs,
-            ignoredDeviceIDs: runtime.ignoredDeviceIDs,
+            knownDeviceIDs: knownDeviceIDs,
+            ignoredDeviceIDs: ignoredDeviceIDs,
             lastNotifiedAtByDeviceID: lastNotifiedAtByDeviceID
         )
 
@@ -441,6 +614,58 @@ actor UnknownVisitorAlertService {
         }
 
         setLastNotifiedAtByDeviceID(lastNotifiedAtByDeviceID)
+    }
+
+    private func processKnownVisitorNotifications(_ visitors: [MiataruVisitor],
+                                                  ownDeviceID: String,
+                                                  watchedDevices: [KnownVisitorAlertWatchDevice],
+                                                  cooldown: TimeInterval) async {
+        guard !watchedDevices.isEmpty else { return }
+
+        var lastNotifiedAtByDeviceID = getKnownVisitorLastNotifiedAtByDeviceID()
+        var lastNotifiedVisitTimestampMsByDeviceID = getKnownVisitorLastNotifiedVisitTimestampMsByDeviceID()
+        let evaluation = KnownVisitorAlertEvaluator.evaluate(
+            visitors: visitors,
+            ownDeviceID: ownDeviceID,
+            watchedDevices: watchedDevices,
+            lastNotifiedAtByDeviceID: lastNotifiedAtByDeviceID,
+            lastNotifiedVisitTimestampMsByDeviceID: lastNotifiedVisitTimestampMsByDeviceID,
+            cooldown: cooldown,
+            now: nowProvider()
+        )
+        guard !evaluation.candidates.isEmpty else { return }
+
+        let title = NSLocalizedString("known_visitor_alert_notification_title", tableName: "Devices", comment: "Notification title for a known device visitor alert")
+        let bodyFormat = NSLocalizedString("known_visitor_alert_notification_body_format", tableName: "Devices", comment: "Notification body format when a known device looked up the user's position; placeholder is the known device display name")
+
+        for candidate in evaluation.candidates {
+            let content = UNMutableNotificationContent()
+            content.title = title
+            content.body = String(format: bodyFormat, locale: Locale.current, candidate.displayName)
+            content.sound = MiataruNotificationSounds.unknownVisitor
+            content.userInfo = [
+                Self.notificationTypeUserInfoKey: Self.knownVisitorNotificationType,
+                Self.notificationDeviceIDUserInfoKey: candidate.deviceID,
+                Self.notificationVisitTimestampUserInfoKey: candidate.visitTimestampMs
+            ]
+
+            let request = UNNotificationRequest(
+                identifier: "known-visitor-\(candidate.deviceID)-\(candidate.visitTimestampMs)",
+                content: content,
+                trigger: nil
+            )
+
+            do {
+                try await notifier.add(request)
+                lastNotifiedAtByDeviceID[candidate.deviceID] = nowProvider()
+                lastNotifiedVisitTimestampMsByDeviceID[candidate.deviceID] = candidate.visitTimestampMs
+            } catch {
+                debugLog("[UnknownVisitorAlertService] Failed scheduling known visitor notification: \(error)")
+            }
+        }
+
+        setKnownVisitorLastNotifiedAtByDeviceID(lastNotifiedAtByDeviceID)
+        setKnownVisitorLastNotifiedVisitTimestampMsByDeviceID(lastNotifiedVisitTimestampMsByDeviceID)
     }
 
     private struct SupplementalData {
@@ -580,5 +805,60 @@ actor UnknownVisitorAlertService {
             partialResult[normalizedID] = entry.value.timeIntervalSince1970
         }
         defaults.set(serialized, forKey: Keys.lastNotifiedByDeviceID)
+    }
+
+    private func getKnownVisitorLastNotifiedAtByDeviceID() -> [String: Date] {
+        guard let raw = defaults.dictionary(forKey: Keys.knownVisitorLastNotifiedAtByDeviceID) else {
+            return [:]
+        }
+
+        return raw.reduce(into: [String: Date]()) { partialResult, entry in
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(entry.key)
+            guard !normalizedID.isEmpty, let timestamp = timeIntervalValue(entry.value) else { return }
+            partialResult[normalizedID] = Date(timeIntervalSince1970: timestamp)
+        }
+    }
+
+    private func setKnownVisitorLastNotifiedAtByDeviceID(_ values: [String: Date]) {
+        let serialized = values.reduce(into: [String: TimeInterval]()) { partialResult, entry in
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(entry.key)
+            guard !normalizedID.isEmpty else { return }
+            partialResult[normalizedID] = entry.value.timeIntervalSince1970
+        }
+        defaults.set(serialized, forKey: Keys.knownVisitorLastNotifiedAtByDeviceID)
+    }
+
+    private func getKnownVisitorLastNotifiedVisitTimestampMsByDeviceID() -> [String: Int64] {
+        guard let raw = defaults.dictionary(forKey: Keys.knownVisitorLastNotifiedVisitTimestampMsByDeviceID) else {
+            return [:]
+        }
+
+        return raw.reduce(into: [String: Int64]()) { partialResult, entry in
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(entry.key)
+            guard !normalizedID.isEmpty, let timestamp = timeIntervalValue(entry.value) else { return }
+            partialResult[normalizedID] = Int64(timestamp.rounded())
+        }
+    }
+
+    private func setKnownVisitorLastNotifiedVisitTimestampMsByDeviceID(_ values: [String: Int64]) {
+        let serialized = values.reduce(into: [String: TimeInterval]()) { partialResult, entry in
+            let normalizedID = UnknownVisitorAlertEvaluator.normalizeDeviceID(entry.key)
+            guard !normalizedID.isEmpty else { return }
+            partialResult[normalizedID] = TimeInterval(entry.value)
+        }
+        defaults.set(serialized, forKey: Keys.knownVisitorLastNotifiedVisitTimestampMsByDeviceID)
+    }
+
+    private func timeIntervalValue(_ rawValue: Any) -> TimeInterval? {
+        if let value = rawValue as? TimeInterval {
+            return value
+        }
+        if let number = rawValue as? NSNumber {
+            return number.doubleValue
+        }
+        if let string = rawValue as? String {
+            return TimeInterval(string)
+        }
+        return nil
     }
 }

@@ -33,6 +33,9 @@ struct iPhone_EditDeviceView: View {
     @State private var aclSecurityStatus: DeviceSecurityStatus = .unknown
     @State private var isActivatingAllowedDeviceList = false
     @State private var activationError: String? = nil
+    @State private var tempNotifyOnVisitorHistoryAccess: Bool = false
+    @State private var isRequestingKnownVisitorNotificationPermission = false
+    @State private var knownVisitorNotificationPermissionDenied = false
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @ObservedObject private var store = KnownDeviceStore.shared
@@ -245,6 +248,26 @@ struct iPhone_EditDeviceView: View {
                         }
                     }
                 }
+                if shouldShowKnownVisitorNotificationToggle {
+                    Section(header: Text("known_visitor_alerts_section_title", tableName: "Devices")) {
+                        Toggle(String(localized: "known_visitor_alerts_toggle", table: "Devices"), isOn: knownVisitorNotificationBinding)
+                            .disabled(isRequestingKnownVisitorNotificationPermission || isSaving)
+                        Text("known_visitor_alerts_explanation", tableName: "Devices")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        if knownVisitorNotificationPermissionDenied {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("known_visitor_alerts_permission_denied_message", tableName: "Devices")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                                Button(String(localized: "unknown_visitor_alerts_open_settings_button", table: "Devices")) {
+                                    LocationManager.shared.openAppSettings()
+                                }
+                                .font(.caption)
+                            }
+                        }
+                    }
+                }
                 Section(header: Text("device_qr_code", tableName: "Devices")) {
                     let qrContent = QRCodeShape(
                         data: DeviceLinkResolver.urlString(for: device.DeviceID).data(using: .utf8) ?? Data(),
@@ -288,6 +311,7 @@ struct iPhone_EditDeviceView: View {
                 }
                 tempHasCurrentLocationAccess = device.hasCurrentLocationAccess
                 tempHasHistoryAccess = device.hasHistoryAccess
+                tempNotifyOnVisitorHistoryAccess = device.notifyOnVisitorHistoryAccess
                 sloganDraft = sloganCache.slogan(for: device.DeviceID) ?? ""
                 Task {
                     await refreshSlogan()
@@ -340,6 +364,7 @@ struct iPhone_EditDeviceView: View {
         }
         device.hasCurrentLocationAccess = tempHasCurrentLocationAccess
         device.hasHistoryAccess = tempHasHistoryAccess
+        device.notifyOnVisitorHistoryAccess = tempNotifyOnVisitorHistoryAccess
 
         if isCurrentDevice {
             do {
@@ -602,6 +627,34 @@ struct iPhone_EditDeviceView: View {
 
     private var hasSimilarDeviceName: Bool {
         store.hasCaseInsensitiveNameDuplicate(named: trimmedDeviceName, excluding: device)
+    }
+
+    private var shouldShowKnownVisitorNotificationToggle: Bool {
+        !isCurrentDevice &&
+            (settings.smartFrequentBackgroundLocationUpdatesEnabled || settings.frequentBackgroundLocationUpdatesEnabled)
+    }
+
+    private var knownVisitorNotificationBinding: Binding<Bool> {
+        Binding(
+            get: { tempNotifyOnVisitorHistoryAccess },
+            set: { updateKnownVisitorNotificationPreference($0) }
+        )
+    }
+
+    private func updateKnownVisitorNotificationPreference(_ enabled: Bool) {
+        guard enabled else {
+            knownVisitorNotificationPermissionDenied = false
+            tempNotifyOnVisitorHistoryAccess = false
+            return
+        }
+
+        isRequestingKnownVisitorNotificationPermission = true
+        Task { @MainActor in
+            let granted = await UnknownVisitorAlertService.shared.requestKnownVisitorNotificationAuthorization()
+            tempNotifyOnVisitorHistoryAccess = granted
+            knownVisitorNotificationPermissionDenied = !granted
+            isRequestingKnownVisitorNotificationPermission = false
+        }
     }
 
     private enum EditDeviceSloganError: LocalizedError {

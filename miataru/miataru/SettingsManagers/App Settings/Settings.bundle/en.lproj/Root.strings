@@ -118,3 +118,7 @@
 "75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "Smart frequent update notifications";
 "location_tracking_health_reminder_interval_title" = "Tracking health reminder";
+
+"1minute" = "1 minute";
+"60minutes" = "60 minutes";
+"known_visitor_notification_cooldown_title" = "Known visitor cooldown";

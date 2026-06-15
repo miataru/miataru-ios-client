@@ -118,3 +118,7 @@
 "75m" = "75 m";
 "smart_frequent_background_mode_change_notifications_title" = "Notifikationer for smarte hyppige opdateringer";
 "location_tracking_health_reminder_interval_title" = "Sundhedspåmindelse";
+
+"1minute" = "1 minut";
+"60minutes" = "60 minutter";
+"known_visitor_notification_cooldown_title" = "Afkøling for kendte besøgende";

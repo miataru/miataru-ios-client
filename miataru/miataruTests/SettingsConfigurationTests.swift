@@ -247,6 +247,12 @@ struct SettingsConfigurationTests {
             "frequent_background_visitor_check_10m_explanation",
             "frequent_background_visitor_check_30m_explanation",
             "frequent_background_visitor_check_60m_explanation",
+            "known_visitor_notification_cooldown_title",
+            "known_visitor_notification_cooldown_1m_explanation",
+            "known_visitor_notification_cooldown_5m_explanation",
+            "known_visitor_notification_cooldown_15m_explanation",
+            "known_visitor_notification_cooldown_30m_explanation",
+            "known_visitor_notification_cooldown_60m_explanation",
             "frequent_background_location_updates_active_hint_format",
             "Location updates in the background use the battery-saving standard mode.",
             "tracking_mode_manual_frequent_background_updates_format",
@@ -287,9 +293,11 @@ struct SettingsConfigurationTests {
             "150m",
             "200m",
             "300m",
+            "1minute",
             "5minutes",
             "10minutes",
             "15minutes",
+            "60minutes",
             "location_track",
             "explanation_location_track",
             "save_location_history_to_server",
@@ -346,6 +354,12 @@ struct SettingsConfigurationTests {
             "show_route_progress",
             "explanation_show_route_progress",
             "explanation_unknown_visitor_alerts_toggle",
+            "known_visitor_alerts_section_title",
+            "known_visitor_alerts_toggle",
+            "known_visitor_alerts_explanation",
+            "known_visitor_alerts_permission_denied_message",
+            "known_visitor_alert_notification_title",
+            "known_visitor_alert_notification_body_format",
             "allowed_device_list_enabled_explanation",
             "allowed_device_list_disabled_explanation",
         ]
@@ -450,6 +464,7 @@ struct SettingsConfigurationTests {
             "frequent_background_visitor_check_10m",
             "frequent_background_visitor_check_30m",
             "frequent_background_visitor_check_60m",
+            "known_visitor_notification_cooldown_title",
             "1hour",
             "2hours",
             "3hours",
@@ -473,9 +488,12 @@ struct SettingsConfigurationTests {
             "15kmh",
             "20kmh",
             "30kmh",
+            "1minute",
             "5minutes",
             "10minutes",
             "15minutes",
+            "30minutes",
+            "60minutes",
             "server_url",
             "app_behaviour",
             "deactivate_device_lock",
@@ -549,6 +567,7 @@ struct SettingsConfigurationTests {
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundBatteryAutoDisableLevel] as? String == "30")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundLocationDeliveryMode] as? String == "0")
         #expect(defaultsByKey[SettingsKeys.frequentBackgroundVisitorCheckInterval] as? String == "600")
+        #expect(defaultsByKey[SettingsKeys.knownVisitorNotificationCooldown] as? String == "1800")
         #expect(defaultsByKey[SettingsKeys.locationTrackingHealthReminderIntervalDays] as? String == "5")
         #expect(defaultsByKey[SettingsKeys.disableDeviceAutolock] as? Bool == false)
         #expect(defaultsByKey[SettingsKeys.preventScreenRotation] as? Bool == false)
@@ -586,6 +605,12 @@ struct SettingsConfigurationTests {
         })
         #expect(healthReminderSpecifier["Titles"] as? [String] == ["5days", "7days", "14days", "30days"])
         #expect(healthReminderSpecifier["Values"] as? [String] == ["5", "7", "14", "30"])
+
+        let knownVisitorCooldownSpecifier = try #require(specifiers.first {
+            $0["Key"] as? String == SettingsKeys.knownVisitorNotificationCooldown
+        })
+        #expect(knownVisitorCooldownSpecifier["Titles"] as? [String] == ["1minute", "5minutes", "15minutes", "30minutes", "60minutes"])
+        #expect(knownVisitorCooldownSpecifier["Values"] as? [String] == ["60", "300", "900", "1800", "3600"])
     }
 
     @Test("Frequent background location update settings normalize and expire as expected")
@@ -643,6 +668,15 @@ struct SettingsConfigurationTests {
         #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue) == 3_600)
         #expect(FrequentBackgroundVisitorCheckInterval.normalizedRawValue(123) == SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)
 
+        #expect(SettingsDefaultValues.knownVisitorNotificationCooldown == KnownVisitorNotificationCooldown.thirtyMinutes.rawValue)
+        #expect(KnownVisitorNotificationCooldown.oneMinute.timeInterval == 60)
+        #expect(KnownVisitorNotificationCooldown.fiveMinutes.timeInterval == 300)
+        #expect(KnownVisitorNotificationCooldown.fifteenMinutes.timeInterval == 900)
+        #expect(KnownVisitorNotificationCooldown.thirtyMinutes.timeInterval == 1_800)
+        #expect(KnownVisitorNotificationCooldown.sixtyMinutes.timeInterval == 3_600)
+        #expect(KnownVisitorNotificationCooldown.normalizedRawValue(KnownVisitorNotificationCooldown.sixtyMinutes.rawValue) == 3_600)
+        #expect(KnownVisitorNotificationCooldown.normalizedRawValue(123) == SettingsDefaultValues.knownVisitorNotificationCooldown)
+
         #expect(LocationTrackingHealthReminderInterval.fiveDays.timeInterval == 432_000)
         #expect(LocationTrackingHealthReminderInterval.normalizedRawValue(LocationTrackingHealthReminderInterval.thirtyDays.rawValue) == 30)
         #expect(LocationTrackingHealthReminderInterval.normalizedRawValue(3) == SettingsDefaultValues.locationTrackingHealthReminderIntervalDays)
@@ -668,6 +702,7 @@ struct SettingsConfigurationTests {
         defaults.set("7200", forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration)
         defaults.set("3", forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter)
         defaults.set("200", forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters)
+        defaults.set("60", forKey: SettingsKeys.knownVisitorNotificationCooldown)
         defaults.set("14", forKey: SettingsKeys.locationTrackingHealthReminderIntervalDays)
 
         #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
@@ -677,13 +712,40 @@ struct SettingsConfigurationTests {
         #expect(manager.frequentBackgroundLocationUpdateDuration == FrequentBackgroundLocationUpdateDuration.twoHours.rawValue)
         #expect(manager.frequentBackgroundLocationDistanceFilter == SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)
         #expect(manager.smartFrequentBackgroundExitFenceRadiusMeters == 200)
+        #expect(manager.knownVisitorNotificationCooldown == KnownVisitorNotificationCooldown.oneMinute.rawValue)
         #expect(manager.locationTrackingHealthReminderIntervalDays == LocationTrackingHealthReminderInterval.fourteenDays.rawValue)
         #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == now.addingTimeInterval(7_200))
 
         defaults.set("25", forKey: SettingsKeys.smartFrequentBackgroundExitFenceRadiusMeters)
+        defaults.set("123", forKey: SettingsKeys.knownVisitorNotificationCooldown)
         #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
         #expect(manager.smartFrequentBackgroundExitFenceRadiusMeters == SettingsDefaultValues.smartFrequentBackgroundExitFenceRadiusMeters)
+        #expect(manager.knownVisitorNotificationCooldown == SettingsDefaultValues.knownVisitorNotificationCooldown)
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
+    }
+
+    @Test("KnownDevice visitor notification flag archives and legacy archives default off")
+    func knownDeviceVisitorNotificationFlagArchivesAndLegacyArchivesDefaultOff() throws {
+        let device = KnownDevice(
+            name: "Watched",
+            deviceID: "KNOWN-\(UUID().uuidString)",
+            notifyOnVisitorHistoryAccess: true
+        )
+
+        let data = try NSKeyedArchiver.archivedData(withRootObject: device, requiringSecureCoding: true)
+        let decoded = try #require(NSKeyedUnarchiver.unarchivedObject(ofClasses: [KnownDevice.self, NSString.self], from: data) as? KnownDevice)
+        #expect(decoded.notifyOnVisitorHistoryAccess)
+
+        let legacyDecoder = LegacyKnownDeviceDecoder(values: [
+            "DeviceName": "Legacy",
+            "DeviceID": "LEGACY-\(UUID().uuidString)",
+            "DeviceIsInGroup": false,
+            "KnownDevicesTablePosition": 3,
+            "hasCurrentLocationAccess": true,
+            "hasHistoryAccess": true
+        ])
+        let legacyDevice = try #require(KnownDevice(coder: legacyDecoder))
+        #expect(!legacyDevice.notifyOnVisitorHistoryAccess)
     }
 
     @Test("Location diagnostics log is opt-in, persistent, capped, and exports rounded locations")
@@ -972,5 +1034,34 @@ struct SettingsConfigurationTests {
         return testFileURL
             .deletingLastPathComponent() // miataruTests
             .deletingLastPathComponent() // project root folder in repo
+    }
+}
+
+private final class LegacyKnownDeviceDecoder: NSCoder {
+    private let values: [String: Any]
+
+    init(values: [String: Any]) {
+        self.values = values
+        super.init()
+    }
+
+    override var allowsKeyedCoding: Bool {
+        true
+    }
+
+    override func containsValue(forKey key: String) -> Bool {
+        values[key] != nil
+    }
+
+    override func decodeObject(forKey key: String) -> Any? {
+        values[key]
+    }
+
+    override func decodeBool(forKey key: String) -> Bool {
+        values[key] as? Bool ?? false
+    }
+
+    override func decodeInteger(forKey key: String) -> Int {
+        values[key] as? Int ?? 0
     }
 }

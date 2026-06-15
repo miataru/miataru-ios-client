@@ -637,6 +637,14 @@ struct LocationTrackingPolicyTests {
             frequentUpdatesEnabled: smartEffective,
             visitorCheckInterval: .tenMinutes
         ) == 600)
+        #expect(LocationTrackingPolicy.frequentBackgroundVisitorChecksEnabled(
+            applicationState: .background,
+            frequentUpdatesEnabled: smartEffective
+        ))
+        #expect(!LocationTrackingPolicy.frequentBackgroundVisitorChecksEnabled(
+            applicationState: .active,
+            frequentUpdatesEnabled: smartEffective
+        ))
         #expect(LocationTrackingPolicy.frequentBackgroundLocationDeliveryDelay(
             applicationState: .active,
             frequentUpdatesEnabled: smartEffective,

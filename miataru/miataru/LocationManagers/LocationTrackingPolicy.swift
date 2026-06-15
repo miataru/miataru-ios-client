@@ -283,11 +283,18 @@ enum LocationTrackingPolicy {
     static func frequentBackgroundVisitorCheckMinimumInterval(applicationState: UIApplication.State,
                                                               frequentUpdatesEnabled: Bool,
                                                               visitorCheckInterval: FrequentBackgroundVisitorCheckInterval) -> TimeInterval? {
-        guard applicationState != .active,
-              frequentUpdatesEnabled else {
+        guard frequentBackgroundVisitorChecksEnabled(
+            applicationState: applicationState,
+            frequentUpdatesEnabled: frequentUpdatesEnabled
+        ) else {
             return nil
         }
         return visitorCheckInterval.minimumInterval
+    }
+
+    static func frequentBackgroundVisitorChecksEnabled(applicationState: UIApplication.State,
+                                                       frequentUpdatesEnabled: Bool) -> Bool {
+        applicationState != .active && frequentUpdatesEnabled
     }
 
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,

@@ -50,6 +50,7 @@ final class LocationUpdateUploadService {
                 retentionTime: Int,
                 deliveryDelay: TimeInterval?,
                 visitorCheckMinimumInterval: TimeInterval?,
+                processKnownVisitorAlerts: Bool,
                 applicationState: UIApplication.State,
                 batteryLevel: Float) async -> SubmissionResult {
         guard let payload = Self.payload(
@@ -72,7 +73,8 @@ final class LocationUpdateUploadService {
             enableHistory: enableHistory,
             retentionTime: retentionTime,
             deliveryDelay: deliveryDelay,
-            visitorCheckMinimumInterval: visitorCheckMinimumInterval
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
         )
         return .delivery(result)
     }

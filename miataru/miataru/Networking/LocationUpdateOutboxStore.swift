@@ -20,6 +20,7 @@ struct LocationUpdateOutboxItem: Codable {
     let enableHistory: Bool
     let retentionTime: Int
     let visitorCheckMinimumInterval: TimeInterval?
+    let processKnownVisitorAlerts: Bool
 
     init(
         serverURLString: String,
@@ -29,7 +30,8 @@ struct LocationUpdateOutboxItem: Codable {
         payload: UpdateLocationPayload,
         enableHistory: Bool,
         retentionTime: Int,
-        visitorCheckMinimumInterval: TimeInterval? = nil
+        visitorCheckMinimumInterval: TimeInterval? = nil,
+        processKnownVisitorAlerts: Bool = false
     ) {
         self.dedupeKey = Self.makeDedupeKey(for: payload)
         self.serverURLString = serverURLString
@@ -40,6 +42,34 @@ struct LocationUpdateOutboxItem: Codable {
         self.enableHistory = enableHistory
         self.retentionTime = retentionTime
         self.visitorCheckMinimumInterval = visitorCheckMinimumInterval
+        self.processKnownVisitorAlerts = processKnownVisitorAlerts
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dedupeKey
+        case serverURLString
+        case enqueuedAt
+        case availableAfter
+        case attemptCount
+        case payload
+        case enableHistory
+        case retentionTime
+        case visitorCheckMinimumInterval
+        case processKnownVisitorAlerts
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.dedupeKey = try container.decode(String.self, forKey: .dedupeKey)
+        self.serverURLString = try container.decode(String.self, forKey: .serverURLString)
+        self.enqueuedAt = try container.decode(Date.self, forKey: .enqueuedAt)
+        self.availableAfter = try container.decodeIfPresent(Date.self, forKey: .availableAfter)
+        self.attemptCount = try container.decode(Int.self, forKey: .attemptCount)
+        self.payload = try container.decode(UpdateLocationPayload.self, forKey: .payload)
+        self.enableHistory = try container.decode(Bool.self, forKey: .enableHistory)
+        self.retentionTime = try container.decode(Int.self, forKey: .retentionTime)
+        self.visitorCheckMinimumInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .visitorCheckMinimumInterval)
+        self.processKnownVisitorAlerts = try container.decodeIfPresent(Bool.self, forKey: .processKnownVisitorAlerts) ?? false
     }
 
     static func makeDedupeKey(for payload: UpdateLocationPayload) -> String {
@@ -106,7 +136,8 @@ actor LocationUpdateOutboxStore {
         enableHistory: Bool,
         retentionTime: Int,
         availableAfter: Date? = nil,
-        visitorCheckMinimumInterval: TimeInterval? = nil
+        visitorCheckMinimumInterval: TimeInterval? = nil,
+        processKnownVisitorAlerts: Bool = false
     ) {
         pruneExpiredEntriesIfNeeded()
 
@@ -117,7 +148,8 @@ actor LocationUpdateOutboxStore {
             payload: payload,
             enableHistory: enableHistory,
             retentionTime: retentionTime,
-            visitorCheckMinimumInterval: visitorCheckMinimumInterval
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
         )
 
         guard !items.contains(where: { $0.dedupeKey == item.dedupeKey }) else {
