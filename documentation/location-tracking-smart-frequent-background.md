@@ -353,6 +353,39 @@ Deactivation clears runtime state, stops frequent updates on the next mode appli
 
 Core Location batches are filtered for valid coordinates/timestamps and processed chronologically. Implausibly future-dated, too old, or older-than-current samples are rejected before updating cache, Smart seeds, fence anchors, diagnostics counters, or uploads.
 
+The filters are intentionally layered because not every bad-looking sample should have the same blast radius:
+
+| Stage | Filter | Applies To | If Rejected |
+|---|---|---|---|
+| Tracking eligibility | Tracking disabled, missing required authorization, or DeviceKey/auth blocked | Core Location service mode | Location services stop or resolve to `stopped`; no upload path is expected. |
+| Batch processability | Coordinate latitude/longitude must be finite and valid; timestamp must be finite | Every `didUpdateLocations` batch | Invalid entries are removed before chronological processing; an all-invalid batch is ignored. |
+| Sample freshness/order | Timestamp must not be more than 60s in the future, older than 10 minutes, or older than the newest raw/current/Smart reference timestamp | Every processable sample | Sample is skipped before raw state, Smart state, counters, cache, or upload can change. |
+| Smart/Frequent state gates | Smart startup guard, activation evidence, accuracy recovery, stale frequent-callback cleanup | Background policy and diagnostics | May change Smart/frequent runtime or suppress stale callbacks, but does not itself make a sample uploadable. |
+| Frequent-background accuracy | Background secondary-manager samples require `horizontalAccuracy <= max(configuredFrequentDistanceFilter, 50 m)` | Secondary frequent background callbacks only | Raw diagnostics/recovery can still observe the sample, but `currentLocation`, cache, Smart confirmation, and upload do not update. |
+| Shared upload/cache plausibility | Valid horizontal accuracy, max 300m accuracy, short speed-spike rejection, and large-jump confirmation | All accepted-location candidates before cache/upload | Raw state can remain visible, but `currentLocation`, local cache, and server history are not updated until accepted/confirmed. |
+| Location Sensitivity | Movement distance or accuracy improvement must meet the selected sensitivity level | Normal accepted-location candidates | Sample is kept out of `currentLocation`, cache, and upload. |
+| Frequent sensitivity bypass | Manual frequent or Smart probing/confirmed background callbacks bypass only Location Sensitivity | Secondary frequent background callbacks while frequent runtime is effective | Preserves frequent uploads after earlier quality gates have passed. |
+| Upload deduplication | Same timestamp-second and coordinate microdegrees as last submitted sample | Accepted samples only | `currentLocation` and local cache update, but no duplicate `UpdateLocation` payload is queued/sent. |
+| Payload validation | Latitude, longitude, accuracy, and timestamp must be finite; accuracy must be non-negative | Final `UpdateLocation` payload build | Upload is skipped as invalid payload; this is a final safety net and should normally be unreachable after earlier filters. |
+
+Raw sample handling and upload/cache acceptance are intentionally separate. `latestRawLocation`, Smart/Frequent recovery, and diagnostics can still observe processable Core Location samples, while `currentLocation`, `DeviceLocationCacheStore`, and `UpdateLocation` require the stricter acceptance path.
+
+Shared upload/cache plausibility rejects:
+
+- invalid, negative, or non-finite horizontal accuracy
+- horizontal accuracy above 300 m
+- short speed spikes with at least 50 m movement inside 5 seconds and derived speed above 180 km/h, unless GPS speed is trusted (`speed <= 220 km/h` and `speedAccuracy <= 2 m/s`)
+
+Large jumps after long callback gaps are deferred instead of immediately accepted:
+
+```text
+distance from last accepted location >= 500 m
+and elapsed time since last accepted location >= 120 s
+and GPS speed is not trusted
+```
+
+The deferred candidate is not cached or uploaded. A later sample within 150 m of that candidate confirms the new position and can proceed through the normal acceptance path; a later sample within 150 m of the previous accepted location discards the pending jump as a likely reception anomaly. A new unconfirmed large jump replaces the previous pending candidate.
+
 Location Sensitivity normally rejects candidates that moved too little and did not improve accuracy enough. Exception:
 
 ```text
@@ -362,7 +395,17 @@ and (manual frequent enabled OR Smart phase is probing/confirmedActive):
     accept for upload path even when Location Sensitivity thresholds are not met
 ```
 
-This exception does not bypass invalid-coordinate filtering, stale callback suppression, frequent-background accuracy quality checks, upload deduplication, delivery delay, visitor cadence, or outbox retry policy.
+This exception does not bypass invalid-coordinate filtering, stale callback suppression, shared plausibility filtering, large-jump confirmation, frequent-background accuracy quality checks, upload deduplication, delivery delay, visitor cadence, or outbox retry policy.
+
+Location Sensitivity levels map to:
+
+```text
+1 -> distance >= 3 m  OR accuracy improvement >= 2 m
+2 -> distance >= 5 m  OR accuracy improvement >= 5 m
+3 -> distance >= 10 m OR accuracy improvement >= 10 m
+4 -> distance >= 25 m OR accuracy improvement >= 20 m
+5 -> distance >= 50 m OR accuracy improvement >= 40 m
+```
 
 Frequent-background callbacks in background require:
 

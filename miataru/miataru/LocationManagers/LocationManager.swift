@@ -96,6 +96,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundStartupGuardPending = true
     private var isSmartFrequentExitFenceActive = false
     private var smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
+    private var pendingLargeJumpLocation: PendingLargeJumpLocation?
     private var headingSmoother = HeadingSmoother()
     private enum LocationUpdateSource: String {
         case primary
@@ -111,6 +112,12 @@ final class LocationManager: NSObject, ObservableObject {
             didCleanUp: false,
             shouldSuppressCallback: false
         )
+    }
+
+    private struct PendingLargeJumpLocation {
+        let candidate: CLLocation
+        let previousAcceptedLocation: CLLocation
+        let metrics: LocationSamplePolicy.AcceptanceMetrics
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
@@ -637,6 +644,41 @@ final class LocationManager: NSObject, ObservableObject {
             context[key] = value
         }
         return context
+    }
+
+    private func diagnosticsLocationContext(_ location: CLLocation,
+                                            acceptanceMetrics metrics: LocationSamplePolicy.AcceptanceMetrics,
+                                            extra: [(String, LocationDiagnosticsValue)] = []) -> [String: LocationDiagnosticsValue] {
+        var fields: [(String, LocationDiagnosticsValue)] = [
+            ("horizontalAccuracyMeters", .double(metrics.horizontalAccuracy)),
+            ("maximumHorizontalAccuracyMeters", .double(metrics.maximumHorizontalAccuracy)),
+            ("maximumImplausibleSpeedKmh", .double(metrics.maximumImplausibleSpeedKmh)),
+            ("maximumTrustedGpsSpeedKmh", .double(metrics.maximumTrustedGPSSpeedKmh)),
+            ("maximumTrustedSpeedAccuracyMetersPerSecond", .double(metrics.maximumTrustedSpeedAccuracyMetersPerSecond)),
+            ("largeJumpDistanceMeters", .double(metrics.largeJumpDistanceMeters)),
+            ("largeJumpMinimumElapsedSeconds", .double(metrics.largeJumpMinimumElapsedSeconds)),
+            ("largeJumpConfirmationRadiusMeters", .double(metrics.largeJumpConfirmationRadiusMeters))
+        ]
+        if let distanceMeters = metrics.distanceMeters {
+            fields.append(("distanceMeters", .double(distanceMeters)))
+        }
+        if let elapsedSeconds = metrics.elapsedSeconds {
+            fields.append(("elapsedSeconds", .double(elapsedSeconds)))
+        }
+        if let derivedSpeedKmh = metrics.derivedSpeedKmh {
+            fields.append(("derivedSpeedKmh", .double(derivedSpeedKmh)))
+        }
+        if let gpsSpeedKmh = metrics.gpsSpeedKmh {
+            fields.append(("gpsSpeedKmh", .double(gpsSpeedKmh)))
+        }
+        if let gpsSpeedAccuracy = metrics.gpsSpeedAccuracyMetersPerSecond {
+            fields.append(("gpsSpeedAccuracyMetersPerSecond", .double(gpsSpeedAccuracy)))
+        }
+        if let previousAccuracy = metrics.previousHorizontalAccuracy {
+            fields.append(("previousHorizontalAccuracyMeters", .double(previousAccuracy)))
+        }
+        fields.append(contentsOf: extra)
+        return diagnosticsLocationContext(location, extra: fields)
     }
 
     private func shouldProcessLocationSample(_ location: CLLocation,
@@ -3097,12 +3139,6 @@ extension LocationManager: CLLocationManagerDelegate {
                                             applicationState: UIApplication.State,
                                             updateSource: LocationUpdateSource) -> Bool {
         let (minimumDistance, significantAccuracyImprovement) = mappedSensitivityValues(for: settings.locationSensitivityLevel)
-        let shouldBypassSensitivityForFrequentUpload = Self.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
-            applicationState: applicationState,
-            updateSourceIsFrequentBackground: updateSource == .frequentBackground,
-            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
-            smartRuntimePhase: smartFrequentBackgroundRuntimePhase
-        )
         guard Self.isFrequentBackgroundLocationAccuracyAcceptable(
             applicationState: applicationState,
             updateSourceIsFrequentBackground: updateSource == .frequentBackground,
@@ -3130,8 +3166,121 @@ extension LocationManager: CLLocationManagerDelegate {
             )
             return false
         }
+
+        var confirmedPendingLargeJump: PendingLargeJumpLocation?
+        if let pendingLargeJumpLocation {
+            if LocationSamplePolicy.confirmsLargeJump(
+                candidate: location,
+                pendingCandidate: pendingLargeJumpLocation.candidate
+            ) {
+                confirmedPendingLargeJump = pendingLargeJumpLocation
+            } else if LocationSamplePolicy.returnsToPreviousAcceptedLocation(
+                candidate: location,
+                previousAcceptedLocation: pendingLargeJumpLocation.previousAcceptedLocation
+            ) {
+                debugLog("[LocationManager] Deferred large-jump location discarded after return near previous accepted location.")
+                diagnosticsLog.appendCoalesced(
+                    level: .warning,
+                    event: "locationAcceptance",
+                    summary: "Discarded deferred large-jump location update.",
+                    result: "rejected",
+                    reason: "large jump discarded",
+                    coalescingKey: "locationAcceptance|rejected|largeJumpDiscarded|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                    context: diagnosticsLocationContext(location, acceptanceMetrics: pendingLargeJumpLocation.metrics, extra: [
+                        ("pendingCandidateAgeSeconds", .double(location.timestamp.timeIntervalSince(pendingLargeJumpLocation.candidate.timestamp))),
+                        ("pendingCandidateReplaced", .bool(false)),
+                        ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                    ])
+                )
+                self.pendingLargeJumpLocation = nil
+            }
+        }
+
+        let acceptanceDecision = LocationSamplePolicy.acceptanceDecision(
+            for: location,
+            previousAcceptedLocation: currentLocation
+        )
+        switch acceptanceDecision {
+        case .accept(let metrics):
+            if let confirmedPendingLargeJump {
+                pendingLargeJumpLocation = nil
+                debugLog("[LocationManager] Deferred large-jump location confirmed.")
+                diagnosticsLog.appendCoalesced(
+                    level: .info,
+                    event: "locationAcceptance",
+                    summary: "Confirmed deferred large-jump location update.",
+                    result: "accepted",
+                    reason: "large jump confirmed",
+                    coalescingKey: "locationAcceptance|accepted|largeJumpConfirmed|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                    context: diagnosticsLocationContext(location, acceptanceMetrics: metrics, extra: [
+                        ("pendingCandidateAgeSeconds", .double(location.timestamp.timeIntervalSince(confirmedPendingLargeJump.candidate.timestamp))),
+                        ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                    ])
+                )
+            }
+        case .reject(let reason, let metrics):
+            debugLog("[LocationManager] Location update ignored: \(reason.rawValue)")
+            diagnosticsLog.appendCoalesced(
+                level: .warning,
+                event: "locationAcceptance",
+                summary: "Ignored implausible location update.",
+                result: "rejected",
+                reason: reason.rawValue,
+                coalescingKey: "locationAcceptance|rejected|plausibility|\(reason.rawValue)|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                context: diagnosticsLocationContext(location, acceptanceMetrics: metrics, extra: [
+                    ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                ])
+            )
+            return false
+        case .deferForConfirmation(let metrics):
+            if let confirmedPendingLargeJump {
+                pendingLargeJumpLocation = nil
+                debugLog("[LocationManager] Deferred large-jump location confirmed.")
+                diagnosticsLog.appendCoalesced(
+                    level: .info,
+                    event: "locationAcceptance",
+                    summary: "Confirmed deferred large-jump location update.",
+                    result: "accepted",
+                    reason: "large jump confirmed",
+                    coalescingKey: "locationAcceptance|accepted|largeJumpConfirmed|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                    context: diagnosticsLocationContext(location, acceptanceMetrics: metrics, extra: [
+                        ("pendingCandidateAgeSeconds", .double(location.timestamp.timeIntervalSince(confirmedPendingLargeJump.candidate.timestamp))),
+                        ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                    ])
+                )
+            } else if let previousLocation = currentLocation {
+                let replacedPendingLargeJump = pendingLargeJumpLocation != nil
+                pendingLargeJumpLocation = PendingLargeJumpLocation(
+                    candidate: location,
+                    previousAcceptedLocation: previousLocation,
+                    metrics: metrics
+                )
+                debugLog("[LocationManager] Location update deferred: large jump awaiting confirmation.")
+                diagnosticsLog.appendCoalesced(
+                    level: .warning,
+                    event: "locationAcceptance",
+                    summary: "Deferred large-jump location update.",
+                    result: "deferred",
+                    reason: "large jump awaiting confirmation",
+                    coalescingKey: "locationAcceptance|deferred|largeJumpAwaitingConfirmation|\(applicationState.rawValue)|\(updateSource.rawValue)",
+                    context: diagnosticsLocationContext(location, acceptanceMetrics: metrics, extra: [
+                        ("pendingCandidateReplaced", .bool(replacedPendingLargeJump)),
+                        ("sensitivityLevel", .integer(settings.locationSensitivityLevel))
+                    ])
+                )
+                return false
+            }
+        }
+
+        let shouldBypassSensitivityForFrequentUpload = Self.shouldBypassLocationSensitivityForFrequentBackgroundUpload(
+            applicationState: applicationState,
+            updateSourceIsFrequentBackground: updateSource == .frequentBackground,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartRuntimePhase: smartFrequentBackgroundRuntimePhase
+        )
         guard let previousLocation = self.currentLocation else {
             debugLog("[LocationManager] First location update accepted.")
+            pendingLargeJumpLocation = nil
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
             diagnosticsLog.append(
                 level: .info,
@@ -3153,6 +3302,7 @@ extension LocationManager: CLLocationManagerDelegate {
         let accuracyImprovement = previousLocation.horizontalAccuracy - location.horizontalAccuracy
         if distance >= minimumDistance {
             debugLog("[LocationManager] Location update accepted: distance (\(distance)m) >= minimum (\(minimumDistance)m)")
+            pendingLargeJumpLocation = nil
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
             diagnosticsLog.appendCoalesced(
                 level: .info,
@@ -3173,6 +3323,7 @@ extension LocationManager: CLLocationManagerDelegate {
         }
         if accuracyImprovement >= significantAccuracyImprovement {
             debugLog("[LocationManager] Location update accepted: accuracy improved by (\(accuracyImprovement)m) >= minimum (\(significantAccuracyImprovement)m)")
+            pendingLargeJumpLocation = nil
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
             diagnosticsLog.appendCoalesced(
                 level: .info,
@@ -3193,6 +3344,7 @@ extension LocationManager: CLLocationManagerDelegate {
         }
         if shouldBypassSensitivityForFrequentUpload {
             debugLog("[LocationManager] Location update accepted: preserving frequent background upload despite sensitivity thresholds")
+            pendingLargeJumpLocation = nil
             recordForensicAcceptedLocation(applicationState: applicationState, source: updateSource)
             diagnosticsLog.appendCoalesced(
                 level: .info,

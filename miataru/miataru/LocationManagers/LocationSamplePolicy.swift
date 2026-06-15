@@ -18,6 +18,35 @@ enum LocationSamplePolicy {
         case outOfOrder
     }
 
+    enum AcceptanceRejectionReason: String, Equatable {
+        case invalidAccuracy = "invalid accuracy"
+        case accuracyTooPoor = "accuracy too poor"
+        case implausibleSpeed = "implausible speed"
+    }
+
+    struct AcceptanceMetrics: Equatable {
+        let distanceMeters: CLLocationDistance?
+        let elapsedSeconds: TimeInterval?
+        let derivedSpeedKmh: Double?
+        let gpsSpeedKmh: Double?
+        let gpsSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy?
+        let previousHorizontalAccuracy: CLLocationAccuracy?
+        let horizontalAccuracy: CLLocationAccuracy
+        let maximumHorizontalAccuracy: CLLocationAccuracy
+        let maximumImplausibleSpeedKmh: Double
+        let maximumTrustedGPSSpeedKmh: Double
+        let maximumTrustedSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy
+        let largeJumpDistanceMeters: CLLocationDistance
+        let largeJumpMinimumElapsedSeconds: TimeInterval
+        let largeJumpConfirmationRadiusMeters: CLLocationDistance
+    }
+
+    enum AcceptanceDecision: Equatable {
+        case accept(AcceptanceMetrics)
+        case reject(reason: AcceptanceRejectionReason, metrics: AcceptanceMetrics)
+        case deferForConfirmation(AcceptanceMetrics)
+    }
+
     struct SubmissionDeduplicationKey: Equatable {
         let timestampSeconds: Int64
         let latitudeMicrodegrees: Int64
@@ -26,6 +55,15 @@ enum LocationSamplePolicy {
 
     static let maximumFutureSkew: TimeInterval = 60
     static let maximumAge: TimeInterval = 10 * 60
+    static let maximumAcceptedHorizontalAccuracy: CLLocationAccuracy = 300
+    static let speedSpikeMinimumDistance: CLLocationDistance = 50
+    static let speedSpikeMaximumElapsed: TimeInterval = 5
+    static let maximumImplausibleDerivedSpeedKmh: Double = 180
+    static let maximumTrustedGPSSpeedKmh: Double = 220
+    static let maximumTrustedSpeedAccuracyMetersPerSecond: CLLocationSpeedAccuracy = 2
+    static let largeJumpDistance: CLLocationDistance = 500
+    static let largeJumpMinimumElapsed: TimeInterval = 120
+    static let largeJumpConfirmationRadius: CLLocationDistance = 150
 
     static func processableLocationUpdates(from locations: [CLLocation]) -> [CLLocation] {
         locations
@@ -119,6 +157,85 @@ enum LocationSamplePolicy {
         }
     }
 
+    static func acceptanceDecision(for location: CLLocation,
+                                   previousAcceptedLocation: CLLocation?,
+                                   maximumHorizontalAccuracy: CLLocationAccuracy = maximumAcceptedHorizontalAccuracy,
+                                   speedSpikeMinimumDistance: CLLocationDistance = speedSpikeMinimumDistance,
+                                   speedSpikeMaximumElapsed: TimeInterval = speedSpikeMaximumElapsed,
+                                   maximumImplausibleSpeedKmh: Double = maximumImplausibleDerivedSpeedKmh,
+                                   maximumTrustedGPSSpeedKmh: Double = maximumTrustedGPSSpeedKmh,
+                                   maximumTrustedSpeedAccuracy: CLLocationSpeedAccuracy = maximumTrustedSpeedAccuracyMetersPerSecond,
+                                   largeJumpDistance: CLLocationDistance = largeJumpDistance,
+                                   largeJumpMinimumElapsed: TimeInterval = largeJumpMinimumElapsed,
+                                   largeJumpConfirmationRadius: CLLocationDistance = largeJumpConfirmationRadius) -> AcceptanceDecision {
+        let metrics = acceptanceMetrics(
+            for: location,
+            previousAcceptedLocation: previousAcceptedLocation,
+            maximumHorizontalAccuracy: maximumHorizontalAccuracy,
+            maximumImplausibleSpeedKmh: maximumImplausibleSpeedKmh,
+            maximumTrustedGPSSpeedKmh: maximumTrustedGPSSpeedKmh,
+            maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy,
+            largeJumpDistance: largeJumpDistance,
+            largeJumpMinimumElapsed: largeJumpMinimumElapsed,
+            largeJumpConfirmationRadius: largeJumpConfirmationRadius
+        )
+
+        guard location.horizontalAccuracy.isFinite,
+              location.horizontalAccuracy >= 0 else {
+            return .reject(reason: .invalidAccuracy, metrics: metrics)
+        }
+
+        if maximumHorizontalAccuracy.isFinite,
+           maximumHorizontalAccuracy >= 0,
+           location.horizontalAccuracy > maximumHorizontalAccuracy {
+            return .reject(reason: .accuracyTooPoor, metrics: metrics)
+        }
+
+        guard previousAcceptedLocation != nil,
+              let distance = metrics.distanceMeters,
+              let elapsed = metrics.elapsedSeconds else {
+            return .accept(metrics)
+        }
+
+        if distance >= speedSpikeMinimumDistance,
+           elapsed > 0,
+           elapsed <= speedSpikeMaximumElapsed,
+           let derivedSpeedKmh = metrics.derivedSpeedKmh,
+           derivedSpeedKmh > maximumImplausibleSpeedKmh,
+           !hasTrustedGPSSpeed(location,
+                               maximumTrustedSpeedKmh: maximumTrustedGPSSpeedKmh,
+                               maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy) {
+            return .reject(reason: .implausibleSpeed, metrics: metrics)
+        }
+
+        if distance >= largeJumpDistance,
+           elapsed >= largeJumpMinimumElapsed,
+           !hasTrustedGPSSpeed(location,
+                               maximumTrustedSpeedKmh: maximumTrustedGPSSpeedKmh,
+                               maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy) {
+            return .deferForConfirmation(metrics)
+        }
+
+        return .accept(metrics)
+    }
+
+    static func confirmsLargeJump(candidate: CLLocation,
+                                  pendingCandidate: CLLocation,
+                                  radiusMeters: CLLocationDistance = largeJumpConfirmationRadius) -> Bool {
+        guard radiusMeters.isFinite,
+              radiusMeters >= 0 else {
+            return false
+        }
+        let distance = candidate.distance(from: pendingCandidate)
+        return distance.isFinite && distance <= radiusMeters
+    }
+
+    static func returnsToPreviousAcceptedLocation(candidate: CLLocation,
+                                                  previousAcceptedLocation: CLLocation,
+                                                  radiusMeters: CLLocationDistance = largeJumpConfirmationRadius) -> Bool {
+        confirmsLargeJump(candidate: candidate, pendingCandidate: previousAcceptedLocation, radiusMeters: radiusMeters)
+    }
+
     static func submissionDeduplicationKey(for location: CLLocation) -> SubmissionDeduplicationKey? {
         let latitude = location.coordinate.latitude
         let longitude = location.coordinate.longitude
@@ -144,5 +261,64 @@ enum LocationSamplePolicy {
         }
 
         return candidateKey != lastSubmittedKey
+    }
+
+    private static func acceptanceMetrics(for location: CLLocation,
+                                          previousAcceptedLocation: CLLocation?,
+                                          maximumHorizontalAccuracy: CLLocationAccuracy,
+                                          maximumImplausibleSpeedKmh: Double,
+                                          maximumTrustedGPSSpeedKmh: Double,
+                                          maximumTrustedSpeedAccuracy: CLLocationSpeedAccuracy,
+                                          largeJumpDistance: CLLocationDistance,
+                                          largeJumpMinimumElapsed: TimeInterval,
+                                          largeJumpConfirmationRadius: CLLocationDistance) -> AcceptanceMetrics {
+        let distance = previousAcceptedLocation.map { location.distance(from: $0) }
+        let elapsed = previousAcceptedLocation.map { location.timestamp.timeIntervalSince($0.timestamp) }
+        let derivedSpeed = derivedSpeedKmh(distanceMeters: distance, elapsedSeconds: elapsed)
+        return AcceptanceMetrics(
+            distanceMeters: distance?.isFinite == true ? distance : nil,
+            elapsedSeconds: elapsed?.isFinite == true ? elapsed : nil,
+            derivedSpeedKmh: derivedSpeed,
+            gpsSpeedKmh: location.speed >= 0 && location.speed.isFinite ? location.speed * 3.6 : nil,
+            gpsSpeedAccuracyMetersPerSecond: location.speedAccuracy >= 0 && location.speedAccuracy.isFinite ? location.speedAccuracy : nil,
+            previousHorizontalAccuracy: previousAcceptedLocation?.horizontalAccuracy,
+            horizontalAccuracy: location.horizontalAccuracy,
+            maximumHorizontalAccuracy: maximumHorizontalAccuracy,
+            maximumImplausibleSpeedKmh: maximumImplausibleSpeedKmh,
+            maximumTrustedGPSSpeedKmh: maximumTrustedGPSSpeedKmh,
+            maximumTrustedSpeedAccuracyMetersPerSecond: maximumTrustedSpeedAccuracy,
+            largeJumpDistanceMeters: largeJumpDistance,
+            largeJumpMinimumElapsedSeconds: largeJumpMinimumElapsed,
+            largeJumpConfirmationRadiusMeters: largeJumpConfirmationRadius
+        )
+    }
+
+    private static func derivedSpeedKmh(distanceMeters: CLLocationDistance?,
+                                        elapsedSeconds: TimeInterval?) -> Double? {
+        guard let distanceMeters,
+              let elapsedSeconds,
+              distanceMeters.isFinite,
+              elapsedSeconds.isFinite,
+              distanceMeters >= 0,
+              elapsedSeconds > 0 else {
+            return nil
+        }
+        return (distanceMeters / elapsedSeconds) * 3.6
+    }
+
+    private static func hasTrustedGPSSpeed(_ location: CLLocation,
+                                           maximumTrustedSpeedKmh: Double,
+                                           maximumTrustedSpeedAccuracy: CLLocationSpeedAccuracy) -> Bool {
+        guard maximumTrustedSpeedKmh.isFinite,
+              maximumTrustedSpeedAccuracy.isFinite,
+              location.speed >= 0,
+              location.speed.isFinite,
+              location.speed * 3.6 <= maximumTrustedSpeedKmh,
+              location.speedAccuracy >= 0,
+              location.speedAccuracy.isFinite,
+              location.speedAccuracy <= maximumTrustedSpeedAccuracy else {
+            return false
+        }
+        return true
     }
 }

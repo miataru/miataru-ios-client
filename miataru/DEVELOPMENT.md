@@ -68,7 +68,7 @@ App string catalogs live in `miataru/miataru/Assets/Localization/` and are split
 - Pure location decisions are split into internal policy types:
   - `LocationTrackingPolicy` covers service modes, background configuration, command plans, restore/reconcile decisions, delivery intervals, and battery-disable policy.
   - `SmartFrequentBackgroundPolicy` covers Smart runtime phases, activation evidence, speed/derived movement checks, exit-fence radius, inactivity, and watchdog recovery.
-  - `LocationSamplePolicy` covers batch ordering, stale/future/out-of-order rejection, sensitivity bypass, and upload deduplication.
+  - `LocationSamplePolicy` covers batch ordering, stale/future/out-of-order rejection, upload/cache plausibility filtering, large-jump confirmation, sensitivity bypass, and upload deduplication.
   - `LocationBackgroundForensics` covers gap assessment, foreground-recovery bursts, and significant-change re-arm decisions.
 - Stateful location helpers are kept small: `LocationUpdateUploadService` builds payloads and protects background uploads, `LocationUpdateMetricsStore` owns the 24-hour counter persistence, and `HeadingSmoother` owns heading/course smoothing.
 - `LocationManager+Types.swift` keeps nested UI/status names and typealiases stable, while `LocationManager+PolicyCompatibility.swift` keeps old static policy wrapper entry points available during the refactor.
@@ -82,13 +82,15 @@ App string catalogs live in `miataru/miataru/Assets/Localization/` and are split
 - Smart frequent background updates are a policy layer over the background resolver: Smart waits in significant-change mode, starts a probing frequent-runtime phase from exit-fence, trusted GPS-speed, or trusted derived-movement evidence, sends the activation notification only after accepted frequent-background movement confirms the runtime, and stops runtime after the shared inactivity window when recent callbacks prove inactivity.
 - Smart frequent inactivity handling is split from callback-gap recovery: inactivity timers are scheduled only while recent location callbacks prove continued evaluation; stale callback gaps clear the next inactivity timeout, emit a coalesced diagnostic, and stay under watchdog recovery instead of synchronously re-evaluating inactivity.
 - Smart frequent accuracy recovery is internal to the default 100 m frequent filter: very coarse frequent-background fixes are rejected from upload/state, can temporarily boost Core Location to 10 m / nearest-ten-meters, and then return to the configured 100 m mode after a good fix or timeout.
+- Shared upload/cache plausibility filtering rejects invalid/coarse fixes, short implausible speed spikes, and unconfirmed large jumps before they can update `currentLocation`, local cache, or server history. `latestRawLocation`, Smart/Frequent recovery, and diagnostics still see raw samples.
 - Frequent-background accuracy acceptance remains `horizontalAccuracy <= max(configuredFrequentDistanceFilter, 50 m)`, so 25 m mode rejects fixes worse than 50 m while 100 m mode keeps its 100 m gate/recovery behavior.
+- The full filter chain is documented in `documentation/location-tracking-smart-frequent-background.md`: service eligibility, batch validity, sample age/order, Smart/Frequent state gates, frequent-background accuracy, upload/cache plausibility, Location Sensitivity, frequent sensitivity bypass, upload dedupe, and final payload validation.
 - Manual frequent background mode is still available as the Stage 2 override after Smart frequent updates are enabled. Manual mode ignores Smart activation/deactivation criteria and uses its configured duration.
 - Frequent background settings include Smart speed threshold/detection/inactivity, optional Smart mode-change notifications, manual distance/duration, delivery delay, visitor-check cadence, reminder/expiry notifications, and low-battery auto-disable.
 - Existing installs with manual frequent mode enabled are normalized/migrated so the Smart prerequisite is also enabled.
 - `documentation/location-tracking-smart-frequent-background.md` is the canonical if-then reference for stopped, foreground, standard background, manual frequent, Smart waiting/probing/confirmedActive, watchdog recovery, and upload/outbox behavior.
 - Navigation views call `beginNavigationLocationSession()` / `endNavigationLocationSession(_:)` so focused navigation gets immediate local location updates without bypassing lifecycle background policy.
-- `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity-filtered.
+- `latestRawLocation` exists for UI that needs immediate local movement; `currentLocation` remains sensitivity- and plausibility-filtered.
 
 ### API and Retry
 

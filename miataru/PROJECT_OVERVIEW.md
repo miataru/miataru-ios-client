@@ -75,7 +75,7 @@ miataruApp.swift
 
 - `LocationTrackingPolicy` resolves service modes, background configuration, service command plans, restore/reconcile decisions, delivery intervals, and low-battery frequent-mode disablement.
 - `SmartFrequentBackgroundPolicy` owns Smart runtime phase decisions, activation evidence, speed/derived movement checks, exit-fence behavior, inactivity timeouts, and watchdog recovery.
-- `LocationSamplePolicy` owns location batch sorting, invalid/stale/future/out-of-order sample rejection, sensitivity bypass, and upload deduplication keys.
+- `LocationSamplePolicy` owns location batch sorting, invalid/stale/future/out-of-order sample rejection, upload/cache plausibility filtering, large-jump confirmation, sensitivity bypass, and upload deduplication keys.
 - `LocationBackgroundForensics` owns background gap assessment, foreground-recovery burst decisions, and significant-change re-arm policy.
 - `LocationManager+Types` and `LocationManager+PolicyCompatibility` keep UI-facing nested names, typealiases, and existing static policy wrappers stable while the facade shrinks.
 - `LocationBackgroundForensicsRecorder` persists forensic state, significant-change re-arm status, and gap/recovery-burst evidence.
@@ -94,6 +94,8 @@ Foreground tracking uses high accuracy. Background tracking defaults to the batt
 Manual frequent background updates remain available as Stage 2 after Smart frequent updates are enabled. The manual mode overrides Smart runtime decisions and is bounded by user-configured distance, duration, delivery delay, visitor-check interval, reminder/expiration notifications, and low-battery auto-disable. Smart frequent runtime uses the same frequent-mode distance, delivery-delay, and visitor-check interval policies. Existing installs that had manual frequent mode enabled are migrated with both the Smart prerequisite and manual mode enabled; the UI locks Smart while the manual override is active.
 
 The location-status UI reports the user-facing background policy separately from the underlying service mode: significant-change, Smart waiting, Smart frequent active, manual frequent active, and foreground/live. Diagnostic counters are persisted by update mode and reset together after 24 hours.
+
+Upload/cache acceptance is stricter than raw location observation: invalid or coarse fixes, short implausible speed spikes, and unconfirmed large jumps are kept out of `currentLocation`, `DeviceLocationCacheStore`, and `UpdateLocation` while `latestRawLocation`, Smart/Frequent recovery, and diagnostics retain visibility into the original Core Location samples.
 
 ### Miataru API Access
 

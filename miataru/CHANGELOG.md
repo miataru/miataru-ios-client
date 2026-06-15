@@ -1,4 +1,7 @@
 version 3.2.2
+- Added a conservative GPS anomaly filter before local cache and `UpdateLocation` upload so poor reception spikes with invalid/coarse accuracy or implausible short-hop speed are kept out of server history.
+- Added deferred large-jump confirmation for long callback gaps: a suspicious 500 m+ jump now waits for a nearby follow-up fix before replacing the last accepted position, while a return near the previous accepted point discards the pending jump.
+- Added `LocationSamplePolicy` regression coverage for plausible movement, short speed spikes, poor horizontal accuracy, large-jump deferral, confirmation, and discard behavior.
 - Clarified the Edit Device copy for known-device visitor notifications across all supported locales so it explains that alerts are tied to location access during Smart or manual frequent background updates.
 - Added opt-in known-device visitor notifications for Smart/manual frequent visitor-history checks, including per-device controls, localized notification copy, and a configurable 1/5/15/30/60-minute cooldown.
 - Restricted known-device visitor notifications to explicit Smart/manual frequent background visitor checks so normal app opens, foreground uploads, manual visitor-history views, and active-app outbox flushes cannot trigger them.

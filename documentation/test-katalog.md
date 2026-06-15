@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **289** (Unit: 272, UI: 17 incl. 11 screenshot captures)
+- Actively linked app test cases: **304** (Unit: 287, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -202,6 +202,12 @@ Important project observations:
 | UT-LSP-002 | Duplicate location callbacks are suppressed before upload | Prevent duplicate server sends from parallel location services | Same timestamp and coordinate callback is skipped; later timestamp is accepted | LocationSamplePolicy | Unit | Deterministic `CLLocation` fixtures | High |
 | UT-LSP-003 | Location update batches are processed chronologically and skip invalid coordinates | Ensure usable Core Location batch entries can be considered | Multi-location callbacks are sorted by timestamp and invalid-coordinate entries are filtered before processing | LocationSamplePolicy | Unit | deterministic `CLLocation` batch fixtures | High |
 | UT-LSP-004 | Location samples reject stale future and out-of-order timestamps | Protect sample acceptance ordering | Stale, future, duplicate, and out-of-order samples are rejected before changing runtime/upload state | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures + fixed dates | High |
+| UT-LSP-005 | Plausible accepted-location movement passes upload cache filtering | Protect normal movement from over-filtering | Small plausible movement with good accuracy is accepted by the upload/cache plausibility gate | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-LSP-006 | Short untrusted speed spike is rejected before upload cache filtering | Prevent short GPS jump pollution | 50m+ in 1s without trusted GPS speed is rejected as implausible speed | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-LSP-007 | Poor horizontal accuracy is rejected before upload cache filtering | Prevent coarse fixes from cache/upload | Accuracy above 300m is rejected before sensitivity bypass or upload | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-LSP-008 | Large jump after a long callback gap waits for confirmation | Protect long-gap jump handling | 500m+ movement after 120s+ without trusted GPS speed is deferred | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-LSP-009 | Second point near a deferred large jump confirms the candidate | Protect confirmation radius | Follow-up sample within 150m of pending jump confirms candidate | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
+| UT-LSP-010 | Return near the previous accepted point discards a deferred large jump | Protect false-jump discard | Follow-up sample within 150m of prior accepted point discards pending jump | LocationSamplePolicy | Unit | deterministic `CLLocation` fixtures | High |
 | UT-LBF-001 | Background forensic gap assessment distinguishes frequent gaps from significant-change idle | Protect diagnostics gap classification | Frequent callback gaps and significant-change idle windows classify separately | LocationBackgroundForensics | Unit | fixed dates and forensic state | Medium |
 | UT-LBF-002 | Foreground recovery burst policy only logs inside recovery window with activity | Protect recovery-burst diagnostics | Foreground recovery bursts require activity inside the configured recovery window | LocationBackgroundForensics | Unit | fixed dates and counters | Medium |
 | UT-LBF-003 | Significant-change rearm policy attempts only for eligible fresh builds | Protect one-time rearm policy | Re-arm attempts are gated by build identifier, tracking, authorization, DeviceKey block state, and reason | LocationBackgroundForensics | Unit | Static policy inputs + fixed dates | High |
@@ -299,7 +305,7 @@ For gap analysis, this catalog already includes key comparison dimensions:
 Practical baseline for the next step:
 
 - Strong coverage for `RouteCacheStore`, `NavigationRouteRefreshPolicy`, `RouteGhostCalculator`.
-- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, Smart frequent accuracy recovery, stale inactivity-timer callback-gap decisions, 25 m accuracy-gate behavior, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, forensics persistence/logging, and duplicate location callback suppression.
+- Added focused coverage for extracted `LocationTrackingPolicy`, `SmartFrequentBackgroundPolicy`, `LocationSamplePolicy`, `LocationBackgroundForensics`, `LocationBackgroundForensicsRecorder`, and `LocationUpdateMetricsStore` behavior, including reboot-safe tracking decisions, Smart frequent activation/deactivation, Smart frequent accuracy recovery, stale inactivity-timer callback-gap decisions, 25 m accuracy-gate behavior, cold-start and persisted Smart reference gating, implausible Smart activation speed rejection, background lifecycle mode selection, foreground-only `When In Use` authorization, mode-specific update counters, shared frequent-mode delivery/visitor intervals, chronological batch handling, sample rejection, upload/cache GPS anomaly filtering, large-jump confirmation, forensics persistence/logging, and duplicate location callback suppression.
 - Added focused coverage for `HistoryAnalyzer` edge cases: empty/single-point histories, duplicate timestamps, derived speed, provided speed, outlier filtering, poor horizontal accuracy, missing altitude, and 10,000-sample bucketing. History graph rendering, hide/restore interaction, and 10,000-point map/panel responsiveness still need UI or integration coverage.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Added focused coverage for known-device visitor notification evaluation, explicit frequent-check trigger context, shared VisitorHistory fetch behavior, per-device cooldown, and legacy `KnownDevice` persistence defaults.
@@ -307,7 +313,7 @@ Practical baseline for the next step:
 - Added string-catalog QA for stale/new translation-unit cleanup in addition to required-key localization completeness.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
-- Last full shared-scheme validation recorded 287 passing tests on `miataru Tests - iPhone 16` (2026-06-15).
+- Last full unit-target validation recorded 287 passing tests on `miataru Tests - iPhone 16` (2026-06-15).
 
 ## 8) Gap Matrix Reference
 
