@@ -1,4 +1,8 @@
 version 3.2.2
+- Added a local known-device VisitorHistory access log that records when configured devices request the local device position, summarizes requests from the same device within 60 minutes into one row, stores the newest request and currently known requester place/coordinates when available, and caps retention to the newest 100 summary events per requesting device.
+- Added a "Latest Request" App Shortcut and App Intent so Shortcuts/Siri can answer when a selected device last requested the user's position.
+- Added the same access history to Device Details and localized the new automation-event summaries, Device Details section, intent dialogs, shortcut title, and shortcut phrases across all supported app locales.
+- Added focused regression coverage for known visitor access recording, 60-minute summary replacement, duplicate timestamp suppression, current requester-location capture, the per-device 100-record automation-event cap, and the new App Intent dialog/localization inventory.
 - Added smooth live map pin movement for nearby device updates up to 500 m on device and group overview maps, with subtle movement trails and immediate jumps for larger moves.
 - Added smoother selected-marker movement while scrubbing or playing back device history on the map.
 - Changed the iPhone device-history panel auto-hide rule so the 5-second timer starts only after active map pan/zoom, map point selection, or Play/Pause, preventing the panel from hiding while users are simply reading or thinking.

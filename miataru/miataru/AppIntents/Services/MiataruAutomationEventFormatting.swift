@@ -99,6 +99,22 @@ enum MiataruAutomationEventFormatting {
             return NSLocalizedString("automation_event_summary_device_left_place", tableName: "AutomationEvents", comment: "Summary for a device left place event without place name")
         case .unknownVisitorDetected:
             return NSLocalizedString("automation_event_summary_unknown_visitor_detected", tableName: "AutomationEvents", comment: "Summary for an unknown visitor alert event")
+        case .knownDeviceRequestedLocalPosition:
+            if let name = safeDisplayName(record.deviceDisplayName),
+               let placeName = safeDisplayName(record.placeName) {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString("automation_event_summary_known_device_requested_position_place_format", tableName: "AutomationEvents", comment: "Summary for a known device requesting the user's location with place. Arguments: device display name, place name."),
+                    name,
+                    placeName
+                )
+            }
+            if let name = safeDisplayName(record.deviceDisplayName) {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString("automation_event_summary_known_device_requested_position_format", tableName: "AutomationEvents", comment: "Summary for a known device requesting the user's location. Argument: device display name."),
+                    name
+                )
+            }
+            return NSLocalizedString("automation_event_summary_known_device_requested_position", tableName: "AutomationEvents", comment: "Summary for a known device requesting the user's location without a device name")
         case .deviceKeyBlockedOperation:
             return NSLocalizedString("automation_event_summary_device_key_blocked_operation", tableName: "AutomationEvents", comment: "Summary for an operation blocked by DeviceKey authentication")
         case .lowBatteryDisabledFrequentTracking:
@@ -130,6 +146,8 @@ enum MiataruAutomationEventFormatting {
             return NSLocalizedString("automation_event_kind_device_left_place", tableName: "AutomationEvents", comment: "Display name for device left place automation event")
         case .unknownVisitorDetected:
             return NSLocalizedString("automation_event_kind_unknown_visitor_detected", tableName: "AutomationEvents", comment: "Display name for unknown visitor detected automation event")
+        case .knownDeviceRequestedLocalPosition:
+            return NSLocalizedString("automation_event_kind_known_device_requested_position", tableName: "AutomationEvents", comment: "Display name for known device requested local position automation event")
         case .deviceKeyBlockedOperation:
             return NSLocalizedString("automation_event_kind_device_key_blocked_operation", tableName: "AutomationEvents", comment: "Display name for DeviceKey blocked operation automation event")
         case .lowBatteryDisabledFrequentTracking:

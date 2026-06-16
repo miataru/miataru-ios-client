@@ -52,6 +52,67 @@ struct MiataruAutomationEventStoreTests {
         #expect((await store.storageInfo()).recordCount == 2)
     }
 
+    @Test("Kind cap drops oldest matching records without dropping other events")
+    func kindCapDropsOldestMatchingRecords() async throws {
+        let baseDate = Date(timeIntervalSince1970: 1_800_000_000)
+        let store = MiataruAutomationEventStore(
+            fileURL: try temporaryFileURL(),
+            maxRecords: 10,
+            kindMaxRecords: [.knownDeviceRequestedLocalPosition: 2],
+            nowProvider: { baseDate.addingTimeInterval(10) }
+        )
+
+        await store.append(event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate))
+        await store.append(event(kind: .navigationStarted, timestamp: baseDate.addingTimeInterval(1)))
+        await store.append(event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate.addingTimeInterval(2)))
+        await store.append(event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate.addingTimeInterval(3)))
+
+        let records = await store.recent(limit: 10)
+        #expect(records.map(\.kind) == [
+            .knownDeviceRequestedLocalPosition,
+            .knownDeviceRequestedLocalPosition,
+            .navigationStarted
+        ])
+        #expect(records.filter { $0.kind == .knownDeviceRequestedLocalPosition }.map(\.timestamp) == [
+            baseDate.addingTimeInterval(3),
+            baseDate.addingTimeInterval(2)
+        ])
+    }
+
+    @Test("Replace removes matching records and appends replacement")
+    func replaceRemovesMatchingRecordsAndAppendsReplacement() async throws {
+        let baseDate = Date(timeIntervalSince1970: 1_800_000_000)
+        let first = event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate, deviceDisplayName: "Steffi")
+        let replacement = event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate.addingTimeInterval(60), deviceDisplayName: "Steffi")
+        let unrelated = event(kind: .navigationStarted, timestamp: baseDate.addingTimeInterval(30))
+        let store = MiataruAutomationEventStore(fileURL: try temporaryFileURL(), nowProvider: { baseDate.addingTimeInterval(120) })
+
+        await store.append(first)
+        await store.append(unrelated)
+        await store.replace(matching: { $0.id == first.id }, with: replacement)
+
+        let records = await store.recent(limit: 10)
+        #expect(records.map(\.id) == [replacement.id, unrelated.id])
+    }
+
+    @Test("Trim removes oldest matching records only")
+    func trimRemovesOldestMatchingRecordsOnly() async throws {
+        let baseDate = Date(timeIntervalSince1970: 1_800_000_000)
+        let store = MiataruAutomationEventStore(fileURL: try temporaryFileURL(), nowProvider: { baseDate.addingTimeInterval(10) })
+        let first = event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate, deviceDisplayName: "Steffi")
+        let second = event(kind: .knownDeviceRequestedLocalPosition, timestamp: baseDate.addingTimeInterval(1), deviceDisplayName: "Steffi")
+        let unrelated = event(kind: .navigationStarted, timestamp: baseDate.addingTimeInterval(2))
+
+        await store.append(first)
+        await store.append(second)
+        await store.append(unrelated)
+        let removed = await store.trim(matching: MiataruAutomationEventFilter(kinds: [.knownDeviceRequestedLocalPosition]), limit: 1)
+
+        let records = await store.recent(limit: 10)
+        #expect(removed == 1)
+        #expect(records.map(\.id) == [unrelated.id, second.id])
+    }
+
     @Test("Age cap prunes old records on load append and query")
     func ageCapPrunesOldRecords() async throws {
         let url = try temporaryFileURL()

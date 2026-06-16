@@ -26,6 +26,7 @@ The implemented foundation supports:
 - "Get Frequent Tracking Status": report whether manual or Smart frequent tracking is active, inactive, expiring, unlimited, or blocked.
 - "Get Device Status": report a selected device's latest location age, coarse place text, accuracy, and optional distance.
 - "Get Distance to Device": report distance and bearing from the user's current location to a selected tracked device.
+- "Get Latest Location Request": report when a selected known device last requested the user's local position through VisitorHistory.
 - "Get ETA to Device": estimate route travel time to a selected tracked device through the injectable route provider.
 - "Route in Apple Maps": open Apple Maps to the last known target coordinate, with optional route direction and transport mode.
 - "Navigate in Miataru": open Miataru directly into internal navigation, with optional route direction, presentation, and transport mode. External `miataru://` links remain valid for Safari and `simctl openurl`.
@@ -40,9 +41,9 @@ The implemented foundation supports:
 - "Check Device Near Place": check whether one visible authorized device is inside one of its saved place radii.
 - "Find Devices Near Place": return visible authorized devices that are currently near one saved place.
 
-Promoted App Shortcut tiles are intentionally limited to the most reliable user-facing actions: Find Device, Route in Apple Maps, Navigation in Miataru, Start Frequent Tracking, Stop Frequent Tracking, Get Miataru Tracking Status, Get Frequent Tracking Status, Get Device Status, and Get Distance to Device.
+Promoted App Shortcut tiles are intentionally limited to the most reliable user-facing actions: Find Device, Route in Apple Maps, Navigation in Miataru, Start Frequent Tracking, Stop Frequent Tracking, Get Miataru Tracking Status, Get Frequent Tracking Status, Get Device Status, Get Distance to Device, and Get Latest Location Request.
 
-ETA, automation event, and Places intents are implemented as power-user App Intents but are not promoted as App Shortcut tiles yet. The visible Places UI is planned separately in `Places-Sprint/00-overview-concept.md`.
+ETA, general automation event query/export/clear, and Places intents are implemented as power-user App Intents but are not promoted as App Shortcut tiles yet. The visible Places UI is planned separately in `Places-Sprint/00-overview-concept.md`.
 
 ## Relevant Models And Services
 
@@ -56,6 +57,7 @@ Relevant models:
 - `MiataruPlaceRecord`: local saved-place model with stable UUID, owning DeviceID, name, coordinate, radius, and timestamps.
 - `MiataruPlaceStore`: Application Support JSON store for device-scoped saved places.
 - `DeviceLocationCacheStore`: cache for last device locations and previously known reverse-geocoding results.
+- `KnownVisitorAccessHistory`: local bridge that records known-device VisitorHistory accesses into summarized 60-minute automation event rows and exposes the newest 100 summary entries per requesting device for UI and App Intents.
 
 Relevant services:
 
@@ -137,9 +139,10 @@ Places:
 Automation events:
 
 - `MiataruAutomationEventStore` persists a bounded local event log with newest-first querying, count and age retention, and corrupt-file recovery.
+- Known-device location request events have an additional per-device cap of 100 summarized records so each requesting device's local access history cannot grow beyond the requested size.
 - Event payloads are sanitized before persistence so DeviceKey-like fields, authorization tokens, and overlong payload values are removed or bounded.
 - Event App Intents return localized summaries and JSON output without exposing raw DeviceID at the top level.
-- Event query/export/clear intents are power-user App Intents and are not promoted as App Shortcut tiles.
+- General event query/export/clear intents are power-user App Intents and are not promoted as App Shortcut tiles.
 
 Privacy and output:
 
@@ -258,8 +261,9 @@ Status and ETA intents:
 2. Run "Get Frequent Tracking Status" while frequent tracking is inactive, manually active, Smart active or waiting, expired, unlimited, and low-battery blocked where possible.
 3. Run "Get Device Status" for a visible device and verify that the dialog includes age, coarse place or fallback text, and accuracy when available.
 4. Run "Get Distance to Device" with and without a current user location and verify the success and user-location-missing paths.
-5. Run "Get ETA to Device" for each supported transport mode where route calculation is available.
-6. Verify every status and ETA dialog avoids raw DeviceID, DeviceKey, exact coordinates, route-provider internals, and raw server responses.
+5. Run "Get Latest Location Request" for a device with and without recorded access history and verify both the dated response and the no-request response.
+6. Run "Get ETA to Device" for each supported transport mode where route calculation is available.
+7. Verify every status, latest-request, and ETA dialog avoids raw DeviceID, DeviceKey, exact coordinates, route-provider internals, and raw server responses.
 
 Automation event intents:
 
@@ -310,12 +314,14 @@ iOS 26 system validation:
 - no-location and unauthorized errors
 - Apple Maps URL privacy
 - Apple Maps direction and transport behavior
+- latest known-device location request dialog formatting
 - Miataru navigation URL defaults, direction, presentation, and transport override behavior
 - Shortcuts foreground handoff
 - frequent tracking explicit duration, omitted duration, unlimited duration, renewal, and precondition failures
 - low-battery frequent status
 - tracking, frequent tracking, device status, distance, and ETA service behavior
 - automation event append, latest, recent list, clear, retention, corrupt-file recovery, payload sanitization, stable JSON, and privacy summaries
+- known-device VisitorHistory access logging, 60-minute summary replacement, duplicate suppression, current requester place/coordinate capture, and the 100-record per-device event cap
 - place persistence, per-device validation, corrupt-file recovery, entity mapping, query resolution, current-location save, stale-location rejection, proximity calculation, and hidden-device exclusion
 - place intent dialog and JSON privacy
 - on-screen annotation helper privacy filtering
@@ -326,7 +332,7 @@ iOS 26 system validation:
 
 Manual Siri/Shortcuts validation remains required because App Shortcut phrase discovery and Siri recognition are only realistic on device or simulator.
 
-Focused local validation on 2026-06-14 passed 54 Swift Testing cases across the App Intents preparation, automation event store, and place store suites.
+Focused local validation on 2026-06-16 passed 58 Swift Testing cases across the App Intents preparation, automation event store, and known visitor access history suites.
 
 ## iOS 26 Schema Roadmap Boundary
 

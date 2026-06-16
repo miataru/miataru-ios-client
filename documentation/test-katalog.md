@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-06-15)
+# Test Catalog (as of 2026-06-16)
 
 ## 1) Scope and Classification
 
@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **304** (Unit: 287, UI: 17 incl. 11 screenshot captures)
+- Actively linked app test cases: **323** (Unit: 306, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -88,6 +88,10 @@ Important project observations:
 | UT-VHV-003 | Device resolution after adding unknown device | unknown->known transition | First nil, after add() name resolves | VisitorHistory / KnownDeviceStore | Unit | Shared store, cleanup via defer | High |
 | UT-VHV-004 | Visitor history sorting by timestamp | Validate sorting logic | 3 visitors sorted descending by TimeStampDate | VisitorHistory | Unit | Fixed time offsets | Medium |
 | UT-VHV-005 | Shortened device ID format | Validate display format | Long ID becomes `prefix...suffix` | VisitorHistory (UI helper) | Unit | Static string ID | Low |
+| UT-VHV-006 | Known visitor records include current requester location and exclude own or unknown devices | Protect local access-history capture | Known VisitorHistory entries become private automation events with current requester place/coordinates; own and unknown devices are excluded | KnownVisitorAccessHistory | Unit | MiataruVisitor, known-device snapshot, location snapshot | High |
+| UT-VHV-007 | Recording deduplicates repeated visitor timestamps | Prevent repeated local access-history writes | Reprocessing the same known visitor timestamp stores only one automation event and returns the latest access entry | KnownVisitorAccessHistory + MiataruAutomationEventStore | Unit | Temp automation-events JSON | High |
+| UT-VHV-008 | Recording summarizes newer accesses within one hour | Protect summarized access-history storage | A newer request inside the 60-minute window replaces the stored summary row with the newest requester location and increments the summary count; a later request outside the window creates a second row | KnownVisitorAccessHistory + MiataruAutomationEventStore | Unit | Temp automation-events JSON, location snapshots | High |
+| UT-VHV-009 | Recording caps summarized accesses per device | Protect per-device access-history retention | More than 100 summarized rows for one known device drop only that device's oldest row while retaining another device's rows | KnownVisitorAccessHistory + MiataruAutomationEventStore | Unit | Temp automation-events JSON, multi-device visitors | High |
 | UT-DLR-001 | Canonical miataru URI parses device ID | Preserve external URI behavior | `miataru://Device_abc-123` resolves to the case-preserved device ID | DeviceLinkResolver | Unit | URL fixture | High |
 | UT-DLR-002 | Path-style miataru URI remains accepted for compatibility | Keep tolerant URI handling | `miataru:/device_abc-123` resolves to the case-preserved device ID | DeviceLinkResolver | Unit | URL fixture | Medium |
 | UT-DLR-003 | Wrong URI scheme is ignored | Reject unrelated links | `https://...` returns nil | DeviceLinkResolver | Unit | URL fixture | High |
@@ -120,6 +124,10 @@ Important project observations:
 | UT-AIP-014 | Proximity checks include horizontal accuracy allowance | Protect near-place calculation | Device outside radius but within radius+accuracy is considered near | App Intents / IntentLocationService proximity | Unit | Fake intent provider, temp place store | High |
 | UT-AIP-015 | Devices near place excludes hidden devices | Enforce proximity visibility boundary | Hidden/no-current-access devices are omitted from find-near-place results | App Intents / IntentLocationService proximity | Unit | Fake intent provider, temp place store | High |
 | UT-AIP-016 | Place intent dialogs and JSON do not leak identifiers or raw coordinates | Protect place intent output privacy | Place dialogs and JSON omit raw DeviceID, coordinates, DeviceKey, and server URL fields | App Intents / PlaceIntents | Unit | Proximity status fixture | High |
+| UT-AIP-017 | Latest location request dialog includes device and requester place | Protect latest-request Shortcut wording | Dialog text for the new latest-request intent includes the selected device display name and requester place without exposing raw IDs | App Intents / GetLatestLocationRequestIntent | Unit | KnownVisitorAccessHistoryEntry fixture | High |
+| UT-AES-001 | Kind cap drops oldest matching records without dropping other events | Protect per-kind automation retention | A kind-specific cap keeps only the newest known-device request events while retaining unrelated automation events | MiataruAutomationEventStore | Unit | Temp automation-events JSON | High |
+| UT-AES-002 | Replace removes matching records and appends replacement | Protect summarized automation-event updates | Store replacement removes a matching event, keeps unrelated records, persists the replacement, and preserves newest-first query order | MiataruAutomationEventStore | Unit | Temp automation-events JSON | High |
+| UT-AES-003 | Trim removes oldest matching records only | Protect scoped event cleanup | Store trimming removes only the oldest records matching a filter and leaves unrelated events in place | MiataruAutomationEventStore | Unit | Temp automation-events JSON | High |
 | UT-PLS-001 | Places persist reload trim names and normalize radii | Protect saved-place persistence | Saves places to JSON, trims names, clamps min/max radius, and reloads in sorted order | MiataruPlaceStore | Unit | Temp Application Support JSON | High |
 | UT-PLS-002 | Default radius is used for missing or invalid radius | Protect radius defaults | Nil/non-finite radius becomes 150 m | MiataruPlaceStore | Unit | Temp store | Medium |
 | UT-PLS-003 | Invalid and duplicate places are rejected | Protect per-device validation | Empty device IDs, empty names, duplicate names within one device, and invalid coordinates throw typed errors; duplicate names across devices are allowed | MiataruPlaceStore | Unit | Temp store | High |
@@ -314,11 +322,12 @@ Practical baseline for the next step:
 - Added focused coverage for `HistoryAnalyzer` edge cases: empty/single-point histories, duplicate timestamps, derived speed, provided speed, outlier filtering, poor horizontal accuracy, missing altitude, and 10,000-sample bucketing. Added `HistoryPanelAutoHidePolicy` coverage for timer source rules. History graph rendering, visual hide/restore interaction, and 10,000-point map/panel responsiveness still need UI or integration coverage.
 - Added focused coverage for unknown-visitor alert evaluation, permission branching, and localization completeness checks.
 - Added focused coverage for known-device visitor notification evaluation, explicit frequent-check trigger context, shared VisitorHistory fetch behavior, per-device cooldown, and legacy `KnownDevice` persistence defaults.
+- Added focused coverage for known-device VisitorHistory access logging, 60-minute summary replacement, current requester place/coordinate capture, duplicate timestamp suppression, latest-request intent dialog text, per-device access-history retention, and scoped automation-event trimming.
 - Added focused coverage for frequent-background reminder, expiration, low-battery, optional Smart mode-change notifications, and Smart notification permission gating.
 - Added string-catalog QA for stale/new translation-unit cleanup in addition to required-key localization completeness.
 - Some tests are still logic-level only without integration (UI target is active and expanded with deterministic core flows, including the settings split/navigation regression path).
 - Previously extracted map/UI tests are now active; next focus remains integration/E2E for navigation and location pipeline.
-- Last full unit-target validation recorded 287 passing tests on `miataru Tests - iPhone 16` (2026-06-15).
+- Last full unit-target validation recorded 306 passing tests on `miataru Tests - iPhone 16` (2026-06-16); focused validation of the access-history/AppIntents/EventStore suites recorded 58 passing tests on 2026-06-16.
 
 ## 8) Gap Matrix Reference
 

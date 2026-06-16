@@ -191,6 +191,76 @@ struct GetDistanceToDeviceIntent: AppIntent {
     }
 }
 
+struct GetLatestLocationRequestIntent: AppIntent {
+    static var title: LocalizedStringResource = LocalizedStringResource("intent_get_latest_location_request_title", defaultValue: "Get Latest Location Request", table: "AppIntents",
+        comment: "Title for the App Intent that reports when a known device last requested the user's location"
+    )
+    static var description = IntentDescription(
+        LocalizedStringResource("intent_get_latest_location_request_description", defaultValue: "Reports when a known device last requested your location through Visitor History.", table: "AppIntents",
+            comment: "Description for the App Intent that reports the latest known-device VisitorHistory access"
+        )
+    )
+    static var openAppWhenRun: Bool = false
+
+    @Parameter(
+        title: LocalizedStringResource("intent_get_latest_location_request_parameter_device", defaultValue: "Device", table: "AppIntents",
+            comment: "Parameter title for selecting a tracked device for latest location request"
+        ),
+        optionsProvider: TrackedDeviceOptionsProvider()
+    )
+    var device: String
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Get latest location request from \(\.$device)")
+    }
+
+    func perform() async throws -> some IntentResult & ProvidesDialog & ReturnsValue<String> {
+        guard let selectedDevice = try await IntentLocationService.shared.device(for: device) else {
+            throw IntentLocationError.deviceUnavailable
+        }
+
+        let displayName = IntentStatusFormatting.spokenDisplayName(
+            displayName: selectedDevice.name,
+            deviceID: selectedDevice.id
+        )
+
+        guard let access = await KnownVisitorAccessHistory.latestAccess(for: selectedDevice.id) else {
+            let dialogText = String.localizedStringWithFormat(
+                NSLocalizedString("intent_get_latest_location_request_dialog_none_format", tableName: "AppIntents", comment: "Dialog when a device has no recorded location request. Argument: device display name."),
+                displayName
+            )
+            return .result(
+                value: dialogText,
+                dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialogText))
+            )
+        }
+
+        let dialogText = Self.dialogText(for: access, displayName: displayName)
+        return .result(
+            value: dialogText,
+            dialog: IntentDialog(LocalizedStringResource(stringLiteral: dialogText))
+        )
+    }
+
+    static func dialogText(for access: KnownVisitorAccessHistoryEntry, displayName: String) -> String {
+        let dateText = IntentStatusFormatting.localizedDateTime(access.timestamp)
+        if let place = KnownVisitorAccessHistory.locationDescription(for: access) {
+            return String.localizedStringWithFormat(
+                NSLocalizedString("intent_get_latest_location_request_dialog_place_format", tableName: "AppIntents", comment: "Dialog when a device has a recorded location request with requester place. Arguments: device display name, date and time, place."),
+                displayName,
+                dateText,
+                place
+            )
+        }
+
+        return String.localizedStringWithFormat(
+            NSLocalizedString("intent_get_latest_location_request_dialog_format", tableName: "AppIntents", comment: "Dialog when a device has a recorded location request. Arguments: device display name, date and time."),
+            displayName,
+            dateText
+        )
+    }
+}
+
 struct GetETAForDeviceIntent: AppIntent {
     static var title: LocalizedStringResource = LocalizedStringResource("intent_get_eta_for_device_title", defaultValue: "Get ETA to Device", table: "AppIntents",
         comment: "Title for the App Intent that reports ETA to a tracked device"

@@ -260,6 +260,24 @@ struct AppIntentsPreparationTests {
         #expect(!url.absoluteString.contains("Steffi"))
     }
 
+    @Test("Latest location request dialog includes device and requester place")
+    func latestLocationRequestDialogIncludesDeviceAndPlace() {
+        let entry = KnownVisitorAccessHistoryEntry(
+            id: UUID(),
+            deviceID: "DEVICE-1",
+            deviceDisplayName: "Steffi",
+            timestamp: Date(timeIntervalSince1970: 1_800_000_000),
+            latitude: 52.52,
+            longitude: 13.405,
+            placeDescription: "Berlin, Germany"
+        )
+
+        let dialog = GetLatestLocationRequestIntent.dialogText(for: entry, displayName: "Steffi")
+
+        #expect(dialog.contains("Steffi"))
+        #expect(dialog.contains("Berlin, Germany"))
+    }
+
     @Test("Apple Maps URL supports direction and explicit transport without leaking identifiers")
     func appleMapsURLSupportsDirectionAndTransport() throws {
         let location = IntentDeviceLocation(
@@ -1061,6 +1079,7 @@ struct AppIntentsPreparationTests {
             "Get frequent tracking status",
             "Get status for ${device}",
             "Get distance to ${device}",
+            "Get latest location request from ${device}",
             "Get ETA to ${device}",
             "Open Maps route to ${device}",
             "Open Miataru navigation to ${device}",
@@ -1108,6 +1127,10 @@ struct AppIntentsPreparationTests {
             [
                 "Check distance to a device in ${applicationName}",
                 "How far away is a Miataru device in ${applicationName}"
+            ],
+            [
+                "When did a device last request my location in ${applicationName}",
+                "Check a location request in ${applicationName}"
             ]
         ]
         let appShortcutPhraseKeys = appShortcutPhraseGroups.flatMap { $0 }
@@ -1121,7 +1144,8 @@ struct AppIntentsPreparationTests {
             "intent_get_tracking_status_shortcut_title",
             "intent_get_frequent_tracking_status_shortcut_title",
             "intent_get_device_status_shortcut_title",
-            "intent_get_distance_to_device_shortcut_title"
+            "intent_get_distance_to_device_shortcut_title",
+            "intent_get_latest_location_request_shortcut_title"
         ]
         let intentKeys = appIntentsStrings.keys.filter { $0.hasPrefix("intent_") }.sorted()
 

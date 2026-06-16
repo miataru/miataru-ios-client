@@ -120,5 +120,17 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             ),
             systemImageName: "ruler"
         )
+
+        AppShortcut(
+            intent: GetLatestLocationRequestIntent(),
+            phrases: [
+                "When did a device last request my location in \(.applicationName)",
+                "Check a location request in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource("intent_get_latest_location_request_shortcut_title", defaultValue: "Latest Request", table: "AppIntents",
+                comment: "Short title for the latest known-device location request App Shortcut"
+            ),
+            systemImageName: "location.viewfinder"
+        )
     }
 }

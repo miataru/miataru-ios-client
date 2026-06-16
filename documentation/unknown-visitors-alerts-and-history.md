@@ -2,7 +2,7 @@
 
 ## Summary
 
-This document consolidates unknown visitor alerts, known-device visitor notifications, unknown visitor list filtering, allowed-list handoff from unknown visitors, add-device locking, DeviceID case preservation, and visitor history slogan behavior.
+This document consolidates unknown visitor alerts, known-device visitor notifications, known-device access history, unknown visitor list filtering, allowed-list handoff from unknown visitors, add-device locking, DeviceID case preservation, and visitor history slogan behavior.
 
 ## Source Notes Consolidated
 
@@ -17,6 +17,7 @@ This document consolidates:
 - Visitor refresh details from `location-permission-devicekey-onboarding-refresh-2026-05-13.md`
 - Unknown visitor sound mapping from `notification-sounds-2026-06-07.md`
 - Known-device visitor notification implementation from 2026-06-15
+- Known-device VisitorHistory access log implementation from 2026-06-16
 
 ## Unknown Visitor Alerts
 
@@ -87,6 +88,35 @@ Cooldown settings:
 - Default: 30 minutes.
 - Allowed values: 1 minute, 5 minutes, 15 minutes, 30 minutes, 60 minutes.
 - Runtime settings and iOS Settings.bundle values share the same key: `known_visitor_notification_cooldown`.
+
+## Known-Device Access History
+
+Known-device access history records when a configured device appears in VisitorHistory for the local device. It is separate from notifications: every known device is eligible for local logging, even if its per-device notification toggle is off.
+
+Storage and retention:
+
+- Stored as `MiataruAutomationEventKind.knownDeviceRequestedLocalPosition` in the local automation event log.
+- Event timestamp is the VisitorHistory request time, not the later detection time.
+- The access-history writer applies a per-requesting-device cap of 100 summarized records for known-device location requests.
+- Duplicate records are suppressed by normalized DeviceID plus VisitorHistory timestamp.
+- Requests from the same known device within one 60-minute summary window are stored as one event record. A newer request in that window replaces the existing summary row, increments its summary count, and stores the newest request time plus the currently known requester location at that newest request.
+- VisitorHistory itself provides only requester DeviceID and request time. Miataru does not fetch requester location history or backfill older visits for this log; it records only newly observed known-device requests.
+- When available, the event stores the currently known location of the requesting device from `DeviceLocationCacheStore` at logging time. The request time remains the VisitorHistory timestamp, while the requester-location timestamp is stored separately in the event payload.
+- Each event stores the known device display name, normalized DeviceID, summary count/window metadata, current requester latitude/longitude when a cache snapshot exists, requester place text when reverse-geocoding is available, the requester-location snapshot timestamp, and bounded payload metadata.
+
+Recording sources:
+
+- Device-list location refreshes fetch up to 100 VisitorHistory entries and log known-device matches after updating the recent-visitor indicator.
+- The standalone Visitor History view logs known-device matches from the loaded server response.
+- Background visitor notification processing also logs known-device matches from the shared VisitorHistory response.
+- No migration or extra `GetLocationHistory` request is performed for historic visits.
+
+User-facing surfaces:
+
+- Device Details shows a local "Location Requests" section below the QR code for other devices, listing all locally retained summarized access rows and requester place/coordinates.
+- The new "Latest Request" App Shortcut can answer when a selected tracked device last requested the local position.
+- General automation event query/export intents can also include the new event kind.
+- Storage thresholds, payload bounds, per-device trimming, and cleanup triggers are documented in `known-device-access-history-storage-limits.md`.
 
 ## Alert Architecture
 
@@ -274,9 +304,12 @@ Validation included:
 - Notification sound tests verifying unknown visitor alerts use `confirm.caf`.
 - Earlier refresh/onboarding validation with 115 unit tests passing.
 - 2026-06-15 full scheme validation on `miataru Tests - iPhone 16` with 287 tests passing.
+- 2026-06-16 focused validation of `KnownVisitorAccessHistoryTests`, `MiataruAutomationEventStoreTests`, and `AppIntentsPreparationTests` with 54 tests passing.
 
 Regression coverage verifies:
 
+- Known VisitorHistory matches record requester location/place data, exclude own and unknown devices, and deduplicate repeated visitor timestamps.
+- The access-history writer enforces the 100-record cap per requesting device for known-device location request events without dropping other devices' access rows.
 - Known/allowed visitor plus unknown visitor enriches only the unknown ID.
 - Only known/allowed visitors schedule no notification and no supplemental lookup.
 - Known-device visitor notifications run only from explicit frequent visitor-check context, not from normal app opens or foreground uploads.

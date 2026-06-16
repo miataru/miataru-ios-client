@@ -127,20 +127,24 @@ final class DeviceLocationRefresher {
         
         do {
             debugLog("[DeviceLocationRefresher] refreshVisitorHistory for device \(currentDeviceID)")
-            // Request a reasonable amount of visitor history entries (enough to cover 90 seconds)
-            // Assuming updates happen every few seconds, requesting 50 entries should be sufficient
+            // Keep enough VisitorHistory entries to feed the bounded local access log.
             APIRequestCounter.shared.record(.getVisitorHistory)
             let visitors = try await MiataruAppAPI.getVisitorHistory(
                 serverURL: serverURL,
                 forDeviceID: currentDeviceID,
                 deviceKey: settings.deviceKey,
-                amount: 50
+                amount: KnownVisitorAccessHistory.maxStoredAccesses
             )
             
             // Update cache on main thread
             await MainActor.run {
                 cache.updateRecentVisitors(from: visitors, ownDeviceID: currentDeviceID)
             }
+            await KnownVisitorAccessHistory.recordKnownDeviceVisitorsFromCurrentStores(
+                visitors,
+                ownDeviceID: currentDeviceID,
+                source: "deviceLocationRefresh"
+            )
             
             debugLog("[DeviceLocationRefresher] Found \(cache.recentVisitorDeviceIDs.count) devices that looked for current user in past 90 seconds")
         } catch {

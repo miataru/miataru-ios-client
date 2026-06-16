@@ -73,6 +73,11 @@ final class VisitorHistoryViewModel: ObservableObject {
                 amount: nil
             )
             self.visitors = response.MiataruVisitors
+            await KnownVisitorAccessHistory.recordKnownDeviceVisitorsFromCurrentStores(
+                response.MiataruVisitors,
+                ownDeviceID: ourDeviceId,
+                source: "visitorHistoryView"
+            )
             self.isLoading = false
             return true
         } catch {

@@ -21,6 +21,7 @@ enum MiataruAutomationEventKind: String, Codable, CaseIterable, Equatable, Hasha
     case deviceEnteredPlace
     case deviceLeftPlace
     case unknownVisitorDetected
+    case knownDeviceRequestedLocalPosition
     case deviceKeyBlockedOperation
     case lowBatteryDisabledFrequentTracking
 }
@@ -145,9 +146,15 @@ struct MiataruAutomationEventOutput: Codable, Equatable, Sendable {
 
 protocol MiataruAutomationEventStoring: Sendable {
     func append(_ event: MiataruAutomationEventRecord) async
+    func replace(
+        matching shouldReplace: @Sendable (MiataruAutomationEventRecord) -> Bool,
+        with event: MiataruAutomationEventRecord
+    ) async
     func latest(matching filter: MiataruAutomationEventFilter) async -> MiataruAutomationEventRecord?
     func recent(since date: Date?, limit: Int) async -> [MiataruAutomationEventRecord]
     func recent(matching filter: MiataruAutomationEventFilter, since date: Date?, limit: Int) async -> [MiataruAutomationEventRecord]
+    @discardableResult
+    func trim(matching filter: MiataruAutomationEventFilter, limit: Int) async -> Int
     @discardableResult
     func clear(olderThan date: Date?) async -> Int
 }
@@ -164,10 +171,13 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
     static let maxPayloadValueLength = 160
     static let maxIdentifierLength = 128
     static let maxDisplayNameLength = 96
+    static let knownDeviceLocationRequestMaxRecords = 100
+    static let defaultKindMaxRecords: [MiataruAutomationEventKind: Int] = [:]
 
     private var records: [MiataruAutomationEventRecord]
     private let fileURL: URL
     private let maxRecords: Int
+    private let kindMaxRecords: [MiataruAutomationEventKind: Int]
     private let retentionInterval: TimeInterval
     private let nowProvider: () -> Date
     private let fileManager: FileManager
@@ -177,12 +187,16 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
     init(
         fileURL: URL? = nil,
         maxRecords: Int = MiataruAutomationEventStore.defaultMaxRecords,
+        kindMaxRecords: [MiataruAutomationEventKind: Int] = MiataruAutomationEventStore.defaultKindMaxRecords,
         retentionInterval: TimeInterval = MiataruAutomationEventStore.defaultRetentionInterval,
         nowProvider: @escaping () -> Date = Date.init,
         fileManager: FileManager = .default
     ) {
         self.fileURL = fileURL ?? Self.defaultFileURL(fileManager: fileManager)
         self.maxRecords = max(1, maxRecords)
+        self.kindMaxRecords = kindMaxRecords.reduce(into: [:]) { partialResult, entry in
+            partialResult[entry.key] = max(1, entry.value)
+        }
         self.retentionInterval = max(1, retentionInterval)
         self.nowProvider = nowProvider
         self.fileManager = fileManager
@@ -195,7 +209,8 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
             loaded,
             now: nowProvider(),
             retentionInterval: self.retentionInterval,
-            maxRecords: self.maxRecords
+            maxRecords: self.maxRecords,
+            kindMaxRecords: self.kindMaxRecords
         )
         records = pruned
         if pruned != loaded {
@@ -206,6 +221,21 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
     func append(_ event: MiataruAutomationEventRecord) async {
         let originalRecords = records
         pruneIfNeeded(persistWhenChanged: false)
+        records.append(Self.sanitized(event))
+        enforceMaxRecordCount()
+        pruneIfNeeded(persistWhenChanged: false)
+        guard records != originalRecords else { return }
+        persist()
+        NotificationCenter.default.post(name: .miataruAutomationEventsDidChange, object: nil)
+    }
+
+    func replace(
+        matching shouldReplace: @Sendable (MiataruAutomationEventRecord) -> Bool,
+        with event: MiataruAutomationEventRecord
+    ) async {
+        let originalRecords = records
+        pruneIfNeeded(persistWhenChanged: false)
+        records.removeAll(where: shouldReplace)
         records.append(Self.sanitized(event))
         enforceMaxRecordCount()
         pruneIfNeeded(persistWhenChanged: false)
@@ -240,6 +270,21 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
             }
             .prefix(boundedLimit)
             .map { $0 }
+    }
+
+    @discardableResult
+    func trim(matching filter: MiataruAutomationEventFilter, limit: Int) async -> Int {
+        let boundedLimit = max(1, limit)
+        pruneIfNeeded(persistWhenChanged: false)
+        let matchingRecords = records.filter { filter.matches($0) }
+        let overflowCount = matchingRecords.count - boundedLimit
+        guard overflowCount > 0 else { return 0 }
+
+        let removedIDs = Set(matchingRecords.prefix(overflowCount).map(\.id))
+        records.removeAll { removedIDs.contains($0.id) }
+        persist()
+        NotificationCenter.default.post(name: .miataruAutomationEventsDidChange, object: nil)
+        return overflowCount
     }
 
     @discardableResult
@@ -383,7 +428,8 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
             records,
             now: nowProvider(),
             retentionInterval: retentionInterval,
-            maxRecords: maxRecords
+            maxRecords: maxRecords,
+            kindMaxRecords: kindMaxRecords
         )
         guard pruned != records else { return }
         records = pruned
@@ -405,7 +451,8 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
         _ records: [MiataruAutomationEventRecord],
         now: Date,
         retentionInterval: TimeInterval,
-        maxRecords: Int
+        maxRecords: Int,
+        kindMaxRecords: [MiataruAutomationEventKind: Int]
     ) -> [MiataruAutomationEventRecord] {
         let cutoff = now.addingTimeInterval(-retentionInterval)
         let agePruned = records
@@ -416,8 +463,31 @@ actor MiataruAutomationEventStore: MiataruAutomationEventStoring {
                 }
                 return lhs.timestamp < rhs.timestamp
             }
-        guard agePruned.count > maxRecords else { return agePruned }
-        return Array(agePruned.suffix(maxRecords))
+        let kindLimited = recordsByApplyingKindLimits(agePruned, kindMaxRecords: kindMaxRecords)
+        guard kindLimited.count > maxRecords else { return kindLimited }
+        return Array(kindLimited.suffix(maxRecords))
+    }
+
+    private static func recordsByApplyingKindLimits(
+        _ records: [MiataruAutomationEventRecord],
+        kindMaxRecords: [MiataruAutomationEventKind: Int]
+    ) -> [MiataruAutomationEventRecord] {
+        guard !kindMaxRecords.isEmpty else { return records }
+
+        var keptReversed: [MiataruAutomationEventRecord] = []
+        keptReversed.reserveCapacity(records.count)
+        var keptCountByKind: [MiataruAutomationEventKind: Int] = [:]
+
+        for record in records.reversed() {
+            if let limit = kindMaxRecords[record.kind] {
+                let keptCount = keptCountByKind[record.kind, default: 0]
+                guard keptCount < limit else { continue }
+                keptCountByKind[record.kind] = keptCount + 1
+            }
+            keptReversed.append(record)
+        }
+
+        return keptReversed.reversed()
     }
 
     private static func loadRecords(

@@ -25,6 +25,7 @@ The current structure favors living topic references over many small dated notes
 - `device-history-cache-map-and-analysis.md` - history loading, cache refresh, user camera priority, and compact speed/altitude analysis.
 - `device-security-devicekey-and-allowed-list.md` - DeviceKey recovery, emergency reset, security status, Allowed Device List read/sync behavior, onboarding DeviceKey flow, and location-permission touchpoints.
 - `unknown-visitors-alerts-and-history.md` - unknown visitor alerts, filtering, enrichment, allowed-list handoff, add-device locking, case preservation, visitor-history refresh, and slogan display.
+- `known-device-access-history-storage-limits.md` - per-device known VisitorHistory access logging limits, 60-minute summary windows, storage bounds, and cleanup triggers.
 - `device-list-cache-slogans-and-settings.md` - device-list refresh behavior, central location/slogan cache ingest, DeviceID/name ambiguity, slogan cleansing, and settings refactor.
 - `persistent-data-cleanup-and-widgets.md` - app-owned cache cleanup, widget device selection, widget/app cache synchronization, and related validation.
 

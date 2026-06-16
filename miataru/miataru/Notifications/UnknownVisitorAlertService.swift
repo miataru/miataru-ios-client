@@ -509,6 +509,12 @@ actor UnknownVisitorAlertService {
         let deviceKey = runtime.deviceKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !ownDeviceID.isEmpty, !deviceKey.isEmpty else { return }
 
+        await KnownVisitorAccessHistory.recordKnownDeviceVisitorsFromCurrentStores(
+            visitors,
+            ownDeviceID: ownDeviceID,
+            source: "visitorNotificationProcessing"
+        )
+
         if runtime.shouldProcessUnknownVisitorAlerts {
             await processUnknownVisitorNotifications(
                 visitors,

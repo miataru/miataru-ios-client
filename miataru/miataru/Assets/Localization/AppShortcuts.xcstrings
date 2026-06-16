@@ -846,6 +846,100 @@
           }
         }
       }
+    },
+    "When did a device last request my location in ${applicationName}": {
+      "localizations": {
+        "da": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Hvornår anmodede en enhed sidst om min placering i ${applicationName}",
+              "Tjek en positionsanmodning i ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Wann hat ein Gerät zuletzt meinen Standort in ${applicationName} angefragt",
+              "Standortanfrage in ${applicationName} prüfen"
+            ]
+          }
+        },
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "When did a device last request my location in ${applicationName}",
+              "Check a location request in ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Cuándo solicitó un dispositivo por última vez mi ubicación en ${applicationName}",
+              "Comprobar una solicitud de ubicación en ${applicationName}"
+            ]
+          }
+        },
+        "fi": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Milloin laite viimeksi pyysi sijaintiani sovelluksessa ${applicationName}",
+              "Tarkista sijaintipyyntö sovelluksessa ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Quand un appareil a-t-il demandé ma position pour la dernière fois dans ${applicationName}",
+              "Vérifier une demande de position dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Quando un dispositivo ha richiesto per l’ultima volta la mia posizione in ${applicationName}",
+              "Controlla una richiesta di posizione in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でデバイスが最後に私の位置情報を要求したのはいつ",
+              "${applicationName}で位置情報リクエストを確認"
+            ]
+          }
+        },
+        "nl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Wanneer heeft een apparaat voor het laatst mijn locatie opgevraagd in ${applicationName}",
+              "Controleer een locatieverzoek in ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "设备上次在 ${applicationName} 中请求我的位置是什么时候",
+              "在 ${applicationName} 中检查位置请求"
+            ]
+          }
+        }
+      }
     }
   },
   "version": "1.1"

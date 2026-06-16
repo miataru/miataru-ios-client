@@ -1537,6 +1537,71 @@
           }
         }
       }
+    },
+    "Get latest location request from ${device}": {
+      "comment": "Parameter summary for latest known-device location request intent",
+      "localizations": {
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hent seneste positionsanmodning fra ${device}"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzte Standortanfrage von ${device} abrufen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get latest location request from ${device}"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtener última solicitud de ubicación de ${device}"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hae viimeisin sijaintipyyntö laitteelta ${device}"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir la dernière demande de position de ${device}"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ottieni l’ultima richiesta di posizione da ${device}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${device}からの最新の位置情報リクエストを取得"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laatste locatieverzoek van ${device} ophalen"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "获取来自${device}的最新位置请求"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

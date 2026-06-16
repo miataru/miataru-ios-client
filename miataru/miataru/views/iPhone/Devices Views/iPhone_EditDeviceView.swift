@@ -36,6 +36,8 @@ struct iPhone_EditDeviceView: View {
     @State private var tempNotifyOnVisitorHistoryAccess: Bool = false
     @State private var isRequestingKnownVisitorNotificationPermission = false
     @State private var knownVisitorNotificationPermissionDenied = false
+    @State private var accessHistoryEntries: [KnownVisitorAccessHistoryEntry] = []
+    @State private var isLoadingAccessHistory = false
     @ObservedObject private var settings = SettingsManager.shared
     @ObservedObject private var sloganCache = DeviceSloganCacheStore.shared
     @ObservedObject private var store = KnownDeviceStore.shared
@@ -292,6 +294,27 @@ struct iPhone_EditDeviceView: View {
                         Spacer()
                     }
                 }
+                if !isCurrentDevice {
+                    Section(header: Text("device_access_history_section_title", tableName: "Devices")) {
+                        Text("device_access_history_explanation", tableName: "Devices")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        if isLoadingAccessHistory {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                Spacer()
+                            }
+                        } else if accessHistoryEntries.isEmpty {
+                            Text("device_access_history_empty", tableName: "Devices")
+                                .foregroundColor(.secondary)
+                        } else {
+                            ForEach(accessHistoryEntries) { entry in
+                                KnownVisitorAccessHistoryRow(entry: entry)
+                            }
+                        }
+                    }
+                }
             }
             .navigationTitle(String(localized: "edit_device", table: "Devices"))
             .toolbar {
@@ -319,10 +342,18 @@ struct iPhone_EditDeviceView: View {
                 Task {
                     await refreshDeviceSecurityStatus()
                 }
+                Task {
+                    await refreshAccessHistory()
+                }
             }
             .onChange(of: settings.allowedDeviceListEnabled) { _, _ in
                 Task {
                     await refreshDeviceSecurityStatus()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .miataruAutomationEventsDidChange)) { _ in
+                Task {
+                    await refreshAccessHistory()
                 }
             }
             .alert(NSLocalizedString("Error", tableName: "SettingsDiagnostics", comment: "The title of an alert that appears when an error occurs."), isPresented: .constant(saveError != nil), presenting: saveError) { _ in
@@ -657,6 +688,21 @@ struct iPhone_EditDeviceView: View {
         }
     }
 
+    @MainActor
+    private func refreshAccessHistory() async {
+        guard !isCurrentDevice else {
+            accessHistoryEntries = []
+            isLoadingAccessHistory = false
+            return
+        }
+
+        if accessHistoryEntries.isEmpty {
+            isLoadingAccessHistory = true
+        }
+        accessHistoryEntries = await KnownVisitorAccessHistory.recentAccesses(for: device.DeviceID)
+        isLoadingAccessHistory = false
+    }
+
     private enum EditDeviceSloganError: LocalizedError {
         case invalidServerURL
         case missingDeviceKey
@@ -669,6 +715,44 @@ struct iPhone_EditDeviceView: View {
                 return NSLocalizedString("device_key_auth_required_message", tableName: "Devices", comment: "Message when device key authentication is required")
             }
         }
+    }
+}
+
+private struct KnownVisitorAccessHistoryRow: View {
+    let entry: KnownVisitorAccessHistoryEntry
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "location.viewfinder")
+                .foregroundColor(.secondary)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(DateFormatter.localizedString(from: entry.timestamp, dateStyle: .medium, timeStyle: .short))
+                    .font(.body)
+                if entry.accessCount > 1 {
+                    Text(groupSummaryText)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Text(locationText)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private var locationText: String {
+        KnownVisitorAccessHistory.locationDescription(for: entry)
+            ?? NSLocalizedString("device_access_history_location_unknown", tableName: "Devices", comment: "Fallback text when a known visitor access has no requester location")
+    }
+
+    private var groupSummaryText: String {
+        String.localizedStringWithFormat(
+            NSLocalizedString("device_access_history_group_count_format", tableName: "Devices", comment: "Grouped known visitor access count in Device Details"),
+            entry.accessCount
+        )
     }
 }
 
