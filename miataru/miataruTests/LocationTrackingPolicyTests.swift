@@ -858,4 +858,74 @@ struct LocationTrackingPolicyTests {
             thresholdPercent: 30
         ))
     }
+
+    @Test("Frequent background one-shot request requires an active delegate-ready frequent service")
+    func frequentBackgroundOneShotRequestRequiresActiveDelegateReadyFrequentService() {
+        #expect(LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: true,
+            frequentBackgroundStandardUpdatesActive: true,
+            delegateReady: true
+        ))
+
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: false,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: true,
+            frequentBackgroundStandardUpdatesActive: true,
+            delegateReady: true
+        ))
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedWhenInUse,
+            frequentUpdatesEnabled: true,
+            frequentBackgroundStandardUpdatesActive: true,
+            delegateReady: true
+        ))
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: false,
+            frequentBackgroundStandardUpdatesActive: true,
+            delegateReady: true
+        ))
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: true,
+            frequentBackgroundStandardUpdatesActive: false,
+            delegateReady: true
+        ))
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: true,
+            frequentBackgroundStandardUpdatesActive: true,
+            delegateReady: false
+        ))
+    }
+
+    @Test("Low-battery smart frequent deactivation blocks watchdog one-shot request")
+    func lowBatterySmartFrequentDeactivationBlocksWatchdogOneShotRequest() {
+        #expect(LocationTrackingPolicy.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: 30,
+            thresholdPercent: 30
+        ))
+
+        let effectiveFrequentAfterDeactivation = LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: false
+        )
+        #expect(!effectiveFrequentAfterDeactivation)
+        #expect(!LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            frequentUpdatesEnabled: effectiveFrequentAfterDeactivation,
+            frequentBackgroundStandardUpdatesActive: false,
+            delegateReady: false
+        ))
+    }
 }

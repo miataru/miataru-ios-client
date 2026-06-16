@@ -450,6 +450,20 @@ extension LocationManager {
         )
     }
 
+    static func shouldRequestFrequentBackgroundOneShotLocation(isTracking: Bool,
+                                                               authorizationStatus: CLAuthorizationStatus,
+                                                               frequentUpdatesEnabled: Bool,
+                                                               frequentBackgroundStandardUpdatesActive: Bool,
+                                                               delegateReady: Bool) -> Bool {
+        LocationTrackingPolicy.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            frequentBackgroundStandardUpdatesActive: frequentBackgroundStandardUpdatesActive,
+            delegateReady: delegateReady
+        )
+    }
+
     static func frequentBackgroundLocationDeliveryDelay(applicationState: UIApplication.State,
                                                         frequentUpdatesEnabled: Bool,
                                                         deliveryMode: FrequentBackgroundLocationDeliveryMode) -> TimeInterval? {

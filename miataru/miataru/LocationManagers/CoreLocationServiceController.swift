@@ -23,6 +23,15 @@ final class CoreLocationServiceController {
         frequentBackgroundActivitySession != nil
     }
 
+    var frequentBackgroundLocationRequestDelegateReady: Bool {
+        guard let delegate = frequentBackgroundManager.delegate else {
+            return false
+        }
+
+        return delegate.responds(to: #selector(CLLocationManagerDelegate.locationManager(_:didUpdateLocations:))) &&
+        delegate.responds(to: #selector(CLLocationManagerDelegate.locationManager(_:didFailWithError:)))
+    }
+
     init(primaryManager: CLLocationManager = CLLocationManager(),
          frequentBackgroundManager: CLLocationManager = CLLocationManager()) {
         self.primaryManager = primaryManager

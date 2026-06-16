@@ -3,6 +3,8 @@ version 3.2.2
 - Added a "Latest Request" App Shortcut and App Intent so Shortcuts/Siri can answer when a selected device last requested the user's position.
 - Added the same access history to Device Details and localized the new automation-event summaries, Device Details section, intent dialogs, shortcut title, and shortcut phrases across all supported app locales.
 - Added focused regression coverage for known visitor access recording, 60-minute summary replacement, duplicate timestamp suppression, current requester-location capture, the per-device 100-record automation-event cap, and the new App Intent dialog/localization inventory.
+- Fixed a Smart frequent watchdog crash after low-battery auto-disable by skipping secondary `requestLocation()` one-shot recovery requests unless frequent background mode is still active and the Core Location delegate is ready.
+- Added regression coverage for delegate-safe frequent background one-shot requests and the low-battery Smart frequent deactivation path.
 - Added smooth live map pin movement for nearby device updates up to 500 m on device and group overview maps, with subtle movement trails and immediate jumps for larger moves.
 - Added smoother selected-marker movement while scrubbing or playing back device history on the map.
 - Changed the iPhone device-history panel auto-hide rule so the 5-second timer starts only after active map pan/zoom, map point selection, or Play/Pause, preventing the panel from hiding while users are simply reading or thinking.
@@ -33,7 +35,7 @@ version 3.2.2
 - Localized all App Shortcut phrases in `AppShortcuts.xcstrings` using string-set values for alternate trigger phrases, localized Step 03 intent parameters/enums and extracted summaries in `Localizable.xcstrings`, and removed stale string-catalog entries for shortcut phrases and obsolete summaries.
 - Replaced English fallback copies in non-English App Intent titles, summaries, dialogs, status labels, and extracted shortcut metadata, with regression coverage for verbatim English fallbacks and placeholder drift.
 - Added App Intent regression coverage for navigation direction/transport/presentation behavior, manual frequent duration overrides, low-battery frequent status, annotation privacy filtering, shortcut localization completeness, and App Shortcut phrase table placement.
-- Updated project metadata for version 3.2.2 build 1.
+- Updated project metadata for version 3.2.2 build 8.
 - Consolidated project documentation under the root `documentation/` folder and coalesced related implementation notes into topic references.
 - Reduced Location Diagnostics resource pressure during frequent background tracking by batching persisted writes, compacting the backing JSON file, coalescing queued/flushed upload diagnostics, and keeping key forensic breadcrumbs immediate.
 - Added Intent Sprint Step 04 as a bounded, privacy-safe local automation event store backed by Application Support JSON with schema version 1, ISO-8601 timestamps, atomic writes, corrupt-file recovery, lazy housekeeping, and the selected 90-day / 2,500-record retention policy.

@@ -1402,7 +1402,7 @@ final class LocationManager: NSObject, ObservableObject {
                 persistence: .immediate
             )
             applyTrackingMode(reason: "smart frequent recovery-fence", applicationStateContext: .forceBackground)
-            coreLocationServices.requestFrequentBackgroundLocation()
+            requestFrequentBackgroundLocationIfSafe(reason: "smart frequent recovery-fence", now: now)
             scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
             return
         }
@@ -1788,6 +1788,77 @@ final class LocationManager: NSObject, ObservableObject {
             return
         }
 
+        requestFrequentBackgroundLocationIfSafe(reason: "smart frequent restart recovery")
+    }
+
+    private func requestFrequentBackgroundLocationIfSafe(reason: String, now: Date = Date()) {
+        let status = locationManager.authorizationStatus
+        let frequentUpdatesEnabled = effectiveFrequentBackgroundUpdatesEnabled
+        let frequentStandardUpdatesActive = isFrequentBackgroundStandardUpdatesActive
+        let delegateReady = coreLocationServices.frequentBackgroundLocationRequestDelegateReady
+        let shouldRequest = Self.shouldRequestFrequentBackgroundOneShotLocation(
+            isTracking: isTracking,
+            authorizationStatus: status,
+            frequentUpdatesEnabled: frequentUpdatesEnabled,
+            frequentBackgroundStandardUpdatesActive: frequentStandardUpdatesActive,
+            delegateReady: delegateReady
+        )
+
+        guard shouldRequest else {
+            let checks = [
+                LocationDiagnosticsLogStore.check(
+                    "trackingActive",
+                    isTracking,
+                    detail: "isTracking=\(isTracking)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "authorizedAlways",
+                    status == .authorizedAlways,
+                    detail: "Authorization status: \(status.rawValue)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "effectiveFrequentBackgroundEnabled",
+                    frequentUpdatesEnabled,
+                    detail: "effectiveFrequent=\(frequentUpdatesEnabled)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "frequentStandardUpdatesActive",
+                    frequentStandardUpdatesActive,
+                    detail: "frequent standard updates active=\(frequentStandardUpdatesActive)."
+                ),
+                LocationDiagnosticsLogStore.check(
+                    "frequentDelegateReady",
+                    delegateReady,
+                    detail: "Frequent background delegate can receive one-shot callbacks."
+                )
+            ]
+            diagnosticsLog.append(
+                level: .warning,
+                event: "frequentBackgroundOneShotRequest",
+                summary: "Skipped frequent background one-shot location request.",
+                result: "skipped",
+                reason: checks.first(where: { !$0.passed })?.detail,
+                checks: checks,
+                context: [
+                    "requestReason": .string(reason),
+                    "applicationState": .integer(UIApplication.shared.applicationState.rawValue),
+                    "authorizationStatus": .integer(Int(status.rawValue)),
+                    "manualFrequentEnabled": .bool(settings.frequentBackgroundLocationUpdatesEnabled),
+                    "smartEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled),
+                    "smartRuntimeActive": .bool(smartFrequentBackgroundRuntimeActive),
+                    "smartRuntimePhase": .string(smartFrequentBackgroundRuntimePhase.rawValue),
+                    "effectiveFrequent": .bool(frequentUpdatesEnabled),
+                    "frequentStandardUpdatesActive": .bool(frequentStandardUpdatesActive),
+                    "frequentDelegateReady": .bool(delegateReady),
+                    "frequentManagerAllowsBackground": .bool(frequentBackgroundLocationManager.allowsBackgroundLocationUpdates),
+                    "frequentManagerShowsIndicator": .bool(frequentBackgroundLocationManager.showsBackgroundLocationIndicator)
+                ],
+                timestamp: now,
+                persistence: .immediate
+            )
+            return
+        }
+
         coreLocationServices.requestFrequentBackgroundLocation()
     }
 
@@ -1871,7 +1942,7 @@ final class LocationManager: NSObject, ObservableObject {
         )
 
         applyTrackingMode(reason: "frequent background accuracy recovery", applicationStateContext: .forceBackground)
-        coreLocationServices.requestFrequentBackgroundLocation()
+        requestFrequentBackgroundLocationIfSafe(reason: "frequent background accuracy recovery", now: now)
     }
 
     @discardableResult
@@ -2555,7 +2626,7 @@ final class LocationManager: NSObject, ObservableObject {
 
         if isTracking {
             applyTrackingMode(reason: "smart frequent recovery watchdog", applicationStateContext: .forceBackground)
-            coreLocationServices.requestFrequentBackgroundLocation()
+            requestFrequentBackgroundLocationIfSafe(reason: "smart frequent recovery watchdog", now: now)
         }
         scheduleSmartFrequentBackgroundWatchdogIfNeeded(now: now)
     }

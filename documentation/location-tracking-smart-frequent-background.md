@@ -196,6 +196,7 @@ Low-battery behavior:
 
 - Check battery before starting frequent mode and when background updates arrive.
 - If battery is at or below threshold, turn off frequent mode, invalidate expiry timer, return to significant-change monitoring, cancel reminder/expiry notifications, and send a low-battery notification explaining current battery, threshold, and fallback to standard mode.
+- Smart frequent runtime is also deactivated by the same low-battery check. Any watchdog, restart-recovery, recovery-fence, or accuracy-recovery path that wants an immediate secondary `requestLocation()` must re-check the post-resolution state first, and skips the one-shot if frequent mode is no longer active or the secondary manager delegate is not ready.
 
 UI:
 
@@ -287,13 +288,16 @@ if recovery attempts < 2:
     log smartFrequentRecovery
     reapply background frequent tracking
     reassert CLBackgroundActivitySession
-    requestLocation() on secondary manager
+    requestLocation() on secondary manager only if frequent mode is still active
+        and the secondary manager delegate can receive update/failure callbacks
     schedule watchdog again
 else:
     deactivate to waiting
     reapply standard background tracking
     send deactivation notification only if runtime was confirmed active and notifications are enabled
 ```
+
+The guarded one-shot request is important because `applyTrackingMode(...)` can legitimately deactivate Smart frequent first, for example when the battery has fallen to the auto-disable threshold. In that case the secondary frequent manager may already have been stopped and detached from its delegate; the recovery path must stay in significant-change mode instead of calling Core Location in an invalid `requestLocation()` state.
 
 Because a normal timer cannot wake an iOS app after suspension, confirmedActive also maintains a Smart recovery exit fence around the latest usable movement anchor and refreshes the persisted runtime marker as relevant movement advances.
 

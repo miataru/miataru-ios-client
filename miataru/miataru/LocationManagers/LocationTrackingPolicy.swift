@@ -357,6 +357,18 @@ enum LocationTrackingPolicy {
         !deviceKeyAuthBlocked
     }
 
+    static func shouldRequestFrequentBackgroundOneShotLocation(isTracking: Bool,
+                                                               authorizationStatus: CLAuthorizationStatus,
+                                                               frequentUpdatesEnabled: Bool,
+                                                               frequentBackgroundStandardUpdatesActive: Bool,
+                                                               delegateReady: Bool) -> Bool {
+        isTracking &&
+        authorizationStatus == .authorizedAlways &&
+        frequentUpdatesEnabled &&
+        frequentBackgroundStandardUpdatesActive &&
+        delegateReady
+    }
+
     static func locationServiceCommandPlan(for mode: TrackingMode,
                                            shouldMaintainRecoveryAnchor: Bool) -> ServiceCommandPlan {
         let secondaryStopCommands: [SecondaryLocationServiceCommand] = [

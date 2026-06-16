@@ -18,7 +18,7 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **323** (Unit: 306, UI: 17 incl. 11 screenshot captures)
+- Actively linked app test cases: **325** (Unit: 308, UI: 17 incl. 11 screenshot captures)
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
@@ -202,6 +202,8 @@ Important project observations:
 | UT-LTP-008 | Frequent background accuracy recovery temporarily uses precise configuration for 100m mode | Protect Smart frequent recovery boost | 100 m Smart frequent recovery uses 10 m / nearest-ten-meters while non-trigger filters keep their configured behavior | LocationTrackingPolicy | Unit | Static configuration inputs | High |
 | UT-LTP-009 | Frequent background accuracy quality gates uploads and current location updates | Protect coarse-fix rejection | Background frequent callbacks reject invalid/coarse accuracy, accept 28.6 m at the 100 m filter, reject 69.4 m at the 25 m filter, and leave foreground/primary callbacks unchanged | LocationTrackingPolicy | Unit | Static app-state/source/accuracy inputs | High |
 | UT-LTP-010 | Smart frequent accuracy recovery starts stops and cools down | Protect recovery trigger lifecycle | 1414 m starts immediately, two >300 m fixes start recovery, manual mode is ineligible, <=100 m stops, 120 s timeout stops, and cooldown blocks restart | LocationTrackingPolicy | Unit | Fixed dates and static policy inputs | High |
+| UT-LTP-012 | Frequent background one-shot request requires an active delegate-ready frequent service | Prevent Core Location `requestLocation()` assertions | One-shot recovery requests require tracking, Always authorization, effective frequent mode, active secondary updates, and a ready delegate | LocationTrackingPolicy | Unit | Static authorization/service-state inputs | High |
+| UT-LTP-013 | Low-battery Smart frequent deactivation blocks watchdog one-shot request | Protect low-battery watchdog recovery path | Battery at threshold deactivates effective Smart frequent mode, so watchdog recovery skips the secondary one-shot request after the secondary manager is stopped | LocationTrackingPolicy | Unit | Static battery/runtime/service-state inputs | High |
 | UT-SFB-001 | Smart frequent speed detection supports hybrid and GPS-only modes | Validate Smart speed source policy | Valid GPS speed wins; Hybrid derives speed from usable distance/time samples; GPS-only ignores derived speed | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures | High |
 | UT-SFB-002 | Persisted smart frequent seed is fresh-gated and still rejects implausible activation | Protect first-background-update Smart activation after relaunch | Fresh seeds can satisfy freshness, while stale/future seeds and implausible derived speeds do not activate | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures + fixed dates | High |
 | UT-SFB-003 | Smart frequent activation evidence is quality aware and startup guarded | Protect activation evidence gates | Trusted GPS, region exit, derived movement, startup-batch, same-second, and low-quality evidence behave at boundaries | SmartFrequentBackgroundPolicy | Unit | deterministic `CLLocation` fixtures | High |
