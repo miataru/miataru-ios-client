@@ -49,6 +49,9 @@ struct iPhone_DeviceHistoryMapView: View {
     /// The committed range used for map rendering - only updates when dragging ends
     @State private var displayRange: ClosedRange<Double>? = nil
     @State private var scrubTimestamp: Double? = nil
+    @State private var animatedSelectionCoordinate: CLLocationCoordinate2D? = nil
+    @State private var selectionCoordinateTarget: CLLocationCoordinate2D? = nil
+    @State private var selectionAnimationTask: Task<Void, Never>? = nil
     @State private var historyPanelVisibility: HistoryPanelVisibility = .visible
     @State private var historyPanelAutoHideTask: Task<Void, Never>?
     // Playback
@@ -107,6 +110,10 @@ struct iPhone_DeviceHistoryMapView: View {
     private var selectedTimelineEntry: MiataruLocationData? {
         guard let scrubTimestamp else { return nil }
         return viewModel.closest(to: scrubTimestamp, in: selectedRange)
+    }
+
+    private var selectedTimelineEntryKey: String? {
+        selectedTimelineEntry.map(historyEntryIdentity)
     }
 
     private var currentAnalysisBucketIndex: Int? {
@@ -180,6 +187,10 @@ struct iPhone_DeviceHistoryMapView: View {
         let annotations = useDownsampling
             ? viewModel.downsampledVisibleHistory(in: displayRange, selected: selectedEntry)
             : mapHistory
+        let unselectedAnnotations = annotations.filter { entry in
+            guard let selectedEntry else { return true }
+            return !isSelectedEntry(entry, selected: selectedEntry)
+        }
         // Always use full history for polyline to show accurate path
         let polylineSegments = isPlaying
             ? viewModel.polylineSegments(from: mapHistory)
@@ -196,28 +207,30 @@ struct iPhone_DeviceHistoryMapView: View {
                 }
             }
 
-            ForEach(Array(annotations.enumerated()), id: \.offset) { _, entry in
+            ForEach(Array(unselectedAnnotations.enumerated()), id: \.offset) { _, entry in
                 let coord = CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
-                let isSelected = selectedEntry.map { isSelectedEntry(entry, selected: $0) } ?? false
-                Annotation("", coordinate: coord, anchor: isSelected ? .bottom : .center) {
-                    if isSelected {
-                        VStack(spacing: 8) {
-                            historyEntryDetailBubble(for: entry)
-                            MiataruMapMarker(color: color(for: entry, within: mapHistory))
-                                .shadow(radius: 2)
-                        }
-                        .contentShape(Rectangle())
+                Annotation("", coordinate: coord, anchor: .center) {
+                    Circle()
+                        .fill(color(for: entry, within: mapHistory))
+                        .frame(width: 10, height: 10)
+                        .contentShape(Circle())
                         .onTapGesture {
                             selectEntryFromMap(entry)
                         }
-                    } else {
-                        Circle()
-                            .fill(color(for: entry, within: mapHistory))
-                            .frame(width: 10, height: 10)
-                            .contentShape(Circle())
-                            .onTapGesture {
-                                selectEntryFromMap(entry)
-                            }
+                }
+            }
+
+            if let selectedEntry {
+                let selectedCoordinate = animatedSelectionCoordinate ?? historyEntryCoordinate(selectedEntry)
+                Annotation("", coordinate: selectedCoordinate, anchor: .bottom) {
+                    VStack(spacing: 8) {
+                        historyEntryDetailBubble(for: selectedEntry)
+                        MiataruMapMarker(color: color(for: selectedEntry, within: mapHistory))
+                            .shadow(radius: 2)
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectEntryFromMap(selectedEntry)
                     }
                 }
             }
@@ -371,6 +384,7 @@ struct iPhone_DeviceHistoryMapView: View {
         }
         .onDisappear {
             stopPlayback()
+            cancelSelectionAnimation()
             debouncedRegionTask?.cancel()
             debouncedFocusTask?.cancel()
             speedOverlayTask?.cancel()
@@ -379,9 +393,18 @@ struct iPhone_DeviceHistoryMapView: View {
         }
         .onReceive(viewModel.$history) { _ in
             initializeTimelineIfNeeded()
+            syncDisplayedSelectionCoordinate(animated: false)
             scheduleHistoryAnalysis()
             updateRegionIfUserCameraAllows(animated: false)
             stopPlayback()
+        }
+        .onChange(of: selectedTimelineEntryKey) { _, _ in
+            syncDisplayedSelectionCoordinate(animated: true)
+        }
+        .onChange(of: animationsAllowed) { _, allowed in
+            if !allowed {
+                finishSelectionAnimationImmediately()
+            }
         }
         .onReceive(deviceLocationTimestampPublisher) { newTimestamp in
             guard let newTimestamp else { return }
@@ -797,6 +820,110 @@ struct iPhone_DeviceHistoryMapView: View {
         guard let target = viewModel.closest(to: scrubTimestamp, in: selectedRange) else { return }
         Task { @MainActor in
             updateRegion(animated: animated, using: [target], useDefaultZoom: true)
+        }
+    }
+
+    @MainActor
+    private func syncDisplayedSelectionCoordinate(animated: Bool) {
+        guard let selectedEntry = selectedTimelineEntry else {
+            cancelSelectionAnimation()
+            animatedSelectionCoordinate = nil
+            selectionCoordinateTarget = nil
+            return
+        }
+
+        let target = historyEntryCoordinate(selectedEntry)
+        if coordinatesEqual(selectionCoordinateTarget, target), animatedSelectionCoordinate != nil {
+            return
+        }
+
+        selectionCoordinateTarget = target
+        updateDisplayedSelectionCoordinate(to: target, animated: animated)
+    }
+
+    @MainActor
+    private func updateDisplayedSelectionCoordinate(to target: CLLocationCoordinate2D, animated: Bool) {
+        let current = animatedSelectionCoordinate
+        let decision = mapPinMotionDecision(
+            from: current,
+            to: target,
+            animationsAllowed: animated && animationsAllowed,
+            quietDistanceMeters: 0.5,
+            maximumAnimatedDistanceMeters: 50_000,
+            minimumDuration: 0.16,
+            maximumDuration: 0.8
+        )
+
+        selectionAnimationTask?.cancel()
+        selectionAnimationTask = nil
+
+        switch decision.update {
+        case .jump, .quiet:
+            animatedSelectionCoordinate = target
+        case .animated(let duration):
+            guard let start = current else {
+                animatedSelectionCoordinate = target
+                return
+            }
+
+            selectionAnimationTask = Task { @MainActor in
+                let startDate = Date()
+                while !Task.isCancelled {
+                    let elapsed = Date().timeIntervalSince(startDate)
+                    let progress = min(max(elapsed / duration, 0), 1)
+                    animatedSelectionCoordinate = interpolatedMapPinCoordinate(from: start, to: target, progress: progress)
+
+                    if progress >= 1 {
+                        break
+                    }
+
+                    do {
+                        try await Task.sleep(nanoseconds: 16_666_667)
+                    } catch {
+                        return
+                    }
+                }
+
+                guard !Task.isCancelled else { return }
+                animatedSelectionCoordinate = target
+                selectionAnimationTask = nil
+            }
+        }
+    }
+
+    @MainActor
+    private func finishSelectionAnimationImmediately() {
+        selectionAnimationTask?.cancel()
+        selectionAnimationTask = nil
+        if let target = selectionCoordinateTarget {
+            animatedSelectionCoordinate = target
+        } else if let selectedEntry = selectedTimelineEntry {
+            animatedSelectionCoordinate = historyEntryCoordinate(selectedEntry)
+        }
+    }
+
+    @MainActor
+    private func cancelSelectionAnimation() {
+        selectionAnimationTask?.cancel()
+        selectionAnimationTask = nil
+    }
+
+    private func historyEntryCoordinate(_ entry: MiataruLocationData) -> CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: entry.Latitude, longitude: entry.Longitude)
+    }
+
+    private func historyEntryIdentity(_ entry: MiataruLocationData) -> String {
+        "\(entry.Timestamp)|\(entry.Latitude)|\(entry.Longitude)"
+    }
+
+    private func coordinatesEqual(_ lhs: CLLocationCoordinate2D?, _ rhs: CLLocationCoordinate2D?) -> Bool {
+        switch (lhs, rhs) {
+        case let (lhs?, rhs?):
+            return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+        case (nil, nil):
+            return true
+        default:
+            return false
         }
     }
 

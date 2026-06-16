@@ -37,6 +37,11 @@ struct iPad_DeviceMapView: View {
     @State private var errorMessage = "" // Error message to display
     @State private var deviceLocation: CLLocationCoordinate2D? // Current device location
     @State private var animatedDeviceLocation: CLLocationCoordinate2D? // Animated marker position for smooth transitions
+    @State private var animatedOtherDeviceLocations: [String: CLLocationCoordinate2D] = [:] // Animated positions for other visible devices
+    @State private var otherDeviceLocationTargets: [String: CLLocationCoordinate2D] = [:] // Last known final positions for other devices
+    @State private var mapPinAnimationTasks: [String: Task<Void, Never>] = [:]
+    @State private var mapPinMovementTrails: [String: MapPinMovementTrail] = [:]
+    @State private var fadingMapPinTrailIDs: Set<UUID> = []
     @State private var deviceAccuracy: Double? // Location accuracy in meters
     @State private var deviceTimestamp: Date? = nil // Timestamp of the last location update
     @ObservedObject private var settings = SettingsManager.shared // App settings
@@ -95,7 +100,7 @@ struct iPad_DeviceMapView: View {
         var devicesByEdge: [Edge: [ArrowData]] = [:]
         
         // Current device
-        if let device = device, let coordinate = deviceLocation,
+        if let device = device, let coordinate = animatedDeviceLocation ?? deviceLocation,
            let edge = OffscreenDeviceEdgeHelper.edge(
                 for: coordinate,
                 in: region,
@@ -133,8 +138,7 @@ struct iPad_DeviceMapView: View {
         if settings.showOffscreenArrowsForOtherDevices {
             let otherDevices = deviceStore.devices.filter { $0.DeviceID != deviceID }
             for otherDevice in otherDevices {
-                if let cached = cache.getLocation(for: otherDevice.DeviceID) {
-                    let coordinate = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                if let coordinate = deviceCoordinate(for: otherDevice.DeviceID) {
                     if let edge = OffscreenDeviceEdgeHelper.edge(
                         for: coordinate,
                         in: region,
@@ -332,6 +336,7 @@ struct iPad_DeviceMapView: View {
                 // Initialize animated marker position with preview or default
                 animatedDeviceLocation = deviceLocation
             }
+            syncDisplayedOtherDeviceLocationsFromCache(cache.locations, animated: false)
             // Set initial zoom level
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
@@ -368,11 +373,17 @@ struct iPad_DeviceMapView: View {
         }
         .onDisappear {
             stopAutoUpdate()
+            cancelMapPinAnimations()
             mapMovementTimer?.invalidate()
             mapMovementTimer = nil
             // Only clear lastOpenedDeviceID when in main window context (not in separate windows)
             if shouldUpdateLastOpenedDeviceID && settings.lastOpenedDeviceID == deviceID {
                 settings.lastOpenedDeviceID = nil
+            }
+        }
+        .onChange(of: animationsAllowed) { _, allowed in
+            if !allowed {
+                finishMapPinAnimationsImmediately()
             }
         }
         .onChange(of: settings.mapUpdateInterval) {
@@ -467,6 +478,9 @@ struct iPad_DeviceMapView: View {
         // Update 'now' every second for relative time display
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
             now = input
+        }
+        .onReceive(cache.$locations) { locations in
+            syncDisplayedOtherDeviceLocationsFromCache(locations, animated: true)
         }
         // Show edit device sheet when requested
         .sheet(isPresented: $showEditDeviceSheet) {
@@ -653,6 +667,23 @@ struct iPad_DeviceMapView: View {
         // Use the new Map API for iOS 17 and above
             if #available(iOS 17.0, *) {
                 Map(position: $cameraPosition, scope: mapScope) {
+                    ForEach(Array(mapPinMovementTrails.values), id: \.id) { trail in
+                        let trailColor = movementTrailColor(for: trail.deviceID)
+                        let trailOpacity = fadingMapPinTrailIDs.contains(trail.id) ? 0.0 : 0.68
+                        MapPolyline(coordinates: [trail.startCoordinate, trail.endCoordinate])
+                            .stroke(trailColor.opacity(trailOpacity), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        Annotation("", coordinate: trail.startCoordinate, anchor: .center) {
+                            Circle()
+                                .fill(trailColor.opacity(trailOpacity * 0.5))
+                                .frame(width: 10, height: 10)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white.opacity(trailOpacity * 0.75), lineWidth: 1)
+                                )
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
+                        }
+                    }
                     // Show device marker if location is available
                     if let coordinate = animatedDeviceLocation, let device = device {
                         // Draw accuracy circle if enabled and accuracy is valid
@@ -767,8 +798,8 @@ struct iPad_DeviceMapView: View {
                     // Other device markers visible in the current viewport only (iOS 17+)
                     if settings.showOffscreenArrowsForOtherDevices, let visibleRegion = (currentRegion ?? cameraPosition.region) {
                         ForEach(deviceStore.devices.filter { $0.DeviceID != deviceID }, id: \.DeviceID) { other in
-                            if let cached = cache.getLocation(for: other.DeviceID) {
-                                let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+                            if let cached = cache.getLocation(for: other.DeviceID),
+                               let coord = deviceCoordinate(for: other.DeviceID) {
                                 if isCoordinate(coord, inside: visibleRegion) {
                                     Annotation("", coordinate: coord, anchor: .bottom) {
                                         ZStack {
@@ -868,7 +899,7 @@ struct iPad_DeviceMapView: View {
             } else {
                 // For iOS versions below 17, use a legacy map view implementation
                 if let currentDevice = device {
-                    iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
+                    iPad_LegacyMapViewRepresentable(region: $region, device: currentDevice, deviceLocation: animatedDeviceLocation ?? deviceLocation, deviceAccuracy: deviceAccuracy, mapType: settings.mapType)
                         .ignoresSafeArea()
                 }
             }
@@ -963,6 +994,9 @@ struct iPad_DeviceMapView: View {
             if let current = deviceLocation {
                 return current
             }
+        }
+        if let animated = animatedOtherDeviceLocations[deviceID] {
+            return animated
         }
         if let cached = cache.getLocation(for: deviceID) {
             return CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
@@ -1092,6 +1126,177 @@ struct iPad_DeviceMapView: View {
         suppressUserCameraChangeDetectionUntil = Date().addingTimeInterval(max(0.2, duration + 1.35))
     }
 
+    @discardableResult
+    private func updateDisplayedDeviceCoordinate(for pinID: String, to target: CLLocationCoordinate2D) -> TimeInterval {
+        let current = deviceCoordinate(for: pinID)
+        let decision = mapPinMotionDecision(from: current, to: target, animationsAllowed: animationsAllowed)
+
+        mapPinAnimationTasks[pinID]?.cancel()
+        mapPinAnimationTasks[pinID] = nil
+
+        switch decision.update {
+        case .jump, .quiet:
+            setDisplayedDeviceCoordinate(target, for: pinID)
+            removeMovementTrail(for: pinID)
+            return 0
+        case .animated(let duration):
+            guard let start = current else {
+                setDisplayedDeviceCoordinate(target, for: pinID)
+                removeMovementTrail(for: pinID)
+                return 0
+            }
+
+            let trail = MapPinMovementTrail(deviceID: pinID, startCoordinate: start, endCoordinate: target)
+            mapPinMovementTrails[pinID] = trail
+            fadingMapPinTrailIDs.remove(trail.id)
+
+            mapPinAnimationTasks[pinID] = Task { @MainActor in
+                let startDate = Date()
+                while !Task.isCancelled {
+                    let elapsed = Date().timeIntervalSince(startDate)
+                    let progress = min(max(elapsed / duration, 0), 1)
+                    let coordinate = interpolatedMapPinCoordinate(from: start, to: target, progress: progress)
+                    setDisplayedDeviceCoordinate(coordinate, for: pinID)
+
+                    if progress >= 1 {
+                        break
+                    }
+
+                    do {
+                        try await Task.sleep(nanoseconds: 16_666_667)
+                    } catch {
+                        return
+                    }
+                }
+
+                guard !Task.isCancelled else { return }
+                setDisplayedDeviceCoordinate(target, for: pinID)
+                mapPinAnimationTasks[pinID] = nil
+                fadeMovementTrail(for: pinID)
+            }
+
+            return duration
+        }
+    }
+
+    private func setDisplayedDeviceCoordinate(_ coordinate: CLLocationCoordinate2D, for pinID: String) {
+        if pinID == deviceID {
+            animatedDeviceLocation = coordinate
+        } else {
+            animatedOtherDeviceLocations[pinID] = coordinate
+        }
+        refreshCachedDeviceCoordinates()
+        updateVisibleDeviceCount(with: currentRegion ?? cameraPosition.region)
+    }
+
+    private func syncDisplayedOtherDeviceLocationsFromCache(_ locations: [CachedDeviceLocation], animated: Bool) {
+        let knownOtherDeviceIDs = Set(deviceStore.devices.map(\.DeviceID)).subtracting([deviceID])
+        var cacheDeviceIDs = Set<String>()
+
+        for location in locations where knownOtherDeviceIDs.contains(location.deviceID) {
+            cacheDeviceIDs.insert(location.deviceID)
+            let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+            if coordinatesEqual(otherDeviceLocationTargets[location.deviceID], coordinate) {
+                continue
+            }
+            otherDeviceLocationTargets[location.deviceID] = coordinate
+            if animated {
+                updateDisplayedDeviceCoordinate(for: location.deviceID, to: coordinate)
+            } else {
+                mapPinAnimationTasks[location.deviceID]?.cancel()
+                mapPinAnimationTasks[location.deviceID] = nil
+                animatedOtherDeviceLocations[location.deviceID] = coordinate
+                removeMovementTrail(for: location.deviceID)
+            }
+        }
+
+        let staleDeviceIDs = Set(animatedOtherDeviceLocations.keys)
+            .subtracting(cacheDeviceIDs)
+            .union(Set(animatedOtherDeviceLocations.keys).subtracting(knownOtherDeviceIDs))
+
+        for staleDeviceID in staleDeviceIDs {
+            mapPinAnimationTasks[staleDeviceID]?.cancel()
+            mapPinAnimationTasks[staleDeviceID] = nil
+            animatedOtherDeviceLocations.removeValue(forKey: staleDeviceID)
+            otherDeviceLocationTargets.removeValue(forKey: staleDeviceID)
+            removeMovementTrail(for: staleDeviceID)
+        }
+
+        refreshCachedDeviceCoordinates()
+        updateVisibleDeviceCount(with: currentRegion ?? cameraPosition.region)
+    }
+
+    private func fadeMovementTrail(for pinID: String) {
+        guard let trail = mapPinMovementTrails[pinID] else { return }
+        if animationsAllowed {
+            withAnimation(.easeOut(duration: 0.25)) {
+                _ = fadingMapPinTrailIDs.insert(trail.id)
+            }
+        } else {
+            fadingMapPinTrailIDs.insert(trail.id)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if mapPinMovementTrails[pinID]?.id == trail.id {
+                mapPinMovementTrails.removeValue(forKey: pinID)
+                fadingMapPinTrailIDs.remove(trail.id)
+            }
+        }
+    }
+
+    private func removeMovementTrail(for pinID: String) {
+        if let trail = mapPinMovementTrails.removeValue(forKey: pinID) {
+            fadingMapPinTrailIDs.remove(trail.id)
+        }
+    }
+
+    private func cancelMapPinAnimations() {
+        for task in mapPinAnimationTasks.values {
+            task.cancel()
+        }
+        mapPinAnimationTasks.removeAll()
+        mapPinMovementTrails.removeAll()
+        fadingMapPinTrailIDs.removeAll()
+    }
+
+    private func finishMapPinAnimationsImmediately() {
+        let animatedPinIDs = Set(mapPinAnimationTasks.keys).union(Set(mapPinMovementTrails.keys))
+        for pinID in animatedPinIDs {
+            mapPinAnimationTasks[pinID]?.cancel()
+            if pinID == deviceID {
+                if let finalCoordinate = deviceLocation {
+                    animatedDeviceLocation = finalCoordinate
+                }
+            } else if let finalCoordinate = otherDeviceLocationTargets[pinID] {
+                animatedOtherDeviceLocations[pinID] = finalCoordinate
+            }
+            removeMovementTrail(for: pinID)
+        }
+        mapPinAnimationTasks.removeAll()
+        mapPinMovementTrails.removeAll()
+        fadingMapPinTrailIDs.removeAll()
+        refreshCachedDeviceCoordinates()
+        updateVisibleDeviceCount(with: currentRegion ?? cameraPosition.region)
+    }
+
+    private func movementTrailColor(for pinID: String) -> Color {
+        if let knownDevice = deviceStore.devices.first(where: { $0.DeviceID == pinID }) {
+            return Color(knownDevice.DeviceColor ?? UIColor.systemBlue)
+        }
+        return pinID == deviceID ? .red : .blue
+    }
+
+    private func coordinatesEqual(_ lhs: CLLocationCoordinate2D?, _ rhs: CLLocationCoordinate2D?) -> Bool {
+        switch (lhs, rhs) {
+        case let (lhs?, rhs?):
+            return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+        case (nil, nil):
+            return true
+        default:
+            return false
+        }
+    }
+
     @ViewBuilder
     private func updateButton() -> some View {
         // Button to manually update device location
@@ -1153,8 +1358,9 @@ struct iPad_DeviceMapView: View {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
                 let coordinateChanged = deviceLocation?.latitude != coordinate.latitude || deviceLocation?.longitude != coordinate.longitude
                 deviceLocation = coordinate
-                // Update animated location immediately to ensure marker moves
-                animatedDeviceLocation = coordinate
+                let markerAnimationDuration = (coordinateChanged || animatedDeviceLocation == nil)
+                    ? updateDisplayedDeviceCoordinate(for: deviceID, to: coordinate)
+                    : 0
                 deviceAccuracy = loc.HorizontalAccuracy
                 deviceTimestamp = loc.TimestampDate
                 now = Date() // Update time immediately
@@ -1162,6 +1368,7 @@ struct iPad_DeviceMapView: View {
                 if coordinateChanged {
                     // iPad-specific: Enhanced location change animations with explicit map movement
                     isProgrammaticCameraChange = true
+                    beginProgrammaticCameraAnimation(duration: max(1.2, markerAnimationDuration))
                     if animationsAllowed {
                         withAnimation(.easeInOut(duration: 1.2)) {
                             if #available(iOS 17.0, *) {
@@ -1371,8 +1578,7 @@ extension iPad_DeviceMapView {
         // Other devices shown on the map (when inside the viewport)
         let others = deviceStore.devices.filter { $0.DeviceID != deviceID }
         for other in others {
-            if let cached = cache.getLocation(for: other.DeviceID) {
-                let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
+            if let coord = deviceCoordinate(for: other.DeviceID) {
                 if isCoordinate(coord, inside: region) {
                     count += 1
                 }

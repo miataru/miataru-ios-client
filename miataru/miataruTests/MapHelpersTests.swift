@@ -223,4 +223,99 @@ struct MapHelpersTests {
             #expect(hasUnit)
         }
     }
+
+    @Test("map pin motion jumps without a previous coordinate")
+    func testMapPinMotionNoPreviousCoordinateJumps() async throws {
+        let target = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let decision = mapPinMotionDecision(from: nil, to: target, animationsAllowed: true)
+
+        #expect(decision.update == .jump)
+        #expect(decision.distanceMeters == nil)
+        #expect(!decision.shouldShowTrail)
+    }
+
+    @Test("map pin motion quietly updates tiny movements")
+    func testMapPinMotionQuietForTinyMovement() async throws {
+        let start = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let target = CLLocationCoordinate2D(latitude: 52.52001, longitude: 13.405)
+        let decision = mapPinMotionDecision(from: start, to: target, animationsAllowed: true)
+
+        #expect(decision.update == .quiet)
+        #expect(decision.distanceMeters != nil)
+        #expect(!decision.shouldShowTrail)
+    }
+
+    @Test("map pin motion animates at the maximum distance boundary")
+    func testMapPinMotionAnimatesAtMaximumDistanceBoundary() async throws {
+        let start = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let target = CLLocationCoordinate2D(latitude: 52.523, longitude: 13.405)
+        let distance = mapPinDistanceMeters(from: start, to: target)
+        let decision = mapPinMotionDecision(
+            from: start,
+            to: target,
+            animationsAllowed: true,
+            maximumAnimatedDistanceMeters: distance
+        )
+
+        if case .animated = decision.update {
+            #expect(decision.shouldShowTrail)
+        } else {
+            Issue.record("Expected boundary distance to animate")
+        }
+    }
+
+    @Test("map pin motion jumps beyond the maximum distance")
+    func testMapPinMotionJumpsBeyondMaximumDistance() async throws {
+        let start = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let target = CLLocationCoordinate2D(latitude: 52.529, longitude: 13.405)
+        let decision = mapPinMotionDecision(from: start, to: target, animationsAllowed: true)
+
+        #expect(decision.update == .jump)
+        #expect((decision.distanceMeters ?? 0) > 500)
+        #expect(!decision.shouldShowTrail)
+    }
+
+    @Test("map pin motion duration clamps to configured min and max")
+    func testMapPinMotionDurationClamps() async throws {
+        let start = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let target = CLLocationCoordinate2D(latitude: 52.523, longitude: 13.405)
+        let distance = mapPinDistanceMeters(from: start, to: target)
+
+        let minimumDecision = mapPinMotionDecision(
+            from: start,
+            to: target,
+            animationsAllowed: true,
+            quietDistanceMeters: distance,
+            maximumAnimatedDistanceMeters: distance + 100
+        )
+        #expect(minimumDecision.animationDuration == 0.45)
+
+        let maximumDecision = mapPinMotionDecision(
+            from: start,
+            to: target,
+            animationsAllowed: true,
+            quietDistanceMeters: 0,
+            maximumAnimatedDistanceMeters: distance
+        )
+        #expect(maximumDecision.animationDuration == 1.2)
+    }
+
+    @Test("map pin interpolation preserves endpoints and has a sane midpoint")
+    func testMapPinInterpolation() async throws {
+        let start = CLLocationCoordinate2D(latitude: 52.52, longitude: 13.405)
+        let end = CLLocationCoordinate2D(latitude: 52.525, longitude: 13.415)
+
+        let first = interpolatedMapPinCoordinate(from: start, to: end, progress: 0)
+        let midpoint = interpolatedMapPinCoordinate(from: start, to: end, progress: 0.5)
+        let last = interpolatedMapPinCoordinate(from: start, to: end, progress: 1)
+
+        #expect(abs(first.latitude - start.latitude) < 0.000001)
+        #expect(abs(first.longitude - start.longitude) < 0.000001)
+        #expect(abs(last.latitude - end.latitude) < 0.000001)
+        #expect(abs(last.longitude - end.longitude) < 0.000001)
+        #expect(midpoint.latitude > min(start.latitude, end.latitude))
+        #expect(midpoint.latitude < max(start.latitude, end.latitude))
+        #expect(midpoint.longitude > min(start.longitude, end.longitude))
+        #expect(midpoint.longitude < max(start.longitude, end.longitude))
+    }
 }

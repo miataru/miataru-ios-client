@@ -32,23 +32,18 @@ struct iPad_LegacyMapViewRepresentable: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: MKMapView, context: Context) {
+        context.coordinator.parent = self
         // iPad-specific: Always use animations for better user experience
         uiView.setRegion(region, animated: true)
         uiView.mapType = mapTypeFromSettings(mapType)
-        uiView.removeAnnotations(uiView.annotations)
+        context.coordinator.updateDeviceAnnotation(on: uiView, coordinate: deviceLocation, title: device.DeviceName)
+        uiView.removeOverlays(uiView.overlays)
         if let coordinate = deviceLocation {
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = device.DeviceName
-            uiView.addAnnotation(annotation)
             // Genauigkeitskreis
-            uiView.removeOverlays(uiView.overlays)
             if settings.indicateAccuracyOnMap, let accuracy = deviceAccuracy, accuracy > 0 {
                 let circle = MKCircle(center: coordinate, radius: accuracy)
                 uiView.addOverlay(circle)
             }
-        } else {
-            uiView.removeOverlays(uiView.overlays)
         }
     }
 
@@ -58,9 +53,33 @@ struct iPad_LegacyMapViewRepresentable: UIViewRepresentable {
 
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: iPad_LegacyMapViewRepresentable
+        private var deviceAnnotation: MKPointAnnotation?
         
         init(_ parent: iPad_LegacyMapViewRepresentable) {
             self.parent = parent
+        }
+
+        func updateDeviceAnnotation(on mapView: MKMapView, coordinate: CLLocationCoordinate2D?, title: String) {
+            guard let coordinate = coordinate else {
+                if let deviceAnnotation {
+                    mapView.removeAnnotation(deviceAnnotation)
+                    self.deviceAnnotation = nil
+                }
+                return
+            }
+
+            if let deviceAnnotation {
+                deviceAnnotation.title = title
+                UIView.animate(withDuration: 0.25) {
+                    deviceAnnotation.coordinate = coordinate
+                }
+            } else {
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = coordinate
+                annotation.title = title
+                deviceAnnotation = annotation
+                mapView.addAnnotation(annotation)
+            }
         }
         
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {

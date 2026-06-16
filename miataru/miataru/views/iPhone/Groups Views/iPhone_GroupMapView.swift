@@ -34,6 +34,9 @@ struct iPhone_GroupMapView: View {
     )
     @State private var deviceLocations: [String: CLLocationCoordinate2D] = [:]
     @State private var animatedDeviceLocations: [String: CLLocationCoordinate2D] = [:] // Animierte Positionen für Marker
+    @State private var mapPinAnimationTasks: [String: Task<Void, Never>] = [:]
+    @State private var mapPinMovementTrails: [String: MapPinMovementTrail] = [:]
+    @State private var fadingMapPinTrailIDs: Set<UUID> = []
     @State private var deviceAccuracies: [String: Double] = [:]
     @State private var deviceTimestamps: [String: Date] = [:]
     @State private var isLoading = false
@@ -103,7 +106,7 @@ struct iPhone_GroupMapView: View {
         var devicesByEdge: [Edge: [(device: KnownDevice, coordinate: CLLocationCoordinate2D, distanceKM: Double, onTap: () -> Void)]] = [:]
         for deviceID in groupDeviceIDs {
             if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
-               let coordinate = deviceLocations[deviceID],
+               let coordinate = animatedDeviceLocations[deviceID] ?? deviceLocations[deviceID],
                let edge = OffscreenDeviceEdgeHelper.edge(for: coordinate,
                                                         in: region,
                                                         screenSize: screenSize,
@@ -307,6 +310,12 @@ struct iPhone_GroupMapView: View {
         }
         .onDisappear {
             stopAutoUpdate()
+            cancelMapPinAnimations()
+        }
+        .onChange(of: animationsAllowed) { _, allowed in
+            if !allowed {
+                finishMapPinAnimationsImmediately()
+            }
         }
         .onChange(of: settings.mapUpdateInterval) { _, _ in
             if !groupDeviceIDs.isEmpty {
@@ -317,12 +326,15 @@ struct iPhone_GroupMapView: View {
             // Remove all locations that no longer belong to the group
             let validIDs = Set(groupDeviceIDs)
             deviceLocations = deviceLocations.filter { validIDs.contains($0.key) }
+            animatedDeviceLocations = animatedDeviceLocations.filter { validIDs.contains($0.key) }
             deviceAccuracies = deviceAccuracies.filter { validIDs.contains($0.key) }
             deviceTimestamps = deviceTimestamps.filter { validIDs.contains($0.key) }
+            removeAnimationState(except: validIDs)
             updateMapRegionToFitDevices()
         }
         .onChange(of: group.id) { _, _ in
             // Reset state when switching to a different group
+            cancelMapPinAnimations()
             deviceLocations.removeAll()
             deviceAccuracies.removeAll()
             deviceTimestamps.removeAll()
@@ -363,21 +375,6 @@ struct iPhone_GroupMapView: View {
                 startAutoUpdate()
             }
         }
-        // TODO: this is not working as expected, the marker is not animated / compile crashes
-        /*.onChange(of: deviceLocations) { newValue in
-            // Für alle deviceIDs, die sich geändert haben, animiere die Position
-            for (deviceID, newCoord) in newValue {
-                let oldCoord = animatedDeviceLocations[deviceID]
-                if oldCoord?.latitude != newCoord.latitude || oldCoord?.longitude != newCoord.longitude {
-                    withAnimation(.easeInOut(duration: 0.7)) {
-                        animatedDeviceLocations[deviceID] = newCoord
-                    }
-                }
-            }
-            // Entferne Marker, die nicht mehr existieren
-            let validIDs = Set(newValue.keys)
-            animatedDeviceLocations = animatedDeviceLocations.filter { validIDs.contains($0.key) }
-        }*/
         .onMapCameraChange(frequency: .continuous) { context in
             let headingChanged = abs((currentMapCamera?.heading ?? 0) - context.camera.heading) > 0.1
             let zoomChanged = abs((currentRegion?.span.latitudeDelta ?? 0) - context.region.span.latitudeDelta) > 0.0001 ||
@@ -432,6 +429,9 @@ struct iPhone_GroupMapView: View {
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { input in
             now = input
         }
+        .onReceive(cache.$locations) { locations in
+            syncDisplayedGroupDeviceLocationsFromCache(locations, animated: true)
+        }
         // Sheet for editing device
         .sheet(isPresented: $showEditDeviceSheet) {
             if let deviceID = editingDeviceID, let index = deviceStore.devices.firstIndex(where: { $0.DeviceID == deviceID }) {
@@ -454,6 +454,23 @@ struct iPhone_GroupMapView: View {
     private func mapSection() -> some View {
         MapReader { proxy in
             Map(position: $cameraPosition, scope: mapScope) {
+                ForEach(Array(mapPinMovementTrails.values), id: \.id) { trail in
+                    let trailColor = movementTrailColor(for: trail.deviceID)
+                    let trailOpacity = fadingMapPinTrailIDs.contains(trail.id) ? 0.0 : 0.68
+                    MapPolyline(coordinates: [trail.startCoordinate, trail.endCoordinate])
+                        .stroke(trailColor.opacity(trailOpacity), style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                    Annotation("", coordinate: trail.startCoordinate, anchor: .center) {
+                        Circle()
+                            .fill(trailColor.opacity(trailOpacity * 0.5))
+                            .frame(width: 10, height: 10)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(trailOpacity * 0.75), lineWidth: 1)
+                            )
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                    }
+                }
                 // Show all devices in the group
                 ForEach(groupDeviceIDs, id: \.self) { deviceID in
                     if let device = deviceStore.devices.first(where: { $0.DeviceID == deviceID }),
@@ -713,9 +730,7 @@ struct iPhone_GroupMapView: View {
             // Update device locations
             for location in locations {
                 let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
-                deviceLocations[location.Device] = coordinate
-                // Update animated location immediately to ensure marker moves
-                animatedDeviceLocations[location.Device] = coordinate
+                updateGroupDeviceLocation(location.Device, to: coordinate)
                 deviceAccuracies[location.Device] = location.HorizontalAccuracy
                 deviceTimestamps[location.Device] = location.TimestampDate
                 now = Date() // Update time immediately for each hit
@@ -744,9 +759,7 @@ struct iPhone_GroupMapView: View {
                     )
                     if let location = locations.first {
                         let coordinate = CLLocationCoordinate2D(latitude: location.Latitude, longitude: location.Longitude)
-                        deviceLocations[location.Device] = coordinate
-                        // Update animated location immediately to ensure marker moves
-                        animatedDeviceLocations[location.Device] = coordinate
+                        updateGroupDeviceLocation(location.Device, to: coordinate)
                         deviceAccuracies[location.Device] = location.HorizontalAccuracy
                         deviceTimestamps[location.Device] = location.TimestampDate
                         anySuccess = true
@@ -786,6 +799,177 @@ struct iPhone_GroupMapView: View {
             if anySuccess {
                 if isAutoCenteringEnabled { updateMapRegionToFitDevices() }
             }
+        }
+    }
+
+    private func updateGroupDeviceLocation(_ deviceID: String, to coordinate: CLLocationCoordinate2D) {
+        let coordinateChanged = !coordinatesEqual(deviceLocations[deviceID], coordinate)
+        deviceLocations[deviceID] = coordinate
+        if coordinateChanged || animatedDeviceLocations[deviceID] == nil {
+            updateDisplayedGroupDeviceCoordinate(for: deviceID, to: coordinate)
+        }
+    }
+
+    @discardableResult
+    private func updateDisplayedGroupDeviceCoordinate(for deviceID: String, to target: CLLocationCoordinate2D) -> TimeInterval {
+        let current = animatedDeviceLocations[deviceID]
+        let decision = mapPinMotionDecision(from: current, to: target, animationsAllowed: animationsAllowed)
+
+        mapPinAnimationTasks[deviceID]?.cancel()
+        mapPinAnimationTasks[deviceID] = nil
+
+        switch decision.update {
+        case .jump, .quiet:
+            setDisplayedGroupDeviceCoordinate(target, for: deviceID)
+            removeMovementTrail(for: deviceID)
+            return 0
+        case .animated(let duration):
+            guard let start = current else {
+                setDisplayedGroupDeviceCoordinate(target, for: deviceID)
+                removeMovementTrail(for: deviceID)
+                return 0
+            }
+
+            let trail = MapPinMovementTrail(deviceID: deviceID, startCoordinate: start, endCoordinate: target)
+            mapPinMovementTrails[deviceID] = trail
+            fadingMapPinTrailIDs.remove(trail.id)
+
+            mapPinAnimationTasks[deviceID] = Task { @MainActor in
+                let startDate = Date()
+                while !Task.isCancelled {
+                    let elapsed = Date().timeIntervalSince(startDate)
+                    let progress = min(max(elapsed / duration, 0), 1)
+                    let coordinate = interpolatedMapPinCoordinate(from: start, to: target, progress: progress)
+                    setDisplayedGroupDeviceCoordinate(coordinate, for: deviceID)
+
+                    if progress >= 1 {
+                        break
+                    }
+
+                    do {
+                        try await Task.sleep(nanoseconds: 16_666_667)
+                    } catch {
+                        return
+                    }
+                }
+
+                guard !Task.isCancelled else { return }
+                setDisplayedGroupDeviceCoordinate(target, for: deviceID)
+                mapPinAnimationTasks[deviceID] = nil
+                fadeMovementTrail(for: deviceID)
+            }
+
+            return duration
+        }
+    }
+
+    private func setDisplayedGroupDeviceCoordinate(_ coordinate: CLLocationCoordinate2D, for deviceID: String) {
+        animatedDeviceLocations[deviceID] = coordinate
+        updateVisibleDeviceCount(with: currentRegion ?? cameraPosition.region)
+    }
+
+    private func syncDisplayedGroupDeviceLocationsFromCache(_ locations: [CachedDeviceLocation], animated: Bool) {
+        let validIDs = Set(groupDeviceIDs)
+        guard !validIDs.isEmpty else { return }
+
+        for location in locations where validIDs.contains(location.deviceID) {
+            let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+            if coordinatesEqual(deviceLocations[location.deviceID], coordinate) {
+                if animatedDeviceLocations[location.deviceID] == nil {
+                    animatedDeviceLocations[location.deviceID] = coordinate
+                }
+                continue
+            }
+
+            if animated {
+                updateGroupDeviceLocation(location.deviceID, to: coordinate)
+            } else {
+                deviceLocations[location.deviceID] = coordinate
+                animatedDeviceLocations[location.deviceID] = coordinate
+                removeMovementTrail(for: location.deviceID)
+            }
+            deviceAccuracies[location.deviceID] = location.accuracy
+            deviceTimestamps[location.deviceID] = location.timestamp
+        }
+    }
+
+    private func fadeMovementTrail(for deviceID: String) {
+        guard let trail = mapPinMovementTrails[deviceID] else { return }
+        if animationsAllowed {
+            withAnimation(.easeOut(duration: 0.25)) {
+                _ = fadingMapPinTrailIDs.insert(trail.id)
+            }
+        } else {
+            fadingMapPinTrailIDs.insert(trail.id)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if mapPinMovementTrails[deviceID]?.id == trail.id {
+                mapPinMovementTrails.removeValue(forKey: deviceID)
+                fadingMapPinTrailIDs.remove(trail.id)
+            }
+        }
+    }
+
+    private func removeMovementTrail(for deviceID: String) {
+        if let trail = mapPinMovementTrails.removeValue(forKey: deviceID) {
+            fadingMapPinTrailIDs.remove(trail.id)
+        }
+    }
+
+    private func cancelMapPinAnimations() {
+        for task in mapPinAnimationTasks.values {
+            task.cancel()
+        }
+        mapPinAnimationTasks.removeAll()
+        mapPinMovementTrails.removeAll()
+        fadingMapPinTrailIDs.removeAll()
+    }
+
+    private func finishMapPinAnimationsImmediately() {
+        let animatedDeviceIDs = Set(mapPinAnimationTasks.keys).union(Set(mapPinMovementTrails.keys))
+        for deviceID in animatedDeviceIDs {
+            mapPinAnimationTasks[deviceID]?.cancel()
+            if let finalCoordinate = deviceLocations[deviceID] {
+                animatedDeviceLocations[deviceID] = finalCoordinate
+            }
+            removeMovementTrail(for: deviceID)
+        }
+        mapPinAnimationTasks.removeAll()
+        mapPinMovementTrails.removeAll()
+        fadingMapPinTrailIDs.removeAll()
+        updateVisibleDeviceCount(with: currentRegion ?? cameraPosition.region)
+    }
+
+    private func removeAnimationState(except validDeviceIDs: Set<String>) {
+        let staleIDs = Set(animatedDeviceLocations.keys)
+            .union(Set(mapPinAnimationTasks.keys))
+            .union(Set(mapPinMovementTrails.keys))
+            .subtracting(validDeviceIDs)
+
+        for staleID in staleIDs {
+            mapPinAnimationTasks[staleID]?.cancel()
+            mapPinAnimationTasks[staleID] = nil
+            animatedDeviceLocations.removeValue(forKey: staleID)
+            removeMovementTrail(for: staleID)
+        }
+    }
+
+    private func movementTrailColor(for deviceID: String) -> Color {
+        if let knownDevice = deviceStore.devices.first(where: { $0.DeviceID == deviceID }) {
+            return Color(knownDevice.DeviceColor ?? UIColor.systemBlue)
+        }
+        return .blue
+    }
+
+    private func coordinatesEqual(_ lhs: CLLocationCoordinate2D?, _ rhs: CLLocationCoordinate2D?) -> Bool {
+        switch (lhs, rhs) {
+        case let (lhs?, rhs?):
+            return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+        case (nil, nil):
+            return true
+        default:
+            return false
         }
     }
     

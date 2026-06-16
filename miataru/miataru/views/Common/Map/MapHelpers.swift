@@ -10,6 +10,7 @@
 import MapKit
 import SwiftUI
 import CoreLocation
+import Foundation
 
 // Helper function for MapStyle
 @available(iOS 17.0, *)
@@ -39,6 +40,98 @@ func currentZoomLevelFromSpan(_ span: MKCoordinateSpan) -> Int {
     // Convert back to km: 1° ≈ 111 km
     let km = avgDelta * 111.0
     return Int(round(km))
+}
+
+enum MapPinMotionUpdate: Equatable {
+    case jump
+    case quiet
+    case animated(duration: TimeInterval)
+}
+
+struct MapPinMotionDecision: Equatable {
+    let update: MapPinMotionUpdate
+    let distanceMeters: CLLocationDistance?
+
+    var animationDuration: TimeInterval? {
+        if case .animated(let duration) = update {
+            return duration
+        }
+        return nil
+    }
+
+    var shouldShowTrail: Bool {
+        animationDuration != nil
+    }
+}
+
+struct MapPinMovementTrail: Identifiable {
+    let id = UUID()
+    let deviceID: String
+    let startCoordinate: CLLocationCoordinate2D
+    let endCoordinate: CLLocationCoordinate2D
+}
+
+func mapPinMotionDecision(
+    from previousCoordinate: CLLocationCoordinate2D?,
+    to newCoordinate: CLLocationCoordinate2D,
+    animationsAllowed: Bool,
+    quietDistanceMeters: CLLocationDistance = 5,
+    maximumAnimatedDistanceMeters: CLLocationDistance = 500,
+    minimumDuration: TimeInterval = 0.45,
+    maximumDuration: TimeInterval = 1.2
+) -> MapPinMotionDecision {
+    guard animationsAllowed, let previousCoordinate = previousCoordinate else {
+        return MapPinMotionDecision(update: .jump, distanceMeters: nil)
+    }
+
+    let distance = mapPinDistanceMeters(from: previousCoordinate, to: newCoordinate)
+    guard distance.isFinite else {
+        return MapPinMotionDecision(update: .jump, distanceMeters: nil)
+    }
+
+    if distance < quietDistanceMeters {
+        return MapPinMotionDecision(update: .quiet, distanceMeters: distance)
+    }
+
+    if distance > maximumAnimatedDistanceMeters {
+        return MapPinMotionDecision(update: .jump, distanceMeters: distance)
+    }
+
+    let usableRange = max(maximumAnimatedDistanceMeters - quietDistanceMeters, Double.leastNonzeroMagnitude)
+    let normalizedDistance = min(max((distance - quietDistanceMeters) / usableRange, 0), 1)
+    let durationRange = max(maximumDuration - minimumDuration, 0)
+    let duration = minimumDuration + (durationRange * normalizedDistance)
+    return MapPinMotionDecision(update: .animated(duration: duration), distanceMeters: distance)
+}
+
+func mapPinDistanceMeters(
+    from first: CLLocationCoordinate2D,
+    to second: CLLocationCoordinate2D
+) -> CLLocationDistance {
+    let firstPoint = MKMapPoint(first)
+    let secondPoint = MKMapPoint(second)
+    return firstPoint.distance(to: secondPoint)
+}
+
+func mapPinEaseInOutCubic(_ progress: Double) -> Double {
+    let clamped = min(max(progress, 0), 1)
+    if clamped < 0.5 {
+        return 4 * clamped * clamped * clamped
+    }
+    return 1 - pow(-2 * clamped + 2, 3) / 2
+}
+
+func interpolatedMapPinCoordinate(
+    from startCoordinate: CLLocationCoordinate2D,
+    to endCoordinate: CLLocationCoordinate2D,
+    progress: Double
+) -> CLLocationCoordinate2D {
+    let easedProgress = mapPinEaseInOutCubic(progress)
+    let startPoint = MKMapPoint(startCoordinate)
+    let endPoint = MKMapPoint(endCoordinate)
+    let x = startPoint.x + ((endPoint.x - startPoint.x) * easedProgress)
+    let y = startPoint.y + ((endPoint.y - startPoint.y) * easedProgress)
+    return MKMapPoint(x: x, y: y).coordinate
 }
 
 /// Approximates the screen distance between two coordinates for the currently visible map region.

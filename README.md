@@ -20,7 +20,7 @@ The app currently supports iPhone and iPad. Mac-specific view files are present 
 - Allowed Device List: manage device access controls and sync changes immediately from edit flows.
 - Unknown visitor alerts: optional local notifications for new unknown devices that look up this device, filtered against own, known, allowed, and ignored IDs.
 - Device info: display and edit short device slogans, show security status, and cache location/slogan metadata centrally.
-- Maps and navigation: device/group maps, accuracy circles, off-screen arrows, route planning, live ETA, route-progress ghost rendering in standard navigation, focused double-tap navigation, turn-by-turn overlay, haptics, and sound cues.
+- Maps and navigation: device/group maps with smooth nearby pin movement and subtle movement trails, accuracy circles, off-screen arrows, route planning, live ETA, route-progress ghost rendering in standard navigation, focused double-tap navigation, turn-by-turn overlay, haptics, and sound cues.
 - QR and deep links: show the current device QR code, scan Miataru URLs, share IDs, and open `miataru://<DEVICE_ID>` links.
 - Siri and Shortcuts: App Intents expose configured, current-location-authorized devices as privacy-friendly choices for finding the last known location, opening Apple Maps or Miataru navigation, managing manual frequent tracking, and using device-scoped saved places/proximity checks without exposing raw DeviceIDs or coordinates in dialogs.
 - Widgets: text and map widgets use AppIntent device selection, shared App Group configuration, cached map snapshots, and live fallback fetches where configured.
@@ -79,6 +79,8 @@ iPhone uses Devices, QR, and Settings tabs, with groups integrated into the Devi
 Navigation supports walking, car, and transit routes. Standard `device -> user` navigation can show progress segmentation and a moving route ghost after enough progress. Reverse `user -> device` navigation uses focused camera behavior and turn-by-turn instructions. Focused double-tap mode intentionally keeps the base route stable and suppresses ghost/progress segmentation.
 
 Live speed labels on map markers are hidden once their location sample is older than five minutes; historical speed displays remain independent of that freshness rule.
+
+Live device and group overview maps animate marker movement for nearby updates up to 500 meters and show a short movement trail. Larger jumps update immediately so distant server updates do not imply continuous travel. Device history maps also glide the selected playback marker between nearby history samples while scrubbing or playing back a route.
 
 ### Settings
 

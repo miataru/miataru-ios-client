@@ -207,6 +207,7 @@ extension EnvironmentValues {
 
 struct AnimationsGate: ViewModifier {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
 
     func body(content: Content) -> some View {
@@ -214,7 +215,7 @@ struct AnimationsGate: ViewModifier {
             .onReceive(NotificationCenter.default.publisher(for: Notification.Name.NSProcessInfoPowerStateDidChange)) { _ in
                 isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
             }
-            .environment(\.animationsAllowed, scenePhase == .active && !isLowPowerMode)
+            .environment(\.animationsAllowed, scenePhase == .active && !isLowPowerMode && !reduceMotion)
     }
 }
 

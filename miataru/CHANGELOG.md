@@ -1,4 +1,6 @@
 version 3.2.2
+- Added smooth live map pin movement for nearby device updates up to 500 m on device and group overview maps, with subtle movement trails and immediate jumps for larger moves.
+- Added smoother selected-marker movement while scrubbing or playing back device history on the map.
 - Changed the iPhone device-history panel auto-hide rule so the 5-second timer starts only after active map pan/zoom, map point selection, or Play/Pause, preventing the panel from hiding while users are simply reading or thinking.
 - Added `HistoryPanelAutoHidePolicy` regression coverage for map-triggered hiding, the Play/Pause exception, ignored panel interactions such as speed changes/scrubbing/range dragging, and programmatic camera changes.
 - Added a conservative GPS anomaly filter before local cache and `UpdateLocation` upload so poor reception spikes with invalid/coarse accuracy or implausible short-hop speed are kept out of server history.

@@ -40,6 +40,8 @@ Multi-Device Management:
 
 Maps and Navigation:
 * Interactive maps with accuracy indicators
+* Nearby device movements glide smoothly on overview maps with a subtle movement trail
+* Device history playback marker glides smoothly between nearby samples
 * Off-screen arrows for devices outside the current map view
 * Route planning with ETA, distance, arrival time, and progress
 * Focused navigation mode for following a route
@@ -92,6 +94,7 @@ location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-h
 * Manual frequent mode remains available as an override
 * Optional Smart mode-change notifications
 * Expanded location tracking diagnostics with mode-specific update counters
+* Nearby device movements now glide smoothly on overview maps with a subtle movement trail
 
 ## Screenshot Suggestions
 

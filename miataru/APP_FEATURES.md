@@ -120,8 +120,10 @@ This document describes the current user-facing and developer-facing feature set
 **For users:**
 
 - Maps show device markers, accuracy circles, relative time, distance, and optional speed labels.
+- Live device and group overview maps glide nearby marker updates up to 500 m with a subtle movement trail; larger jumps update immediately.
 - Live speed labels disappear when the backing location sample is older than five minutes.
 - Device history maps include a compact analysis panel with a speed histogram, altitude sparkline, current playhead speed/altitude values, distance and range summaries, and the existing range timeline.
+- Device history playback and scrubbing glide the selected map marker between nearby samples for smoother route review.
 - The history analysis panel can be hidden with a downward swipe on its handle and restored from a small bottom pill without stopping playback or changing the visible route.
 - The history analysis panel auto-hides only after active map pan/zoom, map point selection, or Play/Pause, so reading the panel does not dismiss it.
 - Off-screen arrows point toward devices outside the current region.
