@@ -50,6 +50,9 @@ private enum SettingsTextTable {
         if key.hasPrefix("explanation_server_url") {
             return "SettingsDiagnostics"
         }
+        if key == "explanation_deactivate_device_lock" {
+            return nil
+        }
         if key.hasPrefix("activity_type_")
             || key.hasPrefix("background_")
             || key.hasPrefix("frequent_background_")

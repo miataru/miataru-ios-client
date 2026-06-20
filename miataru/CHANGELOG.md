@@ -1,3 +1,7 @@
+version 3.3.1
+- Fixed the Settings description for "Deactivate device lock" so it resolves through the correct string catalog and shows the localized copy instead of the localization key.
+- Updated project metadata for version 3.3.1.
+
 version 3.3
 - Added a localized temporary server-update pause that discards own-location updates while active, schedules pause/resume notifications, gates outbox flushing, and keeps Smart/manual frequent background tracking visually throttled to standard significant-change behavior during the pause.
 - Reworked the "This Device" QR tab with the Device Slogan above the Device ID, a leading DeviceKey action, a trailing server-update pause action, neutral QR copy, and a custom duration sheet defaulting to two hours with day/hour/minute wheels.
