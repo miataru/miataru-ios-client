@@ -282,23 +282,6 @@ enum TrackingPauseDuration: Int, CaseIterable, Identifiable, Sendable {
         TimeInterval(rawValue)
     }
 
-    var localizationKey: String {
-        switch self {
-        case .oneHour:
-            return "tracking_pause_duration_1h"
-        case .twoHours:
-            return "tracking_pause_duration_2h"
-        case .fourHours:
-            return "tracking_pause_duration_4h"
-        case .eightHours:
-            return "tracking_pause_duration_8h"
-        case .twentyFourHours:
-            return "tracking_pause_duration_24h"
-        case .fortyEightHours:
-            return "tracking_pause_duration_48h"
-        }
-    }
-
     func expirationDate(from startDate: Date) -> Date {
         startDate.addingTimeInterval(timeInterval)
     }

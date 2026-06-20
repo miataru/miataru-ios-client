@@ -1564,71 +1564,6 @@
         }
       }
     },
-    "background_tracking_mode_paused" : {
-      "comment" : "Background status text while server updates are paused",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serveropdateringer sat på pause"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server-Updates pausiert"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server updates paused"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizaciones del servidor pausadas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Palvelinpäivitykset keskeytetty"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mises à jour serveur en pause"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiornamenti server in pausa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サーバー更新は一時停止中"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serverupdates gepauzeerd"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器更新已暂停"
-          }
-        }
-      }
-    },
     "background_tracking_mode_significant_change" : {
       "comment" : "Background status text for significant-change mode",
       "localizations" : {
@@ -13615,71 +13550,6 @@
         }
       }
     },
-    "tracking_mode_paused" : {
-      "comment" : "Status text while server updates are paused",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serveropdateringer: sat på pause"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server-Updates: pausiert"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server updates: paused"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizaciones del servidor: pausadas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Palvelinpäivitykset: keskeytetty"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mises à jour serveur : en pause"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiornamenti server: in pausa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サーバー更新：一時停止中"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serverupdates: gepauzeerd"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器更新：已暂停"
-          }
-        }
-      }
-    },
     "tracking_mode_smart_frequent_background_updates_format" : {
       "comment" : "Tracking mode text for smart frequent background updates",
       "localizations" : {
@@ -13940,71 +13810,6 @@
         }
       }
     },
-    "tracking_pause_background_hint" : {
-      "comment" : "Hint shown while server updates are paused",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serveropdateringer er midlertidigt sat på pause. Positionssporing på denne enhed fortsætter."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server-Updates sind vorübergehend pausiert. Die Standorterfassung auf diesem Gerät läuft weiter."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server updates are temporarily paused. Location tracking on this device continues."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las actualizaciones del servidor están pausadas temporalmente. El seguimiento de ubicación en este dispositivo continúa."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Palvelinpäivitykset on tilapäisesti keskeytetty. Sijainnin seuranta tällä laitteella jatkuu."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les mises à jour serveur sont temporairement en pause. Le suivi de position continue sur cet appareil."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gli aggiornamenti server sono temporaneamente in pausa. Il tracciamento della posizione su questo dispositivo continua."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サーバー更新は一時停止中です。この端末での位置取得は継続します。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serverupdates zijn tijdelijk gepauzeerd. Locatietracking op dit apparaat blijft actief."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器更新已暂时暂停。本设备上的位置追踪会继续。"
-          }
-        }
-      }
-    },
     "tracking_pause_button_hint" : {
       "comment" : "Accessibility hint for the server update pause toolbar button",
       "localizations" : {
@@ -14131,6 +13936,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停服务器更新"
+          }
+        }
+      }
+    },
+    "tracking_pause_day_picker_format" : {
+      "comment" : "Day value in server update pause duration picker.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d T"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d pv"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d j"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d g"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d日"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d d"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d 天"
           }
         }
       }
@@ -14395,396 +14265,6 @@
         }
       }
     },
-    "tracking_pause_duration_1h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 time"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 Stunde"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 hour"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 hora"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 tunti"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 heure"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 ora"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1 小时"
-          }
-        }
-      }
-    },
-    "tracking_pause_duration_2h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 小时"
-          }
-        }
-      }
-    },
-    "tracking_pause_duration_4h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "4 小时"
-          }
-        }
-      }
-    },
-    "tracking_pause_duration_8h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "8 小时"
-          }
-        }
-      }
-    },
-    "tracking_pause_duration_24h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 小时"
-          }
-        }
-      }
-    },
-    "tracking_pause_duration_48h" : {
-      "comment" : "Server update pause duration option",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 timer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 Stunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 hours"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 horas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 tuntia"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 heures"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 ore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48時間"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 uur"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "48 小时"
-          }
-        }
-      }
-    },
     "tracking_pause_duration_section_title" : {
       "comment" : "Section title for server update pause durations",
       "localizations" : {
@@ -14915,73 +14395,8 @@
         }
       }
     },
-    "tracking_pause_day_picker_format" : {
-      "comment" : "Day value in server update pause duration picker. Argument: number of days.",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d d"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d T"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d d"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d d"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d pv"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d j"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d g"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d日"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d d"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d 天"
-          }
-        }
-      }
-    },
     "tracking_pause_hour_picker_format" : {
-      "comment" : "Hour value in server update pause duration picker. Argument: number of hours.",
+      "comment" : "Hour value in server update pause duration picker.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -15046,7 +14461,7 @@
       }
     },
     "tracking_pause_minute_picker_format" : {
-      "comment" : "Minute value in server update pause duration picker. Argument: number of minutes.",
+      "comment" : "Minute value in server update pause duration picker.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -15106,71 +14521,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d 分钟"
-          }
-        }
-      }
-    },
-    "tracking_pause_resume_now" : {
-      "comment" : "Button title to end a server update pause immediately",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Genoptag serveropdateringer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server-Updates fortsetzen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resume Server Updates"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reanudar actualizaciones del servidor"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jatka palvelinpäivityksiä"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reprendre les mises à jour serveur"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riprendi aggiornamenti server"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サーバー更新を再開"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serverupdates hervatten"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "恢复服务器更新"
           }
         }
       }
@@ -15370,67 +14720,67 @@
         }
       }
     },
-    "tracking_pause_start_button" : {
-      "comment" : "Button title to start the selected server update pause duration",
+    "tracking_pause_resume_now" : {
+      "comment" : "Button title to end a server update pause immediately",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start pause"
+            "value" : "Genoptag serveropdateringer"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pause starten"
+            "value" : "Server-Updates fortsetzen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Start Pause"
+            "value" : "Resume Server Updates"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iniciar pausa"
+            "value" : "Reanudar actualizaciones del servidor"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aloita tauko"
+            "value" : "Jatka palvelinpäivityksiä"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Démarrer la pause"
+            "value" : "Reprendre les mises à jour serveur"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avvia pausa"
+            "value" : "Riprendi aggiornamenti server"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一時停止を開始"
+            "value" : "サーバー更新を再開"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pauze starten"
+            "value" : "Serverupdates hervatten"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开始暂停"
+            "value" : "恢复服务器更新"
           }
         }
       }
@@ -15636,61 +14986,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Midlertidigt ingen serveropdateringer"
+            "value" : "Deaktiver sporing midlertidigt"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temporär keine Server Updates"
+            "value" : "Temporär Tracking deaktivieren"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temporarily No Server Updates"
+            "value" : "Temporarily Disable Tracking"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin actualizaciones del servidor temporalmente"
+            "value" : "Desactivar seguimiento temporalmente"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tilapäisesti ei palvelinpäivityksiä"
+            "value" : "Poista seuranta tilapäisesti käytöstä"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temporairement aucune mise à jour serveur"
+            "value" : "Désactiver temporairement le suivi"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Temporaneamente nessun aggiornamento server"
+            "value" : "Disattiva temporaneamente il tracciamento"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一時的にサーバー更新なし"
+            "value" : "一時的に追跡を無効にする"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tijdelijk geen serverupdates"
+            "value" : "Tracking tijdelijk uitschakelen"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂时不进行服务器更新"
+            "value" : "暂时停用追踪"
           }
         }
       }
@@ -15821,6 +15171,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停服务器更新"
+          }
+        }
+      }
+    },
+    "tracking_pause_start_button" : {
+      "comment" : "Button title to start the selected server update pause duration",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start pause"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Pause"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar pausa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aloita tauko"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer la pause"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avvia pausa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止を開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pauze starten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始暂停"
           }
         }
       }
