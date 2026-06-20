@@ -18,6 +18,8 @@ private enum UITestLaunchArgument {
     static let onboardingCompleted = "-ui-onboarding-completed"
     static let showOnboarding = "-ui-show-onboarding"
     static let disableLocationTracking = "-ui-disable-location-tracking"
+    static let enableLocationTracking = "-ui-enable-location-tracking"
+    static let trackingPauseActive = "-ui-tracking-pause-active"
     static let initialTab = "-ui-initial-tab"
     static let screenshotMode = "-ui-screenshot-mode"
     static let screenshotScenario = "-ui-screenshot-scenario"
@@ -205,6 +207,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
 
         if let type = userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String,
+           Self.opensMyDeviceNotificationTypes.contains(type) {
+            Task { @MainActor in
+                AppNavigationCoordinator.shared.openMyDevice()
+            }
+            completionHandler()
+            return
+        }
+
+        if let type = userInfo[FrequentBackgroundTrackingReminderService.notificationTypeUserInfoKey] as? String,
            Self.opensAdvancedSettingsNotificationTypes.contains(type) {
             Task { @MainActor in
                 AppNavigationCoordinator.shared.openAdvancedSettings()
@@ -222,6 +233,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         FrequentBackgroundTrackingReminderService.batteryAutoDisableNotificationType,
         FrequentBackgroundTrackingReminderService.smartFrequentActivatedNotificationType,
         FrequentBackgroundTrackingReminderService.smartFrequentDeactivatedNotificationType
+    ]
+
+    private static let opensMyDeviceNotificationTypes: Set<String> = [
+        TrackingPauseNotificationService.pauseStartedNotificationType,
+        TrackingPauseNotificationService.resumeNotificationType
     ]
 
     static func didLaunchForLocation(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -287,6 +303,9 @@ struct miataruApp: App {
             skipForFreshUITestReset: shouldSkipExistingInstallMigration
         )
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
+        if ProcessInfo.processInfo.arguments.contains(UITestLaunchArgument.uiTesting) {
+            SettingsManager.shared.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)
+        }
         // Beim ersten Start oder für einen Reset:
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
         _appState = StateObject(wrappedValue: AppState())
@@ -502,6 +521,14 @@ struct miataruApp: App {
 
         if args.contains(UITestLaunchArgument.disableLocationTracking) {
             defaults.set(false, forKey: "track_and_report_location")
+        }
+
+        if args.contains(UITestLaunchArgument.enableLocationTracking) {
+            defaults.set(true, forKey: "track_and_report_location")
+        }
+
+        if args.contains(UITestLaunchArgument.trackingPauseActive) {
+            defaults.set(Date().addingTimeInterval(3_600), forKey: SettingsKeys.trackingPauseExpiresAt)
         }
 
         let hasExplicitInitialTab: Bool

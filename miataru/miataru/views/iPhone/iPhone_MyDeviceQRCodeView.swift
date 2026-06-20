@@ -37,6 +37,7 @@ struct iPhone_MyDeviceQRCodeView: View {
     @State private var showMailComposer = false
     @State private var showShareFallback = false
     @State private var showDeviceKeySheet = false
+    @State private var showTrackingPauseSheet = false
     @State private var qrImage: UIImage? = nil
     @StateObject private var settings = SettingsManager.shared
     @StateObject private var deviceStore = KnownDeviceStore.shared
@@ -122,7 +123,7 @@ struct iPhone_MyDeviceQRCodeView: View {
                 .navigationTitle(String(localized: "my_device", table: "Devices"))
                 .navigationBarTitleDisplayMode(isLandscape ? .inline : .large)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(placement: .topBarLeading) {
                         Button(action: {
                             showDeviceKeySheet = true
                         }) {
@@ -133,6 +134,20 @@ struct iPhone_MyDeviceQRCodeView: View {
                         .accessibilityLabel(Text("device_key_button_label", tableName: "Devices"))
                         .accessibilityHint(Text("device_key_button_hint", tableName: "Devices"))
                         .accessibilityIdentifier("qr_device_key_button")
+                    }
+                    if settings.trackAndReportLocation {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: {
+                                showTrackingPauseSheet = true
+                            }) {
+                                Image(systemName: settings.isTrackingPaused ? "pause.circle.fill" : "timer")
+                                    .foregroundColor(settings.isTrackingPaused ? .orange : .blue)
+                                    .font(.title2)
+                            }
+                            .accessibilityLabel(Text("tracking_pause_button_label", tableName: "LocationTracking"))
+                            .accessibilityHint(Text("tracking_pause_button_hint", tableName: "LocationTracking"))
+                            .accessibilityIdentifier("qr_tracking_pause_button")
+                        }
                     }
                 }
                 .overlay(
@@ -184,6 +199,9 @@ struct iPhone_MyDeviceQRCodeView: View {
                 .sheet(isPresented: $showDeviceKeySheet) {
                     iPhone_DeviceKeySheetView(showsMismatchWarning: false)
                 }
+                .sheet(isPresented: $showTrackingPauseSheet) {
+                    TrackingPauseSheet()
+                }
                 .sheet(isPresented: $showSloganEditor) {
                     sloganEditorSheet
                 }
@@ -232,20 +250,60 @@ struct iPhone_MyDeviceQRCodeView: View {
                 .padding(.horizontal, isLandscape ? 20 : 16)
                 .padding(.vertical, isLandscape ? 6 : 8)
                 
-                // Title and explanation
-                VStack(spacing: isLandscape ? 8 : 12) {
-                    Text("my_device_qr_code", tableName: "Devices")
-                        .font(isLandscape ? .title2 : .title)
-                        .multilineTextAlignment(.center)
-                    
-                    Text("qr_code_explanation", tableName: "OnboardingQR")
-                        .font(isLandscape ? .caption : .body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, isLandscape ? 40 : 20)
-                }
+                Text("qr_code_explanation", tableName: "OnboardingQR")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, isLandscape ? 40 : 20)
             }
             .padding(.top, isLandscape ? 12 : 16)
+
+            VStack(spacing: isLandscape ? 10 : 12) {
+                Text("Device Slogan", tableName: "Devices")
+                    .font(isLandscape ? .subheadline : .headline)
+                    .foregroundColor(.secondary)
+
+                Button {
+                    sloganDraft = ownDeviceSlogan
+                    showSloganEditor = true
+                } label: {
+                    ZStack(alignment: .trailing) {
+                        Text(displayedSloganText)
+                            .font(.caption2)
+                            .foregroundColor(ownDeviceSlogan.isEmpty ? .secondary : .primary)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .center)
+
+                        if isLoadingSlogan || isSavingSlogan {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.blue)
+                                .font(.caption2)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, isLandscape ? 8 : 10)
+                    .frame(maxWidth: isLandscape ? 280 : 300)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .frame(maxWidth: .infinity, alignment: .center)
+                .disabled(isSavingSlogan)
+
+                if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
+                    Text(sloganErrorMessage)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.horizontal, isLandscape ? 20 : 16)
+            .padding(.top, isLandscape ? 12 : 14)
             
             // Device ID Section
             VStack(spacing: isLandscape ? 12 : 16) {
@@ -390,53 +448,6 @@ struct iPhone_MyDeviceQRCodeView: View {
             }
             .padding(.horizontal, isLandscape ? 20 : 16)
             .padding(.top, isLandscape ? 10 : 12)
-
-            VStack(spacing: isLandscape ? 10 : 12) {
-                Text("Device Slogan", tableName: "Devices")
-                    .font(isLandscape ? .subheadline : .headline)
-                    .foregroundColor(.secondary)
-
-                Button {
-                    sloganDraft = ownDeviceSlogan
-                    showSloganEditor = true
-                } label: {
-                    ZStack(alignment: .trailing) {
-                        Text(displayedSloganText)
-                            .font(.caption2)
-                            .foregroundColor(ownDeviceSlogan.isEmpty ? .secondary : .primary)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(2)
-                            .frame(maxWidth: .infinity, alignment: .center)
-
-                        if isLoadingSlogan || isSavingSlogan {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.blue)
-                                .font(.caption2)
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, isLandscape ? 8 : 10)
-                    .frame(maxWidth: isLandscape ? 280 : 300)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity, alignment: .center)
-                .disabled(isSavingSlogan)
-
-                if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
-                    Text(sloganErrorMessage)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.horizontal, isLandscape ? 20 : 16)
-            .padding(.top, isLandscape ? 12 : 14)
             
             VisitorHistorySection(
                 viewModel: visitorHistoryViewModel,
@@ -501,7 +512,10 @@ struct iPhone_MyDeviceQRCodeView: View {
                             .foregroundColor(.secondary)
                     }
                 } footer: {
-                    Text("Max 40 characters", tableName: "Common")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("device_slogan_visibility_explanation", tableName: "Devices")
+                        Text("Max 40 characters", tableName: "Common")
+                    }
                 }
 
                 if let sloganErrorMessage, !sloganErrorMessage.isEmpty {
@@ -627,6 +641,387 @@ struct iPhone_MyDeviceQRCodeView: View {
         currentDeviceID = latestDeviceID
         content = DeviceLinkResolver.urlString(for: latestDeviceID)
         return true
+    }
+}
+
+struct TrackingPauseSettingsRow: View {
+    @ObservedObject private var settings = SettingsManager.shared
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: settings.isTrackingPaused ? "pause.circle.fill" : "timer")
+                .font(.body.weight(.semibold))
+                .foregroundColor(settings.isTrackingPaused ? .orange : .blue)
+                .frame(width: 28, height: 28)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("tracking_pause_settings_title", tableName: "LocationTracking")
+                    .font(.body)
+                    .foregroundColor(.primary)
+
+                Text("tracking_pause_settings_explanation", tableName: "LocationTracking")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let expiresAt = activePauseExpiresAt {
+                    Text(Self.formattedStatus(expiresAt))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundColor(.secondary)
+                .padding(.top, 5)
+        }
+        .padding(.vertical, 6)
+        .contentShape(Rectangle())
+    }
+
+    fileprivate var activePauseExpiresAt: Date? {
+        guard let expiresAt = settings.trackingPauseExpiresAt,
+              expiresAt > Date() else {
+            return nil
+        }
+        return expiresAt
+    }
+
+    fileprivate static func formattedStatus(_ date: Date) -> String {
+        String(
+            format: NSLocalizedString(
+                "tracking_pause_active_until_short_format",
+                tableName: "LocationTracking",
+                comment: "Short status for active server update pause. Argument: end date."
+            ),
+            localizedDateTimeString(from: date)
+        )
+    }
+
+    static func localizedDateTimeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        formatter.locale = .current
+        return formatter.string(from: date)
+    }
+}
+
+struct TrackingPauseDeviceListBanner: View {
+    @ObservedObject private var settings = SettingsManager.shared
+    let action: () -> Void
+
+    var body: some View {
+        if let expiresAt = activePauseExpiresAt {
+            Button(action: action) {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "pause.circle.fill")
+                        .font(.body.weight(.semibold))
+                        .foregroundColor(.orange)
+                        .padding(.top, 1)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("tracking_pause_device_list_banner_title", tableName: "LocationTracking")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text("tracking_pause_device_list_banner_message", tableName: "LocationTracking")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text(expirationText(for: expiresAt))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundColor(.secondary)
+                        .padding(.top, 3)
+                }
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(.primary)
+            .padding(.vertical, 6)
+            .accessibilityIdentifier("devices_tracking_pause_banner")
+            .accessibilityHint(Text("tracking_pause_device_list_banner_hint", tableName: "LocationTracking"))
+        }
+    }
+
+    private var activePauseExpiresAt: Date? {
+        guard let expiresAt = settings.trackingPauseExpiresAt,
+              expiresAt > Date() else {
+            return nil
+        }
+        return expiresAt
+    }
+
+    private func expirationText(for date: Date) -> String {
+        String(
+            format: NSLocalizedString(
+                "tracking_pause_device_list_banner_active_until_format",
+                tableName: "LocationTracking",
+                comment: "Active server update pause line shown in the device list. Argument: end date."
+            ),
+            TrackingPauseSettingsRow.localizedDateTimeString(from: date)
+        )
+    }
+}
+
+struct TrackingPauseSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var settings = SettingsManager.shared
+    @State private var now = Date()
+    @State private var selectedDays = 0
+    @State private var selectedHours = 2
+    @State private var selectedMinutes = 0
+
+    private let minuteTicker = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    sheetHeader
+
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            if let expiresAt = activePauseExpiresAt {
+                                activePauseCard(expiresAt: expiresAt)
+                                    .padding(.horizontal)
+                            }
+
+                            Text("tracking_pause_duration_section_title", tableName: "LocationTracking")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                                .padding(.top, activePauseExpiresAt == nil ? 12 : 4)
+
+                            durationPickerCard
+                                .padding(.horizontal)
+
+                            Text("tracking_pause_sheet_explanation", tableName: "LocationTracking")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.horizontal)
+                        }
+                        .padding(.top, 16)
+                    }
+
+                    Button {
+                        LocationManager.shared.pauseTracking(forCustomDuration: TimeInterval(selectedDurationSeconds))
+                        dismiss()
+                    } label: {
+                        Text("tracking_pause_start_button", tableName: "LocationTracking")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .disabled(!isSelectionValid)
+                    .padding(.horizontal)
+                    .padding(.vertical, 18)
+                    .accessibilityIdentifier("tracking_pause_start_button")
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .navigationBar)
+            .onReceive(minuteTicker) { tick in
+                now = tick
+            }
+            .onChange(of: selectedDays) { _, newValue in
+                if newValue == maximumDays {
+                    selectedHours = 0
+                    selectedMinutes = 0
+                }
+            }
+        }
+    }
+
+    private var sheetHeader: some View {
+        ZStack {
+            Text("tracking_pause_sheet_title", tableName: "LocationTracking")
+                .font(.headline)
+
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.title3.weight(.medium))
+                        .foregroundColor(.primary)
+                        .frame(width: 38, height: 38)
+                        .background(Color(.secondarySystemGroupedBackground), in: Circle())
+                }
+                .accessibilityLabel(Text("cancel", tableName: "Common"))
+
+                Spacer()
+            }
+        }
+        .padding(.horizontal)
+        .padding(.top, 14)
+        .padding(.bottom, 8)
+    }
+
+    private var durationPickerCard: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Picker("", selection: $selectedDays) {
+                    ForEach(0...maximumDays, id: \.self) { value in
+                        Text(dayLabel(for: value)).tag(value)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .labelsHidden()
+                .frame(maxWidth: .infinity)
+                .accessibilityIdentifier("tracking_pause_days_picker")
+
+                Picker("", selection: $selectedHours) {
+                    ForEach(0...23, id: \.self) { value in
+                        Text(hourLabel(for: value)).tag(value)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .labelsHidden()
+                .frame(maxWidth: .infinity)
+                .accessibilityIdentifier("tracking_pause_hours_picker")
+
+                Picker("", selection: $selectedMinutes) {
+                    ForEach(0...59, id: \.self) { value in
+                        Text(minuteLabel(for: value)).tag(value)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .labelsHidden()
+                .frame(maxWidth: .infinity)
+                .accessibilityIdentifier("tracking_pause_minutes_picker")
+            }
+            .frame(height: 182)
+            .clipped()
+
+            Divider()
+                .padding(.horizontal)
+
+            HStack(spacing: 8) {
+                Text("tracking_pause_ends_label", tableName: "LocationTracking")
+                    .font(.subheadline.weight(.semibold))
+
+                Spacer(minLength: 8)
+
+                Text(localizedDateString(from: selectedEndDate))
+                    .font(.subheadline)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
+                    .accessibilityIdentifier("tracking_pause_end_date")
+
+                Text(localizedTimeString(from: selectedEndDate))
+                    .font(.subheadline)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(.tertiarySystemGroupedBackground), in: Capsule())
+                    .accessibilityIdentifier("tracking_pause_end_time")
+            }
+            .padding()
+        }
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func activePauseCard(expiresAt: Date) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(
+                String(
+                    format: NSLocalizedString(
+                        "tracking_pause_active_until_format",
+                        tableName: "LocationTracking",
+                        comment: "Server update pause active status. Argument: end date."
+                    ),
+                    TrackingPauseSettingsRow.localizedDateTimeString(from: expiresAt)
+                )
+            )
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+
+            Button {
+                LocationManager.shared.resumeTrackingFromPause(reason: "user resumed server updates from pause sheet")
+                dismiss()
+            } label: {
+                Label(
+                    String(localized: "tracking_pause_resume_now", table: "LocationTracking"),
+                    systemImage: "play.circle"
+                )
+            }
+            .accessibilityIdentifier("tracking_pause_resume_now_button")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var activePauseExpiresAt: Date? {
+        guard let expiresAt = settings.trackingPauseExpiresAt,
+              expiresAt > now else {
+            return nil
+        }
+        return expiresAt
+    }
+
+    private var selectedDurationSeconds: Int {
+        (selectedDays * 86_400) + (selectedHours * 3_600) + (selectedMinutes * 60)
+    }
+
+    private var selectedEndDate: Date {
+        now.addingTimeInterval(TimeInterval(selectedDurationSeconds))
+    }
+
+    private var isSelectionValid: Bool {
+        let duration = TimeInterval(selectedDurationSeconds)
+        return duration >= TrackingPauseCustomDuration.minimumSeconds &&
+            duration <= TrackingPauseCustomDuration.maximumSeconds
+    }
+
+    private var maximumDays: Int { 30 }
+
+    private func dayLabel(for value: Int) -> String {
+        String(format: NSLocalizedString("tracking_pause_day_picker_format", tableName: "LocationTracking", comment: "Day value in server update pause duration picker."), value)
+    }
+
+    private func hourLabel(for value: Int) -> String {
+        String(format: NSLocalizedString("tracking_pause_hour_picker_format", tableName: "LocationTracking", comment: "Hour value in server update pause duration picker."), value)
+    }
+
+    private func minuteLabel(for value: Int) -> String {
+        String(format: NSLocalizedString("tracking_pause_minute_picker_format", tableName: "LocationTracking", comment: "Minute value in server update pause duration picker."), value)
+    }
+
+    private func localizedDateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.locale = .current
+        return formatter.string(from: date)
+    }
+
+    private func localizedTimeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        formatter.locale = .current
+        return formatter.string(from: date)
     }
 }
 

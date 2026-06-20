@@ -26,12 +26,14 @@ actor LocationUpdateDeliveryCoordinator {
     enum SubmitResult {
         case sent
         case queued
+        case dropped
         case failed(Error)
     }
 
     typealias UpdateSender = (URL, UpdateLocationPayload, Bool, Int) async throws -> Bool
     typealias VisitorProcessor = (URL, TimeInterval?, Bool) async -> Void
     typealias FlushObserver = (LocationUpdateOutboxItem, String, Date) async -> Void
+    typealias FlushEligibilityProvider = () async -> Bool
 
     private struct FlushResult {
         let didReachBatchLimit: Bool
@@ -43,7 +45,10 @@ actor LocationUpdateDeliveryCoordinator {
         outboxStore: LocationUpdateOutboxStore(
             maxItems: SettingsManager.shared.locationUpdateOutboxMaxItems,
             ttl: SettingsManager.shared.locationUpdateOutboxRetentionTimeToLive
-        )
+        ),
+        flushEligibilityProvider: {
+            await MainActor.run { !SettingsManager.shared.isTrackingPaused }
+        }
     )
 
     private let outboxStore: LocationUpdateOutboxStore
@@ -53,6 +58,7 @@ actor LocationUpdateDeliveryCoordinator {
     private let deferredFlushDelay: TimeInterval
     private let visitorProcessor: VisitorProcessor
     private let flushObserver: FlushObserver
+    private let flushEligibilityProvider: FlushEligibilityProvider
 
     private var periodicFlushTask: Task<Void, Never>?
     private var deferredFlushTask: Task<Void, Never>?
@@ -66,7 +72,8 @@ actor LocationUpdateDeliveryCoordinator {
         deferredFlushDelay: TimeInterval = 1,
         updateSender: UpdateSender? = nil,
         visitorProcessor: VisitorProcessor? = nil,
-        flushObserver: FlushObserver? = nil
+        flushObserver: FlushObserver? = nil,
+        flushEligibilityProvider: FlushEligibilityProvider? = nil
     ) {
         self.outboxStore = outboxStore
         self.flushBatchSize = max(1, flushBatchSize)
@@ -95,6 +102,7 @@ actor LocationUpdateDeliveryCoordinator {
         self.flushObserver = flushObserver ?? { item, trigger, flushedAt in
             Self.recordFlushedLocationUpdateDiagnostics(item: item, trigger: trigger, flushedAt: flushedAt)
         }
+        self.flushEligibilityProvider = flushEligibilityProvider ?? { true }
     }
 
     static func recordFlushedLocationUpdateDiagnostics(
@@ -155,6 +163,10 @@ actor LocationUpdateDeliveryCoordinator {
         visitorCheckMinimumInterval: TimeInterval? = nil,
         processKnownVisitorAlerts: Bool = false
     ) async -> SubmitResult {
+        guard await flushEligibilityProvider() else {
+            return .dropped
+        }
+
         if let deliveryDelay, deliveryDelay > 0 {
             let now = Date()
             let availableAfter = await outboxStore.activeDelayedBatchReleaseDate(now: now)
@@ -287,6 +299,15 @@ actor LocationUpdateDeliveryCoordinator {
             if scheduleContinuation && shouldContinueAfterBatch {
                 scheduleFlushSoon(trigger: "\(trigger):continuation")
             }
+        }
+
+        guard await flushEligibilityProvider() else {
+            cancelDeferredFlush()
+            return FlushResult(
+                didReachBatchLimit: false,
+                stoppedOnRetryableError: false,
+                hasPendingItems: await outboxStore.count() > 0
+            )
         }
 
         await outboxStore.pruneExpiredEntries()

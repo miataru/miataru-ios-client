@@ -70,9 +70,9 @@ enum MiataruAutomationEventFormatting {
         case .frequentTrackingExpired:
             return NSLocalizedString("automation_event_summary_frequent_tracking_expired", tableName: "AutomationEvents", comment: "Summary for frequent background tracking expiration")
         case .trackingPaused:
-            return NSLocalizedString("automation_event_summary_tracking_paused", tableName: "AutomationEvents", comment: "Summary for tracking paused")
+            return NSLocalizedString("automation_event_summary_tracking_paused", tableName: "AutomationEvents", comment: "Summary for server update pause")
         case .trackingResumed:
-            return NSLocalizedString("automation_event_summary_tracking_resumed", tableName: "AutomationEvents", comment: "Summary for tracking resumed")
+            return NSLocalizedString("automation_event_summary_tracking_resumed", tableName: "AutomationEvents", comment: "Summary for server update resumed")
         case .deviceLocationUpdated:
             if let name = safeDisplayName(record.deviceDisplayName) {
                 return String.localizedStringWithFormat(
@@ -135,9 +135,9 @@ enum MiataruAutomationEventFormatting {
         case .frequentTrackingExpired:
             return NSLocalizedString("automation_event_kind_frequent_tracking_expired", tableName: "AutomationEvents", comment: "Display name for frequent tracking expired automation event")
         case .trackingPaused:
-            return NSLocalizedString("automation_event_kind_tracking_paused", tableName: "AutomationEvents", comment: "Display name for tracking paused automation event")
+            return NSLocalizedString("automation_event_kind_tracking_paused", tableName: "AutomationEvents", comment: "Display name for server update pause automation event")
         case .trackingResumed:
-            return NSLocalizedString("automation_event_kind_tracking_resumed", tableName: "AutomationEvents", comment: "Display name for tracking resumed automation event")
+            return NSLocalizedString("automation_event_kind_tracking_resumed", tableName: "AutomationEvents", comment: "Display name for server update resumed automation event")
         case .deviceLocationUpdated:
             return NSLocalizedString("automation_event_kind_device_location_updated", tableName: "AutomationEvents", comment: "Display name for device location updated automation event")
         case .deviceEnteredPlace:

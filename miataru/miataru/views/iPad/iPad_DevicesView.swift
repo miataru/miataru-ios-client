@@ -29,6 +29,7 @@ struct iPad_DevicesView: View {
     @State private var isUpdatingFromDeepLink = false // Track if we're updating selection from deep link (to prevent circular updates)
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var showingTrackingPauseResumeConfirmation = false
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openWindow) private var openWindow
@@ -106,8 +107,16 @@ struct iPad_DevicesView: View {
                         }
                     }
 
+                    if settings.isTrackingPaused {
+                        Section {
+                            TrackingPauseDeviceListBanner {
+                                showingTrackingPauseResumeConfirmation = true
+                            }
+                        }
+                    }
+
                     Section(header: Text(NSLocalizedString("devices", tableName: "Devices", comment: "Devices list header on iPad"))) {
-                        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+                        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled && !settings.isTrackingPaused {
                             FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
                                 AppNavigationCoordinator.shared.openAdvancedSettings()
                             }
@@ -223,6 +232,19 @@ struct iPad_DevicesView: View {
                     await visitorHistoryViewModel.loadVisitorHistory(showLoading: false)
                     await refreshUnknownVisitorSupplementalDataIfNeeded(force: true)
                     if success { Haptic.notifySuccess() }
+                }
+                .confirmationDialog(
+                    String(localized: "tracking_pause_resume_confirmation_title", table: "LocationTracking"),
+                    isPresented: $showingTrackingPauseResumeConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button(String(localized: "tracking_pause_resume_confirmation_button", table: "LocationTracking")) {
+                        LocationManager.shared.resumeTrackingFromPause(reason: "user resumed server updates from device list banner")
+                    }
+                    .accessibilityIdentifier("tracking_pause_resume_confirmation_button")
+                    Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+                } message: {
+                    Text("tracking_pause_resume_confirmation_message", tableName: "LocationTracking")
                 }
             }
             .toolbar(.hidden, for: .navigationBar)

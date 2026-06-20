@@ -12,6 +12,7 @@ import Foundation
 
 enum AppRootNavigationDestination: Equatable {
     case devices
+    case myDevice
     case settings
 }
 
@@ -74,6 +75,10 @@ final class AppNavigationCoordinator: ObservableObject {
 
     func openDevices() {
         rootDestination = .devices
+    }
+
+    func openMyDevice() {
+        rootDestination = .myDevice
     }
 
     func openKnownDevice(_ rawDeviceID: String) {

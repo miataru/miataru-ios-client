@@ -366,6 +366,132 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(records.first?.retentionTime == 90)
     }
 
+    @Test("Flush gate blocks automatic sends until server update pause ends")
+    func flushGateBlocksSendsUntilServerUpdatePauseEnds() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "paused"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let gate = FlushEligibilityGate(allowed: false)
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            flushEligibilityProvider: {
+                await gate.isAllowed()
+            }
+        )
+
+        await coordinator.flushOutboxNow()
+        #expect(await sender.callCount == 0)
+        #expect(await store.count() == 1)
+
+        await gate.setAllowed(true)
+        await coordinator.flushOutboxNow()
+
+        #expect(await sender.sentTimestamps == ["paused"])
+        #expect(await store.count() == 0)
+    }
+
+    @Test("Discarded pause outbox is not delivered after server update pause ends")
+    func discardedPauseOutboxIsNotDeliveredAfterServerUpdatePauseEnds() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "queued-before-pause"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let gate = FlushEligibilityGate(allowed: false)
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            flushEligibilityProvider: {
+                await gate.isAllowed()
+            }
+        )
+
+        await coordinator.discardPendingOutbox()
+        await gate.setAllowed(true)
+        await coordinator.flushOutboxNow()
+
+        #expect(await sender.callCount == 0)
+        #expect(await store.count() == 0)
+    }
+
+    @Test("Submit drops new updates while server update pause gate is closed")
+    func submitDropsNewUpdatesWhileServerUpdatePauseGateIsClosed() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let gate = FlushEligibilityGate(allowed: false)
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            flushEligibilityProvider: {
+                await gate.isAllowed()
+            }
+        )
+
+        let dropped = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "during-pause"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .dropped = dropped {
+        } else {
+            Issue.record("Expected server update pause to drop the update")
+        }
+        #expect(await sender.callCount == 0)
+        #expect(await store.count() == 0)
+
+        await gate.setAllowed(true)
+        let sent = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "after-pause"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .sent = sent {
+        } else {
+            Issue.record("Expected updates after the pause to send normally")
+        }
+        #expect(await sender.sentTimestamps == ["after-pause"])
+        #expect(await store.count() == 0)
+    }
+
     @Test("Flushed upload diagnostics are coalesced")
     @MainActor
     func flushedUploadDiagnosticsAreCoalesced() throws {
@@ -820,6 +946,22 @@ private actor RecordingFlushObserver {
 
     func recordsSnapshot() -> [Record] {
         records
+    }
+}
+
+private actor FlushEligibilityGate {
+    private var allowed: Bool
+
+    init(allowed: Bool) {
+        self.allowed = allowed
+    }
+
+    func isAllowed() -> Bool {
+        allowed
+    }
+
+    func setAllowed(_ allowed: Bool) {
+        self.allowed = allowed
     }
 }
 

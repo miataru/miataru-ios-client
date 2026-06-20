@@ -777,61 +777,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Du kan bruge denne QR-kode til at dele din enheds-ID med andre. Scan den, når du tilføjer en ny enhed i Miataru."
+            "value": "Denne QR-kode kan bruges til at dele enheds-id’et. Den kan scannes, når en ny enhed tilføjes i Miataru."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Du kannst diesen QR-Code verwenden, um deine Geräte-ID mit anderen zu teilen."
+            "value": "Dieser QR-Code kann verwendet werden, um die Geräte-ID zu teilen. Beim Hinzufügen eines neuen Geräts in Miataru kann er gescannt werden."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can use this QR-Code to share your Device ID with others. Just scan it while adding a new device in Miataru."
+            "value": "This QR code can be used to share the device ID. It can be scanned when adding a new device in Miataru."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Puedes usar este código QR para compartir tu ID de dispositivo con otros. Solo escanéalo al añadir un nuevo dispositivo en Miataru."
+            "value": "Este código QR puede utilizarse para compartir el ID del dispositivo. Se puede escanear al añadir un nuevo dispositivo en Miataru."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Voit käyttää tätä QR-koodia laite-ID:n jakamiseen muiden kanssa. Skannaa se lisätessäsi uutta laitetta Miataruun."
+            "value": "Tätä QR-koodia voidaan käyttää laite-ID:n jakamiseen. Sen voi skannata, kun Miataruun lisätään uusi laite."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu peux utiliser ce code QR pour partager ton identifiant d’appareil avec d’autres. Scanne-le lors de l’ajout d’un nouvel appareil dans Miataru."
+            "value": "Ce code QR peut être utilisé pour partager l’identifiant de l’appareil. Il peut être scanné lors de l’ajout d’un nouvel appareil dans Miataru."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Puoi usare questo QR code per condividere il tuo ID dispositivo con altri. Scansionalo mentre aggiungi un nuovo dispositivo in Miataru."
+            "value": "Questo codice QR può essere usato per condividere l’ID dispositivo. Può essere scansionato quando si aggiunge un nuovo dispositivo in Miataru."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "このQRコードを使用して、デバイスIDを他の人と共有できます。"
+            "value": "このQRコードはデバイスIDの共有に使用できます。Miataruで新しいデバイスを追加するときにスキャンできます。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je kunt deze QR-code gebruiken om je apparaat-ID met anderen te delen. Scan hem bij het toevoegen van een nieuw apparaat in Miataru."
+            "value": "Deze QR-code kan worden gebruikt om de apparaat-ID te delen. Hij kan worden gescand bij het toevoegen van een nieuw apparaat in Miataru."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "你可以用此二维码与他人分享设备 ID。在 Miataru 添加新设备时扫描即可。"
+            "value": "此二维码可用于分享设备 ID。在 Miataru 中添加新设备时可以扫描它。"
           }
         }
       }

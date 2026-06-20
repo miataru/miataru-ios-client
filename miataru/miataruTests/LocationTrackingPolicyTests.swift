@@ -331,6 +331,110 @@ struct LocationTrackingPolicyTests {
         ) == .backgroundSignificantChange)
     }
 
+    @Test("Server update pause keeps local tracking but downgrades frequent background mode")
+    func trackingPauseDoesNotStopLocalTrackingDecisions() {
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: true,
+            trackingPaused: true
+        ) == .applyTrackingMode)
+
+        #expect(LocationTrackingPolicy.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: true
+        ))
+
+        #expect(LocationTrackingPolicy.shouldMaintainSignificantChangeRecoveryAnchor(
+            trackAndReportLocation: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: true
+        ))
+
+        #expect(LocationTrackingPolicy.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: true
+        ))
+
+        #expect(LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: true
+        ) == false)
+
+        #expect(LocationTrackingPolicy.backgroundTrackingDisplayMode(
+            applicationState: .background,
+            smartEnabled: true,
+            manualFrequentEnabled: true,
+            smartRuntimeActive: true,
+            trackingPaused: true
+        ) == .significantChange)
+
+        #expect(!LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            trackingPaused: true
+        ))
+
+        #expect(LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+                manualFrequentEnabled: true,
+                smartEnabled: true,
+                smartRuntimeActive: true,
+                trackingPaused: true
+            ),
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .backgroundSignificantChange)
+    }
+
+    @Test("Tracking policy resumes normal decisions when pause is not active")
+    func trackingPolicyResumesNormalDecisionsWhenPauseIsNotActive() {
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: false,
+            trackingPaused: false
+        ) == .startTracking)
+
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: true,
+            trackingPaused: false
+        ) == .applyTrackingMode)
+
+        #expect(LocationTrackingPolicy.shouldRestoreTrackingAfterLaunch(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: false
+        ))
+
+        #expect(LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: true,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: false
+        ))
+    }
+
     @Test("Location service command plan keeps primary recovery anchor separate from frequent updates")
     func locationServiceCommandPlanKeepsPrimaryRecoveryAnchorSeparateFromFrequentUpdates() {
         let frequentPlan = LocationTrackingPolicy.locationServiceCommandPlan(
@@ -559,17 +663,26 @@ struct LocationTrackingPolicyTests {
         #expect(LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
             manualFrequentEnabled: true,
             smartEnabled: true,
-            smartRuntimeActive: false
+            smartRuntimeActive: false,
+            trackingPaused: false
         ))
         #expect(LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
             manualFrequentEnabled: false,
             smartEnabled: true,
-            smartRuntimeActive: true
+            smartRuntimeActive: true,
+            trackingPaused: false
         ))
         #expect(!LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
             manualFrequentEnabled: false,
             smartEnabled: true,
-            smartRuntimeActive: false
+            smartRuntimeActive: false,
+            trackingPaused: false
+        ))
+        #expect(!LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            trackingPaused: true
         ))
 
         #expect(LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(
@@ -606,6 +719,13 @@ struct LocationTrackingPolicyTests {
             smartEnabled: true,
             smartRuntimeActive: true
         ) == .foregroundLive)
+        #expect(LocationTrackingPolicy.locationUpdateCounterMode(
+            applicationState: .background,
+            manualFrequentEnabled: true,
+            smartEnabled: true,
+            smartRuntimeActive: true,
+            trackingPaused: true
+        ) == .significantChange)
 
         let manualEffective = LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
             manualFrequentEnabled: true,

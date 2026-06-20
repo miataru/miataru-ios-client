@@ -1076,6 +1076,96 @@ struct FrequentBackgroundTrackingReminderServiceTests {
         #expect(!(await notifier.didRequestAuthorization))
     }
 
+    @Test("Server update pause notification sends start and schedules resume")
+    func trackingPauseNotificationSendsStartAndSchedulesResume() async throws {
+        let suiteName = "TrackingPauseNotificationTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 3_000)
+        let expiresAt = now.addingTimeInterval(600)
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = TrackingPauseNotificationService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.notifyTrackingPaused(until: expiresAt)
+
+        let addedRequests = await notifier.addedRequests
+        #expect(addedRequests.count == 2)
+
+        let started = try #require(addedRequests.first)
+        #expect(started.identifier == TrackingPauseNotificationService.pauseStartedNotificationIdentifier)
+        #expect(started.trigger == nil)
+        #expect(started.content.userInfo[TrackingPauseNotificationService.notificationTypeUserInfoKey] as? String == TrackingPauseNotificationService.pauseStartedNotificationType)
+
+        let resumed = try #require(addedRequests.last)
+        #expect(resumed.identifier == TrackingPauseNotificationService.resumeNotificationIdentifier)
+        #expect(resumed.content.userInfo[TrackingPauseNotificationService.notificationTypeUserInfoKey] as? String == TrackingPauseNotificationService.resumeNotificationType)
+        let trigger = try #require(resumed.trigger as? UNTimeIntervalNotificationTrigger)
+        #expect(trigger.timeInterval == 600)
+        #expect(!trigger.repeats)
+        #expect(defaults.object(forKey: "tracking_pause_resume_notification_date") as? Date == expiresAt)
+    }
+
+    @Test("Manual tracking resume cancels scheduled resume notification")
+    func manualTrackingResumeCancelsScheduledResumeNotification() async throws {
+        let suiteName = "TrackingPauseNotificationTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 3_000)
+        defaults.set(now.addingTimeInterval(600), forKey: "tracking_pause_resume_notification_date")
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = TrackingPauseNotificationService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.cancelScheduledResumeNotification()
+
+        #expect(await notifier.removedPendingIdentifiers.contains(TrackingPauseNotificationService.resumeNotificationIdentifier))
+        #expect(defaults.object(forKey: "tracking_pause_resume_notification_date") == nil)
+    }
+
+    @Test("Automatic server update pause expiry does not cancel due resume notification")
+    func automaticTrackingPauseExpiryDoesNotCancelDueResumeNotification() async throws {
+        let suiteName = "TrackingPauseNotificationTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 3_000)
+        defaults.set(now, forKey: "tracking_pause_resume_notification_date")
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .authorized)
+        let service = TrackingPauseNotificationService(
+            defaults: defaults,
+            notifier: notifier,
+            nowProvider: { now }
+        )
+
+        await service.refresh(pauseExpiresAt: nil)
+
+        #expect(!(await notifier.removedPendingIdentifiers.contains(TrackingPauseNotificationService.resumeNotificationIdentifier)))
+        #expect(defaults.object(forKey: "tracking_pause_resume_notification_date") == nil)
+    }
+
+    @Test("Server update pause notification permission denied is not fatal")
+    func trackingPauseNotificationPermissionDeniedIsNotFatal() async {
+        let notifier = MockFrequentBackgroundTrackingReminderNotifier(initialStatus: .denied)
+        let service = TrackingPauseNotificationService(notifier: notifier)
+
+        await service.notifyTrackingPaused(until: Date().addingTimeInterval(600))
+
+        #expect(await notifier.addedRequests.isEmpty)
+        #expect(await notifier.removedPendingIdentifiers.contains(TrackingPauseNotificationService.resumeNotificationIdentifier))
+    }
+
     private static func existingReminderRequest() -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
         content.userInfo = [

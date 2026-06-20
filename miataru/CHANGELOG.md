@@ -1,3 +1,9 @@
+version 3.3
+- Added a localized temporary server-update pause that discards own-location updates while active, schedules pause/resume notifications, gates outbox flushing, and keeps Smart/manual frequent background tracking visually throttled to standard significant-change behavior during the pause.
+- Reworked the "This Device" QR tab with the Device Slogan above the Device ID, a leading DeviceKey action, a trailing server-update pause action, neutral QR copy, and a custom duration sheet defaulting to two hours with day/hour/minute wheels.
+- Added the same "Temporarily no server updates" action to Settings only when server reporting is enabled, plus active-pause banners above the iPhone and iPad device lists with a confirmation flow to resume server updates.
+- Added regression coverage for pause persistence, policy reconciliation, notification scheduling, outbox gating, localization keys, QR/Settings pause UI, hidden pause controls when reporting is disabled, and the device-list pause banner.
+
 version 3.2.2
 - Added a local known-device VisitorHistory access log that records when configured devices request the local device position, summarizes requests from the same device within 60 minutes into one row, stores the newest request and currently known requester place/coordinates when available, and caps retention to the newest 100 summary events per requesting device.
 - Added a "Latest Request" App Shortcut and App Intent so Shortcuts/Siri can answer when a selected device last requested the user's position.

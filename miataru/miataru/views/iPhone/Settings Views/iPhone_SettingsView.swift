@@ -14,6 +14,7 @@ struct iPhone_SettingsView: View {
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var appNavigation = AppNavigationCoordinator.shared
     @State private var showingDeviceKeySheet = false
+    @State private var showingTrackingPauseSheet = false
     @State private var showAdvancedOptionsFromNavigationRequest = false
     @State private var serverURLDraft = SettingsManager.shared.miataruServerURL
     @State private var pendingServerURLChange: String?
@@ -79,6 +80,16 @@ struct iPhone_SettingsView: View {
                                 .foregroundColor(.blue)
                             Text("manage_your_devicekey", tableName: "Devices")
                         }
+                    }
+
+                    if settings.trackAndReportLocation {
+                        Button {
+                            showingTrackingPauseSheet = true
+                        } label: {
+                            TrackingPauseSettingsRow()
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("settings_tracking_pause_button")
                     }
                 }
 
@@ -189,6 +200,9 @@ struct iPhone_SettingsView: View {
             .navigationTitle(String(localized: "settings", table: "SettingsDiagnostics"))
             .sheet(isPresented: $showingDeviceKeySheet) {
                 iPhone_DeviceKeySheetView(showsMismatchWarning: false)
+            }
+            .sheet(isPresented: $showingTrackingPauseSheet) {
+                TrackingPauseSheet()
             }
             .confirmationDialog(
                 String(localized: "location_update_outbox_server_change_title", table: "LocationTracking"),

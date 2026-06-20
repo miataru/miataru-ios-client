@@ -34,6 +34,7 @@ struct iPhone_DevicesView: View {
     @State private var hasPerformedInitialAutoNavigate: Bool = false
     @State private var navigationTarget: DeviceNavigationTarget? = nil
     @State private var lastUnknownVisitorSupplementalRefresh: Date? = nil
+    @State private var showingTrackingPauseResumeConfirmation = false
     @Environment(\.scenePhase) private var scenePhase
     @Namespace private var zoomTransitionNamespace
     
@@ -109,6 +110,19 @@ struct iPhone_DevicesView: View {
                     editingGroup = nil
                     selectedGroupID = nil
                 }
+            }
+            .confirmationDialog(
+                String(localized: "tracking_pause_resume_confirmation_title", table: "LocationTracking"),
+                isPresented: $showingTrackingPauseResumeConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button(String(localized: "tracking_pause_resume_confirmation_button", table: "LocationTracking")) {
+                    LocationManager.shared.resumeTrackingFromPause(reason: "user resumed server updates from device list banner")
+                }
+                .accessibilityIdentifier("tracking_pause_resume_confirmation_button")
+                Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+            } message: {
+                Text("tracking_pause_resume_confirmation_message", tableName: "LocationTracking")
             }
             .refreshable {
                 await refreshDeviceListFromPull()
@@ -257,6 +271,7 @@ struct iPhone_DevicesView: View {
     private var devicesList: some View {
         List {
             unknownVisitorsSection
+            trackingPauseSection
             frequentLocationUpdatesSection
             devicesSection
             groupsSection
@@ -276,8 +291,19 @@ struct iPhone_DevicesView: View {
     }
 
     @ViewBuilder
+    private var trackingPauseSection: some View {
+        if settings.isTrackingPaused {
+            Section {
+                TrackingPauseDeviceListBanner {
+                    showingTrackingPauseResumeConfirmation = true
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
     private var frequentLocationUpdatesSection: some View {
-        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled {
+        if settings.trackAndReportLocation && settings.frequentBackgroundLocationUpdatesEnabled && !settings.isTrackingPaused {
             Section {
                 FrequentBackgroundLocationUpdatesDeviceListNotice(expiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt) {
                     AppNavigationCoordinator.shared.openAdvancedSettings()

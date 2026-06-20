@@ -652,131 +652,131 @@
       }
     },
     "automation_event_kind_tracking_paused": {
-      "comment": "Display name for tracking paused automation event",
+      "comment": "Display name for server update pause automation event",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sporing sat på pause"
+            "value": "Serveropdateringer sat på pause"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking pausiert"
+            "value": "Server-Updates pausiert"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking Paused"
+            "value": "Server Updates Paused"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seguimiento pausado"
+            "value": "Actualizaciones del servidor pausadas"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seuranta keskeytetty"
+            "value": "Palvelinpäivitykset keskeytetty"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suivi en pause"
+            "value": "Mises à jour serveur en pause"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracciamento in pausa"
+            "value": "Aggiornamenti server in pausa"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "追跡一時停止"
+            "value": "サーバー更新一時停止"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Volgen gepauzeerd"
+            "value": "Serverupdates gepauzeerd"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "跟踪已暂停"
+            "value": "服务器更新已暂停"
           }
         }
       }
     },
     "automation_event_kind_tracking_resumed": {
-      "comment": "Display name for tracking resumed automation event",
+      "comment": "Display name for server update resumed automation event",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sporing genoptaget"
+            "value": "Serveropdateringer genoptaget"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking fortgesetzt"
+            "value": "Server-Updates fortgesetzt"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking Resumed"
+            "value": "Server Updates Resumed"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seguimiento reanudado"
+            "value": "Actualizaciones del servidor reanudadas"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seuranta jatkettu"
+            "value": "Palvelinpäivitykset jatkuvat"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suivi repris"
+            "value": "Mises à jour serveur reprises"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracciamento ripreso"
+            "value": "Aggiornamenti server ripresi"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "追跡再開"
+            "value": "サーバー更新再開"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Volgen hervat"
+            "value": "Serverupdates hervat"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "跟踪已恢复"
+            "value": "服务器更新已恢复"
           }
         }
       }
@@ -2017,131 +2017,131 @@
       }
     },
     "automation_event_summary_tracking_paused": {
-      "comment": "Summary for tracking paused",
+      "comment": "Summary for server update pause",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sporing sat på pause."
+            "value": "Serveropdateringer sat på pause."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking pausiert."
+            "value": "Server-Updates pausiert."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking paused."
+            "value": "Server updates paused."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seguimiento pausado."
+            "value": "Actualizaciones del servidor pausadas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seuranta keskeytetty."
+            "value": "Palvelinpäivitykset keskeytetty."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suivi en pause."
+            "value": "Mises à jour serveur en pause."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracciamento in pausa."
+            "value": "Aggiornamenti server in pausa."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "追跡を一時停止しました。"
+            "value": "サーバー更新を一時停止しました。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Volgen gepauzeerd."
+            "value": "Serverupdates gepauzeerd."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "跟踪已暂停。"
+            "value": "服务器更新已暂停。"
           }
         }
       }
     },
     "automation_event_summary_tracking_resumed": {
-      "comment": "Summary for tracking resumed",
+      "comment": "Summary for server update resumed",
       "localizations": {
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sporing genoptaget."
+            "value": "Serveropdateringer genoptaget."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking fortgesetzt."
+            "value": "Server-Updates fortgesetzt."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking resumed."
+            "value": "Server updates resumed."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seguimiento reanudado."
+            "value": "Actualizaciones del servidor reanudadas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seuranta jatkettu."
+            "value": "Palvelinpäivitykset jatkuvat."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suivi repris."
+            "value": "Mises à jour serveur reprises."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracciamento ripreso."
+            "value": "Aggiornamenti server ripresi."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "追跡を再開しました。"
+            "value": "サーバー更新を再開しました。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Volgen hervat."
+            "value": "Serverupdates hervat."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "跟踪已恢复。"
+            "value": "服务器更新已恢复。"
           }
         }
       }

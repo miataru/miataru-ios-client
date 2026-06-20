@@ -104,18 +104,64 @@ final class ExtendedUITests: XCTestCase {
     }
 
     @MainActor
-    func testQRCodeTabShowsDeviceKeyAction() throws {
-        let app = launchApp(extraArguments: ["-ui-onboarding-completed"])
+    func testQRCodeTabShowsDeviceKeyAndTrackingPauseActions() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-enable-location-tracking"])
 
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
         XCTAssertTrue(selectTab(in: app, index: 1, expectedScreenIdentifier: "screen_qr"), "QR tab should be active")
 
         let deviceKeyButton = app.buttons["qr_device_key_button"]
         XCTAssertTrue(deviceKeyButton.waitForExistence(timeout: 10), "Device key button should exist on QR tab")
-        if deviceKeyButton.isHittable {
-            deviceKeyButton.tap()
-        }
+
+        let pauseButton = app.buttons["qr_tracking_pause_button"]
+        XCTAssertTrue(pauseButton.waitForExistence(timeout: 10), "Server update pause button should exist on QR tab")
+        tapElement(pauseButton)
+        assertTrackingPauseSheetOptions(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert on QR tab flow")
+    }
+
+    @MainActor
+    func testSettingsShowsTrackingPauseEntry() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-enable-location-tracking", "-ui-initial-tab", "2"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
+
+        let pauseEntry = app.descendants(matching: .any)["settings_tracking_pause_button"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: pauseEntry, maxSwipes: 4), "Server update pause settings entry should be reachable")
+        XCTAssertTrue(app.staticTexts["Temporär keine Server Updates"].exists, "Settings entry should use the renamed title")
+        tapElement(pauseEntry)
+        assertTrackingPauseSheetOptions(in: app)
+        XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert on settings server update pause flow")
+    }
+
+    @MainActor
+    func testSettingsHidesTrackingPauseEntryWhenServerUpdatesDisabled() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
+
+        let pauseEntry = app.descendants(matching: .any)["settings_tracking_pause_button"].firstMatch
+        XCTAssertFalse(pauseEntry.exists, "Server update pause settings entry should be hidden when server updates are disabled")
+    }
+
+    @MainActor
+    func testDevicesShowsTrackingPauseBannerAndCanResume() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-tracking-pause-active"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        XCTAssertTrue(selectTab(in: app, index: 0, expectedScreenIdentifier: "screen_devices"), "Devices tab should be active")
+
+        let banner = app.descendants(matching: .any)["devices_tracking_pause_banner"].firstMatch
+        XCTAssertTrue(banner.waitForExistence(timeout: 10), "Active server update pause banner should be visible")
+        tapElement(banner)
+
+        let resumeButton = app.buttons["tracking_pause_resume_confirmation_button"].firstMatch
+        XCTAssertTrue(resumeButton.waitForExistence(timeout: 5), "Resume confirmation button should be visible")
+        resumeButton.tap()
+
+        XCTAssertTrue(waitForNonExistence(of: banner, timeout: 5), "Pause banner should disappear after resuming server updates")
     }
 
     @MainActor
@@ -181,6 +227,14 @@ final class ExtendedUITests: XCTestCase {
         }
 
         return app.frame.intersects(frame)
+    }
+
+    @MainActor
+    private func assertTrackingPauseSheetOptions(in app: XCUIApplication) {
+        XCTAssertTrue(app.pickers["tracking_pause_days_picker"].waitForExistence(timeout: 5), "Pause days picker should exist")
+        XCTAssertTrue(app.pickers["tracking_pause_hours_picker"].waitForExistence(timeout: 5), "Pause hours picker should exist")
+        XCTAssertTrue(app.pickers["tracking_pause_minutes_picker"].waitForExistence(timeout: 5), "Pause minutes picker should exist")
+        XCTAssertTrue(app.buttons["tracking_pause_start_button"].waitForExistence(timeout: 5), "Pause start button should exist")
     }
 
     @MainActor

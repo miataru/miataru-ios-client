@@ -34,11 +34,13 @@ extension LocationManager {
 
     static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
                                                           smartEnabled: Bool,
-                                                          smartRuntimeActive: Bool) -> Bool {
+                                                          smartRuntimeActive: Bool,
+                                                          trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
             manualFrequentEnabled: manualFrequentEnabled,
             smartEnabled: smartEnabled,
-            smartRuntimeActive: smartRuntimeActive
+            smartRuntimeActive: smartRuntimeActive,
+            trackingPaused: trackingPaused
         )
     }
 
@@ -49,24 +51,28 @@ extension LocationManager {
     static func locationUpdateCounterMode(applicationState: UIApplication.State,
                                           manualFrequentEnabled: Bool,
                                           smartEnabled: Bool,
-                                          smartRuntimeActive: Bool) -> LocationUpdateCounterMode {
+                                          smartRuntimeActive: Bool,
+                                          trackingPaused: Bool = false) -> LocationUpdateCounterMode {
         LocationTrackingPolicy.locationUpdateCounterMode(
             applicationState: applicationState,
             manualFrequentEnabled: manualFrequentEnabled,
             smartEnabled: smartEnabled,
-            smartRuntimeActive: smartRuntimeActive
+            smartRuntimeActive: smartRuntimeActive,
+            trackingPaused: trackingPaused
         )
     }
 
     static func backgroundTrackingDisplayMode(applicationState: UIApplication.State,
                                               smartEnabled: Bool,
                                               manualFrequentEnabled: Bool,
-                                              smartRuntimeActive: Bool) -> BackgroundTrackingDisplayMode {
+                                              smartRuntimeActive: Bool,
+                                              trackingPaused: Bool = false) -> BackgroundTrackingDisplayMode {
         LocationTrackingPolicy.backgroundTrackingDisplayMode(
             applicationState: applicationState,
             smartEnabled: smartEnabled,
             manualFrequentEnabled: manualFrequentEnabled,
-            smartRuntimeActive: smartRuntimeActive
+            smartRuntimeActive: smartRuntimeActive,
+            trackingPaused: trackingPaused
         )
     }
 
@@ -494,43 +500,51 @@ extension LocationManager {
 
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
                                                               authorizationStatus: CLAuthorizationStatus,
-                                                              deviceKeyAuthBlocked: Bool) -> Bool {
+                                                              deviceKeyAuthBlocked: Bool,
+                                                              trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: trackAndReportLocation,
             authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            trackingPaused: trackingPaused
         )
     }
 
     static func shouldMaintainLocationServiceSession(trackAndReportLocation: Bool,
                                                      isTracking: Bool,
                                                      authorizationStatus: CLAuthorizationStatus,
-                                                     deviceKeyAuthBlocked: Bool) -> Bool {
+                                                     deviceKeyAuthBlocked: Bool,
+                                                     trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.shouldMaintainLocationServiceSession(
             trackAndReportLocation: trackAndReportLocation,
             isTracking: isTracking,
             authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            trackingPaused: trackingPaused
         )
     }
 
     static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
-                                                  deviceKeyAuthBlocked: Bool) -> Bool {
+                                                  deviceKeyAuthBlocked: Bool,
+                                                  trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.shouldRestoreTrackingAfterLaunch(
             trackAndReportLocation: trackAndReportLocation,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            trackingPaused: trackingPaused
         )
     }
 
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
-                                        isTracking: Bool) -> TrackingReconcileAction {
+                                        isTracking: Bool,
+                                        trackingPaused: Bool = false) -> TrackingReconcileAction {
         LocationTrackingPolicy.trackingReconcileAction(
             trackAndReportLocation: trackAndReportLocation,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked,
             authorizationStatus: authorizationStatus,
-            isTracking: isTracking
+            isTracking: isTracking,
+            trackingPaused: trackingPaused
         )
     }
 
@@ -560,13 +574,15 @@ extension LocationManager {
                                                                 isTracking: Bool,
                                                                 frequentUpdatesEnabled: Bool,
                                                                 authorizationStatus: CLAuthorizationStatus,
-                                                                deviceKeyAuthBlocked: Bool) -> Bool {
+                                                                deviceKeyAuthBlocked: Bool,
+                                                                trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: trackAndReportLocation,
             isTracking: isTracking,
             frequentUpdatesEnabled: frequentUpdatesEnabled,
             authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            trackingPaused: trackingPaused
         )
     }
 

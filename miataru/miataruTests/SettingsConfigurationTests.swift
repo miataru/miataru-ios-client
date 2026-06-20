@@ -147,6 +147,68 @@ struct SettingsConfigurationTests {
         }
     }
 
+    @Test("Server update pause duration exposes the fixed allowed options")
+    func trackingPauseDurationExposesFixedAllowedOptions() {
+        #expect(TrackingPauseDuration.allCases.map(\.rawValue) == [
+            3_600,
+            7_200,
+            14_400,
+            28_800,
+            86_400,
+            172_800
+        ])
+
+        let start = Date(timeIntervalSince1970: 1_000)
+        #expect(TrackingPauseDuration.oneHour.expirationDate(from: start) == start.addingTimeInterval(3_600))
+        #expect(TrackingPauseDuration.fortyEightHours.expirationDate(from: start) == start.addingTimeInterval(172_800))
+        #expect(TrackingPauseCustomDuration.defaultSeconds == 7_200)
+        #expect(TrackingPauseCustomDuration.normalized(60) == TrackingPauseCustomDuration.minimumSeconds)
+        #expect(TrackingPauseCustomDuration.normalized(31 * 86_400) == TrackingPauseCustomDuration.maximumSeconds)
+    }
+
+    @Test("Server update pause is persisted and expired pauses are cleared")
+    func trackingPauseIsPersistedAndExpiredPausesAreCleared() throws {
+        let suiteName = "TrackingPauseSettingsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let start = Date(timeIntervalSince1970: 10_000)
+        let manager = SettingsManager(defaults: defaults)
+        let expiresAt = manager.pauseTracking(duration: .fourHours, now: start)
+
+        #expect(expiresAt == start.addingTimeInterval(14_400))
+        #expect(defaults.object(forKey: SettingsKeys.trackingPauseExpiresAt) as? Date == expiresAt)
+        let customExpiresAt = manager.pauseTracking(duration: TrackingPauseCustomDuration.defaultSeconds, now: start)
+        #expect(customExpiresAt == start.addingTimeInterval(7_200))
+        #expect(defaults.object(forKey: SettingsKeys.trackingPauseExpiresAt) as? Date == customExpiresAt)
+        #expect(manager.trackingPauseIsActive(now: start.addingTimeInterval(1)))
+        #expect(!manager.disableExpiredTrackingPauseIfNeeded(now: start.addingTimeInterval(60)))
+        #expect(manager.disableExpiredTrackingPauseIfNeeded(now: customExpiresAt))
+        #expect(manager.trackingPauseExpiresAt == nil)
+        #expect(defaults.object(forKey: SettingsKeys.trackingPauseExpiresAt) == nil)
+    }
+
+    @Test("Settings refresh imports and clears expired server update pauses")
+    func settingsRefreshImportsAndClearsExpiredTrackingPauses() throws {
+        let suiteName = "TrackingPauseRefreshTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let now = Date(timeIntervalSince1970: 20_000)
+        let manager = SettingsManager(defaults: defaults)
+
+        defaults.set(now.addingTimeInterval(600), forKey: SettingsKeys.trackingPauseExpiresAt)
+        #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
+        #expect(manager.trackingPauseExpiresAt == now.addingTimeInterval(600))
+
+        defaults.set(now.addingTimeInterval(-1), forKey: SettingsKeys.trackingPauseExpiresAt)
+        #expect(manager.refreshFromUserDefaultsForAppActivation(now: now))
+        #expect(manager.trackingPauseExpiresAt == nil)
+        #expect(defaults.object(forKey: SettingsKeys.trackingPauseExpiresAt) == nil)
+    }
+
     @Test("Settings localization keys exist for all app locales")
     func settingsLocalizationKeysExistForAllLocales() throws {
         let requiredKeys = [
@@ -183,6 +245,41 @@ struct SettingsConfigurationTests {
             "smart_frequent_background_deactivated_notification_title",
             "smart_frequent_background_deactivated_notification_body",
             "smart_frequent_background_waiting_hint",
+            "tracking_pause_button_label",
+            "tracking_pause_button_hint",
+            "tracking_pause_settings_title",
+            "tracking_pause_settings_explanation",
+            "tracking_pause_device_list_banner_title",
+            "tracking_pause_device_list_banner_message",
+            "tracking_pause_device_list_banner_active_until_format",
+            "tracking_pause_device_list_banner_hint",
+            "tracking_pause_resume_confirmation_title",
+            "tracking_pause_resume_confirmation_message",
+            "tracking_pause_resume_confirmation_button",
+            "tracking_pause_sheet_title",
+            "tracking_pause_duration_section_title",
+            "tracking_pause_ends_label",
+            "tracking_pause_day_picker_format",
+            "tracking_pause_hour_picker_format",
+            "tracking_pause_minute_picker_format",
+            "tracking_pause_active_until_format",
+            "tracking_pause_active_until_short_format",
+            "tracking_pause_resume_now",
+            "tracking_pause_start_button",
+            "tracking_pause_sheet_explanation",
+            "tracking_pause_started_notification_title",
+            "tracking_pause_started_notification_body_format",
+            "tracking_pause_resumed_notification_title",
+            "tracking_pause_resumed_notification_body",
+            "tracking_pause_duration_1h",
+            "tracking_pause_duration_2h",
+            "tracking_pause_duration_4h",
+            "tracking_pause_duration_8h",
+            "tracking_pause_duration_24h",
+            "tracking_pause_duration_48h",
+            "tracking_pause_background_hint",
+            "tracking_mode_paused",
+            "background_tracking_mode_paused",
             "location_tracking_health_reminder_interval_title",
             "location_tracking_health_reminder_interval_explanation",
             "location_tracking_health_reminder_notification_title",
@@ -362,6 +459,10 @@ struct SettingsConfigurationTests {
             "known_visitor_alert_notification_body_format",
             "allowed_device_list_enabled_explanation",
             "allowed_device_list_disabled_explanation",
+            "Device Slogan",
+            "Device slogan",
+            "device_slogan_visibility_explanation",
+            "qr_code_explanation",
         ]
 
         let strings = try loadAllAppStringCatalogs()

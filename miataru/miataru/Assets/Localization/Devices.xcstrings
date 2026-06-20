@@ -2217,126 +2217,126 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enhedsinfo-tekst"
+            "value" : "Enhedsslogan"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geräte-Info"
+            "value" : "Geräte-Slogan"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Device Info Text"
+            "value" : "Device slogan"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Texto de info del dispositivo"
+            "value" : "Eslogan del dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laitteen infoteksti"
+            "value" : "Laitteen slogan"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Texte d'info de l'appareil"
+            "value" : "Slogan de l’appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Testo info dispositivo"
+            "value" : "Slogan dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイス情報テキスト"
+            "value" : "デバイスのスローガン"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apparaat-infotekst"
+            "value" : "Apparaatslogan"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设备信息文本"
+            "value" : "设备标语"
           }
         }
       }
     },
     "Device Slogan" : {
-      "comment" : "Label/title for the editable device info text.",
+      "comment" : "Label/title for the editable device slogan.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enhedsinfo-tekst"
+            "value" : "Enhedsslogan"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geräte-Info"
+            "value" : "Geräte-Slogan"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Device Info Text"
+            "value" : "Device Slogan"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Texto de info del dispositivo"
+            "value" : "Eslogan del dispositivo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laitteen infoteksti"
+            "value" : "Laitteen slogan"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Texte d'info de l'appareil"
+            "value" : "Slogan de l’appareil"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Testo info dispositivo"
+            "value" : "Slogan dispositivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイス情報テキスト"
+            "value" : "デバイスのスローガン"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apparaat-infotekst"
+            "value" : "Apparaatslogan"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设备信息文本"
+            "value" : "设备标语"
           }
         }
       }
@@ -6755,6 +6755,71 @@
         }
       }
     },
+    "device_slogan_visibility_explanation" : {
+      "comment" : "Explanation below the device slogan input describing when it is visible.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sloganet vises til andre enheder, når de har lov til at hente dette enheds-id."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Slogan wird anderen Geräten angezeigt, wenn sie diese Geräte-ID abrufen dürfen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The slogan is shown to other devices when they are allowed to request this device ID."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El eslogan se muestra a otros dispositivos cuando tienen permiso para consultar este ID de dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slogan näytetään muille laitteille, kun niillä on lupa hakea tämä laite-ID."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le slogan est affiché aux autres appareils lorsqu’ils sont autorisés à consulter cet identifiant d’appareil."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo slogan viene mostrato agli altri dispositivi quando possono richiedere questo ID dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスIDの取得が許可されている他のデバイスに、このスローガンが表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De slogan wordt aan andere apparaten getoond wanneer ze deze apparaat-ID mogen opvragen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当其他设备被允许查询此设备 ID 时，会向它们显示该标语。"
+          }
+        }
+      }
+    },
     "devicelist_addbutton" : {
       "comment" : "Add a new device to your list",
       "localizations" : {
@@ -7796,70 +7861,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此设备"
-          }
-        }
-      }
-    },
-    "my_device_qr_code" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dette er din enheds QR-kode."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QR-Code meines Geräts"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This is your devices QR-Code."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este es el código QR de tu dispositivo."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tässä on laitteesi QR-koodi."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voici le code QR de ton appareil."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo è il QR code del tuo dispositivo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "私のデバイスのQRコード"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dit is de QR-code van je apparaat."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这是你的设备二维码。"
           }
         }
       }

@@ -135,8 +135,10 @@ enum LocationTrackingPolicy {
 
     static func effectiveFrequentBackgroundUpdatesEnabled(manualFrequentEnabled: Bool,
                                                           smartEnabled: Bool,
-                                                          smartRuntimeActive: Bool) -> Bool {
-        manualFrequentEnabled || (smartEnabled && smartRuntimeActive)
+                                                          smartRuntimeActive: Bool,
+                                                          trackingPaused: Bool = false) -> Bool {
+        guard !trackingPaused else { return false }
+        return manualFrequentEnabled || (smartEnabled && smartRuntimeActive)
     }
 
     static func shouldShowBackgroundLocationIndicator(for mode: TrackingMode) -> Bool {
@@ -149,9 +151,13 @@ enum LocationTrackingPolicy {
     static func locationUpdateCounterMode(applicationState: UIApplication.State,
                                           manualFrequentEnabled: Bool,
                                           smartEnabled: Bool,
-                                          smartRuntimeActive: Bool) -> LocationUpdateMetricsStore.CounterMode {
+                                          smartRuntimeActive: Bool,
+                                          trackingPaused: Bool = false) -> LocationUpdateMetricsStore.CounterMode {
         guard applicationState != .active else {
             return .foregroundLive
+        }
+        guard !trackingPaused else {
+            return .significantChange
         }
         if manualFrequentEnabled {
             return .manualFrequent
@@ -165,9 +171,13 @@ enum LocationTrackingPolicy {
     static func backgroundTrackingDisplayMode(applicationState: UIApplication.State,
                                               smartEnabled: Bool,
                                               manualFrequentEnabled: Bool,
-                                              smartRuntimeActive: Bool) -> BackgroundTrackingDisplayMode {
+                                              smartRuntimeActive: Bool,
+                                              trackingPaused: Bool = false) -> BackgroundTrackingDisplayMode {
         guard applicationState != .active else {
             return .foregroundLive
+        }
+        guard !trackingPaused else {
+            return .significantChange
         }
         if manualFrequentEnabled {
             return .manualFrequent
@@ -299,7 +309,8 @@ enum LocationTrackingPolicy {
 
     static func shouldMaintainSignificantChangeRecoveryAnchor(trackAndReportLocation: Bool,
                                                               authorizationStatus: CLAuthorizationStatus,
-                                                              deviceKeyAuthBlocked: Bool) -> Bool {
+                                                              deviceKeyAuthBlocked: Bool,
+                                                              trackingPaused: Bool = false) -> Bool {
         guard trackAndReportLocation,
               !deviceKeyAuthBlocked else {
             return false
@@ -311,23 +322,27 @@ enum LocationTrackingPolicy {
     static func shouldMaintainLocationServiceSession(trackAndReportLocation: Bool,
                                                      isTracking: Bool,
                                                      authorizationStatus: CLAuthorizationStatus,
-                                                     deviceKeyAuthBlocked: Bool) -> Bool {
+                                                     deviceKeyAuthBlocked: Bool,
+                                                     trackingPaused: Bool = false) -> Bool {
         shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: trackAndReportLocation && isTracking,
             authorizationStatus: authorizationStatus,
-            deviceKeyAuthBlocked: deviceKeyAuthBlocked
+            deviceKeyAuthBlocked: deviceKeyAuthBlocked,
+            trackingPaused: trackingPaused
         )
     }
 
     static func shouldRestoreTrackingAfterLaunch(trackAndReportLocation: Bool,
-                                                 deviceKeyAuthBlocked: Bool) -> Bool {
+                                                 deviceKeyAuthBlocked: Bool,
+                                                 trackingPaused: Bool = false) -> Bool {
         trackAndReportLocation && !deviceKeyAuthBlocked
     }
 
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
-                                        isTracking: Bool) -> ReconcileAction {
+                                        isTracking: Bool,
+                                        trackingPaused: Bool = false) -> ReconcileAction {
         guard trackAndReportLocation else {
             return .stopTrackingDisabled
         }
@@ -349,12 +364,14 @@ enum LocationTrackingPolicy {
                                                                 isTracking: Bool,
                                                                 frequentUpdatesEnabled: Bool,
                                                                 authorizationStatus: CLAuthorizationStatus,
-                                                                deviceKeyAuthBlocked: Bool) -> Bool {
+                                                                deviceKeyAuthBlocked: Bool,
+                                                                trackingPaused: Bool = false) -> Bool {
         trackAndReportLocation &&
         isTracking &&
         frequentUpdatesEnabled &&
         authorizationStatus == .authorizedAlways &&
-        !deviceKeyAuthBlocked
+        !deviceKeyAuthBlocked &&
+        !trackingPaused
     }
 
     static func shouldRequestFrequentBackgroundOneShotLocation(isTracking: Bool,

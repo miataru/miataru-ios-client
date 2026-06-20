@@ -190,6 +190,15 @@ class SettingsManager: ObservableObject {
             }
         }
     }
+    @Published var trackingPauseExpiresAt: Date? {
+        didSet {
+            if let trackingPauseExpiresAt {
+                defaults.set(trackingPauseExpiresAt, forKey: SettingsKeys.trackingPauseExpiresAt)
+            } else {
+                defaults.removeObject(forKey: SettingsKeys.trackingPauseExpiresAt)
+            }
+        }
+    }
     @Published var frequentBackgroundLocationDeliveryMode: Int {
         didSet {
             let normalizedValue = FrequentBackgroundLocationDeliveryMode.normalizedRawValue(frequentBackgroundLocationDeliveryMode)
@@ -280,6 +289,10 @@ class SettingsManager: ObservableObject {
 
     var frequentBackgroundLocationUpdateDurationMode: FrequentBackgroundLocationUpdateDuration {
         FrequentBackgroundLocationUpdateDuration(rawValue: frequentBackgroundLocationUpdateDuration) ?? .fourHours
+    }
+
+    var isTrackingPaused: Bool {
+        trackingPauseIsActive()
     }
 
     var frequentBackgroundLocationDeliveryModeSelection: FrequentBackgroundLocationDeliveryMode {
@@ -433,6 +446,7 @@ class SettingsManager: ObservableObject {
         self.frequentBackgroundLocationUpdateDuration = FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration))
         self.frequentBackgroundBatteryAutoDisableLevel = FrequentBackgroundBatteryAutoDisableLevel.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel))
         self.frequentBackgroundLocationUpdatesExpiresAt = d.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date
+        self.trackingPauseExpiresAt = d.object(forKey: SettingsKeys.trackingPauseExpiresAt) as? Date
         self.frequentBackgroundLocationDeliveryMode = FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode))
         self.frequentBackgroundVisitorCheckInterval = FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: d, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval))
         self.knownVisitorNotificationCooldown = KnownVisitorNotificationCooldown.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.knownVisitorNotificationCooldown, defaults: d, defaultValue: SettingsDefaultValues.knownVisitorNotificationCooldown))
@@ -463,7 +477,10 @@ class SettingsManager: ObservableObject {
     }
 
     @discardableResult
-    func refreshFromUserDefaultsForAppActivation(now: Date = Date()) -> Bool {
+    func refreshFromUserDefaultsForAppActivation(
+        now: Date = Date(),
+        clearExpiredTrackingPause: Bool = true
+    ) -> Bool {
         defaults.register(defaults: SettingsDefaultValues.registrations)
 
         var changed = false
@@ -502,6 +519,7 @@ class SettingsManager: ObservableObject {
         assignIfChanged(\.frequentBackgroundLocationDistanceFilter, FrequentBackgroundLocationDistanceFilter.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDistanceFilter, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDistanceFilter)))
         assignIfChanged(\.frequentBackgroundLocationUpdateDuration, FrequentBackgroundLocationUpdateDuration.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationUpdateDuration, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationUpdateDuration)))
         assignIfChanged(\.frequentBackgroundBatteryAutoDisableLevel, FrequentBackgroundBatteryAutoDisableLevel.normalized(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundBatteryAutoDisableLevel, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundBatteryAutoDisableLevel)))
+        assignIfChanged(\.trackingPauseExpiresAt, defaults.object(forKey: SettingsKeys.trackingPauseExpiresAt) as? Date)
         assignIfChanged(\.frequentBackgroundLocationDeliveryMode, FrequentBackgroundLocationDeliveryMode.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundLocationDeliveryMode, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundLocationDeliveryMode)))
         assignIfChanged(\.frequentBackgroundVisitorCheckInterval, FrequentBackgroundVisitorCheckInterval.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.frequentBackgroundVisitorCheckInterval, defaults: defaults, defaultValue: SettingsDefaultValues.frequentBackgroundVisitorCheckInterval)))
         assignIfChanged(\.knownVisitorNotificationCooldown, KnownVisitorNotificationCooldown.normalizedRawValue(Self.persistedInt(forKey: SettingsKeys.knownVisitorNotificationCooldown, defaults: defaults, defaultValue: SettingsDefaultValues.knownVisitorNotificationCooldown)))
@@ -540,13 +558,56 @@ class SettingsManager: ObservableObject {
 
         let frequentWasEnabled = frequentBackgroundLocationUpdatesEnabled
         let expirationWas = frequentBackgroundLocationUpdatesExpiresAt
+        let trackingPauseWas = trackingPauseExpiresAt
         ensureFrequentBackgroundLocationUpdatesExpiration(now: now)
         if frequentWasEnabled != frequentBackgroundLocationUpdatesEnabled ||
             expirationWas != frequentBackgroundLocationUpdatesExpiresAt {
             changed = true
         }
+        if clearExpiredTrackingPause,
+           disableExpiredTrackingPauseIfNeeded(now: now) {
+            changed = true
+        }
+        if trackingPauseWas != trackingPauseExpiresAt {
+            changed = true
+        }
 
         return changed
+    }
+
+    @discardableResult
+    func pauseTracking(duration: TrackingPauseDuration, now: Date = Date()) -> Date {
+        let expiresAt = duration.expirationDate(from: now)
+        trackingPauseExpiresAt = expiresAt
+        return expiresAt
+    }
+
+    @discardableResult
+    func pauseTracking(duration: TimeInterval, now: Date = Date()) -> Date {
+        let normalizedDuration = TrackingPauseCustomDuration.normalized(duration)
+        let expiresAt = now.addingTimeInterval(normalizedDuration)
+        trackingPauseExpiresAt = expiresAt
+        return expiresAt
+    }
+
+    func clearTrackingPause() {
+        trackingPauseExpiresAt = nil
+    }
+
+    func trackingPauseIsActive(now: Date = Date()) -> Bool {
+        guard let trackingPauseExpiresAt else { return false }
+        return trackingPauseExpiresAt > now
+    }
+
+    @discardableResult
+    func disableExpiredTrackingPauseIfNeeded(now: Date = Date()) -> Bool {
+        guard let trackingPauseExpiresAt,
+              trackingPauseExpiresAt <= now else {
+            return false
+        }
+
+        self.trackingPauseExpiresAt = nil
+        return true
     }
 
     func refreshFrequentBackgroundLocationUpdatesExpiration(now: Date = Date()) {

@@ -37,6 +37,7 @@ enum SettingsKeys {
     static let frequentBackgroundLocationDistanceFilter = "frequent_background_location_distance_filter"
     static let frequentBackgroundLocationUpdateDuration = "frequent_background_location_update_duration"
     static let frequentBackgroundLocationUpdatesExpiresAt = "frequent_background_location_updates_expires_at"
+    static let trackingPauseExpiresAt = "tracking_pause_expires_at"
     static let frequentBackgroundBatteryAutoDisableLevel = "frequent_background_battery_auto_disable_level"
     static let frequentBackgroundLocationDeliveryMode = "frequent_background_location_delivery_mode"
     static let frequentBackgroundVisitorCheckInterval = "frequent_background_visitor_check_interval"
@@ -264,6 +265,52 @@ enum FrequentBackgroundLocationUpdateDuration: Int, CaseIterable, Sendable {
 
     static func normalizedRawValue(_ value: Int) -> Int {
         Self(rawValue: value)?.rawValue ?? SettingsDefaultValues.frequentBackgroundLocationUpdateDuration
+    }
+}
+
+enum TrackingPauseDuration: Int, CaseIterable, Identifiable, Sendable {
+    case oneHour = 3_600
+    case twoHours = 7_200
+    case fourHours = 14_400
+    case eightHours = 28_800
+    case twentyFourHours = 86_400
+    case fortyEightHours = 172_800
+
+    var id: Int { rawValue }
+
+    var timeInterval: TimeInterval {
+        TimeInterval(rawValue)
+    }
+
+    var localizationKey: String {
+        switch self {
+        case .oneHour:
+            return "tracking_pause_duration_1h"
+        case .twoHours:
+            return "tracking_pause_duration_2h"
+        case .fourHours:
+            return "tracking_pause_duration_4h"
+        case .eightHours:
+            return "tracking_pause_duration_8h"
+        case .twentyFourHours:
+            return "tracking_pause_duration_24h"
+        case .fortyEightHours:
+            return "tracking_pause_duration_48h"
+        }
+    }
+
+    func expirationDate(from startDate: Date) -> Date {
+        startDate.addingTimeInterval(timeInterval)
+    }
+}
+
+enum TrackingPauseCustomDuration {
+    static let minimumSeconds: TimeInterval = 15 * 60
+    static let defaultSeconds: TimeInterval = 2 * 60 * 60
+    static let maximumSeconds: TimeInterval = 30 * 24 * 60 * 60
+
+    static func normalized(_ seconds: TimeInterval) -> TimeInterval {
+        min(max(seconds, minimumSeconds), maximumSeconds)
     }
 }
 

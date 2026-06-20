@@ -111,6 +111,9 @@ struct iPhone_RootView: View {
         case .devices:
             selectedTab = 0
             appNavigation.consumeRootDestination(.devices)
+        case .myDevice:
+            selectedTab = 1
+            appNavigation.consumeRootDestination(.myDevice)
         case .settings:
             selectedTab = 2
         case .none:

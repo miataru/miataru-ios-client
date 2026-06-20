@@ -366,3 +366,173 @@ actor FrequentBackgroundTrackingReminderService {
         }
     }
 }
+
+actor TrackingPauseNotificationService {
+    static let shared = TrackingPauseNotificationService()
+
+    static let pauseStartedNotificationIdentifier = "tracking_pause_started"
+    static let pauseStartedNotificationType = "tracking_pause_started"
+    static let resumeNotificationIdentifier = "tracking_pause_resumed"
+    static let resumeNotificationType = "tracking_pause_resumed"
+    static let notificationTypeUserInfoKey = UnknownVisitorAlertService.notificationTypeUserInfoKey
+
+    private enum Keys {
+        static let scheduledResumeDate = "tracking_pause_resume_notification_date"
+    }
+
+    private let defaults: UserDefaults
+    private let notifier: LocalNotificationNotifying
+    private let nowProvider: () -> Date
+
+    init(defaults: UserDefaults = .standard,
+         notifier: LocalNotificationNotifying = LiveLocalNotificationNotifier(),
+         nowProvider: @escaping () -> Date = Date.init) {
+        self.defaults = defaults
+        self.notifier = notifier
+        self.nowProvider = nowProvider
+    }
+
+    func notifyTrackingPaused(until expiresAt: Date) async {
+        guard await ensureAuthorization() else {
+            await cancelScheduledResumeNotification()
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = NSLocalizedString(
+            "tracking_pause_started_notification_title",
+            tableName: "LocationTracking",
+            comment: "Notification title shown when server update delivery is paused"
+        )
+        let bodyFormat = NSLocalizedString(
+            "tracking_pause_started_notification_body_format",
+            tableName: "LocationTracking",
+            comment: "Notification body shown when server update delivery is paused. Argument: resume date."
+        )
+        content.body = String(
+            format: bodyFormat,
+            locale: Locale.current,
+            Self.localizedDateTimeString(from: expiresAt)
+        )
+        content.sound = .default
+        content.userInfo = [
+            Self.notificationTypeUserInfoKey: Self.pauseStartedNotificationType
+        ]
+
+        let request = UNNotificationRequest(
+            identifier: Self.pauseStartedNotificationIdentifier,
+            content: content,
+            trigger: nil
+        )
+
+        do {
+            await notifier.removePendingNotificationRequests(withIdentifiers: [Self.pauseStartedNotificationIdentifier])
+            try await notifier.add(request)
+        } catch {
+            debugLog("[TrackingPauseNotificationService] Failed scheduling pause-start notification: \(error)")
+        }
+
+        await scheduleResumeNotificationIfNeeded(expiresAt: expiresAt)
+    }
+
+    func refresh(pauseExpiresAt: Date?) async {
+        guard let pauseExpiresAt,
+              pauseExpiresAt > nowProvider() else {
+            await cancelScheduledResumeNotificationIfNeeded()
+            return
+        }
+
+        await scheduleResumeNotificationIfNeeded(expiresAt: pauseExpiresAt)
+    }
+
+    func cancelScheduledResumeNotification() async {
+        await notifier.removePendingNotificationRequests(withIdentifiers: [Self.resumeNotificationIdentifier])
+        defaults.removeObject(forKey: Keys.scheduledResumeDate)
+    }
+
+    private func cancelScheduledResumeNotificationIfNeeded() async {
+        guard let scheduledResumeDate = defaults.object(forKey: Keys.scheduledResumeDate) as? Date else {
+            return
+        }
+
+        if scheduledResumeDate <= nowProvider() {
+            defaults.removeObject(forKey: Keys.scheduledResumeDate)
+            return
+        }
+
+        await notifier.removePendingNotificationRequests(withIdentifiers: [Self.resumeNotificationIdentifier])
+        defaults.removeObject(forKey: Keys.scheduledResumeDate)
+    }
+
+    private func scheduleResumeNotificationIfNeeded(expiresAt: Date) async {
+        let interval = expiresAt.timeIntervalSince(nowProvider())
+        guard interval > 0 else { return }
+
+        guard await ensureAuthorization() else {
+            await cancelScheduledResumeNotification()
+            return
+        }
+
+        await notifier.removePendingNotificationRequests(withIdentifiers: [Self.resumeNotificationIdentifier])
+
+        let content = UNMutableNotificationContent()
+        content.title = NSLocalizedString(
+            "tracking_pause_resumed_notification_title",
+            tableName: "LocationTracking",
+            comment: "Notification title shown when server update delivery resumes after a pause"
+        )
+        content.body = NSLocalizedString(
+            "tracking_pause_resumed_notification_body",
+            tableName: "LocationTracking",
+            comment: "Notification body shown when server update delivery resumes after a pause"
+        )
+        content.sound = .default
+        content.userInfo = [
+            Self.notificationTypeUserInfoKey: Self.resumeNotificationType
+        ]
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: max(1, interval),
+            repeats: false
+        )
+        let request = UNNotificationRequest(
+            identifier: Self.resumeNotificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
+
+        do {
+            try await notifier.add(request)
+            defaults.set(expiresAt, forKey: Keys.scheduledResumeDate)
+        } catch {
+            debugLog("[TrackingPauseNotificationService] Failed scheduling pause-resume notification: \(error)")
+        }
+    }
+
+    private func ensureAuthorization() async -> Bool {
+        let status = await notifier.authorizationStatus()
+        switch status {
+        case .authorized, .provisional, .ephemeral:
+            return true
+        case .notDetermined:
+            do {
+                return try await notifier.requestAuthorization(options: [.alert, .sound])
+            } catch {
+                debugLog("[TrackingPauseNotificationService] Notification authorization request failed: \(error)")
+                return false
+            }
+        case .denied:
+            return false
+        @unknown default:
+            return false
+        }
+    }
+
+    private static func localizedDateTimeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        formatter.locale = .current
+        return formatter.string(from: date)
+    }
+}

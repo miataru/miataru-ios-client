@@ -124,6 +124,9 @@ struct iPad_RootView: View {
         case .devices:
             selectedTab = 0
             appNavigation.consumeRootDestination(.devices)
+        case .myDevice:
+            selectedTab = 2
+            appNavigation.consumeRootDestination(.myDevice)
         case .settings:
             selectedTab = 3
         case .none:
