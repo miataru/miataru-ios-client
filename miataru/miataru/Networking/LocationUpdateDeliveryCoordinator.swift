@@ -41,6 +41,17 @@ actor LocationUpdateDeliveryCoordinator {
         let hasPendingItems: Bool
     }
 
+    private struct InFlightDirectSend {
+        let id: UUID
+        let serverURL: URL
+        let payload: UpdateLocationPayload
+        let enableHistory: Bool
+        let retentionTime: Int
+        let visitorCheckMinimumInterval: TimeInterval?
+        let processKnownVisitorAlerts: Bool
+        var replayServerURL: URL?
+    }
+
     static let shared = LocationUpdateDeliveryCoordinator(
         outboxStore: LocationUpdateOutboxStore(
             maxItems: SettingsManager.shared.locationUpdateOutboxMaxItems,
@@ -64,6 +75,12 @@ actor LocationUpdateDeliveryCoordinator {
     private var deferredFlushTask: Task<Void, Never>?
     private var deferredFlushDate: Date?
     private var isFlushing = false
+    private var inFlightDirectSend: InFlightDirectSend?
+    private var isRestoringDirectSendToOutbox = false
+
+    private var isDirectSendBlockingQueue: Bool {
+        inFlightDirectSend != nil || isRestoringDirectSendToOutbox
+    }
 
     init(
         outboxStore: LocationUpdateOutboxStore = LocationUpdateOutboxStore(),
@@ -185,7 +202,36 @@ actor LocationUpdateDeliveryCoordinator {
             return .queued
         }
 
-        if !(await outboxStore.isEmpty()) {
+        if isDirectSendBlockingQueue {
+            await outboxStore.enqueue(
+                serverURL: serverURL,
+                payload: payload,
+                enableHistory: enableHistory,
+                retentionTime: retentionTime,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
+            )
+            await notifyOutboxDidChange()
+            scheduleFlushSoon(trigger: "submitWithInFlightDirectSend")
+            return .queued
+        }
+
+        let hasPendingOutbox = !(await outboxStore.isEmpty())
+        if isDirectSendBlockingQueue {
+            await outboxStore.enqueue(
+                serverURL: serverURL,
+                payload: payload,
+                enableHistory: enableHistory,
+                retentionTime: retentionTime,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
+            )
+            await notifyOutboxDidChange()
+            scheduleFlushSoon(trigger: "submitWithInFlightDirectSend")
+            return .queued
+        }
+
+        if hasPendingOutbox {
             await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
@@ -199,23 +245,26 @@ actor LocationUpdateDeliveryCoordinator {
             return .queued
         }
 
+        let directSendID = UUID()
+        inFlightDirectSend = InFlightDirectSend(
+            id: directSendID,
+            serverURL: serverURL,
+            payload: payload,
+            enableHistory: enableHistory,
+            retentionTime: retentionTime,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
+        )
+
         do {
             let success = try await updateSender(serverURL, payload, enableHistory, retentionTime)
-            return success ? .sent : .failed(LocationUpdateDeliveryError.serverDidNotAcknowledge)
-        } catch {
-            guard MiataruRetryClassifier.isRetryable(error) else {
-                return .failed(error)
-            }
-            await outboxStore.enqueue(
-                serverURL: serverURL,
-                payload: payload,
-                enableHistory: enableHistory,
-                retentionTime: retentionTime,
-                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
-                processKnownVisitorAlerts: processKnownVisitorAlerts
+            return await finishInFlightDirectSend(
+                id: directSendID,
+                result: success ? .sent : .failed(LocationUpdateDeliveryError.serverDidNotAcknowledge)
             )
-            await notifyOutboxDidChange()
-            return .queued
+        } catch {
+            let result: SubmitResult = MiataruRetryClassifier.isRetryable(error) ? .queued : .failed(error)
+            return await finishInFlightDirectSend(id: directSendID, result: result)
         }
     }
 
@@ -254,9 +303,14 @@ actor LocationUpdateDeliveryCoordinator {
     }
 
     func sendPendingOutbox(to serverURL: URL) async {
-        guard await outboxStore.count() > 0 else { return }
-        let didRetarget = await outboxStore.updateServerURLForPendingItems(serverURL)
-        if didRetarget {
+        let pendingCount = await outboxStore.count()
+        let didMarkInFlightReplay = markInFlightDirectSendForReplay(to: serverURL)
+        guard pendingCount > 0 || didMarkInFlightReplay else { return }
+
+        let didRetarget = pendingCount > 0
+            ? await outboxStore.updateServerURLForPendingItems(serverURL)
+            : false
+        if didRetarget || didMarkInFlightReplay {
             await notifyOutboxDidChange()
         }
         cancelDeferredFlush()
@@ -265,6 +319,7 @@ actor LocationUpdateDeliveryCoordinator {
 
     func discardPendingOutbox() async {
         cancelDeferredFlush()
+        inFlightDirectSend?.replayServerURL = nil
         await outboxStore.removeAll()
         await notifyOutboxDidChange()
     }
@@ -281,9 +336,100 @@ actor LocationUpdateDeliveryCoordinator {
         }
     }
 
+    private func finishInFlightDirectSend(id: UUID, result: SubmitResult) async -> SubmitResult {
+        guard let completedSend = inFlightDirectSend,
+              completedSend.id == id else {
+            return result
+        }
+
+        let replayServerURL = completedSend.replayServerURL
+        let shouldRestoreToOutbox: Bool
+        if replayServerURL != nil {
+            shouldRestoreToOutbox = true
+        } else if case .queued = result {
+            shouldRestoreToOutbox = true
+        } else {
+            shouldRestoreToOutbox = false
+        }
+
+        inFlightDirectSend = nil
+        if shouldRestoreToOutbox {
+            isRestoringDirectSendToOutbox = true
+        }
+        defer {
+            if shouldRestoreToOutbox {
+                isRestoringDirectSendToOutbox = false
+            }
+        }
+
+        let finalResult: SubmitResult
+        if let replayServerURL {
+            await enqueueInFlightDirectSendAtFront(completedSend, serverURL: replayServerURL)
+            await notifyOutboxDidChange()
+            if case .sent = result {
+                finalResult = .sent
+            } else {
+                finalResult = .queued
+            }
+        } else if case .queued = result {
+            await enqueueInFlightDirectSendAtFront(completedSend, serverURL: completedSend.serverURL)
+            await notifyOutboxDidChange()
+            finalResult = .queued
+        } else {
+            finalResult = result
+        }
+
+        if case .sent = result {
+            await notifyOwnLocationUpdateDidSend()
+        }
+
+        if await outboxStore.count() > 0 {
+            scheduleFlushSoon(trigger: "directSendCompleted")
+        }
+
+        return finalResult
+    }
+
+    private func enqueueInFlightDirectSendAtFront(_ directSend: InFlightDirectSend, serverURL: URL) async {
+        await outboxStore.enqueueAtFront(
+            serverURL: serverURL,
+            payload: directSend.payload,
+            enableHistory: directSend.enableHistory,
+            retentionTime: directSend.retentionTime,
+            visitorCheckMinimumInterval: directSend.visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: directSend.processKnownVisitorAlerts
+        )
+    }
+
+    private func markInFlightDirectSendForReplay(to serverURL: URL) -> Bool {
+        guard var directSend = inFlightDirectSend else { return false }
+
+        let previousReplayURLString = directSend.replayServerURL?.absoluteString
+        let nextReplayURL = directSend.serverURL.absoluteString == serverURL.absoluteString ? nil : serverURL
+        guard previousReplayURLString != nextReplayURL?.absoluteString else {
+            return false
+        }
+
+        directSend.replayServerURL = nextReplayURL
+        inFlightDirectSend = directSend
+        return true
+    }
+
     private func flushOutbox(trigger: String,
                              scheduleContinuation: Bool = true,
                              includeDelayedItems: Bool = false) async -> FlushResult {
+        if isDirectSendBlockingQueue {
+            let pendingCount = await outboxStore.count()
+            if pendingCount > 0 {
+                scheduleFlushSoon(trigger: "\(trigger):directInFlight")
+            }
+            return FlushResult(
+                didReachBatchLimit: false,
+                stoppedOnRetryableError: true,
+                hasPendingItems: pendingCount > 0
+            )
+        }
+
         guard !isFlushing else {
             scheduleFlushSoon(trigger: "\(trigger):coalesced")
             return FlushResult(

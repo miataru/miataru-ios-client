@@ -1,3 +1,11 @@
+version 3.3.2
+- Prevented hung `UpdateLocation` requests from blocking later Core Location samples by treating an in-flight direct upload as the logical queue head and immediately queueing subsequent submissions behind it.
+- Preserved FIFO delivery when an in-flight direct upload fails retryably by restoring the original payload to the front of the outbox before later queued updates.
+- Kept server URL retargeting safe while a direct upload is still in flight by replaying the affected payload to the selected new server URL after the old request resolves.
+- Added request and resource timeouts for the bundled Miataru API client session so broken network states cannot hold update requests indefinitely.
+- Added focused regression coverage for in-flight direct-send queueing, FIFO tail drain, retryable head requeueing, and direct-send retarget replay.
+- Updated project metadata for version 3.3.2.
+
 version 3.3.1
 - Fixed the Settings description for "Deactivate device lock" so it resolves through the correct string catalog and shows the localized copy instead of the localization key.
 - Updated project metadata for version 3.3.1.

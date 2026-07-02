@@ -876,6 +876,8 @@ public enum MiataruAPIClient {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
         configuration.urlCache = nil
+        configuration.timeoutIntervalForRequest = 20
+        configuration.timeoutIntervalForResource = 30
         return URLSession(configuration: configuration)
     }()
     private static let jsonDecoder = JSONDecoder()

@@ -3032,7 +3032,6 @@ final class LocationManager: NSObject, ObservableObject {
 
         switch result {
         case .sent:
-            self.markServerUpdateSucceeded()
             recordForensicUpload(applicationState: applicationState)
             diagnosticsLog.appendCoalesced(
                 level: .info,
@@ -3043,7 +3042,6 @@ final class LocationManager: NSObject, ObservableObject {
                 coalescingKey: "locationUpload|sent|\(applicationState.rawValue)",
                 context: LocationDiagnosticsLogStore.roundedLocationContext(location)
             )
-            NotificationCenter.default.post(name: .didSendOwnLocationUpdate, object: nil)
             Task {
                 await UnknownVisitorAlertService.shared.processAfterSuccessfulLocationUpdate(
                     serverURL: serverURL,
@@ -3451,8 +3449,8 @@ extension LocationManager: CLLocationManagerDelegate {
             }
 
             let uploadLocations = locationsPendingUpload
-            Task { @MainActor in
-                for location in uploadLocations {
+            for location in uploadLocations {
+                Task { @MainActor in
                     await self.sendLocationToServer(location)
                 }
             }

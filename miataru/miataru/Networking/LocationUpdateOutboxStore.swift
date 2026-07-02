@@ -165,6 +165,40 @@ actor LocationUpdateOutboxStore {
         persist()
     }
 
+    func enqueueAtFront(
+        serverURL: URL,
+        payload: UpdateLocationPayload,
+        enableHistory: Bool,
+        retentionTime: Int,
+        visitorCheckMinimumInterval: TimeInterval? = nil,
+        processKnownVisitorAlerts: Bool = false
+    ) {
+        pruneExpiredEntriesIfNeeded()
+
+        let item = LocationUpdateOutboxItem(
+            serverURLString: serverURL.absoluteString,
+            enqueuedAt: nowProvider(),
+            payload: payload,
+            enableHistory: enableHistory,
+            retentionTime: retentionTime,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
+        )
+
+        if let existingIndex = items.firstIndex(where: { $0.dedupeKey == item.dedupeKey }) {
+            items.remove(at: existingIndex)
+        }
+
+        items.insert(item, at: 0)
+
+        if items.count > maxItems {
+            let overflow = items.count - maxItems
+            items.removeLast(overflow)
+        }
+
+        persist()
+    }
+
     func pruneExpiredEntries() {
         pruneExpiredEntriesIfNeeded()
     }

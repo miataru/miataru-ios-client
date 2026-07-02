@@ -223,6 +223,163 @@ struct LocationUpdateDeliveryCoordinatorTests {
         await coordinator.stopPeriodicFlushTaskForTesting()
     }
 
+    @Test("Submit during in-flight direct send queues without waiting")
+    func submitDuringInFlightDirectSendQueuesWithoutWaiting() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.2,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let firstTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "first"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let secondTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "second"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let snapshotWhileFirstSendIsBlocked = await store.itemsSnapshot()
+        #expect(snapshotWhileFirstSendIsBlocked.map(\.payload.Timestamp) == ["second"])
+
+        await sender.releaseFirstCall()
+        if case .sent = await firstTask.value {
+        } else {
+            Issue.record("Expected first direct submit to report sent after release")
+        }
+        if case .queued = await secondTask.value {
+        } else {
+            Issue.record("Expected second submit to queue while first send is in flight")
+        }
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("In-flight direct send drains queued tail in FIFO order")
+    func inFlightDirectSendDrainsQueuedTailInFIFOOrder() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let firstTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "first"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let secondResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "second"),
+            enableHistory: false,
+            retentionTime: 90
+        )
+        if case .queued = secondResult {
+        } else {
+            Issue.record("Expected second submit to queue behind in-flight direct send")
+        }
+
+        await sender.releaseFirstCall()
+        _ = await firstTask.value
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentTimestamps == ["first", "second"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Retryable in-flight direct failure queues original before later submissions")
+    func retryableInFlightDirectFailureQueuesOriginalBeforeLaterSubmissions() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender(firstOutcome: .failure(MiataruAPIClient.APIError.requestFailed(URLError(.timedOut))))
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.5,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let firstTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "first"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let secondResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "second"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+        if case .queued = secondResult {
+        } else {
+            Issue.record("Expected second submit to queue while first send is in flight")
+        }
+
+        await sender.releaseFirstCall()
+        if case .queued = await firstTask.value {
+        } else {
+            Issue.record("Expected retryable first send failure to queue original payload")
+        }
+
+        var snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["first", "second"])
+
+        await coordinator.flushOutboxNow()
+
+        snapshot = await store.itemsSnapshot()
+        #expect(snapshot.isEmpty)
+        #expect(await sender.sentTimestamps == ["first", "first", "second"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
     @Test("Delayed submit batches updates until the selected delivery window")
     func delayedSubmitBatchesUpdatesUntilDeliveryWindow() async throws {
         let tempURL = temporaryOutboxURL()
@@ -797,6 +954,53 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.sentTimestamps == ["queued", "queued"])
     }
 
+    @Test("Server URL retarget replays in-flight direct send to new URL")
+    func serverURLRetargetReplaysInFlightDirectSendToNewURL() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let oldServerURL = URL(string: "https://old.example.org")!
+        let newServerURL = URL(string: "https://new.example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let submitTask = Task {
+            await coordinator.submit(
+                serverURL: oldServerURL,
+                payload: payload(timestamp: "direct"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        await coordinator.sendPendingOutbox(to: newServerURL)
+        try await Task.sleep(nanoseconds: 50_000_000)
+        #expect(await sender.sentURLs == [oldServerURL.absoluteString])
+
+        await sender.releaseFirstCall()
+        if case .sent = await submitTask.value {
+        } else {
+            Issue.record("Expected original direct send to report sent")
+        }
+        try await Task.sleep(nanoseconds: 200_000_000)
+
+        #expect(await store.count() == 0)
+        #expect(await sender.sentURLs == [oldServerURL.absoluteString, newServerURL.absoluteString])
+        #expect(await sender.sentTimestamps == ["direct", "direct"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
     @Test("Pending outbox can be discarded after server URL change")
     func pendingOutboxCanBeDiscardedAfterServerURLChange() async throws {
         let tempURL = temporaryOutboxURL()
@@ -966,10 +1170,20 @@ private actor FlushEligibilityGate {
 }
 
 private actor BlockingFirstUpdateSender {
+    enum FirstOutcome {
+        case success(Bool)
+        case failure(Error)
+    }
+
     private(set) var sentTimestamps: [String] = []
     private(set) var sentURLs: [String] = []
+    private let firstOutcome: FirstOutcome
     private var firstCallContinuation: CheckedContinuation<Void, Never>?
     private var firstCallWaiters: [CheckedContinuation<Void, Never>] = []
+
+    init(firstOutcome: FirstOutcome = .success(true)) {
+        self.firstOutcome = firstOutcome
+    }
 
     func send(
         url: URL,
@@ -988,6 +1202,13 @@ private actor BlockingFirstUpdateSender {
             firstCallWaiters.removeAll()
             await withCheckedContinuation { continuation in
                 firstCallContinuation = continuation
+            }
+
+            switch firstOutcome {
+            case .success(let success):
+                return success
+            case .failure(let error):
+                throw error
             }
         }
 
