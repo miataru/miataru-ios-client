@@ -46,6 +46,7 @@ struct iPhone_DeviceMapView: View {
     @ObservedObject private var settings = SettingsManager.shared // App settings
     @ObservedObject private var cache = DeviceLocationCacheStore.shared // Device location cache
     @Environment(\.animationsAllowed) private var animationsAllowed
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var deviceStore = KnownDeviceStore.shared // Store for known devices
     @StateObject private var locationManager = LocationManager.shared // Access to user's location
     @State private var timerCancellable: AnyCancellable? = nil // Timer for auto-updating location
@@ -74,6 +75,7 @@ struct iPhone_DeviceMapView: View {
     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
     @State private var isMapMoving = false // Track if map is currently moving/animating
     @State private var mapMovementTimer: Timer? = nil // Timer to detect when map movement stops
+    @State private var isMapVisible = false
     
     // MARK: - Identifiable wrapper for device picker sheet
     private struct DevicePickerData: Identifiable {
@@ -296,6 +298,7 @@ struct iPhone_DeviceMapView: View {
         }
         .adaptiveToolbarBackground()
         .onAppear {
+            isMapVisible = true
             settings.lastOpenedDeviceID = deviceID
             selectedActionDeviceID = deviceID
             // Use preview parameters if set (for SwiftUI preview)
@@ -328,23 +331,7 @@ struct iPhone_DeviceMapView: View {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
             
-            // Use the best available location for map initialization
-            let coordinate = bestAvailableLocation
-            // Initial region set is programmatic; suppress user detection for the animation
-            beginProgrammaticCameraAnimation(duration: 0.5)
-            if animationsAllowed {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    region = MKCoordinateRegion(center: coordinate, span: span)
-                    if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                    }
-                }
-            } else {
-                region = MKCoordinateRegion(center: coordinate, span: span)
-                if #available(iOS 17.0, *) {
-                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                }
-            }
+            recenterMapForPresentation()
             if #available(iOS 17.0, *) {
                 updateVisibleDeviceCount(with: cameraPosition.region)
             }
@@ -352,12 +339,18 @@ struct iPhone_DeviceMapView: View {
             startAutoUpdate()
         }
         .onDisappear {
+            isMapVisible = false
             stopAutoUpdate()
             cancelMapPinAnimations()
             mapMovementTimer?.invalidate()
             mapMovementTimer = nil
             if settings.lastOpenedDeviceID == deviceID {
                 settings.lastOpenedDeviceID = nil
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active, isMapVisible {
+                recenterMapForPresentation()
             }
         }
         .onChange(of: animationsAllowed) { _, allowed in
@@ -1456,6 +1449,24 @@ struct iPhone_DeviceMapView: View {
         } else {
             cameraPosition = .camera(newCamera)
             userHasRotatedMap = false
+        }
+    }
+
+    private func recenterMapForPresentation() {
+        resetZoomToSettings()
+
+        // A restored NavigationStack can present this view before MapKit has attached
+        // its camera binding. Reapply once after presentation so cold starts and app
+        // activation reliably center on the selected device.
+        Task { @MainActor in
+            await Task.yield()
+            do {
+                try await Task.sleep(nanoseconds: 200_000_000)
+            } catch {
+                return
+            }
+            guard isMapVisible, scenePhase == .active else { return }
+            resetZoomToSettings()
         }
     }
 

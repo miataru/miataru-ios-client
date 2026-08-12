@@ -76,6 +76,7 @@ struct iPad_DeviceMapView: View {
     @State private var visibleDeviceCount: Int = 0 // Number of devices currently visible in the map viewport
     @State private var isMapMoving = false // Track if map is currently moving/animating
     @State private var mapMovementTimer: Timer? = nil // Timer to detect when map movement stops
+    @State private var isMapVisible = false
     
     // MARK: - Identifiable wrapper for device picker sheet
     private struct DevicePickerData: Identifiable {
@@ -300,6 +301,7 @@ struct iPad_DeviceMapView: View {
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         .onAppear {
+            isMapVisible = true
             // Ensure auto-centering is enabled on fresh start
             isAutoCenteringEnabled = true
             // Only update lastOpenedDeviceID when in main window context (not in separate windows)
@@ -341,23 +343,7 @@ struct iPad_DeviceMapView: View {
             let span = spanForZoomLevel(settings.mapZoomLevel)
             currentMapSpan = span // Set initial zoom level
             
-            // Use the best available location for map initialization
-            let coordinate = bestAvailableLocation
-            // iPad-specific: Force animations with longer duration for better visual feedback
-            beginProgrammaticCameraAnimation(duration: 1.0)
-            if animationsAllowed {
-                withAnimation(.easeInOut(duration: 1.0)) {
-                    region = MKCoordinateRegion(center: coordinate, span: span)
-                    if #available(iOS 17.0, *) {
-                        cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                    }
-                }
-            } else {
-                region = MKCoordinateRegion(center: coordinate, span: span)
-                if #available(iOS 17.0, *) {
-                    cameraPosition = .region(MKCoordinateRegion(center: coordinate, span: span))
-                }
-            }
+            recenterMapForPresentation()
             if #available(iOS 17.0, *) {
                 updateVisibleDeviceCount(with: cameraPosition.region)
             }
@@ -369,9 +355,13 @@ struct iPad_DeviceMapView: View {
                 // Known SwiftUI MapKit issue: occasionally renders black after restoration
                 // Recreate the map view by changing its identity
                 mapInteractionID = UUID()
+                if isMapVisible {
+                    recenterMapForPresentation()
+                }
             }
         }
         .onDisappear {
+            isMapVisible = false
             stopAutoUpdate()
             cancelMapPinAnimations()
             mapMovementTimer?.invalidate()
@@ -1527,6 +1517,24 @@ struct iPad_DeviceMapView: View {
         } else {
             cameraPosition = .camera(newCamera)
             userHasRotatedMap = false
+        }
+    }
+
+    private func recenterMapForPresentation() {
+        resetZoomToSettings()
+
+        // A restored split view can present this view before MapKit has attached its
+        // camera binding. Reapply after the map recreation so cold starts and app
+        // activation reliably center on the selected device.
+        Task { @MainActor in
+            await Task.yield()
+            do {
+                try await Task.sleep(nanoseconds: 200_000_000)
+            } catch {
+                return
+            }
+            guard isMapVisible, scenePhase == .active else { return }
+            resetZoomToSettings()
         }
     }
 
