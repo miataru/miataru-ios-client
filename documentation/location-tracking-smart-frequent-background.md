@@ -95,6 +95,8 @@ Lifecycle contexts can be forced when needed. During background transitions the 
 
 Focused turn-by-turn navigation registers UUID-backed navigation location sessions. Sessions do not override background policy: foreground resolves to high accuracy; background resolves to significant-change or frequent background mode.
 
+While a Navigation Live Activity is running and effective Smart/manual frequent updates are inactive, Miataru may schedule a separate best-effort `BGAppRefreshTask` no earlier than 15 minutes later. The task fetches only the navigation target, recalculates the route from cached own-location data when possible, updates the Activity, and resubmits itself while still eligible. As soon as Smart or manual frequent updates become effective, the pending fallback task is cancelled. This scheduler never starts, stops, or changes Core Location services and iOS does not guarantee its execution time.
+
 ## Stopped Mode
 
 Enter `stopped` when tracking is off, DeviceKey/auth is blocked, authorization is missing/denied/restricted, or the app is backgrounded with only When In Use authorization.

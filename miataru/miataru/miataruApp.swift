@@ -157,6 +157,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        NavigationLiveActivityBackgroundRefreshScheduler.shared.register()
         restoreTrackingForLocationLaunchIfNeeded(launchOptions)
         return true
     }

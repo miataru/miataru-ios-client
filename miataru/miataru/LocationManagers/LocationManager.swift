@@ -129,6 +129,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
+    private var lastPublishedFrequentBackgroundRefreshEligibility: Bool?
     
     // MARK: - Init
     override private init() {
@@ -374,6 +375,17 @@ final class LocationManager: NSObject, ObservableObject {
             manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
             smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
+            trackingPaused: settings.isTrackingPaused
+        )
+    }
+
+    var frequentBackgroundUpdatesAreEffectivelyActive: Bool {
+        Self.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            isTracking: isTracking,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
+            authorizationStatus: locationManager.authorizationStatus,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             trackingPaused: settings.isTrackingPaused
         )
     }
@@ -1033,6 +1045,8 @@ final class LocationManager: NSObject, ObservableObject {
             applyTrackingMode(reason: effectiveReason, applicationStateContext: applicationStateContext)
         }
 
+        publishFrequentBackgroundRefreshEligibilityIfNeeded()
+
         return action
     }
 
@@ -1157,6 +1171,18 @@ final class LocationManager: NSObject, ObservableObject {
         apply(mode)
         ensureSignificantChangeRecoveryAnchorIfNeeded(reason: reason, shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor)
         reconcileSmartFrequentExitFence(reason: reason, applicationState: state)
+        publishFrequentBackgroundRefreshEligibilityIfNeeded()
+    }
+
+    private func publishFrequentBackgroundRefreshEligibilityIfNeeded() {
+        let isActive = frequentBackgroundUpdatesAreEffectivelyActive
+        guard lastPublishedFrequentBackgroundRefreshEligibility != isActive else { return }
+        lastPublishedFrequentBackgroundRefreshEligibility = isActive
+        NotificationCenter.default.post(
+            name: .frequentBackgroundTrackingEligibilityDidChange,
+            object: nil,
+            userInfo: ["isActive": isActive]
+        )
     }
 
     private func apply(_ mode: TrackingMode) {

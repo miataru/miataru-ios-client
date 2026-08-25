@@ -194,6 +194,7 @@ final class NavigationLiveActivityCoordinator {
     private let client: NavigationLiveActivityClient
     private let defaults: UserDefaults
     private let now: () -> Date
+    private let backgroundRefresh: (NavigationLiveActivitySnapshot) async -> NavigationLiveActivitySnapshot?
 
     private(set) var currentSnapshot: NavigationLiveActivitySnapshot?
     private(set) var activityID: String?
@@ -207,14 +208,22 @@ final class NavigationLiveActivityCoordinator {
     private var sceneIsBackground = false
     private var activityHasBeenBackgrounded = false
 
+    var hasRunningActivity: Bool {
+        activityID != nil && currentSnapshot != nil
+    }
+
     init(
         client: NavigationLiveActivityClient,
         defaults: UserDefaults,
-        now: @escaping () -> Date = Date.init
+        now: @escaping () -> Date = Date.init,
+        backgroundRefresh: @escaping (NavigationLiveActivitySnapshot) async -> NavigationLiveActivitySnapshot? = {
+            await NavigationLiveActivityBackgroundRefresher.shared.refresh($0)
+        }
     ) {
         self.client = client
         self.defaults = defaults
         self.now = now
+        self.backgroundRefresh = backgroundRefresh
         currentSnapshot = Self.loadPersistedSnapshot(from: defaults)
     }
 
@@ -317,11 +326,13 @@ final class NavigationLiveActivityCoordinator {
             activityID = nil
             currentSnapshot = nil
             defaults.removeObject(forKey: Self.persistedSnapshotKey)
+            publishActivityStateChange()
             return
         }
 
         activityID = matchingRecord.id
         activityHasBeenBackgrounded = true
+        publishActivityStateChange()
         observeLifecycle(of: matchingRecord.id)
         for record in records where record.id != matchingRecord.id {
             await client.end(id: record.id, presentation: nil)
@@ -361,6 +372,7 @@ final class NavigationLiveActivityCoordinator {
                 }
                 activityID = newActivityID
                 lastActivityUpdateAt = requestDate
+                publishActivityStateChange()
                 observeLifecycle(of: newActivityID)
             } catch {
                 debugLog("[NavigationLiveActivityCoordinator] Failed to start Live Activity: \(error)")
@@ -393,7 +405,41 @@ final class NavigationLiveActivityCoordinator {
             self.activityUnavailableForCurrentNavigation = true
             self.activityLifecycleObservationTask?.cancel()
             self.activityLifecycleObservationTask = nil
+            self.publishActivityStateChange()
         }
+    }
+
+    func performBestEffortBackgroundRefresh() async -> Bool {
+        guard let activityID, let snapshot = currentSnapshot else { return false }
+        guard let refreshedSnapshot = await backgroundRefresh(snapshot), !Task.isCancelled else {
+            return false
+        }
+        guard self.activityID == activityID,
+              currentSnapshot?.deviceID == snapshot.deviceID else {
+            return false
+        }
+
+        currentSnapshot = refreshedSnapshot
+        persistIfNeeded(refreshedSnapshot, force: true)
+        let updateDate = now()
+        let didUpdate = await client.update(
+            id: activityID,
+            presentation: Self.presentation(for: refreshedSnapshot, now: updateDate)
+        )
+        guard self.activityID == activityID else { return didUpdate }
+        if didUpdate {
+            lastActivityUpdateAt = updateDate
+            return true
+        }
+
+        self.activityID = nil
+        lastActivityUpdateAt = nil
+        activityHasBeenBackgrounded = false
+        activityUnavailableForCurrentNavigation = true
+        activityLifecycleObservationTask?.cancel()
+        activityLifecycleObservationTask = nil
+        publishActivityStateChange()
+        return false
     }
 
     private func endCurrentActivity(presentationSnapshot: NavigationLiveActivitySnapshot?) {
@@ -403,6 +449,7 @@ final class NavigationLiveActivityCoordinator {
         activityLifecycleObservationTask = nil
         lastActivityUpdateAt = nil
         activityHasBeenBackgrounded = false
+        publishActivityStateChange()
 
         guard let endedActivityID else { return }
         let endDate = now()
@@ -428,6 +475,7 @@ final class NavigationLiveActivityCoordinator {
                 activityHasBeenBackgrounded = false
                 activityUnavailableForCurrentNavigation = true
                 activityLifecycleObservationTask = nil
+                publishActivityStateChange()
                 break
             }
         }
@@ -443,6 +491,10 @@ final class NavigationLiveActivityCoordinator {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         defaults.set(data, forKey: Self.persistedSnapshotKey)
         lastPersistedAt = persistenceDate
+    }
+
+    private func publishActivityStateChange() {
+        NotificationCenter.default.post(name: .navigationLiveActivityStateDidChange, object: nil)
     }
 
     private static func loadPersistedSnapshot(from defaults: UserDefaults) -> NavigationLiveActivitySnapshot? {

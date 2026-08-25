@@ -7,8 +7,9 @@ version 3.4
 - Extended focused double-tap navigation Live Activities with the current MapKit turn instruction, maneuver symbol, and remaining distance to the maneuver, including compact Dynamic Island guidance.
 - Added the target device's latest reverse-geocoded locality and country to standard-navigation Live Activities while preserving the last known place during refresh failures.
 - Removed the Live Activity's navigation-specific high-frequency Core Location override and background activity session so it cannot suppress Smart frequent activation, interfere with Significant-Change tracking, or leave a navigation-owned blue location indicator active.
+- Added a system-scheduled best-effort BGAppRefresh fallback while a Navigation Live Activity runs without effective Smart/manual frequent updates; it refreshes the target device and route no earlier than 15 minutes later, updates the Activity, preserves the last valid route on partial failure, and cancels immediately when frequent tracking becomes active.
 - Added focused regression coverage proving that an active navigation does not override Significant-Change or Smart/manual frequent background tracking, alongside Live Activity lifecycle and deep-link coverage.
-- Updated project metadata for version 3.4 builds 2 through 6.
+- Updated project metadata for version 3.4 builds 2 through 7.
 
 version 3.3.5
 - Preserved unsuccessful location updates in the FIFO outbox for later retry, including TLS, non-acknowledged server responses, invalid server URLs, and other delivery failures instead of dropping them.

@@ -8,6 +8,7 @@
 	<array>
 		<string>com.miataru.ios.background-location</string>
 		<string>com.miataru.ios.background-server-update</string>
+		<string>com.miataru.ios.navigation-live-activity-refresh</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>

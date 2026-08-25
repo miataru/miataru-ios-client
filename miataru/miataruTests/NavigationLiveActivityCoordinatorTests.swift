@@ -204,6 +204,31 @@ struct NavigationLiveActivityCoordinatorTests {
         #expect(harness.client.updates[0].presentation.state.maneuverDistanceMeters == 80)
     }
 
+    @Test("Background refresh publishes a freshly fetched route to the active Activity")
+    func backgroundRefreshPublishesFreshRoute() async {
+        let refreshed = snapshot(
+            distanceMeters: 420,
+            ownLocationTimestamp: Date(timeIntervalSince1970: 1_100),
+            remoteLocationTimestamp: Date(timeIntervalSince1970: 1_100),
+            lastUpdatedAt: Date(timeIntervalSince1970: 1_100),
+            refreshInterval: 30
+        )
+        let client = FakeNavigationLiveActivityClient()
+        let coordinator = makeCoordinator(
+            client: client,
+            defaults: isolatedDefaults(),
+            backgroundRefresh: { _ in refreshed }
+        )
+        coordinator.registerOrUpdate(snapshot())
+        coordinator.sceneWillResignActive()
+        await settle()
+
+        #expect(await coordinator.performBestEffortBackgroundRefresh())
+        #expect(client.updates.count == 1)
+        #expect(client.updates[0].presentation.state.distanceMeters == 420)
+        #expect(coordinator.currentSnapshot == refreshed)
+    }
+
     @Test("Launch reconciliation binds a matching activity and removes orphans")
     func launchReconciliationBindsAndRemovesOrphans() async {
         let defaults = isolatedDefaults()
@@ -268,12 +293,14 @@ struct NavigationLiveActivityCoordinatorTests {
     private func makeCoordinator(
         client: FakeNavigationLiveActivityClient,
         defaults: UserDefaults,
-        now: @escaping () -> Date = Date.init
+        now: @escaping () -> Date = Date.init,
+        backgroundRefresh: @escaping (NavigationLiveActivitySnapshot) async -> NavigationLiveActivitySnapshot? = { _ in nil }
     ) -> NavigationLiveActivityCoordinator {
         NavigationLiveActivityCoordinator(
             client: client,
             defaults: defaults,
-            now: now
+            now: now,
+            backgroundRefresh: backgroundRefresh
         )
     }
 
