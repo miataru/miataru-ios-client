@@ -1,4 +1,6 @@
 version 3.4
+- Fixed a destructive startup-heartbeat configuration bug: cached-location heartbeats now preserve the current server-history preference instead of forcing `EnableLocationHistory=false`, which Miataru servers interpret as a command to erase all stored history for the device.
+- Applied the current server-history preference when pending location updates are eventually delivered so an already queued heartbeat from an affected build cannot erase history after a later retry.
 - Added a Navigation Live Activity that starts when an active Miataru navigation moves into the background and shows the target device name, distance, remaining travel time, and arrival time on the Lock Screen and Dynamic Island for both route directions and all supported transport modes.
 - Kept exactly one Live Activity per navigation, reconciled matching activities after relaunch, preserved the activity when returning to the foreground, and ended it on cancellation, arrival, navigation-view exit, or target-device changes.
 - Added idempotent Live Activity deep links that reopen the exact target, route direction, transport mode, and focused navigation presentation without creating a parallel navigation session.
@@ -9,11 +11,11 @@ version 3.4
 - Removed the Live Activity's navigation-specific high-frequency Core Location override and background activity session so it cannot suppress Smart frequent activation, interfere with Significant-Change tracking, or leave a navigation-owned blue location indicator active.
 - Added a system-scheduled best-effort BGAppRefresh fallback while a Navigation Live Activity runs without effective Smart/manual frequent updates; it refreshes the target device and route no earlier than 15 minutes later, updates the Activity, preserves the last valid route on partial failure, and cancels immediately when frequent tracking becomes active.
 - Added focused regression coverage proving that an active navigation does not override Significant-Change or Smart/manual frequent background tracking, alongside Live Activity lifecycle and deep-link coverage.
-- Updated project metadata for version 3.4 builds 2 through 7.
+- Updated project metadata for version 3.4 builds 2 through 8.
 
 version 3.3.5
 - Preserved unsuccessful location updates in the FIFO outbox for later retry, including TLS, non-acknowledged server responses, invalid server URLs, and other delivery failures instead of dropping them.
-- Added a once-per-process startup heartbeat that refreshes a valid cached own-device location only when reporting is enabled, tracking is not paused, and the last successful server update is at least three hours old; heartbeat uploads do not add a history point.
+- Added a once-per-process startup heartbeat that refreshes a valid cached own-device location only when reporting is enabled, tracking is not paused, and the last successful server update is at least three hours old.
 - Added focused regression coverage for lossless failed-update retention and startup-heartbeat payload and eligibility rules.
 - Updated project metadata for version 3.3.5 build 1.
 

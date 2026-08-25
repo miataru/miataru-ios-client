@@ -34,6 +34,7 @@ actor LocationUpdateDeliveryCoordinator {
     typealias VisitorProcessor = (URL, TimeInterval?, Bool) async -> Void
     typealias FlushObserver = (LocationUpdateOutboxItem, String, Date) async -> Void
     typealias FlushEligibilityProvider = () async -> Bool
+    typealias HistoryEnabledProvider = () async -> Bool
 
     private struct FlushResult {
         let didReachBatchLimit: Bool
@@ -59,6 +60,9 @@ actor LocationUpdateDeliveryCoordinator {
         ),
         flushEligibilityProvider: {
             await MainActor.run { !SettingsManager.shared.isTrackingPaused }
+        },
+        historyEnabledProvider: {
+            await MainActor.run { SettingsManager.shared.saveLocationHistoryOnServer }
         }
     )
 
@@ -70,6 +74,7 @@ actor LocationUpdateDeliveryCoordinator {
     private let visitorProcessor: VisitorProcessor
     private let flushObserver: FlushObserver
     private let flushEligibilityProvider: FlushEligibilityProvider
+    private let historyEnabledProvider: HistoryEnabledProvider?
 
     private var periodicFlushTask: Task<Void, Never>?
     private var deferredFlushTask: Task<Void, Never>?
@@ -90,7 +95,8 @@ actor LocationUpdateDeliveryCoordinator {
         updateSender: UpdateSender? = nil,
         visitorProcessor: VisitorProcessor? = nil,
         flushObserver: FlushObserver? = nil,
-        flushEligibilityProvider: FlushEligibilityProvider? = nil
+        flushEligibilityProvider: FlushEligibilityProvider? = nil,
+        historyEnabledProvider: HistoryEnabledProvider? = nil
     ) {
         self.outboxStore = outboxStore
         self.flushBatchSize = max(1, flushBatchSize)
@@ -120,6 +126,7 @@ actor LocationUpdateDeliveryCoordinator {
             Self.recordFlushedLocationUpdateDiagnostics(item: item, trigger: trigger, flushedAt: flushedAt)
         }
         self.flushEligibilityProvider = flushEligibilityProvider ?? { true }
+        self.historyEnabledProvider = historyEnabledProvider
     }
 
     static func recordFlushedLocationUpdateDiagnostics(
@@ -183,6 +190,7 @@ actor LocationUpdateDeliveryCoordinator {
         guard await flushEligibilityProvider() else {
             return .dropped
         }
+        let effectiveEnableHistory = await effectiveHistoryEnabled(fallback: enableHistory)
 
         if let deliveryDelay, deliveryDelay > 0 {
             let now = Date()
@@ -191,7 +199,7 @@ actor LocationUpdateDeliveryCoordinator {
             await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
-                enableHistory: enableHistory,
+                enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 availableAfter: availableAfter,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
@@ -206,7 +214,7 @@ actor LocationUpdateDeliveryCoordinator {
             await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
-                enableHistory: enableHistory,
+                enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
@@ -221,7 +229,7 @@ actor LocationUpdateDeliveryCoordinator {
             await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
-                enableHistory: enableHistory,
+                enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
@@ -235,7 +243,7 @@ actor LocationUpdateDeliveryCoordinator {
             await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
-                enableHistory: enableHistory,
+                enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
@@ -250,14 +258,14 @@ actor LocationUpdateDeliveryCoordinator {
             id: directSendID,
             serverURL: serverURL,
             payload: payload,
-            enableHistory: enableHistory,
+            enableHistory: effectiveEnableHistory,
             retentionTime: retentionTime,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
             processKnownVisitorAlerts: processKnownVisitorAlerts
         )
 
         do {
-            let success = try await updateSender(serverURL, payload, enableHistory, retentionTime)
+            let success = try await updateSender(serverURL, payload, effectiveEnableHistory, retentionTime)
             return await finishInFlightDirectSend(
                 id: directSendID,
                 result: success ? .sent : .failed(LocationUpdateDeliveryError.serverDidNotAcknowledge)
@@ -481,7 +489,8 @@ actor LocationUpdateDeliveryCoordinator {
             }
 
             do {
-                let success = try await updateSender(serverURL, head.payload, head.enableHistory, head.retentionTime)
+                let effectiveEnableHistory = await effectiveHistoryEnabled(fallback: head.enableHistory)
+                let success = try await updateSender(serverURL, head.payload, effectiveEnableHistory, head.retentionTime)
                 if success {
                     guard await outboxStore.removeHead(matching: head) else {
                         debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed during send; keeping current queue state")
@@ -490,7 +499,9 @@ actor LocationUpdateDeliveryCoordinator {
                     await notifyOutboxDidChange()
                     processedCount += 1
                     await notifyOwnLocationUpdateDidSend()
-                    await flushObserver(head, trigger, Date())
+                    var deliveredItem = head
+                    deliveredItem.enableHistory = effectiveEnableHistory
+                    await flushObserver(deliveredItem, trigger, Date())
                     Task {
                         await visitorProcessor(
                             serverURL,
@@ -530,6 +541,13 @@ actor LocationUpdateDeliveryCoordinator {
             stoppedOnDeliveryFailure: stoppedOnDeliveryFailure,
             hasPendingItems: shouldContinueAfterBatch
         )
+    }
+
+    private func effectiveHistoryEnabled(fallback: Bool) async -> Bool {
+        // History is a current server-side preference, not immutable event metadata. In
+        // particular, replaying a stale false value would erase history created since enqueue.
+        guard let historyEnabledProvider else { return fallback }
+        return await historyEnabledProvider()
     }
 
     private func scheduleFlushSoon(trigger: String) {

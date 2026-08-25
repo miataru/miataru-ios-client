@@ -1104,6 +1104,7 @@ public enum MiataruAPIClient {
     ///   - serverURL: The base URL of the Miataru server.
     ///   - locationData: The location data to be sent to the server.
     ///   - enableHistory: Whether the server should store location history for this device.
+    ///     Per the Miataru protocol, `false` also erases all history already stored for it.
     ///   - retentionTime: The time in minutes for the server to retain this location data.
     /// - Returns: A boolean indicating if the server acknowledged the update.
     /// - Throws: An `APIError` if the request fails.

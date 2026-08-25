@@ -162,6 +162,60 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(cachedLocation.batteryLevel == 12)
     }
 
+    @Test("Startup heartbeat uses the current server-history setting")
+    func startupHeartbeatUsesCurrentServerHistorySetting() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(true), .success(true)])
+        let historyEnabledCoordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            historyEnabledProvider: { true }
+        )
+
+        let enabledResult = await historyEnabledCoordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "heartbeat"),
+            enableHistory: false,
+            retentionTime: 60
+        )
+
+        if case .sent = enabledResult {
+        } else {
+            Issue.record("Expected history-enabled heartbeat submission to be sent")
+        }
+
+        let historyDisabledCoordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            historyEnabledProvider: { false }
+        )
+        let disabledResult = await historyDisabledCoordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "heartbeat-history-disabled"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .sent = disabledResult {
+        } else {
+            Issue.record("Expected history-disabled heartbeat submission to be sent")
+        }
+        #expect(await sender.sentHistorySettings == [true, false])
+    }
+
     @Test("Startup heartbeat requires enabled reporting and a stale server update")
     func startupHeartbeatRequiresEnabledReportingAndStaleServerUpdate() {
         let now = Date(timeIntervalSince1970: 20_000)
@@ -654,6 +708,38 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(records.first?.trigger == "manual")
         #expect(records.first?.enableHistory == false)
         #expect(records.first?.retentionTime == 90)
+    }
+
+    @Test("Flush replaces a stale queued history flag with the current setting")
+    func flushUsesCurrentServerHistorySettingForQueuedUpdate() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "legacy-heartbeat"),
+            enableHistory: false,
+            retentionTime: 90
+        )
+
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            historyEnabledProvider: { true }
+        )
+
+        await coordinator.flushOutboxNow()
+
+        #expect(await sender.sentTimestamps == ["legacy-heartbeat"])
+        #expect(await sender.sentHistorySettings == [true])
+        #expect(await coordinator.pendingOutboxCount() == 0)
     }
 
     @Test("Flush gate blocks automatic sends until server update pause ends")
@@ -1207,6 +1293,7 @@ private actor MockUpdateSender {
     private(set) var callCount: Int = 0
     private(set) var sentTimestamps: [String] = []
     private(set) var sentURLs: [String] = []
+    private(set) var sentHistorySettings: [Bool] = []
     private var outcomes: [Outcome]
 
     init(outcomes: [Outcome]) {
@@ -1219,12 +1306,12 @@ private actor MockUpdateSender {
         enableHistory: Bool,
         retentionTime: Int
     ) async throws -> Bool {
-        _ = enableHistory
         _ = retentionTime
 
         callCount += 1
         sentTimestamps.append(payload.Timestamp)
         sentURLs.append(url.absoluteString)
+        sentHistorySettings.append(enableHistory)
         guard !outcomes.isEmpty else {
             return true
         }

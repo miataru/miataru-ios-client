@@ -17,7 +17,7 @@ struct LocationUpdateOutboxItem: Codable {
     let availableAfter: Date?
     var attemptCount: Int
     let payload: UpdateLocationPayload
-    let enableHistory: Bool
+    var enableHistory: Bool
     let retentionTime: Int
     let visitorCheckMinimumInterval: TimeInterval?
     let processKnownVisitorAlerts: Bool

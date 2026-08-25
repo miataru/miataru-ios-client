@@ -2969,7 +2969,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Server Communication
     @MainActor
-    private func sendLocationToServer(_ location: CLLocation, enableHistoryOverride: Bool? = nil) async {
+    private func sendLocationToServer(_ location: CLLocation) async {
         if settings.isTrackingPaused {
             serverUpdateStatus = .idle
             diagnosticsLog.append(
@@ -3030,7 +3030,7 @@ final class LocationManager: NSObject, ObservableObject {
             serverURL: serverURL,
             deviceID: thisDeviceIDManager.shared.deviceID,
             deviceKey: settings.deviceKey,
-            enableHistory: enableHistoryOverride ?? settings.saveLocationHistoryOnServer,
+            enableHistory: settings.saveLocationHistoryOnServer,
             retentionTime: settings.locationDataRetentionTime,
             deliveryDelay: deliveryDelay,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
@@ -3157,7 +3157,9 @@ final class LocationManager: NSObject, ObservableObject {
         Task { @MainActor [weak self] in
             await Task.yield()
             guard let self else { return }
-            await self.sendLocationToServer(heartbeatLocation, enableHistoryOverride: false)
+            // Miataru treats EnableLocationHistory=false as a command to erase all existing
+            // server history, so a heartbeat must use the same setting as every normal update.
+            await self.sendLocationToServer(heartbeatLocation)
         }
     }
 
