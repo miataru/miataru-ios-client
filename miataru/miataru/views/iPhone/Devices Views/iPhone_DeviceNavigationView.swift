@@ -90,6 +90,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isProgrammaticCameraChange = false
     @State private var isAutoCenteringEnabled = true
     @State private var timerCancellable: AnyCancellable? = nil
+    @State private var liveActivityBackgroundRefreshCancellable: AnyCancellable? = nil
     @State private var deviceTimestamp: Date? = nil
     @State private var userTimestamp: Date? = nil
     @State private var isLoading: Bool = false
@@ -259,6 +260,7 @@ struct iPhone_DeviceNavigationView: View {
         .toolbarBackgroundVisibility(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .id(device.DeviceID)
         .onChange(of: device.DeviceID) {
+            NavigationLiveActivityCoordinator.shared.endNavigation()
             routeCalculationGeneration &+= 1
             routeCalculationTask?.cancel()
             routeCalculationTask = nil
@@ -461,6 +463,7 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 hasAppliedInitialFetchRouteSync = false
                 updateCoordinates(recenter: true)
+                cache.enqueueGeocodingIfNeeded(for: device.DeviceID)
                 updateRouteGhostSnapshot(forceRevision: true)
                 // Record initial distance after coordinates are set
                 recordInitialDistance()
@@ -474,6 +477,14 @@ struct iPhone_DeviceNavigationView: View {
                 mutualNavigationDetector.startMonitoring(targetDeviceId: device.DeviceID, serverURL: settings.miataruServerURL)
                 // Initialize mutual navigation state
                 isMutualNavigation = mutualNavigationDetector.isMutualNavigation
+                liveActivityBackgroundRefreshCancellable = NotificationCenter.default.publisher(
+                    for: .navigationLiveActivityBackgroundRefreshRequested
+                ).sink { _ in
+                    Task { @MainActor in
+                        guard isViewActive else { return }
+                        await runAutoUpdateTick()
+                    }
+                }
             }
             .onReceive(locationManager.$currentLocation) { _ in
                 updateCoordinates()
@@ -513,6 +524,8 @@ struct iPhone_DeviceNavigationView: View {
                 isViewActive = false
                 navigationFeedbackGate.isViewActive = false
                 navigationOverlayCancellables.removeAll()
+                liveActivityBackgroundRefreshCancellable?.cancel()
+                liveActivityBackgroundRefreshCancellable = nil
                 stopAutoUpdate()
                 routeCalculationGeneration &+= 1
                 routeCalculationTask?.cancel()
@@ -528,6 +541,7 @@ struct iPhone_DeviceNavigationView: View {
                 routeInfoState.onCancel = nil
                 // Stop mutual navigation detection
                 mutualNavigationDetector.stopMonitoring()
+                NavigationLiveActivityCoordinator.shared.endNavigation()
                 recordAutomationNavigationEndedIfNeeded(reason: "viewDisappear")
                 endNavigationLocationSessionIfNeeded()
             }
@@ -902,6 +916,7 @@ struct iPhone_DeviceNavigationView: View {
             let coord = CLLocationCoordinate2D(latitude: cached.latitude, longitude: cached.longitude)
             let changed = deviceCoordinate?.latitude != coord.latitude || deviceCoordinate?.longitude != coord.longitude
             deviceCoordinate = coord
+            deviceTimestamp = cached.timestamp
             if changed || animatedDeviceCoordinate == nil {
                 if animationsAllowed {
                     withAnimation { animatedDeviceCoordinate = coord }
@@ -2066,6 +2081,7 @@ struct iPhone_DeviceNavigationView: View {
         navigationOverlayViewModel = nil
         lastOverlayStepIndex = nil
         routeInfoState.hide()
+        NavigationLiveActivityCoordinator.shared.endNavigation()
         stopAutoUpdate()
         showChromeIfNeeded()
         // Disable navigation modes when navigation is stopped
@@ -2133,6 +2149,10 @@ struct iPhone_DeviceNavigationView: View {
         if arrivalTimeText != newArrivalTimeText {
             arrivalTimeText = newArrivalTimeText
         }
+        publishNavigationLiveActivity(
+            distanceMeters: clampedRemainingMeters,
+            remainingTravelTime: remainingSeconds ?? 0
+        )
     }
 
     private func applyStaticRouteSummaryFromCurrentRoute() {
@@ -2144,6 +2164,80 @@ struct iPhone_DeviceNavigationView: View {
         travelTime = formattedDuration(route.expectedTravelTime)
         distanceText = formattedDistance(route.distance)
         arrivalTimeText = formattedArrivalTime(after: route.expectedTravelTime)
+        publishNavigationLiveActivity(
+            distanceMeters: route.distance,
+            remainingTravelTime: route.expectedTravelTime
+        )
+    }
+
+    private func publishNavigationLiveActivity(
+        distanceMeters: CLLocationDistance,
+        remainingTravelTime: TimeInterval
+    ) {
+        guard isViewActive else { return }
+        let transportMode = IntentTransportMode.fromNavigationSetting(effectiveNavigationTransportType)
+        let displayName = TrackedDeviceIntentMetadata.displayName(
+            deviceName: device.DeviceName,
+            deviceID: device.DeviceID
+        )
+        let maneuver = liveActivityManeuver
+        let snapshot = NavigationLiveActivitySnapshot(
+            deviceID: device.DeviceID,
+            deviceDisplayName: displayName,
+            direction: isRouteFromDeviceToUser
+                ? DeviceNavigationRouteDirection.deviceToUser.rawValue
+                : DeviceNavigationRouteDirection.userToDevice.rawValue,
+            transportMode: transportMode.rawValue,
+            transportSymbolName: transportSymbolName(),
+            distanceMeters: max(0, distanceMeters),
+            remainingTravelTime: max(0, remainingTravelTime),
+            ownLocationTimestamp: userTimestamp,
+            remoteLocationTimestamp: deviceTimestamp ?? cache.getLocation(for: device.DeviceID)?.timestamp,
+            lastUpdatedAt: Date(),
+            refreshInterval: Double(settings.mapUpdateInterval),
+            presentationMode: isNavigationMode ? "focused" : "standard",
+            remoteLocationDescription: remoteDeviceLocationDescription,
+            maneuverInstruction: maneuver?.instruction,
+            maneuverSymbolName: maneuver?.symbolName,
+            maneuverDistanceMeters: maneuver?.distanceMeters
+        )
+        NavigationLiveActivityCoordinator.shared.registerOrUpdate(snapshot)
+    }
+
+    private var remoteDeviceLocationDescription: String? {
+        guard let cachedLocation = cache.getLocation(for: device.DeviceID) else { return nil }
+        let locality = cachedLocation.locality?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let country = cachedLocation.country?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let validLocality = locality.flatMap { $0.isEmpty ? nil : $0 }
+        let validCountry = country.flatMap { $0.isEmpty ? nil : $0 }
+
+        switch (validLocality, validCountry) {
+        case let (locality?, country?) where locality.caseInsensitiveCompare(country) != .orderedSame:
+            return "\(locality), \(country)"
+        case let (locality?, _):
+            return locality
+        case let (_, country?):
+            return country
+        default:
+            return nil
+        }
+    }
+
+    private var liveActivityManeuver: (instruction: String, symbolName: String, distanceMeters: Double)? {
+        guard isNavigationMode,
+              !isRouteFromDeviceToUser,
+              let viewModel = navigationOverlayViewModel,
+              let instruction = viewModel.instruction else {
+            return nil
+        }
+        let remainingDistance = viewModel.remainingDistance?.converted(to: .meters).value
+            ?? instruction.distance.converted(to: .meters).value
+        guard remainingDistance.isFinite else { return nil }
+        return (
+            instruction: instruction.text,
+            symbolName: instruction.symbol.systemImageName,
+            distanceMeters: max(0, remainingDistance)
+        )
     }
 
     private func formattedDuration(_ seconds: TimeInterval?) -> String? {

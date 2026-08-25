@@ -73,7 +73,7 @@ final class LocationBackgroundForensicsRecorder {
         state.lastKnownApplicationState = applicationState.rawValue
 
         switch mode {
-        case .backgroundSignificantChange, .backgroundFrequent:
+        case .backgroundSignificantChange, .backgroundNavigation, .backgroundFrequent:
             if state.backgroundTrackingExpectedSince == nil {
                 state.backgroundTrackingExpectedSince = now
             }
@@ -85,7 +85,7 @@ final class LocationBackgroundForensicsRecorder {
 
     func recordServiceAssertion(mode: LocationTrackingPolicy.TrackingMode, now: Date = Date()) {
         switch mode {
-        case .backgroundSignificantChange, .backgroundFrequent:
+        case .backgroundSignificantChange, .backgroundNavigation, .backgroundFrequent:
             state.lastServiceAssertionAt = now
             state.backgroundServicesAsserted = true
         case .foregroundHighAccuracy, .stopped:
@@ -248,6 +248,8 @@ final class LocationBackgroundForensicsRecorder {
             return "foregroundHighAccuracy"
         case .backgroundSignificantChange:
             return "backgroundSignificantChange"
+        case .backgroundNavigation:
+            return "backgroundNavigation"
         case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
             return "backgroundFrequent(distanceFilter: \(distanceFilter), desiredAccuracy: \(desiredAccuracy))"
         }

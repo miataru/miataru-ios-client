@@ -17,6 +17,7 @@ import Network
 /// LocationManager handles high-accuracy foreground tracking and significant-change background tracking.
 final class LocationManager: NSObject, ObservableObject {
     static let shared = LocationManager()
+    static let startupHeartbeatMinimumServerUpdateAge: TimeInterval = 3 * 60 * 60
 
     private static var shouldPreserveEnabledTrackingPreferenceForUITests: Bool {
         let args = ProcessInfo.processInfo.arguments
@@ -81,6 +82,7 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var pendingLocationUpdateCount: Int = 0
     private var pendingAlwaysAuthorizationRequestTask: Task<Void, Never>?
     private var didAttemptAlwaysAuthorizationInCurrentSession = false
+    private var didScheduleStartupHeartbeat = false
     private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
     private var smartFrequentBackgroundSpeedReferenceLocation: CLLocation?
     private var smartFrequentBackgroundMovementAnchor: CLLocation?
@@ -127,6 +129,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
+    private var backgroundNavigationLocationSessionIDs = Set<UUID>()
     
     // MARK: - Init
     override private init() {
@@ -191,6 +194,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        scheduleStartupHeartbeatIfNeeded()
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did become active")
         reconcileTrackingState(
@@ -720,17 +724,21 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @discardableResult
-    func beginNavigationLocationSession() -> UUID {
+    func beginNavigationLocationSession(allowsHighAccuracyBackground: Bool = false) -> UUID {
         let id = UUID()
         navigationLocationSessionIDs.insert(id)
-        debugLog("[LocationManager] beginNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
+        if allowsHighAccuracyBackground {
+            backgroundNavigationLocationSessionIDs.insert(id)
+        }
+        debugLog("[LocationManager] beginNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count), backgroundSessions=\(backgroundNavigationLocationSessionIDs.count)")
         applyTrackingMode(reason: "begin navigation location session")
         return id
     }
 
     func endNavigationLocationSession(_ id: UUID) {
         guard navigationLocationSessionIDs.remove(id) != nil else { return }
-        debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
+        backgroundNavigationLocationSessionIDs.remove(id)
+        debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count), backgroundSessions=\(backgroundNavigationLocationSessionIDs.count)")
         applyTrackingMode(reason: "end navigation location session")
     }
 
@@ -1082,7 +1090,7 @@ final class LocationManager: NSObject, ObservableObject {
             applicationState: state,
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
-            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty,
+            hasNavigationLocationSession: !backgroundNavigationLocationSessionIDs.isEmpty,
             accuracyRecoveryActive: frequentBackgroundAccuracyRecoveryActive
         )
         let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
@@ -1097,7 +1105,8 @@ final class LocationManager: NSObject, ObservableObject {
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             authorizationStatus: status,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
-            trackingPaused: settings.isTrackingPaused
+            trackingPaused: settings.isTrackingPaused,
+            hasNavigationLocationSession: !backgroundNavigationLocationSessionIDs.isEmpty
         )
         let commandPlan = Self.locationServiceCommandPlan(
             for: mode,
@@ -1107,7 +1116,7 @@ final class LocationManager: NSObject, ObservableObject {
             evaluateBackgroundTrackingGap(trigger: reason)
         }
         recordForensicModeResolution(mode: mode, applicationState: state, reason: reason)
-        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
+        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), backgroundNavigationSessions=\(backgroundNavigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
         diagnosticsLog.append(
             level: .info,
             event: "trackingModeResolution",
@@ -1133,7 +1142,8 @@ final class LocationManager: NSObject, ObservableObject {
                 "trackingPauseExpiresAt": settings.trackingPauseExpiresAt.map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("none"),
                 "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
-                "navigationSessions": .integer(navigationLocationSessionIDs.count)
+                "navigationSessions": .integer(navigationLocationSessionIDs.count),
+                "backgroundNavigationSessions": .integer(backgroundNavigationLocationSessionIDs.count)
             ],
             persistence: .immediate
         )
@@ -1165,6 +1175,13 @@ final class LocationManager: NSObject, ObservableObject {
             startHighAccuracyUpdates()
         case .backgroundSignificantChange:
             startSignificantChangeMonitoring()
+        case .backgroundNavigation:
+            let configuration = BackgroundUpdateConfiguration(
+                usesSignificantChangeMonitoring: false,
+                distanceFilter: kCLDistanceFilterNone,
+                desiredAccuracy: kCLLocationAccuracyBestForNavigation
+            )
+            startFrequentBackgroundLocationUpdates(configuration: configuration)
         case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
             let configuration = BackgroundUpdateConfiguration(
                 usesSignificantChangeMonitoring: false,
@@ -2940,7 +2957,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Server Communication
     @MainActor
-    private func sendLocationToServer(_ location: CLLocation) async {
+    private func sendLocationToServer(_ location: CLLocation, enableHistoryOverride: Bool? = nil) async {
         if settings.isTrackingPaused {
             serverUpdateStatus = .idle
             diagnosticsLog.append(
@@ -3001,7 +3018,7 @@ final class LocationManager: NSObject, ObservableObject {
             serverURL: serverURL,
             deviceID: thisDeviceIDManager.shared.deviceID,
             deviceKey: settings.deviceKey,
-            enableHistory: settings.saveLocationHistoryOnServer,
+            enableHistory: enableHistoryOverride ?? settings.saveLocationHistoryOnServer,
             retentionTime: settings.locationDataRetentionTime,
             deliveryDelay: deliveryDelay,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
@@ -3102,6 +3119,73 @@ final class LocationManager: NSObject, ObservableObject {
                 persistence: .immediate
             )
         }
+    }
+
+    private func scheduleStartupHeartbeatIfNeeded() {
+        guard !didScheduleStartupHeartbeat else { return }
+        didScheduleStartupHeartbeat = true
+
+        let heartbeatTimestamp = Date()
+        guard Self.shouldSendStartupHeartbeat(
+                reportingEnabled: settings.trackAndReportLocation,
+                lastServerUpdate: lastServerUpdate,
+                now: heartbeatTimestamp
+              ),
+              !settings.isTrackingPaused,
+              let cachedLocation = DeviceLocationCacheStore.shared.getLocation(
+                for: thisDeviceIDManager.shared.deviceID
+              ),
+              let heartbeatLocation = Self.startupHeartbeatLocation(
+                from: cachedLocation,
+                timestamp: heartbeatTimestamp
+              ) else {
+            return
+        }
+
+        Task { @MainActor [weak self] in
+            await Task.yield()
+            guard let self else { return }
+            await self.sendLocationToServer(heartbeatLocation, enableHistoryOverride: false)
+        }
+    }
+
+    static func shouldSendStartupHeartbeat(
+        reportingEnabled: Bool,
+        lastServerUpdate: Date?,
+        now: Date = Date(),
+        minimumServerUpdateAge: TimeInterval = startupHeartbeatMinimumServerUpdateAge
+    ) -> Bool {
+        guard reportingEnabled else { return false }
+        guard let lastServerUpdate else { return true }
+        return now.timeIntervalSince(lastServerUpdate) >= max(0, minimumServerUpdateAge)
+    }
+
+    static func startupHeartbeatLocation(
+        from cachedLocation: CachedDeviceLocation,
+        timestamp: Date = Date()
+    ) -> CLLocation? {
+        let coordinate = CLLocationCoordinate2D(
+            latitude: cachedLocation.latitude,
+            longitude: cachedLocation.longitude
+        )
+        guard CLLocationCoordinate2DIsValid(coordinate),
+              cachedLocation.accuracy.isFinite,
+              cachedLocation.accuracy >= 0,
+              timestamp.timeIntervalSince1970.isFinite else {
+            return nil
+        }
+
+        let altitude = cachedLocation.altitude.flatMap { $0.isFinite ? $0 : nil }
+        let speed = cachedLocation.speed.flatMap { $0.isFinite && $0 >= 0 ? $0 : nil }
+        return CLLocation(
+            coordinate: coordinate,
+            altitude: altitude ?? 0,
+            horizontalAccuracy: cachedLocation.accuracy,
+            verticalAccuracy: altitude == nil ? -1 : 0,
+            course: -1,
+            speed: speed ?? -1,
+            timestamp: timestamp
+        )
     }
 
     static func apiErrorDiagnosticCategory(_ error: Error) -> String {

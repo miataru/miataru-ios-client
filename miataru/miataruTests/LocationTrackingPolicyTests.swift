@@ -280,7 +280,7 @@ struct LocationTrackingPolicyTests {
             frequentUpdatesEnabled: false,
             distanceFilterMeters: 25,
             hasNavigationLocationSession: true
-        ) == .backgroundSignificantChange)
+        ) == .backgroundNavigation)
 
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: true,
@@ -316,10 +316,7 @@ struct LocationTrackingPolicyTests {
             frequentUpdatesEnabled: true,
             distanceFilterMeters: 10,
             hasNavigationLocationSession: true
-        ) == .backgroundFrequent(
-            distanceFilter: 10,
-            desiredAccuracy: kCLLocationAccuracyNearestTenMeters
-        ))
+        ) == .backgroundNavigation)
 
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: true,
@@ -329,6 +326,23 @@ struct LocationTrackingPolicyTests {
             distanceFilterMeters: 50,
             hasNavigationLocationSession: false
         ) == .backgroundSignificantChange)
+
+        #expect(LocationTrackingPolicy.locationServiceCommandPlan(
+            for: .backgroundNavigation,
+            shouldMaintainRecoveryAnchor: true
+        ) == .init(
+            primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
+            secondary: [
+                .stopMonitoringSignificantLocationChanges,
+                .startUpdatingLocation(
+                    allowsBackground: true,
+                    distanceFilter: kCLDistanceFilterNone,
+                    desiredAccuracy: kCLLocationAccuracyBestForNavigation
+                )
+            ]
+        ))
+
+        #expect(LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: .backgroundNavigation))
     }
 
     @Test("Server update pause keeps local tracking but downgrades frequent background mode")
@@ -370,6 +384,26 @@ struct LocationTrackingPolicyTests {
             deviceKeyAuthBlocked: false,
             trackingPaused: true
         ) == false)
+
+        #expect(LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: true,
+            isTracking: true,
+            frequentUpdatesEnabled: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: true,
+            hasNavigationLocationSession: true
+        ))
+
+        #expect(!LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+            trackAndReportLocation: false,
+            isTracking: false,
+            frequentUpdatesEnabled: false,
+            authorizationStatus: .authorizedAlways,
+            deviceKeyAuthBlocked: false,
+            trackingPaused: false,
+            hasNavigationLocationSession: true
+        ))
 
         #expect(LocationTrackingPolicy.backgroundTrackingDisplayMode(
             applicationState: .background,

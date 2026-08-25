@@ -37,7 +37,7 @@ actor LocationUpdateDeliveryCoordinator {
 
     private struct FlushResult {
         let didReachBatchLimit: Bool
-        let stoppedOnRetryableError: Bool
+        let stoppedOnDeliveryFailure: Bool
         let hasPendingItems: Bool
     }
 
@@ -286,7 +286,7 @@ actor LocationUpdateDeliveryCoordinator {
         while true {
             let result = await flushOutbox(trigger: "manualFull", scheduleContinuation: false, includeDelayedItems: true)
             guard result.didReachBatchLimit,
-                  !result.stoppedOnRetryableError,
+                  !result.stoppedOnDeliveryFailure,
                   result.hasPendingItems else {
                 break
             }
@@ -329,7 +329,7 @@ actor LocationUpdateDeliveryCoordinator {
         while true {
             let result = await flushOutbox(trigger: trigger, scheduleContinuation: false, includeDelayedItems: true)
             guard result.didReachBatchLimit,
-                  !result.stoppedOnRetryableError,
+                  !result.stoppedOnDeliveryFailure,
                   result.hasPendingItems else {
                 break
             }
@@ -346,10 +346,12 @@ actor LocationUpdateDeliveryCoordinator {
         let shouldRestoreToOutbox: Bool
         if replayServerURL != nil {
             shouldRestoreToOutbox = true
-        } else if case .queued = result {
-            shouldRestoreToOutbox = true
-        } else {
+        } else if case .sent = result {
             shouldRestoreToOutbox = false
+        } else if case .dropped = result {
+            shouldRestoreToOutbox = false
+        } else {
+            shouldRestoreToOutbox = true
         }
 
         inFlightDirectSend = nil
@@ -371,10 +373,10 @@ actor LocationUpdateDeliveryCoordinator {
             } else {
                 finalResult = .queued
             }
-        } else if case .queued = result {
+        } else if shouldRestoreToOutbox {
             await enqueueInFlightDirectSendAtFront(completedSend, serverURL: completedSend.serverURL)
             await notifyOutboxDidChange()
-            finalResult = .queued
+            finalResult = result
         } else {
             finalResult = result
         }
@@ -425,7 +427,7 @@ actor LocationUpdateDeliveryCoordinator {
             }
             return FlushResult(
                 didReachBatchLimit: false,
-                stoppedOnRetryableError: true,
+                stoppedOnDeliveryFailure: true,
                 hasPendingItems: pendingCount > 0
             )
         }
@@ -434,7 +436,7 @@ actor LocationUpdateDeliveryCoordinator {
             scheduleFlushSoon(trigger: "\(trigger):coalesced")
             return FlushResult(
                 didReachBatchLimit: false,
-                stoppedOnRetryableError: true,
+                stoppedOnDeliveryFailure: true,
                 hasPendingItems: await outboxStore.count() > 0
             )
         }
@@ -451,7 +453,7 @@ actor LocationUpdateDeliveryCoordinator {
             cancelDeferredFlush()
             return FlushResult(
                 didReachBatchLimit: false,
-                stoppedOnRetryableError: false,
+                stoppedOnDeliveryFailure: false,
                 hasPendingItems: await outboxStore.count() > 0
             )
         }
@@ -459,7 +461,7 @@ actor LocationUpdateDeliveryCoordinator {
         await outboxStore.pruneExpiredEntries()
 
         var processedCount = 0
-        var stoppedOnRetryableError = false
+        var stoppedOnDeliveryFailure = false
         while processedCount < flushBatchSize {
             guard let head = await outboxStore.peekHead() else { break }
             if !includeDelayedItems,
@@ -469,14 +471,13 @@ actor LocationUpdateDeliveryCoordinator {
                 break
             }
             guard let serverURL = URL(string: head.serverURLString) else {
-                debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item with invalid URL: \(head.serverURLString)")
-                guard await outboxStore.removeHead(matching: head) else {
-                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping invalid URL item")
+                guard await outboxStore.incrementHeadAttemptCount(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while retaining invalid URL item")
                     break
                 }
-                await notifyOutboxDidChange()
-                processedCount += 1
-                continue
+                debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped and retained outbox item with invalid URL: \(head.serverURLString)")
+                stoppedOnDeliveryFailure = true
+                break
             }
 
             do {
@@ -500,43 +501,33 @@ actor LocationUpdateDeliveryCoordinator {
                     continue
                 }
 
-                debugLog("[LocationUpdateDeliveryCoordinator] Dropping outbox item because server did not ACK")
-                guard await outboxStore.removeHead(matching: head) else {
-                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping non-ACK item")
+                guard await outboxStore.incrementHeadAttemptCount(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while retaining non-ACK item")
                     break
                 }
-                await notifyOutboxDidChange()
-                processedCount += 1
+                debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped because server did not ACK; retained outbox item")
+                stoppedOnDeliveryFailure = true
+                break
             } catch {
-                if MiataruRetryClassifier.isRetryable(error) {
-                    guard await outboxStore.incrementHeadAttemptCount(matching: head) else {
-                        debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed during retryable error; keeping current queue state")
-                        break
-                    }
-                    debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped (transient head error, trigger=\(trigger)): \(error)")
-                    stoppedOnRetryableError = true
+                guard await outboxStore.incrementHeadAttemptCount(matching: head) else {
+                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed during delivery error; keeping current queue state")
                     break
                 }
-
-                debugLog("[LocationUpdateDeliveryCoordinator] Dropping non-retryable outbox item error: \(error)")
-                guard await outboxStore.removeHead(matching: head) else {
-                    debugLog("[LocationUpdateDeliveryCoordinator] Outbox head changed while dropping non-retryable item")
-                    break
-                }
-                await notifyOutboxDidChange()
-                processedCount += 1
+                debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped and retained outbox item after delivery error (trigger=\(trigger)): \(error)")
+                stoppedOnDeliveryFailure = true
+                break
             }
         }
 
         if processedCount >= flushBatchSize,
-           !stoppedOnRetryableError,
+           !stoppedOnDeliveryFailure,
            !(await outboxStore.isEmpty()) {
             shouldContinueAfterBatch = true
         }
 
         return FlushResult(
             didReachBatchLimit: processedCount >= flushBatchSize,
-            stoppedOnRetryableError: stoppedOnRetryableError,
+            stoppedOnDeliveryFailure: stoppedOnDeliveryFailure,
             hasPendingItems: shouldContinueAfterBatch
         )
     }

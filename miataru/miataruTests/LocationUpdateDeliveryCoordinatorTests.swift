@@ -56,6 +56,139 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 1)
     }
 
+    @Test("Submit queues update after expired TLS certificate failure")
+    func submitQueuesAfterExpiredTLSCertificateFailure() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [
+            .failure(MiataruAPIClient.APIError.requestFailed(URLError(.serverCertificateHasBadDate)))
+        ])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "tls-expired"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .failed = result {
+        } else {
+            Issue.record("Expected expired TLS certificate failure to remain visible while queueing original payload")
+        }
+        #expect(await store.itemsSnapshot().map(\.payload.Timestamp) == ["tls-expired"])
+        #expect(await sender.callCount == 1)
+    }
+
+    @Test("Submit queues update when server does not acknowledge it")
+    func submitQueuesWhenServerDoesNotAcknowledge() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(false)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushBatchSize: 25,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "not-acknowledged"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        if case .failed = result {
+        } else {
+            Issue.record("Expected non-acknowledged update to report failure while remaining queued")
+        }
+        #expect(await store.itemsSnapshot().map(\.payload.Timestamp) == ["not-acknowledged"])
+    }
+
+    @Test("Startup heartbeat preserves cached location and refreshes timestamp and battery")
+    func startupHeartbeatPreservesCachedLocationAndRefreshesMetadata() throws {
+        let cachedTimestamp = Date(timeIntervalSince1970: 1_000)
+        let heartbeatTimestamp = Date(timeIntervalSince1970: 2_000)
+        let cachedLocation = CachedDeviceLocation(
+            deviceID: "heartbeat-device",
+            latitude: 49.860511,
+            longitude: 10.859793,
+            accuracy: 4.7,
+            timestamp: cachedTimestamp,
+            batteryLevel: 12,
+            altitude: 273.2,
+            speed: 12.6
+        )
+
+        let heartbeatLocation = try #require(
+            LocationManager.startupHeartbeatLocation(
+                from: cachedLocation,
+                timestamp: heartbeatTimestamp
+            )
+        )
+        let payload = try #require(
+            LocationUpdateUploadService.payload(
+                from: heartbeatLocation,
+                deviceID: cachedLocation.deviceID,
+                deviceKey: "key",
+                batteryLevel: 0.85
+            )
+        )
+
+        #expect(payload.Latitude == cachedLocation.latitude)
+        #expect(payload.Longitude == cachedLocation.longitude)
+        #expect(payload.HorizontalAccuracy == cachedLocation.accuracy)
+        #expect(payload.Altitude == cachedLocation.altitude)
+        #expect(payload.Speed == cachedLocation.speed)
+        #expect(payload.Timestamp == "2000")
+        #expect(payload.BatteryLevel == 85)
+        #expect(cachedLocation.timestamp == cachedTimestamp)
+        #expect(cachedLocation.batteryLevel == 12)
+    }
+
+    @Test("Startup heartbeat requires enabled reporting and a stale server update")
+    func startupHeartbeatRequiresEnabledReportingAndStaleServerUpdate() {
+        let now = Date(timeIntervalSince1970: 20_000)
+        let minimumAge = LocationManager.startupHeartbeatMinimumServerUpdateAge
+
+        #expect(LocationManager.shouldSendStartupHeartbeat(
+            reportingEnabled: false,
+            lastServerUpdate: nil,
+            now: now
+        ) == false)
+        #expect(LocationManager.shouldSendStartupHeartbeat(
+            reportingEnabled: true,
+            lastServerUpdate: now.addingTimeInterval(-(minimumAge - 1)),
+            now: now
+        ) == false)
+        #expect(LocationManager.shouldSendStartupHeartbeat(
+            reportingEnabled: true,
+            lastServerUpdate: now.addingTimeInterval(-minimumAge),
+            now: now
+        ) == true)
+        #expect(LocationManager.shouldSendStartupHeartbeat(
+            reportingEnabled: true,
+            lastServerUpdate: nil,
+            now: now
+        ) == true)
+    }
+
     @Test("Submit queues update after uncertain decoding failure")
     func submitQueuesAfterDecodingFailure() async throws {
         let tempURL = temporaryOutboxURL()
@@ -775,8 +908,8 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 1)
     }
 
-    @Test("Flush drops non-retryable head and continues with next item")
-    func flushDropsNonRetryableAndContinues() async throws {
+    @Test("Flush retains failed head regardless of retry classification")
+    func flushRetainsFailedHeadRegardlessOfRetryClassification() async throws {
         let tempURL = temporaryOutboxURL()
         defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
 
@@ -801,12 +934,15 @@ struct LocationUpdateDeliveryCoordinatorTests {
 
         await coordinator.flushOutboxNow()
 
-        #expect(await store.count() == 0)
-        #expect(await sender.callCount == 2)
+        let snapshot = await store.itemsSnapshot()
+        #expect(snapshot.map(\.payload.Timestamp) == ["first", "second"])
+        #expect(snapshot[0].attemptCount == 1)
+        #expect(snapshot[1].attemptCount == 0)
+        #expect(await sender.callCount == 1)
     }
 
-    @Test("Submit returns failed for non-retryable error without queueing")
-    func submitFailsWithoutQueueingOnNonRetryableError() async throws {
+    @Test("Submit queues update for non-retryable error")
+    func submitQueuesOnNonRetryableError() async throws {
         let tempURL = temporaryOutboxURL()
         defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
 
@@ -832,19 +968,17 @@ struct LocationUpdateDeliveryCoordinatorTests {
             retentionTime: 60
         )
 
-        switch result {
-        case .failed:
-            break
-        default:
-            Issue.record("Expected failed result")
+        if case .failed = result {
+        } else {
+            Issue.record("Expected non-retryable error to report failure while queueing the update")
         }
 
-        #expect(await store.count() == 0)
+        #expect(await store.count() == 1)
         #expect(await sender.callCount == 1)
     }
 
-    @Test("Submit does not queue clear auth invalid response")
-    func submitDoesNotQueueClearAuthInvalidResponse() async throws {
+    @Test("Submit queues clear auth invalid response")
+    func submitQueuesClearAuthInvalidResponse() async throws {
         let tempURL = temporaryOutboxURL()
         defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
 
@@ -872,10 +1006,10 @@ struct LocationUpdateDeliveryCoordinatorTests {
 
         if case .failed = result {
         } else {
-            Issue.record("Expected clear auth invalid response to fail without queueing")
+            Issue.record("Expected clear auth invalid response to report failure while queueing the update")
         }
 
-        #expect(await store.count() == 0)
+        #expect(await store.count() == 1)
         #expect(await sender.callCount == 1)
     }
 

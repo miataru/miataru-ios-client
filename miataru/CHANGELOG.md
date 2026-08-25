@@ -1,3 +1,28 @@
+version 3.4
+- Added a Navigation Live Activity that starts when an active Miataru navigation moves into the background and shows the target device name, distance, remaining travel time, and arrival time on the Lock Screen and Dynamic Island for both route directions and all supported transport modes.
+- Kept exactly one Live Activity per navigation, reconciled matching activities after relaunch, preserved the activity when returning to the foreground, and ended it on cancellation, arrival, navigation-view exit, or target-device changes.
+- Added idempotent Live Activity deep links that reopen the exact target, route direction, transport mode, and focused navigation presentation without creating a parallel navigation session.
+- Added stale-state indicators and best-effort local background route refreshes that retain the last successful distance and ETA during partial location failures, offline periods, and iOS suspension.
+- Added a privacy-gated high-accuracy background navigation mode for active Live Activities with Always location access, while continuing to respect disabled reporting, DeviceKey blocking, and paused server uploads.
+- Extended focused double-tap navigation Live Activities with the current MapKit turn instruction, maneuver symbol, and remaining distance to the maneuver, including compact Dynamic Island guidance.
+- Added the target device's latest reverse-geocoded locality and country to standard-navigation Live Activities while preserving the last known place during refresh failures.
+- Fixed a Live Activity lifecycle regression that could leave high-frequency background location tracking and the blue system location indicator active after the Activity had been dismissed or ended; without an active navigation, Miataru now immediately returns to its previous Significant-Change, Smart, or explicitly enabled frequent-background policy.
+- Added focused regression coverage for Live Activity lifecycle and deep links plus background-navigation location policy.
+- Updated project metadata for version 3.4 builds 2 through 4.
+
+version 3.3.5
+- Preserved unsuccessful location updates in the FIFO outbox for later retry, including TLS, non-acknowledged server responses, invalid server URLs, and other delivery failures instead of dropping them.
+- Added a once-per-process startup heartbeat that refreshes a valid cached own-device location only when reporting is enabled, tracking is not paused, and the last successful server update is at least three hours old; heartbeat uploads do not add a history point.
+- Added focused regression coverage for lossless failed-update retention and startup-heartbeat payload and eligibility rules.
+- Updated project metadata for version 3.3.5 build 1.
+
+version 3.3.4
+- Fixed selected-device map centering on iPhone and iPad during initial presentation, cold-start restoration, and return to the active scene by reapplying the configured camera position after MapKit attaches its camera binding.
+- Updated project metadata for version 3.3.4 builds 1 and 2.
+
+version 3.3.3
+- Published the 3.3.2 codebase as version 3.3.3 build 1 with no functional changes beyond release metadata.
+
 version 3.3.2
 - Prevented hung `UpdateLocation` requests from blocking later Core Location samples by treating an in-flight direct upload as the logical queue head and immediately queueing subsequent submissions behind it.
 - Preserved FIFO delivery when an in-flight direct upload fails retryably by restoring the original payload to the front of the outbox before later queued updates.

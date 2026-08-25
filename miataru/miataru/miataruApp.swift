@@ -328,6 +328,7 @@ struct miataruApp: App {
         WidgetDataSyncCoordinator.syncAllDevices()
         Task { @MainActor in
             PersistentDataCleanup.run()
+            await NavigationLiveActivityCoordinator.shared.reconcileAtLaunch()
         }
         // Runtime toggle changes remain controlled by LocationManager.observeSettings().
         
@@ -420,8 +421,12 @@ struct miataruApp: App {
             case .active:
                 WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
                 LocationManager.shared.appDidEnterForeground()
+                NavigationLiveActivityCoordinator.shared.sceneDidBecomeActive()
+            case .inactive:
+                NavigationLiveActivityCoordinator.shared.sceneWillResignActive()
             case .background:
                 LocationManager.shared.appDidEnterBackground()
+                NavigationLiveActivityCoordinator.shared.sceneDidEnterBackground()
             default:
                 break
             }
@@ -436,6 +441,16 @@ struct miataruApp: App {
 
     private func handleIncomingURL(_ url: URL) {
         guard let destination = DeviceLinkResolver.destination(from: url) else { return }
+
+        if case .navigation(let deviceID, let options) = destination,
+           NavigationLiveActivityCoordinator.shared.matchesActiveNavigation(
+               deviceID: deviceID,
+               direction: options.direction.rawValue,
+               transportMode: options.transportMode?.rawValue
+           ) {
+            appNavigation.openDevices()
+            return
+        }
 
         Task { @MainActor in
             // When resuming from background, SwiftUI may restore navigation state after the URL

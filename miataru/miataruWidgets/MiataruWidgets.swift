@@ -16,6 +16,6 @@ struct MiataruWidgets: WidgetBundle {
     var body: some Widget {
         DeviceLocationTextWidget()
         DeviceLocationMapWidget()
+        NavigationLiveActivityWidget()
     }
 }
-
