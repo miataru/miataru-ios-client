@@ -186,13 +186,7 @@ extension Notification.Name {
 final class NavigationLiveActivityCoordinator {
     static let shared = NavigationLiveActivityCoordinator(
         client: ActivityKitNavigationLiveActivityClient(),
-        defaults: UserDefaults(suiteName: "group.com.miataru.ios") ?? .standard,
-        beginNavigationLocationSession: {
-            LocationManager.shared.beginNavigationLocationSession(allowsHighAccuracyBackground: true)
-        },
-        endNavigationLocationSession: { sessionID in
-            LocationManager.shared.endNavigationLocationSession(sessionID)
-        }
+        defaults: UserDefaults(suiteName: "group.com.miataru.ios") ?? .standard
     )
 
     private static let persistedSnapshotKey = "navigationLiveActivitySnapshot"
@@ -200,12 +194,9 @@ final class NavigationLiveActivityCoordinator {
     private let client: NavigationLiveActivityClient
     private let defaults: UserDefaults
     private let now: () -> Date
-    private let beginNavigationLocationSession: () -> UUID
-    private let endNavigationLocationSession: (UUID) -> Void
 
     private(set) var currentSnapshot: NavigationLiveActivitySnapshot?
     private(set) var activityID: String?
-    private var navigationLocationSessionID: UUID?
     private var lastActivityUpdateAt: Date?
     private var lastPersistedAt: Date?
     private var isStartingActivity = false
@@ -216,26 +207,14 @@ final class NavigationLiveActivityCoordinator {
     private var sceneIsBackground = false
     private var activityHasBeenBackgrounded = false
 
-    var requiresHighAccuracyBackgroundLocation: Bool {
-        hasLiveViewRegistration &&
-        currentSnapshot != nil &&
-        !activityUnavailableForCurrentNavigation &&
-        client.areActivitiesEnabled &&
-        (activityID != nil || isStartingActivity)
-    }
-
     init(
         client: NavigationLiveActivityClient,
         defaults: UserDefaults,
-        now: @escaping () -> Date = Date.init,
-        beginNavigationLocationSession: @escaping () -> UUID,
-        endNavigationLocationSession: @escaping (UUID) -> Void
+        now: @escaping () -> Date = Date.init
     ) {
         self.client = client
         self.defaults = defaults
         self.now = now
-        self.beginNavigationLocationSession = beginNavigationLocationSession
-        self.endNavigationLocationSession = endNavigationLocationSession
         currentSnapshot = Self.loadPersistedSnapshot(from: defaults)
     }
 
@@ -275,11 +254,7 @@ final class NavigationLiveActivityCoordinator {
         guard hasLiveViewRegistration, let currentSnapshot else { return }
         sceneIsPreparingForBackground = true
         persistIfNeeded(currentSnapshot, force: true)
-        if activityID != nil {
-            beginNavigationLocationSessionIfNeeded()
-        } else {
-            startActivityIfNeeded()
-        }
+        startActivityIfNeeded()
     }
 
     func sceneDidEnterBackground() {
@@ -290,11 +265,7 @@ final class NavigationLiveActivityCoordinator {
             return
         }
         activityHasBeenBackgrounded = true
-        if activityID != nil {
-            beginNavigationLocationSessionIfNeeded()
-        } else {
-            startActivityIfNeeded()
-        }
+        startActivityIfNeeded()
         NotificationCenter.default.post(name: .navigationLiveActivityBackgroundRefreshRequested, object: nil)
     }
 
@@ -346,7 +317,6 @@ final class NavigationLiveActivityCoordinator {
             activityID = nil
             currentSnapshot = nil
             defaults.removeObject(forKey: Self.persistedSnapshotKey)
-            endNavigationLocationSessionIfNeeded()
             return
         }
 
@@ -391,7 +361,6 @@ final class NavigationLiveActivityCoordinator {
                 }
                 activityID = newActivityID
                 lastActivityUpdateAt = requestDate
-                beginNavigationLocationSessionIfNeeded()
                 observeLifecycle(of: newActivityID)
             } catch {
                 debugLog("[NavigationLiveActivityCoordinator] Failed to start Live Activity: \(error)")
@@ -424,7 +393,6 @@ final class NavigationLiveActivityCoordinator {
             self.activityUnavailableForCurrentNavigation = true
             self.activityLifecycleObservationTask?.cancel()
             self.activityLifecycleObservationTask = nil
-            self.endNavigationLocationSessionIfNeeded()
         }
     }
 
@@ -435,7 +403,6 @@ final class NavigationLiveActivityCoordinator {
         activityLifecycleObservationTask = nil
         lastActivityUpdateAt = nil
         activityHasBeenBackgrounded = false
-        endNavigationLocationSessionIfNeeded()
 
         guard let endedActivityID else { return }
         let endDate = now()
@@ -444,11 +411,6 @@ final class NavigationLiveActivityCoordinator {
             guard let self else { return }
             await client.end(id: endedActivityID, presentation: presentation)
         }
-    }
-
-    private func beginNavigationLocationSessionIfNeeded() {
-        guard navigationLocationSessionID == nil else { return }
-        navigationLocationSessionID = beginNavigationLocationSession()
     }
 
     private func observeLifecycle(of observedActivityID: String) {
@@ -466,16 +428,9 @@ final class NavigationLiveActivityCoordinator {
                 activityHasBeenBackgrounded = false
                 activityUnavailableForCurrentNavigation = true
                 activityLifecycleObservationTask = nil
-                endNavigationLocationSessionIfNeeded()
                 break
             }
         }
-    }
-
-    private func endNavigationLocationSessionIfNeeded() {
-        guard let navigationLocationSessionID else { return }
-        endNavigationLocationSession(navigationLocationSessionID)
-        self.navigationLocationSessionID = nil
     }
 
     private func persistIfNeeded(_ snapshot: NavigationLiveActivitySnapshot, force: Bool) {

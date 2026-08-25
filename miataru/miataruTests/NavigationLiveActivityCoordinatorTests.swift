@@ -18,7 +18,6 @@ struct NavigationLiveActivityCoordinatorTests {
         harness.coordinator.sceneWillResignActive()
         await settle()
         #expect(harness.client.requests.count == 1)
-        #expect(harness.locationSessions.begun == 1)
 
         harness.coordinator.sceneDidEnterBackground()
         harness.coordinator.sceneDidBecomeActive()
@@ -32,11 +31,10 @@ struct NavigationLiveActivityCoordinatorTests {
         harness.coordinator.endNavigation()
         await settle()
         #expect(harness.client.endedIDs == ["activity-1"])
-        #expect(harness.locationSessions.ended == 1)
     }
 
-    @Test("System-ended activity releases its background location session")
-    func systemEndedActivityReleasesLocationSession() async {
+    @Test("System-ended activity clears its coordinator binding")
+    func systemEndedActivityClearsCoordinatorBinding() async {
         let harness = makeHarness()
         harness.coordinator.registerOrUpdate(snapshot())
         harness.coordinator.sceneWillResignActive()
@@ -47,22 +45,19 @@ struct NavigationLiveActivityCoordinatorTests {
         harness.coordinator.sceneDidBecomeActive()
         await settle()
         #expect(harness.coordinator.activityID == nil)
-        #expect(harness.locationSessions.ended == 1)
     }
 
-    @Test("Dismissed activity immediately releases background location and is not recreated")
-    func dismissedActivityImmediatelyReleasesBackgroundLocation() async {
+    @Test("Dismissed activity is not recreated")
+    func dismissedActivityIsNotRecreated() async {
         let harness = makeHarness()
         harness.coordinator.registerOrUpdate(snapshot())
         harness.coordinator.sceneWillResignActive()
         await settle()
         harness.coordinator.sceneDidEnterBackground()
-        #expect(harness.locationSessions.begun == 1)
 
         harness.client.sendLifecycle(.inactive, for: "activity-1")
         await settle()
         #expect(harness.coordinator.activityID == nil)
-        #expect(harness.locationSessions.ended == 1)
 
         harness.coordinator.sceneDidBecomeActive()
         harness.coordinator.sceneWillResignActive()
@@ -82,7 +77,6 @@ struct NavigationLiveActivityCoordinatorTests {
         await settle()
         #expect(harness.client.endedIDs == ["activity-1"])
         #expect(harness.coordinator.currentSnapshot != nil)
-        #expect(harness.locationSessions.ended == 1)
     }
 
     @Test("No route and disabled ActivityKit never start a Live Activity")
@@ -223,31 +217,25 @@ struct NavigationLiveActivityCoordinatorTests {
                 attributes: NavigationLiveActivityAttributes(deviceID: "ORPHAN", deviceDisplayName: "Orphan")
             )
         ]
-        let sessions = LocationSessionSpy()
-        let coordinator = makeCoordinator(client: client, defaults: defaults, sessions: sessions)
+        let coordinator = makeCoordinator(client: client, defaults: defaults)
 
         await coordinator.reconcileAtLaunch()
         await settle()
         #expect(coordinator.activityID == "matching")
         #expect(client.endedIDs == ["orphan"])
-        #expect(sessions.begun == 0)
-        #expect(!coordinator.requiresHighAccuracyBackgroundLocation)
 
         coordinator.registerOrUpdate(storedSnapshot)
         coordinator.sceneWillResignActive()
-        #expect(sessions.begun == 1)
-        #expect(coordinator.requiresHighAccuracyBackgroundLocation)
     }
 
-    @Test("A restored Activity without an open navigation cannot retain background location")
-    func restoredActivityWithoutLiveNavigationReleasesBackgroundLocation() async {
+    @Test("A restored Activity without an open navigation is ended on backgrounding")
+    func restoredActivityWithoutLiveNavigationEndsOnBackgrounding() async {
         let defaults = isolatedDefaults()
         let storedSnapshot = snapshot()
         defaults.set(try? JSONEncoder().encode(storedSnapshot), forKey: "navigationLiveActivitySnapshot")
         let client = FakeNavigationLiveActivityClient()
         client.records = [NavigationLiveActivityRecord(id: "matching", attributes: storedSnapshot.attributes)]
-        let sessions = LocationSessionSpy()
-        let coordinator = makeCoordinator(client: client, defaults: defaults, sessions: sessions)
+        let coordinator = makeCoordinator(client: client, defaults: defaults)
 
         await coordinator.reconcileAtLaunch()
         coordinator.sceneWillResignActive()
@@ -257,8 +245,6 @@ struct NavigationLiveActivityCoordinatorTests {
         #expect(client.endedIDs == ["matching"])
         #expect(coordinator.activityID == nil)
         #expect(coordinator.currentSnapshot == nil)
-        #expect(sessions.begun == 0)
-        #expect(!coordinator.requiresHighAccuracyBackgroundLocation)
     }
 
     private func makeHarness(
@@ -268,37 +254,26 @@ struct NavigationLiveActivityCoordinatorTests {
         let client = FakeNavigationLiveActivityClient()
         client.areActivitiesEnabled = activitiesEnabled
         let defaults = isolatedDefaults()
-        let sessions = LocationSessionSpy()
         let coordinator = makeCoordinator(
             client: client,
             defaults: defaults,
-            sessions: sessions,
             now: now
         )
         return TestHarness(
             coordinator: coordinator,
-            client: client,
-            locationSessions: sessions
+            client: client
         )
     }
 
     private func makeCoordinator(
         client: FakeNavigationLiveActivityClient,
         defaults: UserDefaults,
-        sessions: LocationSessionSpy,
         now: @escaping () -> Date = Date.init
     ) -> NavigationLiveActivityCoordinator {
         NavigationLiveActivityCoordinator(
             client: client,
             defaults: defaults,
-            now: now,
-            beginNavigationLocationSession: {
-                sessions.begun += 1
-                return UUID()
-            },
-            endNavigationLocationSession: { _ in
-                sessions.ended += 1
-            }
+            now: now
         )
     }
 
@@ -410,12 +385,6 @@ private final class FakeNavigationLiveActivityClient: NavigationLiveActivityClie
     }
 }
 
-@MainActor
-private final class LocationSessionSpy {
-    var begun = 0
-    var ended = 0
-}
-
 private final class TestClock {
     var now: Date
 
@@ -428,5 +397,4 @@ private final class TestClock {
 private struct TestHarness {
     let coordinator: NavigationLiveActivityCoordinator
     let client: FakeNavigationLiveActivityClient
-    let locationSessions: LocationSessionSpy
 }

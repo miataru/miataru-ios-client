@@ -575,16 +575,14 @@ extension LocationManager {
                                                                 frequentUpdatesEnabled: Bool,
                                                                 authorizationStatus: CLAuthorizationStatus,
                                                                 deviceKeyAuthBlocked: Bool,
-                                                                trackingPaused: Bool = false,
-                                                                hasNavigationLocationSession: Bool = false) -> Bool {
+                                                                trackingPaused: Bool = false) -> Bool {
         LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: trackAndReportLocation,
             isTracking: isTracking,
             frequentUpdatesEnabled: frequentUpdatesEnabled,
             authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked,
-            trackingPaused: trackingPaused,
-            hasNavigationLocationSession: hasNavigationLocationSession
+            trackingPaused: trackingPaused
         )
     }
 

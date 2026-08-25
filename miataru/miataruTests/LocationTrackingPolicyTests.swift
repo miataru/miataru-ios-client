@@ -235,8 +235,8 @@ struct LocationTrackingPolicyTests {
         #expect(timedOut.shouldStopRecovery)
     }
 
-    @Test("Location tracking mode resolver keeps foreground, navigation, and background policies distinct")
-    func locationTrackingModeResolverKeepsForegroundNavigationAndBackgroundPoliciesDistinct() {
+    @Test("Navigation never overrides the existing background tracking policy")
+    func navigationNeverOverridesExistingBackgroundTrackingPolicy() {
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: false,
             authorizationStatus: .authorizedAlways,
@@ -280,7 +280,7 @@ struct LocationTrackingPolicyTests {
             frequentUpdatesEnabled: false,
             distanceFilterMeters: 25,
             hasNavigationLocationSession: true
-        ) == .backgroundNavigation)
+        ) == .backgroundSignificantChange)
 
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: true,
@@ -309,14 +309,20 @@ struct LocationTrackingPolicyTests {
             hasNavigationLocationSession: false
         ) == .backgroundFrequent(distanceFilter: 50, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
 
+        let smartFrequentEnabled = LocationTrackingPolicy.effectiveFrequentBackgroundUpdatesEnabled(
+            manualFrequentEnabled: false,
+            smartEnabled: true,
+            smartRuntimeActive: true
+        )
+        #expect(smartFrequentEnabled)
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: true,
             authorizationStatus: .authorizedAlways,
             applicationState: .background,
-            frequentUpdatesEnabled: true,
+            frequentUpdatesEnabled: smartFrequentEnabled,
             distanceFilterMeters: 10,
             hasNavigationLocationSession: true
-        ) == .backgroundNavigation)
+        ) == .backgroundFrequent(distanceFilter: 10, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
 
         #expect(LocationTrackingPolicy.resolvedTrackingMode(
             isTracking: true,
@@ -327,22 +333,7 @@ struct LocationTrackingPolicyTests {
             hasNavigationLocationSession: false
         ) == .backgroundSignificantChange)
 
-        #expect(LocationTrackingPolicy.locationServiceCommandPlan(
-            for: .backgroundNavigation,
-            shouldMaintainRecoveryAnchor: true
-        ) == .init(
-            primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
-            secondary: [
-                .stopMonitoringSignificantLocationChanges,
-                .startUpdatingLocation(
-                    allowsBackground: true,
-                    distanceFilter: kCLDistanceFilterNone,
-                    desiredAccuracy: kCLLocationAccuracyBestForNavigation
-                )
-            ]
-        ))
-
-        #expect(LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: .backgroundNavigation))
+        #expect(!LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: .backgroundSignificantChange))
     }
 
     @Test("Ending background navigation restores Significant-Change tracking")
@@ -407,14 +398,13 @@ struct LocationTrackingPolicyTests {
             trackingPaused: true
         ) == false)
 
-        #expect(LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
+        #expect(!LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
             trackAndReportLocation: true,
             isTracking: true,
             frequentUpdatesEnabled: false,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false,
-            trackingPaused: true,
-            hasNavigationLocationSession: true
+            trackingPaused: true
         ))
 
         #expect(!LocationTrackingPolicy.shouldMaintainFrequentBackgroundActivitySession(
@@ -423,8 +413,7 @@ struct LocationTrackingPolicyTests {
             frequentUpdatesEnabled: false,
             authorizationStatus: .authorizedAlways,
             deviceKeyAuthBlocked: false,
-            trackingPaused: false,
-            hasNavigationLocationSession: true
+            trackingPaused: false
         ))
 
         #expect(LocationTrackingPolicy.backgroundTrackingDisplayMode(

@@ -129,7 +129,6 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private var navigationLocationSessionIDs = Set<UUID>()
-    private var backgroundNavigationLocationSessionIDs = Set<UUID>()
     
     // MARK: - Init
     override private init() {
@@ -724,21 +723,17 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @discardableResult
-    func beginNavigationLocationSession(allowsHighAccuracyBackground: Bool = false) -> UUID {
+    func beginNavigationLocationSession() -> UUID {
         let id = UUID()
         navigationLocationSessionIDs.insert(id)
-        if allowsHighAccuracyBackground {
-            backgroundNavigationLocationSessionIDs.insert(id)
-        }
-        debugLog("[LocationManager] beginNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count), backgroundSessions=\(backgroundNavigationLocationSessionIDs.count)")
+        debugLog("[LocationManager] beginNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
         applyTrackingMode(reason: "begin navigation location session")
         return id
     }
 
     func endNavigationLocationSession(_ id: UUID) {
         guard navigationLocationSessionIDs.remove(id) != nil else { return }
-        backgroundNavigationLocationSessionIDs.remove(id)
-        debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count), backgroundSessions=\(backgroundNavigationLocationSessionIDs.count)")
+        debugLog("[LocationManager] endNavigationLocationSession id=\(id), activeSessions=\(navigationLocationSessionIDs.count)")
         applyTrackingMode(reason: "end navigation location session")
     }
 
@@ -1090,7 +1085,7 @@ final class LocationManager: NSObject, ObservableObject {
             applicationState: state,
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
-            hasNavigationLocationSession: !backgroundNavigationLocationSessionIDs.isEmpty,
+            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty,
             accuracyRecoveryActive: frequentBackgroundAccuracyRecoveryActive
         )
         let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
@@ -1105,8 +1100,7 @@ final class LocationManager: NSObject, ObservableObject {
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
             authorizationStatus: status,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
-            trackingPaused: settings.isTrackingPaused,
-            hasNavigationLocationSession: !backgroundNavigationLocationSessionIDs.isEmpty
+            trackingPaused: settings.isTrackingPaused
         )
         let commandPlan = Self.locationServiceCommandPlan(
             for: mode,
@@ -1116,7 +1110,7 @@ final class LocationManager: NSObject, ObservableObject {
             evaluateBackgroundTrackingGap(trigger: reason)
         }
         recordForensicModeResolution(mode: mode, applicationState: state, reason: reason)
-        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), backgroundNavigationSessions=\(backgroundNavigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
+        debugLog("[LocationManager] applyTrackingMode reason=\(reason), context=\(applicationStateContext), state=\(state.rawValue), status=\(status.rawValue), isTracking=\(isTracking), navigationSessions=\(navigationLocationSessionIDs.count), manualFrequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), smartEnabled=\(settings.smartFrequentBackgroundLocationUpdatesEnabled), smartRuntimeActive=\(smartFrequentBackgroundRuntimeActive), effectiveFrequent=\(effectiveFrequentBackgroundUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), primaryRecoveryAnchorActive=\(isSignificantChangeRecoveryAnchorActive), mode=\(mode), commandPlan=\(commandPlan)")
         diagnosticsLog.append(
             level: .info,
             event: "trackingModeResolution",
@@ -1142,8 +1136,7 @@ final class LocationManager: NSObject, ObservableObject {
                 "trackingPauseExpiresAt": settings.trackingPauseExpiresAt.map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("none"),
                 "accuracyRecoveryActive": .bool(frequentBackgroundAccuracyRecoveryActive),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive),
-                "navigationSessions": .integer(navigationLocationSessionIDs.count),
-                "backgroundNavigationSessions": .integer(backgroundNavigationLocationSessionIDs.count)
+                "navigationSessions": .integer(navigationLocationSessionIDs.count)
             ],
             persistence: .immediate
         )
@@ -1175,13 +1168,6 @@ final class LocationManager: NSObject, ObservableObject {
             startHighAccuracyUpdates()
         case .backgroundSignificantChange:
             startSignificantChangeMonitoring()
-        case .backgroundNavigation:
-            let configuration = BackgroundUpdateConfiguration(
-                usesSignificantChangeMonitoring: false,
-                distanceFilter: kCLDistanceFilterNone,
-                desiredAccuracy: kCLLocationAccuracyBestForNavigation
-            )
-            startFrequentBackgroundLocationUpdates(configuration: configuration)
         case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
             let configuration = BackgroundUpdateConfiguration(
                 usesSignificantChangeMonitoring: false,
@@ -3313,14 +3299,8 @@ final class LocationManager: NSObject, ObservableObject {
         recordLocationTrackingHealthReminderActivity(reason: "app did enter foreground")
     }
 
-    func appDidEnterBackground(hasActiveLiveActivityNavigation: Bool = false) {
-        if !hasActiveLiveActivityNavigation, !backgroundNavigationLocationSessionIDs.isEmpty {
-            let staleBackgroundSessionIDs = backgroundNavigationLocationSessionIDs
-            backgroundNavigationLocationSessionIDs.removeAll()
-            navigationLocationSessionIDs.subtract(staleBackgroundSessionIDs)
-            debugLog("[LocationManager] Cleared \(staleBackgroundSessionIDs.count) stale background navigation location session(s)")
-        }
-        debugLog("[LocationManager] App did enter background, activeLiveActivityNavigation=\(hasActiveLiveActivityNavigation)")
+    func appDidEnterBackground() {
+        debugLog("[LocationManager] App did enter background")
         reconcileTrackingState(reason: "app did enter background", applicationStateContext: .forceBackground)
     }
 

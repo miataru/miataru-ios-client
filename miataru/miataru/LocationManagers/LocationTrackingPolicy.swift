@@ -34,7 +34,6 @@ enum LocationTrackingPolicy {
         case stopped
         case foregroundHighAccuracy
         case backgroundSignificantChange
-        case backgroundNavigation
         case backgroundFrequent(distanceFilter: CLLocationDistance, desiredAccuracy: CLLocationAccuracy)
     }
 
@@ -146,9 +145,6 @@ enum LocationTrackingPolicy {
         if case .backgroundFrequent = mode {
             return true
         }
-        if case .backgroundNavigation = mode {
-            return true
-        }
         return false
     }
 
@@ -239,10 +235,6 @@ enum LocationTrackingPolicy {
                 return .foregroundHighAccuracy
             }
             return .foregroundHighAccuracy
-        }
-
-        if hasNavigationLocationSession {
-            return .backgroundNavigation
         }
 
         let configuration = backgroundUpdateConfiguration(
@@ -373,14 +365,13 @@ enum LocationTrackingPolicy {
                                                                 frequentUpdatesEnabled: Bool,
                                                                 authorizationStatus: CLAuthorizationStatus,
                                                                 deviceKeyAuthBlocked: Bool,
-                                                                trackingPaused: Bool = false,
-                                                                hasNavigationLocationSession: Bool = false) -> Bool {
+                                                                trackingPaused: Bool = false) -> Bool {
         trackAndReportLocation &&
         isTracking &&
-        (frequentUpdatesEnabled || hasNavigationLocationSession) &&
+        frequentUpdatesEnabled &&
         authorizationStatus == .authorizedAlways &&
         !deviceKeyAuthBlocked &&
-        (!trackingPaused || hasNavigationLocationSession)
+        !trackingPaused
     }
 
     static func shouldRequestFrequentBackgroundOneShotLocation(isTracking: Bool,
@@ -425,21 +416,6 @@ enum LocationTrackingPolicy {
             return ServiceCommandPlan(
                 primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
                 secondary: secondaryStopCommands
-            )
-        case .backgroundNavigation:
-            return ServiceCommandPlan(
-                primary: [
-                    .stopUpdatingLocation,
-                    shouldMaintainRecoveryAnchor ? .startMonitoringSignificantLocationChanges : .stopMonitoringSignificantLocationChanges
-                ],
-                secondary: [
-                    .stopMonitoringSignificantLocationChanges,
-                    .startUpdatingLocation(
-                        allowsBackground: true,
-                        distanceFilter: kCLDistanceFilterNone,
-                        desiredAccuracy: kCLLocationAccuracyBestForNavigation
-                    )
-                ]
             )
         case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
             return ServiceCommandPlan(

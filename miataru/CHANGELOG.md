@@ -3,13 +3,12 @@ version 3.4
 - Kept exactly one Live Activity per navigation, reconciled matching activities after relaunch, preserved the activity when returning to the foreground, and ended it on cancellation, arrival, navigation-view exit, or target-device changes.
 - Added idempotent Live Activity deep links that reopen the exact target, route direction, transport mode, and focused navigation presentation without creating a parallel navigation session.
 - Added stale-state indicators and best-effort local background route refreshes that retain the last successful distance and ETA during partial location failures, offline periods, and iOS suspension.
-- Added a privacy-gated high-accuracy background navigation mode for active Live Activities with Always location access, while continuing to respect disabled reporting, DeviceKey blocking, and paused server uploads.
+- Kept the established Core Location background policy unchanged while a Live Activity is running: Significant-Change remains the standard mode, and Smart or manually enabled frequent updates retain their existing activation, cadence, recovery, and privacy behavior.
 - Extended focused double-tap navigation Live Activities with the current MapKit turn instruction, maneuver symbol, and remaining distance to the maneuver, including compact Dynamic Island guidance.
 - Added the target device's latest reverse-geocoded locality and country to standard-navigation Live Activities while preserving the last known place during refresh failures.
-- Fixed a Live Activity lifecycle regression that could leave high-frequency background location tracking and the blue system location indicator active after the Activity had been dismissed or ended; without an active navigation, Miataru now immediately returns to its previous Significant-Change, Smart, or explicitly enabled frequent-background policy.
-- Fixed restored or stale Live Activities acquiring the navigation location override without an open navigation view, and added a hard background transition cleanup so orphaned navigation sessions cannot keep the blue system location indicator active.
-- Added focused regression coverage for Live Activity lifecycle and deep links plus background-navigation location policy.
-- Updated project metadata for version 3.4 builds 2 through 5.
+- Removed the Live Activity's navigation-specific high-frequency Core Location override and background activity session so it cannot suppress Smart frequent activation, interfere with Significant-Change tracking, or leave a navigation-owned blue location indicator active.
+- Added focused regression coverage proving that an active navigation does not override Significant-Change or Smart/manual frequent background tracking, alongside Live Activity lifecycle and deep-link coverage.
+- Updated project metadata for version 3.4 builds 2 through 6.
 
 version 3.3.5
 - Preserved unsuccessful location updates in the FIFO outbox for later retry, including TLS, non-acknowledged server responses, invalid server URLs, and other delivery failures instead of dropping them.
