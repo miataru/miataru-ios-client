@@ -425,8 +425,10 @@ struct miataruApp: App {
             case .inactive:
                 NavigationLiveActivityCoordinator.shared.sceneWillResignActive()
             case .background:
-                LocationManager.shared.appDidEnterBackground()
                 NavigationLiveActivityCoordinator.shared.sceneDidEnterBackground()
+                LocationManager.shared.appDidEnterBackground(
+                    hasActiveLiveActivityNavigation: NavigationLiveActivityCoordinator.shared.requiresHighAccuracyBackgroundLocation
+                )
             default:
                 break
             }

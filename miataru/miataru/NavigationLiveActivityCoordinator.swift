@@ -216,6 +216,14 @@ final class NavigationLiveActivityCoordinator {
     private var sceneIsBackground = false
     private var activityHasBeenBackgrounded = false
 
+    var requiresHighAccuracyBackgroundLocation: Bool {
+        hasLiveViewRegistration &&
+        currentSnapshot != nil &&
+        !activityUnavailableForCurrentNavigation &&
+        client.areActivitiesEnabled &&
+        (activityID != nil || isStartingActivity)
+    }
+
     init(
         client: NavigationLiveActivityClient,
         defaults: UserDefaults,
@@ -264,17 +272,29 @@ final class NavigationLiveActivityCoordinator {
     }
 
     func sceneWillResignActive() {
-        guard let currentSnapshot else { return }
+        guard hasLiveViewRegistration, let currentSnapshot else { return }
         sceneIsPreparingForBackground = true
         persistIfNeeded(currentSnapshot, force: true)
-        startActivityIfNeeded()
+        if activityID != nil {
+            beginNavigationLocationSessionIfNeeded()
+        } else {
+            startActivityIfNeeded()
+        }
     }
 
     func sceneDidEnterBackground() {
         sceneIsPreparingForBackground = false
         sceneIsBackground = true
+        guard hasLiveViewRegistration, currentSnapshot != nil else {
+            endNavigation()
+            return
+        }
         activityHasBeenBackgrounded = true
-        startActivityIfNeeded()
+        if activityID != nil {
+            beginNavigationLocationSessionIfNeeded()
+        } else {
+            startActivityIfNeeded()
+        }
         NotificationCenter.default.post(name: .navigationLiveActivityBackgroundRefreshRequested, object: nil)
     }
 
@@ -332,7 +352,6 @@ final class NavigationLiveActivityCoordinator {
 
         activityID = matchingRecord.id
         activityHasBeenBackgrounded = true
-        beginNavigationLocationSessionIfNeeded()
         observeLifecycle(of: matchingRecord.id)
         for record in records where record.id != matchingRecord.id {
             await client.end(id: record.id, presentation: nil)
@@ -343,6 +362,7 @@ final class NavigationLiveActivityCoordinator {
     private func startActivityIfNeeded() {
         guard activityID == nil,
               !isStartingActivity,
+              hasLiveViewRegistration,
               !activityUnavailableForCurrentNavigation,
               client.areActivitiesEnabled,
               let snapshot = currentSnapshot else {
@@ -360,7 +380,8 @@ final class NavigationLiveActivityCoordinator {
                     attributes: snapshot.attributes,
                     presentation: presentation
                 )
-                guard currentSnapshot?.deviceID == snapshot.deviceID else {
+                guard hasLiveViewRegistration,
+                      currentSnapshot?.deviceID == snapshot.deviceID else {
                     await client.end(id: newActivityID, presentation: presentation)
                     return
                 }

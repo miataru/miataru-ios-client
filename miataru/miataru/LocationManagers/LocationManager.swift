@@ -3313,8 +3313,14 @@ final class LocationManager: NSObject, ObservableObject {
         recordLocationTrackingHealthReminderActivity(reason: "app did enter foreground")
     }
 
-    func appDidEnterBackground() {
-        debugLog("[LocationManager] App did enter background")
+    func appDidEnterBackground(hasActiveLiveActivityNavigation: Bool = false) {
+        if !hasActiveLiveActivityNavigation, !backgroundNavigationLocationSessionIDs.isEmpty {
+            let staleBackgroundSessionIDs = backgroundNavigationLocationSessionIDs
+            backgroundNavigationLocationSessionIDs.removeAll()
+            navigationLocationSessionIDs.subtract(staleBackgroundSessionIDs)
+            debugLog("[LocationManager] Cleared \(staleBackgroundSessionIDs.count) stale background navigation location session(s)")
+        }
+        debugLog("[LocationManager] App did enter background, activeLiveActivityNavigation=\(hasActiveLiveActivityNavigation)")
         reconcileTrackingState(reason: "app did enter background", applicationStateContext: .forceBackground)
     }
 

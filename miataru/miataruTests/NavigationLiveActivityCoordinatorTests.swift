@@ -230,7 +230,35 @@ struct NavigationLiveActivityCoordinatorTests {
         await settle()
         #expect(coordinator.activityID == "matching")
         #expect(client.endedIDs == ["orphan"])
+        #expect(sessions.begun == 0)
+        #expect(!coordinator.requiresHighAccuracyBackgroundLocation)
+
+        coordinator.registerOrUpdate(storedSnapshot)
+        coordinator.sceneWillResignActive()
         #expect(sessions.begun == 1)
+        #expect(coordinator.requiresHighAccuracyBackgroundLocation)
+    }
+
+    @Test("A restored Activity without an open navigation cannot retain background location")
+    func restoredActivityWithoutLiveNavigationReleasesBackgroundLocation() async {
+        let defaults = isolatedDefaults()
+        let storedSnapshot = snapshot()
+        defaults.set(try? JSONEncoder().encode(storedSnapshot), forKey: "navigationLiveActivitySnapshot")
+        let client = FakeNavigationLiveActivityClient()
+        client.records = [NavigationLiveActivityRecord(id: "matching", attributes: storedSnapshot.attributes)]
+        let sessions = LocationSessionSpy()
+        let coordinator = makeCoordinator(client: client, defaults: defaults, sessions: sessions)
+
+        await coordinator.reconcileAtLaunch()
+        coordinator.sceneWillResignActive()
+        coordinator.sceneDidEnterBackground()
+        await settle()
+
+        #expect(client.endedIDs == ["matching"])
+        #expect(coordinator.activityID == nil)
+        #expect(coordinator.currentSnapshot == nil)
+        #expect(sessions.begun == 0)
+        #expect(!coordinator.requiresHighAccuracyBackgroundLocation)
     }
 
     private func makeHarness(

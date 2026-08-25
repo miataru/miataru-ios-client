@@ -345,6 +345,28 @@ struct LocationTrackingPolicyTests {
         #expect(LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: .backgroundNavigation))
     }
 
+    @Test("Ending background navigation restores Significant-Change tracking")
+    func endingBackgroundNavigationRestoresSignificantChangeTracking() {
+        let modeAfterNavigationEnds = LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: .background,
+            frequentUpdatesEnabled: false,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        )
+
+        #expect(modeAfterNavigationEnds == .backgroundSignificantChange)
+        #expect(LocationTrackingPolicy.locationServiceCommandPlan(
+            for: modeAfterNavigationEnds,
+            shouldMaintainRecoveryAnchor: true
+        ) == .init(
+            primary: [.stopUpdatingLocation, .startMonitoringSignificantLocationChanges],
+            secondary: [.stopUpdatingLocation, .stopMonitoringSignificantLocationChanges]
+        ))
+        #expect(!LocationTrackingPolicy.shouldShowBackgroundLocationIndicator(for: modeAfterNavigationEnds))
+    }
+
     @Test("Server update pause keeps local tracking but downgrades frequent background mode")
     func trackingPauseDoesNotStopLocalTrackingDecisions() {
         #expect(LocationTrackingPolicy.trackingReconcileAction(
