@@ -1,3 +1,6 @@
+version 3.5
+- Prepared version 3.5 build 1 and kept Live Activities enabled through the generated app Info.plist without a duplicate source-plist key.
+
 version 3.4
 - Fixed a destructive startup-heartbeat configuration bug: cached-location heartbeats now preserve the current server-history preference instead of forcing `EnableLocationHistory=false`, which Miataru servers interpret as a command to erase all stored history for the device.
 - Applied the current server-history preference when pending location updates are eventually delivered so an already queued heartbeat from an affected build cannot erase history after a later retry.
