@@ -4,6 +4,7 @@ version 3.5
 - Added a full-screen navigation HUD with three high-contrast palettes, optional horizontal mirroring, route and device vectors, readable guidance or route summary, and an idle-hiding control bar that remains available to VoiceOver.
 - Made the user-to-device HUD show a brief route overview before an animated, forward-looking perspective of the current route section; enlarged HUD text and added a palette-tinted own-position arrow aligned with reliable heading or the local route tangent.
 - Kept the screen awake while HUD is active, restored the previous idle-lock setting afterward, and added focused search, localization, speed, HUD projection, heading, and UI coverage.
+- Cleared Swift compiler warnings by importing Combine explicitly for the tracking-pause timer and passing `CodingKeys.self` to the bundled QRCode Codable containers.
 - Prepared version 3.5 build 1 and kept Live Activities enabled through the generated app Info.plist without a duplicate source-plist key.
 
 version 3.4
