@@ -82,6 +82,16 @@ Result:
 - Cached and freshly calculated routes behave consistently.
 - Focused navigation remains on the reversed-route live-summary path.
 
+## Live Speed And Navigation HUD
+
+The navigation screen shows the user's live speed in both route directions whenever a route is available. Speed is always displayed in metric km/h, independent of the device's regional unit preference. The value comes from `latestRawLocation ?? currentLocation`; an invalid or older-than-15-seconds sample displays a dash. The value changes with a short numeric transition unless Reduce Motion is enabled, and its accessibility value includes the localized unit.
+
+The optional full-screen HUD presents a black background, route geometry, route summary, direction, and turn guidance when navigating from the user to the device. The overview shows both endpoint markers; the focused user-to-device view emphasizes the own-position marker and forward route. Its three palettes are black/white, black/red, and black with a white route plus yellow speed and own-marker emphasis. Mirroring applies to the projected HUD content, including the own-position marker, while the palette and close controls stay unmirrored and usable. Controls hide after inactivity and return on a HUD tap; VoiceOver keeps them available. Closing the HUD restores the previous navigation chrome state. The existing device-autolock setting remains the source of the app-wide idle timer policy, with the HUD session integrated into that policy.
+
+In user-to-device navigation, the HUD opens with a route overview, then transitions to a perspective-focused projection of the current route segment after a short overview interval. It follows the user's current location and uses the route's forward geometry so upcoming turns remain visible. Route recalculation or direction changes restart the overview. Device-to-user mode remains an overview and does not show an incorrect turn instruction. The own-position arrow uses validated compass/course heading when available; a route tangent is only a fallback in user-to-device mode, while device-to-user mode uses a neutral position marker when own heading is unavailable.
+
+Geometry and settings behavior are covered by `NavigationHUDSettingsTests`, including route projection, heading rotation, focus-window distance, and persisted HUD choices. Search navigation has focused UI coverage. There is not yet a simulator UI test that exercises a live route through the HUD in both orientations, so visual behavior with real MapKit routes remains a manual QA item.
+
 ## Route Progress Ghost
 
 The route progress ghost appears in standard navigation (`device -> user`) to visualize predicted movement between server updates.
@@ -132,6 +142,8 @@ Validation included:
 - Confirmation that the localized separator is used in the bottom accessory.
 - Confirmation that pulse effects use the same activation gate.
 - Focused unit validation for `RouteGhostCalculatorTests`, `MKPolylineExtensionsTests`, and `NavigationRouteRefreshPolicyTests`.
+- Focused `NavigationHUDSettingsTests` run: 10 tests passed, including HUD projection, focus geometry, and heading behavior.
+- Settings search UI tests for root controls and advanced/prerequisite routing passed in the focused simulator lane.
 
 Route ghost coverage verifies:
 

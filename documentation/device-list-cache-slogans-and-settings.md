@@ -144,6 +144,16 @@ Related localization fix:
 - Missing `frequent_background_location_updates_central_explanation` was added for all app locales.
 - Central Settings uses the shorter explanation; Advanced Options keeps the detailed frequent-background explanation.
 
+## Settings Search
+
+The root Settings screen provides one native localized search field that indexes actionable settings on both the root and Advanced Options screens. Results include individual toggles and pickers as well as useful destinations such as DeviceKey management, tracking pause, allowed-device access, and location-tracking details. Selecting a result routes to its owning screen or sheet and anchors the control after navigation; it does not rely on scrolling to a row that may be hidden by a permission or feature condition.
+
+The typed search index evaluates current availability. When a control is hidden by a prerequisite, the result routes to the visible prerequisite control, including the parent location-tracking switch or the applicable Smart/manual frequent-update switch. The subtitle explains whether the parent setting must be enabled or tracking authorization is needed. Availability is refreshed from settings and permission state so stale results do not lead to missing anchors.
+
+Search titles and user-facing explanations are localized in all ten app locales. The existing `show_current_speed_on_map` marker preference is synchronized with the OS Settings bundle; the live navigation speed display and HUD-only choices remain in-app behavior/preferences.
+
+Focused UI tests cover root-control routing, Advanced Options routing, and prerequisite routing. `NavigationHUDSettingsTests` also cover search-index availability and prerequisite descriptions.
+
 ## Device ID And Name Ambiguity
 
 Preserving DeviceID casing revealed ambiguity cases because routing, cache keys, unknown visitor filtering, and matching intentionally compare case-insensitively.

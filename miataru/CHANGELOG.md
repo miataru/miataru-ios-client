@@ -1,4 +1,9 @@
 version 3.5
+- Added localized Settings search for individual controls on the main and Advanced Options pages, with direct navigation to available controls and clear prerequisite guidance for hidden ones.
+- Added the iPhone's live speed in km/h to both navigation directions and map presentations, including zero speed, a dash for invalid or more-than-15-second-old readings, VoiceOver labels, and motion-aware digit animation.
+- Added a full-screen navigation HUD with three high-contrast palettes, optional horizontal mirroring, route and device vectors, readable guidance or route summary, and an idle-hiding control bar that remains available to VoiceOver.
+- Made the user-to-device HUD show a brief route overview before an animated, forward-looking perspective of the current route section; enlarged HUD text and added a palette-tinted own-position arrow aligned with reliable heading or the local route tangent.
+- Kept the screen awake while HUD is active, restored the previous idle-lock setting afterward, and added focused search, localization, speed, HUD projection, heading, and UI coverage.
 - Prepared version 3.5 build 1 and kept Live Activities enabled through the generated app Info.plist without a duplicate source-plist key.
 
 version 3.4

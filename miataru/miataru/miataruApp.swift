@@ -352,10 +352,13 @@ struct miataruApp: App {
                 .onAppear {
 #if os(iOS)
                     // Set initial value
-                    UIApplication.shared.isIdleTimerDisabled = SettingsManager.shared.disableDeviceAutolock
+                    UIApplication.shared.isIdleTimerDisabled = SettingsManager.shared.disableDeviceAutolock || NavigationHUDSession.shared.isActive
                     // Subscribe to changes
-                    autolockCancellable = SettingsManager.shared.$disableDeviceAutolock.sink { value in
-                        UIApplication.shared.isIdleTimerDisabled = value
+                    autolockCancellable = SettingsManager.shared.$disableDeviceAutolock
+                        .combineLatest(NavigationHUDSession.shared.$isActive)
+                        .receive(on: RunLoop.main)
+                        .sink { settingDisablesIdleTimer, hudIsActive in
+                            UIApplication.shared.isIdleTimerDisabled = settingDisablesIdleTimer || hudIsActive
                     }
                     // Apply and observe app-wide rotation lock setting.
                     rotationLockCancellable = SettingsManager.shared.$preventScreenRotation

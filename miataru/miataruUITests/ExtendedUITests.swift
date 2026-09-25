@@ -104,6 +104,67 @@ final class ExtendedUITests: XCTestCase {
     }
 
     @MainActor
+    func testSettingsSearchRoutesDirectlyToNavigationHUDControls() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
+
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
+        let searchField = app.searchFields.firstMatch
+        if !searchField.waitForExistence(timeout: 3) {
+            let searchButton = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "search")).firstMatch
+            XCTAssertTrue(searchButton.waitForExistence(timeout: 5), "Settings search button should be available")
+            searchButton.tap()
+        }
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5), "Settings search field should open")
+        searchField.tap()
+        searchField.typeText("HUD")
+
+        let hudResult = app.buttons["settings_search_result_navigation_hud_section"]
+        XCTAssertTrue(hudResult.waitForExistence(timeout: 5), "HUD settings should appear in search results")
+        hudResult.tap()
+
+        let palette = app.descendants(matching: .any)["settings_navigation_hud_palette"].firstMatch
+        XCTAssertTrue(palette.waitForExistence(timeout: 10), "Search should open Advanced Options at HUD palette")
+        XCTAssertTrue(palette.isHittable, "HUD palette should be scrolled into view")
+        XCTAssertTrue(app.switches["settings_navigation_hud_mirror"].exists, "HUD mirror control should be in the same topic")
+    }
+
+    @MainActor
+    func testSettingsSearchRoutesRootActionDirectlyToDeviceKeySheet() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10))
+        let searchField = app.searchFields.firstMatch
+        if !searchField.waitForExistence(timeout: 3) {
+            app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "search")).firstMatch.tap()
+        }
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("device key")
+        let result = app.buttons["settings_search_result_manage_your_devicekey"]
+        XCTAssertTrue(result.waitForExistence(timeout: 5))
+        result.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["device_key_sheet"].waitForExistence(timeout: 10), "Root action search should present the Device Key sheet")
+    }
+
+    @MainActor
+    func testSettingsSearchRoutesHiddenFrequentControlToTrackingPrerequisite() throws {
+        let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-initial-tab", "2"])
+        XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10))
+        let searchField = app.searchFields.firstMatch
+        if !searchField.waitForExistence(timeout: 3) {
+            app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "search")).firstMatch.tap()
+        }
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        searchField.tap()
+        searchField.typeText("speed threshold")
+        let result = app.buttons["settings_search_result_smart_frequent_background_speed_threshold_title"]
+        XCTAssertTrue(result.waitForExistence(timeout: 5))
+        result.tap()
+        let trackingToggle = app.switches["settings_location_track_toggle"]
+        XCTAssertTrue(trackingToggle.waitForExistence(timeout: 5), "Unavailable advanced control should route to the tracking prerequisite")
+        XCTAssertTrue(trackingToggle.isHittable, "Tracking prerequisite toggle should be reachable")
+    }
+
+    @MainActor
     func testQRCodeTabShowsDeviceKeyAndTrackingPauseActions() throws {
         let app = launchApp(extraArguments: ["-ui-onboarding-completed", "-ui-enable-location-tracking"])
 

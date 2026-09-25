@@ -60,10 +60,12 @@ struct iPhone_DeviceNavigationView: View {
     @EnvironmentObject private var routeInfoState: RouteInfoState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.animationsAllowed) private var animationsAllowed
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var cache = DeviceLocationCacheStore.shared
     @ObservedObject private var routeCache = RouteCacheStore.shared
     @ObservedObject private var locationManager = LocationManager.shared
     @ObservedObject private var settings = SettingsManager.shared
+    @ObservedObject private var hudSettings = NavigationHUDSettings.shared
     @StateObject private var deviceStore = KnownDeviceStore.shared
 
     @Namespace private var mapScope
@@ -107,6 +109,8 @@ struct iPhone_DeviceNavigationView: View {
     @State private var isChromeVisible: Bool = true
     @State private var isFollowDeviceHeadingMode: Bool = false
     @State private var isNavigationMode: Bool = false
+    @State private var isNavigationHUDVisible = false
+    @State private var chromeVisibilityBeforeHUD = true
     @State private var hasRecordedAutomationNavigationStart: Bool = false
     @State private var navigationLocationSessionID: UUID? = nil
     @State private var lastFollowCameraUpdate: Date? = nil
@@ -135,6 +139,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var routeRetryTask: Task<Void, Never>? = nil
     @State private var routeCalculationTask: Task<Void, Never>? = nil
     @State private var routeCalculationGeneration: UInt64 = 0
+    @State private var navigationHUDRouteRevision: UInt64 = 0
     @State private var autoUpdateTask: Task<Void, Never>? = nil
     @State private var isFetchingTargetDeviceLocation: Bool = false
     @State private var pendingTargetLocationFetchRequest: TargetLocationFetchRequest? = nil
@@ -233,14 +238,46 @@ struct iPhone_DeviceNavigationView: View {
         .overlay(
             InfoOverlay(message: infoOverlayManager.message, visible: infoOverlayManager.visible)
         )
+        .overlay(alignment: .top) {
+            if isNavigationHUDVisible {
+                NavigationHUDView(
+                    location: effectiveUserLocation,
+                    destination: isRouteFromDeviceToUser
+                        ? String(localized: "navigation_hud_destination_you", table: "MapNavigationHistory")
+                        : (device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName),
+                    remoteLabel: device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName,
+                    routeDistance: distanceText,
+                    travelTime: travelTime,
+                    instruction: isRouteFromDeviceToUser ? nil : navigationOverlayViewModel?.instruction?.text,
+                    instructionSymbol: isRouteFromDeviceToUser ? nil : navigationOverlayViewModel?.instruction?.symbol.systemImageName,
+                    directionLabel: NSLocalizedString(isRouteFromDeviceToUser ? "navigation_hud_direction_to_user" : "navigation_hud_direction_to_device", tableName: "MapNavigationHistory", comment: "Direction label in navigation HUD"),
+                    userCoordinate: effectiveUserLocation?.coordinate,
+                    userHeadingDegrees: navigationHUDHeading?.degrees,
+                    userHeadingIsMeasured: navigationHUDHeading != nil,
+                    allowsRouteTangentFallback: !isRouteFromDeviceToUser && route != nil,
+                    remoteCoordinate: deviceCoordinate,
+                    routeCoordinates: navigationHUDRouteCoordinates,
+                    focusedRouteCoordinates: navigationHUDFocusedRouteCoordinates,
+                    canFocusRoute: !isRouteFromDeviceToUser && route != nil && navigationHUDFocusedRouteCoordinates.count > 1,
+                    routeSessionID: routeCalculationGeneration &+ navigationHUDRouteRevision,
+                    onClose: {
+                        closeNavigationHUD()
+                    },
+                    onSetPalette: { hudSettings.palette = $0 },
+                    onToggleMirror: { hudSettings.isMirrored.toggle() }
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .zIndex(10)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isNavigationHUDVisible)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 reloadToolbarButton()
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    isRouteFromDeviceToUser.toggle()
-                    calculateRoute(ignoreCache: true)
+                    switchNavigationDirection()
                 }) {
                     directionIndicatorIcon()
                 }
@@ -254,11 +291,37 @@ struct iPhone_DeviceNavigationView: View {
                 }
                 .buttonStyle(.plain)
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    if isNavigationHUDVisible {
+                        closeNavigationHUD()
+                    } else {
+                        chromeVisibilityBeforeHUD = isChromeVisible
+                        isNavigationHUDVisible = true
+                        NavigationHUDSession.shared.setActive(true)
+                        setChromeVisible(false)
+                    }
+                } label: {
+                    Image(systemName: "speedometer")
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("navigation_hud_toggle", tableName: "MapNavigationHistory"))
+                .accessibilityIdentifier("navigation_hud_toggle")
+            }
         }
         .toolbar(isChromeVisible ? .visible : .hidden, for: .navigationBar)
         .toolbar(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .toolbarBackgroundVisibility(isChromeVisible ? .visible : .hidden, for: .tabBar)
         .id(device.DeviceID)
+        .onChange(of: isRouteFromDeviceToUser) { _, _ in
+            setRouteForRendering(nil)
+            routeDisplayPolyline = nil
+            routeGhostSnapshot = nil
+            navigationOverlayViewModel = nil
+            travelTime = nil
+            distanceText = nil
+            arrivalTimeText = nil
+        }
         .onChange(of: device.DeviceID) {
             NavigationLiveActivityCoordinator.shared.endNavigation()
             routeCalculationGeneration &+= 1
@@ -521,6 +584,9 @@ struct iPhone_DeviceNavigationView: View {
                 Task { await refreshNavigationAfterAppBecomesActive() }
             }
             .onDisappear {
+                isNavigationHUDVisible = false
+                NavigationHUDSession.shared.setActive(false)
+                setChromeVisible(chromeVisibilityBeforeHUD)
                 isViewActive = false
                 navigationFeedbackGate.isViewActive = false
                 navigationOverlayCancellables.removeAll()
@@ -676,11 +742,10 @@ struct iPhone_DeviceNavigationView: View {
 
     @ViewBuilder
     private var topOverlayContent: some View {
-        if travelTime != nil || distanceText != nil {
+        HStack(spacing: 8) {
             if #available(iOS 26.0, *) {
-                // Use bottom accessory on iOS 26; no top overlay
                 EmptyView()
-            } else {
+            } else if travelTime != nil || distanceText != nil {
                 HStack(spacing: 8) {
                     if let travelTime {
                         Image(systemName: "clock")
@@ -707,9 +772,26 @@ struct iPhone_DeviceNavigationView: View {
                 .padding(8)
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                .padding()
+            }
+            if route != nil {
+                let formattedSpeed = freshUserSpeedLabel ?? "—"
+                HStack(spacing: 4) {
+                    Text(formattedSpeed)
+                    Text(String(localized: "navigation_speed_kmh_unit", table: "MapNavigationHistory"))
+                        .accessibilityHidden(true)
+                }
+                    .font(.system(size: 21, weight: .semibold, design: .rounded).monospacedDigit())
+                    .contentTransition(animationsAllowed && !reduceMotion ? .numericText() : .identity)
+                    .animation(animationsAllowed && !reduceMotion ? .easeOut(duration: 0.22) : nil, value: formattedSpeed)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(NavigationHUDView.speedAccessibilityText(for: formattedSpeed)))
+                    .padding(8)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .accessibilityIdentifier("navigation_live_speed")
             }
         }
+        .padding()
     }
     
     
@@ -1025,6 +1107,7 @@ struct iPhone_DeviceNavigationView: View {
                           calculationGeneration == routeCalculationGeneration else { return }
                     defer { routeCalculationTask = nil }
                     if let first = response.routes.first {
+                        navigationHUDRouteRevision &+= 1
                         routeSummarySeedDate = Date()
                         setRouteForRendering(first)
                         applyStaticRouteSummary(for: first)
@@ -1543,6 +1626,13 @@ struct iPhone_DeviceNavigationView: View {
         routeInfoState.isChromeVisible = isVisible
     }
 
+    private func closeNavigationHUD() {
+        guard isNavigationHUDVisible else { return }
+        isNavigationHUDVisible = false
+        NavigationHUDSession.shared.setActive(false)
+        setChromeVisible(chromeVisibilityBeforeHUD)
+    }
+
     @ViewBuilder
     private func scaleBarView() -> some View {
         Group {
@@ -1840,6 +1930,50 @@ struct iPhone_DeviceNavigationView: View {
 
     private var effectiveUserLocation: CLLocation? {
         locationManager.latestRawLocation ?? locationManager.currentLocation
+    }
+
+    private var navigationHUDHeading: NavigationHUDHeading? {
+        let location = effectiveUserLocation
+        return NavigationHUDHeading.resolve(
+            compassDegrees: locationManager.userHeading,
+            compassIsValid: locationManager.isHeadingValid,
+            courseDegrees: location?.course,
+            speed: location?.speed,
+            locationAge: location.map { now.timeIntervalSince($0.timestamp) }
+        )
+    }
+
+    private var freshUserSpeedLabel: String? {
+        let text = NavigationHUDView.speedText(for: effectiveUserLocation, now: now)
+        return text == "—" ? nil : text
+    }
+
+    private var navigationHUDRouteCoordinates: [CLLocationCoordinate2D] {
+        let polyline = routeDisplayPolyline ?? route?.polyline
+        guard let polyline else { return [] }
+        let points = polyline.points()
+        return (0..<polyline.pointCount).map { points[$0].coordinate }
+    }
+
+    private var navigationHUDFocusedRouteCoordinates: [CLLocationCoordinate2D] {
+        guard !isRouteFromDeviceToUser, let route, let location = effectiveUserLocation else { return [] }
+        let polyline = route.polyline
+        let points = polyline.points()
+        let coordinates = (0..<polyline.pointCount).map { points[$0].coordinate }
+        return NavigationHUDFocusRoute.coordinates(route: coordinates, userCoordinate: location.coordinate)
+    }
+
+    private func switchNavigationDirection() {
+        // Clear all direction-specific presentation immediately before the new route request.
+        setRouteForRendering(nil)
+        routeDisplayPolyline = nil
+        routeGhostSnapshot = nil
+        navigationOverlayViewModel = nil
+        travelTime = nil
+        distanceText = nil
+        arrivalTimeText = nil
+        isRouteFromDeviceToUser.toggle()
+        calculateRoute(ignoreCache: true)
     }
 
     private func hasReliableFollowHeading() -> Bool {
@@ -2287,6 +2421,7 @@ extension iPhone_DeviceNavigationView {
                 offRouteThreshold: offRouteThreshold
             ) {
                 // Apply cached route and keep display fields in sync
+                navigationHUDRouteRevision &+= 1
                 routeSummarySeedDate = Date()
                 setRouteForRendering(cached.route)
                 applyStaticRouteSummary(for: cached.route)

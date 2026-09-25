@@ -11,12 +11,19 @@ import SwiftUI
 
 struct iPhone_AdvancedOptionsView: View {
     @ObservedObject var settings = SettingsManager.shared
+    @ObservedObject private var hudSettings = NavigationHUDSettings.shared
     @ObservedObject private var locationManager = LocationManager.shared
     @State private var isRequestingSmartFrequentNotificationPermission = false
     @State private var smartFrequentNotificationPermissionDenied = false
+    @State private var initialScrollAnchor: String?
+
+    init(scrollAnchor: String? = nil) {
+        _initialScrollAnchor = State(initialValue: scrollAnchor)
+    }
 
     var body: some View {
-        Form {
+        ScrollViewReader { proxy in
+          Form {
             if trackingPermissionVisibility.showsAlwaysPermissionNotice {
                 Section {
                     AlwaysLocationPermissionRequiredNotice()
@@ -35,6 +42,7 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         .pickerStyle(.menu)
                     }
+                    .id(SettingsSearchIndex.anchor("activity_type_tracking_accuracy_title"))
 
                     SettingsDescriptionText("activity_type_accuracy_explanation")
 
@@ -50,6 +58,7 @@ struct iPhone_AdvancedOptionsView: View {
                         }
                         .pickerStyle(.menu)
                     }
+                    .id(SettingsSearchIndex.anchor("location_sensitivity_title"))
 
                     SettingsDescriptionText("location_sensitivity_explanation")
                 }
@@ -57,6 +66,7 @@ struct iPhone_AdvancedOptionsView: View {
                 Section(header: Text("background_location_updates_section_title", tableName: "LocationTracking")) {
                     Toggle(String(localized: "smart_frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                         .accessibilityIdentifier("settings_smart_frequent_background_location_updates_toggle")
+                        .id(SettingsSearchIndex.anchor("smart_frequent_background_location_updates_title"))
                         .disabled(settings.frequentBackgroundLocationUpdatesEnabled)
                     SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
                     if settings.frequentBackgroundLocationUpdatesEnabled {
@@ -69,6 +79,7 @@ struct iPhone_AdvancedOptionsView: View {
                         Text("14days", tableName: "Common").tag(LocationTrackingHealthReminderInterval.fourteenDays.rawValue)
                         Text("30days", tableName: "Common").tag(LocationTrackingHealthReminderInterval.thirtyDays.rawValue)
                     }
+                    .id(SettingsSearchIndex.anchor("location_tracking_health_reminder_interval_title"))
                     SettingsDescriptionText("location_tracking_health_reminder_interval_explanation")
 
                     if settings.smartFrequentBackgroundLocationUpdatesEnabled {
@@ -80,12 +91,14 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("20kmh", tableName: "Common").tag(20)
                             Text("30kmh", tableName: "Common").tag(30)
                         }
+                        .id(SettingsSearchIndex.anchor("smart_frequent_background_speed_threshold_title"))
                         SettingsDescriptionText("smart_frequent_background_speed_threshold_explanation")
 
                         Picker(String(localized: "smart_frequent_background_speed_detection_title", table: "LocationTracking"), selection: $settings.smartFrequentBackgroundSpeedDetectionMode) {
                             Text("smart_frequent_background_speed_detection_hybrid", tableName: "LocationTracking").tag(SmartFrequentBackgroundSpeedDetectionMode.hybrid.rawValue)
                             Text("smart_frequent_background_speed_detection_gps_only", tableName: "LocationTracking").tag(SmartFrequentBackgroundSpeedDetectionMode.gpsOnly.rawValue)
                         }
+                        .id(SettingsSearchIndex.anchor("smart_frequent_background_speed_detection_title"))
                         SettingsDescriptionText("smart_frequent_background_speed_detection_explanation")
 
                         Picker(String(localized: "smart_frequent_background_inactivity_window_title", table: "LocationTracking"), selection: $settings.smartFrequentBackgroundInactivityWindow) {
@@ -94,6 +107,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("15minutes", tableName: "Common").tag(SmartFrequentBackgroundInactivityWindow.fifteenMinutes.rawValue)
                             Text("30minutes", tableName: "Common").tag(SmartFrequentBackgroundInactivityWindow.thirtyMinutes.rawValue)
                         }
+                        .id(SettingsSearchIndex.anchor("smart_frequent_background_inactivity_window_title"))
                         SettingsDescriptionText("smart_frequent_background_inactivity_window_explanation")
 
                         Picker(String(localized: "smart_frequent_background_exit_fence_radius_title", table: "LocationTracking"), selection: $settings.smartFrequentBackgroundExitFenceRadiusMeters) {
@@ -104,9 +118,11 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("75m", tableName: "Common").tag(75)
                             Text("50m", tableName: "Common").tag(50)
                         }
+                        .id(SettingsSearchIndex.anchor("smart_frequent_background_exit_fence_radius_title"))
                         SettingsDescriptionText("smart_frequent_background_exit_fence_radius_explanation")
 
                         Toggle(String(localized: "smart_frequent_background_mode_change_notifications_title", table: "LocationTracking"), isOn: smartFrequentModeChangeNotificationsBinding)
+                            .id(SettingsSearchIndex.anchor("smart_frequent_background_mode_change_notifications_title"))
                             .accessibilityIdentifier("settings_smart_frequent_background_mode_change_notifications_toggle")
                             .disabled(isRequestingSmartFrequentNotificationPermission)
                         SettingsDescriptionText("smart_frequent_background_mode_change_notifications_explanation")
@@ -121,6 +137,7 @@ struct iPhone_AdvancedOptionsView: View {
                         }
 
                         Toggle(String(localized: "frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
+                            .id(SettingsSearchIndex.anchor("frequent_background_location_updates_title"))
                             .accessibilityIdentifier("settings_frequent_background_location_updates_toggle")
                         SettingsDescriptionText("frequent_background_location_updates_manual_explanation")
 
@@ -135,6 +152,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("10m", tableName: "Common").tag(10)
                             Text("5m", tableName: "Common").tag(5)
                         }
+                        .id(SettingsSearchIndex.anchor("background_location_distance_filter_title"))
                         SettingsDescriptionText(frequentBackgroundDistanceFilterExplanationKey)
 
                         if settings.frequentBackgroundLocationUpdatesEnabled {
@@ -147,6 +165,7 @@ struct iPhone_AdvancedOptionsView: View {
                                 Text("24hours", tableName: "Common").tag(FrequentBackgroundLocationUpdateDuration.twentyFourHours.rawValue)
                                 Text("frequent_background_location_updates_duration_unlimited", tableName: "LocationTracking").tag(FrequentBackgroundLocationUpdateDuration.unlimited.rawValue)
                             }
+                            .id(SettingsSearchIndex.anchor("frequent_background_location_updates_duration_title"))
                             SettingsDescriptionText(frequentBackgroundDurationExplanationKey)
                         }
 
@@ -157,6 +176,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text(verbatim: "40%").tag(40)
                             Text(verbatim: "50%").tag(50)
                         }
+                        .id(SettingsSearchIndex.anchor("frequent_background_battery_auto_disable_level_title"))
                         Text(frequentBackgroundBatteryAutoDisableLevelExplanation)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -169,6 +189,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_location_delivery_5m", tableName: "LocationTracking").tag(FrequentBackgroundLocationDeliveryMode.everyFiveMinutes.rawValue)
                             Text("frequent_background_location_delivery_10m", tableName: "LocationTracking").tag(FrequentBackgroundLocationDeliveryMode.everyTenMinutes.rawValue)
                         }
+                        .id(SettingsSearchIndex.anchor("frequent_background_location_delivery_mode_title"))
                         SettingsDescriptionText(frequentBackgroundDeliveryExplanationKey)
 
                         Picker(String(localized: "frequent_background_visitor_check_interval_title", table: "LocationTracking"), selection: $settings.frequentBackgroundVisitorCheckInterval) {
@@ -179,6 +200,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("frequent_background_visitor_check_30m", tableName: "LocationTracking").tag(FrequentBackgroundVisitorCheckInterval.everyThirtyMinutes.rawValue)
                             Text("frequent_background_visitor_check_60m", tableName: "LocationTracking").tag(FrequentBackgroundVisitorCheckInterval.everyHour.rawValue)
                         }
+                        .id(SettingsSearchIndex.anchor("frequent_background_visitor_check_interval_title"))
                         SettingsDescriptionText(frequentBackgroundVisitorCheckExplanationKey)
 
                         Picker(String(localized: "known_visitor_notification_cooldown_title", table: "LocationTracking"), selection: $settings.knownVisitorNotificationCooldown) {
@@ -188,6 +210,7 @@ struct iPhone_AdvancedOptionsView: View {
                             Text("30minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.thirtyMinutes.rawValue)
                             Text("60minutes", tableName: "Common").tag(KnownVisitorNotificationCooldown.sixtyMinutes.rawValue)
                         }
+                        .id(SettingsSearchIndex.anchor("known_visitor_notification_cooldown_title"))
                         SettingsDescriptionText(knownVisitorNotificationCooldownExplanationKey)
                     }
                 }
@@ -196,18 +219,23 @@ struct iPhone_AdvancedOptionsView: View {
             Section(header: Text("app_behaviour", tableName: "SettingsDiagnostics")) {
                 Toggle(String(localized: "pulsating_map_markers", table: "LocationTracking"), isOn: $settings.pulsingMapMarkers)
                     .accessibilityIdentifier("settings_pulsing_map_markers_toggle")
+                    .id(SettingsSearchIndex.anchor("pulsating_map_markers"))
                 SettingsDescriptionText("explanation_pulsating_map_markers")
 
                 Toggle(String(localized: "indicate_location_accuracy", table: "LocationTracking"), isOn: $settings.indicateAccuracyOnMap)
+                    .id(SettingsSearchIndex.anchor("indicate_location_accuracy"))
                 SettingsDescriptionText("explanation_indicate_location_accuracy")
 
                 Toggle(String(localized: "show_offscreen_arrows_for_other_devices", table: "MapNavigationHistory"), isOn: $settings.showOffscreenArrowsForOtherDevices)
+                    .id(SettingsSearchIndex.anchor("show_offscreen_arrows_for_other_devices"))
                 SettingsDescriptionText("explanation_show_offscreen_arrows_for_other_devices")
 
                 Toggle(String(localized: "auto_refresh_device_list", table: "LocationTracking"), isOn: $settings.autoRefreshDeviceList)
+                    .id(SettingsSearchIndex.anchor("auto_refresh_device_list"))
                 SettingsDescriptionText("explanation_auto_refresh_device_list")
 
                 Toggle(String(localized: "show_current_speed_on_map", table: "MapNavigationHistory"), isOn: $settings.showCurrentSpeedOnMap)
+                    .id(SettingsSearchIndex.anchor("show_current_speed_on_map"))
                 SettingsDescriptionText("explanation_show_current_speed_on_map")
 
                 if trackingPermissionVisibility.showsTrackingDependentSettings {
@@ -217,6 +245,7 @@ struct iPhone_AdvancedOptionsView: View {
                         Text("location_update_outbox_retention_30d", tableName: "LocationTracking").tag(LocationUpdateOutboxRetentionMode.thirtyDays.rawValue)
                         Text("location_update_outbox_retention_unlimited", tableName: "LocationTracking").tag(LocationUpdateOutboxRetentionMode.unlimited.rawValue)
                     }
+                    .id(SettingsSearchIndex.anchor("location_update_outbox_retention_title"))
 
                     Picker(String(localized: "location_update_outbox_max_items_title", table: "LocationTracking"), selection: $settings.locationUpdateOutboxMaxItems) {
                         Text("500", tableName: "Common").tag(500)
@@ -225,6 +254,7 @@ struct iPhone_AdvancedOptionsView: View {
                         Text("5000", tableName: "Common").tag(5000)
                         Text("10000", tableName: "Common").tag(10_000)
                     }
+                    .id(SettingsSearchIndex.anchor("location_update_outbox_max_items_title"))
                     SettingsDescriptionText("explanation_location_update_outbox_policy")
                 }
             }
@@ -237,6 +267,7 @@ struct iPhone_AdvancedOptionsView: View {
                     Text("30s", tableName: "Common").tag(30)
                     Text("60s", tableName: "Common").tag(60)
                 }
+                .id(SettingsSearchIndex.anchor("map_update_interval"))
                 SettingsDescriptionText("explanation_map_update_interval")
 
                 Picker(String(localized: "outside_map_update_interval", table: "LocationTracking"), selection: $settings.outsideMapUpdateInterval) {
@@ -246,9 +277,11 @@ struct iPhone_AdvancedOptionsView: View {
                     Text("30s", tableName: "Common").tag(30)
                     Text("60s", tableName: "Common").tag(60)
                 }
+                .id(SettingsSearchIndex.anchor("outside_map_update_interval"))
                 SettingsDescriptionText("explanation_outside_map_update_interval")
 
                 Toggle(String(localized: "zoom_to_fit_for_groups", table: "LocationTracking"), isOn: $settings.groupsZoomToFit)
+                    .id(SettingsSearchIndex.anchor("zoom_to_fit_for_groups"))
                 SettingsDescriptionText("explanation_zoom_to_fit_for_groups")
 
                 Picker(String(localized: "reverse_geocoding_threshold", table: "LocationTracking"), selection: $settings.reverseGeocodingThresholdMeters) {
@@ -257,16 +290,45 @@ struct iPhone_AdvancedOptionsView: View {
                     Text("1000m", tableName: "Common").tag(1000)
                     Text("10km", tableName: "Common").tag(10_000)
                 }
+                .id(SettingsSearchIndex.anchor("reverse_geocoding_threshold"))
                 SettingsDescriptionText("explanation_reverse_geocoding_threshold")
             }
 
             Section(header: Text("navigation", tableName: "MapNavigationHistory")) {
                 Toggle(String(localized: "navigation_auto_route_update", table: "MapNavigationHistory"), isOn: $settings.automaticRouteUpdateDuringNavigation)
+                    .id(SettingsSearchIndex.anchor("navigation_auto_route_update"))
                 SettingsDescriptionText("explanation_navigation_auto_route_update")
 
                 Toggle(String(localized: "show_route_progress", table: "MapNavigationHistory"), isOn: $settings.showRouteProgress)
+                    .id(SettingsSearchIndex.anchor("show_route_progress"))
                 SettingsDescriptionText("explanation_show_route_progress")
             }
+
+            Section(header: Text("navigation_hud_section", tableName: "MapNavigationHistory")) {
+                Picker(String(localized: "navigation_hud_palette", table: "MapNavigationHistory"), selection: $hudSettings.palette) {
+                    Text("navigation_hud_palette_white", tableName: "MapNavigationHistory").tag(NavigationHUDPalette.white)
+                    Text("navigation_hud_palette_red", tableName: "MapNavigationHistory").tag(NavigationHUDPalette.red)
+                    Text("navigation_hud_palette_yellow", tableName: "MapNavigationHistory").tag(NavigationHUDPalette.yellow)
+                }
+                .id(SettingsSearchIndex.anchor("navigation_hud_palette"))
+                .accessibilityIdentifier("settings_navigation_hud_palette")
+                Toggle(String(localized: "navigation_hud_mirror", table: "MapNavigationHistory"), isOn: $hudSettings.isMirrored)
+                    .id(SettingsSearchIndex.anchor("navigation_hud_mirror"))
+                    .accessibilityIdentifier("settings_navigation_hud_mirror")
+                Text("navigation_hud_explanation", tableName: "MapNavigationHistory")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .id(SettingsSearchIndex.anchor("navigation_hud_section"))
+          }
+          .onAppear {
+              guard let initialScrollAnchor else { return }
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                  withAnimation { proxy.scrollTo(initialScrollAnchor, anchor: .top) }
+                  self.initialScrollAnchor = nil
+              }
+          }
         }
         .navigationTitle(String(localized: "advanced_options", table: "SettingsDiagnostics"))
         .navigationBarTitleDisplayMode(.inline)

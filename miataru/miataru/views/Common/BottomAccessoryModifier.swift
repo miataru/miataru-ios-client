@@ -15,13 +15,14 @@ struct BottomAccessoryModifier: ViewModifier {
     @EnvironmentObject private var settings: SettingsManager
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.animationsAllowed) private var animationsAllowed
+    @ObservedObject private var navigationHUDSession = NavigationHUDSession.shared
 
     let onAccessoryTap: (() -> Void)?
 
     func body(content: Content) -> some View {
         content
             .overlay(alignment: .bottom) {
-                if routeInfoState.isVisible {
+                if routeInfoState.isVisible && !navigationHUDSession.isActive {
                     routeInfoAccessory
                         .padding(.horizontal, 16)
                         .padding(.bottom, safeAreaBottomInset + (routeInfoState.isChromeVisible ? 40 : 12))

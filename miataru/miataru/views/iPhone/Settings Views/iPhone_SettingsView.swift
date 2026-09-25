@@ -16,6 +16,11 @@ struct iPhone_SettingsView: View {
     @State private var showingDeviceKeySheet = false
     @State private var showingTrackingPauseSheet = false
     @State private var showAdvancedOptionsFromNavigationRequest = false
+    @State private var showLocationDetailsFromSearch = false
+    @State private var settingsSearchQuery = ""
+    @State private var isSettingsSearchPresented = false
+    @State private var pendingMainSearchAnchor: String?
+    @State private var pendingAdvancedSearchAnchor: String?
     @State private var serverURLDraft = SettingsManager.shared.miataruServerURL
     @State private var pendingServerURLChange: String?
     @State private var pendingServerURLQueuedCount = 0
@@ -24,13 +29,41 @@ struct iPhone_SettingsView: View {
 
     var body: some View {
         NavigationStack {
+          ScrollViewReader { settingsScrollProxy in
             Form {
+              if !settingsSearchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Section(header: Text("settings_search_results", tableName: "SettingsDiagnostics")) {
+                    ForEach(matchingSettings) { entry in
+                        Button {
+                            openSearchResult(entry)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(entry.title).font(.body)
+                                Text(searchSubtitle(for: entry))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("settings_search_result_\(entry.key)")
+                    }
+                    if matchingSettings.isEmpty {
+                        Text("settings_search_no_results", tableName: "SettingsDiagnostics")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+              } else {
                 Section(header: Text("track_and_history", tableName: "LocationTracking")) {
                     Toggle(String(localized: "location_track", table: "LocationTracking"), isOn: $settings.trackAndReportLocation)
+                        .accessibilityIdentifier("settings_location_track_toggle")
+                        .id(SettingsSearchIndex.anchor("location_track"))
                     SettingsDescriptionText("explanation_location_track")
 
                     if trackingPermissionVisibility.showsTrackingDependentSettings {
                         Toggle(String(localized: "save_location_history_to_server", table: "LocationTracking"), isOn: $settings.saveLocationHistoryOnServer)
+                            .id(SettingsSearchIndex.anchor("save_location_history_to_server"))
                         SettingsDescriptionText("explanation_save_location_history_to_server")
 
                         Toggle(String(localized: "unknown_visitor_alerts_toggle", table: "Devices"),
@@ -41,6 +74,7 @@ struct iPhone_SettingsView: View {
                                 }
                             )
                         )
+                        .id(SettingsSearchIndex.anchor("unknown_visitor_alerts_toggle"))
                         .disabled(isUpdatingUnknownVisitorAlerts)
                         SettingsDescriptionText("explanation_unknown_visitor_alerts_toggle")
 
@@ -66,6 +100,7 @@ struct iPhone_SettingsView: View {
                                 Text("24hours", tableName: "Common").tag(1440)
                                 Text("7days", tableName: "Common").tag(10_080)
                             }
+                            .id(SettingsSearchIndex.anchor("store_history_before_autoremove"))
                             SettingsDescriptionText("explanation_store_history_before_autoremove")
                         }
                     } else if trackingPermissionVisibility.showsAlwaysPermissionNotice {
@@ -81,6 +116,7 @@ struct iPhone_SettingsView: View {
                             Text("manage_your_devicekey", tableName: "Devices")
                         }
                     }
+                    .id(SettingsSearchIndex.anchor("manage_your_devicekey"))
 
                     if settings.trackAndReportLocation {
                         Button {
@@ -90,13 +126,16 @@ struct iPhone_SettingsView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityIdentifier("settings_tracking_pause_button")
+                        .id(SettingsSearchIndex.anchor("tracking_pause_settings_title"))
                     }
                 }
+                .id("settings.track-and-history")
 
                 if trackingPermissionVisibility.showsTrackingDependentSettings {
                     Section(header: Text("background_location_updates_section_title", tableName: "LocationTracking")) {
                         Toggle(String(localized: "smart_frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.smartFrequentBackgroundLocationUpdatesEnabled)
                             .accessibilityIdentifier("settings_smart_frequent_background_location_updates_central_toggle")
+                            .id(SettingsSearchIndex.anchor("smart_frequent_background_location_updates_title"))
                             .disabled(settings.frequentBackgroundLocationUpdatesEnabled)
                         SettingsDescriptionText("smart_frequent_background_location_updates_explanation")
                         if settings.frequentBackgroundLocationUpdatesEnabled {
@@ -106,6 +145,7 @@ struct iPhone_SettingsView: View {
                         if settings.smartFrequentBackgroundLocationUpdatesEnabled {
                             Toggle(String(localized: "frequent_background_location_updates_title", table: "LocationTracking"), isOn: $settings.frequentBackgroundLocationUpdatesEnabled)
                                 .accessibilityIdentifier("settings_frequent_background_location_updates_central_toggle")
+                                .id(SettingsSearchIndex.anchor("frequent_background_location_updates_title"))
                             SettingsDescriptionText("frequent_background_location_updates_manual_explanation")
                             if settings.frequentBackgroundLocationUpdatesEnabled {
                                 SettingsWarningText("frequent_background_location_updates_battery_warning")
@@ -114,17 +154,18 @@ struct iPhone_SettingsView: View {
                     }
                 }
 
-                if !settings.allowedDeviceListEnabled {
-                    Section(header: Text("allowed_device_list_section_title", tableName: "Devices")) {
-                        AllowedDeviceListSettingsContent()
-                    }
+                Section(header: Text("allowed_device_list_section_title", tableName: "Devices")) {
+                    AllowedDeviceListSettingsContent()
                 }
+                .id(SettingsSearchIndex.anchor("allowed_device_list_section_title"))
 
                 Section(header: Text("app_behaviour", tableName: "SettingsDiagnostics")) {
                     Toggle(String(localized: "deactivate_device_lock", table: "Devices"), isOn: $settings.disableDeviceAutolock)
+                        .id(SettingsSearchIndex.anchor("deactivate_device_lock"))
                     SettingsDescriptionText("explanation_deactivate_device_lock")
 
                     Toggle(String(localized: "prevent_screen_rotation", table: "LocationTracking"), isOn: $settings.preventScreenRotation)
+                        .id(SettingsSearchIndex.anchor("prevent_screen_rotation"))
                     SettingsDescriptionText("explanation_prevent_screen_rotation")
                 }
 
@@ -134,6 +175,7 @@ struct iPhone_SettingsView: View {
                         Text("hybrid_map", tableName: "MapNavigationHistory").tag(2)
                         Text("sat_map", tableName: "MapNavigationHistory").tag(3)
                     }
+                    .id(SettingsSearchIndex.anchor("map_type"))
                     SettingsDescriptionText("explanation_map_type")
 
                     Picker(String(localized: "map_zoom_level", table: "MapNavigationHistory"), selection: $settings.mapZoomLevel) {
@@ -145,6 +187,7 @@ struct iPhone_SettingsView: View {
                         Text("50km", tableName: "Common").tag(50)
                         Text("100km", tableName: "Common").tag(100)
                     }
+                    .id(SettingsSearchIndex.anchor("map_zoom_level"))
                     SettingsDescriptionText("explanation_map_zoom_level")
                 }
 
@@ -154,6 +197,7 @@ struct iPhone_SettingsView: View {
                         Text("transport_car", tableName: "MapNavigationHistory").tag(2)
                         Text("transport_transit", tableName: "MapNavigationHistory").tag(3)
                     }
+                    .id(SettingsSearchIndex.anchor("transport_mode"))
                     SettingsDescriptionText("explanation_navigation_mode")
                 }
 
@@ -166,6 +210,7 @@ struct iPhone_SettingsView: View {
                         .onSubmit {
                             commitServerURLDraft()
                         }
+                        .id(SettingsSearchIndex.anchor("server_url"))
                     SettingsDescriptionText("explanation_server_url")
                 }
 
@@ -181,6 +226,7 @@ struct iPhone_SettingsView: View {
                         }
                     }
                     .accessibilityIdentifier("settings_advanced_options_link")
+                    .id(SettingsSearchIndex.anchor("advanced_options"))
 
                     NavigationLink(destination: iPhone_LocationStatusView()
                         .navigationTitle(String(localized: "Location Tracking Details", table: "LocationTracking"))
@@ -192,10 +238,18 @@ struct iPhone_SettingsView: View {
                         }
                     }
                     .accessibilityIdentifier("settings_location_tracking_details_link")
+                    .id(SettingsSearchIndex.anchor("Location Tracking Details"))
                 }
+                .id("settings.advanced-links")
+              }
             }
             .navigationDestination(isPresented: $showAdvancedOptionsFromNavigationRequest) {
-                iPhone_AdvancedOptionsView()
+                iPhone_AdvancedOptionsView(scrollAnchor: pendingAdvancedSearchAnchor)
+            }
+            .navigationDestination(isPresented: $showLocationDetailsFromSearch) {
+                iPhone_LocationStatusView()
+                    .navigationTitle(String(localized: "Location Tracking Details", table: "LocationTracking"))
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .navigationTitle(String(localized: "settings", table: "SettingsDiagnostics"))
             .sheet(isPresented: $showingDeviceKeySheet) {
@@ -221,7 +275,24 @@ struct iPhone_SettingsView: View {
             } message: {
                 Text(serverURLQueueDialogMessage)
             }
+            .onChange(of: showAdvancedOptionsFromNavigationRequest) { _, isActive in
+                if !isActive { pendingAdvancedSearchAnchor = nil }
+            }
+            .onChange(of: pendingMainSearchAnchor) { _, anchor in
+                guard let anchor else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    withAnimation { settingsScrollProxy.scrollTo(anchor, anchor: .center) }
+                    pendingMainSearchAnchor = nil
+                }
+            }
+          }
         }
+        .searchable(
+            text: $settingsSearchQuery,
+            isPresented: $isSettingsSearchPresented,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: Text("settings_search_prompt", tableName: "SettingsDiagnostics")
+        )
         .accessibilityIdentifier("settings_navigation_view")
         .onAppear {
             handleSettingsNavigationRequest(appNavigation.settingsRequest)
@@ -247,6 +318,65 @@ struct iPhone_SettingsView: View {
     }
 
     @State private var isUpdatingUnknownVisitorAlerts = false
+
+    private var matchingSettings: [SettingsSearchEntry] {
+        SettingsSearchIndex.entries().filter { $0.matches(settingsSearchQuery) }
+    }
+
+    private func openSearchResult(_ entry: SettingsSearchEntry) {
+        let target = SettingsSearchIndex.target(
+            for: entry,
+            trackingReady: trackingPermissionVisibility.showsTrackingDependentSettings,
+            saveHistoryOnServer: settings.saveLocationHistoryOnServer,
+            smartFrequentEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            frequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            trackingEnabled: settings.trackAndReportLocation
+        )
+
+        settingsSearchQuery = ""
+        isSettingsSearchPresented = false
+        switch target.page {
+        case .main:
+            pendingMainSearchAnchor = target.anchor
+        case .advanced:
+            pendingAdvancedSearchAnchor = target.anchor
+            showAdvancedOptionsFromNavigationRequest = true
+        case .deviceKey:
+            showingDeviceKeySheet = true
+        case .trackingPause:
+            showingTrackingPauseSheet = true
+        case .allowedDevices:
+            pendingMainSearchAnchor = target.anchor
+        case .trackingDetails:
+            showLocationDetailsFromSearch = true
+        }
+    }
+
+    private func isAvailable(_ entry: SettingsSearchEntry) -> Bool {
+        !SettingsSearchIndex.target(
+            for: entry,
+            trackingReady: trackingPermissionVisibility.showsTrackingDependentSettings,
+            saveHistoryOnServer: settings.saveLocationHistoryOnServer,
+            smartFrequentEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            frequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            trackingEnabled: settings.trackAndReportLocation
+        ).isPrerequisite
+    }
+
+    private func searchSubtitle(for entry: SettingsSearchEntry) -> String {
+        guard !isAvailable(entry) else {
+            if entry.page == .deviceKey { return String(localized: "settings_search_open_device_key", table: "SettingsDiagnostics") }
+            if entry.page == .trackingPause { return String(localized: "settings_search_open_tracking_pause", table: "SettingsDiagnostics") }
+            if entry.page == .trackingDetails { return String(localized: "settings_search_open_tracking_details", table: "SettingsDiagnostics") }
+            return String(localized: "settings_search_open_control", table: "SettingsDiagnostics")
+        }
+        let messageKey = SettingsSearchIndex.prerequisiteMessageKey(
+            for: entry,
+            trackingEnabled: settings.trackAndReportLocation,
+            trackingReady: trackingPermissionVisibility.showsTrackingDependentSettings
+        )
+        return String(localized: String.LocalizationValue(messageKey), table: "SettingsDiagnostics")
+    }
 
     private var trackingPermissionVisibility: TrackingPermissionSettingsVisibility {
         TrackingPermissionSettingsGate.visibility(

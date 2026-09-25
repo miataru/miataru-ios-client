@@ -57,7 +57,7 @@ These records are still useful but are not broad enough to merge into a topic re
 
 ## Current Project Facts
 
-- Current app version: `3.2.2`
+- Current app version: `3.5`
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`

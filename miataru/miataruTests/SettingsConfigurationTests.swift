@@ -214,6 +214,16 @@ struct SettingsConfigurationTests {
         let requiredKeys = [
             "advanced_options",
             "advanced_options_and_tracking_status",
+            "settings_search_prompt",
+            "settings_search_results",
+            "settings_search_no_results",
+            "settings_search_open_control",
+            "settings_search_open_device_key",
+            "settings_search_open_tracking_pause",
+            "settings_search_open_tracking_details",
+            "settings_search_requires_tracking_permission",
+            "settings_search_requires_parent_setting",
+            "allowed_device_list_enable_button",
             "always_location_permission_required_title",
             "always_location_permission_required_message",
             "always_location_permission_required_steps",
@@ -409,6 +419,26 @@ struct SettingsConfigurationTests {
             "explanation_auto_refresh_device_list",
             "show_current_speed_on_map",
             "explanation_show_current_speed_on_map",
+            "navigation_hud_section",
+            "navigation_hud_palette",
+            "navigation_hud_palette_white",
+            "navigation_hud_palette_red",
+            "navigation_hud_palette_yellow",
+            "navigation_hud_palette_white_option",
+            "navigation_hud_palette_red_option",
+            "navigation_hud_palette_yellow_option",
+            "navigation_hud_mirror",
+            "navigation_hud_explanation",
+            "navigation_hud_route_overview",
+            "navigation_speed_kmh_unit",
+            "navigation_speed_accessibility_format",
+            "navigation_hud_close",
+            "navigation_hud_toggle",
+            "navigation_hud_direction_to_user",
+            "navigation_hud_direction_to_device",
+            "navigation_hud_destination_you",
+            "navigation_hud_you",
+            "navigation_hud_waiting_for_route",
             "location_update_outbox_retention_title",
             "location_update_outbox_retention_24h",
             "location_update_outbox_retention_7d",
@@ -458,7 +488,8 @@ struct SettingsConfigurationTests {
 
         let strings = try loadAllAppStringCatalogs()
 
-        for key in requiredKeys {
+        let allRequiredKeys = Set(requiredKeys).union(SettingsSearchIndex.entries().map(\.key)).sorted()
+        for key in allRequiredKeys {
             let keyEntry = try #require(strings[key] as? [String: Any], "Missing localization key: \(key)")
             let localizations = try #require(keyEntry["localizations"] as? [String: Any], "Missing localizations block for key: \(key)")
 
