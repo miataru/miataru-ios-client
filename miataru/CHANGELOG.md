@@ -1,4 +1,5 @@
 version 3.5
+- Stabilized the asynchronous visitor-check regression test used by the release gate; no app behavior changed.
 - Reviewed all ten shipped app languages across the app, widget, onboarding, permission text, Siri shortcuts, and system settings; refined copy, corrected inconsistent informal address, and aligned shared settings labels.
 - Fixed misleading tracking-pause and location-sensitivity explanations, an active-tracking status shown as inactive, broken onboarding permission copy, untranslated feature names, and ambiguous map and server messages.
 - Corrected unknown-visitor dialogs so ignoring a device is no longer described as blocking server access when access control is off.

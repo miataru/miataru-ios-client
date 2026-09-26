@@ -665,7 +665,12 @@ struct LocationUpdateDeliveryCoordinatorTests {
 
         await coordinator.flushOutboxNow()
 
-        let records = await visitorProcessor.recordsSnapshot()
+        var records = await visitorProcessor.recordsSnapshot()
+        for _ in 0..<100 {
+            if !records.isEmpty { break }
+            try await Task.sleep(nanoseconds: 50_000_000)
+            records = await visitorProcessor.recordsSnapshot()
+        }
         #expect(records.count == 1)
         #expect(records.first?.urlString == "https://example.org")
         #expect(records.first?.minimumInterval == 600)
