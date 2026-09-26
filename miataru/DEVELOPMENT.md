@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Xcode 16+
+- Xcode 27.0 (validated local toolchain)
 - iOS 18.6 device or simulator
 - macOS 14+ development host
 - Swift language version 5.0 in project settings
@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current main app metadata is version **3.2**. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current checkout has main app and widget metadata **3.5 (build 2)**. This identifies the development source, not an App Store release or accepted upload. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 
@@ -39,6 +39,18 @@ miataru/
 ├── miataruUITests/                  # Functional UI tests
 └── miataruScreenshotUITests/        # Screenshot UI tests
 ```
+
+## Verification and graph workflow
+
+From `miataru/`, use `./scripts/verify.sh affected --dry-run --explain` to inspect the affected selection and `./scripts/verify.sh affected` for ordinary changes. `unit` and `ui` run full respective lanes; `release` runs complete Unit and serial functional UI coverage in sequence with separate result bundles; `tooling` tests selectors, metadata and graph tooling. `./scripts/verify.sh status --lane release` reads the retained aggregate status and both bundle paths. A zero-test or incomplete result is a failure. Screenshot capture is a separate affected release check.
+
+Test scripts serialize Xcode test commands with `miataru/artifacts/xcode-test.lock` and use isolated `miataru/artifacts/DerivedData` so stale builds in Xcode's global DerivedData cannot invalidate the simulator app signature. Result bundles and logs remain under `miataru/artifacts/`.
+
+The repository-local [SwiftProjectGraph](../tools/SwiftProjectGraph/README.md) narrows ambiguous source/API/dependency searches. Start with a focused graph context query before broad source inspection. Its generated SQLite data is ignored; source and Xcode project settings remain authoritative. After the successful build/test lane and before commit, run `tools/SwiftProjectGraph/run.sh enrich` and `doctor` from the repository root.
+
+`AGENTS.md` defines the repository-wide commit and release rules. Team delegation is opt-in; the Codex roles and hooks live under `.codex/` and `scripts/`. A completed app code/project/asset commit advances the app build exactly once and adds a changelog entry. Push, archive, and upload require a separate user request.
+
+The [release workflow](../documentation/release-workflow.md) records the tested commit, physical iPhone gate for sensitive location/background changes, archive signing and dSYMs, upload acceptance, and later Apple processing as separate evidence.
 
 ## Localization
 

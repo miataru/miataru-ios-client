@@ -1,0 +1,517 @@
+Path	Purpose	Status	Authority	Action
+3rd party licenses.md	Licenses used in Miataru iOS app	Current	License files and dependency manifests	Review when dependencies change
+AGENTS.md	Miataru Repository Rules	Current	Active repository workflow	Keep requirements consistent across tools
+Assets/App Icons/App Icon Template/readme.rtf	readme	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/App Icons/Variant 8 - Liquid Glass/Untitled Document 1.txt	Untitled Document 1	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/App Icons/Variant 8 - Liquid Glass/colors.txt	colors	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/App Icons/Variant 9 - Liquid Glass lighter/Untitled Document 1.txt	Untitled Document 1	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/App Icons/Variant 9 - Liquid Glass lighter/colors.txt	colors	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/Resources/Dribbble - iOS 7 OmniGraffle stencils (Freebie) by Hardheaded.co.webloc	Dribbble iOS 7 OmniGraffle stencils (Freebie) by Hardheaded.co	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/Resources/My app design workflow.webloc	My app design workflow	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/Resources/Tab Bar Icons iOS 7 Media Icons Pixeden.webloc	Tab Bar Icons iOS 7 Media Icons Pixeden	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/Resources/The iOS 7 Design Cheat Sheet - Ivo Mynttinen - User Interface Designer.webloc	The iOS 7 Design Cheat Sheet Ivo Mynttinen User Interface Designer	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/iPad App Wireframes.graffle	iPad App Wireframes	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/iPhone App Wireframes.graffle/image9.pdf	image9	historisch	Original design/reference assets	Retain as historical visual or external reference
+Assets/UI Wireframes/iPhone App Wireframes.pdf	iPhone App Wireframes	historisch	Original design/reference assets	Retain as historical visual or external reference
+LICENSE	LICENSE	Current	License files and dependency manifests	Review when dependencies change
+README.md	miataru iOS App	Current	App code and project settings	Keep verified against current implementation
+documentation/DOCUMENTATION_INVENTORY.md	Documentation Inventory and Cleanup	Current	App code and project settings	Keep topic facts and links verified
+documentation/Intent-Sprint/00-overview.md	Intent Sprint Overview	P0 target	App Intents code and living reference	Keep implemented and planned stages distinct
+documentation/Intent-Sprint/01-schema-and-entity-foundation.md	Schema And Entity Foundation	historisch	App Intents code and living reference	Retain stage evidence; check live status in current reference
+documentation/Intent-Sprint/02-status-intents.md	Status Intents	historisch	App Intents code and living reference	Retain stage evidence; check live status in current reference
+documentation/Intent-Sprint/03-navigation-and-frequent-controls.md	Navigation And Frequent Controls	historisch	App Intents code and living reference	Retain stage evidence; check live status in current reference
+documentation/Intent-Sprint/04-automation-event-store.md	Automation Event Store	historisch	App Intents code and living reference	Retain stage evidence; check live status in current reference
+documentation/Intent-Sprint/05-places-proximity-and-watches.md	Places, Proximity, And Watches	P0 target	App Intents code and living reference	Keep implemented and planned stages distinct
+documentation/Intent-Sprint/06-testing-and-rollout.md	Testing And Rollout	historisch	App Intents code and living reference	Retain stage evidence; check live status in current reference
+documentation/Places-Sprint/00-overview-concept.md	Places UI/UX Overview And Concept	P0 target	Place store and App Intents code	Retain future visible-UI contract
+documentation/README.md	Documentation Map	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-intents-current-shortcuts-and-manual-validation.md	App Intents, Shortcuts, And Manual Validation	Current	App code and project settings	Keep topic facts and links verified
+documentation/audits/documentation-audit-2026-05-22.md	Documentation Audit - 2026-05-22	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
+documentation/audits/ipad-iphone-audit-2026-03-04.md	iPad vs iPhone Audit (2026-03-04)	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
+documentation/device-history-cache-map-and-analysis.md	Device History Cache, Map, And Analysis	Current	App code and project settings	Keep topic facts and links verified
+documentation/device-list-cache-slogans-and-settings.md	Device List, Cache, Slogans, And Settings	Current	App code and project settings	Keep topic facts and links verified
+documentation/device-security-devicekey-and-allowed-list.md	Device Security, DeviceKey, And Allowed Device List	Current	App code and project settings	Keep topic facts and links verified
+documentation/known-device-access-history-storage-limits.md	Known-Device Access History Storage Limits	Current	App code and project settings	Keep topic facts and links verified
+documentation/location-tracking-smart-frequent-background.md	Location Tracking, Smart Frequent, And Background Updates	Current	App code and project settings	Keep topic facts and links verified
+documentation/navigation-routing-and-mutual-navigation.md	Navigation, Routing, And Mutual Navigation	Current	App code and project settings	Keep topic facts and links verified
+documentation/persistent-data-cleanup-and-widgets.md	Persistent Data Cleanup And Widgets	Current	App code and project settings	Keep topic facts and links verified
+documentation/release-workflow.md	Miataru Release Workflow	Current	App code and project settings	Keep topic facts and links verified
+documentation/rotation-lock-deprecation-fix-2026-03-03.md	Rotation Lock Deprecation Fix (2026-03-03)	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
+documentation/screenshot-test-workflow.md	Screenshot Test Workflow	Current	App code and project settings	Keep topic facts and links verified
+documentation/settings-advanced-options-hitbox-2026-06-11.md	Settings Advanced Options Hitbox Fix - 2026-06-11	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
+documentation/test-build-repair-report-2026-02-27.md	Test Build Repair Report (2026-02-27)	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
+documentation/test-gap-matrix.md	Test Gap Matrix (reviewed 2026-09-25)	Current	Active test sources, schemes, result bundles	Synchronize when tests change
+documentation/test-katalog.md	Test Catalog (reviewed 2026-09-25)	Current	Active test sources, schemes, result bundles	Synchronize when tests change
+documentation/unknown-visitors-alerts-and-history.md	Unknown Visitors, Alerts, And Visitor History	Current	App code and project settings	Keep topic facts and links verified
+miataru/.cursor/plans/2026-03-01 Test Screenshot Automation Plan.md	Test-Neustrukturierung mit dedizierten Schemes und Screenshot-Suite (seriell, 1 Simulator)	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/2026-03-04_miataru_api_retry_strategy_no_client_changes.plan.md	Miataru API Retry/Resilience Plan (ohne Änderungen an MiataruClientSwift)	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/Allowed Device List Feature-concept.md	Allowed Device List Feature — Implementation Plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/allowed_device_list_feature_032669d5.plan.md	allowed device list feature 032669d5.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/animated_route_in_navigate_mode_71f7d07a.plan.md	Animated polyline on navigation route (full route)	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/deduplicate_device_location_refresh_c34cc28a.plan.md	Deduplicate Device Location Refresh Pipeline	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/devicekey_auth_flow_aec977ce.plan.md	DeviceKey Authentication Plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/devicekey_usage_audit_5be4fa9c.plan.md	devicekey usage audit 5be4fa9c.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/devicetapnearbysheetdiagnosis_a66a9859.plan.md	Device Tap Nearby Sheet Analysis	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/fix_devicehistorymapview_zoom_and_data_retrieval_a5ed1d34.plan.md	Fix DeviceHistoryMapView Zoom and Data Retrieval	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/ghostspeedincorporation_5201c16a.plan.md	Incorporate	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/history-map-refactor_9ad9659b.plan.md	history map refactor 9ad9659b.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/implement_getvisitorhistory_api_6b929d34.plan.md	implement getvisitorhistory api 6b929d34.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/improve_map_tapability_d170647b.plan.md	improve map tapability d170647b.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/low-power-gate-effects_980105a3.plan.md	Low Power Mode Gating Plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/macos_native_support_2a05c700.plan.md	macos native support 2a05c700.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/merge_groups_into_devices_5173d21e.plan.md	Merge Groups Into Devices	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/miataru_ios_widgets_be2ab38b.plan.md	miataru ios widgets be2ab38b.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/mutual_navigation_and_visitor_history_0bbbadc5.plan.md	mutual navigation and visitor history 0bbbadc5.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/mutual_navigation_sounds_7835d78c.plan.md	Mutual Navigation Sound Cues	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/navigation_overlay_mode_a06f0fbb.plan.md	navigation overlay mode a06f0fbb.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/periodic_location_updates_fa95e72d.plan.md	Implementation Plan: Periodic Location Updates	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/playback_respects_manual_zoom_7fac64f4.plan.md	Playback respects manual zoom (history map)	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/post_update_onboarding_15483174.plan.md	Post-Update Onboarding Replay	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/reverse_navigation_double-tap_mode_241b4efc.plan.md	reverse navigation double tap mode 241b4efc.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/route_request_optimization_8e204d1a.plan.md	route request optimization 8e204d1a.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/timeline_scrub_performance_2824e1c0.plan.md	Improve Timeline Scrub Performance	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/turn_feedback_cues_5fce8e08.plan.md	Turn Feedback Cues Plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/visitor-log-inline_b90777eb.plan.md	visitor log inline b90777eb.plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/plans/visitorhistoryautorefresh_9a355328.plan.md	Visitor History Auto-Refresh Plan	historisch	Current code and living topic docs	Keep as evidence; see documentation index
+miataru/.cursor/rules/changelog-on-commit.mdc	Changelog on Commit	Current	Active repository workflow	Keep requirements consistent across tools
+miataru/.cursorrules	.cursorrules	Current	Active repository workflow	Keep requirements consistent across tools
+miataru/.specstory/history/2025-07-05_14-14Z-wie-wird-die-deviceid-erzeugt-und-verwaltet.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-05_15-06Z-download-entfernen-bei-fehlerhaften-downloads.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_12-47Z-ich-möchte-das-lokalisieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_13-38Z-füge-eine-erklärung-hinzu.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_13-51Z-text-formatting-issue-discussion.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_13-53Z-text-bricht-nicht-um.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_13-58Z-text-bricht-nicht-um.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_14-03Z-alternative-darstellungsformen-zum-kreis.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_14-10Z-kreative-alternativen-für-devicerow.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_14-26Z-animation-option-for-miatarumapmarker.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_14-48Z-text-mit-gegenteiliger-farbumrandung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-15_14-55Z-refresh-on-element-appear.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_16-00Z-map-der-nächsten-5-geräte-anzeigen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_16-28Z-marker-click-shows-device-in-map-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_16-38Z-update-deprecated-methods-for-ios-17.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_16-45Z-deprecated-initializer-in-ios-17.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_16-48Z-reimplement-view-using-iphone-groupmapview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-09Z-publishing-changes-from-background-threads.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-17Z-standard-schattenfarbe-für-kreis-festlegen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-21Z-farbpicker-für-gesamte-zeile-aktivieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-29Z-touch-target-für-den-colorpicker-vergrößern.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-43Z-toolbar-mit-einem-done-button.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-17_17-45Z-synchronisation-der-einstellungen-überprüfen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_10-01Z-zoom-level-for-pin-visibility-adjustment.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_10-25Z-implementiere-einen-wiederverwendbaren-color-picker.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_11-56Z-implementiere-das-preview-macro-für-xcode.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-00Z-die-breite-stimmt-nicht.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-20Z-warum-verändert-sich-der-pulsingaccuracycircle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-30Z-reinitialisieren-der-pulsinaccuracycircle-animation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-32Z-animation-issues-with-pulsing-accuracy-circle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-36Z-sharesheet-für-deviceid-teilen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-40Z-spracheinstellungen-für-app-festlegen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-44Z-hinweis-zur-gruppenerstellung-anzeigen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_12-50Z-hinweis-für-das-hinzufügen-von-geräten.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_13-08Z-mapview-integration-above-existing-content.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_18-47Z-zoom-level-for-pin-visibility-adjustment.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_19-25Z-qr-code-integration-for-ios-app.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-18_19-28Z-finish-button-placement-in-onboarding-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_17-22Z-cfbundledisplayname-problem-analysis.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_17-23Z-compiler-error-in-swift-expression.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_17-25Z-ipad-root-view-reset-instructions.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_17-54Z-portiere-die-refresh-logik-von-iphone-devicesview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_17-56Z-analyse-app-display-name-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_18-15Z-aktualisierung-der-gerätesliste-bei-standortänderung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_18-46Z-text-im-picker-zu-groß.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_18-49Z-kurze-texte-auf-deutsch-und-japanisch.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_18-53Z-ringpuffer-für-n-stunden-lokal-speichern.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_19-08Z-qr-code-scan-handling-for-app-launch.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_19-24Z-widget-mit-gruppenkarte-erstellen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_19-35Z-farbepicker-in-adddeviceview-einfügen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_19-44Z-kann-man-den-sicherheitsabstand-verringern.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_19-54Z-animation-von-pin-positionen-und-zoom.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-07-19_20-01Z-geräte-und-sicherheitsbereiche-im-zoom.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-12_13-34Z-unter-ios26-scheint-es-so-zu-sein-dass-wenn-die.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_10-10Z-view-skaliert-nicht-bei-drehung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_10-15Z-buttons-too-low-in-hstack.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_10-50Z-toolbar-und-tabbar-anpassen-für-ios.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_10-51Z-toolbar-und-tabbar-an-ios-version-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_11-03Z-unterschiede-bei-der-pin-positionierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_11-53Z-vollständig-reaktive-ansicht-für-qr-code.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_12-27Z-prüfung-der-berechtigungen-für-standortverfolgung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_12-35Z-standardstandort-der-karten-in-der-app.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_13-33Z-hinweispfeil-für-geräte-außerhalb-des-bildschirms.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_13-42Z-offscreen-device-error-bei-kartenrotation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_14-14Z-kompassdarstellung-im-mapview-deaktivieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_14-21Z-deaktivieren-des-kompasses-in-mapviews.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_14-28Z-navigation-title-hidden-in-ios-26.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-13_14-30Z-hintergrund-für-ios26-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-15_11-35Z-mapview-animation-issue-on-ipad.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-15_12-03Z-cannot-find-currentcamera-error.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-15_12-26Z-farbe-des-offscreen-device-arrows.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-15_12-30Z-offscreen-arrows-for-cached-devices.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-15_12-48Z-initialisierung-der-ipad-deviceview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_08-46Z-probleme-mit-der-kartenaktualisierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_08-57Z-erstelle-ipad-version-der-groupmapview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_14-00Z-fehlender-ok-button-auf-dem-ipad.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_14-09Z-transparente-statusleiste-für-ipad-app.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_14-29Z-merge-cursor-rules-and-development-guidelines.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-18_14-30Z-vermeidung-von-überlappungen-bei-device-arrows.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_09-55Z-navigation-issue-with-offscreen-arrows.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_10-04Z-symbol-für-reload-button-mit-glasseffekt.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_11-58Z-ersetzen-von-update-durch-systemimage.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_12-04Z-positionierung-der-offscreenarrows-überprüfen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_12-29Z-debug-offscreendevicearrow-rotation-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_12-51Z-text-ersetzen-durch-ein-pencil-symbol.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_13-26Z-navigation-title-in-toolbar-center.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_13-34Z-pull-to-refresh-taptic-feedback-implementation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_13-51Z-change-text-to-system-image.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_14-05Z-ersetze-editbutton-durch-pencilsymbol.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_14-13Z-update-button-design-modification.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_14-34Z-symbol-vor-edit-device-text-anzeigen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_14-47Z-color-picker-view-presentation-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-19_14-52Z-system-top-bar-auf-ipad-transparent-machen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_05-35Z-check-type-safety-and-improvements.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_09-23Z-debug-outputs-with-ifdef-statements.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_09-26Z-rendering-stabilität-und-view-skalierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_09-46Z-label-placement-above-pulsating-accuracy-circle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_10-03Z-replace-if-debug-with-conditional-logger.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_10-17Z-offscreen-device-settings-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_10-27Z-prüfung-der-offscreen-statuskriterien.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_10-34Z-iphone-settings-view-as-sheet-presentation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_11-01Z-top-bar-transparent-on-ipad.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_11-34Z-kontextmenü-anpassen-für-ios26.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_12-06Z-probleme-mit-der-standortverfolgung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_12-31Z-fehlende-swipe-geste-in-der-deviceliste.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_12-47Z-überprüfung-des-projekts-auf-barrierefreiheit.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-22_12-58Z-reverse-geocoding-und-entfernungsanzeige.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-25_09-15Z-text-visibility-issue-in-devices-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-25_09-46Z-sharesheet-zeigt-keine-optionen-an.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-25_10-13Z-höhe-der-rowitems-festlegen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_08-13Z-aktualisierung-der-placemark-reverse-geocoding.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_09-55Z-swift-error-with-result-builder-usage.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_10-35Z-fixing-result-builder-application-errors.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_11-27Z-cannot-find-type-knowndevice-error.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_11-57Z-drag-and-drop-issue-in-ipad-devices-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_12-06Z-gerätepfeile-verschwinden-bei-kartenrotation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_12-08Z-share-buttons-layout-in-qr-code-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_12-25Z-update-onchange-usage-for-ios-17.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_12-44Z-swift-closure-argument-mismatch-error.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_13-18Z-buttons-and-layout-adjustments-for-ui.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_13-57Z-problem-mit-der-deviceview-navigation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_14-07Z-reload-button-mit-long-press-aktualisieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_14-12Z-fehleroverlay-bei-routenfehler-anzeigen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-26_14-21Z-überprüfung-und-änderung-des-navigationtransporttype.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_07-14Z-layout-issue-on-ipad-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_08-03Z-implement-scale-bar-and-compass-in-views.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_08-30Z-kontextmenüpunkt-navigate-auf-lokalen-geräten.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_08-36Z-change-user-position-behavior-in-maps.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_08-45Z-wo-wird-die-reisezeit-angezeigt.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_09-25Z-navigation-starten-bei-swipe-left-auf-devicerow.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_10-32Z-update-onchange-usage-for-ios-17.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-27_12-02Z-navigation-map-ignores-map-configuration.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_07-32Z-fixing-type-conversion-error-in-swift.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_07-37Z-kontextmenü-nur-für-gültige-standorte.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_08-55Z-fixing-missing-member-in-swift-class.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_10-10Z-fensterwiederherstellung-bei-neustart-verhindern.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_11-15Z-default-settings-for-route-progress.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_12-00Z-zeige-den-gerätenamen-an.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_12-07Z-überprüfung-der-tipper-implementierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_12-09Z-fortschrittsschwelle-für-routenanzeige.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-28_12-27Z-voiceover-für-die-gesamte-app-aktivieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-29_09-28Z-gestaltung-eines-offenen-pfeilkopfs.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-29_09-59Z-fehlende-navigate-option-im-ipad-devicesview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-29_10-11Z-swift-programming-error-resolution.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-30_08-55Z-vordergrundfarbe-je-nach-modus.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-30_09-12Z-socket-option-error-connection-idle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-31_07-53Z-markerpins-im-sichtbaren-kartenausschnitt-anzeigen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-08-31_08-36Z-disable-other-devices-display-setting.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-01_08-52Z-einführung-eines-pulsierenden-map-marker-settings.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-01_10-44Z-navigation-funktion-im-kontextmenü-überprüfen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-01_10-56Z-global-setting-for-automatic-route-updates.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-03_11-20Z-alle-sinnvollen-einstellungen-synchronisieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-03_11-27Z-füge-routecounter-zur-statistik-hinzu.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-03_11-36Z-erweiterung-des-miataruapiclient.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-03_11-56Z-offscreen-arrows-ein-und-ausblenden.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_10-03Z-reverse-geocoding-lookup-bedingungen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_10-10Z-fix-cllocationcoordinate2d-member-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_10-14Z-implement-battery-symbol-in-devicerow.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_10-34Z-incorporate-optional-speed-in-ghost-position.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_11-09Z-bezeichnungen-für-höhe-in-mehreren-sprachen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_11-13Z-zstack-breiter-als-devicebatterysymbol.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-05_11-23Z-auslagern-der-annotation-in-eigene-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_09-16Z-compiler-error-in-swift-expression.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_09-37Z-warum-kein-devicerow-und-batteriesymbole.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_09-51Z-allgemeinere-iphone-grouprowview-swift.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_09-54Z-fehlerhafte-präsentation-von-ipad-groupdetailview.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_09-58Z-buttons-not-visible-on-ipad-view.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_10-04Z-geschwindigkeit-in-der-routenberechnung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_10-12Z-zoom-und-pan-verhalten-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_11-45Z-mapscalebar-für-ipad-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_11-52Z-autocenterzoom-user-interaction-requirements.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_12-05Z-autocenter-deaktivieren-bei-nutzerinteraktionen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_12-17Z-füge-ein-paar-debug-ausgaben-hinzu.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_12-42Z-strategien-für-caching-und-performance.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_13-30Z-git-ignore-miataru-xcodeproj-user-data.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_13-46Z-app-cold-start-initialization-mechanism.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_13-51Z-größe-des-mapmarkers-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_13-55Z-implement-caching-and-rendering-strategy.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-07_14-10Z-ios-app-für-macos-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-08_07-24Z-caching-issues-with-dark-light-mode.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-08_07-34Z-positionierung-des-pulsingcircle-anpassen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_07-09Z-positionierung-des-miatarumapmarkers-überprüfen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_09-28Z-tab-bar-tinting-issues-in-dark-mode.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_09-42Z-animationen-bei-mehr-als-fünf-geräten-deaktivieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_09-59Z-formatter-aktualisieren-sich-nicht-richtig.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_10-10Z-warum-wird-die-zeit-nicht-aktualisiert.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_10-14Z-aktualisierungsproblem-der-miatarumappin.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-10_11-48Z-hintergrundaktualisierungen-funktionieren-nicht.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-12_08-26Z-die-tastatur-überdeckt-das-eingabefeld.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-12_08-53Z-pulsing-circle-display-issue-on-maps.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-09-12_09-06Z-farben-für-tab-bars-zentralisieren.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-10-04_13-00Z-adjust-map-scale-bar-glass-effect.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-10-11_15-09Z-implement-bottom-accessory-for-navigation-eta.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-10-11_15-52Z-replace-custom-label-with-ios-annotation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-11_10-21Z-devicehistorymapview-incorrect-zoom-and-data.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-23_11-48Z-map-device-pin-tap-area.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-23_12-04Z-floating-map-timeline-selection.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-23_13-49Z-map-item-selection-marker-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_11-10Z-timeline-scrubbing-performance.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_12-13Z-button-glass-effect-on-ios-26.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_12-44Z-io26-branch-animation-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_12-51Z-timeline-playback-point-drawing.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_12-55Z-timeline-overlay-color-scale.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_13-42Z-iphone-devicehistorymapview-refactoring-and-simplification.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_13-48Z-device-history-timeline-overlay-touch-area.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_14-39Z-no-history-message-display-on-map.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_14-51Z-miataruapiclient-history-decoding-error.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_14-59Z-iphone-device-history-map-range-crash.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_15-17Z-ipad-navigation-bottom-accessory-missing.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_15-23Z-close-device-context-menu-on-map.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-24_15-29Z-closely-positioned-devices-tapability.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-25_09-49Z-location-update-encoding-error.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-25_20-03Z-nearby-device-selection-sheet-delay.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-26_14-30Z-iphone-device-map-view-debug-output.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-26_15-02Z-iphone-navigation-direction-reversal.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-28_15-26Z-map-marker-y-axis-offset.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-28_15-56Z-map-marker-vertical-offset.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-28_16-05Z-off-screen-device-arrows-fade-behavior.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-28_16-29Z-timezone-from-map-location.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2025-12-28_16-51Z-global-timeline-coloring-for-device-history.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-02_16-25Z-ghost-device-position-speed-integration.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-02_16-46Z-french-and-spanish-language-translation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-03_20-51Z-info-plist-translation-synchronization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-03_21-00Z-ipad-view-top-whitespace.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-03_21-27Z-history-map-connection-simplification-logic.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-05_17-09Z-mobile-map-element-corner-spacing.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-05_17-17Z-playback-button-speed-control.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-05_19-42Z-iphone-ipad-app-device-location-widgets.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-06_16-03Z-widget-location-fetching-implementation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-06_16-18Z-widget-device-opening-and-url-handling.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-07_19-09Z-map-widget-text-display-consolidation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-07_19-26Z-widget-location-update-logic.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-07_19-30Z-miataru-url-device-opening-on-app-start.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-07_20-21Z-deep-link-device-map-override.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-07_20-27Z-map-widget-pre-render-update-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-08_15-35Z-map-widget-device-view-conflict.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-08_16-57Z-app-and-widget-version-synchronization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-08_17-05Z-map-widget-update-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-09_13-47Z-manual-zoom-during-playback.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-11_18-51Z-ipad-app-dark-mode-colors-on-macos.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-12_11-46Z-map-widget-image-rendering-issues.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-12_13-08Z-multiple-iphone-map-widget-rendering.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-12_16-21Z-multiple-map-widget-rendering-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-12_17-18Z-empty-home-screen-widgets-after-update.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-13_11-51Z-zoom-overlay-display-synchronization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-14_18-33Z-app-store-location-permission-rejection.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-14_18-50Z-miataru-location-permission-message.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-14_20-03Z-widget-localization-missing-translations.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-14_20-17Z-macos-native-app-development-plan.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-16_08-39Z-a-debugging-session.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-17_12-52Z-self-scope-and-extraneous-brace-errors.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-17_12-59Z-macos-build-configuration-and-view-omission.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-17_14-51Z-mac-onboarding-views-implementation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-17_15-05Z-mac-groups-view-type-check-timeout.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-18_14-55Z-navigation-stop-proximity-logic.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-18_15-06Z-history-playback-button-and-toolbar-collapse.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-18_15-14Z-device-location-refresh-deduplication.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-18_15-32Z-app-store-description.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-18_15-40Z-proximity-navigation-notification-behavior.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-19_19-19Z-miataru-client-getvisitorhistory-api-support.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-19_19-35Z-miataru-mutual-navigation-and-visitor-history.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-20_19-03Z-devicenavigationview-compiler-type-check-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-20_19-12Z-device-visitor-history-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-20_19-24Z-miataru-server-time-based-location-updates.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_17-25Z-qr-code-tab-name-change.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_17-29Z-visitor-view-access-time-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_18-00Z-unknown-device-add-sheet-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_18-29Z-visitor-device-map-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_18-36Z-internationalization-keys-usage.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-21_18-46Z-periodic-location-update-feature-removal.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-22_16-03Z-anrede-konsistenz-in-app-übersetzungen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-22_17-08Z-changes-description-and-commit.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_18-03Z-mutually-active-display-update-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_18-09Z-missing-route-polyline-updates.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_18-40Z-visitor-history-device-distance.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_19-25Z-device-visitor-history-indicator.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_20-18Z-widget-initiated-requests-count.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-23_20-27Z-new-device-default-color.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_14-55Z-iphone-3-onboarding-view-alignment.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_15-02Z-ipad-multi-window-device-selection-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_16-43Z-ipad-widget-deeplink-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_16-47Z-ipad-app-window-device-independence.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_19-34Z-deep-uri-device-id-case-sensitivity.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-24_19-38Z-show-current-speed-on-map-toggle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-29_19-44Z-speed-on-map-toggle-plan-localization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-29_20-28Z-groups-list-ui-integration.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_08-58Z-mutually-active-navigation-sound-effects.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_10-58Z-mutual-navigation-sound-assets.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_11-00Z-project-plan-execution.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_11-15Z-miataru-map-marker-speed-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_11-42Z-haptics-for-navigation-and-app-evaluation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_11-42Z-map-marker-device-speed-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_16-27Z-navigationoverlaykit-integration-for-route-instructions.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_17-44Z-navigation-route-flipping-behavior.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_18-05Z-energy-saving-mode-animation-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_18-48Z-visitor-log-placement-on-qr-code-tab.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-30_19-05Z-visitor-history-refresh-behavior.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_11-43Z-device-list-update-frequency.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_12-30Z-miataruapiclient-signature-and-devicekey.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_13-57Z-devicekey-authentication-and-management-plan.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_13-59Z-miataru-devicekey-authentication-plan.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_15-59Z-devicekey-onboarding-view-adjustments.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_16-12Z-existing-user-post-update-onboarding-views.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_16-26Z-iphone-onboarding-text-localization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_20-12Z-device-key-sheet-translation-and-function.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_20-19Z-iphone-location-status-view-version-and-build.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_20-23Z-iphone-location-status-view-api-counters.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_20-52Z-device-key-restore-sheet-translation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_20-57Z-device-key-button-sheet-relocation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_21-04Z-devicekey-dark-mode-button-readability.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-01-31_22-33Z-add-group-button-styling.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-10Z-iphone-devicekey-visitor-history-retrieval.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-14Z-getvisitorhistory-calls-without-devicekey.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-39Z-onboarding-devicekey-button-configuration.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-47Z-ios-background-location-speed-information.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-48Z-settings-section-name-change.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_13-58Z-stale-localizations-in-xcode-sheets.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-02_17-33Z-reversed-route-navigation-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-03_19-45Z-navigation-overlay-ui-visibility.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-04_14-44Z-flickering-navigation-route-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-04_17-13Z-double-tap-navigation-map-views.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-04_18-43Z-navigation-route-request-evaluation-and-optimization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-04_19-16Z-ghost-display-on-reversed-navigation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_15-11Z-erweiterte-karten-navigation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_15-50Z-turn-by-turn-navigation-haptics-and-sound.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_18-06Z-unused-user-variable-warning.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_18-17Z-switch-case-executable-statement.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_18-30Z-invisible-navigation-ghost.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-05_19-10Z-shimmeringroutepolyline-animation-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_12-47Z-double-tap-navigation-map-angle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_13-17Z-local-master-branch-reset.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_16-10Z-user-mode-reset-on-navigation-stop.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_16-47Z-device-speed-in-history-feature.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_17-00Z-navigation-mode-location-cache-issue.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_17-12Z-animated-navigation-route-display.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_19-25Z-animated-polyline-gradient-patch.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_21-19Z-haptics-in-double-tapped-navigation-mode.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-06_21-28Z-route-polyline-dashed-animation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_10-17Z-edit-device-view-layout.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_10-22Z-access-control-error-message-translation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_10-26Z-acl-configuration-for-user-device.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_10-39Z-ghost-position-calculation-for-moving-device.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_13-43Z-ghost-appearance-after-eta-bug.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_15-05Z-location-tracking-statistics-not-resetting.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_15-18Z-double-tap-implies-single-tap.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_15-46Z-device-location-history-cache.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_16-00Z-unknown-visitor-device-id-pre-fill.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_16-03Z-acl-toggle-dependency.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_16-10Z-allowed-device-feature-translations.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_16-31Z-haptik-bei-navigation-im-umkehrmodus.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_16-50Z-visitor-history-refresh-on-devices-tab.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_18-08Z-ignore-list-removal-after-device-add.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_18-15Z-visitor-history-slide-actions.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_18-21Z-visitor-history-slide-actions.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-07_18-31Z-device-location-request-id-transmission.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-08_18-47Z-allowed-device-list-feature-implementation-plan.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-15_11-13Z-zusammenfassung-von-branch-3-commits.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-15_11-29Z-changelog-update-rules.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-15_14-51Z-miataruswift-device-slogan-api-client-erweiterung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-15_16-22Z-device-info-text-unknown-visitors-and-info-labels.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-15_17-06Z-slogan-placeholder-and-localization-audit.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-17_19-48Z-getlocationhistory-requesting-devicekey.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-19_13-25Z-encoding-error-overlay-and-retry-policy.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-19_17-12Z-vollmodus-route-und-live-eta.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-23_18-30Z-navigation-background-refresh-und-mutual-rendering.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-24_19-36Z-doppel-tap-navigation-rendering-und-kamera.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-24_20-03Z-standort-statistik-heute-zaehler-und-lokalisierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-26_13-58Z-navigation-refresh-tests-und-threading-fixes.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-26_15-46Z-uitest-target-application-fix.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-26_16-50Z-navigation-standardmodus-speed-anzeige.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-27_13-08Z-repository-aenderungen-analysieren-dokumentieren-und-committen.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-27_13-29Z-bildschirmrotation-verhindern-setting.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-27_15-45Z-zielgeraet-route-refresh-offroute-optimierung.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-27_18-45Z-cli-test-skripte-fuer-macos.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-02-27_19-02Z-test-build-configuration-and-test-integration-repair.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-02_09-44Z-navigation-bottom-arrival-localization.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-04_07-56Z-double-tap-route-refresh-und-widget-stale-key.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-09_16-53Z-unknown-visitor-alerts-onboarding-and-commit.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-11_13-19Z-miataru-client-getdevicesecuritystatus-api-endpoint.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-11_19-18Z-navigation-standard-mode-eta-refresh-and-compact-arrival-line.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-03-14_19-02Z-settings-refactor-and-slogan-fetch-paths.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-04-24_09-19Z-device-history-loading-feedback.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-04-24_09-27Z-device-history-map-user-camera-priority.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-04-27_00-29Z-central-background-updates-settings-toggle.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-04-27_09-50Z-frequent-background-device-list-expiration-notice.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-06-08_10-38Z-location-manager-policy-refactor.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-06-08_11-24Z-smart-frequent-watchdog-deactivation-notification.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-08-25_18-41-03Z-navigation-live-activity-and-location-delivery.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-08-25_18-55-32Z-navigation-background-location-cleanup.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-08-25_19-36-00Z-live-activity-location-policy-isolation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-08-25_19-59-56Z-navigation-live-activity-bgapprefresh.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/.specstory/history/2026-08-25_22-05-47Z-startup-heartbeat-history-preservation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
+miataru/AGENTS.md	Agent Rules	Current	Active repository workflow	Keep requirements consistent across tools
+miataru/APP_FEATURES.md	miataru App - Feature and Developer Guide	Current	App code and project settings	Keep verified against current implementation
+miataru/APP_STORE_DESCRIPTION.md	miataru - App Store Description	Current	Verified app behavior and release record	Update copy only for accepted capabilities
+miataru/CHANGELOG.md	CHANGELOG	Current	Completed commits and release evidence	Append completed changes under project version
+miataru/DEVELOPMENT.md	Development Guide - miataru iOS App	Current	App code and project settings	Keep verified against current implementation
+miataru/Libraries/CodeScanner-main/README.md	CodeScanner	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/CodeScanner-main/Sources/CodeScanner/Resources/Assets.xcassets/capture.imageset/Capture Button.pdf	Capture Button	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/CodeScanner-main/Sources/CodeScanner/Resources/Assets.xcassets/viewfinder.imageset/viewfinder.pdf	viewfinder	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/MiataruClientSwift/README.md	MiataruAPIClient	Current	App code and project settings	Keep verified against current implementation
+miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_14-03Z-swift-code-errors-and-deprecations.md	Swift code errors and deprecations (2025-10-12 14:03Z)	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_14-24Z-rename-project-to-better-reflect-purpose.md	Rename project to better reflect purpose (2025-10-12 14:24Z)	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_14-42Z-update-navigation-tokens-for-multiple-languages.md	Update navigation tokens for multiple languages (2025-10-12 14:42Z)	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_14-48Z-understanding-token-structures-and-their-use-cases.md	Understanding token structures and their use-cases (2025-10-12 14:48Z)	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/NavigationOverlayKit-master/.specstory/history/2025-10-12_16-16Z-check-for-overlapping-token-definitions.md	Check for overlapping token definitions (2025-10-12 16:16Z)	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/NavigationOverlayKit-master/README.md	NavigationOverlayKit	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Art/images/basic-doco-md-coreimage.pdf	basic doco md coreimage	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Documentation/shape-configuration/eye-styles.md	Eye shape options	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Documentation/shape-configuration/pixel-styles.md	Pixel shape options	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Documentation/shape-configuration/pupil-styles.md	Pupil shape options	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/basic/index.md	A basic QR Code	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/blobby/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/green/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/lcd/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/lineargradient/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/logo-background/logo-background.md	logo background	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/negated/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/peacock/beach-peacock.pdf	beach peacock	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/peacock/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/people/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/people/qrcode-with-logo.pdf	qrcode with logo	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/pixel-inset-doco/pixel-inset-tests.md	Pixel inset generator examples	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/pixel-rotation-doco/pixel-rotation-tests.md	Pixel rotation generator examples	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/red-b/red-b.md	red b	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/scan/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/scan/qrcode-with-basic-logo.pdf	qrcode with basic logo	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/simple-inner-shadow/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/ugly-sweater/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/watchos/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/wiki/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/wombles/wombles.md	wombles	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/Examples/wwf/index.md	index	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/QRCode-main/README.md	QRCode	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/SwiftImageReadWrite/README.md	SwiftImageReadWrite	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/Libraries/swift-qrcode-generator/README.md	Swift QR Code Generator	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update
+miataru/PROJECT_OVERVIEW.md	miataru iOS App - Project Overview	Current	App code and project settings	Keep verified against current implementation
+tools/SwiftProjectGraph/BENCHMARKS.md	Miataru SwiftProjectGraph Benchmark	Current	SwiftProjectGraph source and project.json	Keep Miataru commands and limits accurate
+tools/SwiftProjectGraph/INSTALL.md	Install SwiftProjectGraph in another repository	Current	SwiftProjectGraph source and project.json	Keep Miataru commands and limits accurate
+tools/SwiftProjectGraph/README.md	SwiftProjectGraph	Current	SwiftProjectGraph source and project.json	Keep Miataru commands and limits accurate

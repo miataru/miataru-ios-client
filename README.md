@@ -2,7 +2,7 @@
 
 **miataru** is an open-source iPhone and iPad app for privacy-focused location sharing, device management, and navigation through Miataru servers chosen by the user.
 
-Current project state: **version 3.2.2**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
+Current checkout: **development version 3.5 (build 2)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
 
 ## Overview
 
@@ -20,6 +20,9 @@ The app currently supports iPhone and iPad. Mac-specific view files are present 
 - Allowed Device List: manage device access controls and sync changes immediately from edit flows.
 - Unknown visitor alerts: optional local notifications for new unknown devices that look up this device, filtered against own, known, allowed, and ignored IDs.
 - Device info: display and edit short device slogans, show security status, and cache location/slogan metadata centrally.
+- Settings search: localized search opens individual root and Advanced Options controls, with prerequisite guidance for unavailable controls.
+- Navigation HUD: full-screen guidance with three palettes, optional mirror mode, accessible controls, and a live own-speed display.
+- Navigation Live Activity: background navigation status on the Lock Screen and Dynamic Island when the system permits it.
 - Maps and navigation: device/group maps with smooth nearby pin movement and subtle movement trails, accuracy circles, off-screen arrows, route planning, live ETA, route-progress ghost rendering in standard navigation, focused double-tap navigation, turn-by-turn overlay, haptics, and sound cues.
 - QR and deep links: show the current device QR code, scan Miataru URLs, share IDs, and open `miataru://<DEVICE_ID>` links.
 - Siri and Shortcuts: App Intents expose configured, current-location-authorized devices as privacy-friendly choices for finding the last known location, opening Apple Maps or Miataru navigation, managing manual frequent tracking, and using device-scoped saved places/proximity checks without exposing raw DeviceIDs or coordinates in dialogs.
@@ -90,7 +93,7 @@ Root settings cover the most common tracking, DeviceKey, privacy, app behavior, 
 
 Open `miataru/miataru.xcodeproj` in Xcode. The app target currently uses:
 
-- Xcode 16+
+- Xcode 27.0 (validated local toolchain)
 - iOS 18.6 deployment target
 - Swift language version 5.0 in project settings
 - Target device family: iPhone and iPad
@@ -106,7 +109,7 @@ cd miataru
 ./scripts/test-all.sh
 ```
 
-See `miataru/DEVELOPMENT.md`, `documentation/test-katalog.md`, `documentation/test-gap-matrix.md`, and `documentation/screenshot-test-workflow.md` for the detailed workflow.
+Run `./scripts/verify.sh affected --dry-run --explain` from `miataru/` to inspect selection, `./scripts/verify.sh affected` for normal changes, and `./scripts/verify.sh release` for the full Unit and serial UI gate. The SwiftProjectGraph lives under `tools/SwiftProjectGraph/`. See `miataru/DEVELOPMENT.md`, `documentation/test-katalog.md`, `documentation/test-gap-matrix.md`, and `documentation/screenshot-test-workflow.md` for the detailed workflow.
 
 ## Dependencies
 

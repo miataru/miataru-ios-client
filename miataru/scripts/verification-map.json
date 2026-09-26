@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "fullUnitThreshold": 0.25,
+  "rules": [
+    {
+      "name": "location-and-background",
+      "paths": [
+        "miataru/miataru/LocationManagers/**",
+        "miataru/miataru/Notifications/*Frequent*",
+        "miataru/miataru/Info.plist"
+      ],
+      "unit": [
+        "LocationTrackingPolicyTests",
+        "SmartFrequentBackgroundPolicyTests",
+        "LocationSamplePolicyTests",
+        "LocationBackgroundForensicsTests",
+        "LocationUpdateMetricsStorePolicyTests"
+      ]
+    },
+    {
+      "name": "delivery-and-api",
+      "paths": [
+        "miataru/miataru/Networking/**",
+        "miataru/Libraries/MiataruClientSwift/**"
+      ],
+      "unit": [
+        "LocationUpdateDeliveryCoordinatorTests",
+        "LocationUpdateOutboxStoreTests",
+        "MiataruRequestExecutorTests"
+      ]
+    },
+    {
+      "name": "settings-and-localization",
+      "paths": [
+        "miataru/miataru/SettingsManagers/**",
+        "miataru/miataru/Assets/Localization/**",
+        "miataru/miataru/*.lproj/**"
+      ],
+      "unit": [
+        "SettingsConfigurationTests",
+        "UnknownVisitorAlertLocalizationTests",
+        "NavigationHUDSettingsTests"
+      ]
+    },
+    {
+      "name": "navigation-and-history",
+      "paths": [
+        "miataru/miataru/views/**/Devices Views/**",
+        "miataru/miataru/views/Common/Map/**",
+        "miataru/miataru/views/**/Navigation*",
+        "miataru/miataru/SettingsManagers/**/Route*"
+      ],
+      "unit": [
+        "NavigationRouteRefreshPolicyTests",
+        "RouteGhostCalculatorTests",
+        "RouteCacheStoreTests",
+        "HistoryAnalyzerTests",
+        "HistoryPanelAutoHidePolicyTests"
+      ],
+      "ui": [
+        "ExtendedUITests"
+      ]
+    },
+    {
+      "name": "app-intents",
+      "paths": [
+        "miataru/miataru/AppIntents/**"
+      ],
+      "unit": [
+        "AppIntentsPreparationTests",
+        "MiataruAutomationEventStoreTests",
+        "MiataruPlaceStoreTests"
+      ]
+    },
+    {
+      "name": "widgets",
+      "paths": [
+        "miataru/miataruWidgets/**",
+        "miataru/miataru/SettingsManagers/*Widget*",
+        "miataru/Shared/**"
+      ],
+      "unit": [
+        "WidgetDataSyncCoordinatorTests",
+        "PersistentDataCleanupTests"
+      ],
+      "ui": [
+        "ExtendedUITests"
+      ]
+    },
+    {
+      "name": "device-security-and-visitors",
+      "paths": [
+        "miataru/miataru/DeviceKeyAuthHandler.swift",
+        "miataru/miataru/SettingsManagers/**/Devices/**",
+        "miataru/miataru/Notifications/*Visitor*"
+      ],
+      "unit": [
+        "SettingsConfigurationTests",
+        "UnknownVisitorAlertEvaluatorTests",
+        "KnownVisitorAccessHistoryTests",
+        "DeviceLinkResolverTests"
+      ]
+    },
+    {
+      "name": "shared-shell",
+      "paths": [
+        "miataru/miataru/miataruApp.swift",
+        "miataru/miataru/views/*Root*",
+        "miataru/miataru/views/Common/BottomAccessoryModifier.swift"
+      ],
+      "unit": [
+        "SettingsConfigurationTests",
+        "DeviceLinkResolverTests"
+      ],
+      "ui": [
+        "ExtendedUITests"
+      ],
+      "fullUI": true
+    }
+  ],
+  "fullReleasePaths": [
+    "miataru/miataru.xcodeproj/**",
+    "miataru/*.xctestplan",
+    "miataru/scripts/verify*",
+    "miataru/scripts/_test-common.sh",
+    "miataru/scripts/test-*.sh",
+    "miataru/scripts/verification-map.json",
+    "tools/SwiftProjectGraph/**",
+    "scripts/project-graph-*.py",
+    "scripts/codex-hook.py",
+    "scripts/test-codex-hooks.py",
+    ".codex/**"
+  ],
+  "fullUIPaths": [
+    "miataru/miataru/views/iPhone/iPhone_RootView.swift",
+    "miataru/miataru/views/iPad/iPad_RootView.swift",
+    "miataru/miataruUITests/**"
+  ],
+  "productivePaths": [
+    "miataru/miataru/**/*.swift",
+    "miataru/miataru/*.swift",
+    "miataru/miataruWidgets/**/*.swift",
+    "miataru/miataruWidgets/*.swift",
+    "miataru/Libraries/MiataruClientSwift/Sources/**",
+    "miataru/Shared/**",
+    "miataru/miataru/Assets/**",
+    "miataru/miataruWidgets/**"
+  ],
+  "documentationPaths": [
+    "*.md",
+    "documentation/**",
+    "miataru/*.md",
+    "miataru/.cursor/plans/**",
+    "miataru/.cursor/rules/**",
+    "miataru/.cursorrules",
+    "AGENTS.md"
+  ]
+}

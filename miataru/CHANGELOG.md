@@ -1,4 +1,6 @@
 version 3.5
+- Marked seven dynamically referenced Settings search and navigation HUD strings as manually maintained so Xcode extraction no longer treats their complete translations as stale.
+- Prepared development build 2 and updated the local verification, graph, agent, and documentation workflows.
 - Added localized Settings search for individual controls on the main and Advanced Options pages, with direct navigation to available controls and clear prerequisite guidance for hidden ones.
 - Added the iPhone's live speed in km/h to both navigation directions and map presentations, including zero speed, a dash for invalid or more-than-15-second-old readings, VoiceOver labels, and motion-aware digit animation.
 - Added a full-screen navigation HUD with three high-contrast palettes, optional horizontal mirroring, route and device vectors, readable guidance or route summary, and an idle-hiding control bar that remains available to VoiceOver.

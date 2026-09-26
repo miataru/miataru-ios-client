@@ -1,5 +1,7 @@
 # miataru - App Store Description
 
+This is editable copy for a future submission. Current source metadata is 3.5 build 2; this document does not establish an App Store release or upload.
+
 ## Subtitle (30 characters max)
 
 Your Location, Your Control
@@ -58,8 +60,8 @@ Widgets:
 * Use cached map snapshots and shared app data for quick glanceable updates
 
 Siri and Shortcuts:
-* Ask for the last known location of configured devices as people
-* Open Apple Maps routes to a person's last known location
+* Ask for the last known location of configured devices
+* Open Apple Maps routes to a device's last known location
 * Keep shortcut output privacy-friendly without exposing raw device identifiers
 
 Designed for iPhone and iPad:
@@ -84,17 +86,13 @@ Private location sharing on your terms with DeviceKey protection, widgets, Siri 
 
 location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-hosted,server
 
-## What's New - Version 3.2
+## What's New - Version 3.5 Draft
 
-* New Siri and Shortcuts actions for finding a person and opening a route
-* New Shortcuts actions to start or stop manual frequent background tracking without opening the app
-* New Smart frequent background update mode
-* Automatic switch from significant-change tracking to frequent updates when movement is detected
-* Shared inactivity window returns Smart frequent updates to standard background tracking
-* Manual frequent mode remains available as an override
-* Optional Smart mode-change notifications
-* Expanded location tracking diagnostics with mode-specific update counters
-* Nearby device movements now glide smoothly on overview maps with a subtle movement trail
+* Search Settings by individual control, including Advanced Options.
+* View your live speed during navigation and use the new full-screen navigation HUD with three palettes and optional mirroring.
+* See improved route and device guidance with accessible controls in the HUD.
+
+These are draft notes for a future submission. The changelog records the complete 3.5 development changes; release copy must be checked against the release candidate and App Store Connect state.
 
 ## Screenshot Suggestions
 

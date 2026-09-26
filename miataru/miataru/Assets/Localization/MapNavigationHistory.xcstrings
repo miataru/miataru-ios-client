@@ -5793,7 +5793,7 @@
     },
     "navigation_hud_direction_to_device": {
       "comment": "Localized copy for Settings search and the navigation HUD.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -5859,7 +5859,7 @@
     },
     "navigation_hud_direction_to_user": {
       "comment": "Localized copy for Settings search and the navigation HUD.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -6185,7 +6185,7 @@
     },
     "navigation_hud_palette_red_option": {
       "comment": "Localized HUD palette name for the in-HUD palette menu.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -6316,7 +6316,7 @@
     },
     "navigation_hud_palette_white_option": {
       "comment": "Localized HUD palette name for the in-HUD palette menu.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -6447,7 +6447,7 @@
     },
     "navigation_hud_palette_yellow_option": {
       "comment": "Localized HUD palette name for the in-HUD palette menu.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {

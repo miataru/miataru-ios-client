@@ -2,7 +2,7 @@
 
 ## Current State
 
-miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The current app metadata is **3.2.2** with an iOS deployment target of **18.6**. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The development checkout has app and widget metadata **3.5 build 2** with an iOS deployment target of **18.6**. This is source metadata, not proof of an App Store release. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
 Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 
@@ -167,7 +167,7 @@ Shared schemes and scripts:
 - `miataru-Screenshots` / `Screenshots.xctestplan` / `scripts/test-screenshots.sh`
 - `scripts/test-unit.sh`, `scripts/test-ui.sh`, and `scripts/test-all.sh`
 
-The current catalog and remaining gaps are maintained in `documentation/test-katalog.md` and `documentation/test-gap-matrix.md`.
+The verification entry point is `scripts/verify.sh affected` (preview with `--dry-run --explain`); `release` runs the complete Unit and serial UI gate. The repository-local SwiftProjectGraph is documented at `../tools/SwiftProjectGraph/README.md`. The current catalog and remaining gaps are maintained in `documentation/test-katalog.md` and `documentation/test-gap-matrix.md`.
 
 ## Dependencies
 

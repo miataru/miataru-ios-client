@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "projectName": "miataru",
+  "projectID": "com.miataru.ios",
+  "sourceRoots": [
+    "miataru/miataru",
+    "miataru/miataruWidgets",
+    "miataru/Shared",
+    "miataru/Libraries/MiataruClientSwift/Sources",
+    "tools/SwiftProjectGraph"
+  ],
+  "testRoots": [
+    "miataru/miataruTests",
+    "miataru/miataruUITests",
+    "miataru/miataruScreenshotUITests"
+  ],
+  "documentRoots": [
+    "README.md",
+    "AGENTS.md",
+    "3rd party licenses.md",
+    "documentation",
+    "miataru/AGENTS.md",
+    "miataru/APP_FEATURES.md",
+    "miataru/APP_STORE_DESCRIPTION.md",
+    "miataru/CHANGELOG.md",
+    "miataru/DEVELOPMENT.md",
+    "miataru/PROJECT_OVERVIEW.md",
+    "miataru/Libraries/MiataruClientSwift/README.md",
+    "miataru/.cursor/plans"
+  ],
+  "scriptRoots": ["miataru/scripts", "scripts"],
+  "excludePathComponents": [".build", ".git", ".specstory", "artifacts", "DerivedData", "graph", "node_modules", "xcuserdata"],
+  "includeGlobs": ["**/*.swift", "**/*.c", "**/*.cpp", "**/*.mm", "**/*.h", "**/*.hpp", "**/*.md", "**/*.json", "**/*.sh", "**/*.pbxproj", "**/*.xctestplan"],
+  "excludeGlobs": ["**/.build/**", "**/.specstory/**", "**/artifacts/**", "**/DerivedData/**", "**/graph/**", "**/node_modules/**", "**/xcuserdata/**"],
+  "xcodeProjects": ["miataru/miataru.xcodeproj/project.pbxproj"],
+  "schemes": ["miataru", "miataru-FunctionalUI", "miataru-Screenshots"],
+  "packages": ["miataru/Libraries/MiataruClientSwift/Package.swift"],
+  "testPlans": ["miataru/FunctionalSerial.xctestplan", "miataru/Screenshots.xctestplan"],
+  "testTargets": ["miataruTests", "miataruUITests", "miataruScreenshotUITests"],
+  "indexStorePaths": [".build/swiftgraph-index/Index.noindex/DataStore"],
+  "verificationCommands": [
+    "miataru/scripts/verify.sh affected --dry-run --explain",
+    "miataru/scripts/verify.sh tooling",
+    "miataru/scripts/verify.sh release",
+    "tools/SwiftProjectGraph/run.sh doctor"
+  ],
+  "documentRules": [
+    {"pathPrefix": "documentation/audits", "status": "historical"},
+    {"pathPrefix": "documentation/Intent-Sprint/05-", "status": "P0 target"},
+    {"pathPrefix": "documentation/Places-Sprint", "status": "P0 target"},
+    {"pathPrefix": "documentation/Intent-Sprint", "status": "historical"},
+    {"pathPrefix": "documentation/", "status": "Current"},
+    {"pathPrefix": "miataru/.cursor/plans", "status": "historical"},
+    {"pathPrefix": "miataru/APP_STORE_DESCRIPTION.md", "status": "Current"},
+    {"pathPrefix": "miataru/", "status": "Current"},
+    {"pathPrefix": "README.md", "status": "Current"},
+    {"pathPrefix": "AGENTS.md", "status": "Current"}
+  ],
+  "subsystems": [
+    {"name": "App composition", "paths": ["miataru/miataru/miataruApp.swift", "miataru/miataru/views/iPhone", "miataru/miataru/views/iPad"], "description": "SwiftUI launch, navigation, onboarding, and device presentation."},
+    {"name": "Location tracking", "paths": ["miataru/miataru/LocationManagers"], "description": "Core Location policy, background lifecycle, sample filtering, and diagnostics."},
+    {"name": "Delivery and API", "paths": ["miataru/miataru/Networking", "miataru/Libraries/MiataruClientSwift/Sources"], "description": "Miataru protocol, retries, history flag, and durable FIFO outbox."},
+    {"name": "Navigation", "paths": ["miataru/miataru/views/Common/Map", "miataru/miataru/views/iPhone/Devices Views", "miataru/miataru/SettingsManagers"], "description": "Route refresh, maps, history, HUD, and Live Activity presentation."},
+    {"name": "Settings and identity", "paths": ["miataru/miataru/SettingsManagers", "miataru/miataru/DeviceKeyAuthHandler.swift"], "description": "User settings, device identity, access, persistence, and widget exchange."},
+    {"name": "App Intents", "paths": ["miataru/miataru/AppIntents"], "description": "Siri, Shortcuts, entities, and privacy-safe service adapters."},
+    {"name": "Widgets", "paths": ["miataru/miataruWidgets", "miataru/Shared"], "description": "WidgetKit timeline and shared App Group projections."},
+    {"name": "Verification", "paths": ["miataru/scripts", "miataru/miataruTests", "miataru/miataruUITests", "miataru/miataruScreenshotUITests"], "description": "Risk-based selectors, dedicated simulators, and release evidence."}
+  ],
+  "architectureFlows": [
+    {"name": "Location delivery", "steps": ["Core Location callback", "LocationSamplePolicy", "LocationManager", "LocationUpdateDeliveryCoordinator", "MiataruAppAPI", "Miataru server"]},
+    {"name": "Navigation", "steps": ["Device selection", "route cache", "MapKit route", "navigation presentation", "Live Activity"]},
+    {"name": "Widget refresh", "steps": ["App stores", "WidgetDataSyncCoordinator", "App Group payload", "WidgetTimelineDataLoader", "WidgetKit timeline"]}
+  ],
+  "searchSynonyms": {
+    "location": ["tracking", "gps", "corelocation"],
+    "delivery": ["upload", "outbox", "retry", "history"],
+    "navigation": ["route", "map", "hud", "live activity"],
+    "device": ["devicekey", "allowed list", "visitor"]
+  }
+}

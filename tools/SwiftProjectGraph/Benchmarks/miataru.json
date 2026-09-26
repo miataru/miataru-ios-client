@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "project": "miataru",
+  "cases": [
+    {
+      "id": "location-policy-api",
+      "description": "Signature-only location policy API versus source inspection",
+      "tool": "swift_graph_file_api",
+      "arguments": {"path": "LocationSamplePolicy.swift"},
+      "baseline": "sed -n '1,260p' miataru/miataru/LocationManagers/LocationSamplePolicy.swift",
+      "expected": ["LocationSamplePolicy"]
+    },
+    {
+      "id": "location-delivery-context",
+      "description": "Cross-file location upload and outbox navigation",
+      "tool": "swift_graph_context",
+      "arguments": {"query": "location update delivery coordinator outbox retry", "token_budget": 3000},
+      "baseline": "rg -n 'LocationUpdateDeliveryCoordinator|LocationUpdateOutboxStore|MiataruRetryPolicy' miataru/miataru/Networking",
+      "expected": ["LocationUpdateDeliveryCoordinator", "LocationUpdateOutboxStore"]
+    },
+    {
+      "id": "exact-setting-control",
+      "description": "Exact literal control where targeted rg should be efficient",
+      "tool": "swift_graph_find_all",
+      "arguments": {"pattern": "SmartFrequentBackgroundPolicy", "path": "miataru", "limit": 100},
+      "baseline": "rg -n 'SmartFrequentBackgroundPolicy' miataru/miataru/LocationManagers miataru/miataruTests",
+      "expected": ["SmartFrequentBackgroundPolicy"]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+name = "researcher"
+description = "Luna read-only inventory, context, and evidence researcher."
+developer_instructions = "Read-only. Do not edit, commit, archive, upload, run a simulator, spawn nested agents, or escalate to Sol."
+model = "gpt-6-luna"
+model_reasoning_effort = "low"
+sandbox_mode = "read-only"

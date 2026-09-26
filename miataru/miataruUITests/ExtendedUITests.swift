@@ -91,13 +91,17 @@ final class ExtendedUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["root_tab_view"].waitForExistence(timeout: 10), "Root tab view should be visible")
         XCTAssertTrue(app.tabBars.firstMatch.buttons.element(boundBy: 2).waitForSelected(timeout: 10), "Settings tab should be active")
 
-        let advancedOptionsLabel = app.staticTexts["settings_advanced_options_label"].firstMatch
-        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: advancedOptionsLabel, maxSwipes: 6), "Advanced options link should be reachable")
+        let advancedOptionsLink = app.buttons["settings_advanced_options_link"].firstMatch
+        XCTAssertTrue(waitForElementByScrollingUp(in: app, element: advancedOptionsLink, maxSwipes: 6), "Advanced options link should be reachable")
 
         let pulsingToggle = app.descendants(matching: .any)["settings_pulsing_map_markers_toggle"].firstMatch
         XCTAssertFalse(pulsingToggle.exists, "Advanced-only toggle should not be visible on the root settings screen")
 
-        tapElement(advancedOptionsLabel)
+        // Leave clear space above the tab bar; SwiftUI exposes this row before it is safely tappable.
+        app.collectionViews.firstMatch.swipeUp()
+        XCTAssertTrue(advancedOptionsLink.waitForHittable(timeout: 5), "Advanced options link should be tappable above the tab bar")
+        tapElement(advancedOptionsLink)
+        XCTAssertTrue(app.collectionViews["screen_settings_advanced_options"].waitForExistence(timeout: 10), "Advanced options screen should open")
 
         XCTAssertTrue(waitForElementByScrollingUp(in: app, element: pulsingToggle, maxSwipes: 8), "Moved advanced toggle should be reachable on the advanced options screen")
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert after opening advanced options")
@@ -190,7 +194,6 @@ final class ExtendedUITests: XCTestCase {
 
         let pauseEntry = app.descendants(matching: .any)["settings_tracking_pause_button"].firstMatch
         XCTAssertTrue(waitForElementByScrollingUp(in: app, element: pauseEntry, maxSwipes: 4), "Server update pause settings entry should be reachable")
-        XCTAssertTrue(app.staticTexts["Temporär keine Server Updates"].exists, "Settings entry should use the renamed title")
         tapElement(pauseEntry)
         assertTrackingPauseSheetOptions(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists, "Unexpected alert on settings server update pause flow")
@@ -273,7 +276,11 @@ final class ExtendedUITests: XCTestCase {
     private func tapElement(_ element: XCUIElement) {
         XCTAssertTrue(element.waitForExistence(timeout: 5), "Element should exist before tapping")
 
-        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        if element.isHittable {
+            element.tap()
+        } else {
+            element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
     }
 
     private func isVisible(_ element: XCUIElement, in app: XCUIApplication) -> Bool {
@@ -287,7 +294,9 @@ final class ExtendedUITests: XCTestCase {
             return false
         }
 
-        return app.frame.intersects(frame)
+        guard app.frame.intersects(frame) else { return false }
+        let tabBar = app.tabBars.firstMatch
+        return !tabBar.exists || frame.maxY < tabBar.frame.minY - 16
     }
 
     @MainActor

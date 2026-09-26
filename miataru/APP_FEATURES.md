@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app as of version **3.2.2**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app in the **3.5 (build 2) development checkout**.
 
 ## App Navigation and Views
 
@@ -211,6 +211,7 @@ This document describes the current user-facing and developer-facing feature set
 
 **For users:**
 
+- Localized Settings search finds individual root and Advanced Options controls and routes to the owning control; unavailable controls explain their prerequisite.
 - Root settings cover tracking/history, unknown visitor alerts, DeviceKey, Smart/manual frequent background access, allowed-device-list entry, app behavior, map type/zoom, navigation transport, server URL, Advanced Options, and Location Tracking Details.
 - Advanced Options include tracking accuracy/sensitivity, Smart frequent threshold/detection/inactivity options, optional Smart mode-change notifications, manual frequent background details, marker effects, accuracy indicators, off-screen arrows, device-list refresh, speed labels, outbox policy, map update intervals, reverse geocoding threshold, route auto-update, and route progress.
 - Smart frequent controls are locked with explanatory copy while manual frequent background updates are active, because manual mode is the effective override until users turn it off.
@@ -221,6 +222,10 @@ This document describes the current user-facing and developer-facing feature set
 - `SettingsManager` is the single source for runtime preferences and side effects.
 - `SettingsConfiguration` centralizes defaults, normalization, and one-time existing-install migrations.
 - Settings parity is regression-tested against `Settings.bundle/Root.plist` and localized `Root.strings` files.
+
+## Navigation HUD and Live Activity
+
+The 3.5 development checkout provides a full-screen navigation HUD with high-contrast palettes, optional mirroring, route and device vectors, live own speed with freshness handling, and accessible controls. A Navigation Live Activity can present target, route time/distance, and guidance in the background; iOS scheduling and permission determine actual delivery. The current behavior and limits are detailed in `documentation/navigation-routing-and-mutual-navigation.md`.
 
 ## Caching and Reverse Geocoding
 
@@ -260,7 +265,8 @@ This document describes the current user-facing and developer-facing feature set
 
 - Active targets are `miataruTests`, `miataruUITests`, and `miataruScreenshotUITests`.
 - Shared schemes are `miataru-FunctionalUI` and `miataru-Screenshots`.
-- Use `scripts/test-unit.sh`, `scripts/test-functional-ui-serial.sh`, `scripts/test-ui.sh`, `scripts/test-screenshots.sh`, or `scripts/test-all.sh`.
+- Use `scripts/verify.sh affected --dry-run --explain` to inspect the selector, `scripts/verify.sh affected` for ordinary work, and `scripts/verify.sh release` for the full Unit and serial UI gate. `scripts/verify.sh tooling` checks the selector, metadata, documentation, agent hooks, and graph. The graph is in `../tools/SwiftProjectGraph/`.
+- Existing direct scripts remain available: `scripts/test-unit.sh`, `scripts/test-functional-ui-serial.sh`, `scripts/test-ui.sh`, `scripts/test-screenshots.sh`, or `scripts/test-all.sh`.
 - Keep `documentation/test-katalog.md` and `documentation/test-gap-matrix.md` synchronized whenever tests change.
 
 ## Historical Platform Drift Decision

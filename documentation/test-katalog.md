@@ -1,4 +1,4 @@
-# Test Catalog (as of 2026-06-16)
+# Test Catalog (reviewed 2026-09-25)
 
 ## 1) Scope and Classification
 
@@ -18,11 +18,60 @@ Important project observations:
 
 ## 2) Inventory at a Glance
 
-- Actively linked app test cases: **338** (Unit: 318, UI: 20 incl. 11 screenshot captures)
+- The previous **338** count (318 Unit, 20 UI including screenshot captures) was a 2026-06-16 snapshot; it is not a current executed-test count. The current active test targets are `miataruTests`, `miataruUITests`, and `miataruScreenshotUITests`. Use the retained `.xcresult` summary for the actual executed count of each gate.
+- The current synchronized source folders contain **36 Unit test files**, **1 functional UI test file with 12 declared test methods**, and **1 screenshot test file with 11 declared scenarios**. Swift Testing may expand one declaration into multiple executed cases; the result bundle is authoritative for execution.
+- `SettingsConfigurationTests` checks app string catalogs for stale keys and new translation units. The 3.5 dynamic Settings search and HUD keys are marked `manual` so they remain maintained and testable without a source-extraction reference.
 - Existing but not linked app test cases: **0**
 - Third-party test functions in `Libraries`: **172**
 
-## 2.1) Category/Scheme Mapping
+The detailed case rows below are the historical catalog baseline. Current membership is defined by synchronized test folders and the two active test plans; the risk-based suite selection is versioned in `miataru/scripts/verification-map.json`.
+
+## 2.1) Active Suite Files
+
+These linked sources are the current suite-file inventory. Swift Testing parameterization determines the executed-case count in the `.xcresult`.
+
+| Target | Suite file |
+|---|---|
+| Unit | [AppIntentsPreparationTests](../miataru/miataruTests/AppIntentsPreparationTests.swift) |
+| Unit | [AutomationEventEmissionHelperTests](../miataru/miataruTests/AutomationEventEmissionHelperTests.swift) |
+| Unit | [DeviceLinkResolverTests](../miataru/miataruTests/DeviceLinkResolverTests.swift) |
+| Unit | [DeviceLocationCacheStoreTests](../miataru/miataruTests/DeviceLocationCacheStoreTests.swift) |
+| Unit | [DeviceSloganSanitizationTests](../miataru/miataruTests/DeviceSloganSanitizationTests.swift) |
+| Unit | [HistoryAnalyzerTests](../miataru/miataruTests/HistoryAnalyzerTests.swift) |
+| Unit | [HistoryPanelAutoHidePolicyTests](../miataru/miataruTests/HistoryPanelAutoHidePolicyTests.swift) |
+| Unit | [KnownVisitorAccessHistoryTests](../miataru/miataruTests/KnownVisitorAccessHistoryTests.swift) |
+| Unit | [LocalStorageUsageReporterTests](../miataru/miataruTests/LocalStorageUsageReporterTests.swift) |
+| Unit | [LocationBackgroundForensicsTests](../miataru/miataruTests/LocationBackgroundForensicsTests.swift) |
+| Unit | [LocationSamplePolicyTests](../miataru/miataruTests/LocationSamplePolicyTests.swift) |
+| Unit | [LocationTrackingPolicyTests](../miataru/miataruTests/LocationTrackingPolicyTests.swift) |
+| Unit | [LocationUpdateDeliveryCoordinatorTests](../miataru/miataruTests/LocationUpdateDeliveryCoordinatorTests.swift) |
+| Unit | [LocationUpdateMetricsStorePolicyTests](../miataru/miataruTests/LocationUpdateMetricsStorePolicyTests.swift) |
+| Unit | [LocationUpdateOutboxStoreTests](../miataru/miataruTests/LocationUpdateOutboxStoreTests.swift) |
+| Unit | [MKPolylineExtensionsTests](../miataru/miataruTests/MKPolylineExtensionsTests.swift) |
+| Unit | [MapHelpersAdditionalTests](../miataru/miataruTests/MapHelpersAdditionalTests.swift) |
+| Unit | [MapHelpersTests](../miataru/miataruTests/MapHelpersTests.swift) |
+| Unit | [MiataruAutomationEventStoreTests](../miataru/miataruTests/MiataruAutomationEventStoreTests.swift) |
+| Unit | [MiataruPlaceStoreTests](../miataru/miataruTests/MiataruPlaceStoreTests.swift) |
+| Unit | [MiataruRequestExecutorTests](../miataru/miataruTests/MiataruRequestExecutorTests.swift) |
+| Unit | [MutualNavigationDetectorTests](../miataru/miataruTests/MutualNavigationDetectorTests.swift) |
+| Unit | [NavigationHUDSettingsTests](../miataru/miataruTests/NavigationHUDSettingsTests.swift) |
+| Unit | [NavigationLiveActivityBackgroundRefreshTests](../miataru/miataruTests/NavigationLiveActivityBackgroundRefreshTests.swift) |
+| Unit | [NavigationLiveActivityCoordinatorTests](../miataru/miataruTests/NavigationLiveActivityCoordinatorTests.swift) |
+| Unit | [NavigationRouteRefreshPolicyTests](../miataru/miataruTests/NavigationRouteRefreshPolicyTests.swift) |
+| Unit | [PersistentDataCleanupTests](../miataru/miataruTests/PersistentDataCleanupTests.swift) |
+| Unit | [RouteCacheStoreTests](../miataru/miataruTests/RouteCacheStoreTests.swift) |
+| Unit | [RouteGhostCalculatorTests](../miataru/miataruTests/RouteGhostCalculatorTests.swift) |
+| Unit | [SettingsConfigurationTests](../miataru/miataruTests/SettingsConfigurationTests.swift) |
+| Unit | [SmartFrequentBackgroundPolicyTests](../miataru/miataruTests/SmartFrequentBackgroundPolicyTests.swift) |
+| Unit | [UnknownVisitorAlertEvaluatorTests](../miataru/miataruTests/UnknownVisitorAlertEvaluatorTests.swift) |
+| Unit | [UnknownVisitorAlertLocalizationTests](../miataru/miataruTests/UnknownVisitorAlertLocalizationTests.swift) |
+| Unit | [VisitorHistoryViewModelTests](../miataru/miataruTests/VisitorHistoryViewModelTests.swift) |
+| Unit | [WidgetDataSyncCoordinatorTests](../miataru/miataruTests/WidgetDataSyncCoordinatorTests.swift) |
+| Unit | [miataruTests](../miataru/miataruTests/miataruTests.swift) |
+| Functional UI | [ExtendedUITests](../miataru/miataruUITests/ExtendedUITests.swift) |
+| Screenshot | [FeatureScreenshotScenariosUITests](../miataru/miataruScreenshotUITests/FeatureScreenshotScenariosUITests.swift) |
+
+## 2.2) Category/Scheme Mapping
 
 | Category | Target(s) | Shared Scheme | Test Plan | Trigger |
 |---|---|---|---|---|
@@ -300,11 +349,15 @@ These cases were previously located under `miataru.xcodeproj/*.swift` and are no
 | DT-UI-001 | testLaunchWithCompletedOnboardingShowsRootTabs | Stable launch state | Launch with completed onboarding, tab root visible, no alert | App Bootstrap / Tab Root | UI (XCTest) | Yes |
 | DT-UI-002 | testDevicesAddSheetCanOpenAndCancel | Basic device flow validation | Open add-device sheet and close via cancel | Device List / Add Device | UI (XCTest) | Yes |
 | DT-UI-003 | testSettingsShowOnboardingActionIsReachable | Protect settings onboarding action | Opens tracking details from settings and verifies the onboarding action remains reachable without alerts | Settings / Tracking Details | UI (XCTest) | Yes |
-| DT-UI-004 | testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen | Protect settings reorganization and row hitbox | Starts directly on Settings via `-ui-initial-tab`, verifies Advanced Options is reachable, and confirms advanced-only controls no longer appear on root settings | Settings / Advanced Options | UI (XCTest) | Yes |
-| DT-UI-005 | testQRCodeTabShowsDeviceKeyAction | Validate QR core action | Open QR tab, device key action available and tappable | QR Screen / Device Key | UI (XCTest) | Yes |
+| DT-UI-004 | testSettingsAdvancedOptionsNavigationMovesAdvancedControlsOffRootScreen | Protect settings reorganization and navigation | Starts directly on Settings via `-ui-initial-tab`, opens the Advanced Options link, verifies the destination screen and its advanced-only toggle, and confirms that toggle is absent from root Settings | Settings / Advanced Options | UI (XCTest) | Yes |
+| DT-UI-005 | testQRCodeTabShowsDeviceKeyAndTrackingPauseActions | Validate QR core actions | Open QR tab, verify the Device Key action, and open the tracking pause sheet | QR Screen / Device Key / Tracking Pause | UI (XCTest) | Yes |
 | DT-UI-006 | testSettingsSearchRoutesDirectlyToNavigationHUDControls | Protect advanced setting deep-link and anchor | Search opens Advanced Options directly at HUD controls and exposes palette/mirror settings | Settings Search / Navigation HUD | UI (XCTest) | Yes |
 | DT-UI-007 | testSettingsSearchRoutesRootActionDirectlyToDeviceKeySheet | Protect action search routing | Search opens the owning Device Key sheet from root Settings | Settings Search / Device Key | UI (XCTest) | Yes |
 | DT-UI-008 | testSettingsSearchRoutesHiddenFrequentControlToTrackingPrerequisite | Protect hidden-setting prerequisite routing | With tracking unavailable, a frequent speed-threshold result returns to the visible tracking control | Settings Search / Tracking | UI (XCTest) | Yes |
+| DT-UI-009 | testLocationDiagnosticsSheetOpensFromVersionTripleTap | Protect diagnostics access | Open tracking details, triple-tap the version section, verify the diagnostics sheet and dismiss it | Settings / Tracking Details | UI (XCTest) | Yes |
+| DT-UI-010 | testSettingsShowsTrackingPauseEntry | Protect tracking pause entry | With tracking enabled, open the Settings pause entry and verify the sheet controls | Settings / Tracking Pause | UI (XCTest) | Yes |
+| DT-UI-011 | testSettingsHidesTrackingPauseEntryWhenServerUpdatesDisabled | Protect pause entry visibility | With server updates disabled, verify the Settings pause entry is absent | Settings / Tracking Pause | UI (XCTest) | Yes |
+| DT-UI-012 | testDevicesShowsTrackingPauseBannerAndCanResume | Protect active pause recovery | With an active pause, open the Devices banner, confirm resume, and verify the banner disappears | Devices / Tracking Pause | UI (XCTest) | Yes |
 
 ## 5) Screenshot Test Inventory (`miataruScreenshotUITests`)
 

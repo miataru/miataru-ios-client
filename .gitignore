@@ -41,6 +41,10 @@ DerivedData/
 
 # Build & Dependencies
 build/
+.build/
+__pycache__/
+*.py[cod]
+tools/SwiftProjectGraph/graph/
 DerivedData/
 *.log
 *.lock

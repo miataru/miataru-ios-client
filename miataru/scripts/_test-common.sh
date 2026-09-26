@@ -13,6 +13,8 @@ TEST_SIMULATOR_DEVICE_TYPE="${TEST_SIMULATOR_DEVICE_TYPE:-com.apple.CoreSimulato
 TEST_OUTPUT="${TEST_OUTPUT:-summary}"
 TEST_LOG_DIR="${TEST_LOG_DIR:-$REPO_ROOT/artifacts/test-logs}"
 TEST_SUMMARY_MAX_LINES="${TEST_SUMMARY_MAX_LINES:-200}"
+TEST_LOCK_PATH="${TEST_LOCK_PATH:-$REPO_ROOT/artifacts/xcode-test.lock}"
+TEST_DERIVED_DATA_PATH="${TEST_DERIVED_DATA_PATH:-$REPO_ROOT/artifacts/DerivedData}"
 
 latest_ios_runtime_id() {
   xcrun simctl list runtimes available | awk -F ' - ' '/iOS .*com.apple.CoreSimulator.SimRuntime.iOS-/{print $NF}' | tail -n1
@@ -216,10 +218,12 @@ run_xcodebuild_test() {
   local only_testing="$1"
   shift
 
+  mkdir -p "$(dirname "$TEST_LOCK_PATH")"
+
   case "$TEST_OUTPUT" in
     full)
       echo "  output: full"
-      xcodebuild test "$@"
+      lockf -t 0 "$TEST_LOCK_PATH" xcodebuild test "$@"
       ;;
     summary)
       local errexit_was_set
@@ -240,7 +244,7 @@ run_xcodebuild_test() {
       echo "Focused xcodebuild output:"
 
       set +e
-      xcodebuild test "$@" 2>&1 | tee "$log_file" | filter_xcodebuild_summary
+      lockf -t 0 "$TEST_LOCK_PATH" xcodebuild test "$@" 2>&1 | tee "$log_file" | filter_xcodebuild_summary
       status="${PIPESTATUS[0]}"
       if [[ "$errexit_was_set" == "1" ]]; then
         set -e
@@ -282,6 +286,7 @@ run_tests() {
     -scheme "$SCHEME"
     -configuration "$CONFIGURATION"
     -destination "$destination"
+    -derivedDataPath "$TEST_DERIVED_DATA_PATH"
   )
 
   if [[ -n "$only_testing" ]] && ! has_explicit_only_testing "$@"; then

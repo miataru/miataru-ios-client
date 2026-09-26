@@ -62,6 +62,10 @@ cd miataru
 ./scripts/test-functional-ui-serial.sh
 ```
 
+For a release request, run `./scripts/verify.sh release` first and capture affected
+screenshots and locales from the same checked commit. Screenshot tests share the
+Xcode test lock and isolated `miataru/artifacts/DerivedData` with Unit/UI tests.
+
 ## Languages and Regions
 
 Default run set:
@@ -95,7 +99,7 @@ Optionally override version/build manually:
 
 ```bash
 cd miataru
-APP_VERSION_OVERRIDE="3.1.2" APP_BUILD_OVERRIDE="6" ./scripts/test-screenshots.sh --test root-qr
+APP_VERSION_OVERRIDE="3.5" APP_BUILD_OVERRIDE="2" ./scripts/test-screenshots.sh --test root-qr
 ```
 
 ## Simulator Rules
@@ -128,11 +132,11 @@ All PNGs and metadata are written to:
 - `MARKETING_VERSION` (version)
 - `CURRENT_PROJECT_VERSION` (build)
 
-Example: `v3-1-2-b6`
+Example for the current development checkout: `v3-5-b2`
 
-## Skip Behavior ("up to 10")
+## Skip Behavior (11 scenarios)
 
-The test class contains 10 deterministic scenarios. Unreachable scenarios are recorded via `XCTSkip` so the overall run remains stable while still producing usable PNG output.
+The test class contains 11 deterministic scenarios. Unreachable scenarios are recorded via `XCTSkip` so the overall run remains stable while still producing usable PNG output.
 
 ## Troubleshooting
 

@@ -589,6 +589,7 @@ run_single_capture() {
     -configuration "$CONFIGURATION"
     -testPlan "$TEST_PLAN"
     -destination "platform=iOS Simulator,id=$udid"
+    -derivedDataPath "$ARTIFACT_ROOT/DerivedData"
     -resultBundlePath "$result_bundle"
     -parallel-testing-enabled NO
     -parallel-testing-worker-count 1
@@ -607,7 +608,7 @@ run_single_capture() {
   SCREENSHOT_LANG="$language" \
   SCREENSHOT_REGION="$region" \
   SCREENSHOT_DEVICE_NAME="$device_name" \
-  xcodebuild "${xcodebuild_args[@]}"
+  lockf -t 0 "$ARTIFACT_ROOT/xcode-test.lock" xcodebuild "${xcodebuild_args[@]}"
 
   if [[ "${XCODEBUILD_DRY_RUN:-0}" == "1" ]]; then
     echo "Dry-run enabled, skipping xcresult attachment export." >&2

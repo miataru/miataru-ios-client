@@ -4093,7 +4093,7 @@
     },
     "settings_search_requires_parent_setting": {
       "comment": "Localized copy for Settings search and the navigation HUD.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {
@@ -4159,7 +4159,7 @@
     },
     "settings_search_requires_tracking_permission": {
       "comment": "Localized copy for Settings search and the navigation HUD.",
-      "extractionState": "stale",
+      "extractionState": "manual",
       "localizations": {
         "da": {
           "stringUnit": {

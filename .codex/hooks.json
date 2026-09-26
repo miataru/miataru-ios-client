@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/project-graph-post-patch.py\"",
+            "timeout": 120,
+            "type": "command"
+          }
+        ],
+        "matcher": "apply_patch|Edit|Write"
+      }
+    ],
+    "SessionStart": [],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/codex-hook.py\" prompt",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": ".*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/codex-hook.py\" pretool",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "spawn_agent|Agent"
+      }
+    ]
+  }
+}
