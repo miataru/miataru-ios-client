@@ -103,7 +103,7 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.5` build `3` (app and widget). App Store Connect accepted the build 3 upload on 2026-09-26; Apple processing completion, App Review, and store availability remain unverified.
+- Current development checkout: `3.5` build `4` (app and widget). App Store Connect accepted the build 4 upload on 2026-09-26; Apple processing started, but completion, App Review, and store availability remain unverified.
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
