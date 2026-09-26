@@ -62,9 +62,10 @@ cd miataru
 ./scripts/test-functional-ui-serial.sh
 ```
 
-For a release request, run `./scripts/verify.sh release` first and capture affected
-screenshots and locales from the same checked commit. Screenshot tests share the
-Xcode test lock and isolated `miataru/artifacts/DerivedData` with Unit/UI tests.
+When screenshots are explicitly requested for a release, first run
+`./scripts/verify.sh release`, then capture the requested screens and locales
+from the same checked commit. Screenshot tests share the Xcode test lock and isolated
+`miataru/artifacts/DerivedData` with Unit/UI tests.
 
 ## Languages and Regions
 
@@ -99,7 +100,7 @@ Optionally override version/build manually:
 
 ```bash
 cd miataru
-APP_VERSION_OVERRIDE="3.5" APP_BUILD_OVERRIDE="2" ./scripts/test-screenshots.sh --test root-qr
+APP_VERSION_OVERRIDE="3.5" APP_BUILD_OVERRIDE="3" ./scripts/test-screenshots.sh --test root-qr
 ```
 
 ## Simulator Rules
@@ -132,7 +133,7 @@ All PNGs and metadata are written to:
 - `MARKETING_VERSION` (version)
 - `CURRENT_PROJECT_VERSION` (build)
 
-Example for the current development checkout: `v3-5-b2`
+Example for the current development checkout: `v3-5-b3`
 
 ## Skip Behavior (11 scenarios)
 

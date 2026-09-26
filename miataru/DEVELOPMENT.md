@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current checkout has main app and widget metadata **3.5 (build 2)**. This identifies the development source, not an App Store release or accepted upload. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current checkout has main app and widget metadata **3.5 (build 3)**. This identifies the development source, not an App Store release or accepted upload. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 
@@ -42,7 +42,7 @@ miataru/
 
 ## Verification and graph workflow
 
-From `miataru/`, use `./scripts/verify.sh affected --dry-run --explain` to inspect the affected selection and `./scripts/verify.sh affected` for ordinary changes. `unit` and `ui` run full respective lanes; `release` runs complete Unit and serial functional UI coverage in sequence with separate result bundles; `tooling` tests selectors, metadata and graph tooling. `./scripts/verify.sh status --lane release` reads the retained aggregate status and both bundle paths. A zero-test or incomplete result is a failure. Screenshot capture is a separate affected release check.
+From `miataru/`, use `./scripts/verify.sh affected --dry-run --explain` to inspect the affected selection and `./scripts/verify.sh affected` for ordinary changes. `unit` and `ui` run full respective lanes; `release` runs complete Unit and serial functional UI coverage in sequence with separate result bundles; `tooling` tests selectors, metadata and graph tooling. `./scripts/verify.sh status --lane release` reads the retained aggregate status and both bundle paths. A zero-test or incomplete result is a failure. Screenshot capture runs only on explicit request.
 
 Test scripts serialize Xcode test commands with `miataru/artifacts/xcode-test.lock` and use isolated `miataru/artifacts/DerivedData` so stale builds in Xcode's global DerivedData cannot invalidate the simulator app signature. Result bundles and logs remain under `miataru/artifacts/`.
 
@@ -50,7 +50,7 @@ The repository-local [SwiftProjectGraph](../tools/SwiftProjectGraph/README.md) n
 
 `AGENTS.md` defines the repository-wide commit and release rules. Team delegation is opt-in; the Codex roles and hooks live under `.codex/` and `scripts/`. A completed app code/project/asset commit advances the app build exactly once and adds a changelog entry. Push, archive, and upload require a separate user request.
 
-The [release workflow](../documentation/release-workflow.md) records the tested commit, physical iPhone gate for sensitive location/background changes, archive signing and dSYMs, upload acceptance, and later Apple processing as separate evidence.
+The [release workflow](../documentation/release-workflow.md) records the tested commit, optional user-requested physical iPhone checks, archive signing and dSYMs, upload acceptance, and later Apple processing as separate evidence.
 
 ## Localization
 

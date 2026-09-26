@@ -33,7 +33,7 @@ The current structure favors living topic references over many small dated notes
 
 - [Repository agent rules](../AGENTS.md) and [Miataru rules](../miataru/AGENTS.md) define scoped work, opt-in team routing, build increments, and release evidence.
 - [Verification map](../miataru/scripts/verification-map.json), [verification runner](../miataru/scripts/verify.py), and [metadata preflight](../miataru/scripts/verify-metadata.py) define the executable gates.
-- [Release workflow](release-workflow.md) defines the checked-commit, physical-iPhone, archive, signing/dSYM, upload, and Apple-processing evidence boundaries.
+- [Release workflow](release-workflow.md) defines the checked-commit, optional physical-iPhone, archive, signing/dSYM, upload, and Apple-processing evidence boundaries.
 - [SwiftProjectGraph](../tools/SwiftProjectGraph/README.md) is the local source/document navigation index; [installation and refresh](../tools/SwiftProjectGraph/INSTALL.md) explain its lifecycle.
 
 ## Test Documentation
@@ -103,7 +103,7 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.5` build `2` (app and widget); this is not an App Store release claim
+- Current development checkout: `3.5` build `3` (app and widget); this is not an App Store release claim
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`

@@ -1,6 +1,6 @@
 # miataru - App Store Description
 
-This is editable copy for a future submission. Current source metadata is 3.5 build 2; this document does not establish an App Store release or upload.
+This is editable copy for a future submission. Current source metadata is 3.5 build 3; this document does not establish an App Store release or upload.
 
 ## Subtitle (30 characters max)
 

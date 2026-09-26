@@ -12,13 +12,12 @@ upload, Apple processing, or App Review outcome.
 2. Run `cd miataru && ./scripts/verify.sh release` against that commit. Preserve
    both retained Unit/UI `.xcresult` bundles, executed counts, failures/skips,
    and the aggregate release status. The two Xcode invocations run in sequence.
-   Run affected screenshot scenarios and all affected shipped locales on the
-   dedicated screenshot devices. A zero-test, hung, partial, or failing lane
-   is not release evidence.
-3. For changes to location sharing, background behavior, permissions, or Live
-   Activities, document a physical iPhone check before upload. Include device,
-   iOS version, tested permission/background states, observed delivery and
-   recovery behavior, and result. Simulator results do not substitute for it.
+   Validate affected shipped localizations. Screenshot captures run only on
+   explicit request. A zero-test, hung, partial, or failing lane is not release
+   evidence.
+3. A physical iPhone check is outside the standard release gate. Perform and
+   document it only when explicitly requested, including device, iOS version,
+   tested states, observations, and result.
 
 ## Archive and handoff
 

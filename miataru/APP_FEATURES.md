@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app in the **3.5 (build 2) development checkout**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app in the **3.5 (build 3) development checkout**.
 
 ## App Navigation and Views
 

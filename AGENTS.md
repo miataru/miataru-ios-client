@@ -46,13 +46,13 @@ simulator, and localization details.
 - Keep DeviceKey storage and widget behavior compatible with the current app.
   Do not add secret-bearing log, diagnostic, document, or test-artifact copies.
 - For a release, test the committed input with full Unit and serial functional
-  UI coverage plus affected localization/screenshot checks. Changes to location
-  sharing, background behavior, permissions, or Live Activities require a
-  documented physical iPhone check before upload.
+  UI coverage plus affected localization checks. Screenshot captures and a
+  physical iPhone check are outside the standard release gate; perform them
+  only when the user explicitly requests them.
 - Verify archive app/widget metadata, signing, architecture, and dSYMs. Report
   archive, App Store Connect upload acceptance, Apple processing, App Review,
-  and physical-device acceptance as separate states. Never infer a later state
-  from an earlier success.
+  and any requested physical-device acceptance as separate states. Never infer
+  a later state from an earlier success.
 
 # BEGIN SwiftProjectGraph
 ## Local project graph

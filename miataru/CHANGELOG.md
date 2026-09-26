@@ -1,4 +1,5 @@
 version 3.5
+- Prepared version 3.5 build 3 for App Store Connect distribution without further functional changes.
 - Marked seven dynamically referenced Settings search and navigation HUD strings as manually maintained so Xcode extraction no longer treats their complete translations as stale.
 - Prepared development build 2 and updated the local verification, graph, agent, and documentation workflows.
 - Added localized Settings search for individual controls on the main and Advanced Options pages, with direct navigation to available controls and clear prerequisite guidance for hidden ones.
