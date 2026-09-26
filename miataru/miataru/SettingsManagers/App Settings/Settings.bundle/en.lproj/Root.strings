@@ -22,11 +22,11 @@
 "activity_type_fitness" = "Medium (Cycling, Running)";
 "activity_type_automotive" = "Highest (Navigation)";
 "location_sensitivity_title" = "Location Update Sensitivity";
-"location_tracking_update_sensitivity_very_sensitive_short" = "Very sensitive (3m/2m)";
-"location_tracking_update_sensitivity_default_short" = "Default (5m/5m)";
-"location_tracking_update_sensitivity_balanced_short" = "Balanced (10m/10m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "Battery saver (25m/20m)";
-"location_tracking_update_sensitivity_minimal_short" = "Minimal (50m/40m)";
+"location_tracking_update_sensitivity_very_sensitive_short" = "Very sensitive (3 m/2 m)";
+"location_tracking_update_sensitivity_default_short" = "Default (5 m/5 m)";
+"location_tracking_update_sensitivity_balanced_short" = "Balanced (10 m/10 m)";
+"location_tracking_update_sensitivity_battery_saver_short" = "Battery saver (25 m/20 m)";
+"location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
 "background_location_updates_section_title" = "Background location updates";
 "frequent_background_location_updates_title" = "More frequent background updates";
 "background_location_distance_filter_title" = "Movement threshold";
@@ -49,7 +49,7 @@
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";
-"server_url" = "Miataru Server URL";
+"server_url" = "Miataru server URL";
 "app_behaviour" = "App behavior";
 "deactivate_device_lock" = "Deactivate device lock";
 "prevent_screen_rotation" = "Prevent screen rotation";
@@ -121,4 +121,4 @@
 
 "1minute" = "1 minute";
 "60minutes" = "60 minutes";
-"known_visitor_notification_cooldown_title" = "Known visitor cooldown";
+"known_visitor_notification_cooldown_title" = "Known visitor alert cooldown";

@@ -3,7 +3,7 @@
 "track_and_history" = "追踪与安全";
 "location_track" = "跟踪设备位置";
 "save_location_history_to_server" = "将位置历史保存到服务器";
-"store_history_before_autoremove" = "自动删除位置数据时间";
+"store_history_before_autoremove" = "自动删除位置数据的时间";
 "30minutes" = "30 分钟";
 "1hour" = "1 小时";
 "2hours" = "2 小时";
@@ -21,12 +21,12 @@
 "activity_type_other" = "标准（默认）";
 "activity_type_fitness" = "中等（骑行、跑步）";
 "activity_type_automotive" = "最高（导航）";
-"location_sensitivity_title" = "位置更新敏感度";
-"location_tracking_update_sensitivity_very_sensitive_short" = "超敏 (3m/2m)";
-"location_tracking_update_sensitivity_default_short" = "默认 (5m/5m)";
-"location_tracking_update_sensitivity_balanced_short" = "平衡 (10m/10m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "省电 (25m/20m)";
-"location_tracking_update_sensitivity_minimal_short" = "最低 (50m/40m)";
+"location_sensitivity_title" = "位置更新灵敏度";
+"location_tracking_update_sensitivity_very_sensitive_short" = "超敏（3 米/2 米）";
+"location_tracking_update_sensitivity_default_short" = "默认（5 米/5 米）";
+"location_tracking_update_sensitivity_balanced_short" = "平衡（10 米/10 米）";
+"location_tracking_update_sensitivity_battery_saver_short" = "省电（25 米/20 米）";
+"location_tracking_update_sensitivity_minimal_short" = "最低（50 米/40 米）";
 "background_location_updates_section_title" = "后台位置更新";
 "frequent_background_location_updates_title" = "更频繁的后台更新";
 "background_location_distance_filter_title" = "移动阈值";
@@ -121,4 +121,4 @@
 
 "1minute" = "1 分钟";
 "60minutes" = "60 分钟";
-"known_visitor_notification_cooldown_title" = "已知访客冷却时间";
+"known_visitor_notification_cooldown_title" = "已知访客提醒冷却时间";

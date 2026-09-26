@@ -1,6 +1,6 @@
 /* Italian InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "Utilizziamo la tua posizione per mostrarla e condividerla con i tuoi dispositivi.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Abbiamo bisogno della posizione in background per mantenere aggiornata la posizione del tuo dispositivo anche quando l’app non è aperta.";
+"NSLocationWhenInUseUsageDescription" = "Miataru usa la tua posizione per mostrartela e condividerla con i dispositivi che scegli.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Quando il tracciamento è attivo, Miataru usa la posizione in background per mantenere aggiornata la posizione condivisa anche quando l’app è chiusa.";
 
 
 

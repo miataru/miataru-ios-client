@@ -1,6 +1,6 @@
 /* Finnish InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "Käytämme sijaintiasi näyttääksemme paikkasi ja jakaaksemme sen laitteidesi kanssa.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Tarvitsemme taustasijainnin, jotta laitteesi sijainti pysyy ajan tasalla myös silloin, kun sovellus ei ole auki.";
+"NSLocationWhenInUseUsageDescription" = "Miataru käyttää sijaintiasi näyttääkseen sijaintisi ja jakaakseen sen valitsemillesi laitteille.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Kun seuranta on käytössä, Miataru päivittää jaettua sijaintiasi taustalla myös sovelluksen ollessa suljettuna.";
 
 
 

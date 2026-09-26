@@ -2377,7 +2377,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Un appareil connu a demandé votre position"
+            "value": "Un appareil connu a demandé ta position"
           }
         },
         "it": {
@@ -2442,7 +2442,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ a demandé votre position"
+            "value": "%@ a demandé ta position"
           }
         },
         "it": {
@@ -2507,7 +2507,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ a demandé votre position depuis %@"
+            "value": "%@ a demandé ta position depuis %@"
           }
         },
         "it": {

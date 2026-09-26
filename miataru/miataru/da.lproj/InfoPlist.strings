@@ -1,6 +1,6 @@
 /* Danish InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "Vi bruger din placering til at vise din position og dele den med dine enheder.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "Vi har brug for baggrundsplacering for at holde din enheds placering opdateret, selv når appen ikke er åben.";
+"NSLocationWhenInUseUsageDescription" = "Miataru bruger din position til at vise, hvor du er, og dele den med de enheder, du vælger.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Når sporing er slået til, bruger Miataru lokalitet i baggrunden til at holde din delte position opdateret, også når appen er lukket.";
 
 
 

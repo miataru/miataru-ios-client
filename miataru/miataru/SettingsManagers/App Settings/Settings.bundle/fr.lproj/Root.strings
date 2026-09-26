@@ -1,7 +1,7 @@
 /* Chaînes localisées pour Settings.bundle Root.plist (Français) */
 
 "track_and_history" = "Suivi et sécurité";
-"location_track" = "suivre la position de l’appareil";
+"location_track" = "Suivre la position de l’appareil";
 "save_location_history_to_server" = "Enregistrer l’historique de localisation sur le serveur";
 "store_history_before_autoremove" = "Supprimer automatiquement les données de localisation après";
 "30minutes" = "30 minutes";
@@ -51,7 +51,7 @@
 "25m" = "25 m";
 "server_url" = "URL du serveur Miataru";
 "app_behaviour" = "Comportement de l’application";
-"deactivate_device_lock" = "désactiver le verrouillage de l’appareil";
+"deactivate_device_lock" = "Désactiver le verrouillage de l’appareil";
 "prevent_screen_rotation" = "Empêcher la rotation de l’écran";
 "indicate_location_accuracy" = "Indiquer la précision de la position";
 "show_offscreen_arrows_for_other_devices" = "Afficher les autres appareils sur la carte de l’appareil";
@@ -65,9 +65,9 @@
 "location_update_outbox_max_items_title" = "Nombre maximal de mises à jour gardées";
 "map_configuration" = "Réglages de la carte";
 "map_type" = "Type de carte";
-"default_map" = "carte par défaut";
+"default_map" = "Carte par défaut";
 "hybrid_map" = "Carte hybride";
-"sat_map" = "carte satellite";
+"sat_map" = "Carte satellite";
 "map_update_interval" = "Intervalle de mise à jour sur la carte";
 "outside_map_update_interval" = "Intervalle de mise à jour ailleurs";
 "5s" = "5 secondes";
@@ -86,9 +86,9 @@
 "zoom_to_fit_for_groups" = "Ajuster le zoom aux groupes";
 "navigation" = "Navigation";
 "transport_mode" = "Mode de transport";
-"transport_walk" = "marche";
+"transport_walk" = "Marche";
 "transport_car" = "Voiture";
-"transport_transit" = "transit";
+"transport_transit" = "Transports en commun";
 "show_route_progress" = "Afficher la progression de l’itinéraire";
 "advanced_options" = "Options avancées";
 "pulsating_map_markers" = "Marqueurs de carte pulsants et scintillants";

@@ -1,4 +1,8 @@
 version 3.5
+- Reviewed all ten shipped app languages across the app, widget, onboarding, permission text, Siri shortcuts, and system settings; refined copy, corrected inconsistent informal address, and aligned shared settings labels.
+- Fixed misleading tracking-pause and location-sensitivity explanations, an active-tracking status shown as inactive, broken onboarding permission copy, untranslated feature names, and ambiguous map and server messages.
+- Corrected unknown-visitor dialogs so ignoring a device is no longer described as blocking server access when access control is off.
+- Prepared development build 4 for the localization review.
 - Prepared version 3.5 build 3 for App Store Connect distribution without further functional changes.
 - Marked seven dynamically referenced Settings search and navigation HUD strings as manually maintained so Xcode extraction no longer treats their complete translations as stale.
 - Prepared development build 2 and updated the local verification, graph, agent, and documentation workflows.

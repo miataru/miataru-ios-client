@@ -142,7 +142,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Anwendungsverhalten"
+            "value": "App-Verhalten"
           }
         },
         "en": {
@@ -666,7 +666,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Documentation to setup your own server (GitHub)"
+            "value": "How to set up your own server (GitHub)"
           }
         },
         "es": {
@@ -1251,7 +1251,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Invalid QR-Code"
+            "value": "Invalid QR code"
           }
         },
         "es": {
@@ -1315,7 +1315,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The QR-Code has to begin with 'miataru://'."
+            "value": "The QR code must start with miataru://."
           }
         },
         "es": {
@@ -2475,61 +2475,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Netværksfejl. Tjek server-URL eller netværksforbindelse."
+            "value": "Netværksfejl. Tjek serverens URL og netværksforbindelsen."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Netzwerkfehler"
+            "value": "Netzwerkfehler. Prüfe die Server-URL und deine Internetverbindung."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Network error. Check server URL or network connection."
+            "value": "Network error. Check the server URL and your internet connection."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Error de red. Verifica la URL del servidor o la conexión de red."
+            "value": "Error de red. Comprueba la URL del servidor y tu conexión a internet."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verkkovirhe. Tarkista palvelin-URL tai yhteys."
+            "value": "Verkkovirhe. Tarkista palvelimen URL-osoite ja internetyhteys."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erreur réseau. Vérifiez l’URL du serveur ou la connexion réseau."
+            "value": "Erreur réseau. Vérifie l’URL du serveur et ta connexion Internet."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Errore di rete. Controlla URL del server o connessione."
+            "value": "Errore di rete. Controlla l’URL del server e la connessione a internet."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ネットワークエラー"
+            "value": "ネットワークエラー。サーバーのURLとインターネット接続を確認してください。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Netwerkfout. Controleer server-URL of netwerkverbinding."
+            "value": "Netwerkfout. Controleer de server-URL en je internetverbinding."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "网络错误。请检查服务器 URL 或网络连接。"
+            "value": "网络错误。请检查服务器 URL 和网络连接。"
           }
         }
       }
@@ -2551,7 +2551,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Please enter a valid https server URL."
+            "value": "Enter a valid HTTPS server URL."
           }
         },
         "es": {
@@ -2569,7 +2569,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Veuillez saisir une URL de serveur https valide."
+            "value": "Saisis une URL de serveur https valide."
           }
         },
         "it": {
@@ -3060,61 +3060,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server-URL eller DeviceID er forkert."
+            "value": "Kunne ikke indlæse enhedernes positioner. Tjek serverens URL og de valgte enheder."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server- oder Geräte-ID ungültig"
+            "value": "Gerätestandorte konnten nicht geladen werden. Prüfe die Server-URL und die ausgewählten Geräte."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server URL or DeviceID is wrong."
+            "value": "Could not load device locations. Check the server URL and selected devices."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La URL del servidor o el ID del dispositivo es incorrecto."
+            "value": "No se pudieron cargar las ubicaciones de los dispositivos. Comprueba la URL del servidor y los dispositivos seleccionados."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Palvelin-URL tai DeviceID on virheellinen."
+            "value": "Laitteiden sijainteja ei voitu ladata. Tarkista palvelimen URL-osoite ja valitut laitteet."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "L’URL du serveur ou l’identifiant de l’appareil est incorrect."
+            "value": "Impossible de charger la position des appareils. Vérifie l’URL du serveur et les appareils sélectionnés."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "URL del server o DeviceID non valido."
+            "value": "Impossibile caricare le posizioni dei dispositivi. Controlla l’URL del server e i dispositivi selezionati."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "サーバーまたはデバイスIDが無効です"
+            "value": "デバイスの位置情報を読み込めませんでした。サーバーのURLと選択したデバイスを確認してください。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server-URL of DeviceID is onjuist."
+            "value": "Kan de locaties van de apparaten niet laden. Controleer de server-URL en de geselecteerde apparaten."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "服务器 URL 或设备 ID 错误。"
+            "value": "无法加载设备位置。请检查服务器 URL 和所选设备。"
           }
         }
       }
@@ -3201,7 +3201,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru Server URL"
+            "value": "Miataru server URL"
           }
         },
         "es": {
@@ -3254,61 +3254,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru-server-URL er ugyldig"
+            "value": "Miataru-serverens URL er ugyldig."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ungültige Miataru Server-URL"
+            "value": "Die Miataru-Server-URL ist ungültig."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru Server-URL is invalid"
+            "value": "The Miataru server URL is invalid."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La URL del servidor Miataru no es válida"
+            "value": "La URL del servidor Miataru no es válida."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru-palvelimen URL on virheellinen"
+            "value": "Miataru-palvelimen URL-osoite on virheellinen."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "L’URL du serveur Miataru est invalide"
+            "value": "L’URL du serveur Miataru est invalide."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "URL server Miataru non valida"
+            "value": "L’URL del server Miataru non è valida."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "無効なサーバーURLです"
+            "value": "MiataruサーバーのURLが無効です。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru-server-URL is ongeldig"
+            "value": "De URL van de Miataru-server is ongeldig."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru 服务器 URL 无效"
+            "value": "Miataru 服务器 URL 无效。"
           }
         }
       }
@@ -3967,61 +3967,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deaktiver sporing midlertidigt"
+            "value": "Sæt afsendelse af positioner på pause"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Temporär Tracking deaktivieren"
+            "value": "Standortübertragung pausieren"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Temporarily Disable Tracking"
+            "value": "Pause sending locations"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desactivar seguimiento temporalmente"
+            "value": "Pausar el envío de ubicaciones"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Poista seuranta tilapäisesti käytöstä"
+            "value": "Keskeytä sijaintien lähetys"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Désactiver temporairement le suivi"
+            "value": "Suspendre l’envoi des positions"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Disattiva temporaneamente il tracciamento"
+            "value": "Sospendi l’invio delle posizioni"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "一時的に追跡を無効にする"
+            "value": "位置情報の送信を一時停止"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tracking tijdelijk uitschakelen"
+            "value": "Verzenden van locaties pauzeren"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "暂时停用追踪"
+            "value": "暂停发送位置"
           }
         }
       }
@@ -4128,7 +4128,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Activez d’abord le réglage parent."
+            "value": "Active d’abord le réglage dont cette option dépend."
           }
         },
         "it": {
@@ -4241,7 +4241,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Search Results"
+            "value": "Search results"
           }
         },
         "es": {

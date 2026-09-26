@@ -40,9 +40,9 @@ struct iPhone_2_OnboardingLocationPermissionView: View {
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                         (
-                            Text("You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '", tableName: "LocationTracking")
+                            Text("onboarding_location_permission_explanation_prefix", tableName: "LocationTracking")
                             + Text("Allow While Using App", tableName: "LocationTracking").bold()
-                            + Text("'.", tableName: "Common")
+                            + Text("onboarding_location_permission_explanation_suffix", tableName: "LocationTracking")
                         )
                         .font(.subheadline)
                         .multilineTextAlignment(.leading)

@@ -22,11 +22,11 @@
 "activity_type_fitness" = "Keskitaso (pyöräily, juoksu)";
 "activity_type_automotive" = "Korkein (navigointi)";
 "location_sensitivity_title" = "Sijaintipäivitysten herkkyys";
-"location_tracking_update_sensitivity_very_sensitive_short" = "Erittäin herkkä (3m/2m)";
-"location_tracking_update_sensitivity_default_short" = "Oletus (5m/5m)";
-"location_tracking_update_sensitivity_balanced_short" = "Tasapainoinen (10m/10m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "Virransäästö (25m/20m)";
-"location_tracking_update_sensitivity_minimal_short" = "Minimi (50m/40m)";
+"location_tracking_update_sensitivity_very_sensitive_short" = "Erittäin herkkä (3 m/2 m)";
+"location_tracking_update_sensitivity_default_short" = "Oletus (5 m/5 m)";
+"location_tracking_update_sensitivity_balanced_short" = "Tasapainoinen (10 m/10 m)";
+"location_tracking_update_sensitivity_battery_saver_short" = "Virransäästö (25 m/20 m)";
+"location_tracking_update_sensitivity_minimal_short" = "Minimi (50 m/40 m)";
 "background_location_updates_section_title" = "Taustasijaintipäivitykset";
 "frequent_background_location_updates_title" = "Tiheämmät taustapäivitykset";
 "background_location_distance_filter_title" = "Liikkumiskynnys";

@@ -329,61 +329,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tilføj enheder via knappen Redigér"
+            "value" : "Tilføj enheder via Rediger."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Füge Geräte mit dem Bearbeiten‑Button hinzu"
+            "value" : "Füge über „Bearbeiten“ Geräte hinzu."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "add devices using the Edit button"
+            "value" : "Add devices using Edit."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "añade dispositivos usando el botón Editar"
+            "value" : "Añade dispositivos con Editar."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "lisää laitteita Muokkaa-painikkeella"
+            "value" : "Lisää laitteita Muokkaa-painikkeella."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ajoutez des appareils avec le bouton Modifier"
+            "value" : "Ajoute des appareils avec Modifier."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "aggiungi dispositivi usando il pulsante Modifica"
+            "value" : "Aggiungi dispositivi con Modifica."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編集ボタンを使用してデバイスを追加してください"
+            "value" : "「編集」からデバイスを追加してください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "voeg apparaten toe via de knop Bewerken"
+            "value" : "Voeg apparaten toe via Wijzig."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用编辑按钮添加设备"
+            "value" : "使用“编辑”添加设备。"
           }
         }
       }
@@ -394,61 +394,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "kunne ikke hente placering for enhed: %@"
+            "value" : "Kunne ikke hente positionen for %@."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standort für Gerät konnte nicht abgerufen werden: %@"
+            "value" : "Standort von %@ konnte nicht abgerufen werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "could not fetch location for device: %@"
+            "value" : "Could not load the location of %@."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "no se pudo obtener la ubicación del dispositivo: %@"
+            "value" : "No se pudo cargar la ubicación de %@."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ei voitu hakea laitteen sijaintia: %@"
+            "value" : "Laitteen %@ sijaintia ei voitu ladata."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "impossible de récupérer la position de l’appareil : %@"
+            "value" : "Impossible de charger la position de %@."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "impossibile recuperare la posizione del dispositivo: %@"
+            "value" : "Impossibile caricare la posizione di %@."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバイスの位置情報を取得できませんでした: %@"
+            "value" : "%@の位置情報を読み込めませんでした。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "kon locatie voor apparaat niet ophalen: %@"
+            "value" : "Kan de locatie van %@ niet laden."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法获取设备位置：%@"
+            "value" : "无法加载 %@ 的位置。"
           }
         }
       }
@@ -458,61 +458,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "vælg de enheder, der skal være i denne gruppe"
+            "value" : "Enheder i gruppen"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle Geräte aus, die in dieser Gruppe sein sollen"
+            "value" : "Geräte in dieser Gruppe"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "select devices that should be in this group"
+            "value" : "Devices in this group"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "selecciona los dispositivos que deben estar en este grupo"
+            "value" : "Dispositivos del grupo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "valitse laitteet tähän ryhmään"
+            "value" : "Ryhmän laitteet"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "sélectionnez les appareils qui doivent être dans ce groupe"
+            "value" : "Appareils du groupe"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "seleziona i dispositivi che devono essere in questo gruppo"
+            "value" : "Dispositivi del gruppo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このグループに含めるデバイスを選択してください"
+            "value" : "グループ内のデバイス"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "selecteer apparaten die in deze groep moeten zitten"
+            "value" : "Apparaten in deze groep"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应包含在此组的设备"
+            "value" : "群组中的设备"
           }
         }
       }
@@ -616,7 +616,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saisissez le nom du groupe"
+            "value" : "Saisis le nom du groupe"
           }
         },
         "it" : {
@@ -726,7 +726,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "enter a group name here"
+            "value" : "Enter a group name"
           }
         },
         "es" : {
@@ -744,7 +744,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "entrez un nom de groupe ici"
+            "value" : "entre un nom de groupe ici"
           }
         },
         "it" : {
@@ -1329,7 +1329,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun groupe disponible. Créez-en un nouveau pour commencer."
+            "value" : "Aucun groupe disponible. Crée-en un nouveau pour commencer."
           }
         },
         "it" : {
@@ -1459,7 +1459,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Touchez le bouton + pour créer un nouveau groupe."
+            "value" : "Touche le bouton + pour créer un nouveau groupe."
           }
         },
         "it" : {

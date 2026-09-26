@@ -380,7 +380,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standaard (default)"
+            "value" : "Standaard"
           }
         },
         "zh-Hans" : {
@@ -526,61 +526,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru kræver altid adgang til placering til baggrundssporing, Smart/Frequent Background Updates og pålidelig deling, mens appen er i baggrunden."
+            "value" : "Miataru skal have lokalitetstilladelsen Altid til sporing i baggrunden, smarte og hyppigere baggrundsopdateringer samt pålidelig positionsdeling, mens appen er i baggrunden."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru benötigt Standortzugriff „Immer“ für Hintergrund-Tracking, Smart/Frequent Background Updates und zuverlässiges Teilen, während die App im Hintergrund ist."
+            "value" : "Miataru benötigt Standortzugriff „Immer“ für Hintergrund-Tracking, smarte und häufigere Hintergrund-Updates sowie zuverlässige Standortfreigabe, während die App im Hintergrund läuft."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru needs Always location access for background tracking, Smart/Frequent Background Updates, and reliable sharing while the app is in the background."
+            "value" : "Miataru needs Always location access for background tracking, smart and frequent background updates, and reliable location sharing while the app is in the background."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru necesita acceso a la ubicación Siempre para el seguimiento en segundo plano, Smart/Frequent Background Updates y el uso compartido fiable mientras la app está en segundo plano."
+            "value" : "Miataru necesita acceso Siempre a la ubicación para el seguimiento en segundo plano, las actualizaciones inteligentes y frecuentes y el uso compartido fiable de la ubicación mientras la app está en segundo plano."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru tarvitsee Aina-sijaintiluvan taustaseurantaan, Smart/Frequent Background Updates -toimintoihin ja luotettavaan jakamiseen, kun appi on taustalla."
+            "value" : "Miataru tarvitsee Aina-sijaintiluvan taustaseurantaan, älykkäisiin ja tiheämpiin taustapäivityksiin sekä luotettavaan sijainnin jakamiseen sovelluksen ollessa taustalla."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru a besoin de l’accès permanent à la localisation pour le suivi en arrière-plan, Smart/Frequent Background Updates et un partage fiable lorsque l’app est en arrière-plan."
+            "value" : "Miataru a besoin de l’accès permanent à la position pour le suivi en arrière-plan, les mises à jour intelligentes et fréquentes ainsi que le partage fiable de ta position lorsque l’app est en arrière-plan."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru richiede l’accesso alla posizione Sempre per il tracciamento in background, Smart/Frequent Background Updates e la condivisione affidabile mentre l’app è in background."
+            "value" : "Miataru richiede l’accesso alla posizione Sempre per il tracciamento in background, gli aggiornamenti intelligenti e frequenti e la condivisione affidabile della posizione mentre l’app è in background."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru には、バックグラウンド追跡、Smart/Frequent Background Updates、アプリがバックグラウンドにある間の確実な共有のために、位置情報の「常に許可」が必要です。"
+            "value" : "Miataruでバックグラウンド追跡やスマート更新、高頻度更新を行い、アプリがバックグラウンドでも位置情報を確実に共有するには、位置情報の「常に許可」が必要です。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru heeft locatietoegang Altijd nodig voor achtergrondtracering, Smart/Frequent Background Updates en betrouwbaar delen terwijl de app op de achtergrond staat."
+            "value" : "Miataru heeft locatietoegang Altijd nodig voor tracking op de achtergrond, slimme en frequente achtergrondupdates en betrouwbaar delen van je locatie terwijl de app op de achtergrond staat."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru 需要“始终”位置访问权限，才能进行后台跟踪、Smart/Frequent Background Updates，并在应用处于后台时可靠共享位置。"
+            "value" : "Miataru 需要“始终允许”位置访问权限，才能在后台跟踪位置、智能或频繁更新位置，并可靠地共享位置。"
           }
         }
       }
@@ -621,7 +621,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouvrez Réglages iOS > Confidentialité et sécurité > Services de localisation > Miataru > Toujours."
+            "value" : "Ouvre Réglages iOS > Confidentialité et sécurité > Services de localisation > Miataru > Toujours."
           }
         },
         "it" : {
@@ -918,61 +918,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mest responsiv. Accepterer opdateringer efter ca. 25 m og kan bruge mest batteri."
+            "value" : "Responsiv. Accepterer opdateringer efter ca. 25 m bevægelse og kan bruge mere batteri end større afstandsgrænser."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Am reaktionsschnellsten. Akzeptiert Updates nach etwa 25 m und kann am meisten Akku verbrauchen."
+            "value" : "Reaktionsschnell. Akzeptiert Updates nach etwa 25 m Bewegung und kann mehr Akku verbrauchen als größere Distanzschwellen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Most responsive. Accepts updates after about 25 m and can use the most battery."
+            "value" : "Responsive. Accepts updates after about 25 m of movement and may use more battery than larger distance thresholds."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El más sensible. Acepta actualizaciones tras unos 25 m y puede consumir la mayor cantidad de batería."
+            "value" : "Sensible. Acepta actualizaciones tras unos 25 m de movimiento y puede consumir más batería que los umbrales de distancia mayores."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reagoi nopeimmin. Hyväksyy päivitykset noin 25 m jälkeen ja voi kuluttaa eniten akkua."
+            "value" : "Reagoi herkästi. Hyväksyy päivitykset noin 25 m:n liikkeen jälkeen ja voi kuluttaa enemmän akkua kuin suuremmat etäisyysrajat."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le plus réactif. Accepte des mises à jour après environ 25 m et peut consommer le plus de batterie."
+            "value" : "Réactif. Accepte les mises à jour après environ 25 m de déplacement et peut consommer plus de batterie qu’un seuil de distance plus élevé."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Massima reattività. Accetta aggiornamenti dopo circa 25 m e può consumare più batteria."
+            "value" : "Reattivo. Accetta aggiornamenti dopo circa 25 m di movimento e può consumare più batteria rispetto a soglie di distanza maggiori."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最も反応が速い設定です。約25 mの移動後に更新を受け入れ、最もバッテリーを消費する場合があります。"
+            "value" : "反応が速い設定です。約25 mの移動後に更新を受け入れます。距離のしきい値が大きい設定より電力を消費する場合があります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reageert het snelst. Accepteert updates na ongeveer 25 m en kan de meeste batterij gebruiken."
+            "value" : "Reageert snel. Accepteert updates na ongeveer 25 m verplaatsing en kan meer batterij verbruiken dan grotere afstandsdrempels."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "响应最快。移动约 25 米后接受更新，可能消耗最多电量。"
+            "value" : "响应灵敏。移动约 25 米后接受更新，耗电量可能高于距离阈值更大的设置。"
           }
         }
       }
@@ -984,61 +984,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mere responsiv. Accepterer opdateringer efter ca. 50 m og kan bruge mere batteri."
+            "value" : "Moderat responsiv. Accepterer opdateringer efter ca. 50 m bevægelse og kan bruge mere batteri end standardindstillingen."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reaktionsschneller. Akzeptiert Updates nach etwa 50 m und kann mehr Akku verbrauchen."
+            "value" : "Mäßig reaktionsschnell. Akzeptiert Updates nach etwa 50 m Bewegung und kann mehr Akku verbrauchen als die Standardeinstellung."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "More responsive. Accepts updates after about 50 m and can use more battery."
+            "value" : "Moderately responsive. Accepts updates after about 50 m of movement and may use more battery than the default."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Más sensible. Acepta actualizaciones tras unos 50 m y puede consumir más batería."
+            "value" : "Sensibilidad moderada. Acepta actualizaciones tras unos 50 m de movimiento y puede consumir más batería que el ajuste predeterminado."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reagoi nopeammin. Hyväksyy päivitykset noin 50 m jälkeen ja voi kuluttaa enemmän akkua."
+            "value" : "Reagoi kohtalaisen herkästi. Hyväksyy päivitykset noin 50 m:n liikkeen jälkeen ja voi kuluttaa enemmän akkua kuin oletusasetus."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plus réactif. Accepte des mises à jour après environ 50 m et peut consommer plus de batterie."
+            "value" : "Réactivité modérée. Accepte les mises à jour après environ 50 m de déplacement et peut consommer plus de batterie que le réglage par défaut."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Più reattivo. Accetta aggiornamenti dopo circa 50 m e può consumare più batteria."
+            "value" : "Reattività moderata. Accetta aggiornamenti dopo circa 50 m di movimento e può consumare più batteria rispetto all’impostazione predefinita."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "より反応が速い設定です。約50 mの移動後に更新を受け入れ、より多くのバッテリーを消費する場合があります。"
+            "value" : "適度に反応する設定です。約50 mの移動後に更新を受け入れます。標準設定より電力を消費する場合があります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reageert sneller. Accepteert updates na ongeveer 50 m en kan meer batterij gebruiken."
+            "value" : "Reageert gemiddeld snel. Accepteert updates na ongeveer 50 m verplaatsing en kan meer batterij verbruiken dan de standaardinstelling."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "响应更快。移动约 50 米后接受更新，可能会消耗更多电量。"
+            "value" : "响应速度适中。移动约 50 米后接受更新，耗电量可能高于默认设置。"
           }
         }
       }
@@ -2820,61 +2820,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Når slået til vises en enheds aktuelle hastighed (hvis >10) over markøren på kortet."
+            "value" : "Viser en enheds hastighed over dens markør på kortet, når den er mindst 10 km/t."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wenn aktiviert, wird die aktuelle Geschwindigkeit eines Geräts (wenn >10) über dem Marker auf der Karte angezeigt."
+            "value" : "Zeigt die Geschwindigkeit eines Geräts ab 10 km/h über seiner Markierung auf der Karte an."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "When on, the current speed of a device will be shown (if >10) above the marker on the map."
+            "value" : "Shows a device’s speed above its map marker when it reaches 10 km/h or more."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si está activado, se mostrará la velocidad actual de un dispositivo (si >10) sobre el marcador en el mapa."
+            "value" : "Muestra la velocidad de un dispositivo sobre su marcador en el mapa cuando alcanza al menos 10 km/h."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kun käytössä, laitteen nykyinen nopeus näytetään (jos >10) kartan merkinnän yläpuolella."
+            "value" : "Näyttää laitteen nopeuden karttamerkin yläpuolella, kun nopeus on vähintään 10 km/h."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si activé, la vitesse actuelle d’un appareil est affichée (si >10) au-dessus du repère sur la carte."
+            "value" : "Affiche la vitesse d’un appareil au-dessus de son repère sur la carte dès qu’elle atteint 10 km/h."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se attivato, la velocità attuale di un dispositivo verrà mostrata (se >10) sopra il marker sulla mappa."
+            "value" : "Mostra la velocità di un dispositivo sopra il suo indicatore sulla mappa quando raggiunge almeno 10 km/h."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "オンの場合、デバイスの現在速度が（>10 の場合）マップ上のマーカーの上に表示されます。"
+            "value" : "デバイスの速度が10 km/h以上になると、地図上のマーカーの上に表示します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indien ingeschakeld wordt de huidige snelheid van een apparaat (als >10) boven de markering op de kaart weergegeven."
+            "value" : "Toont de snelheid van een apparaat boven de kaartmarkering zodra die 10 km/u of hoger is."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用后，将在地图上的标记上方显示设备当前速度（如果 >10）。"
+            "value" : "当设备速度达到 10 公里/小时或更高时，在地图标记上方显示速度。"
           }
         }
       }
@@ -3479,7 +3479,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle 1 Minute"
+            "value" : "Jede Minute"
           }
         },
         "en" : {
@@ -4620,7 +4620,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes en arrière-plan restent actives jusqu’à ce que vous les désactiviez manuellement."
+            "value" : "Les mises à jour fréquentes en arrière-plan restent actives jusqu’à ce que tu les désactives manuellement."
           }
         },
         "it" : {
@@ -4815,7 +4815,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru utilise le mode de localisation fréquent en arrière-plan sans expiration. Touchez pour ouvrir les options avancées et le désactiver."
+            "value" : "Miataru utilise le mode de localisation fréquent en arrière-plan sans expiration. Touche pour ouvrir les options avancées et le désactiver."
           }
         },
         "it" : {
@@ -5283,7 +5283,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自動的に無効化するまで"
+            "value" : "自動的に無効になるまでの時間"
           }
         },
         "nl" : {
@@ -5348,7 +5348,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "なし"
+            "value" : "自動的に無効にしない"
           }
         },
         "nl" : {
@@ -5402,7 +5402,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez cette option pour garder des mises à jour en arrière-plan plus fréquentes avec les réglages choisis. Ce mode manuel remplace les critères intelligents de démarrage et d’arrêt."
+            "value" : "Active cette option pour garder des mises à jour en arrière-plan plus fréquentes avec les réglages choisis. Ce mode manuel remplace les critères intelligents de démarrage et d’arrêt."
           }
         },
         "it" : {
@@ -5508,7 +5508,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle 1 Minute"
+            "value" : "Jede Minute"
           }
         },
         "en" : {
@@ -6032,7 +6032,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle 60 Minuten"
+            "value" : "Jede Stunde"
           }
         },
         "en" : {
@@ -6577,7 +6577,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 1 minute."
+            "value" : "Après une notification pour le même appareil connu, Miataru peut t’avertir à nouveau après 1 minute."
           }
         },
         "it" : {
@@ -6643,7 +6643,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 5 minutes."
+            "value" : "Après une notification pour le même appareil connu, Miataru peut t’avertir à nouveau après 5 minutes."
           }
         },
         "it" : {
@@ -6709,7 +6709,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 15 minutes."
+            "value" : "Après une notification pour le même appareil connu, Miataru peut t’avertir à nouveau après 15 minutes."
           }
         },
         "it" : {
@@ -6775,7 +6775,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 30 minutes."
+            "value" : "Après une notification pour le même appareil connu, Miataru peut t’avertir à nouveau après 30 minutes."
           }
         },
         "it" : {
@@ -6841,7 +6841,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Après une notification pour le même appareil connu, Miataru peut vous avertir à nouveau après 60 minutes."
+            "value" : "Après une notification pour le même appareil connu, Miataru peut t’avertir à nouveau après 60 minutes."
           }
         },
         "it" : {
@@ -6883,7 +6883,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abkühlzeit für bekannte Besucher"
+            "value" : "Mindestabstand für bekannte Besucher"
           }
         },
         "en" : {
@@ -7788,7 +7788,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-Change-Rearm"
+            "value" : "Überwachung großer Standortänderungen reaktivieren"
           }
         },
         "en" : {
@@ -7830,7 +7830,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Significant-change opnieuw activeren"
+            "value" : "Detectie van grote locatieveranderingen hervatten"
           }
         },
         "zh-Hans" : {
@@ -8202,7 +8202,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'autorisation de localisation a été refusée précédemment. Pour activer le suivi de localisation, ouvrez les Réglages et accordez l'accès à la localisation à Miataru."
+            "value" : "L'autorisation de localisation a été refusée précédemment. Pour activer le suivi de localisation, ouvre les Réglages et accorde l'accès à la localisation à Miataru."
           }
         },
         "it" : {
@@ -8220,7 +8220,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Locatietoestemming werd eerder geweigerd. Om locatietracering in te schakelen, open Instellingen en verleen Miataru toegang tot uw locatie."
+            "value" : "Locatietoegang is eerder geweigerd. Open Instellingen en geef Miataru toegang tot je locatie om tracking in te schakelen."
           }
         },
         "zh-Hans" : {
@@ -8396,7 +8396,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "suivre la position de l’appareil"
+            "value" : "Suivre la position de l’appareil"
           }
         },
         "it" : {
@@ -8462,7 +8462,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru vous rappelle d’ouvrir l’app si elle n’a pas été ouverte ou n’a envoyé aucune mise à jour de position pendant cette durée."
+            "value" : "Miataru te rappelle d’ouvrir l’app si elle n’a pas été ouverte et n’a envoyé aucune mise à jour de position pendant cette durée."
           }
         },
         "it" : {
@@ -8503,7 +8503,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tracking-Prüferinnerung"
+            "value" : "Erinnerung zur Tracking-Prüfung"
           }
         },
         "en" : {
@@ -8592,7 +8592,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miataru est silencieuse depuis un moment. Ouvrez l’app pour confirmer que le suivi de position fonctionne toujours."
+            "value" : "Miataru est silencieuse depuis un moment. Ouvre l’app pour confirmer que le suivi de position fonctionne toujours."
           }
         },
         "it" : {
@@ -8692,19 +8692,19 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Balanceret (10m/10m)"
+            "value" : "Balanceret (10 m/10 m)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausgewogen (10 m/10 m)"
+            "value" : "Ausgewogen (10 m/10 m)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Balanced (10m/10m)"
+            "value" : "Balanced (10 m/10 m)"
           }
         },
         "es" : {
@@ -8716,7 +8716,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tasapainoinen (10m/10m)"
+            "value" : "Tasapainoinen (10 m/10 m)"
           }
         },
         "fr" : {
@@ -8728,25 +8728,25 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bilanciato (10m/10m)"
+            "value" : "Bilanciato (10 m/10 m)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バランス (10m/10m)"
+            "value" : "バランス (10 m/10 m)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gebalanceerd (10m/10m)"
+            "value" : "Gebalanceerd (10 m/10 m)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平衡 (10m/10m)"
+            "value" : "平衡（10 米/10 米）"
           }
         }
       }
@@ -8757,19 +8757,19 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Strømbesparelse (25m/20m)"
+            "value" : "Strømbesparelse (25 m/20 m)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Energiesparmodus (25 m/20 m)"
+            "value" : "Energiesparmodus (25 m/20 m)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Battery saver (25m/20m)"
+            "value" : "Battery saver (25 m/20 m)"
           }
         },
         "es" : {
@@ -8781,7 +8781,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Virransäästö (25m/20m)"
+            "value" : "Virransäästö (25 m/20 m)"
           }
         },
         "fr" : {
@@ -8793,25 +8793,25 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Risparmio batteria (25m/20m)"
+            "value" : "Risparmio batteria (25 m/20 m)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "省電力 (25m/20m)"
+            "value" : "省電力 (25 m/20 m)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Batterijbesparing (25m/20m)"
+            "value" : "Batterijbesparing (25 m/20 m)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "省电 (25m/20m)"
+            "value" : "省电（25 米/20 米）"
           }
         }
       }
@@ -8822,19 +8822,19 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard (5m/5m)"
+            "value" : "Standard (5 m/5 m)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard (5 m/5 m)"
+            "value" : "Standard (5 m/5 m)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Default (5m/5m)"
+            "value" : "Default (5 m/5 m)"
           }
         },
         "es" : {
@@ -8846,7 +8846,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oletus (5m/5m)"
+            "value" : "Oletus (5 m/5 m)"
           }
         },
         "fr" : {
@@ -8858,25 +8858,25 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Predefinito (5m/5m)"
+            "value" : "Predefinito (5 m/5 m)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デフォルト (5m/5m)"
+            "value" : "デフォルト (5 m/5 m)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standaard (5m/5m)"
+            "value" : "Standaard (5 m/5 m)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认 (5m/5m)"
+            "value" : "默认（5 米/5 米）"
           }
         }
       }
@@ -8887,19 +8887,19 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimal (50m/40m)"
+            "value" : "Minimal (50 m/40 m)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimal (50 m/40 m)"
+            "value" : "Minimal (50 m/40 m)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimal (50m/40m)"
+            "value" : "Minimal (50 m/40 m)"
           }
         },
         "es" : {
@@ -8911,7 +8911,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimi (50m/40m)"
+            "value" : "Minimi (50 m/40 m)"
           }
         },
         "fr" : {
@@ -8923,25 +8923,25 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimo (50m/40m)"
+            "value" : "Minimo (50 m/40 m)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最小 (50m/40m)"
+            "value" : "最小 (50 m/40 m)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimaal (50m/40m)"
+            "value" : "Minimaal (50 m/40 m)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最低 (50m/40m)"
+            "value" : "最低（50 米/40 米）"
           }
         }
       }
@@ -8952,19 +8952,19 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meget følsom (3m/2m)"
+            "value" : "Meget følsom (3 m/2 m)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sehr empfindlich (3 m/2 m)"
+            "value" : "Sehr empfindlich (3 m/2 m)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Very sensitive (3m/2m)"
+            "value" : "Very sensitive (3 m/2 m)"
           }
         },
         "es" : {
@@ -8976,7 +8976,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erittäin herkkä (3m/2m)"
+            "value" : "Erittäin herkkä (3 m/2 m)"
           }
         },
         "fr" : {
@@ -8988,25 +8988,25 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Molto sensibile (3m/2m)"
+            "value" : "Molto sensibile (3 m/2 m)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "非常に高感度 (3m/2m)"
+            "value" : "非常に高感度 (3 m/2 m)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeer gevoelig (3m/2m)"
+            "value" : "Zeer gevoelig (3 m/2 m)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "超敏 (3m/2m)"
+            "value" : "超敏（3 米/2 米）"
           }
         }
       }
@@ -10300,67 +10300,67 @@
         }
       }
     },
-    "Only allowed when app in foregrond" : {
+    "location_tracking_status_foreground_only" : {
       "comment" : "Location Tracking Status statusText\npermission text in Location Tracking Status",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kun tilladt når appen er i forgrunden"
+            "value" : "Positionsadgang kun, når appen er i brug"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur erlaubt, wenn die App im Vordergrund ist"
+            "value" : "Standortzugriff nur bei Verwendung der App"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only allowed when app in foregrond"
+            "value" : "Location access only while using the app"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permitido solo cuando la app está en primer plano"
+            "value" : "Acceso a la ubicación solo mientras se usa la app"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sallittu vain kun sovellus on etualalla"
+            "value" : "Sijaintia voi käyttää vain sovelluksen ollessa käytössä"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisé uniquement lorsque l’app est au premier plan"
+            "value" : "Accès à la position uniquement pendant l’utilisation de l’app"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consentito solo quando l'app è in primo piano"
+            "value" : "Accesso alla posizione solo mentre usi l’app"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アプリがフォアグラウンドにあるときのみ許可されます"
+            "value" : "アプリの使用中のみ位置情報にアクセス可能"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alleen toegestaan als app op de voorgrond is"
+            "value" : "Locatietoegang alleen tijdens gebruik van de app"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅在应用前台时允许"
+            "value" : "仅在使用 App 时可访问位置"
           }
         }
       }
@@ -10798,7 +10798,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "マップマーカーの鼓動/シマーアニメーション"
+            "value" : "地図マーカーの脈動・きらめき"
           }
         },
         "nl" : {
@@ -11501,7 +11501,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Définit la distance à laquelle vous devez quitter la zone de réveil intelligente avant que Miataru commence à tester des mises à jour plus fréquentes en arrière-plan. Les rayons plus petits peuvent réagir plus tôt, mais réveiller plus souvent; les rayons plus grands sont plus calmes et économes. Cela ne modifie pas le seuil de déplacement des mises à jour fréquentes. iOS peut limiter le rayon effectif."
+            "value" : "Définit la distance à laquelle tu dois quitter la zone de réveil intelligente avant que Miataru commence à tester des mises à jour plus fréquentes en arrière-plan. Les rayons plus petits peuvent réagir plus tôt, mais réveiller plus souvent; les rayons plus grands sont plus calmes et économes. Cela ne modifie pas le seuil de déplacement des mises à jour fréquentes. iOS peut limiter le rayon effectif."
           }
         },
         "it" : {
@@ -11894,7 +11894,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lorsque cette option est activée, Miataru utilise normalement le mode standard économe en batterie et ne lance automatiquement les mises à jour plus fréquentes en arrière-plan que lorsque votre déplacement dépasse le seuil de vitesse."
+            "value" : "Lorsque cette option est activée, Miataru utilise normalement le mode standard économe en batterie et ne lance automatiquement les mises à jour plus fréquentes en arrière-plan que lorsque ton déplacement dépasse le seuil de vitesse."
           }
         },
         "it" : {
@@ -12025,7 +12025,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les mises à jour fréquentes manuelles en arrière-plan sont actives. Désactivez-les avant de modifier les mises à jour fréquentes intelligentes."
+            "value" : "Les mises à jour fréquentes manuelles en arrière-plan sont actives. Désactive-les avant de modifier les mises à jour fréquentes intelligentes."
           }
         },
         "it" : {
@@ -12222,7 +12222,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les notifications ne sont pas autorisées. Ouvrez les réglages iOS pour être averti lorsque les mises à jour fréquentes intelligentes changent de mode."
+            "value" : "Les notifications ne sont pas autorisées. Ouvre les réglages iOS pour être averti lorsque les mises à jour fréquentes intelligentes changent de mode."
           }
         },
         "it" : {
@@ -12263,7 +12263,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Smart-Häufige-Updates-Benachrichtigungen"
+            "value" : "Benachrichtigungen bei Smart-Moduswechsel"
           }
         },
         "en" : {
@@ -12648,61 +12648,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybrid bruger GPS-hastighed, når den er tilgængelig, og beregner ellers hastighed ud fra afstand og tid mellem brugbare positioner. Kun GPS bruger kun systemets hastighedsværdi."
+            "value" : "Hybrid bruger GPS-hastighed, når den er tilgængelig, og beregner ellers hastigheden ud fra afstanden og tiden mellem brugbare positioner. Kun GPS bruger udelukkende systemets hastighedsværdi."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybrid nutzt GPS-Speed, wenn verfügbar, und berechnet sonst Geschwindigkeit aus Distanz und Zeit zwischen brauchbaren Standorten. Nur GPS verwendet ausschließlich den System-Speed-Wert."
+            "value" : "Hybrid verwendet die GPS-Geschwindigkeit, sofern sie verfügbar ist. Andernfalls berechnet Miataru die Geschwindigkeit aus Distanz und Zeit zwischen verwertbaren Standorten. Nur GPS verwendet ausschließlich den vom System gelieferten Geschwindigkeitswert."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybrid uses GPS speed when available and otherwise derives speed from distance and time between usable locations. GPS only uses only the system speed value."
+            "value" : "Hybrid uses GPS speed when available; otherwise, it calculates speed from the distance and time between usable locations. GPS only uses the speed reported by the system."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Híbrido usa la velocidad GPS cuando está disponible y, si no, calcula la velocidad a partir de la distancia y el tiempo entre ubicaciones utilizables. Solo GPS usa únicamente el valor de velocidad del sistema."
+            "value" : "Híbrido usa la velocidad GPS cuando está disponible; de lo contrario, la calcula a partir de la distancia y el tiempo entre ubicaciones válidas. Solo GPS usa la velocidad indicada por el sistema."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybridi käyttää GPS-nopeutta, kun se on saatavilla, ja muuten laskee nopeuden käyttökelpoisten sijaintien etäisyydestä ja ajasta. Vain GPS käyttää vain järjestelmän nopeusarvoa."
+            "value" : "Hybridi käyttää GPS-nopeutta, kun se on saatavilla. Muussa tapauksessa nopeus lasketaan käyttökelpoisten sijaintien välisestä etäisyydestä ja ajasta. Vain GPS käyttää järjestelmän ilmoittamaa nopeutta."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybride utilise la vitesse GPS lorsqu’elle est disponible, sinon calcule la vitesse à partir de la distance et du temps entre des positions exploitables. GPS seul utilise uniquement la vitesse fournie par le système."
+            "value" : "Le mode hybride utilise la vitesse GPS si elle est disponible. Sinon, il calcule la vitesse à partir de la distance et du temps entre deux positions exploitables. Le mode GPS seul utilise la vitesse fournie par le système."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ibrido usa la velocità GPS quando disponibile e altrimenti calcola la velocità da distanza e tempo tra posizioni utilizzabili. Solo GPS usa solo il valore di velocità del sistema."
+            "value" : "La modalità ibrida usa la velocità GPS quando è disponibile; altrimenti la calcola dalla distanza e dal tempo tra posizioni valide. La modalità Solo GPS usa la velocità fornita dal sistema."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ハイブリッドは利用可能な場合は GPS 速度を使い、それ以外は有効な位置間の距離と時間から速度を推定します。GPS のみはシステムの速度値だけを使います。"
+            "value" : "ハイブリッドはGPSの速度を利用できる場合に使用し、それ以外は有効な位置情報間の距離と時間から速度を計算します。「GPSのみ」はシステムが報告した速度を使用します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hybride gebruikt gps-snelheid wanneer beschikbaar en berekent anders snelheid uit afstand en tijd tussen bruikbare locaties. Alleen gps gebruikt alleen de systeemsnelheid."
+            "value" : "Hybride gebruikt de gps-snelheid wanneer die beschikbaar is. Anders berekent Miataru de snelheid uit de afstand en tijd tussen bruikbare locaties. Alleen gps gebruikt de snelheid die het systeem meldt."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "混合模式会优先使用 GPS 速度，否则根据可用位置之间的距离和时间推算速度。仅 GPS 模式只使用系统速度值。"
+            "value" : "混合模式优先使用 GPS 速度；否则根据有效位置之间的距离和时间计算速度。仅 GPS 模式使用系统报告的速度。"
           }
         }
       }
@@ -12719,7 +12719,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur GPS-Speed"
+            "value" : "Nur GPS-Geschwindigkeit"
           }
         },
         "en" : {
@@ -13209,7 +13209,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位置情報を自動的に削除します"
+            "value" : "位置情報を自動削除するまでの時間"
           }
         },
         "nl" : {
@@ -13221,7 +13221,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自动删除位置数据时间"
+            "value" : "自动删除位置数据的时间"
           }
         }
       }
@@ -13237,7 +13237,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verfolgung & Sicherheit"
+            "value" : "Tracking & Sicherheit"
           }
         },
         "en" : {
@@ -13290,67 +13290,67 @@
         }
       }
     },
-    "Tracking inactive (fore- & background)" : {
+    "location_tracking_status_active" : {
       "comment" : "Location Tracking Status statusText",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sporing inaktiv (for- og baggrund)"
+            "value" : "Sporing aktiv i for- og baggrunden"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verfolgung inaktiv (Vorder- & Hintergrund)"
+            "value" : "Tracking aktiv (im Vorder- und Hintergrund)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tracking inactive (fore- & background)"
+            "value" : "Tracking active (foreground and background)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seguimiento inactivo (primer y segundo plano)"
+            "value" : "Seguimiento activo en primer y segundo plano"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seuranta ei aktiivinen (etu- ja tausta)"
+            "value" : "Seuranta on käytössä etualalla ja taustalla"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suivi inactif (avant-plan et arrière-plan)"
+            "value" : "Suivi actif au premier plan et en arrière-plan"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tracciamento inattivo (primo e secondo piano)"
+            "value" : "Tracciamento attivo in primo piano e in background"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "追跡無効（フォアグラウンド＆バックグラウンド）"
+            "value" : "追跡中（フォアグラウンドとバックグラウンド）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tracking inactief (voor- en achtergrond)"
+            "value" : "Tracking actief op de voorgrond en achtergrond"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "跟踪未激活（前台和后台）"
+            "value" : "前台和后台均在跟踪位置"
           }
         }
       }
@@ -13367,7 +13367,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verfolgungsmodus: Echtzeit (GPS)"
+            "value" : "Tracking-Modus: Echtzeit (GPS)"
           }
         },
         "en" : {
@@ -13432,7 +13432,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verfolgungsmodus: Standard (stromsparend)"
+            "value" : "Tracking-Modus: Standard (stromsparend)"
           }
         },
         "en" : {
@@ -14171,7 +14171,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les nouvelles positions ne sont pas envoyées au serveur et ne le seront pas plus tard. Touchez pour mettre fin à la pause."
+            "value" : "Les nouvelles positions ne sont pas envoyées au serveur et ne le seront pas plus tard. Touche pour mettre fin à la pause."
           }
         },
         "it" : {
@@ -15370,66 +15370,132 @@
         }
       }
     },
-    "You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '" : {
+    "onboarding_location_permission_explanation_prefix" : {
+      "comment" : "Introductory onboarding copy before the bold system permission choice.",
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du behøver ikke give adgang til lokation, da du kan bruge grundlæggende funktioner som at se andre enheders lokationer uden at dele din egen lokation. Du kan swipe til venstre for at fortsætte uden at aktivere lokationsdeling.\nFor at give Miataru tilladelsen skal du aktivere kontakten og svare i dialogen med. '"
+            "value" : "Du kan bruge Miataru uden at dele din position. Stryg til venstre for at fortsætte uden at slå sporing til.\n\nHvis du vil dele din position, skal du slå kontakten til og vælge “"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du musst keinen Standortzugriff gewähren, da du grundlegende Funktionen wie das Anzeigen von Standorten anderer Geräte nutzen kannst, ohne deinen eigenen Standort zu teilen. Du kannst nach links wischen, um fortzufahren, ohne die Standortfreigabe zu aktivieren.\nUm Miataru die Erlaubnis zu erteilen, aktiviere den Schalter und beantworte den folgenden Dialog mit. '"
+            "value" : "Du kannst Miataru verwenden, ohne deinen Standort zu teilen. Wische nach links, um ohne Tracking fortzufahren.\n\nWenn du deinen Standort teilen möchtest, aktiviere den Schalter und wähle im Berechtigungsdialog „"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You do not have to allow location access as you can use basic functions like seeing other device locations without sharing your own location. You can swipe left to continue without enabling the location sharing.\nTo give Miataru the permission please enable the toggle and answer the following dialog with. '"
+            "value" : "You can use Miataru without sharing your location. Swipe left to continue without turning on tracking.\n\nTo share your location, turn on the switch and choose “"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No tienes que permitir el acceso a la ubicación, ya que puedes usar funciones básicas como ver las ubicaciones de otros dispositivos sin compartir tu propia ubicación. Puedes deslizar hacia la izquierda para continuar sin habilitar el uso compartido de ubicación.\nPara otorgar el permiso a Miataru, activa el interruptor y responde al siguiente diálogo con. '"
+            "value" : "Puedes usar Miataru sin compartir tu ubicación. Desliza hacia la izquierda para continuar sin activar el seguimiento.\n\nPara compartir tu ubicación, activa el interruptor y elige «"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sinun ei tarvitse sallia sijaintipääsyä, koska voit käyttää perustoimintoja, kuten muiden laitteiden sijaintien näkemistä ilman oman sijaintisi jakamista. Voit pyyhkäistä vasemmalle jatkaaksesi ilman sijaintijakamisen ottamista käyttöön.\nAnna Miatarulle lupa ottamalla kytkin käyttöön ja vastaamalla seuraavaan valintaikkunaan. '"
+            "value" : "Voit käyttää Miatarua jakamatta sijaintiasi. Jatka ilman seurantaa pyyhkäisemällä vasemmalle.\n\nJos haluat jakaa sijaintisi, ota kytkin käyttöön ja valitse lupakyselyssä ”"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu n'as pas à autoriser l'accès à la localisation car tu peux utiliser des fonctions de base comme voir les localisations d'autres appareils sans partager ta propre localisation. Tu peux faire glisser vers la gauche pour continuer sans activer le partage de localisation.\nPour accorder l'autorisation à Miataru, active le bouton et réponds à la boîte de dialogue suivante par. '"
+            "value" : "Tu peux utiliser Miataru sans partager ta position. Balaye vers la gauche pour continuer sans activer le suivi.\n\nPour partager ta position, active le bouton et choisis « "
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non devi consentire l'accesso alla posizione poiché puoi utilizzare funzioni di base come vedere le posizioni di altri dispositivi senza condividere la tua posizione. Puoi scorrere a sinistra per continuare senza abilitare la condivisione della posizione.\nPer concedere l'autorizzazione a Miataru, attiva l'interruttore e rispondi al seguente dialogo con. '"
+            "value" : "Puoi usare Miataru senza condividere la tua posizione. Scorri verso sinistra per continuare senza attivare il tracciamento.\n\nPer condividere la tua posizione, attiva l’interruttore e scegli “"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "位置情報へのアクセスを許可する必要はありません。自分の位置情報を共有せずに、他のデバイスの位置を表示するなどの基本機能を使用できます。位置情報の共有を有効にせずに、左にスワイプして続行できます。\nMiataruに許可を与えるには、トグルを有効にし、次のダイアログで. '"
+            "value" : "位置情報を共有せずにMiataruを利用できます。追跡を有効にせずに続けるには、左にスワイプしてください。\n\n位置情報を共有するには、スイッチをオンにし、許可画面で「"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U hoeft geen toegang tot de locatie toe te staan, omdat u basis functies kunt gebruiken zoals het zien van locaties van andere apparaten zonder uw eigen locatie te delen. U kunt naar links vegen om door te gaan zonder locatiedeling in te schakelen.\nOm Miataru toestemming te geven, schakel de schakelaar in en beantwoord het dialoogvenster met. '"
+            "value" : "Je kunt Miataru gebruiken zonder je locatie te delen. Veeg naar links om verder te gaan zonder tracking in te schakelen.\n\nWil je je locatie delen, zet dan de schakelaar aan en kies ‘"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您不必允许位置访问，因为您可以使用基本功能，例如在不共享自己位置的情况下查看其他设备的位置。您可以向左滑动以在不启用位置共享的情况下继续。\n要给 Miataru 权限，请启用开关，并在随后的对话框中选择. '"
+            "value" : "你可以在不共享位置的情况下使用 Miataru。向左滑动即可继续，无需开启位置跟踪。\n\n要共享位置，请打开开关，并在权限提示中选择“"
+          }
+        }
+      }
+    },
+    "onboarding_location_permission_explanation_suffix" : {
+      "comment" : "Copy following the bold system permission choice in onboarding.",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "” i tilladelsesdialogen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "” in the permission prompt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "» en la solicitud de permiso."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "”."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " » dans la demande d’autorisation."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "” nella richiesta di autorizzazione."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "」を選択してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "’ in de toestemmingsvraag."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "”。"
           }
         }
       }

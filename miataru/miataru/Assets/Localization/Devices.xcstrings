@@ -338,7 +338,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diesem Gerät den Zugriff auf Ihre aktuelle Position erlauben"
+            "value" : "Diesem Gerät Zugriff auf deine aktuelle Position erlauben"
           }
         },
         "en" : {
@@ -362,7 +362,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autoriser cet appareil à accéder à votre position actuelle"
+            "value" : "Autoriser cet appareil à accéder à ta position actuelle"
           }
         },
         "it" : {
@@ -380,13 +380,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sta dit apparaat toe toegang te krijgen tot uw huidige locatie"
+            "value" : "Dit apparaat toegang geven tot je huidige locatie"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许此设备访问您的当前位置"
+            "value" : "允许此设备访问你当前的位置"
           }
         }
       }
@@ -794,7 +794,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diesem Gerät den Zugriff auf Ihren Positionsverlauf erlauben"
+            "value" : "Diesem Gerät Zugriff auf deinen Positionsverlauf erlauben"
           }
         },
         "en" : {
@@ -818,7 +818,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autoriser cet appareil à accéder à votre historique de localisation"
+            "value" : "Autoriser cet appareil à accéder à ton historique de localisation"
           }
         },
         "it" : {
@@ -836,13 +836,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sta dit apparaat toe toegang te krijgen tot uw locatiegeschiedenis"
+            "value" : "Dit apparaat toegang geven tot je locatiegeschiedenis"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "允许此设备访问您的位置历史记录"
+            "value" : "允许此设备访问你的位置历史记录"
           }
         }
       }
@@ -924,7 +924,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optional Zugriffskontrolle für verknüpfte Geräte aktivieren. Sie können pro Gerät festlegen, ob aktuelle Position und Positionsverlauf geteilt werden. Dies erfordert einen DeviceKey und kann später nicht deaktiviert werden."
+            "value" : "Du kannst die Zugriffskontrolle für verknüpfte Geräte aktivieren und für jedes Gerät festlegen, ob es deine aktuelle Position und deinen Positionsverlauf sehen darf. Dafür brauchst du einen DeviceKey. Die Zugriffskontrolle kann später nicht wieder ausgeschaltet werden."
           }
         },
         "en" : {
@@ -948,7 +948,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activez optionnellement le contrôle d'accès pour les appareils liés. Vous pouvez définir par appareil si la position actuelle et l'historique des positions sont partagés. Cela nécessite un DeviceKey et ne peut pas être désactivé plus tard."
+            "value" : "Tu peux activer le contrôle d’accès pour les appareils liés, puis choisir pour chacun s’il peut voir ta position actuelle et ton historique de localisation. Cette fonction nécessite un DeviceKey et ne peut pas être désactivée par la suite."
           }
         },
         "it" : {
@@ -966,13 +966,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optioneel toegangscontrole inschakelen voor gekoppelde apparaten. U kunt per apparaat definiëren of de huidige locatie en locatiegeschiedenis worden gedeeld. Dit vereist een DeviceKey en kan later niet worden uitgeschakeld."
+            "value" : "Je kunt toegangscontrole inschakelen voor gekoppelde apparaten. Daarna bepaal je per apparaat of het je huidige locatie en locatiegeschiedenis mag zien. Hiervoor heb je een DeviceKey nodig. Je kunt toegangscontrole later niet meer uitschakelen."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可选地为链接的设备启用访问控制。您可以按设备定义是否共享当前位置和位置历史记录。这需要设备密钥，以后无法关闭。"
+            "value" : "你可以为已连接的设备启用访问控制，并分别决定它们能否查看你当前的位置和位置历史。此功能需要 DeviceKey，启用后无法关闭。"
           }
         }
       }
@@ -1639,7 +1639,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Steuern Sie, welche Geräte auf Ihre Positionsdaten zugreifen können"
+            "value" : "Lege fest, welche Geräte auf deine Positionsdaten zugreifen dürfen"
           }
         },
         "en" : {
@@ -1663,7 +1663,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contrôlez quels appareils peuvent accéder à vos données de localisation"
+            "value" : "Choisis quels appareils peuvent accéder à tes données de localisation"
           }
         },
         "it" : {
@@ -1681,13 +1681,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bepaal welke apparaten toegang hebben tot uw locatiegegevens"
+            "value" : "Kies welke apparaten toegang hebben tot je locatiegegevens"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "控制哪些设备可以访问您的位置数据"
+            "value" : "选择可以访问你位置数据的设备"
           }
         }
       }
@@ -1922,7 +1922,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "désactiver le verrouillage de l’appareil"
+            "value" : "Désactiver le verrouillage de l’appareil"
           }
         },
         "it" : {
@@ -2442,7 +2442,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ces entrées indiquent quand cet appareil connu a demandé la position de votre appareil. Les demandes dans une fenêtre de 60 minutes sont regroupées; la ligne affiche la demande la plus récente et la position actuellement connue de l’appareil demandeur à ce moment-là."
+            "value" : "Ces entrées indiquent quand cet appareil connu a demandé la position de ton appareil. Les demandes dans une fenêtre de 60 minutes sont regroupées; la ligne affiche la demande la plus récente et la position actuellement connue de l’appareil demandeur à ce moment-là."
           }
         },
         "it" : {
@@ -2940,7 +2940,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "enter the ID here or scan QR code"
+            "value" : "Enter the ID or scan a QR code"
           }
         },
         "es" : {
@@ -2958,7 +2958,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "saisissez l’ID ici ou scannez le code QR"
+            "value" : "saisis l’ID ici ou scanne le code QR"
           }
         },
         "it" : {
@@ -4194,7 +4194,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saisissez le DeviceKey que vous souhaitez utiliser pour cet appareil."
+            "value" : "Saisis le DeviceKey que tu souhaites utiliser pour cet appareil."
           }
         },
         "it" : {
@@ -4944,61 +4944,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En DeviceKey beskytter positionsopdateringer, besøgsoversigt og adgangskontrolindstillinger.\n\nNår den er sat, kan nøglen ikke fjernes - kun ændres. Opbevar den sikkert og gem en kopi et trygt sted.\n\nDet er valgfrit at sætte den, men det gør din brug mere sikker."
+            "value" : "En DeviceKey beskytter positionsopdateringer, besøgshistorik og indstillinger for adgangskontrol.\n\nNår den er oprettet, kan den ændres, men ikke fjernes. Opbevar den sikkert, og gem en kopi et sikkert sted.\n\nDet er valgfrit at oprette en DeviceKey, men den giver ekstra beskyttelse."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein DeviceKey schützt Standortaktualisierungen, Besucherhistorie und Zugriffssteuerungseinstellungen.\n\nSobald er gesetzt ist, kann der Schlüssel nicht entfernt werden - nur geändert. Bewahre ihn sicher auf und speichere eine Kopie an einem sicheren Ort.\n\nDas Einrichten ist optional, macht deine Nutzung aber sicherer."
+            "value" : "Ein DeviceKey schützt Standortaktualisierungen, Besucherhistorie und Einstellungen für die Zugriffskontrolle.\n\nNach dem Einrichten kannst du ihn ändern, aber nicht entfernen. Bewahre ihn sicher auf und verwahre eine Kopie an einem geschützten Ort.\n\nEin DeviceKey ist optional und bietet zusätzlichen Schutz."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A DeviceKey protects location updates, visitor history, and access control settings.\n\nOnce set, the key cannot be removed - only changed. Keep it safe and store a copy in a secure place.\n\nSetting it is optional but makes your use more secure."
+            "value" : "A DeviceKey protects location updates, visitor history, and access control settings.\n\nOnce set, you can change the key but cannot remove it. Keep it safe and store a copy in a secure place.\n\nA DeviceKey is optional and provides extra protection."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protege las actualizaciones de ubicación, el historial de visitantes y la configuración de control de acceso.\n\nUna vez establecido, la clave no se puede eliminar - solo cambiar. Guárdala de forma segura y guarda una copia en un lugar seguro.\n\nConfigurarlo es opcional, pero hace tu uso más seguro."
+            "value" : "Un DeviceKey protege las actualizaciones de ubicación, el historial de visitantes y los ajustes de control de acceso.\n\nUna vez configurado, puedes cambiarlo, pero no eliminarlo. Guárdalo y conserva una copia en un lugar seguro.\n\nConfigurar un DeviceKey es opcional y ofrece protección adicional."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey suojaa sijaintipäivityksiä, vierailijahistoriaa ja pääsynhallinta-asetuksia.\n\nKun avain on asetettu, sitä ei voi poistaa - vain muuttaa. Säilytä se turvallisesti ja tallenna kopio turvalliseen paikkaan.\n\nAsettaminen on valinnaista, mutta se tekee käytöstäsi turvallisempaa."
+            "value" : "DeviceKey suojaa sijaintipäivityksiä, vierailuhistoriaa ja käyttöoikeuksien hallinnan asetuksia.\n\nKun olet määrittänyt sen, voit vaihtaa avaimen mutta et poistaa sitä. Säilytä avain ja sen kopio turvallisessa paikassa.\n\nDeviceKey on valinnainen ja tarjoaa lisäsuojaa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protège les mises à jour de localisation, l'historique des visiteurs et les paramètres de contrôle d'accès.\n\nUne fois défini, la clé ne peut pas être supprimée - seulement modifiée. Conserve-la en sécurité et garde une copie dans un endroit sûr.\n\nLe définir est facultatif, mais cela rend ton utilisation plus sûre."
+            "value" : "Un DeviceKey protège les mises à jour de position, l’historique des visiteurs et les réglages de contrôle d’accès.\n\nUne fois défini, tu peux le modifier, mais pas le supprimer. Garde-le en lieu sûr et conserve-en une copie dans un endroit protégé.\n\nLe DeviceKey est facultatif et offre une protection supplémentaire."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un DeviceKey protegge gli aggiornamenti della posizione, la cronologia dei visitatori e le impostazioni di controllo accessi.\n\nUna volta impostata, la chiave non può essere rimossa - solo modificata. Conservala in modo sicuro e salva una copia in un luogo sicuro.\n\nImpostarla è facoltativo, ma rende l'uso più sicuro."
+            "value" : "Un DeviceKey protegge gli aggiornamenti della posizione, la cronologia dei visitatori e le impostazioni di controllo degli accessi.\n\nDopo averlo impostato, puoi modificarlo ma non rimuoverlo. Conservalo al sicuro e salva una copia in un luogo protetto.\n\nIl DeviceKey è facoltativo e offre una protezione aggiuntiva."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey は位置情報の更新、訪問履歴、アクセス制御設定を保護します。\n\n一度設定すると、キーは削除できません - 変更のみ可能です。安全に保管し、安全な場所にコピーを保存してください。\n\n設定は任意ですが、より安全に利用できます。"
+            "value" : "DeviceKeyは位置情報の更新、訪問履歴、アクセス制御の設定を保護します。\n\n設定後は変更できますが、削除はできません。安全に保管し、コピーも安全な場所に保存してください。\n\nDeviceKeyの設定は任意ですが、保護を強化できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Een DeviceKey beschermt locatie-updates, bezoekersgeschiedenis en toegangscontrole-instellingen.\n\nZodra deze is ingesteld, kan de sleutel niet worden verwijderd - alleen gewijzigd. Bewaar hem veilig en sla een kopie op op een veilige plek.\n\nInstellen is optioneel, maar maakt je gebruik veiliger."
+            "value" : "Een DeviceKey beschermt locatie-updates, bezoekersgeschiedenis en instellingen voor toegangscontrole.\n\nNa het instellen kun je de sleutel wijzigen, maar niet verwijderen. Bewaar hem veilig en sla een kopie op een veilige plek op.\n\nEen DeviceKey is optioneel en biedt extra bescherming."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DeviceKey 可保护位置更新、访问者历史记录和访问控制设置。\n\n一旦设置，密钥无法移除 - 只能更改。请妥善保管并在安全位置保存一份副本。\n\n设置是可选的，但会让你的使用更安全。"
+            "value" : "DeviceKey 可保护位置更新、访问历史和访问控制设置。\n\n设置后可以更改，但不能移除。请妥善保管，并在安全的位置保存副本。\n\nDeviceKey 可选，但能提供额外保护。"
           }
         }
       }
@@ -5559,7 +5559,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saisissez le DeviceKey que vous souhaitez restaurer pour cet appareil."
+            "value" : "Saisis le DeviceKey que tu souhaites restaurer pour cet appareil."
           }
         },
         "it" : {
@@ -7376,7 +7376,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ vient de consulter votre position."
+            "value" : "%@ vient de consulter ta position."
           }
         },
         "it" : {
@@ -7508,7 +7508,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous recevez une notification lorsque cet appareil consulte votre position pendant que les mises à jour en arrière-plan Smart ou plus fréquentes sont actives."
+            "value" : "Tu reçois une notification lorsque cet appareil consulte ta position pendant que les mises à jour en arrière-plan Smart ou plus fréquentes sont actives."
           }
         },
         "it" : {
@@ -7574,7 +7574,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les notifications sont désactivées. Autorisez-les dans Réglages pour utiliser cette alerte d’appareil."
+            "value" : "Les notifications sont désactivées. Autorise-les dans Réglages pour utiliser cette alerte d’appareil."
           }
         },
         "it" : {
@@ -7706,7 +7706,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notifier lorsque cet appareil accède à votre position"
+            "value" : "Notifier lorsque cet appareil accède à ta position"
           }
         },
         "it" : {
@@ -8030,7 +8030,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionnez un appareil pour afficher les détails"
+            "value" : "Sélectionne un appareil pour afficher les détails"
           }
         },
         "it" : {
@@ -8387,61 +8387,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En ukendt enhed forsøgte at anmode om din position.\n\nDin position er indtil nu ikke blevet delt med denne enhed.\nHvis du tilføjer den, kan du aktivere adgangskontrol og derefter vælge, om den får adgang, og hvilke positionsdata der deles.\nDu kan også ignorere den. Så modtager den ingen positionsdata og vises kun i besøgshistorikken på fanen \"denne enhed\"."
+            "value" : "En ukendt enhed har anmodet om din position.\n\nAdgangskontrol er slået fra. Hvis du ignorerer enheden, skjules den på listen over ukendte besøgende, og du får ikke flere advarsler om den. Det spærrer ikke dens adgang til positionsdata.\n\nAktivér adgangskontrol for at vælge, hvilke enheder der må se din aktuelle position og historik. Anmodningen bliver stående i besøgshistorikken."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein unbekanntes Gerät wollte deine Position abfragen.\n\nDeine Position wurde bisher nicht an dieses Gerät weitergegeben.\nWenn du es hinzufügst, kannst du die Zugriffskontrolle aktivieren und dann festlegen, ob es Zugriff bekommt und welche Positionsdaten freigegeben werden.\nDu kannst es auch ignorieren. Dann erhält es keine Positionsdaten und taucht nur noch in der Besucherhistorie im Tab „dieses Gerät“ auf."
+            "value" : "Ein unbekanntes Gerät hat deinen Standort angefragt.\n\nDie Zugriffskontrolle ist ausgeschaltet. Wenn du das Gerät ignorierst, wird es aus der Liste unbekannter Besucher ausgeblendet und löst keine weiteren Warnungen aus. Der Zugriff auf Standortdaten wird dadurch nicht gesperrt.\n\nAktiviere die Zugriffskontrolle, um festzulegen, welche Geräte deine aktuelle Position und deinen Verlauf sehen dürfen. Die Anfrage bleibt in der Besucherhistorie erhalten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An unknown device wanted to request your location.\n\nYour location has not been shared with this device so far.\nIf you add it, you can enable access control and then choose whether it gets access and which location data is shared.\nYou can also ignore it. Then it receives no location data and only appears in the visitor history on the \"this Device\" tab."
+            "value" : "An unknown device requested your location.\n\nAccess control is off. Ignoring the device hides it from the unknown visitor list and stops further alerts about it. It does not block access to your location data.\n\nTurn on access control to choose which devices can see your current location and history. The request remains in visitor history."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un dispositivo desconocido intentó consultar tu ubicación.\n\nTu ubicación aún no se ha compartido con este dispositivo.\nSi lo añades, puedes activar el control de acceso y decidir si tendrá acceso y qué datos de ubicación se compartirán.\nTambién puedes ignorarlo. Entonces no recibirá ningún dato de ubicación y solo aparecerá en el historial de visitantes de la pestaña \"este dispositivo\"."
+            "value" : "Un dispositivo desconocido solicitó tu ubicación.\n\nEl control de acceso está desactivado. Si ignoras el dispositivo, dejará de aparecer en la lista de visitantes desconocidos y no recibirás más alertas sobre él. Ignorarlo no bloquea el acceso a tus datos de ubicación.\n\nActiva el control de acceso para decidir qué dispositivos pueden ver tu ubicación actual y tu historial. La solicitud seguirá en el historial de visitantes."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tuntematon laite yritti pyytää sijaintiasi.\n\nSijaintiasi ei ole tähän mennessä jaettu tälle laitteelle.\nJos lisäät sen, voit ottaa käyttöön käyttöoikeuksien hallinnan ja valita, saako se käyttöoikeuden ja mitä sijaintitietoja jaetaan.\nVoit myös ohittaa sen. Silloin se ei saa sijaintitietoja ja näkyy vain \"tämä laite\" -välilehden vierailuhistoriassa."
+            "value" : "Tuntematon laite pyysi sijaintiasi.\n\nKäyttöoikeuksien hallinta ei ole käytössä. Jos ohitat laitteen, se piilotetaan tuntemattomien vierailijoiden luettelosta eikä siitä lähetetä uusia hälytyksiä. Ohittaminen ei estä laitteen pääsyä sijaintitietoihisi.\n\nOta käyttöoikeuksien hallinta käyttöön, jos haluat valita, mitkä laitteet saavat nähdä nykyisen sijaintisi ja sijaintihistoriasi. Pyyntö säilyy vierailuhistoriassa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un appareil inconnu a voulu demander votre position.\n\nVotre position n’a pas encore été partagée avec cet appareil.\nSi vous l’ajoutez, vous pouvez activer le contrôle d’accès puis choisir s’il obtient un accès et quelles données de position sont partagées.\nVous pouvez aussi l’ignorer. Il ne recevra alors aucune donnée de position et n’apparaîtra plus que dans l’historique des visiteurs de l’onglet « cet appareil »."
+            "value" : "Un appareil inconnu a demandé ta position.\n\nLe contrôle d’accès est désactivé. Si tu ignores cet appareil, il disparaît de la liste des visiteurs inconnus et ne déclenche plus d’alertes. Cela ne bloque pas son accès à tes données de position.\n\nActive le contrôle d’accès pour choisir quels appareils peuvent voir ta position actuelle et ton historique. La demande reste dans l’historique des visiteurs."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un dispositivo sconosciuto ha provato a richiedere la tua posizione.\n\nLa tua posizione non è stata ancora condivisa con questo dispositivo.\nSe lo aggiungi, puoi attivare il controllo accessi e poi scegliere se avrà accesso e quali dati di posizione verranno condivisi.\nPuoi anche ignorarlo. In questo caso non riceverà alcun dato di posizione e comparirà solo nella cronologia visitatori della scheda \"questo dispositivo\"."
+            "value" : "Un dispositivo sconosciuto ha richiesto la tua posizione.\n\nIl controllo degli accessi è disattivato. Se ignori il dispositivo, non comparirà più nell’elenco dei visitatori sconosciuti e non riceverai altri avvisi al riguardo. Ignorarlo non blocca l’accesso ai tuoi dati di posizione.\n\nAttiva il controllo degli accessi per scegliere quali dispositivi possono vedere la tua posizione attuale e la cronologia. La richiesta rimane nella cronologia dei visitatori."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不明なデバイスがあなたの位置情報を要求しようとしました。\n\nあなたの位置情報は、これまでこのデバイスに共有されていません。\n追加する場合は、アクセス制御を有効にしてから、アクセスを許可するか、どの位置情報を共有するかを選択できます。\n無視することもできます。その場合、このデバイスは位置情報を受け取らず、「このデバイス」タブの訪問履歴にのみ表示されます。"
+            "value" : "不明なデバイスが位置情報を要求しました。\n\nアクセス制御はオフです。このデバイスを無視すると、不明な訪問者の一覧から非表示になり、今後このデバイスに関する通知は届きません。ただし、位置情報へのアクセスは遮断されません。\n\n現在地や履歴を閲覧できるデバイスを選ぶには、アクセス制御をオンにしてください。要求の記録は訪問履歴に残ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Een onbekend apparaat wilde je locatie opvragen.\n\nJe locatie is tot nu toe niet met dit apparaat gedeeld.\nAls je het toevoegt, kun je toegangscontrole inschakelen en daarna kiezen of het toegang krijgt en welke locatiegegevens worden gedeeld.\nJe kunt het ook negeren. Dan ontvangt het geen locatiegegevens en verschijnt het alleen nog in de bezoekgeschiedenis op het tabblad \"dit apparaat\"."
+            "value" : "Een onbekend apparaat heeft je locatie opgevraagd.\n\nToegangscontrole staat uit. Als je het apparaat negeert, verdwijnt het uit de lijst met onbekende bezoekers en krijg je er geen meldingen meer over. Negeren blokkeert de toegang tot je locatiegegevens niet.\n\nSchakel toegangscontrole in om te bepalen welke apparaten je huidige locatie en geschiedenis mogen zien. Het verzoek blijft in de bezoekgeschiedenis staan."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一台未知设备想要请求你的位置。\n\n到目前为止，你的位置尚未与这台设备共享。\n如果你添加它，可以启用访问控制，然后选择它是否可以访问以及共享哪些位置数据。\n你也可以忽略它。这样它不会收到任何位置数据，并且只会显示在“此设备”标签页的访问历史中。"
+            "value" : "未知设备请求了你的位置。\n\n访问控制目前已关闭。忽略该设备只会将其从未知访客列表中隐藏，并停止关于它的后续提醒；不会阻止它访问你的位置数据。\n\n启用访问控制后，你可以选择哪些设备能查看当前位置和历史记录。此次请求仍会保留在访问历史中。"
           }
         }
       }
@@ -8452,61 +8452,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En ukendt enhed forsøgte at anmode om din position.\n\nDin position er indtil nu ikke blevet delt med denne enhed.\nHvis du tilføjer den, kan du vælge, om den får adgang, og hvilke positionsdata der deles.\nDu kan også ignorere den. Så modtager den ingen positionsdata og vises kun i besøgshistorikken på fanen \"denne enhed\"."
+            "value" : "En ukendt enhed har anmodet om din position.\n\nTilføj enheden for at vælge, om den må se din aktuelle position eller historik. Hvis du ignorerer den, skjules den på listen over ukendte besøgende, og du får ikke flere advarsler om den. Ignorering ændrer ikke adgangstilladelserne. Anmodningen bliver stående i besøgshistorikken."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein unbekanntes Gerät wollte deine Position abfragen.\n\nDeine Position wurde bisher nicht an dieses Gerät weitergegeben.\nWenn du es hinzufügst, kannst du festlegen, ob es Zugriff bekommt und welche Positionsdaten freigegeben werden.\nDu kannst es auch ignorieren. Dann erhält es keine Positionsdaten und taucht nur noch in der Besucherhistorie im Tab „dieses Gerät“ auf."
+            "value" : "Ein unbekanntes Gerät hat deinen Standort angefragt.\n\nFüge es hinzu, um festzulegen, ob es deine aktuelle Position oder deinen Verlauf sehen darf. Wenn du es ignorierst, wird es aus der Liste unbekannter Besucher ausgeblendet und löst keine weiteren Warnungen aus. Die Zugriffsrechte ändern sich dadurch nicht. Die Anfrage bleibt in der Besucherhistorie erhalten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An unknown device wanted to request your location.\n\nYour location has not been shared with this device so far.\nIf you add it, you can choose whether it gets access and which location data is shared.\nYou can also ignore it. Then it receives no location data and only appears in the visitor history on the \"this Device\" tab."
+            "value" : "An unknown device requested your location.\n\nAdd it to choose whether it can see your current location or history. Ignoring it hides it from the unknown visitor list and stops further alerts about it. Ignoring does not change its access permissions. The request remains in visitor history."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un dispositivo desconocido intentó consultar tu ubicación.\n\nTu ubicación aún no se ha compartido con este dispositivo.\nSi lo añades, puedes decidir si tendrá acceso y qué datos de ubicación se compartirán.\nTambién puedes ignorarlo. Entonces no recibirá ningún dato de ubicación y solo aparecerá en el historial de visitantes de la pestaña \"este dispositivo\"."
+            "value" : "Un dispositivo desconocido solicitó tu ubicación.\n\nAñádelo para decidir si puede ver tu ubicación actual o tu historial. Si lo ignoras, dejará de aparecer en la lista de visitantes desconocidos y no recibirás más alertas sobre él. Ignorarlo no cambia sus permisos de acceso. La solicitud seguirá en el historial de visitantes."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tuntematon laite yritti pyytää sijaintiasi.\n\nSijaintiasi ei ole tähän mennessä jaettu tälle laitteelle.\nJos lisäät sen, voit valita, saako se käyttöoikeuden ja mitä sijaintitietoja jaetaan.\nVoit myös ohittaa sen. Silloin se ei saa sijaintitietoja ja näkyy vain \"tämä laite\" -välilehden vierailuhistoriassa."
+            "value" : "Tuntematon laite pyysi sijaintiasi.\n\nLisää laite, jos haluat päättää, saako se nähdä nykyisen sijaintisi tai sijaintihistoriasi. Jos ohitat sen, se piilotetaan tuntemattomien vierailijoiden luettelosta eikä siitä lähetetä uusia hälytyksiä. Ohittaminen ei muuta käyttöoikeuksia. Pyyntö säilyy vierailuhistoriassa."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un appareil inconnu a voulu demander votre position.\n\nVotre position n’a pas encore été partagée avec cet appareil.\nSi vous l’ajoutez, vous pouvez choisir s’il obtient un accès et quelles données de position sont partagées.\nVous pouvez aussi l’ignorer. Il ne recevra alors aucune donnée de position et n’apparaîtra plus que dans l’historique des visiteurs de l’onglet « cet appareil »."
+            "value" : "Un appareil inconnu a demandé ta position.\n\nAjoute-le pour choisir s’il peut voir ta position actuelle ou ton historique. Si tu l’ignores, il disparaît de la liste des visiteurs inconnus et ne déclenche plus d’alertes. L’ignorer ne change pas ses autorisations d’accès. La demande reste dans l’historique des visiteurs."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un dispositivo sconosciuto ha provato a richiedere la tua posizione.\n\nLa tua posizione non è stata ancora condivisa con questo dispositivo.\nSe lo aggiungi, puoi scegliere se avrà accesso e quali dati di posizione verranno condivisi.\nPuoi anche ignorarlo. In questo caso non riceverà alcun dato di posizione e comparirà solo nella cronologia visitatori della scheda \"questo dispositivo\"."
+            "value" : "Un dispositivo sconosciuto ha richiesto la tua posizione.\n\nAggiungilo per scegliere se può vedere la tua posizione attuale o la cronologia. Se lo ignori, non comparirà più nell’elenco dei visitatori sconosciuti e non riceverai altri avvisi al riguardo. Ignorarlo non modifica i suoi permessi di accesso. La richiesta rimane nella cronologia dei visitatori."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不明なデバイスがあなたの位置情報を要求しようとしました。\n\nあなたの位置情報は、これまでこのデバイスに共有されていません。\n追加する場合は、アクセスを許可するか、どの位置情報を共有するかを選択できます。\n無視することもできます。その場合、このデバイスは位置情報を受け取らず、「このデバイス」タブの訪問履歴にのみ表示されます。"
+            "value" : "不明なデバイスが位置情報を要求しました。\n\nデバイスを追加すると、現在地や履歴の閲覧を許可するか選べます。無視すると、不明な訪問者の一覧から非表示になり、今後このデバイスに関する通知は届きません。ただし、アクセス権は変わりません。要求の記録は訪問履歴に残ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Een onbekend apparaat wilde je locatie opvragen.\n\nJe locatie is tot nu toe niet met dit apparaat gedeeld.\nAls je het toevoegt, kun je kiezen of het toegang krijgt en welke locatiegegevens worden gedeeld.\nJe kunt het ook negeren. Dan ontvangt het geen locatiegegevens en verschijnt het alleen nog in de bezoekgeschiedenis op het tabblad \"dit apparaat\"."
+            "value" : "Een onbekend apparaat heeft je locatie opgevraagd.\n\nVoeg het toe om te bepalen of het je huidige locatie of geschiedenis mag zien. Als je het negeert, verdwijnt het uit de lijst met onbekende bezoekers en krijg je er geen meldingen meer over. Negeren verandert de toegangsrechten niet. Het verzoek blijft in de bezoekgeschiedenis staan."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一台未知设备想要请求你的位置。\n\n到目前为止，你的位置尚未与这台设备共享。\n如果你添加它，可以选择它是否可以访问以及共享哪些位置数据。\n你也可以忽略它。这样它不会收到任何位置数据，并且只会显示在“此设备”标签页的访问历史中。"
+            "value" : "未知设备请求了你的位置。\n\n添加该设备后，你可以决定它能否查看当前位置或历史记录。忽略只会将其从未知访客列表中隐藏，并停止关于它的后续提醒；不会改变访问权限。此次请求仍会保留在访问历史中。"
           }
         }
       }
@@ -8677,7 +8677,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un appareil inconnu a demandé votre position"
+            "value" : "Un appareil inconnu a demandé ta position"
           }
         },
         "it" : {
@@ -8742,7 +8742,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un appareil inconnu (%@) depuis %@ a demandé votre position"
+            "value" : "Un appareil inconnu (%@) depuis %@ a demandé ta position"
           }
         },
         "it" : {
@@ -8935,7 +8935,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les notifications sont désactivées pour Miataru. Activez-les dans les réglages iOS pour utiliser cette fonctionnalité."
+            "value" : "Les notifications sont désactivées pour Miataru. Active-les dans les réglages iOS pour utiliser cette fonctionnalité."
           }
         },
         "it" : {

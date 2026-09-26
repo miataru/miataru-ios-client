@@ -1098,11 +1098,11 @@ struct AppIntentsPreparationTests {
             ],
             [
                 "Open a Maps route in ${applicationName}",
-                "Route in Maps with ${applicationName}"
+                "Get directions in Maps with ${applicationName}"
             ],
             [
                 "Start Miataru navigation in ${applicationName}",
-                "Navigate in Miataru with ${applicationName}"
+                "Navigate to a device with ${applicationName}"
             ],
             [
                 "Start frequent tracking in ${applicationName}",
@@ -1122,7 +1122,7 @@ struct AppIntentsPreparationTests {
             ],
             [
                 "Check a device status in ${applicationName}",
-                "How old is a Miataru location in ${applicationName}"
+                "When was a device's location last updated in ${applicationName}"
             ],
             [
                 "Check distance to a device in ${applicationName}",

@@ -303,7 +303,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Position actuelle obsolète"
+            "value" : "Ta position n’est plus à jour"
           }
         },
         "it" : {
@@ -327,7 +327,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自身位置已过期"
+            "value" : "你的位置已过期"
           }
         }
       }
@@ -532,61 +532,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg hvilket enhed widgetten skal vise."
+            "value" : "Vælg den enhed, som widgetten skal vise."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle, welches Gerät im Widget angezeigt wird."
+            "value" : "Wähle das Gerät aus, das im Widget angezeigt werden soll."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose which device the widget should display."
+            "value" : "Choose the device to display in the widget."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige qué dispositivo debe mostrar el widget."
+            "value" : "Elige el dispositivo que quieres mostrar en el widget."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse, mikä laite widgetissä näytetään."
+            "value" : "Valitse widgetissä näytettävä laite."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez l'appareil que le widget doit afficher."
+            "value" : "Choisis l’appareil à afficher dans le widget."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli quale dispositivo deve mostrare il widget."
+            "value" : "Scegli il dispositivo da mostrare nel widget."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウィジェットに表示するデバイスを選択します。"
+            "value" : "ウィジェットに表示するデバイスを選んでください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kies welk apparaat de widget moet weergeven."
+            "value" : "Kies het apparaat dat de widget moet tonen."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择小组件应显示的设备。"
+            "value" : "选择要在小组件中显示的设备。"
           }
         }
       }
@@ -857,61 +857,61 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Viser et kortbillede af den valgte enhed med hurtig afstandsinfo."
+            "value" : "Viser den valgte enheds position på et kort og afstanden til den."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt eine Kartenansicht des ausgewählten Geräts mit Entfernungsinfo."
+            "value" : "Zeigt die Position des ausgewählten Geräts auf einer Karte und die Entfernung zu ihm."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shows a map snapshot of the selected device with quick distance info."
+            "value" : "Shows the selected device on a map and its distance from you."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra una instantánea del mapa del dispositivo seleccionado con información rápida de distancia."
+            "value" : "Muestra el dispositivo seleccionado en un mapa y a qué distancia está de ti."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Näyttää valitun laitteen karttakuvan nopealla etäisyystiedolla."
+            "value" : "Näyttää valitun laitteen sijainnin kartalla ja sen etäisyyden sinusta."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche une capture de carte de l'appareil sélectionné avec des informations de distance rapides."
+            "value" : "Affiche la position de l’appareil choisi sur une carte et sa distance par rapport à toi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostra un'istantanea della mappa del dispositivo selezionato con informazioni rapide sulla distanza."
+            "value" : "Mostra la posizione del dispositivo scelto su una mappa e la sua distanza da te."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選択したデバイスの地図スナップショットと距離情報を表示します。"
+            "value" : "選択したデバイスの位置を地図に表示し、自分からの距離も示します。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toont een kaartmomentopname van het geselecteerde apparaat met snelle afstandsinformatie."
+            "value" : "Toont de locatie van het gekozen apparaat op een kaart en de afstand tot jou."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示所选设备的地图快照和快速距离信息。"
+            "value" : "在地图上显示所选设备的位置及其与你的距离。"
           }
         }
       }
@@ -1082,7 +1082,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiche où se trouve un appareil sélectionné et à quelle distance il se trouve de vous."
+            "value" : "Affiche la position de l’appareil choisi et sa distance par rapport à toi."
           }
         },
         "it" : {
@@ -1106,7 +1106,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示所选设备的位置以及它距离您有多远。"
+            "value" : "显示所选设备的位置以及它与你的距离。"
           }
         }
       }

@@ -1,6 +1,6 @@
 /* Simplified Chinese InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "我们使用你的位置来显示你的当前位置，并与设备共享。";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "即使应用未打开，我们也需要后台定位来保持设备位置的最新状态。";
+"NSLocationWhenInUseUsageDescription" = "Miataru 使用你的位置显示当前位置，并与所选设备共享。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "启用位置跟踪后，即使应用已关闭，Miataru 也会使用后台定位来更新你共享的位置。";
 
 
 

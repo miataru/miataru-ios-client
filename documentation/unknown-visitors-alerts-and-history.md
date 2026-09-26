@@ -192,6 +192,8 @@ Supplemental lookup:
 - exclude ignored visitor IDs
 - keep newest visitor entry per device
 
+Ignoring a visitor only changes the local unknown-visitor list and alert filtering. It does not update the server's allowed-device list or revoke access. The request remains visible in Visitor History. When access control is off, ignoring the visitor does not prevent that device from receiving location data; the unknown-device action sheet states this explicitly.
+
 Normal location delivery remains isolated: own-location upload still goes through `LocationUpdateDeliveryCoordinator` and `MiataruAppAPI.updateLocation`. The supplemental `GetLocation` request can only happen after visitor-history alert processing produces unknown candidates.
 
 ## Unknown Visitor Lists And Allowed Device List Flow

@@ -1,6 +1,6 @@
 /* Lokalisierte Strings für Settings.bundle Root.plist (Deutsch) */
 
-"track_and_history" = "Verfolgung & Sicherheit";
+"track_and_history" = "Tracking & Sicherheit";
 "location_track" = "Standort des Geräts verfolgen";
 "save_location_history_to_server" = "Standortverlauf auf dem Server speichern";
 "store_history_before_autoremove" = "Standortdaten automatisch entfernen nach …";
@@ -22,11 +22,11 @@
 "activity_type_fitness" = "Mittel (Radfahren, Laufen)";
 "activity_type_automotive" = "Höchste (Navigation)";
 "location_sensitivity_title" = "Empfindlichkeit der Standort-Updates";
-"location_tracking_update_sensitivity_very_sensitive_short" = "Sehr empfindlich (3 m/2 m)";
-"location_tracking_update_sensitivity_default_short" = "Standard (5 m/5 m)";
-"location_tracking_update_sensitivity_balanced_short" = "Ausgewogen (10 m/10 m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "Energiesparmodus (25 m/20 m)";
-"location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
+"location_tracking_update_sensitivity_very_sensitive_short" = "Sehr empfindlich (3 m/2 m)";
+"location_tracking_update_sensitivity_default_short" = "Standard (5 m/5 m)";
+"location_tracking_update_sensitivity_balanced_short" = "Ausgewogen (10 m/10 m)";
+"location_tracking_update_sensitivity_battery_saver_short" = "Energiesparmodus (25 m/20 m)";
+"location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
 "background_location_updates_section_title" = "Hintergrund-Standortupdates";
 "frequent_background_location_updates_title" = "Häufigere Hintergrund-Updates";
 "background_location_distance_filter_title" = "Bewegungsschwelle";
@@ -36,21 +36,21 @@
 "frequent_background_location_delivery_mode_title" = "An Server senden";
 "frequent_background_location_delivery_immediate" = "Sofort";
 "frequent_background_location_delivery_30s" = "Alle 30 Sekunden";
-"frequent_background_location_delivery_1m" = "Alle 1 Minute";
+"frequent_background_location_delivery_1m" = "Jede Minute";
 "frequent_background_location_delivery_5m" = "Alle 5 Minuten";
 "frequent_background_location_delivery_10m" = "Alle 10 Minuten";
 "frequent_background_visitor_check_interval_title" = "Besucher prüfen";
 "frequent_background_visitor_check_every_update" = "Bei jedem Update";
-"frequent_background_visitor_check_1m" = "Alle 1 Minute";
+"frequent_background_visitor_check_1m" = "Jede Minute";
 "frequent_background_visitor_check_5m" = "Alle 5 Minuten";
 "frequent_background_visitor_check_10m" = "Alle 10 Minuten";
 "frequent_background_visitor_check_30m" = "Alle 30 Minuten";
-"frequent_background_visitor_check_60m" = "Alle 60 Minuten";
+"frequent_background_visitor_check_60m" = "Jede Stunde";
 "100m" = "100 m";
 "50m" = "50 m";
 "25m" = "25 m";
 "server_url" = "Miataru Server-URL";
-"app_behaviour" = "Anwendungsverhalten";
+"app_behaviour" = "App-Verhalten";
 "deactivate_device_lock" = "Gerätesperre deaktivieren";
 "prevent_screen_rotation" = "Bildschirmrotation verhindern";
 "indicate_location_accuracy" = "Genauigkeit anzeigen";
@@ -68,7 +68,7 @@
 "default_map" = "Standardkarte";
 "hybrid_map" = "Hybridkarte";
 "sat_map" = "Satellitenkarte";
-"map_update_interval" = "Aktualisierungsintervall für Devices";
+"map_update_interval" = "Aktualisierungsintervall auf der Karte";
 "outside_map_update_interval" = "Aktualisierungsintervall überall sonst";
 "5s" = "5 Sekunden";
 "10s" = "10 Sekunden";
@@ -100,7 +100,7 @@
 "smart_frequent_background_speed_threshold_title" = "Geschwindigkeitsschwelle";
 "smart_frequent_background_speed_detection_title" = "Geschwindigkeitserkennung";
 "smart_frequent_background_speed_detection_hybrid" = "Hybrid";
-"smart_frequent_background_speed_detection_gps_only" = "Nur GPS-Speed";
+"smart_frequent_background_speed_detection_gps_only" = "Nur GPS-Geschwindigkeit";
 "smart_frequent_background_inactivity_window_title" = "Inaktivitätsfenster";
 "2kmh" = "2 km/h";
 "5kmh" = "5 km/h";
@@ -116,9 +116,9 @@
 "200m" = "200 m";
 "150m" = "150 m";
 "75m" = "75 m";
-"smart_frequent_background_mode_change_notifications_title" = "Smart-Häufige-Updates-Benachrichtigungen";
-"location_tracking_health_reminder_interval_title" = "Tracking-Prüferinnerung";
+"smart_frequent_background_mode_change_notifications_title" = "Benachrichtigungen bei Smart-Moduswechsel";
+"location_tracking_health_reminder_interval_title" = "Erinnerung zur Tracking-Prüfung";
 
 "1minute" = "1 Minute";
 "60minutes" = "60 Minuten";
-"known_visitor_notification_cooldown_title" = "Abkühlzeit für bekannte Besucher";
+"known_visitor_notification_cooldown_title" = "Mindestabstand für bekannte Besucher";

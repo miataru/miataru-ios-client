@@ -2312,7 +2312,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "l’authentification DeviceKey nécessite votre attention"
+            "value": "l’authentification DeviceKey nécessite une intervention de ta part"
           }
         },
         "it": {
@@ -3003,7 +3003,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Hintergrundverfolgung benötigt Immer-Zugriff auf den Standort. Öffne Miataru und erlaube Immer-Zugriff, bevor du sie startest."
+            "value": "Häufiges Hintergrund-Tracking benötigt Standortzugriff „Immer“. Öffne Miataru und gewähre diesen Zugriff, bevor du es startest."
           }
         },
         "en": {
@@ -3027,7 +3027,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi fréquent en arrière-plan nécessite l’accès permanent à la position. Ouvrez Miataru et autorisez l’accès permanent avant de le démarrer."
+            "value": "Le suivi fréquent en arrière-plan nécessite l’accès permanent à la position. Ouvre Miataru et autorise l’accès permanent avant de le démarrer."
           }
         },
         "it": {
@@ -3068,7 +3068,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru hat die Verfolgung gestoppt, weil die DeviceKey-Authentifizierung fehlgeschlagen ist. Öffne Miataru, um deinen DeviceKey zu aktualisieren."
+            "value": "Miataru hat das Tracking gestoppt, weil die DeviceKey-Authentifizierung fehlgeschlagen ist. Öffne Miataru, um deinen DeviceKey zu aktualisieren."
           }
         },
         "en": {
@@ -3092,7 +3092,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru a arrêté le suivi, car l’authentification DeviceKey a échoué. Ouvrez Miataru pour mettre à jour votre DeviceKey."
+            "value": "Miataru a arrêté le suivi, car l’authentification DeviceKey a échoué. Ouvre Miataru pour mettre à jour ton DeviceKey."
           }
         },
         "it": {
@@ -3133,7 +3133,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Standortverfolgung ist ausgeschaltet. Aktiviere die Standortverfolgung in Miataru, bevor du häufige Verfolgung startest."
+            "value": "Standortverfolgung ist ausgeschaltet. Aktiviere die Standortverfolgung in Miataru, bevor du häufiges Tracking startest."
           }
         },
         "en": {
@@ -3157,7 +3157,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi de position est désactivé. Activez le suivi de position dans Miataru avant de démarrer le suivi fréquent."
+            "value": "Le suivi de position est désactivé. Active le suivi de position dans Miataru avant de démarrer le suivi fréquent."
           }
         },
         "it": {
@@ -3677,7 +3677,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Indique la distance entre votre position actuelle et un appareil suivi."
+            "value": "Indique la distance entre ta position actuelle et un appareil suivi."
           }
         },
         "it": {
@@ -4002,7 +4002,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Estime le temps de trajet entre votre position actuelle et un appareil suivi."
+            "value": "Estime le temps de trajet entre ta position actuelle et un appareil suivi."
           }
         },
         "it": {
@@ -4327,7 +4327,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi fréquent est actif jusqu’à ce que vous l’arrêtiez."
+            "value": "Le suivi fréquent est actif jusqu’à ce que tu l’arrêtes."
           }
         },
         "it": {
@@ -5042,7 +5042,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi Miataru est bloqué. Vérifiez l’autorisation de localisation."
+            "value": "Le suivi Miataru est bloqué. Vérifie l’autorisation de localisation."
           }
         },
         "it": {
@@ -5107,7 +5107,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi Miataru est bloqué, car l’authentification DeviceKey nécessite votre attention."
+            "value": "Le suivi Miataru est bloqué, car l’authentification DeviceKey nécessite une intervention de ta part."
           }
         },
         "it": {
@@ -6472,7 +6472,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Votre position actuelle est trop ancienne pour être enregistrée comme lieu."
+            "value": "Ta position actuelle est trop ancienne pour être enregistrée comme lieu."
           }
         },
         "it": {
@@ -7057,7 +7057,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Votre position actuelle n’est pas disponible pour le moment."
+            "value": "Ta position actuelle n’est pas disponible pour le moment."
           }
         },
         "it": {
@@ -8487,7 +8487,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez un appareil pour ce lieu."
+            "value": "Choisis un appareil pour ce lieu."
           }
         },
         "it": {
@@ -8552,7 +8552,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saisissez un nom de lieu."
+            "value": "Saisis un nom de lieu."
           }
         },
         "it": {
@@ -8747,7 +8747,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enregistre votre position actuelle comme lieu Miataru nommé."
+            "value": "Enregistre ta position actuelle comme lieu Miataru nommé."
           }
         },
         "it": {
@@ -9178,7 +9178,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Startet Miatarus häufigere Hintergrundverfolgung mit der aktuellen Dauer-Einstellung."
+            "value": "Startet Miatarus häufigeres Hintergrund-Tracking für die eingestellte Dauer."
           }
         },
         "en": {
@@ -9243,7 +9243,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung ist aktiv, bis du sie stoppst."
+            "value": "Häufiges Tracking ist aktiv, bis du es stoppst."
           }
         },
         "en": {
@@ -9267,7 +9267,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le suivi fréquent est actif jusqu’à ce que vous l’arrêtiez."
+            "value": "Le suivi fréquent est actif jusqu’à ce que tu l’arrêtes."
           }
         },
         "it": {
@@ -9308,7 +9308,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung ist bis %@ aktiv."
+            "value": "Häufiges Tracking ist bis %@ aktiv."
           }
         },
         "en": {
@@ -9503,7 +9503,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung starten"
+            "value": "Häufiges Tracking starten"
           }
         },
         "en": {
@@ -9568,7 +9568,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Stoppt Miatarus häufigere Hintergrundverfolgung und lässt die Standardverfolgung unverändert."
+            "value": "Stoppt Miatarus häufigeres Hintergrund-Tracking. Das Standard-Tracking bleibt aktiv."
           }
         },
         "en": {
@@ -9633,7 +9633,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung war bereits ausgeschaltet."
+            "value": "Häufiges Tracking war bereits ausgeschaltet."
           }
         },
         "en": {
@@ -9698,7 +9698,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung wurde gestoppt. Die Standardverfolgung bleibt unverändert."
+            "value": "Häufiges Tracking wurde gestoppt. Das Standard-Tracking bleibt unverändert."
           }
         },
         "en": {
@@ -9828,7 +9828,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Häufige Verfolgung stoppen"
+            "value": "Häufiges Tracking stoppen"
           }
         },
         "en": {
@@ -10732,61 +10732,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fortæller, hvornår en kendt enhed sidst anmodede om din placering via Visitor History."
+            "value": "Fortæller, hvornår en kendt enhed sidst anmodede om din position ifølge besøgshistorikken."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Meldet, wann ein bekanntes Gerät zuletzt deinen Standort über die Visitor History angefragt hat."
+            "value": "Zeigt, wann ein bekanntes Gerät deinen Standort laut Besucherhistorie zuletzt abgefragt hat."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reports when a known device last requested your location through Visitor History."
+            "value": "Reports when a known device last requested your location, as recorded in visitor history."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Indica cuándo un dispositivo conocido solicitó por última vez tu ubicación mediante Visitor History."
+            "value": "Indica cuándo un dispositivo conocido solicitó tu ubicación por última vez, según el historial de visitantes."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kertoo, milloin tunnettu laite viimeksi pyysi sijaintiasi Visitor Historyn kautta."
+            "value": "Kertoo vierailuhistorian perusteella, milloin tunnettu laite pyysi sijaintiasi viimeksi."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Indique quand un appareil connu a demandé votre position pour la dernière fois via Visitor History."
+            "value": "Indique quand un appareil connu a demandé ta position pour la dernière fois, d’après l’historique des visiteurs."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Indica quando un dispositivo noto ha richiesto per l’ultima volta la tua posizione tramite Visitor History."
+            "value": "Indica quando un dispositivo noto ha richiesto la tua posizione per l’ultima volta, secondo la cronologia dei visitatori."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "既知のデバイスがVisitor History経由で最後にあなたの位置情報を要求した日時を報告します。"
+            "value": "訪問履歴に記録された、既知のデバイスが最後に位置情報を要求した日時を確認します。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Meldt wanneer een bekend apparaat voor het laatst je locatie via Visitor History heeft opgevraagd."
+            "value": "Geeft aan wanneer een bekend apparaat volgens de bezoekgeschiedenis voor het laatst je locatie heeft opgevraagd."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "报告一台已知设备上次通过 Visitor History 请求你的位置的时间。"
+            "value": "根据访问历史，显示已知设备上次请求你的位置的时间。"
           }
         }
       }
@@ -10957,7 +10957,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ n’a pas encore demandé votre position."
+            "value": "%@ n’a pas encore demandé ta position."
           }
         },
         "it": {
@@ -11022,7 +11022,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ a demandé votre position pour la dernière fois le %@."
+            "value": "%@ a demandé ta position pour la dernière fois le %@."
           }
         },
         "it": {
@@ -11087,7 +11087,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ a demandé votre position pour la dernière fois le %@ depuis %@."
+            "value": "%@ a demandé ta position pour la dernière fois le %@ depuis %@."
           }
         },
         "it": {

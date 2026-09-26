@@ -1,6 +1,6 @@
 /* Dutch InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "We gebruiken je locatie om je positie te tonen en te delen met je apparaten.";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "We hebben achtergrondlocatie nodig om de locatie van je apparaat actueel te houden, ook wanneer de app niet is geopend.";
+"NSLocationWhenInUseUsageDescription" = "Miataru gebruikt je locatie om te tonen waar je bent en deze te delen met apparaten die je kiest.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Als tracking aanstaat, gebruikt Miataru je locatie op de achtergrond om je gedeelde positie actueel te houden, ook wanneer de app is gesloten.";
 
 
 

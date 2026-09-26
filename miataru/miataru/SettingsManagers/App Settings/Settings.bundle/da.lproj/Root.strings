@@ -22,11 +22,11 @@
 "activity_type_fitness" = "Mellem (cykling, løb)";
 "activity_type_automotive" = "Højeste (navigation)";
 "location_sensitivity_title" = "Følsomhed for placeringsopdateringer";
-"location_tracking_update_sensitivity_very_sensitive_short" = "Meget følsom (3m/2m)";
-"location_tracking_update_sensitivity_default_short" = "Standard (5m/5m)";
-"location_tracking_update_sensitivity_balanced_short" = "Balanceret (10m/10m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "Strømbesparelse (25m/20m)";
-"location_tracking_update_sensitivity_minimal_short" = "Minimal (50m/40m)";
+"location_tracking_update_sensitivity_very_sensitive_short" = "Meget følsom (3 m/2 m)";
+"location_tracking_update_sensitivity_default_short" = "Standard (5 m/5 m)";
+"location_tracking_update_sensitivity_balanced_short" = "Balanceret (10 m/10 m)";
+"location_tracking_update_sensitivity_battery_saver_short" = "Strømbesparelse (25 m/20 m)";
+"location_tracking_update_sensitivity_minimal_short" = "Minimal (50 m/40 m)";
 "background_location_updates_section_title" = "Baggrundsopdateringer";
 "frequent_background_location_updates_title" = "Hyppigere baggrundsopdateringer";
 "background_location_distance_filter_title" = "Bevægelsestærskel";

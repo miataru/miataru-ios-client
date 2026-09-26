@@ -8,7 +8,7 @@
             "state": "translated",
             "values": [
               "Tjek en enheds status i ${applicationName}",
-              "Hvor gammel er en Miataru-placering i ${applicationName}"
+              "Hvornår blev en enheds position sidst opdateret i ${applicationName}"
             ]
           }
         },
@@ -17,7 +17,7 @@
             "state": "translated",
             "values": [
               "Gerätestatus in ${applicationName} prüfen",
-              "Wie alt ist ein Miataru-Standort in ${applicationName}"
+              "Wann wurde der Standort eines Geräts in ${applicationName} zuletzt aktualisiert"
             ]
           }
         },
@@ -26,7 +26,7 @@
             "state": "translated",
             "values": [
               "Check a device status in ${applicationName}",
-              "How old is a Miataru location in ${applicationName}"
+              "When was a device's location last updated in ${applicationName}"
             ]
           }
         },
@@ -35,7 +35,7 @@
             "state": "translated",
             "values": [
               "Comprobar el estado de un dispositivo en ${applicationName}",
-              "Qué antigüedad tiene una ubicación de Miataru en ${applicationName}"
+              "Cuándo se actualizó por última vez la ubicación de un dispositivo en ${applicationName}"
             ]
           }
         },
@@ -44,7 +44,7 @@
             "state": "translated",
             "values": [
               "Tarkista laitteen tila sovelluksessa ${applicationName}",
-              "Kuinka vanha Miataru-sijainti on sovelluksessa ${applicationName}"
+              "Milloin laitteen sijainti päivitettiin viimeksi sovelluksessa ${applicationName}"
             ]
           }
         },
@@ -53,7 +53,7 @@
             "state": "translated",
             "values": [
               "Vérifier l’état d’un appareil dans ${applicationName}",
-              "Quel âge a une position Miataru dans ${applicationName}"
+              "Quand la position d’un appareil a-t-elle été mise à jour dans ${applicationName}"
             ]
           }
         },
@@ -62,7 +62,7 @@
             "state": "translated",
             "values": [
               "Controlla lo stato di un dispositivo in ${applicationName}",
-              "Quanto è vecchia una posizione Miataru in ${applicationName}"
+              "Quando è stata aggiornata l’ultima volta la posizione di un dispositivo in ${applicationName}"
             ]
           }
         },
@@ -71,7 +71,7 @@
             "state": "translated",
             "values": [
               "${applicationName}でデバイスの状態を確認",
-              "${applicationName}でMiataruの位置はどのくらい前ですか"
+              "${applicationName}でデバイスの位置情報が最後に更新されたのはいつ"
             ]
           }
         },
@@ -80,7 +80,7 @@
             "state": "translated",
             "values": [
               "Controleer een apparaatstatus in ${applicationName}",
-              "Hoe oud is een Miataru-locatie in ${applicationName}"
+              "Wanneer is de locatie van een apparaat voor het laatst bijgewerkt in ${applicationName}"
             ]
           }
         },
@@ -89,7 +89,7 @@
             "state": "translated",
             "values": [
               "在 ${applicationName} 中检查设备状态",
-              "${applicationName} 中的 Miataru 位置有多旧"
+              "${applicationName} 中设备位置最后更新于何时"
             ]
           }
         }
@@ -478,7 +478,7 @@
             "state": "translated",
             "values": [
               "Åbn en Maps-rute i ${applicationName}",
-              "Rute i Maps med ${applicationName}"
+              "Få rutevejledning i Maps med ${applicationName}"
             ]
           }
         },
@@ -487,7 +487,7 @@
             "state": "translated",
             "values": [
               "Karten-Route in ${applicationName} öffnen",
-              "Route in Karten mit ${applicationName}"
+              "Route in Karten mit ${applicationName} anzeigen"
             ]
           }
         },
@@ -496,7 +496,7 @@
             "state": "translated",
             "values": [
               "Open a Maps route in ${applicationName}",
-              "Route in Maps with ${applicationName}"
+              "Get directions in Maps with ${applicationName}"
             ]
           }
         },
@@ -505,7 +505,7 @@
             "state": "translated",
             "values": [
               "Abrir una ruta de Mapas en ${applicationName}",
-              "Ruta en Mapas con ${applicationName}"
+              "Obtener indicaciones en Mapas con ${applicationName}"
             ]
           }
         },
@@ -514,7 +514,7 @@
             "state": "translated",
             "values": [
               "Avaa Maps-reitti sovelluksessa ${applicationName}",
-              "Reitti Mapsissa sovelluksella ${applicationName}"
+              "Näytä reittiohjeet Kartat-sovelluksessa ${applicationName}-sovelluksella"
             ]
           }
         },
@@ -523,7 +523,7 @@
             "state": "translated",
             "values": [
               "Ouvrir un itinéraire Plans dans ${applicationName}",
-              "Itinéraire dans Plans avec ${applicationName}"
+              "Obtenir un itinéraire dans Plans avec ${applicationName}"
             ]
           }
         },
@@ -532,7 +532,7 @@
             "state": "translated",
             "values": [
               "Apri un percorso Mappe in ${applicationName}",
-              "Percorso in Mappe con ${applicationName}"
+              "Ottieni indicazioni in Mappe con ${applicationName}"
             ]
           }
         },
@@ -541,7 +541,7 @@
             "state": "translated",
             "values": [
               "${applicationName}でマップの経路を開く",
-              "${applicationName}でマップに経路を表示"
+              "${applicationName}でマップの経路案内を表示"
             ]
           }
         },
@@ -550,7 +550,7 @@
             "state": "translated",
             "values": [
               "Open een Kaarten-route in ${applicationName}",
-              "Route in Kaarten met ${applicationName}"
+              "Toon een route in Kaarten met ${applicationName}"
             ]
           }
         },
@@ -559,7 +559,7 @@
             "state": "translated",
             "values": [
               "在 ${applicationName} 中打开地图路线",
-              "使用 ${applicationName} 在地图中规划路线"
+              "使用 ${applicationName} 在地图中获取路线"
             ]
           }
         }
@@ -666,7 +666,7 @@
             "state": "translated",
             "values": [
               "Start Miataru-navigation i ${applicationName}",
-              "Naviger i Miataru med ${applicationName}"
+              "Naviger til en enhed med ${applicationName}"
             ]
           }
         },
@@ -675,7 +675,7 @@
             "state": "translated",
             "values": [
               "Miataru-Navigation in ${applicationName} starten",
-              "In Miataru mit ${applicationName} navigieren"
+              "Mit ${applicationName} zu einem Gerät navigieren"
             ]
           }
         },
@@ -684,7 +684,7 @@
             "state": "translated",
             "values": [
               "Start Miataru navigation in ${applicationName}",
-              "Navigate in Miataru with ${applicationName}"
+              "Navigate to a device with ${applicationName}"
             ]
           }
         },
@@ -693,7 +693,7 @@
             "state": "translated",
             "values": [
               "Iniciar navegación de Miataru en ${applicationName}",
-              "Navegar en Miataru con ${applicationName}"
+              "Navegar hasta un dispositivo con ${applicationName}"
             ]
           }
         },
@@ -702,7 +702,7 @@
             "state": "translated",
             "values": [
               "Aloita Miataru-navigointi sovelluksessa ${applicationName}",
-              "Navigoi Miatarussa sovelluksella ${applicationName}"
+              "Navigoi laitteen luo sovelluksella ${applicationName}"
             ]
           }
         },
@@ -711,7 +711,7 @@
             "state": "translated",
             "values": [
               "Démarrer la navigation Miataru dans ${applicationName}",
-              "Naviguer dans Miataru avec ${applicationName}"
+              "Naviguer vers un appareil avec ${applicationName}"
             ]
           }
         },
@@ -720,7 +720,7 @@
             "state": "translated",
             "values": [
               "Avvia la navigazione Miataru in ${applicationName}",
-              "Naviga in Miataru con ${applicationName}"
+              "Naviga verso un dispositivo con ${applicationName}"
             ]
           }
         },
@@ -729,7 +729,7 @@
             "state": "translated",
             "values": [
               "${applicationName}でMiataruナビゲーションを開始",
-              "${applicationName}でMiataru内をナビゲート"
+              "${applicationName}でデバイスまでナビゲート"
             ]
           }
         },
@@ -738,7 +738,7 @@
             "state": "translated",
             "values": [
               "Start Miataru-navigatie in ${applicationName}",
-              "Navigeer in Miataru met ${applicationName}"
+              "Navigeer naar een apparaat met ${applicationName}"
             ]
           }
         },
@@ -747,7 +747,7 @@
             "state": "translated",
             "values": [
               "在 ${applicationName} 中开始 Miataru 导航",
-              "使用 ${applicationName} 在 Miataru 中导航"
+              "使用 ${applicationName} 导航至设备"
             ]
           }
         }

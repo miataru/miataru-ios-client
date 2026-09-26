@@ -1,4 +1,4 @@
 /* Japanese InfoPlist strings */
-"NSLocationWhenInUseUsageDescription" = "位置情報は現在地の表示とデバイス間の共有に使用します。";
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "アプリが開いていない時でも位置情報を最新に保つため、バックグラウンドでの位置情報アクセスが必要です。";
+"NSLocationWhenInUseUsageDescription" = "Miataruは現在地を表示し、選択したデバイスと共有するために位置情報を使用します。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "追跡が有効な場合、アプリを閉じていても共有位置を最新に保つため、Miataruはバックグラウンドで位置情報を使用します。";
 

@@ -22,11 +22,11 @@
 "activity_type_fitness" = "Media (ciclismo, corsa)";
 "activity_type_automotive" = "Massima (navigazione)";
 "location_sensitivity_title" = "Sensibilità aggiornamenti posizione";
-"location_tracking_update_sensitivity_very_sensitive_short" = "Molto sensibile (3m/2m)";
-"location_tracking_update_sensitivity_default_short" = "Predefinito (5m/5m)";
-"location_tracking_update_sensitivity_balanced_short" = "Bilanciato (10m/10m)";
-"location_tracking_update_sensitivity_battery_saver_short" = "Risparmio batteria (25m/20m)";
-"location_tracking_update_sensitivity_minimal_short" = "Minimo (50m/40m)";
+"location_tracking_update_sensitivity_very_sensitive_short" = "Molto sensibile (3 m/2 m)";
+"location_tracking_update_sensitivity_default_short" = "Predefinito (5 m/5 m)";
+"location_tracking_update_sensitivity_balanced_short" = "Bilanciato (10 m/10 m)";
+"location_tracking_update_sensitivity_battery_saver_short" = "Risparmio batteria (25 m/20 m)";
+"location_tracking_update_sensitivity_minimal_short" = "Minimo (50 m/40 m)";
 "background_location_updates_section_title" = "Aggiornamenti posizione in background";
 "frequent_background_location_updates_title" = "Aggiornamenti in background più frequenti";
 "background_location_distance_filter_title" = "Soglia di movimento";
@@ -121,4 +121,4 @@
 
 "1minute" = "1 minuto";
 "60minutes" = "60 minuti";
-"known_visitor_notification_cooldown_title" = "Pausa visitatori noti";
+"known_visitor_notification_cooldown_title" = "Pausa per visitatori noti";

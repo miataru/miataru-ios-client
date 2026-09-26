@@ -29,7 +29,7 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             intent: OpenRouteToPersonIntent(),
             phrases: [
                 "Open a Maps route in \(.applicationName)",
-                "Route in Maps with \(.applicationName)"
+                "Get directions in Maps with \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource("intent_open_route_to_device_shortcut_title", defaultValue: "Route in Maps", table: "AppIntents",
                 comment: "Short title for the Maps route App Shortcut"
@@ -41,7 +41,7 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             intent: OpenMiataruNavigationToPersonIntent(),
             phrases: [
                 "Start Miataru navigation in \(.applicationName)",
-                "Navigate in Miataru with \(.applicationName)"
+                "Navigate to a device with \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource("intent_open_miataru_navigation_to_device_shortcut_title", defaultValue: "Navigation in Miataru", table: "AppIntents",
                 comment: "Short title for the Miataru in-app navigation App Shortcut"
@@ -101,7 +101,7 @@ struct MiataruAppShortcutsProvider: AppShortcutsProvider {
             intent: GetDeviceStatusIntent(),
             phrases: [
                 "Check a device status in \(.applicationName)",
-                "How old is a Miataru location in \(.applicationName)"
+                "When was a device's location last updated in \(.applicationName)"
             ],
             shortTitle: LocalizedStringResource("intent_get_device_status_shortcut_title", defaultValue: "Device Status", table: "AppIntents",
                 comment: "Short title for the device status App Shortcut"

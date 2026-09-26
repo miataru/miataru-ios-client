@@ -18,7 +18,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Easily share your device ID or add others by scanning QR-Codes."
+            "value": "Share your device ID or add other devices by scanning QR codes."
           }
         },
         "es": {
@@ -36,7 +36,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Partagez facilement ton identifiant d’appareil ou ajoute-en d’autres en scannant des codes QR."
+            "value": "Partage facilement ton identifiant d’appareil ou ajoute d’autres appareils en scannant leur code QR."
           }
         },
         "it": {
@@ -201,61 +201,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru hjælper dig med at dele din (enheds)placering med personer og grupper, du stoler på."
+            "value": "Med Miataru kan du dele din position og se positionen for enheder, du tilføjer."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru hilft dir, deinen (Geräte-)Standort mit Personen und Gruppen zu teilen, denen du vertraust."
+            "value": "Mit Miataru kannst du deinen Standort teilen und die Standorte hinzugefügter Geräte sehen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru helps you share your (device) location with people and groups you trust."
+            "value": "Miataru lets you share your location and see the locations of devices you add."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru te ayuda a compartir la ubicación de tu dispositivo con personas y grupos de confianza."
+            "value": "Miataru te permite compartir tu ubicación y ver la de los dispositivos que añadas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru auttaa jakamaan (laitteen) sijaintisi luotettujen ihmisten ja ryhmien kanssa."
+            "value": "Miatarulla voit jakaa sijaintisi ja nähdä lisäämiesi laitteiden sijainnit."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru t'aide à partager la position de ton appareil avec des personnes et des groupes de confiance."
+            "value": "Miataru te permet de partager ta position et de voir celle des appareils que tu ajoutes."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru ti aiuta a condividere la posizione (del dispositivo) con persone e gruppi di cui ti fidi."
+            "value": "Miataru ti permette di condividere la tua posizione e vedere quella dei dispositivi che aggiungi."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataruは信頼できる人やグループとデバイスの位置情報を共有するのに役立ちます。"
+            "value": "Miataruでは自分の位置情報を共有し、追加したデバイスの位置を確認できます。"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru helpt je je (apparaat)locatie te delen met mensen en groepen die je vertrouwt."
+            "value": "Met Miataru kun je je locatie delen en de locaties zien van apparaten die je toevoegt."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru 帮助你与信任的人和群组共享（设备）位置。"
+            "value": "Miataru 可让你共享自己的位置，并查看已添加设备的位置。"
           }
         }
       }
@@ -423,7 +423,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "\"Un appareil inconnu (l'iPhone de Maria) de Berlin a demandé votre position\""
+            "value": "\"Un appareil inconnu (l'iPhone de Maria) de Berlin a demandé ta position\""
           }
         },
         "it": {
@@ -551,7 +551,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Miataru peut vous avertir lorsqu'un appareil inconnu demande votre position."
+            "value": "Miataru peut t’avertir lorsqu'un appareil inconnu demande ta position."
           }
         },
         "it": {
@@ -853,7 +853,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Scan a QR-Code from another device running Miataru."
+            "value": "Scan a QR code from another device running Miataru."
           }
         },
         "es": {
@@ -871,7 +871,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Scannez un code QR depuis un autre appareil utilisant Miataru."
+            "value": "Scanne un code QR depuis un autre appareil utilisant Miataru."
           }
         },
         "it": {
@@ -917,7 +917,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "touch here to scan QR code"
+            "value": "Scan QR code"
           }
         },
         "es": {
@@ -935,7 +935,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "touchez ici pour scanner le code QR"
+            "value": "Touche ici pour scanner un code QR"
           }
         },
         "it": {
@@ -981,7 +981,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Share & Scan with QR-Codes"
+            "value": "Share and scan with QR codes"
           }
         },
         "es": {
@@ -1176,7 +1176,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Show your QR-Code to someone you trust."
+            "value": "Show your QR code to someone you trust."
           }
         },
         "es": {
@@ -1194,7 +1194,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Montrez ton code QR à une personne de confiance."
+            "value": "Montre ton code QR à une personne de confiance."
           }
         },
         "it": {
@@ -1304,7 +1304,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap on Finish to start using Miataru."
+            "value": "Tap Finish to start using Miataru."
           }
         },
         "es": {
@@ -1322,7 +1322,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touchez Terminer pour commencer à utiliser Miataru."
+            "value": "Touche Terminer pour commencer à utiliser Miataru."
           }
         },
         "it": {
@@ -1740,61 +1740,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dine data sendes kun, når du aktivt slår det til"
+            "value": "Din position sendes kun, når du slår sporing til"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deine Daten werden nur gesendet, wenn du sie gezielt aktivierst."
+            "value": "Dein Standort wird nur gesendet, wenn du Tracking aktivierst"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your data is only sent when you specifically activate it"
+            "value": "Your location is sent only when you turn on tracking"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tus datos solo se envían cuando los activas explícitamente"
+            "value": "Tu ubicación solo se envía cuando activas el seguimiento"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tietosi lähetetään vain, kun aktivoit sen"
+            "value": "Sijaintisi lähetetään vain, kun otat seurannan käyttöön"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tes données ne sont envoyées que lorsque tu les actives explicitement"
+            "value": "Ta position n’est envoyée que si tu actives le suivi"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "I tuoi dati vengono inviati solo quando li attivi esplicitamente"
+            "value": "La tua posizione viene inviata solo quando attivi il tracciamento"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "データは、あなたが明示的に有効にしたときにのみ送信されます。"
+            "value": "追跡をオンにした場合のみ位置情報が送信されます"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je data wordt alleen verzonden wanneer je dit zelf activeert"
+            "value": "Je locatie wordt alleen verzonden als je tracking inschakelt"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "只有你主动启用时，数据才会发送"
+            "value": "只有开启位置跟踪后才会发送你的位置"
           }
         }
       }
@@ -1804,61 +1804,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dine data forbliver på den server, du vælger, i den periode, du vælger"
+            "value": "Vælg serveren, og hvor længe den skal gemme din position"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deine Daten bleiben so lange auf dem Server, wie du es festlegst."
+            "value": "Wähle den Server und wie lange er deinen Standort speichern soll"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your data stays on the server you choose for the time you choose"
+            "value": "Choose the server and how long it should keep your location"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tus datos permanecen en el servidor que elijas durante el tiempo que decidas"
+            "value": "Elige el servidor y cuánto tiempo debe conservar tu ubicación"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tietosi pysyvät valitsemallasi palvelimella valitsemasi ajan"
+            "value": "Valitse palvelin ja kuinka kauan sen tulee säilyttää sijaintiasi"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tes données restent sur le serveur que tu choisis pendant la durée que tu choisis"
+            "value": "Choisis le serveur et la durée de conservation de ta position"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "I tuoi dati restano sul server scelto per il tempo che decidi"
+            "value": "Scegli il server e per quanto tempo deve conservare la tua posizione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "データは、選択したサーバーに選択した期間だけ保存されます。"
+            "value": "保存先のサーバーと位置情報の保存期間を選べます"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je data blijft op de server die je kiest, zolang als je kiest"
+            "value": "Kies de server en hoe lang die je locatie moet bewaren"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "你的数据只会在你选择的服务器上保存指定时间"
+            "value": "选择服务器以及位置的保存时长"
           }
         }
       }

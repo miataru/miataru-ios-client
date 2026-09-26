@@ -368,9 +368,9 @@ struct iPhone_LocationStatusView: View {
         
         switch locationManager.authorizationStatus {
         case .authorizedAlways:
-            return locationManager.isTracking ? NSLocalizedString("Tracking inactive (fore- & background)", tableName: "LocationTracking", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
+            return locationManager.isTracking ? NSLocalizedString("location_tracking_status_active", tableName: "LocationTracking", comment: "Location Tracking Status statusText") : NSLocalizedString("Permission granted, but not active", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         case .authorizedWhenInUse:
-            return NSLocalizedString("Only allowed when app in foregrond", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
+            return NSLocalizedString("location_tracking_status_foreground_only", tableName: "LocationTracking", comment: "Location Tracking Status statusText")
         case .denied:
             return NSLocalizedString("Location access denied", comment: "Location Tracking Status statusText")
         case .restricted:

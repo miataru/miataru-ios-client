@@ -1141,7 +1141,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "carte par défaut"
+            "value": "Carte par défaut"
           }
         },
         "it": {
@@ -3067,7 +3067,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "位置更新敏感度"
+            "value": "位置更新灵敏度"
           }
         }
       }
@@ -3172,7 +3172,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez une action pour %@"
+            "value": "Choisis une action pour %@"
           }
         },
         "it": {
@@ -3406,7 +3406,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aktualisierungsintervall für Devices"
+            "value": "Aktualisierungsintervall auf der Karte"
           }
         },
         "en": {
@@ -3512,7 +3512,7 @@
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Standaard zoomniveau kaart"
+            "value": "Standaardzoomniveau van de kaart"
           }
         },
         "zh-Hans": {
@@ -4469,7 +4469,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Impossible de générer un itinéraire entre les positions. Essayez de changer le mode de transport dans les réglages."
+            "value": "Impossible de générer un itinéraire entre les positions. Essaie de changer le mode de transport dans les réglages."
           }
         },
         "it": {
@@ -4599,7 +4599,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Limite quotidienne de requêtes d’itinéraire atteinte. Réessayez demain."
+            "value": "Limite quotidienne de requêtes d’itinéraire atteinte. Réessaie demain."
           }
         },
         "it": {
@@ -4663,7 +4663,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "carte satellite"
+            "value": "Carte satellite"
           }
         },
         "it": {
@@ -4698,61 +4698,61 @@
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beregner..."
+            "value": "Beregner…"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "???"
+            "value": "Wird berechnet…"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "???"
+            "value": "Calculating…"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Calculando..."
+            "value": "Calculando…"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lasketaan..."
+            "value": "Lasketaan…"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Calcul..."
+            "value": "Calcul en cours…"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Calcolo..."
+            "value": "Calcolo in corso…"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "???"
+            "value": "計算中…"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bezig met berekenen..."
+            "value": "Berekenen…"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "计算中..."
+            "value": "正在计算…"
           }
         }
       }
@@ -5568,7 +5568,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "transit"
+            "value": "Transports en commun"
           }
         },
         "it": {
@@ -5632,7 +5632,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "marche"
+            "value": "Marche"
           }
         },
         "it": {
@@ -5894,7 +5894,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vers vous"
+            "value": "Vers toi"
           }
         },
         "it": {
@@ -5959,7 +5959,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Affiche votre vitesse GPS actuelle et l’itinéraire. Les indications de changement de direction s’affichent lorsque vous naviguez vers l’appareil. Si votre position date de plus de 15 secondes, la vitesse s’affiche sous la forme — km/h."
+            "value": "Affiche ta vitesse GPS actuelle et l’itinéraire. Les indications de changement de direction s’affichent lorsque tu navigues vers l’appareil. Si ta position date de plus de 15 secondes, la vitesse s’affiche sous la forme — km/h."
           }
         },
         "it": {
@@ -6807,7 +6807,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous"
+            "value": "Tu"
           }
         },
         "it": {
