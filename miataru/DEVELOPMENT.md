@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current checkout has main app and widget metadata **3.5 (build 3)**. This identifies the development source, not an App Store release or accepted upload. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current checkout has main app and widget metadata **3.5 (build 3)**. App Store Connect accepted the upload of build 3 on 2026-09-26; Apple processing completion, App Review, and store availability remain unverified. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 

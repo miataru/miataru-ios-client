@@ -4,6 +4,8 @@
 
 Current checkout: **development version 3.5 (build 3)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
 
+App Store Connect accepted the upload of 3.5 build 3 on 2026-09-26. Apple processing completion, App Review, and store availability remain unverified.
+
 ## Overview
 
 miataru lets users publish their own device location, follow trusted devices, organize devices into groups, share device IDs through QR codes and deep links, and navigate to another device. The app keeps user control at the center: users pick the server, decide whether history is stored, optionally protect server-side operations with a DeviceKey, and can enable an allowed-device list for stricter access control.
